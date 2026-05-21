@@ -101,6 +101,14 @@ public sealed class TownScreenUxmlHubLayoutTests
         var uxml = File.ReadAllText("Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uxml");
         Assert.That(uxml, Does.Contain("SquadBuilderRoot"));
         Assert.That(uxml, Does.Contain("SquadBuilderCloseButton"));
+        Assert.That(uxml, Does.Contain("SquadBuilderThreeZoneLayout"));
+        Assert.That(uxml, Does.Contain("SquadBuilderRosterRail"));
+        Assert.That(uxml, Does.Contain("SquadBuilderRosterCountLabel"));
+        Assert.That(uxml, Does.Contain("SquadBuilderRosterList"));
+        Assert.That(uxml, Does.Contain("SquadBuilderFormationBoard"));
+        Assert.That(uxml, Does.Contain("SquadBuilderSelectedDetail"));
+        Assert.That(uxml, Does.Contain("SquadBuilderSelectedHeroName"));
+        Assert.That(uxml, Does.Contain("SquadBuilderSelectedHeroLoadout"));
         // 6 anchor
         Assert.That(uxml, Does.Contain("SquadBuilderAnchor_FrontTop"));
         Assert.That(uxml, Does.Contain("SquadBuilderAnchor_FrontCenter"));
@@ -114,6 +122,16 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_ProtectCarry"));
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_CollapseWeakSide"));
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_AllInBackline"));
+        Assert.That(uxml, Does.Contain("팀 태세 (Team Posture)"));
+        Assert.That(uxml, Does.Not.Contain("자세 (Team Posture)"));
+
+        var presenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/SquadBuilderPresenter.cs");
+        Assert.That(presenter, Does.Contain("ProfileQueries.GetLoadoutView"));
+        Assert.That(presenter, Does.Contain("session.Profile.Heroes"));
+        Assert.That(presenter, Does.Contain("ContentTextResolver"));
+        Assert.That(presenter, Does.Contain("BuildHeroRow"));
+        Assert.That(presenter, Does.Contain("팀 태세 갱신"));
+        Assert.That(presenter, Does.Not.Contain("자세 갱신"));
     }
 
     [Test]

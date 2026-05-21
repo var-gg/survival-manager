@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Meta.Services;
+using SM.Persistence.Abstractions.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -28,8 +30,17 @@ public sealed class SquadBuilderPresenter
     private readonly VisualElement _modalRoot;
     private readonly Button _closeButton;
     private readonly Label _statusLabel;
+    private readonly Label _rosterCountLabel;
+    private readonly VisualElement _rosterList;
+    private readonly Label _selectedAnchorLabel;
+    private readonly Label _selectedHeroName;
+    private readonly Label _selectedHeroMeta;
+    private readonly Label _selectedHeroLoadout;
+    private readonly VisualElement _selectedHeroTags;
     private readonly (DeploymentAnchorId Anchor, Button Button)[] _anchorButtons;
     private readonly (TeamPostureType Posture, Button Button)[] _postureButtons;
+    private DeploymentAnchorId _selectedAnchor = DeploymentAnchorId.FrontCenter;
+    private string _statusText = "편성 상태를 확인하세요.";
     private bool _isOpen;
 
     public SquadBuilderPresenter(VisualElement panelRoot, GameSessionRoot root, ContentTextResolver contentText)
@@ -41,6 +52,13 @@ public sealed class SquadBuilderPresenter
         _modalRoot = Require<VisualElement>(_panelRoot, "SquadBuilderRoot");
         _closeButton = Require<Button>(_panelRoot, "SquadBuilderCloseButton");
         _statusLabel = Require<Label>(_panelRoot, "SquadBuilderStatusLabel");
+        _rosterCountLabel = Require<Label>(_panelRoot, "SquadBuilderRosterCountLabel");
+        _rosterList = Require<VisualElement>(_panelRoot, "SquadBuilderRosterList");
+        _selectedAnchorLabel = Require<Label>(_panelRoot, "SquadBuilderSelectedAnchorLabel");
+        _selectedHeroName = Require<Label>(_panelRoot, "SquadBuilderSelectedHeroName");
+        _selectedHeroMeta = Require<Label>(_panelRoot, "SquadBuilderSelectedHeroMeta");
+        _selectedHeroLoadout = Require<Label>(_panelRoot, "SquadBuilderSelectedHeroLoadout");
+        _selectedHeroTags = Require<VisualElement>(_panelRoot, "SquadBuilderSelectedHeroTags");
 
         _anchorButtons = new[]
         {
@@ -93,15 +111,16 @@ public sealed class SquadBuilderPresenter
 
     private void OnAnchorClicked(DeploymentAnchorId anchor)
     {
+        _selectedAnchor = anchor;
         _root.SessionState.CycleDeploymentAssignment(anchor);
-        _statusLabel.text = $"앵커 갱신: {LocalizeAnchor(anchor)}";
+        _statusText = $"배치 갱신: {LocalizeAnchor(anchor)}";
         Render();
     }
 
     private void OnPostureClicked(TeamPostureType posture)
     {
         _root.SessionState.SetTeamPosture(posture);
-        _statusLabel.text = $"자세 갱신: {LocalizePosture(posture)}";
+        _statusText = $"팀 태세 갱신: {LocalizePosture(posture)}";
         Render();
     }
 
@@ -120,6 +139,7 @@ public sealed class SquadBuilderPresenter
         var session = _root.SessionState;
         var loadout = _root.ProfileQueries.GetLoadoutView(_root.ActiveProfileId);
         var heroById = session.Profile.Heroes.ToDictionary(h => h.HeroId, StringComparer.Ordinal);
+        var anchorByHeroId = BuildAnchorByHeroId(loadout);
 
         foreach (var entry in _anchorButtons)
         {
@@ -130,7 +150,7 @@ public sealed class SquadBuilderPresenter
             {
                 heroLabel = !string.IsNullOrEmpty(hero.Name)
                     ? hero.Name
-                    : _contentText.GetArchetypeName(hero.HeroId);
+                    : ResolveHeroArchetypeName(hero);
             }
             else
             {
@@ -138,6 +158,7 @@ public sealed class SquadBuilderPresenter
             }
 
             entry.Button.text = $"{LocalizeAnchor(entry.Anchor)}\n{heroLabel}";
+            entry.Button.EnableInClassList("sm-sqb-modal__anchor-button--selected", entry.Anchor == _selectedAnchor);
         }
 
         var selected = session.SelectedTeamPosture;
@@ -145,6 +166,156 @@ public sealed class SquadBuilderPresenter
         {
             entry.Button.EnableInClassList("sm-sqb-modal__posture-button--selected", entry.Posture == selected);
         }
+
+        RenderRoster(session, loadout, anchorByHeroId);
+        RenderSelectedDetail(session, loadout, heroById, anchorByHeroId);
+        _statusLabel.text = $"{_statusText} · 현재 팀 태세: {LocalizePosture(selected)}";
+    }
+
+    private void RenderRoster(
+        GameSessionState session,
+        SM.Meta.Model.LoadoutView? loadout,
+        IReadOnlyDictionary<string, DeploymentAnchorId> anchorByHeroId)
+    {
+        _rosterList.Clear();
+        var expeditionIds = loadout?.ExpeditionSquadHeroIds ?? Array.Empty<string>();
+        var expeditionSet = new HashSet<string>(expeditionIds, StringComparer.Ordinal);
+        var rows = session.Profile.Heroes
+            .OrderByDescending(hero => anchorByHeroId.ContainsKey(hero.HeroId))
+            .ThenByDescending(hero => expeditionSet.Contains(hero.HeroId))
+            .ThenBy(hero => ResolveHeroDisplayName(hero), StringComparer.Ordinal)
+            .Select(hero => BuildHeroRow(session, hero, anchorByHeroId, expeditionSet))
+            .ToArray();
+
+        _rosterCountLabel.text = $"· {rows.Length}";
+        foreach (var row in rows)
+        {
+            var container = new VisualElement { name = $"SquadBuilderRosterRow_{SanitizeName(row.HeroId)}" };
+            container.AddToClassList("sm-sqb-modal__roster-row");
+            container.EnableInClassList("sm-sqb-modal__roster-row--deployed", row.IsDeployed);
+
+            var name = new Label(row.DisplayName);
+            name.AddToClassList("sm-sqb-modal__roster-name");
+            container.Add(name);
+
+            var meta = new Label($"{row.MetaLabel} · {row.DeploymentLabel}");
+            meta.AddToClassList("sm-sqb-modal__roster-meta");
+            container.Add(meta);
+
+            _rosterList.Add(container);
+        }
+    }
+
+    private void RenderSelectedDetail(
+        GameSessionState session,
+        SM.Meta.Model.LoadoutView? loadout,
+        IReadOnlyDictionary<string, HeroInstanceRecord> heroById,
+        IReadOnlyDictionary<string, DeploymentAnchorId> anchorByHeroId)
+    {
+        var deployment = loadout?.Deployments.FirstOrDefault(d => d.Anchor == _selectedAnchor);
+        var heroId = deployment?.HeroId ?? string.Empty;
+        _selectedAnchorLabel.text = $"선택 앵커 · {LocalizeAnchor(_selectedAnchor)}";
+        _selectedHeroTags.Clear();
+
+        if (string.IsNullOrWhiteSpace(heroId) || !heroById.TryGetValue(heroId, out var hero))
+        {
+            _selectedHeroName.text = "비어있음";
+            _selectedHeroMeta.text = "이 anchor에는 hero가 없습니다.";
+            _selectedHeroLoadout.text = "formation board의 anchor를 누르면 기존 순환 규칙으로 배치가 갱신됩니다.";
+            AddDetailTag("empty");
+            AddDetailTag(LocalizePosture(session.SelectedTeamPosture));
+            return;
+        }
+
+        var row = BuildHeroRow(
+            session,
+            hero,
+            anchorByHeroId,
+            new HashSet<string>(loadout?.ExpeditionSquadHeroIds ?? Array.Empty<string>(), StringComparer.Ordinal));
+        _selectedHeroName.text = row.DisplayName;
+        _selectedHeroMeta.text = row.MetaLabel;
+        _selectedHeroLoadout.text = row.LoadoutLabel;
+        AddDetailTag(row.DeploymentLabel);
+        AddDetailTag(row.RarityLabel);
+        AddDetailTag($"팀 태세 {LocalizePosture(session.SelectedTeamPosture)}");
+    }
+
+    private SquadBuilderHeroRow BuildHeroRow(
+        GameSessionState session,
+        HeroInstanceRecord hero,
+        IReadOnlyDictionary<string, DeploymentAnchorId> anchorByHeroId,
+        HashSet<string> expeditionSet)
+    {
+        var progression = session.Profile.HeroProgressions
+            .FirstOrDefault(entry => string.Equals(entry.HeroId, hero.HeroId, StringComparison.Ordinal));
+        var loadout = session.Profile.HeroLoadouts
+            .FirstOrDefault(entry => string.Equals(entry.HeroId, hero.HeroId, StringComparison.Ordinal));
+        var level = progression?.Level ?? 1;
+        var xpPct = progression != null ? Mathf.Clamp(progression.Experience % 100, 0, 100) : 0;
+        var equippedItemCount = loadout?.EquippedItemInstanceIds.Count(id => !string.IsNullOrWhiteSpace(id))
+            ?? hero.EquippedItemIds.Count(id => !string.IsNullOrWhiteSpace(id));
+        var equippedSkillCount = loadout?.EquippedSkillInstanceIds.Count(id => !string.IsNullOrWhiteSpace(id)) ?? 0;
+        var passiveCount = loadout?.SelectedPassiveNodeIds.Count(id => !string.IsNullOrWhiteSpace(id)) ?? 0;
+        var className = string.IsNullOrWhiteSpace(hero.ClassId) ? "class 미정" : _contentText.GetClassName(hero.ClassId);
+        var raceName = string.IsNullOrWhiteSpace(hero.RaceId) ? "race 미정" : _contentText.GetRaceName(hero.RaceId);
+        var deploymentLabel = anchorByHeroId.TryGetValue(hero.HeroId, out var anchor)
+            ? LocalizeAnchor(anchor)
+            : expeditionSet.Contains(hero.HeroId)
+                ? "원정 후보"
+                : "대기";
+
+        return new SquadBuilderHeroRow(
+            HeroId: hero.HeroId,
+            DisplayName: ResolveHeroDisplayName(hero),
+            MetaLabel: $"{className} / {raceName} · Lv {level} · XP {xpPct}%",
+            LoadoutLabel: $"장비 {equippedItemCount} · 스킬 {equippedSkillCount} · 패시브 {passiveCount}",
+            DeploymentLabel: deploymentLabel,
+            RarityLabel: hero.RecruitTier.ToString().ToLowerInvariant(),
+            IsDeployed: anchorByHeroId.ContainsKey(hero.HeroId));
+    }
+
+    private static IReadOnlyDictionary<string, DeploymentAnchorId> BuildAnchorByHeroId(SM.Meta.Model.LoadoutView? loadout)
+    {
+        var result = new Dictionary<string, DeploymentAnchorId>(StringComparer.Ordinal);
+        if (loadout == null) return result;
+
+        foreach (var deployment in loadout.Deployments)
+        {
+            if (!string.IsNullOrWhiteSpace(deployment.HeroId))
+            {
+                result[deployment.HeroId] = deployment.Anchor;
+            }
+        }
+
+        return result;
+    }
+
+    private void AddDetailTag(string text)
+    {
+        var tag = new Label(text);
+        tag.AddToClassList("sm-sqb-modal__tag");
+        _selectedHeroTags.Add(tag);
+    }
+
+    private string ResolveHeroDisplayName(HeroInstanceRecord hero)
+    {
+        return !string.IsNullOrWhiteSpace(hero.Name)
+            ? hero.Name
+            : ResolveHeroArchetypeName(hero);
+    }
+
+    private string ResolveHeroArchetypeName(HeroInstanceRecord hero)
+    {
+        return !string.IsNullOrWhiteSpace(hero.ArchetypeId)
+            ? _contentText.GetArchetypeName(hero.ArchetypeId)
+            : hero.HeroId;
+    }
+
+    private static string SanitizeName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return "empty";
+        var chars = value.Select(ch => char.IsLetterOrDigit(ch) ? ch : '_').ToArray();
+        return new string(chars);
     }
 
     private void HandleKeyDown(KeyDownEvent evt)
@@ -174,6 +345,15 @@ public sealed class SquadBuilderPresenter
         TeamPostureType.AllInBackline => "후열 깊이 침투",
         _ => posture.ToString(),
     };
+
+    private sealed record SquadBuilderHeroRow(
+        string HeroId,
+        string DisplayName,
+        string MetaLabel,
+        string LoadoutLabel,
+        string DeploymentLabel,
+        string RarityLabel,
+        bool IsDeployed);
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement
     {

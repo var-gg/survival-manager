@@ -26,27 +26,47 @@
             </ui:VisualElement>
             <ui:VisualElement class="sm-ornament-divider sm-sqb-modal__divider" picking-mode="Ignore" />
 
-            <ui:VisualElement class="sm-sqb-modal__section">
-                <ui:Label class="sm-sqb-modal__section-title" text="앵커 배치" />
-                <ui:Label name="SquadBuilderAnchorHint" class="sm-sqb-modal__hint" text="버튼을 누르면 다음 hero로 순환합니다." />
-                <ui:VisualElement class="sm-sqb-modal__anchor-grid">
-                    <ui:VisualElement class="sm-sqb-modal__anchor-column">
-                        <ui:Label class="sm-sqb-modal__column-title" text="전열 (Front)" />
-                        <ui:Button name="SquadBuilderAnchor_FrontTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
-                        <ui:Button name="SquadBuilderAnchor_FrontCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
-                        <ui:Button name="SquadBuilderAnchor_FrontBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+            <ui:VisualElement name="SquadBuilderThreeZoneLayout" class="sm-sqb-modal__body">
+                <ui:VisualElement name="SquadBuilderRosterRail" class="sm-sqb-modal__section sm-sqb-modal__section--roster">
+                    <ui:VisualElement class="sm-sqb-modal__section-header">
+                        <ui:Label class="sm-sqb-modal__section-title" text="roster" />
+                        <ui:Label name="SquadBuilderRosterCountLabel" class="sm-sqb-modal__count" text="· 0" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="sm-sqb-modal__anchor-column">
-                        <ui:Label class="sm-sqb-modal__column-title" text="후열 (Back)" />
-                        <ui:Button name="SquadBuilderAnchor_BackTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
-                        <ui:Button name="SquadBuilderAnchor_BackCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
-                        <ui:Button name="SquadBuilderAnchor_BackBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                    <ui:Label class="sm-sqb-modal__hint" text="원정 후보와 현재 배치 상태" />
+                    <ui:VisualElement name="SquadBuilderRosterList" class="sm-sqb-modal__roster-list" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="SquadBuilderFormationBoard" class="sm-sqb-modal__section sm-sqb-modal__section--formation">
+                    <ui:Label class="sm-sqb-modal__section-title" text="3x2 formation board" />
+                    <ui:Label name="SquadBuilderAnchorHint" class="sm-sqb-modal__hint" text="버튼을 누르면 다음 hero로 순환합니다." />
+                    <ui:VisualElement class="sm-sqb-modal__anchor-grid">
+                        <ui:VisualElement class="sm-sqb-modal__anchor-column">
+                            <ui:Label class="sm-sqb-modal__column-title" text="전열 (Front)" />
+                            <ui:Button name="SquadBuilderAnchor_FrontTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                            <ui:Button name="SquadBuilderAnchor_FrontCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                            <ui:Button name="SquadBuilderAnchor_FrontBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="sm-sqb-modal__anchor-column">
+                            <ui:Label class="sm-sqb-modal__column-title" text="후열 (Back)" />
+                            <ui:Button name="SquadBuilderAnchor_BackTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                            <ui:Button name="SquadBuilderAnchor_BackCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                            <ui:Button name="SquadBuilderAnchor_BackBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement name="SquadBuilderSelectedDetail" class="sm-sqb-modal__section sm-sqb-modal__section--detail">
+                    <ui:Label class="sm-sqb-modal__section-title" text="selected detail" />
+                    <ui:Label name="SquadBuilderSelectedAnchorLabel" class="sm-sqb-modal__detail-kicker" text="선택 앵커" />
+                    <ui:Label name="SquadBuilderSelectedHeroName" class="sm-sqb-modal__detail-name" text="비어있음" />
+                    <ui:Label name="SquadBuilderSelectedHeroMeta" class="sm-sqb-modal__detail-meta" text="hero 없음" />
+                    <ui:Label name="SquadBuilderSelectedHeroLoadout" class="sm-sqb-modal__detail-body" text="loadout 없음" />
+                    <ui:VisualElement name="SquadBuilderSelectedHeroTags" class="sm-sqb-modal__tag-row" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="sm-sqb-modal__section">
-                <ui:Label class="sm-sqb-modal__section-title" text="자세 (Team Posture)" />
+                <ui:Label class="sm-sqb-modal__section-title" text="팀 태세 (Team Posture)" />
                 <ui:VisualElement class="sm-sqb-modal__posture-row">
                     <ui:Button name="SquadBuilderPosture_HoldLine" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="전열 사수" />
                     <ui:Button name="SquadBuilderPosture_StandardAdvance" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="표준 전진" />

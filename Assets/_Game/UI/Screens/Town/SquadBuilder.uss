@@ -22,7 +22,7 @@
 /* Panel — atom token (sm-frame-ceremony-bg / sm-frame-trim-*) + corner cap atom의 absolute parent. */
 .sm-sqb-modal__panel {
     position: relative;
-    width: 760px;
+    width: 980px;
     background-color: var(--sm-frame-ceremony-bg);
     border-left-width: var(--sm-frame-trim-w);
     border-right-width: var(--sm-frame-trim-w);
@@ -73,6 +73,32 @@
     flex-direction: column;
 }
 
+.sm-sqb-modal__body {
+    flex-direction: row;
+    align-items: stretch;
+    margin-bottom: 18px;
+}
+
+.sm-sqb-modal__section-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sm-sqb-modal__section--roster {
+    width: 238px;
+    margin-right: 14px;
+}
+
+.sm-sqb-modal__section--formation {
+    flex-grow: 1;
+    margin-right: 14px;
+}
+
+.sm-sqb-modal__section--detail {
+    width: 238px;
+}
+
 .sm-sqb-modal__section-title {
     color: var(--sm-gold-200);
     font-size: 14px;
@@ -81,10 +107,56 @@
     margin-bottom: 6px;
 }
 
+.sm-sqb-modal__count {
+    color: var(--sm-ink-3);
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
 .sm-sqb-modal__hint {
     color: var(--sm-ink-3);
     font-size: 11px;
     margin-bottom: 10px;
+}
+
+.sm-sqb-modal__roster-list {
+    flex-direction: column;
+}
+
+.sm-sqb-modal__roster-row {
+    background-color: rgba(11, 16, 36, 0.48);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.16);
+    border-right-color: rgba(230, 183, 81, 0.16);
+    border-top-color: rgba(230, 183, 81, 0.12);
+    border-bottom-color: rgba(230, 183, 81, 0.2);
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    margin-bottom: 7px;
+}
+
+.sm-sqb-modal__roster-row--deployed {
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: rgba(230, 183, 81, 0.36);
+    border-bottom-color: rgba(230, 183, 81, 0.48);
+}
+
+.sm-sqb-modal__roster-name {
+    color: var(--sm-ink-1);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.sm-sqb-modal__roster-meta {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    margin-top: 2px;
 }
 
 .sm-sqb-modal__anchor-grid {
@@ -113,6 +185,58 @@
     -unity-text-align: middle-center;
     color: var(--sm-ink-1);
     white-space: normal;
+}
+
+.sm-sqb-modal__anchor-button--selected {
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+    color: var(--sm-gold-100);
+}
+
+.sm-sqb-modal__detail-kicker {
+    color: var(--sm-ink-3);
+    font-size: 10px;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.sm-sqb-modal__detail-name {
+    color: var(--sm-ink-1);
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+}
+
+.sm-sqb-modal__detail-meta {
+    color: var(--sm-gold-100);
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.sm-sqb-modal__detail-body {
+    color: var(--sm-ink-2);
+    font-size: 11px;
+    white-space: normal;
+    margin-bottom: 10px;
+}
+
+.sm-sqb-modal__tag-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.sm-sqb-modal__tag {
+    background-color: rgba(200, 147, 42, 0.18);
+    color: var(--sm-gold-100);
+    font-size: 10px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 .sm-sqb-modal__posture-row {
