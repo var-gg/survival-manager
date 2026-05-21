@@ -82,6 +82,12 @@
     margin-top: 4px;
 }
 
+.rgp-header__close {
+    margin-top: 8px;
+    align-self: flex-end;
+    min-width: 44px;
+}
+
 /* --------- Filter chip strip -------------------------------- */
 
 .rgp-filter-strip {

@@ -5,6 +5,11 @@ public sealed record TownCharacterSheetPanelViewState(
     string Body);
 
 public sealed record TownCharacterSheetViewState(
+    string HeroId,
+    string DisplayName,
+    string ArchetypeLabel,
+    string RoleLabel,
+    string FamilyKey,
     TownCharacterSheetPanelViewState Overview,
     TownCharacterSheetPanelViewState Loadout,
     TownCharacterSheetPanelViewState Passives,

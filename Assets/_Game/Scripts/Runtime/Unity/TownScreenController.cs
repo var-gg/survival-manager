@@ -28,7 +28,9 @@ public sealed class TownScreenController : MonoBehaviour
     private CompendiumPresenter? _compendiumPresenter;
     private TacticalWorkshopPresenter? _tacticalWorkshopPresenter;
     private TacticalWorkshopView? _tacticalWorkshopView;
+    private TownCharacterSheetPresenter? _characterSheetPresenter;
     private RosterGridView? _rosterModalView;
+    private RosterGridPresenter? _rosterGridPresenter;
     // jjjj hub V3 NPC mapping (pindoc://decision-town-hub-v3-ashglen-face-cluster):
     //   달목 → Recruit / 쇠매 → EquipmentRefit / 갈마 → PassiveBoard / 솔길 → Inventory.
 
@@ -106,6 +108,7 @@ public sealed class TownScreenController : MonoBehaviour
         TryWireInventory(panelHost.Root, view);
         TryWirePermanentAugment(panelHost.Root, view);
         TryWireCompendium(panelHost.Root, view);
+        TryWireCharacterSheet(panelHost.Root, view);
         TryWireSquadBuilder(panelHost.Root, view);
         TryWireTacticalWorkshop(panelHost.Root, view);
         TryWireRoster(panelHost.Root, view);
@@ -246,13 +249,37 @@ public sealed class TownScreenController : MonoBehaviour
         catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] SquadBuilder wire 실패: {e.Message}"); }
     }
 
+    private void TryWireCharacterSheet(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var sheetView = new TownCharacterSheetView(root);
+            _characterSheetPresenter = new TownCharacterSheetPresenter(_root, _localization, _contentText, sheetView);
+            _characterSheetPresenter.Initialize();
+            _characterSheetPresenter.Close();
+            _presenter?.SetHeroOpener(_characterSheetPresenter.Open);
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] CharacterSheet wire 실패: {e.Message}"); }
+    }
+
     private void TryWireRoster(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
             _rosterModalView = new RosterGridView(root, heroCardTemplate: null);
+            _rosterGridPresenter = new RosterGridPresenter(
+                _root,
+                _rosterModalView,
+                _contentText,
+                heroId => _characterSheetPresenter?.Open(heroId));
+            _rosterGridPresenter.Initialize();
+            _rosterModalView.BindClose(_rosterModalView.Close);
             _rosterModalView.Close();
-            view.BindRosterOpen(() => _presenter?.Refresh("동료 명부 — heroCardTemplate Resources copy 후속 wire."));
+            view.BindRosterOpen(() =>
+            {
+                _rosterModalView.Open();
+                _rosterGridPresenter.Refresh();
+            });
         }
         catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Roster wire 실패: {e.Message}"); }
     }
@@ -308,6 +335,7 @@ public sealed class TownScreenController : MonoBehaviour
     {
         _presenter?.Refresh();
         _compendiumPresenter?.Refresh();
+        _characterSheetPresenter?.Refresh();
     }
 }
 }

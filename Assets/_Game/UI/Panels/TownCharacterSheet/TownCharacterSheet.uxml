@@ -1,0 +1,58 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="../../Foundation/Styles/ThemeTokens.uss" />
+    <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
+    <Style src="../../Foundation/USS/foundation_glow.uss" />
+    <Style src="../../Foundation/USS/common_detail.uss" />
+    <Style src="TownCharacterSheet.uss" />
+    <ui:VisualElement name="TownCharacterSheetRoot" class="tcs-root sm-modal-anim sm-modal-anim--enter">
+        <ui:VisualElement name="TownCharacterSheetBackdrop" class="tcs-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement name="TownCharacterSheetFrame" class="tcs-frame sm-modal-frame sm-modal-frame--parchment">
+            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="tcs-header">
+                <ui:VisualElement class="tcs-identity">
+                    <ui:VisualElement name="TcsPortraitToken" class="tcs-portrait-token sm-chrome-l3" picking-mode="Ignore" />
+                    <ui:VisualElement class="tcs-identity-copy">
+                        <ui:Label name="TcsHeroNameLabel" class="tcs-title sm-cd-title" />
+                        <ui:Label name="TcsHeroMetaLabel" class="tcs-meta sm-cd-meta" />
+                        <ui:Label name="TcsRoleLabel" class="tcs-role sm-cd-tag" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="TownCharacterSheetCloseButton" class="tcs-close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="tcs-body">
+                <ui:VisualElement class="tcs-column tcs-column--primary">
+                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+                        <ui:Label name="TcsOverviewTitle" class="tcs-panel__title" />
+                        <ui:Label name="TcsOverviewBody" class="tcs-panel__body" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+                        <ui:Label name="TcsLoadoutTitle" class="tcs-panel__title" />
+                        <ui:Label name="TcsLoadoutBody" class="tcs-panel__body" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="tcs-column">
+                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+                        <ui:Label name="TcsPassivesTitle" class="tcs-panel__title" />
+                        <ui:Label name="TcsPassivesBody" class="tcs-panel__body" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+                        <ui:Label name="TcsSynergyTitle" class="tcs-panel__title" />
+                        <ui:Label name="TcsSynergyBody" class="tcs-panel__body" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="tcs-column">
+                    <ui:VisualElement class="tcs-panel tcs-panel--progression sm-chrome-l2">
+                        <ui:Label name="TcsProgressionTitle" class="tcs-panel__title" />
+                        <ui:Label name="TcsProgressionBody" class="tcs-panel__body" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

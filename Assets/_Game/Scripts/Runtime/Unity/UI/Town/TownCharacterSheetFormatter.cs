@@ -47,11 +47,16 @@ public sealed class TownCharacterSheetFormatter
                 "ui.town.sheet.empty",
                 "Select a hero to inspect town loadout, passives, synergy, and progression.");
             return new TownCharacterSheetViewState(
-                new TownCharacterSheetPanelViewState(titles.Overview, emptyBody),
-                new TownCharacterSheetPanelViewState(titles.Loadout, emptyBody),
-                new TownCharacterSheetPanelViewState(titles.Passives, emptyBody),
-                new TownCharacterSheetPanelViewState(titles.Synergy, emptyBody),
-                new TownCharacterSheetPanelViewState(titles.Progression, emptyBody));
+                HeroId: string.Empty,
+                DisplayName: "No hero selected",
+                ArchetypeLabel: string.Empty,
+                RoleLabel: string.Empty,
+                FamilyKey: string.Empty,
+                Overview: new TownCharacterSheetPanelViewState(titles.Overview, emptyBody),
+                Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, emptyBody),
+                Passives: new TownCharacterSheetPanelViewState(titles.Passives, emptyBody),
+                Synergy: new TownCharacterSheetPanelViewState(titles.Synergy, emptyBody),
+                Progression: new TownCharacterSheetPanelViewState(titles.Progression, emptyBody));
         }
 
         var loadout = session.Profile.HeroLoadouts.FirstOrDefault(record =>
@@ -61,13 +66,21 @@ public sealed class TownCharacterSheetFormatter
         var archetype = ResolveArchetype(hero.ArchetypeId);
         var baseline = ResolveBaseline(hero.ArchetypeId);
         var board = ResolvePassiveBoard(loadout?.PassiveBoardId ?? string.Empty, baseline, hero.ClassId);
+        var characterName = _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
+        var archetypeName = _contentText.GetArchetypeName(hero.ArchetypeId);
+        var roleLabel = _contentText.GetRoleName(string.Empty, archetype?.RoleTag ?? string.Empty);
 
         return new TownCharacterSheetViewState(
-            new TownCharacterSheetPanelViewState(titles.Overview, BuildOverviewBody(session, hero, archetype)),
-            new TownCharacterSheetPanelViewState(titles.Loadout, BuildLoadoutBody(session, hero, baseline)),
-            new TownCharacterSheetPanelViewState(titles.Passives, BuildPassivesBody(loadout, board, selectedNode)),
-            new TownCharacterSheetPanelViewState(titles.Synergy, BuildSynergyBody(session, hero, archetype, baseline)),
-            new TownCharacterSheetPanelViewState(
+            HeroId: hero.HeroId,
+            DisplayName: characterName,
+            ArchetypeLabel: archetypeName,
+            RoleLabel: roleLabel,
+            FamilyKey: hero.ClassId,
+            Overview: new TownCharacterSheetPanelViewState(titles.Overview, BuildOverviewBody(session, hero, archetype)),
+            Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, BuildLoadoutBody(session, hero, baseline)),
+            Passives: new TownCharacterSheetPanelViewState(titles.Passives, BuildPassivesBody(loadout, board, selectedNode)),
+            Synergy: new TownCharacterSheetPanelViewState(titles.Synergy, BuildSynergyBody(session, hero, archetype, baseline)),
+            Progression: new TownCharacterSheetPanelViewState(
                 titles.Progression,
                 BuildProgressionBody(session, hero, loadout, progression, selectedItem, retrainActiveCost, retrainPassiveCost, fullRetrainCost, dismissRefund)));
     }

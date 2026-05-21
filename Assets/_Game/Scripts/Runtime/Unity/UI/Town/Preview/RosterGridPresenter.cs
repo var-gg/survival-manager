@@ -20,13 +20,19 @@ public sealed class RosterGridPresenter : IRosterGridActions
     private readonly GameSessionRoot _root;
     private readonly RosterGridView _view;
     private readonly ContentTextResolver _contentText;
+    private readonly Action<string>? _heroSelected;
     private string _selectedFilterKey = "all";
 
-    public RosterGridPresenter(GameSessionRoot root, RosterGridView view, ContentTextResolver contentText)
+    public RosterGridPresenter(
+        GameSessionRoot root,
+        RosterGridView view,
+        ContentTextResolver contentText,
+        Action<string>? heroSelected = null)
     {
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
+        _heroSelected = heroSelected;
     }
 
     public void Initialize()
@@ -42,7 +48,10 @@ public sealed class RosterGridPresenter : IRosterGridActions
 
     void IRosterGridActions.OnHeroSelected(string heroId)
     {
-        // TODO Sprint 3: Town hub controller에 hero selection 통보 → CharacterSheet navigation.
+        if (!string.IsNullOrWhiteSpace(heroId))
+        {
+            _heroSelected?.Invoke(heroId);
+        }
     }
 
     void IRosterGridActions.OnFilterSelected(string filterKey)

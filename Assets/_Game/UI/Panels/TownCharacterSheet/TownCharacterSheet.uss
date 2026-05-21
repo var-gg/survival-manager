@@ -1,0 +1,122 @@
+.tcs-root {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.tcs-backdrop {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-color: rgba(8, 12, 28, 0.72);
+}
+
+.tcs-frame {
+    width: 1040px;
+    height: 620px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 22px;
+    padding-bottom: 22px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 96;
+    -unity-slice-bottom: 96;
+    -unity-slice-scale: 0.46;
+}
+
+.tcs-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.tcs-identity {
+    flex-direction: row;
+    align-items: center;
+}
+
+.tcs-portrait-token {
+    width: 72px;
+    height: 72px;
+    margin-right: 14px;
+    background-color: rgba(26, 32, 63, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a32);
+    border-right-color: var(--sm-gold-300-a32);
+    border-top-color: var(--sm-gold-300-a32);
+    border-bottom-color: var(--sm-gold-300-a32);
+}
+
+.tcs-identity-copy {
+    flex-direction: column;
+}
+
+.tcs-title {
+    font-size: 24px;
+    color: var(--sm-gold-100);
+}
+
+.tcs-meta {
+    font-size: 12px;
+    color: var(--sm-ink-2);
+    margin-top: 4px;
+}
+
+.tcs-role {
+    align-self: flex-start;
+    margin-top: 8px;
+    color: var(--sm-vellum);
+}
+
+.tcs-close {
+    min-width: 48px;
+}
+
+.tcs-body {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.tcs-column {
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-direction: column;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.tcs-column--primary {
+    flex-grow: 1.25;
+}
+
+.tcs-panel {
+    flex-grow: 1;
+    margin-bottom: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgba(18, 24, 50, 0.74);
+}
+
+.tcs-panel--progression {
+    flex-grow: 1;
+}
+
+.tcs-panel__title {
+    color: var(--sm-gold-300);
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.tcs-panel__body {
+    color: var(--sm-ink-1);
+    font-size: 11px;
+    white-space: normal;
+}

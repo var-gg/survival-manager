@@ -56,13 +56,25 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("PermanentAugmentTemplate"));
         Assert.That(uxml, Does.Contain("InventoryTemplate"));
         Assert.That(uxml, Does.Contain("RosterTemplate"));
+        Assert.That(uxml, Does.Contain("CharacterSheetTemplate"));
         Assert.That(uxml, Does.Contain("CompendiumTemplate"));
         Assert.That(uxml, Does.Contain("TacticalWorkshopTemplate"));
         Assert.That(uxml, Does.Contain("../../Panels/RecruitPack/RecruitPack.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/EquipmentRefit/EquipmentRefit.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/InventoryTab/InventoryTab.uxml"));
+        Assert.That(uxml, Does.Contain("../../Panels/TownCharacterSheet/TownCharacterSheet.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/SkillCompendium/SkillCompendium.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/TacticalWorkshop/TacticalWorkshop.uxml"));
+        var characterSheetUxml = File.ReadAllText("Assets/_Game/UI/Panels/TownCharacterSheet/TownCharacterSheet.uxml");
+        Assert.That(characterSheetUxml, Does.Contain("TownCharacterSheetRoot"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsHeroNameLabel"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsProgressionBody"));
+        var townPresenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenPresenter.cs");
+        Assert.That(townPresenter, Does.Contain("SetHeroOpener"));
+        var townController = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs");
+        Assert.That(townController, Does.Contain("TryWireCharacterSheet"));
+        Assert.That(townController, Does.Contain("RosterGridPresenter"));
+        Assert.That(townController, Does.Contain("BindRosterOpen"));
         var compendiumUxml = File.ReadAllText("Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uxml");
         Assert.That(compendiumUxml, Does.Contain("CompendiumSearchField"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumClassFilter"));
@@ -202,6 +214,7 @@ public sealed class TownScreenUxmlHubLayoutTests
             "Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uss",
             "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uss",
             "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uss",
+            "Assets/_Game/UI/Panels/TownCharacterSheet/TownCharacterSheet.uss",
             "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss",
         };
 

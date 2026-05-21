@@ -24,6 +24,7 @@ public sealed class TownScreenPresenter
     private readonly TownScreenView _view;
     private readonly ScreenHelpState _helpState;
     private readonly Dictionary<string, Action> _npcOpeners = new(StringComparer.Ordinal);
+    private Action<string>? _heroOpener;
     private Action? _settingsOpener;
     private Action? _theaterOpener;
     private string _pendingStatus = string.Empty;
@@ -157,10 +158,17 @@ public sealed class TownScreenPresenter
     public void OnHeroClick(string heroId)
     {
         if (string.IsNullOrEmpty(heroId)) return;
-        Refresh($"동료 시트 — {heroId} (Phase 3 CharacterSheet 후속 wire)");
+        if (_heroOpener != null)
+        {
+            _heroOpener.Invoke(heroId);
+            return;
+        }
+
+        Refresh($"동료 시트 — {heroId} (CharacterSheet opener 미연결)");
     }
 
     public void SetNpcOpener(string npcId, Action open) => _npcOpeners[npcId] = open;
+    public void SetHeroOpener(Action<string> open) => _heroOpener = open;
     public void SetSettingsOpener(Action open) => _settingsOpener = open;
     public void SetTheaterOpener(Action open) => _theaterOpener = open;
 

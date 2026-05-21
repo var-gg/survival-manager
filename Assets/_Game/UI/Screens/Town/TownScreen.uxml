@@ -13,6 +13,7 @@
     <ui:Template name="PermanentAugmentTemplate" src="../../Panels/PermanentAugment/PermanentAugment.uxml" />
     <ui:Template name="InventoryTemplate" src="../../Panels/InventoryTab/InventoryTab.uxml" />
     <ui:Template name="RosterTemplate" src="../../Panels/TownRosterGrid/TownRosterGrid.uxml" />
+    <ui:Template name="CharacterSheetTemplate" src="../../Panels/TownCharacterSheet/TownCharacterSheet.uxml" />
     <ui:Template name="CompendiumTemplate" src="../../Panels/SkillCompendium/SkillCompendium.uxml" />
     <ui:Template name="TacticalWorkshopTemplate" src="../../Panels/TacticalWorkshop/TacticalWorkshop.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub town-hub--v3">
@@ -117,6 +118,9 @@
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="RosterTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
+            <ui:Instance template="CharacterSheetTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="CompendiumTemplate" picking-mode="Ignore" />
