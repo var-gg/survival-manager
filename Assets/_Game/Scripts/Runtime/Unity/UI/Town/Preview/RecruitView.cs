@@ -14,7 +14,18 @@ namespace SM.Unity.UI.Town.Preview;
 public sealed class RecruitView
 {
     private readonly VisualElement _cardRow;
+    private readonly VisualElement? _detailStateChips;
+    private readonly VisualElement? _detailTags;
+    private readonly VisualElement? _pressureNeedChips;
     private readonly VisualElement? _modalRoot;
+    private readonly Label? _detailNameLabel;
+    private readonly Label? _detailMetaLabel;
+    private readonly Label? _detailPlanLabel;
+    private readonly Label? _detailCostLabel;
+    private readonly Label? _detailSkillLabel;
+    private readonly Label? _pressureRosterLabel;
+    private readonly Label? _pressureNeedLabel;
+    private readonly Label? _pressurePlanLabel;
     private readonly Label? _scoutLabel;
     private readonly Label? _refreshLabel;
     private readonly Button? _scoutButton;
@@ -29,6 +40,17 @@ public sealed class RecruitView
         _cardRow = root.Q<VisualElement>("CardRow")
             ?? throw new ArgumentException("CardRow 못 찾음");
         _modalRoot = root.Q<VisualElement>("RcpRoot");   // hub modal toggle용 (preview에선 null OK)
+        _detailStateChips = root.Q<VisualElement>("SelectedCandidateStateChips");
+        _detailTags = root.Q<VisualElement>("SelectedCandidateTags");
+        _pressureNeedChips = root.Q<VisualElement>("RosterNeedChips");
+        _detailNameLabel = root.Q<Label>("SelectedCandidateNameLabel");
+        _detailMetaLabel = root.Q<Label>("SelectedCandidateMetaLabel");
+        _detailPlanLabel = root.Q<Label>("SelectedCandidatePlanLabel");
+        _detailCostLabel = root.Q<Label>("SelectedCandidateCostLabel");
+        _detailSkillLabel = root.Q<Label>("SelectedCandidateSkillLabel");
+        _pressureRosterLabel = root.Q<Label>("RosterPressureCountLabel");
+        _pressureNeedLabel = root.Q<Label>("RosterPressureNeedLabel");
+        _pressurePlanLabel = root.Q<Label>("RosterPressurePlanLabel");
         _scoutLabel = root.Q<Label>("ScoutLabel");
         _refreshLabel = root.Q<Label>("RefreshLabel");
         _scoutButton = root.Q<Button>(className: "rcp-actions__scout");
@@ -82,6 +104,8 @@ public sealed class RecruitView
     {
         if (state == null) throw new ArgumentNullException(nameof(state));
         RenderCards(state.Candidates);
+        RenderSelectedDetail(state.SelectedCandidateDetail);
+        RenderRosterPressure(state.RosterPressure);
         RenderActionBar(state.ActionBar);
     }
 
@@ -99,8 +123,10 @@ public sealed class RecruitView
         var card = new VisualElement();
         card.AddToClassList("rcp-card");
         card.AddToClassList("sm-hover-raise");   // 콘솔급 motion — hover raise
+        if (c.IsSelected) card.AddToClassList("rcp-card--selected");
         if (c.SlotType == RecruitSlotType.Protected) card.AddToClassList("rcp-card--protected");
         if (c.SlotType == RecruitSlotType.OnPlan) card.AddToClassList("rcp-card--on-plan");
+        card.RegisterCallback<ClickEvent>(_ => _actions?.OnCandidateSelected(c.SlotIndex));
 
         // pity badge — corner marker (slot type Protected와 별개: pity 보정으로 tier 보장된 offer)
         if (c.ProtectedByPity)
@@ -169,6 +195,14 @@ public sealed class RecruitView
         tierPlan.Add(planGroup);
         card.Add(tierPlan);
 
+        var stateRow = new VisualElement();
+        stateRow.AddToClassList("rcp-card__state-row");
+        foreach (var chipText in c.StateChips)
+        {
+            stateRow.Add(BuildChip(chipText, "rcp-card__state-chip"));
+        }
+        card.Add(stateRow);
+
         // 6) tag chip row (◐ archetype RecruitPlanTags ≤3 — offer field 아님)
         var tagRow = new VisualElement();
         tagRow.AddToClassList("rcp-card__tag-row");
@@ -208,6 +242,63 @@ public sealed class RecruitView
         card.Add(recruitBtn);
 
         return card;
+    }
+
+    private void RenderSelectedDetail(RecruitSelectedCandidateDetailViewState? detail)
+    {
+        if (detail == null)
+        {
+            if (_detailNameLabel != null) _detailNameLabel.text = string.Empty;
+            if (_detailMetaLabel != null) _detailMetaLabel.text = string.Empty;
+            if (_detailPlanLabel != null) _detailPlanLabel.text = string.Empty;
+            if (_detailCostLabel != null) _detailCostLabel.text = string.Empty;
+            if (_detailSkillLabel != null) _detailSkillLabel.text = string.Empty;
+            _detailStateChips?.Clear();
+            _detailTags?.Clear();
+            return;
+        }
+
+        if (_detailNameLabel != null) _detailNameLabel.text = detail.DisplayName;
+        if (_detailMetaLabel != null) _detailMetaLabel.text = $"{detail.ClassLabel} / {detail.TierLabel}";
+        if (_detailPlanLabel != null) _detailPlanLabel.text = $"{detail.PlanFitLabel} {detail.PlanScoreLabel}";
+        if (_detailCostLabel != null) _detailCostLabel.text = detail.CostLabel;
+        if (_detailSkillLabel != null)
+        {
+            _detailSkillLabel.text = detail.SkillSummary;
+            _detailSkillLabel.tooltip = detail.SkillSummary;
+        }
+
+        RenderChipRow(_detailStateChips, detail.StateChips, "rcp-detail__state-chip");
+        RenderChipRow(_detailTags, detail.Tags, "rcp-detail__tag");
+    }
+
+    private void RenderRosterPressure(RecruitRosterPressureViewState pressure)
+    {
+        if (_pressureRosterLabel != null) _pressureRosterLabel.text = pressure.RosterCountLabel;
+        if (_pressureNeedLabel != null) _pressureNeedLabel.text = pressure.NeedLabel;
+        if (_pressurePlanLabel != null) _pressurePlanLabel.text = pressure.PlanSummaryLabel;
+        RenderChipRow(_pressureNeedChips, pressure.NeedChips, "rcp-pressure__need-chip");
+    }
+
+    private static void RenderChipRow(VisualElement? row, IReadOnlyList<string> chips, string className)
+    {
+        if (row == null)
+        {
+            return;
+        }
+
+        row.Clear();
+        foreach (var chip in chips)
+        {
+            row.Add(BuildChip(chip, className));
+        }
+    }
+
+    private static Label BuildChip(string text, string className)
+    {
+        var chip = new Label(text);
+        chip.AddToClassList(className);
+        return chip;
     }
 
     private static VisualElement BuildSkillLine(string slotKey, string skillText, string variant)
@@ -282,6 +373,7 @@ public sealed class RecruitView
 
 public interface IRecruitActions
 {
+    void OnCandidateSelected(int slotIndex);
     void OnRecruitConfirmed(int slotIndex);
     void OnScoutClicked();
     void OnRefreshClicked();

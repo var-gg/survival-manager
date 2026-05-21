@@ -35,7 +35,9 @@ public sealed record RecruitCandidateViewState(
     string FlexActive,                      // ✅ offer.FlexActiveId — rolled (offer가 실제로 굴린 값)
     string FlexPassive,                     // ✅ offer.FlexPassiveId — rolled
     Texture2D? PortraitSprite,
-    Texture2D? ClassSprite
+    Texture2D? ClassSprite,
+    bool IsSelected,
+    IReadOnlyList<string> StateChips
 );
 
 public sealed record RecruitActionBarViewState(
@@ -46,7 +48,29 @@ public sealed record RecruitActionBarViewState(
     int CurrentPaidRefreshCost              // 2 / 4 / 6 — paid escalation
 );
 
+public sealed record RecruitSelectedCandidateDetailViewState(
+    int SlotIndex,
+    string DisplayName,
+    string ClassLabel,
+    string TierLabel,
+    string PlanFitLabel,
+    string PlanScoreLabel,
+    string CostLabel,
+    IReadOnlyList<string> StateChips,
+    IReadOnlyList<string> Tags,
+    string SkillSummary
+);
+
+public sealed record RecruitRosterPressureViewState(
+    string RosterCountLabel,
+    string NeedLabel,
+    string PlanSummaryLabel,
+    IReadOnlyList<string> NeedChips
+);
+
 public sealed record RecruitViewState(
     IReadOnlyList<RecruitCandidateViewState> Candidates,
-    RecruitActionBarViewState ActionBar
+    RecruitActionBarViewState ActionBar,
+    RecruitSelectedCandidateDetailViewState? SelectedCandidateDetail,
+    RecruitRosterPressureViewState RosterPressure
 );

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Core.Contracts;
+using SM.Meta.Model;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -27,6 +28,7 @@ public sealed class RecruitPresenter : IRecruitActions
     private readonly ContentTextResolver _contentText;
     private readonly SpriteLoader _classSprite;
     private readonly SpriteLoader _portraitLoader;
+    private int _selectedSlotIndex;
 
     public RecruitPresenter(
         GameSessionRoot root,
@@ -69,6 +71,13 @@ public sealed class RecruitPresenter : IRecruitActions
     void IRecruitActions.OnRecruitConfirmed(int slotIndex)
     {
         _root.SessionState.Recruit(slotIndex);
+        _selectedSlotIndex = 0;
+        Refresh();
+    }
+
+    void IRecruitActions.OnCandidateSelected(int slotIndex)
+    {
+        _selectedSlotIndex = slotIndex;
         Refresh();
     }
 
@@ -100,6 +109,11 @@ public sealed class RecruitPresenter : IRecruitActions
             CurrentPaidRefreshCost: session.CurrentRecruitRefreshCost);
 
         var offers = session.RecruitOffers;
+        if (offers.Count > 0 && (_selectedSlotIndex < 0 || _selectedSlotIndex >= offers.Count))
+        {
+            _selectedSlotIndex = 0;
+        }
+
         var candidates = new List<RecruitCandidateViewState>(offers.Count);
         for (var i = 0; i < offers.Count; i++)
         {
@@ -133,12 +147,87 @@ public sealed class RecruitPresenter : IRecruitActions
                 FlexActive: ResolveSkillName(offer.FlexActiveId),
                 FlexPassive: ResolveSkillName(offer.FlexPassiveId),
                 PortraitSprite: _portraitLoader(offer.UnitBlueprintId),
-                ClassSprite: string.IsNullOrEmpty(classKey) ? null : _classSprite(classKey)));
+                ClassSprite: string.IsNullOrEmpty(classKey) ? null : _classSprite(classKey),
+                IsSelected: i == _selectedSlotIndex,
+                StateChips: BuildStateChips(offer)));
         }
 
+        var selected = candidates.FirstOrDefault(candidate => candidate.IsSelected)
+            ?? candidates.FirstOrDefault();
         return new RecruitViewState(
             Candidates: candidates,
-            ActionBar: actionBar);
+            ActionBar: actionBar,
+            SelectedCandidateDetail: BuildSelectedDetail(selected),
+            RosterPressure: BuildRosterPressure(session, candidates));
+    }
+
+    private RecruitSelectedCandidateDetailViewState? BuildSelectedDetail(RecruitCandidateViewState? candidate)
+    {
+        if (candidate == null)
+        {
+            return null;
+        }
+
+        return new RecruitSelectedCandidateDetailViewState(
+            SlotIndex: candidate.SlotIndex,
+            DisplayName: candidate.DisplayName,
+            ClassLabel: candidate.ClassKey,
+            TierLabel: candidate.Tier.ToString(),
+            PlanFitLabel: candidate.PlanFit.ToString(),
+            PlanScoreLabel: $"+{candidate.PlanScore}",
+            CostLabel: $"{candidate.GoldCost} Gold",
+            StateChips: candidate.StateChips,
+            Tags: candidate.Tags,
+            SkillSummary: $"SIG {candidate.SigActive} / {candidate.SigPassive}\nFLX {candidate.FlexActive} / {candidate.FlexPassive}");
+    }
+
+    private RecruitRosterPressureViewState BuildRosterPressure(
+        GameSessionState session,
+        IReadOnlyList<RecruitCandidateViewState> candidates)
+    {
+        const int rosterSoftCap = 12;
+        var heroes = session.Profile.Heroes;
+        var classCounts = heroes
+            .GroupBy(hero => hero.ClassId ?? string.Empty, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal);
+        var needChips = new[] { "vanguard", "duelist", "ranger", "mystic" }
+            .OrderBy(key => classCounts.TryGetValue(key, out var count) ? count : 0)
+            .ThenBy(key => key, StringComparer.Ordinal)
+            .Take(2)
+            .Select(key => $"{key} need")
+            .ToList();
+        var onPlanCount = candidates.Count(candidate => candidate.PlanFit == RecruitPlanFit.OnPlan);
+        var protectedCount = candidates.Count(candidate => candidate.ProtectedByPity || candidate.SlotType == RecruitSlotType.Protected);
+        var scoutCount = candidates.Count(candidate => candidate.ScoutBias);
+
+        return new RecruitRosterPressureViewState(
+            RosterCountLabel: $"{heroes.Count}/{rosterSoftCap} roster",
+            NeedLabel: heroes.Count >= rosterSoftCap ? "압박 높음" : "보강 여지",
+            PlanSummaryLabel: $"{onPlanCount} on-plan · {protectedCount} protected · {scoutCount} scout",
+            NeedChips: needChips);
+    }
+
+    private static IReadOnlyList<string> BuildStateChips(RecruitUnitPreview offer)
+    {
+        var chips = new List<string>(4);
+        if (offer.Metadata.PlanFit == CandidatePlanFit.OnPlan || offer.Metadata.SlotType == RecruitOfferSlotType.OnPlan)
+        {
+            chips.Add("on-plan");
+        }
+        if (offer.Metadata.SlotType == RecruitOfferSlotType.Protected)
+        {
+            chips.Add("protected");
+        }
+        if (offer.Metadata.ProtectedByPity)
+        {
+            chips.Add("pity");
+        }
+        if (offer.Metadata.BiasedByScout)
+        {
+            chips.Add("scout");
+        }
+
+        return chips;
     }
 
     private string ResolveSkillName(string? skillId)

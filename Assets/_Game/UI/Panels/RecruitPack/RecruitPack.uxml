@@ -33,7 +33,26 @@
                 <ui:Button class="rcp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
-            <ui:VisualElement name="CardRow" class="rcp-card-row" />
+            <ui:VisualElement class="rcp-decision-layout">
+                <ui:VisualElement name="CardRow" class="rcp-card-row" />
+                <ui:VisualElement name="RecruitDecisionPanel" class="rcp-decision-panel sm-chrome-l2">
+                    <ui:VisualElement name="SelectedCandidateDetail" class="rcp-detail">
+                        <ui:Label name="SelectedCandidateNameLabel" class="rcp-detail__name" />
+                        <ui:Label name="SelectedCandidateMetaLabel" class="rcp-detail__meta" />
+                        <ui:VisualElement name="SelectedCandidateStateChips" class="rcp-detail__state-row" />
+                        <ui:Label name="SelectedCandidatePlanLabel" class="rcp-detail__plan" />
+                        <ui:Label name="SelectedCandidateCostLabel" class="rcp-detail__cost" />
+                        <ui:Label name="SelectedCandidateSkillLabel" class="rcp-detail__skills" />
+                        <ui:VisualElement name="SelectedCandidateTags" class="rcp-detail__tags" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="RosterPressurePanel" class="rcp-pressure">
+                        <ui:Label name="RosterPressureCountLabel" class="rcp-pressure__count" />
+                        <ui:Label name="RosterPressureNeedLabel" class="rcp-pressure__need" />
+                        <ui:Label name="RosterPressurePlanLabel" class="rcp-pressure__plan" />
+                        <ui:VisualElement name="RosterNeedChips" class="rcp-pressure__chips" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
 
             <!-- Action bar — Recruit는 per-card로 옮겼고, action bar는 Scout/Refresh만 -->
             <ui:VisualElement class="rcp-actions">

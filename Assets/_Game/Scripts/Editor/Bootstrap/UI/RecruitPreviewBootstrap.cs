@@ -127,7 +127,9 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
                 FlexActive: r.FlexA,
                 FlexPassive: r.FlexP,
                 PortraitSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(PortraitPathFmt, r.BlueprintId)),
-                ClassSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(ClassSpriteFmt, r.ClassKey))));
+                ClassSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(string.Format(ClassSpriteFmt, r.ClassKey)),
+                IsSelected: i == 2,
+                StateChips: BuildMockStateChips(r.Slot, r.Plan, r.Pity, r.Scout)));
         }
 
         var actionBar = new RecruitActionBarViewState(
@@ -137,6 +139,38 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
             FreeRefreshesRemaining: 0,    // 이미 free 사용
             CurrentPaidRefreshCost: 4);    // 2→4→6 cap의 2회차
 
-        return new RecruitViewState(candidates, actionBar);
+        var selected = candidates[2];
+        var detail = new RecruitSelectedCandidateDetailViewState(
+            SlotIndex: selected.SlotIndex,
+            DisplayName: selected.DisplayName,
+            ClassLabel: selected.ClassKey,
+            TierLabel: selected.Tier.ToString(),
+            PlanFitLabel: selected.PlanFit.ToString(),
+            PlanScoreLabel: $"+{selected.PlanScore}",
+            CostLabel: $"{selected.GoldCost} Gold",
+            StateChips: selected.StateChips,
+            Tags: selected.Tags,
+            SkillSummary: $"SIG {selected.SigActive} / {selected.SigPassive}\nFLX {selected.FlexActive} / {selected.FlexPassive}");
+        var pressure = new RecruitRosterPressureViewState(
+            RosterCountLabel: "8/12 roster",
+            NeedLabel: "ranger need",
+            PlanSummaryLabel: "2 on-plan · 1 protected · 1 scout",
+            NeedChips: new[] { "ranger need", "vanguard need" });
+
+        return new RecruitViewState(candidates, actionBar, detail, pressure);
+    }
+
+    private static IReadOnlyList<string> BuildMockStateChips(
+        RecruitSlotType slot,
+        RecruitPlanFit plan,
+        bool pity,
+        bool scout)
+    {
+        var chips = new List<string>(4);
+        if (slot == RecruitSlotType.OnPlan || plan == RecruitPlanFit.OnPlan) chips.Add("on-plan");
+        if (slot == RecruitSlotType.Protected) chips.Add("protected");
+        if (pity) chips.Add("pity");
+        if (scout) chips.Add("scout");
+        return chips;
     }
 }
