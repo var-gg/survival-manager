@@ -276,7 +276,8 @@ public sealed class AtlasScreenPresenter
             recommended,
             AtlasReadabilityFormatter.FormatBoundaryNote(),
             $"NodeOverlayHash={preview.NodeOverlayHash[..12]} / BattleContextHash={preview.BattleContextHash[..12]} / stageCandidatePathHash={stageCandidatePathHash[..12]} / input=runId>chapterId>siteId>nodeIndex>encounterId>stageCandidatePathHash>NodeOverlayHash>squadSnapshotId",
-            ThreatBandLabel: threatBandLabel);
+            ThreatBandLabel: threatBandLabel,
+            EnemyIntel: AtlasEnemyIntelViewState.Empty);
     }
 
     private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack, string sigilSnapshotHash, int activeSigilCap)

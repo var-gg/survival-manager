@@ -1,9 +1,11 @@
+using System;
 using System.Linq;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
 using SM.Core;
 using SM.Meta;
 using SM.Unity.Narrative;
+using SM.Unity.UI.Expedition;
 using UnityEngine;
 
 namespace SM.Unity.UI.Atlas;
@@ -102,9 +104,97 @@ public sealed class AtlasScreenController : MonoBehaviour
             return;
         }
 
-        CurrentState = _presenter.Build();
+        CurrentState = InjectEnemyIntel(_presenter.Build());
         _view.Render(CurrentState);
         ViewStateRendered?.Invoke(CurrentState);
+    }
+
+    private AtlasScreenViewState InjectEnemyIntel(AtlasScreenViewState state)
+    {
+        return state with
+        {
+            Preview = state.Preview with
+            {
+                EnemyIntel = BuildEnemyIntel(),
+            },
+        };
+    }
+
+    private AtlasEnemyIntelViewState BuildEnemyIntel()
+    {
+        if (_root == null || _region == null)
+        {
+            return AtlasEnemyIntelViewState.Empty;
+        }
+
+        if (!_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        {
+            return AtlasEnemyIntelViewState.Empty with
+            {
+                ForecastLine = "부분 정보: combat content snapshot을 읽을 수 없어 적 징후가 제한됩니다.",
+            };
+        }
+
+        var selectedNodeId = _presenter.Session.SelectedNodeId;
+        var atlasNode = _region.Nodes.FirstOrDefault(node => string.Equals(node.NodeId, selectedNodeId, StringComparison.Ordinal));
+        if (atlasNode is not { SiteNodeIndex: >= 0 })
+        {
+            return AtlasEnemyIntelViewState.Empty with
+            {
+                ForecastLine = "부분 정보: 선택한 Atlas node는 전투 site node가 아닙니다.",
+            };
+        }
+
+        var expeditionNode = _root.SessionState.ExpeditionNodes
+            .FirstOrDefault(node => node.Index == atlasNode.SiteNodeIndex);
+        if (expeditionNode == null)
+        {
+            return AtlasEnemyIntelViewState.Empty with
+            {
+                ForecastLine = "부분 정보: 선택한 Atlas node와 연결된 expedition node가 아직 없습니다.",
+            };
+        }
+
+        var contentText = new ContentTextResolver(_root.Localization, _root.CombatContentLookup);
+        return ExpeditionEncounterPreviewBuilder.TryBuild(
+            snapshot,
+            expeditionNode,
+            contentText.GetCharacterName,
+            contentText.GetArchetypeName,
+            out var preview)
+            ? BuildEnemyIntel(preview)
+            : AtlasEnemyIntelViewState.Empty with
+            {
+                ForecastLine = "부분 정보: 이 node는 전투 예고가 없는 settlement 또는 보상 node입니다.",
+            };
+    }
+
+    private static AtlasEnemyIntelViewState BuildEnemyIntel(ExpeditionEncounterPreview preview)
+    {
+        var enemies = preview.EnemyNames.Count == 0
+            ? "적 구성 징후: 미상"
+            : $"적 구성 징후: {string.Join(", ", preview.EnemyNames)}";
+        var rewards = preview.RewardDropTags.Count == 0
+            ? "보상 징후: 미상"
+            : $"보상 징후: {string.Join(", ", preview.RewardDropTags.Take(5))}";
+        var boss = string.IsNullOrWhiteSpace(preview.BossOverlayName)
+            ? string.Empty
+            : $"boss overlay 징후: {preview.BossOverlayName}{FormatOptional(preview.BossAuraTag, " · aura ")}{FormatOptional(preview.BossUtilityTag, " · utility ")}";
+
+        return new AtlasEnemyIntelViewState(
+            true,
+            "부분 정보",
+            $"예상 정보: {preview.EncounterName} ({preview.Kind}) - 정찰 기준",
+            enemies,
+            $"위협 예상: {preview.ThreatSkulls} skull · {preview.DifficultyBand}",
+            $"세력 징후: {preview.FactionId}",
+            rewards,
+            boss);
+    }
+
+    private static string FormatOptional(string value, string prefix)
+    {
+        return string.IsNullOrWhiteSpace(value) ? string.Empty : $"{prefix}{value}";
     }
 
     public bool SelectTileFromWorld(string nodeId)

@@ -63,6 +63,27 @@ public sealed record AtlasStageCandidateViewState(
     bool IsSelected,
     string LockReason);
 
+public sealed record AtlasEnemyIntelViewState(
+    bool IsVisible,
+    string Header,
+    string ForecastLine,
+    string EnemyNamesLine,
+    string ThreatLine,
+    string FactionLine,
+    string RewardLine,
+    string BossOverlayLine)
+{
+    public static AtlasEnemyIntelViewState Empty { get; } = new(
+        false,
+        "부분 정보 없음",
+        "예상 가능한 적 정보가 아직 없습니다.",
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty);
+}
+
 public sealed record AtlasPreviewPanelViewState(
     string Title,
     string JudgementLine,
@@ -72,7 +93,8 @@ public sealed record AtlasPreviewPanelViewState(
     string RecommendedCharacters,
     string BoundaryNote,
     string DebugHashLine,
-    string ThreatBandLabel = "");
+    string ThreatBandLabel = "",
+    AtlasEnemyIntelViewState? EnemyIntel = null);
 
 public sealed record AtlasScreenViewState(
     string RegionTitle,

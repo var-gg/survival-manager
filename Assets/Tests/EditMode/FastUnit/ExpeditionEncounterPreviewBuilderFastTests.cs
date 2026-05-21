@@ -46,6 +46,45 @@ public sealed class ExpeditionEncounterPreviewBuilderFastTests
         Assert.That(preview.RewardDropTags, Is.SupersetOf(new[] { "reward_source_boss", "answer_lane_adaptive_mastery", "boss_ask_final_record" }));
     }
 
+    [TestCase("site_worldscar_depths_skirmish_1", EncounterKindValue.Skirmish, 1, "site_skirmish", "faction_worldscar_depths")]
+    [TestCase("site_worldscar_depths_elite_1", EncounterKindValue.Elite, 2, "site_elite", "faction_worldscar_depths")]
+    [TestCase("site_worldscar_depths_boss_1", EncounterKindValue.Boss, 3, "site_boss", "faction_worldscar_depths")]
+    public void TryBuild_SurfacesPartialIntelFields_ForBattleKinds(
+        string nodeId,
+        EncounterKindValue expectedKind,
+        int expectedThreat,
+        string expectedDifficulty,
+        string expectedFaction)
+    {
+        var node = new ExpeditionNodeViewModel(
+            1,
+            nodeId,
+            "label",
+            "reward",
+            "description",
+            true,
+            ExpeditionNodeEffectKind.None,
+            0,
+            "reward_source",
+            Array.Empty<int>());
+
+        Assert.That(
+            ExpeditionEncounterPreviewBuilder.TryBuild(
+                CreateSnapshot(),
+                node,
+                ResolveCharacterName,
+                ResolveArchetypeName,
+                out var preview),
+            Is.True);
+
+        Assert.That(preview.Kind, Is.EqualTo(expectedKind));
+        Assert.That(preview.ThreatSkulls, Is.EqualTo(expectedThreat));
+        Assert.That(preview.DifficultyBand, Is.EqualTo(expectedDifficulty));
+        Assert.That(preview.FactionId, Is.EqualTo(expectedFaction));
+        Assert.That(preview.EnemyNames, Is.Not.Empty);
+        Assert.That(preview.RewardDropTags, Is.Not.Empty);
+    }
+
     [Test]
     public void TryBuild_SkipsSettlementNode()
     {
@@ -76,6 +115,34 @@ public sealed class ExpeditionEncounterPreviewBuilderFastTests
         return EditorFreeCombatContentFixture.CreateSnapshot(
             encounters: new Dictionary<string, EncounterTemplate>(StringComparer.Ordinal)
             {
+                ["site_worldscar_depths_skirmish_1"] = new(
+                    "site_worldscar_depths_skirmish_1",
+                    "Worldscar Depths Skirmish",
+                    "site_worldscar_depths",
+                    "site_worldscar_depths_skirmish_1_squad",
+                    string.Empty,
+                    "reward_source_skirmish",
+                    "faction_worldscar_depths",
+                    1,
+                    1,
+                    1,
+                    "site_skirmish",
+                    EncounterKindValue.Skirmish,
+                    new[] { "reward_source_skirmish" }),
+                ["site_worldscar_depths_elite_1"] = new(
+                    "site_worldscar_depths_elite_1",
+                    "Worldscar Depths Elite",
+                    "site_worldscar_depths",
+                    "site_worldscar_depths_elite_1_squad",
+                    string.Empty,
+                    "reward_source_elite",
+                    "faction_worldscar_depths",
+                    2,
+                    2,
+                    2,
+                    "site_elite",
+                    EncounterKindValue.Elite,
+                    new[] { "reward_source_elite", "elite_cache" }),
                 ["site_worldscar_depths_boss_1"] = new(
                     "site_worldscar_depths_boss_1",
                     "Worldscar Depths Boss",
@@ -93,6 +160,31 @@ public sealed class ExpeditionEncounterPreviewBuilderFastTests
             },
             enemySquads: new Dictionary<string, EnemySquadTemplate>(StringComparer.Ordinal)
             {
+                ["site_worldscar_depths_skirmish_1_squad"] = new(
+                    "site_worldscar_depths_skirmish_1_squad",
+                    "Worldscar Scout Squad",
+                    "faction_worldscar_depths",
+                    TeamPostureType.StandardAdvance,
+                    1,
+                    1,
+                    new[] { "faction_worldscar_depths", "skirmish", "scout_scrap" },
+                    new[]
+                    {
+                        Member("scout", "raider", "extra_worldscar_scout", DeploymentAnchorId.FrontCenter, EnemySquadMemberRoleValue.Unit),
+                    }),
+                ["site_worldscar_depths_elite_1_squad"] = new(
+                    "site_worldscar_depths_elite_1_squad",
+                    "Worldscar Elite Squad",
+                    "faction_worldscar_depths",
+                    TeamPostureType.CollapseWeakSide,
+                    2,
+                    2,
+                    new[] { "faction_worldscar_depths", "elite", "elite_writ" },
+                    new[]
+                    {
+                        Member("elite", "guardian", "extra_worldscar_record_bailiff", DeploymentAnchorId.FrontCenter, EnemySquadMemberRoleValue.Captain),
+                        Member("support", "mirror_cantor", "extra_worldscar_archive_cell", DeploymentAnchorId.BackCenter, EnemySquadMemberRoleValue.Escort),
+                    }),
                 ["site_worldscar_depths_boss_1_squad"] = new(
                     "site_worldscar_depths_boss_1_squad",
                     "Worldscar Boss Squad",
@@ -146,6 +238,7 @@ public sealed class ExpeditionEncounterPreviewBuilderFastTests
         return characterId switch
         {
             "npc_baekgyu_sternheim" => "Baekgyu",
+            "extra_worldscar_scout" => "Worldscar Scout",
             "extra_worldscar_archive_cell" => "Worldscar Archive Cell",
             "extra_worldscar_record_bailiff" => "Worldscar Record Bailiff",
             _ => fallbackArchetypeId,

@@ -26,6 +26,8 @@
 
                 <ui:Label text="적 정보" class="atlas-preview-label" />
                 <ui:Label name="atlas-preview-enemy" class="atlas-preview-body" />
+                <ui:Label text="적 징후" class="atlas-preview-label" />
+                <ui:Label name="atlas-preview-enemy-intel" class="atlas-preview-body atlas-preview-body--intel" />
 
                 <ui:Label text="각인 효과" class="atlas-preview-label" />
                 <ui:Label name="atlas-preview-modifiers" class="atlas-preview-body" />

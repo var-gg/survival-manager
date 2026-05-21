@@ -23,6 +23,7 @@ public sealed class AtlasScreenView
     private readonly Label _judgement;
     private readonly Label _threatBand;
     private readonly Label _enemy;
+    private readonly Label _enemyIntel;
     private readonly Label _modifiers;
     private readonly Label _reward;
     private readonly Label _recommendations;
@@ -49,6 +50,7 @@ public sealed class AtlasScreenView
         _judgement = Require<Label>("atlas-preview-judgement");
         _threatBand = Require<Label>("atlas-preview-threat-band");
         _enemy = Require<Label>("atlas-preview-enemy");
+        _enemyIntel = Require<Label>("atlas-preview-enemy-intel");
         _modifiers = Require<Label>("atlas-preview-modifiers");
         _reward = Require<Label>("atlas-preview-reward");
         _recommendations = Require<Label>("atlas-preview-recommendations");
@@ -213,11 +215,32 @@ public sealed class AtlasScreenView
         _judgement.text = preview.JudgementLine;
         RenderThreatBand(preview.ThreatBandLabel);
         _enemy.text = preview.EnemyPreview;
+        RenderEnemyIntel(preview.EnemyIntel ?? AtlasEnemyIntelViewState.Empty);
         _modifiers.text = preview.ModifierStack;
         _reward.text = preview.RewardPreview;
         _recommendations.text = preview.RecommendedCharacters;
         _boundary.text = preview.BoundaryNote;
         _hash.text = preview.DebugHashLine;
+    }
+
+    private void RenderEnemyIntel(AtlasEnemyIntelViewState intel)
+    {
+        if (!intel.IsVisible)
+        {
+            _enemyIntel.text = intel.ForecastLine;
+            return;
+        }
+
+        _enemyIntel.text = string.Join("\n", new[]
+        {
+            intel.Header,
+            intel.ForecastLine,
+            intel.EnemyNamesLine,
+            intel.ThreatLine,
+            intel.FactionLine,
+            intel.RewardLine,
+            intel.BossOverlayLine,
+        }.Where(line => !string.IsNullOrWhiteSpace(line)));
     }
 
     private void RenderThreatBand(string label)

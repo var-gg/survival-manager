@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -229,6 +230,50 @@ public sealed class AtlasV2SpineSigilFastTests
             .Select(AtlasReadabilityFormatter.FormatThreatBand)
             .ToArray();
         Assert.That(allBandLabels, Is.EqualTo(new[] { "안정", "고조", "과중", "극단" }));
+        Assert.That(state.Preview.EnemyIntel, Is.Not.Null);
+        Assert.That(state.Preview.EnemyIntel!.Header, Is.EqualTo("부분 정보 없음"));
+    }
+
+    [Test]
+    public void EnemyIntelContract_AtlasAbsorbsEncounterPreview()
+    {
+        var viewStateSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenViewState.cs");
+        var controllerSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenController.cs");
+        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uxml");
+
+        Assert.That(viewStateSource, Does.Contain("AtlasEnemyIntelViewState"));
+        Assert.That(viewStateSource, Does.Contain("AtlasPreviewPanelViewState"));
+        Assert.That(viewStateSource, Does.Contain("EnemyIntel"));
+        Assert.That(controllerSource, Does.Contain("TryGetCombatSnapshot"));
+        Assert.That(controllerSource, Does.Contain("ExpeditionEncounterPreviewBuilder.TryBuild"));
+        Assert.That(controllerSource, Does.Contain("SessionState.ExpeditionNodes"));
+        Assert.That(controllerSource, Does.Contain("SiteNodeIndex"));
+        Assert.That(uxml, Does.Contain("atlas-preview-enemy-intel"));
+
+        var root = CreateAtlasRoot();
+        var view = new AtlasScreenView(root);
+        var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
+        view.Render(state with
+        {
+            Preview = state.Preview with
+            {
+                EnemyIntel = new AtlasEnemyIntelViewState(
+                    true,
+                    "부분 정보",
+                    "예상 정보: sample - 정찰 기준",
+                    "적 구성 징후: sample enemy",
+                    "위협 예상: 2 skull",
+                    "세력 징후: faction_sample",
+                    "보상 징후: reward_sample",
+                    "boss overlay 징후: sample boss"),
+            },
+        });
+
+        var intelLabel = root.Q<Label>("atlas-preview-enemy-intel");
+        Assert.That(intelLabel, Is.Not.Null);
+        Assert.That(intelLabel!.text, Does.Contain("부분 정보"));
+        Assert.That(intelLabel.text, Does.Contain("예상 정보"));
+        Assert.That(intelLabel.text, Does.Contain("징후"));
     }
 
     private static AtlasAnchorVisibilityState FindAnchorState(AtlasScreenViewState state, string nodeId)
@@ -261,6 +306,7 @@ public sealed class AtlasV2SpineSigilFastTests
         root.Add(new Label { name = "atlas-preview-judgement" });
         root.Add(new Label { name = "atlas-preview-threat-band" });
         root.Add(new Label { name = "atlas-preview-enemy" });
+        root.Add(new Label { name = "atlas-preview-enemy-intel" });
         root.Add(new Label { name = "atlas-preview-modifiers" });
         root.Add(new Label { name = "atlas-preview-reward" });
         root.Add(new Label { name = "atlas-preview-recommendations" });
