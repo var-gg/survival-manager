@@ -46,6 +46,11 @@ public sealed class TownScreenView
     private readonly Label _permanentAugmentEntryLabel;
     private readonly Button _theaterButton;
     private readonly Label _theaterEntryLabel;
+    private readonly Label _serviceSelectedHeroLabel;
+    private readonly Label _serviceWalletLabel;
+    private readonly Label _serviceInventoryLabel;
+    private readonly Label _serviceRosterPressureLabel;
+    private readonly Label _serviceAvailabilityLabel;
     private readonly Label _clusterEyebrowLabel;
 
     private readonly Label _statusLabel;
@@ -93,6 +98,11 @@ public sealed class TownScreenView
         _permanentAugmentEntryLabel = Require<Label>(root, "PermanentAugmentEntryLabel");
         _theaterButton = Require<Button>(root, "TheaterButton");
         _theaterEntryLabel = Require<Label>(root, "TheaterEntryLabel");
+        _serviceSelectedHeroLabel = Require<Label>(root, "ServiceSelectedHeroLabel");
+        _serviceWalletLabel = Require<Label>(root, "ServiceWalletLabel");
+        _serviceInventoryLabel = Require<Label>(root, "ServiceInventoryLabel");
+        _serviceRosterPressureLabel = Require<Label>(root, "ServiceRosterPressureLabel");
+        _serviceAvailabilityLabel = Require<Label>(root, "ServiceAvailabilityLabel");
         _clusterEyebrowLabel = Require<Label>(root, "ClusterEyebrowLabel");
 
         _statusLabel = Require<Label>(root, "StatusLabel");
@@ -152,6 +162,11 @@ public sealed class TownScreenView
         _tacticalWorkshopEntryLabel.text = state.TacticalWorkshopEntryLabel;
         _permanentAugmentEntryLabel.text = state.PermanentAugmentEntryLabel;
         _theaterEntryLabel.text = state.TheaterEntryLabel;
+        _serviceSelectedHeroLabel.text = state.ServiceDecision.SelectedHeroLabel;
+        _serviceWalletLabel.text = state.ServiceDecision.WalletLabel;
+        _serviceInventoryLabel.text = state.ServiceDecision.InventoryLabel;
+        _serviceRosterPressureLabel.text = state.ServiceDecision.RosterPressureLabel;
+        _serviceAvailabilityLabel.text = state.ServiceDecision.ModalAvailabilityLabel;
         _clusterEyebrowLabel.text = state.ClusterEyebrow;
 
         // NPC strip — 4 face card lg.

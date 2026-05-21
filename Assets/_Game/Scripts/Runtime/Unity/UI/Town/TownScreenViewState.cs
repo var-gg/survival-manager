@@ -25,6 +25,13 @@ public sealed record TownWelcomeViewState(
     string EmotionKey,
     string Greeting);
 
+public sealed record TownServiceDecisionViewState(
+    string SelectedHeroLabel,
+    string WalletLabel,
+    string InventoryLabel,
+    string RosterPressureLabel,
+    string ModalAvailabilityLabel);
+
 public sealed record TownScreenViewState(
     string TitleEyebrow,
     string Title,
@@ -50,6 +57,7 @@ public sealed record TownScreenViewState(
     bool CanQuickBattle,
     bool ShowQuickBattle,
     string StatusText,
+    TownServiceDecisionViewState ServiceDecision,
     // Phase 7 V3 hub V3 utility column / cluster / entry labels (UXML literal 분리)
     string LedgerTitle,
     string RosterEntryLabel,

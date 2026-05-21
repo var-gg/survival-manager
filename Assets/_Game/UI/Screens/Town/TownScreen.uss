@@ -161,6 +161,35 @@
     font-size: 13px;
 }
 
+.town-hub__service-panel {
+    margin-top: 4px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgba(18, 24, 52, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.24);
+    border-right-color: rgba(230, 183, 81, 0.24);
+    border-top-color: rgba(245, 214, 138, 0.22);
+    border-bottom-color: rgba(138, 100, 24, 0.38);
+}
+
+.town-hub__service-line {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    margin-bottom: 4px;
+    white-space: normal;
+}
+
+.town-hub__service-line--availability {
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+}
+
 /* Hero cluster — bottom row (deploy md row + roster sm row) */
 .town-hub__hero-cluster {
     flex-direction: column;

@@ -73,6 +73,13 @@
                 <ui:Button name="TheaterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
                     <ui:Label name="TheaterEntryLabel" class="town-hub__utility-name" text="▶  극장" picking-mode="Ignore" />
                 </ui:Button>
+                <ui:VisualElement name="ServiceDecisionPanel" class="town-hub__service-panel">
+                    <ui:Label name="ServiceSelectedHeroLabel" class="town-hub__service-line" picking-mode="Ignore" />
+                    <ui:Label name="ServiceWalletLabel" class="town-hub__service-line" picking-mode="Ignore" />
+                    <ui:Label name="ServiceInventoryLabel" class="town-hub__service-line" picking-mode="Ignore" />
+                    <ui:Label name="ServiceRosterPressureLabel" class="town-hub__service-line" picking-mode="Ignore" />
+                    <ui:Label name="ServiceAvailabilityLabel" class="town-hub__service-line town-hub__service-line--availability" picking-mode="Ignore" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
 

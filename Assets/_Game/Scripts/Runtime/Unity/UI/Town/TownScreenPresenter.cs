@@ -27,6 +27,7 @@ public sealed class TownScreenPresenter
     private Action<string>? _heroOpener;
     private Action? _settingsOpener;
     private Action? _theaterOpener;
+    private string _selectedHeroId = string.Empty;
     private string _pendingStatus = string.Empty;
 
     public TownScreenPresenter(
@@ -158,6 +159,7 @@ public sealed class TownScreenPresenter
     public void OnHeroClick(string heroId)
     {
         if (string.IsNullOrEmpty(heroId)) return;
+        _selectedHeroId = heroId;
         if (_heroOpener != null)
         {
             _heroOpener.Invoke(heroId);
@@ -250,6 +252,7 @@ public sealed class TownScreenPresenter
             CanQuickBattle: showDebugActions && session.CanStartQuickBattleSmoke,
             ShowQuickBattle: showDebugActions,
             StatusText: statusText,
+            ServiceDecision: BuildServiceDecision(session, string.IsNullOrEmpty(_selectedHeroId) ? welcomeHeroId : _selectedHeroId),
             LedgerTitle: Localize(GameLocalizationTables.UITown, "ui.town.ledger.title", "LEDGER · 마을 비망록"),
             RosterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.roster", "◈  동료 명부"),
             CompendiumEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.compendium", "도감"),
@@ -258,6 +261,28 @@ public sealed class TownScreenPresenter
             PermanentAugmentEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.permanent_augment", "✦  영구 강화"),
             TheaterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.theater", "▶  극장"),
             ClusterEyebrow: Localize(GameLocalizationTables.UITown, "ui.town.cluster.eyebrow", "잿골에 머무는 동료"));
+    }
+
+    private TownServiceDecisionViewState BuildServiceDecision(GameSessionState session, string selectedHeroId)
+    {
+        var selectedHero = session.Profile.Heroes.FirstOrDefault(hero =>
+            string.Equals(hero.HeroId, selectedHeroId, StringComparison.Ordinal));
+        var heroLabel = selectedHero == null
+            ? "동료 선택 없음"
+            : $"{ResolveHeroDisplayName(selectedHero.HeroId, selectedHero.Name)} · {_contentText.GetClassName(selectedHero.ClassId)}";
+        var deployCount = session.ExpeditionSquadHeroIds.Count;
+        var serviceReadyCount = _npcOpeners.Count;
+        if (_heroOpener != null)
+        {
+            serviceReadyCount++;
+        }
+
+        return new TownServiceDecisionViewState(
+            SelectedHeroLabel: heroLabel,
+            WalletLabel: $"{session.Profile.Currencies.Gold:N0} Gold · {session.Profile.Currencies.Echo:N0} Echo",
+            InventoryLabel: $"{session.Profile.Inventory.Count} inventory",
+            RosterPressureLabel: $"{session.Profile.Heroes.Count}/12 roster · {deployCount}/4 deploy",
+            ModalAvailabilityLabel: $"{serviceReadyCount}/5 services ready");
     }
 
     private string ResolveHeroDisplayName(string heroId, string? heroName)
