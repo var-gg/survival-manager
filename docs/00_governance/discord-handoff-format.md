@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-29
+- 최종수정일: 2026-05-22
 - 소스오브트루스: `docs/00_governance/discord-handoff-format.md`
 - 관련문서:
   - `docs/00_governance/agent-operating-model.md`
@@ -38,7 +38,7 @@
 ### 결정사항
 
 - 앞으로 기준이 되는 결정만 남긴다.
-- 설명이 길어지면 ADR이나 기준 문서로 보낸다.
+- 설명이 길어지면 pindoc Decision 또는 git ADR로 보낸다 (`AGENTS.md`의 결정 매트릭스 기준).
 
 ### 리스크
 
@@ -48,7 +48,7 @@
 ### 다음 단계
 
 - 지금 작업을 자동 확장하지 않고 다음 작업 후보만 남긴다.
-- task 문서의 `Next Steps`와 모순되면 안 된다.
+- 해당 pindoc Task의 다음 단계와 모순되면 안 된다.
 
 ## 스타일 규칙
 

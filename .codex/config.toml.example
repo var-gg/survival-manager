@@ -1,8 +1,14 @@
-# Survival Manager Codex Unity MCP example
-# Copy the MCP stanza into ~/.codex/config.toml on the local machine.
+# Survival Manager Codex MCP example
+# Copy the MCP stanzas into ~/.codex/config.toml on the local machine.
+#
+# unityMCP  — Unity Editor 자동화 (editor state 가속)
+# pindoc    — 기획/설계/창작/의사결정 source-of-truth (Pindoc Wiki)
 
 [mcp_servers.unityMCP]
 url = "http://127.0.0.1:43157/mcp"
+
+[mcp_servers.pindoc]
+url = "http://127.0.0.1:5830/mcp"
 
 [features]
 rmcp_client = true

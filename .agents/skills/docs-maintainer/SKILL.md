@@ -1,18 +1,22 @@
 ---
 name: docs-maintainer
-description: 저장소 문서의 생성, 정리, 인덱스 동기화, lifecycle 정리, 검증 루프를 수행한다.
+description: repo Markdown durable docs(코드 계약·하네스·setup·index·코드 ADR)의 생성, 정리, 인덱스 동기화, lifecycle 정리, 검증 루프를 수행한다. 기획·설계·narrative·의사결정·task 추적은 이 스킬이 아니라 pindoc artifact로 간다.
 ---
 
 # docs-maintainer
 
 ## 목적
 
-이 스킬은 저장소 문서를 만들거나 고칠 때, 문서가 실제 구현·정책·인덱스와 함께 움직이도록 유지하는 데 사용한다.
+이 스킬은 **repo Markdown durable docs**(코드 직결 계약, 테스트/문서 하네스, setup·운영 절차, 폴더 `index.md`, 코드 직결 ADR)를 만들거나 고칠 때, 문서가 실제 구현·정책·인덱스와 함께 움직이도록 유지하는 데 사용한다.
 특히 docs harness, deprecated 정리, 한국어 durable docs 정책, index 동기화, validation loop를 같이 처리하는 작업에 적용한다.
+
+이 스킬은 repo Markdown 전용이다. 기획·설계·narrative/lore·UX·의사결정·다중세션 task 추적은 이 스킬이 아니라 pindoc artifact로 간다 (`PINDOC.md`, `AGENTS.md` "문서 하네스 규칙"의 분류 기준). 작업이 그 범주이면 이 스킬을 멈추고 pindoc으로 라우팅한다.
 
 ## 반드시 사용하는 경우
 
-- `docs/**`, `prompts/**`, `.agents/skills/**`, `tasks/**`를 수정하는 작업
+먼저 작업이 repo Markdown 범주인지 분류한다. 기획·설계·결정·narrative·task 추적이면 이 스킬이 아니라 pindoc artifact로 간다. 아래는 repo Markdown으로 확정된 뒤 적용한다.
+
+- `docs/**`, `prompts/**`, `.agents/skills/**`의 repo Markdown을 수정하는 작업
 - 문서 구조, 수명주기, 언어 정책, index 체계, deprecated 정리를 바꾸는 작업
 - 구현 변경 후 관련 문서, 관련문서 링크, index를 같이 맞추는 작업
 - source-of-truth matrix가 필요한 문서군을 정리하는 작업
@@ -41,21 +45,22 @@ description: 저장소 문서의 생성, 정리, 인덱스 동기화, lifecycle 
 문서 작업은 아래 순서로 시작한다.
 
 1. `AGENTS.md`
-2. `docs/index.md`
-3. 관련 폴더 `index.md`
-4. 현재 task `status.md`
+2. `PINDOC.md`
+3. `docs/index.md`
+4. 관련 폴더 `index.md`
 
 필요한 세부 문서는 이 체인을 읽은 뒤 범위와 직접 연결된 active source만 on-demand로 연다.
 모든 Markdown 파일을 기본 컨텍스트에 병합하지 않는다.
 
 ### 2. 문서 역할을 먼저 분류한다
 
-- `docs/**`: durable knowledge
-- `tasks/**`: live state / handoff
+- pindoc artifact: 기획·설계·narrative/lore·UX·의사결정·다중세션 task 추적의 source-of-truth. **이 범주는 이 스킬 대상이 아니다.**
+- `docs/**`: repo Markdown durable knowledge (코드 직결 계약, 하네스, setup, index)
 - `prompts/**`, `.agents/skills/**`: agent routing asset
-- `docs/04_decisions/**`: durable decision
+- `docs/04_decisions/**`: 코드 직결 architecture ADR
+- `tasks/**`: legacy 마크다운 실행 문서. 신규 작업 추적은 pindoc Task다 (`task-execution-pattern.md`)
 
-같은 주제를 다뤄도 역할이 다르면 삭제보다 역할 분리를 우선한다.
+작업이 pindoc 범주이면 이 스킬을 멈추고 pindoc으로 라우팅한다. 같은 주제를 다뤄도 역할이 다르면 삭제보다 역할 분리를 우선한다.
 
 ### 3. source-of-truth 우선순위를 확인한다
 
@@ -106,17 +111,11 @@ pwsh -File tools/smoke-check.ps1 -RepoRoot .
 병렬화가 필요하면 deprecated inventory, language audit, index coverage audit 같은 read-only 조사에 한정한다.
 실제 쓰기와 최종 통합은 한 작업 단위에서 처리한다.
 
-### 8. handoff 체크리스트를 강제한다
+### 8. task handoff은 pindoc Task lifecycle을 따른다
 
-task 실행 문서를 닫기 전에는 아래를 모두 확인한다.
-
-- `spec.md`에 최소 `Goal`, `Authoritative boundary`, `In scope`, `Out of scope`, `asmdef impact`, `persistence impact`, `validator / test oracle`, `done definition`, `deferred`가 있다.
-- `plan.md`에 최소 `Preflight`, `Phase 1 code-only`, `Phase 2 asset authoring`, `Phase 3 validation`, `rollback / escape hatch`, `tool usage plan`, `loop budget`이 있다.
-- `implement.md`는 phase별 요약, deviation, blockers, diagnostics, `why this loop happened`를 남기고 미시 `compile -> refresh -> console` 로그를 그대로 나열하지 않는다.
-- `status.md`는 `Current state`, `Acceptance matrix`, `Evidence`, `Remaining blockers`, `Deferred / debug-only`, `Loop budget consumed`, `Handoff notes`를 가진다.
-- 위 필수 섹션이 하나라도 비어 있거나 누락되면 handoff-ready로 올리지 않는다.
-- Unity migration task라면 `compile green`만으로 닫지 않고 validator, targeted test, runtime path oracle 근거까지 남긴다.
-- oversized umbrella task는 parent status만으로 닫지 않고 child phase 문서로 split closure한다.
+신규 작업의 task 추적·handoff는 pindoc Task artifact로 한다 (`PINDOC.md` Task lifecycle, `docs/00_governance/task-execution-pattern.md`). 이 스킬로 `tasks/<id>/` 마크다운 실행 문서를 새로 만들지 않는다.
+기존 `tasks/` 폴더의 legacy 마크다운 문서를 닫는 경우에만 `task-execution-pattern.md`의 legacy 섹션 기준을 적용한다.
+surface와 무관하게, `compile green`만으로 닫지 않고 validator·targeted test·runtime path oracle 같은 acceptance evidence를 함께 남기는 원칙은 유지한다.
 
 ### 9. index 동기화를 mandatory로 본다
 

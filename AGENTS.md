@@ -8,6 +8,15 @@
 Pindoc artifact 본문(Context / Decision / Rationale / Alternatives / Consequences 같은 섹션)은 구조화된 register에 속해서 표·bullet·ADR 스타일 축약이 자연스럽다. 반면 사용자 대면 응답은 추론 흐름이 연결된 산문 register에 속한다. "Alt A(...) · B(...)" 같은 축약, 괄호 안 한 단어 기각 이유, 중점(·)으로 나열한 짧은 구절이 artifact 본문에서 대화로 역류하지 않게 한다. 애매할 때는 응답을 두세 문장 산문으로 다시 쓰며 추론을 압축이 아닌 서술로 노출한다.
 <!-- pindoc:register-separation:v1 END -->
 
+### Pindoc 하네스 로딩 (모든 에이전트)
+
+이 저장소의 Pindoc 운영 하네스 본체는 루트 `PINDOC.md`에 있다. 신규 장기 문서가 pindoc artifact로만 진입한다는 write surface 규칙, Pre-flight Check, `artifact.propose` 프로토콜, area taxonomy, Task lifecycle이 모두 거기 정의돼 있다.
+
+- 이 문서 맨 끝의 `@PINDOC.md`는 `@import`를 자동 전개하는 에이전트(Claude Code)용 로딩 경로다.
+- **`@import`를 전개하지 않는 에이전트(Codex 등)는 세션 시작 시 `PINDOC.md`를 직접 열어 읽고 그 규칙을 따른다.** `@PINDOC.md` 줄을 평문 텍스트로 흘려보내지 않는다.
+- 기획·설계·결정·다중세션 task 작업을 시작하기 전에 `PINDOC.md`의 write surface와 Pre-flight Check를 먼저 적용한다.
+- `PINDOC.md`는 `pindoc.harness.install`이 생성·관리한다. 손으로 직접 고치지 않는다.
+
 이 문서는 이 저장소에서 작업하는 사람과 에이전트가 공통으로 따를 최소 운영 원칙만 정의한다.
 
 ## 저장소 목적
@@ -168,13 +177,22 @@ pwsh -File tools/unity-bridge.ps1 test-batch-fast   # FastUnit 카테고리만 �
 
 ## 문서 하네스 규칙
 
-- `docs/**`, `prompts/**`, `.agents/skills/**`, `tasks/**`, `tools/docs*.ps1`, `tools/smoke-check.ps1`, `.github/workflows/**`를 건드리는 작업이면 먼저 `$docs-maintainer`를 사용한다.
-- 문서 구조, 문서 수명주기, deprecated 정리, 언어 정책, index 체계가 바뀌는 작업이면 task 문서를 먼저 만들고 `status.md`를 handoff 기준으로 유지한다.
-- 기본 시작 컨텍스트는 `AGENTS.md` -> `docs/index.md` -> 관련 폴더 `index.md` -> 현재 task `status.md`로 제한한다. 모든 Markdown 파일을 한 번에 읽지 않는다.
+### 먼저 분류한다 — pindoc artifact vs repo Markdown
+
+문서성 작업은 어느 surface에 속하는지 먼저 분류한다. 분류를 건너뛰고 자동으로 repo Markdown을 만들지 않는다.
+
+- **pindoc artifact로 간다**: 제품 방향·MVP 범위·design pillar, 게임기획, narrative/lore/세계관, UX/UI 설계, 위 "의사결정 기록 위치"의 결정 매트릭스에서 git ADR이 아닌 모든 의사결정, 다중세션 작업의 task 추적. → `mcp__pindoc__pindoc_artifact_propose`를 쓰고 `PINDOC.md`의 write surface·Pre-flight Check·Task lifecycle 규칙을 따른다. 이 범주를 repo Markdown으로 새로 만들지 않는다.
+- **repo Markdown으로 간다**: 코드 직결 계약, 테스트/문서 하네스, setup·운영 절차, 폴더 `index.md`, 코드 직결 architecture ADR(`docs/04_decisions/**`). → 이 경우에만 `$docs-maintainer`를 사용한다.
+- 한 작업에 두 범주가 섞이면 분리한다. 기획/설계/결정 부분은 pindoc, 코드계약/하네스/setup 부분은 repo Markdown으로 보낸다.
+
+### repo Markdown 작업 규칙
+
+- 위 분류에서 repo Markdown으로 확정된 작업이면 먼저 `$docs-maintainer`를 사용한다. 대상은 `docs/**`, `prompts/**`, `.agents/skills/**`, `tools/docs*.ps1`, `tools/smoke-check.ps1`, `.github/workflows/**`다.
+- 기본 시작 컨텍스트는 `AGENTS.md` -> `PINDOC.md` -> `docs/index.md` -> 관련 폴더 `index.md`로 제한한다. 모든 Markdown 파일을 한 번에 읽지 않는다.
 - 게임기획/제품/창작 방향을 찾을 때는 repo의 오래된 `docs/01_product/**` 또는 creative `docs/02_design/**` 사본을 복원해 읽지 말고 Pindoc context/search를 먼저 사용한다.
 - `status: deprecated` 문서와 index의 deprecated pointer는 active source로 쓰지 않는다. replacement, ADR (또는 pindoc Decision), registry를 우선한다.
-- 문서를 수정했으면 같은 작업 단위에서 관련 `index.md`, 관련문서 링크, task `status.md`, 검증 스크립트를 같이 갱신한다.
-- `docs/**`와 human-facing task/status 보고는 한국어 본문과 한국어 메타데이터를 유지한다. 파일명, 코드, 명령어, API 식별자는 영어를 유지한다.
+- 문서를 수정했으면 같은 작업 단위에서 관련 `index.md`, 관련문서 링크, 검증 스크립트를 같이 갱신한다.
+- `docs/**`와 human-facing 보고는 한국어 본문과 한국어 메타데이터를 유지한다. 파일명, 코드, 명령어, API 식별자는 영어를 유지한다.
 
 ## 코드 구조 하네스 규칙
 

@@ -14,7 +14,7 @@
 - 파일명/경로 규칙은 `naming-conventions.md`
 - 용어 정의는 `glossary.md`
 - Codex 작업 운영 규칙은 `agent-operating-model.md`
-- task 문서 운용 방식은 `task-execution-pattern.md`
+- 다중세션 작업 추적(pindoc Task)과 legacy task 폴더 패턴은 `task-execution-pattern.md`
 - 완료 보고 형식은 `discord-handoff-format.md`
 - 구조 변경 검수 기준은 `implementation-review-checklist.md`
 - localization 운영 기준은 `docs/02_design/ui/localization-policy.md`와 `docs/05_setup/localization-workflow.md`
@@ -27,8 +27,8 @@
 - `docs-evals.md`: docs harness eval 초안과 검증 관점
 - `naming-conventions.md`: 문서 파일명과 경로 명명 규칙
 - `glossary.md`: 공통 용어와 문서 체계 용어 정의
-- `agent-operating-model.md`: Codex 전용 운영 원칙
-- `task-execution-pattern.md`: task 폴더와 실행 문서 패턴
+- `agent-operating-model.md`: Codex 전용 운영 원칙 (pindoc 우선 운영 포함)
+- `task-execution-pattern.md`: 다중세션 작업 추적(pindoc Task) 기준과 legacy `tasks/` 마크다운 패턴
 - `discord-handoff-format.md`: Codex 완료/핸드오프 보고 형식
 - `implementation-review-checklist.md`: 인간과 AI 공통 구조 검수 체크리스트
 
