@@ -60,7 +60,7 @@ public sealed class TownCharacterSheetView
     {
         _modalRoot.style.display = DisplayStyle.Flex;
         _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
-        var wrapper = _modalRoot.parent?.parent;
+        var wrapper = FindModalOverlay();
         if (wrapper != null)
         {
             wrapper.style.display = DisplayStyle.Flex;
@@ -71,7 +71,7 @@ public sealed class TownCharacterSheetView
     {
         _modalRoot.style.display = DisplayStyle.None;
         _modalRoot.AddToClassList("sm-modal-anim--enter");
-        var wrapper = _modalRoot.parent?.parent;
+        var wrapper = FindModalOverlay();
         if (wrapper != null)
         {
             wrapper.style.display = DisplayStyle.None;
@@ -111,6 +111,19 @@ public sealed class TownCharacterSheetView
         title.text = panel.Title;
         body.text = panel.Body;
         body.tooltip = panel.Body;
+    }
+
+    private VisualElement? FindModalOverlay()
+    {
+        for (var current = _modalRoot.parent; current != null; current = current.parent)
+        {
+            if (current.ClassListContains("town-hub__modal-overlay"))
+            {
+                return current;
+            }
+        }
+
+        return _modalRoot.parent?.parent ?? _modalRoot.parent;
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement

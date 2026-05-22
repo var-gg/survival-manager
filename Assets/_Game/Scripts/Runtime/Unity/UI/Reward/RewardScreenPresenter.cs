@@ -116,7 +116,7 @@ public sealed class RewardScreenPresenter
         var canReturnToTown = session.PendingRewardChoices.Count == 0;
         var profile = _root.ProfileQueries.GetProfileView(_root.ActiveProfileId);
         return new RewardScreenViewState(
-            Localize(GameLocalizationTables.UIReward, "ui.reward.title", "Reward Operator UI"),
+            Localize(GameLocalizationTables.UIReward, "ui.reward.title", "보상 정산"),
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
@@ -177,24 +177,27 @@ public sealed class RewardScreenPresenter
         return BuildProgressionRowsCore(
             session,
             profile,
-            token => token.HasValue ? token.Resolve(_localization, _contentText) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
-            BuildContinuationText);
+            token => token.HasValue ? SanitizePlayerFacingSummary(token.Resolve(_localization, _contentText)) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
+            BuildContinuationText,
+            SanitizePlayerFacingSummary);
     }
 
     private static IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRowsCore(
         GameSessionState session,
         ProfileView profile,
         Func<SessionTextToken, string> resolveToken,
-        Func<GameSessionState, string> resolveContinuation)
+        Func<GameSessionState, string> resolveContinuation,
+        Func<string, string>? sanitizeText = null)
     {
+        sanitizeText ??= value => value;
         var battleValue = session.LastBattleSummary.HasValue
-            ? resolveToken(session.LastBattleSummary)
+            ? sanitizeText(resolveToken(session.LastBattleSummary))
             : session.LastBattleVictory ? "Victory" : "Defeat";
         var lootValue = session.LastAutomaticLootBundle == null
             ? "None"
-            : LootResolutionService.FormatSummary(session.LastAutomaticLootBundle);
+            : sanitizeText(LootResolutionService.FormatSummary(session.LastAutomaticLootBundle));
         var choiceValue = session.LastRewardApplicationSummary.HasValue
-            ? resolveToken(session.LastRewardApplicationSummary)
+            ? sanitizeText(resolveToken(session.LastRewardApplicationSummary))
             : session.PendingRewardChoices.Count == 0 ? "Applied" : "Awaiting choice";
 
         return new[]
@@ -204,7 +207,7 @@ public sealed class RewardScreenPresenter
             new RewardProgressionRowViewState("Reward Choice", choiceValue, session.PendingRewardChoices.Count == 0 ? "applied" : "pending"),
             new RewardProgressionRowViewState("Wallet", $"{profile.Gold} Gold / {profile.Echo} Echo", "economy"),
             new RewardProgressionRowViewState("Inventory", $"{profile.InventoryCount} items", "inventory"),
-            new RewardProgressionRowViewState("Continuation", resolveContinuation(session), session.PendingRewardChoices.Count == 0 ? "ready" : "locked"),
+            new RewardProgressionRowViewState("Continuation", sanitizeText(resolveContinuation(session)), session.PendingRewardChoices.Count == 0 ? "ready" : "locked"),
         };
     }
 
@@ -365,60 +368,34 @@ public sealed class RewardScreenPresenter
 
     private string BuildRunDeltaText(GameSessionState session)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine(Localize(
+        var lootSummary = session.LastAutomaticLootBundle == null
+            ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
+            : SanitizePlayerFacingSummary(LootResolutionService.FormatSummary(session.LastAutomaticLootBundle));
+        var continuation = session.PendingRewardChoices.Count == 0
+            ? BuildContinuationText(session)
+            : Localize(GameLocalizationTables.UIReward, "ui.reward.summary.awaiting_choice", "Choose one reward before returning.");
+
+        var lines = new[]
+        {
+            Localize(
             GameLocalizationTables.UIReward,
             "ui.reward.summary.settlement_result",
             "Settlement: {0}",
-            BuildSettlementHeadline(session)));
-        sb.AppendLine(Localize(
-            GameLocalizationTables.UIReward,
-            "ui.reward.summary.base_reward",
-            "Base Reward: {0}",
-            session.LastBattleSummary.HasValue
-                ? session.LastBattleSummary.Resolve(_localization, _contentText)
-                : BuildFallbackSummary(session)));
-        sb.AppendLine(Localize(
-            GameLocalizationTables.UIReward,
-            "ui.reward.summary.auto_loot",
-            "Auto Loot: {0}",
-            session.LastAutomaticLootBundle == null ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None") : LootResolutionService.FormatSummary(session.LastAutomaticLootBundle)));
+            BuildSettlementHeadline(session)),
+            Localize(GameLocalizationTables.UIReward, "ui.reward.summary.auto_loot", "Auto Loot: {0}", lootSummary),
+            Localize(GameLocalizationTables.UIReward, "ui.reward.summary.continuation", "Continuation: {0}", continuation),
+        }.Select(line => ClampPanelLine(line, 92)).ToList();
+
         if (session.LastRewardApplicationSummary.HasValue)
         {
-            sb.AppendLine(Localize(
+            lines.Add(ClampPanelLine(Localize(
                 GameLocalizationTables.UIReward,
                 "ui.reward.summary.choice_applied",
                 "Chosen Reward: {0}",
-                session.LastRewardApplicationSummary.Resolve(_localization, _contentText)));
+                SanitizePlayerFacingSummary(session.LastRewardApplicationSummary.Resolve(_localization, _contentText))), 92));
         }
 
-        var firstTempId = session.ActiveRun?.Overlay.FirstSelectedTemporaryAugmentId ?? string.Empty;
-        if (!string.IsNullOrWhiteSpace(firstTempId))
-        {
-            sb.AppendLine($"First Temp Thesis: {_contentText.GetAugmentName(firstTempId)}");
-        }
-
-        var pendingUnlockId = session.ActiveRun?.Overlay.PendingPermanentUnlockId ?? string.Empty;
-        if (!string.IsNullOrWhiteSpace(pendingUnlockId))
-        {
-            sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.permanent_unlock", "Permanent Candidate Pending: {0}", _contentText.GetAugmentName(pendingUnlockId)));
-        }
-        else if (session.LastPermanentUnlockSummary.HasValue)
-        {
-            sb.AppendLine(session.LastPermanentUnlockSummary.Resolve(_localization, _contentText));
-        }
-
-        var profile = _root.ProfileQueries.GetProfileView(_root.ActiveProfileId);
-        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.wallet", "Wallet Now: {0} Gold / {1} Echo", profile.Gold, profile.Echo));
-        sb.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.summary.inventory_now", "Inventory Now: {0} items", profile.InventoryCount));
-        sb.AppendLine(Localize(
-            GameLocalizationTables.UIReward,
-            "ui.reward.summary.continuation",
-            "Continuation: {0}",
-            session.PendingRewardChoices.Count == 0
-                ? BuildContinuationText(session)
-                : Localize(GameLocalizationTables.UIReward, "ui.reward.summary.awaiting_choice", "Choose one reward before returning.")));
-        return sb.ToString();
+        return string.Join("\n", lines);
     }
 
     private string BuildBuildContextText(GameSessionState session)
@@ -431,12 +408,9 @@ public sealed class RewardScreenPresenter
             .Distinct(StringComparer.Ordinal)
             .ToList();
         var builder = new StringBuilder();
-        builder.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.posture", "Posture: {0}", session.SelectedTeamPosture));
-        builder.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.equipped_permanent", "Equipped Permanent: {0}", FormatAugmentName(equippedPermanentId)));
-        builder.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.bench", "Bench Candidates: {0}", FormatAugmentList(benchPermanentIds)));
-        builder.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.temp_augments", "Current Temp Augments: {0}", FormatAugmentList(session.Expedition.TemporaryAugmentIds)));
-        builder.AppendLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.thesis", "Build Thesis: {0}", BuildThesisLine(session, equippedPermanentId)));
-        return builder.ToString();
+        builder.AppendLine(ClampPanelLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.posture", "Posture: {0}", session.SelectedTeamPosture), 82));
+        builder.AppendLine(ClampPanelLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.equipped_permanent", "Equipped Permanent: {0}", FormatAugmentName(equippedPermanentId)), 82));
+        return builder.ToString().TrimEnd();
     }
 
     private string BuildLocaleStatus()
@@ -524,7 +498,7 @@ public sealed class RewardScreenPresenter
 
         if (session.IsQuickBattleSmokeActive)
         {
-            return Localize(GameLocalizationTables.UIReward, "ui.reward.status.default.quick", "Quick Battle smoke settlement: pick one card and return to Town.");
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.status.default.quick", "빠른 전투 정산입니다. 보상 카드 한 장을 고르고 마을로 돌아가세요.");
         }
 
         if (!session.LastBattleVictory)
@@ -541,7 +515,7 @@ public sealed class RewardScreenPresenter
     {
         if (session.IsQuickBattleSmokeActive)
         {
-            return Localize(GameLocalizationTables.UIReward, "ui.reward.action.return_town_smoke", "Return to Town / Smoke Complete");
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.action.return_town_smoke", "마을로 복귀 / 빠른 전투 완료");
         }
 
         if (!session.LastBattleVictory)
@@ -558,7 +532,7 @@ public sealed class RewardScreenPresenter
     {
         if (session.IsQuickBattleSmokeActive)
         {
-            return Localize(GameLocalizationTables.UIReward, "ui.reward.result.quick_smoke", "Quick Battle Smoke");
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.result.quick_smoke", "빠른 전투");
         }
 
         if (!session.LastBattleVictory)
@@ -706,7 +680,7 @@ public sealed class RewardScreenPresenter
     {
         if (session.IsQuickBattleSmokeActive)
         {
-            return Localize(GameLocalizationTables.UIReward, "ui.reward.continuation.smoke", "Smoke lane closes and returns to Town.");
+            return Localize(GameLocalizationTables.UIReward, "ui.reward.continuation.smoke", "빠른 전투를 마치고 마을로 돌아갑니다.");
         }
 
         return IsFinalExtractSettlement(session)
@@ -718,7 +692,7 @@ public sealed class RewardScreenPresenter
     {
         if (session.IsQuickBattleSmokeActive)
         {
-            return "Smoke lane closes and returns to Town.";
+            return "빠른 전투를 마치고 마을로 돌아갑니다.";
         }
 
         return IsFinalExtractSettlement(session)
@@ -726,7 +700,110 @@ public sealed class RewardScreenPresenter
             : "Run stays active and can resume from Town.";
     }
 
-    private string ResolveChoiceTitle(RewardChoiceViewModel choice) => Localize(GameLocalizationTables.UIReward, choice.TitleKey, choice.PayloadId);
-    private string ResolveChoiceDescription(RewardChoiceViewModel choice) => Localize(GameLocalizationTables.UIReward, choice.DescriptionKey, choice.PayloadId);
+    private string ResolveChoiceTitle(RewardChoiceViewModel choice) => Localize(GameLocalizationTables.UIReward, choice.TitleKey, BuildChoiceFallbackTitle(choice));
+    private string ResolveChoiceDescription(RewardChoiceViewModel choice) => Localize(GameLocalizationTables.UIReward, choice.DescriptionKey, BuildChoiceFallbackDescription(choice));
     private string Localize(string table, string key, string fallback, params object[] args) => _localization.LocalizeOrFallback(table, key, fallback, args);
+
+    private string BuildChoiceFallbackTitle(RewardChoiceViewModel choice)
+    {
+        return choice.Kind switch
+        {
+            RewardChoiceKind.Gold => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.gold", "Gold +{0}", choice.GoldAmount),
+            RewardChoiceKind.Echo => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.echo", "Echo +{0}", choice.EchoAmount),
+            RewardChoiceKind.Item => _contentText.GetItemName(choice.PayloadId),
+            RewardChoiceKind.TemporaryAugment => _contentText.GetAugmentName(choice.PayloadId),
+            RewardChoiceKind.PermanentAugmentSlot => Localize(GameLocalizationTables.UIReward, "ui.reward.kind.permanent_slot", "Legacy Slot Reward"),
+            _ => HumanizeIdentifier(choice.PayloadId),
+        };
+    }
+
+    private string BuildChoiceFallbackDescription(RewardChoiceViewModel choice)
+    {
+        return choice.Kind switch
+        {
+            RewardChoiceKind.Gold => Localize(GameLocalizationTables.UIReward, "ui.reward.choice.gold_fallback", "Immediate gold for recruit and service costs."),
+            RewardChoiceKind.Echo => Localize(GameLocalizationTables.UIReward, "ui.reward.choice.echo_fallback", "Echo reserve for scouting and recovery."),
+            RewardChoiceKind.Item => Localize(GameLocalizationTables.UIReward, "ui.reward.choice.item_fallback", "Equipment candidate: {0}.", _contentText.GetItemName(choice.PayloadId)),
+            RewardChoiceKind.TemporaryAugment => Localize(GameLocalizationTables.UIReward, "ui.reward.choice.augment_fallback", "Temporary run thesis: {0}.", _contentText.GetAugmentName(choice.PayloadId)),
+            RewardChoiceKind.PermanentAugmentSlot => Localize(GameLocalizationTables.UIReward, "ui.reward.choice.permanent_slot_fallback", "Permanent build slot reward."),
+            _ => HumanizeIdentifier(choice.PayloadId),
+        };
+    }
+
+    private static string SanitizePlayerFacingSummary(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var separators = new[] { ' ', ',', '\n', '\r', '\t', '/', ':', ';', '(', ')', '[', ']' };
+        var tokens = value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+        var result = value;
+        foreach (var token in tokens.Where(LooksLikeIdentifierToken).Distinct(StringComparer.Ordinal).OrderByDescending(token => token.Length))
+        {
+            result = result.Replace(token, HumanizeIdentifier(token), StringComparison.Ordinal);
+        }
+
+        return result;
+    }
+
+    private static string ClampPanelLine(string value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var collapsed = string.Join(" ", value
+            .Replace("\r", " ", StringComparison.Ordinal)
+            .Replace("\n", " ", StringComparison.Ordinal)
+            .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+        return collapsed.Length <= maxLength ? collapsed : $"{collapsed[..Math.Max(1, maxLength - 1)]}…";
+    }
+
+    private static bool LooksLikeIdentifierToken(string value)
+    {
+        return value.Contains('_', StringComparison.Ordinal)
+               || value.StartsWith("reward.", StringComparison.Ordinal)
+               || value.StartsWith("content.", StringComparison.Ordinal)
+               || value.StartsWith("ui.", StringComparison.Ordinal);
+    }
+
+    private static string HumanizeIdentifier(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var token = value.Trim();
+        if (token.Contains('.', StringComparison.Ordinal))
+        {
+            var parts = token.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            for (var i = parts.Length - 1; i >= 0; i--)
+            {
+                if (!string.Equals(parts[i], "name", StringComparison.Ordinal)
+                    && !string.Equals(parts[i], "desc", StringComparison.Ordinal))
+                {
+                    token = parts[i];
+                    break;
+                }
+            }
+        }
+
+        foreach (var prefix in new[] { "item_", "augment_", "reward_source_", "site_", "skirmish_", "ember_", "gold_" })
+        {
+            if (token.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                token = token[prefix.Length..];
+                break;
+            }
+        }
+
+        var words = token.Replace('_', ' ').Replace('-', ' ').Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        return words.Length == 0
+            ? value
+            : string.Join(" ", words.Select(word => char.ToUpperInvariant(word[0]) + (word.Length > 1 ? word[1..] : string.Empty)));
+    }
 }

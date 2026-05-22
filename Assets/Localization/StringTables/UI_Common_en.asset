@@ -153,7 +153,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 14
-    m_Localized: 
+    m_Localized: Start the local loop and verify Town, Atlas, Battle, and Reward.
     m_Metadata:
       m_Items: []
   - m_Id: 15

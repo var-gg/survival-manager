@@ -100,6 +100,8 @@ public sealed class SquadBuilderPresenter
     {
         _isOpen = true;
         Render();
+        FindModalOverlay()?.BringToFront();
+        _modalRoot.BringToFront();
         _modalRoot.Focus();
     }
 
@@ -131,7 +133,7 @@ public sealed class SquadBuilderPresenter
         _modalRoot.EnableInClassList("sm-sqb-modal--closed", !_isOpen);
         _modalRoot.EnableInClassList("sm-modal-anim--enter", !_isOpen);
         // hub의 town-hub__modal-overlay wrapper도 토글 — UXML inline display:none 강제 default closed 우회.
-        var wrapper = _modalRoot.parent?.parent;
+        var wrapper = FindModalOverlay();
         if (wrapper != null) wrapper.style.display = _isOpen ? DisplayStyle.Flex : DisplayStyle.None;
 
         if (!_isOpen) return;
@@ -148,16 +150,15 @@ public sealed class SquadBuilderPresenter
             string heroLabel;
             if (!string.IsNullOrEmpty(heroId) && heroById.TryGetValue(heroId, out var hero))
             {
-                heroLabel = !string.IsNullOrEmpty(hero.Name)
-                    ? hero.Name
-                    : ResolveHeroArchetypeName(hero);
+                heroLabel = ResolveHeroDisplayName(hero);
             }
             else
             {
                 heroLabel = "비어있음";
             }
 
-            entry.Button.text = $"{LocalizeAnchor(entry.Anchor)}\n{heroLabel}";
+            entry.Button.text = $"{LocalizeAnchor(entry.Anchor)}\n{Shorten(heroLabel, 12)}";
+            entry.Button.tooltip = heroLabel;
             entry.Button.EnableInClassList("sm-sqb-modal__anchor-button--selected", entry.Anchor == _selectedAnchor);
         }
 
@@ -299,7 +300,7 @@ public sealed class SquadBuilderPresenter
 
     private string ResolveHeroDisplayName(HeroInstanceRecord hero)
     {
-        return !string.IsNullOrWhiteSpace(hero.Name)
+        return !LooksLikeRawLocalizationKey(hero.Name)
             ? hero.Name
             : ResolveHeroArchetypeName(hero);
     }
@@ -316,6 +317,42 @@ public sealed class SquadBuilderPresenter
         if (string.IsNullOrWhiteSpace(value)) return "empty";
         var chars = value.Select(ch => char.IsLetterOrDigit(ch) ? ch : '_').ToArray();
         return new string(chars);
+    }
+
+    private VisualElement? FindModalOverlay()
+    {
+        for (var current = _modalRoot.parent; current != null; current = current.parent)
+        {
+            if (current.ClassListContains("town-hub__modal-overlay"))
+            {
+                return current;
+            }
+        }
+
+        return _modalRoot.parent?.parent ?? _modalRoot.parent;
+    }
+
+    private static string Shorten(string value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return $"{value[..Math.Max(1, maxLength - 1)]}…";
+    }
+
+    private static bool LooksLikeRawLocalizationKey(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+
+        var trimmed = value.Trim();
+        return trimmed.StartsWith("content.", StringComparison.Ordinal)
+               || trimmed.StartsWith("ui.", StringComparison.Ordinal)
+               || trimmed.StartsWith("No translation found", StringComparison.OrdinalIgnoreCase);
     }
 
     private void HandleKeyDown(KeyDownEvent evt)

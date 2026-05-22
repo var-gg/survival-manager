@@ -24,7 +24,7 @@
             <ui:Button name="SettingsButton" class="ui-button sm-bs-control-btn sm-bs-settings-entry" />
         </ui:VisualElement>
 
-        <ui:Foldout name="BattleDebugFoldout" text="Battle Debug" value="false" class="battle-debug-foldout sm-bs-debug-foldout">
+        <ui:Foldout name="BattleDebugFoldout" text="Battle Debug" value="false" class="battle-debug-foldout sm-bs-debug-foldout" style="display: none;">
             <ui:VisualElement name="BattleDebugFoldoutBody" class="battle-debug-foldout__body sm-bs-debug-foldout-body">
                 <ui:VisualElement class="battle-debug-foldout__row sm-bs-debug-foldout-row">
                     <ui:Label name="BattleDebugEncounterIdKey" class="battle-debug-foldout__key sm-bs-debug-foldout-key" text="EncounterId" />

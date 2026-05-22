@@ -15,6 +15,10 @@
     "Assets/_Game/UI/Panels/SettingsGlobal/SettingsGlobal.uss"
   ],
   "monitoredProductionPanelUss": [
+    "Assets/_Game/UI/Screens/Town/SquadBuilder.uss",
+    "Assets/_Game/UI/Screens/Atlas/AtlasScreen.uss",
+    "Assets/_Game/UI/Screens/Battle/BattleScreen.uss",
+    "Assets/_Game/UI/Screens/Reward/RewardScreen.uss"
   ],
   "productionUxmlRoots": [
     "Assets/_Game/UI/Panels",

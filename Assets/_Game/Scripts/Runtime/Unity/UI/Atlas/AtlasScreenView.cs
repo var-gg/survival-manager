@@ -58,6 +58,7 @@ public sealed class AtlasScreenView
         _recommendations = Require<Label>("atlas-preview-recommendations");
         _boundary = Require<Label>("atlas-boundary-note");
         _hash = Require<Label>("atlas-debug-hash");
+        _hash.style.display = DisplayStyle.None;
         _continueButton = Require<Button>("atlas-continue-button");
         _continueButton.clicked += () => ContinueSelected?.Invoke();
 
@@ -225,7 +226,8 @@ public sealed class AtlasScreenView
         _reward.text = preview.RewardPreview;
         _recommendations.text = preview.RecommendedCharacters;
         _boundary.text = preview.BoundaryNote;
-        _hash.text = preview.DebugHashLine;
+        _hash.text = string.Empty;
+        _hash.style.display = DisplayStyle.None;
     }
 
     private static string BuildActionRibbon(AtlasPreviewPanelViewState preview)

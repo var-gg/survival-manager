@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
@@ -195,7 +196,7 @@ public sealed class BattleScreenPresenter
                 isDirect ? "ui.battle.tooltip.playback_direct" : "ui.battle.tooltip.playback",
                 isDirect
                     ? "Combat Sandbox lets you pause, replay the same seed, and roll a new seed."
-                    : "Quick Battle (Smoke) lets you pause, replay, and change playback speed."),
+                    : "빠른 전투에서는 일시정지, 재생, 속도 조절을 사용할 수 있습니다."),
             isSmoke,
             canChangeSpeed,
             canPause,
@@ -206,19 +207,19 @@ public sealed class BattleScreenPresenter
                 ? Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.continue_ready", "Proceed to Reward with the resolved battle result.")
                 : Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.continue_locked", "Continue activates after the battle is fully resolved."),
             Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.replay_same_seed" : "ui.battle.action.replay", isDirect ? "Replay Same Seed" : "Replay"),
-            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.replay_same_seed" : "ui.battle.tooltip.replay", isDirect ? "Replay the active Combat Sandbox battle with the same deterministic seed." : "Replay the current Quick Battle (Smoke) timeline from the start."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.replay_same_seed" : "ui.battle.tooltip.replay", isDirect ? "Replay the active Combat Sandbox battle with the same deterministic seed." : "현재 빠른 전투 타임라인을 처음부터 다시 봅니다."),
             canReplay,
-            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.new_seed" : "ui.battle.action.rebattle", isDirect ? "New Seed" : "Rebattle (Debug)"),
-            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.new_seed" : "ui.battle.tooltip.rebattle", isDirect ? "Restart Combat Sandbox with the next seed while keeping the active preset." : "Restart Quick Battle (Smoke) with a fresh seed."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.new_seed" : "ui.battle.action.rebattle", isDirect ? "New Seed" : "재전투"),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.new_seed" : "ui.battle.tooltip.rebattle", isDirect ? "Restart Combat Sandbox with the next seed while keeping the active preset." : "새 시드로 빠른 전투를 다시 시작합니다."),
             canRebattle,
-            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.exit_sandbox" : "ui.battle.action.return_town_debug", isDirect ? "Exit Sandbox" : "Return to Town (Debug)"),
-            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.exit_sandbox" : "ui.battle.tooltip.return_town_direct", isDirect ? "Leave Combat Sandbox after the battle is resolved." : "Leave Quick Battle (Smoke) after the battle is resolved and go directly back to Town."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.action.exit_sandbox" : "ui.battle.action.return_town_debug", isDirect ? "Exit Sandbox" : "마을로 복귀"),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.exit_sandbox" : "ui.battle.tooltip.return_town_direct", isDirect ? "Leave Combat Sandbox after the battle is resolved." : "전투가 끝난 뒤 마을로 바로 돌아갑니다."),
             isSmoke && isBattleFinished,
-            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.group.sandbox" : "ui.battle.group.smoke", isDirect ? "Combat Sandbox" : "Quick Battle (Smoke)"),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.group.sandbox" : "ui.battle.group.smoke", isDirect ? "Combat Sandbox" : "빠른 전투"),
             isSmoke,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.group.utility", "Utility"),
             Localize(GameLocalizationTables.UICommon, "ui.common.settings", "Settings"),
-            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.settings_sandbox" : "ui.battle.tooltip.settings", isDirect ? "Open display settings. Sandbox diagnostics appear only in Combat Sandbox." : "Open display settings. Debug settings appear only in Quick Battle (Smoke)."),
+            Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.settings_sandbox" : "ui.battle.tooltip.settings", isDirect ? "Open display settings. Sandbox diagnostics appear only in Combat Sandbox." : "표시 설정을 엽니다."),
             progressNormalized,
             true,
             _options.ShowTeamHpSummary,
@@ -235,7 +236,7 @@ public sealed class BattleScreenPresenter
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.team_summary", "Show ally and enemy team summaries in the side panels."),
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.debug", "Debug"),
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.debug_overlay", "Debug Overlay {0}", BuildStateLabel(_options.ShowDebugOverlay)),
-                Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.debug_overlay_sandbox" : "ui.battle.tooltip.debug_overlay", isDirect ? "Show targeting lines and sandbox diagnostics for Combat Sandbox." : "Show targeting lines and battle diagnostics for Quick Battle (Smoke)."),
+                Localize(GameLocalizationTables.UIBattle, isDirect ? "ui.battle.tooltip.debug_overlay_sandbox" : "ui.battle.tooltip.debug_overlay", isDirect ? "Show targeting lines and sandbox diagnostics for Combat Sandbox." : "전투 판정선을 표시합니다."),
                 isSmoke,
                 string.IsNullOrWhiteSpace(settingsStatusText)
                     ? Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings")
@@ -253,7 +254,7 @@ public sealed class BattleScreenPresenter
             .ThenBy(unit => unit.Name)
             .Select(unit => new BattleRosterUnitViewState(
                 unit.Id,
-                unit.Name,
+                SanitizeUnitName(unit),
                 BattleReadabilityFormatter.BuildPlayerFacingState(unit),
                 unit.MaxHealth > 0f ? UnityEngine.Mathf.Clamp01(unit.CurrentHealth / unit.MaxHealth) : 0f,
                 unit.IsAlive,
@@ -312,8 +313,8 @@ public sealed class BattleScreenPresenter
         if (_sessionState.IsQuickBattleSmokeActive)
         {
             return isPaused
-                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick_paused", "Quick Battle (Smoke) | Speed x{0:0} | Paused", playbackSpeed)
-                : Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick", "Quick Battle (Smoke) | Speed x{0:0}", playbackSpeed);
+                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick_paused", "빠른 전투 | Speed x{0:0} | Paused", playbackSpeed)
+                : Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick", "빠른 전투 | Speed x{0:0}", playbackSpeed);
         }
 
         return Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.ingame", "Authored Expedition Battle");
@@ -362,9 +363,9 @@ public sealed class BattleScreenPresenter
                 "ui.battle.status.step_focus",
                 "Step {0:000} | {1} {2} -> {3} | {4}{5}",
                 step.StepIndex,
-                focus.ActorName,
+                SanitizePlayerFacingText(focus.ActorName),
                 verb,
-                focus.TargetName,
+                SanitizePlayerFacingText(focus.TargetName),
                 pressure,
                 pausedSuffix);
         }
@@ -425,8 +426,8 @@ public sealed class BattleScreenPresenter
 
     private string BuildLogLine(BattleEvent eventData)
     {
-        var source = string.IsNullOrWhiteSpace(eventData.ActorName) ? "?" : eventData.ActorName;
-        var target = string.IsNullOrWhiteSpace(eventData.TargetName) ? "?" : eventData.TargetName;
+        var source = string.IsNullOrWhiteSpace(eventData.ActorName) ? "?" : SanitizePlayerFacingText(eventData.ActorName);
+        var target = string.IsNullOrWhiteSpace(eventData.TargetName) ? "?" : SanitizePlayerFacingText(eventData.TargetName);
         var time = eventData.TimeSeconds;
         return eventData.LogCode switch
         {
@@ -442,5 +443,65 @@ public sealed class BattleScreenPresenter
     private string Localize(string table, string key, string fallback, params object[] args)
     {
         return _localization.LocalizeOrFallback(table, key, fallback, args);
+    }
+
+    private static string SanitizeUnitName(BattleUnitReadModel unit)
+    {
+        return SanitizePlayerFacingText(
+            unit.Name,
+            string.IsNullOrWhiteSpace(unit.ArchetypeId) ? unit.Id : unit.ArchetypeId);
+    }
+
+    private static string SanitizePlayerFacingText(string value, string fallback = "-")
+    {
+        if (!LooksLikeRawLocalizationKey(value))
+        {
+            return value;
+        }
+
+        var token = ExtractRawKeyLeaf(value);
+        return BattleReadabilityFormatter.HumanizeToken(token, fallback);
+    }
+
+    private static bool LooksLikeRawLocalizationKey(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+
+        var trimmed = value.Trim();
+        return trimmed.StartsWith("content.", StringComparison.Ordinal)
+               || trimmed.StartsWith("ui.", StringComparison.Ordinal)
+               || trimmed.StartsWith("No translation found", StringComparison.OrdinalIgnoreCase)
+               || (trimmed.Contains('_', StringComparison.Ordinal) && !trimmed.Contains(' ', StringComparison.Ordinal));
+    }
+
+    private static string ExtractRawKeyLeaf(string value)
+    {
+        var token = value;
+        if (value.Contains('.', StringComparison.Ordinal))
+        {
+            var parts = value.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            for (var i = parts.Length - 1; i >= 0; i--)
+            {
+                if (!string.Equals(parts[i], "name", StringComparison.Ordinal)
+                    && !string.Equals(parts[i], "desc", StringComparison.Ordinal))
+                {
+                    token = parts[i];
+                    break;
+                }
+            }
+        }
+
+        foreach (var prefix in new[] { "extra_", "item_", "augment_", "reward_source_", "site_" })
+        {
+            if (token.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return token[prefix.Length..];
+            }
+        }
+
+        return token;
     }
 }

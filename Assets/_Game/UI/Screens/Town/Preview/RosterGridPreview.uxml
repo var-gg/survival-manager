@@ -42,6 +42,6 @@
             <ui:VisualElement name="GridContainer" class="rgp-grid" />
         </ui:ScrollView>
 
-        <ui:Button name="QuickBattleButton" class="rgp-quick-battle sm-cta sm-cta--hero sm-cta--utility" text="Quick Battle (Smoke)" />
+        <ui:Button name="QuickBattleButton" class="rgp-quick-battle sm-cta sm-cta--hero sm-cta--utility" text="빠른 전투" />
     </ui:VisualElement>
 </ui:UXML>

@@ -578,6 +578,7 @@
 }
 
 .atlas-debug-hash {
+    display: none;
     margin-top: 10px;
     color: rgb(148, 160, 168);
     font-size: 10px;

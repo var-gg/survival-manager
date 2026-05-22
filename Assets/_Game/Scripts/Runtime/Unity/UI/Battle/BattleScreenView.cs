@@ -236,6 +236,7 @@ public sealed class BattleScreenView
         _statusBattleScopedTitle = Require<Label>(root, "StatusBattleScopedTitle");
         _statusBattleGrid = Require<VisualElement>(root, "StatusBattleGrid");
         _battleDebugFoldout = Require<Foldout>(root, "BattleDebugFoldout");
+        _battleDebugFoldout.style.display = DisplayStyle.None;
         _battleDebugEncounterIdValue = Require<Label>(root, "BattleDebugEncounterIdValue");
         _battleDebugSiteNodeIndexValue = Require<Label>(root, "BattleDebugSiteNodeIndexValue");
         _battleDebugBattleContextHashValue = Require<Label>(root, "BattleDebugBattleContextHashValue");
@@ -338,6 +339,7 @@ public sealed class BattleScreenView
     public void RenderDebugFoldout(BattleDebugFoldoutViewState state)
     {
         var snapshot = state ?? BattleDebugFoldoutViewState.Empty;
+        _battleDebugFoldout.style.display = DisplayStyle.None;
         _battleDebugEncounterIdValue.text = snapshot.EncounterId;
         _battleDebugSiteNodeIndexValue.text = snapshot.SiteNodeIndexText;
         _battleDebugBattleContextHashValue.text = snapshot.BattleContextHash;

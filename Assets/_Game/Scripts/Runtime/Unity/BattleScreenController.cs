@@ -239,7 +239,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         if (!_root.SessionState.IsQuickBattleSmokeActive)
         {
-            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.rebattle_smoke_only", "Re-battle is only available in Quick Battle (Smoke)."));
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.rebattle_smoke_only", "재전투는 빠른 전투에서만 사용할 수 있습니다."));
             return;
         }
 
@@ -267,7 +267,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         if (!_root.SessionState.IsQuickBattleSmokeActive)
         {
-            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.return_town_smoke_only", "Direct return to Town is only available in Quick Battle (Smoke)."));
+            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.return_town_smoke_only", "마을 바로 복귀는 빠른 전투에서만 사용할 수 있습니다."));
             return;
         }
 

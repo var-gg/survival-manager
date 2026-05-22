@@ -521,7 +521,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 106
-    m_Localized: "Quick Battle smoke lane \uC885\uB8CC"
+    m_Localized: "빠른 전투 \uC885\uB8CC"
     m_Metadata:
       m_Items: []
   - m_Id: 107
@@ -554,6 +554,32 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 122
     m_Localized: "\uC774\uBCA4\uD2B8 \uD0C0\uC784\uB77C\uC778"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123
+    m_Localized: "\uC601\uC785\uACFC \uC11C\uBE44\uC2A4 \uBE44\uC6A9\uC744 \uC704\uD55C \uC989\uC2DC \uACE8\uB4DC\uC785\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 124
+    m_Localized: "\uC815\uCC30\uACFC \uBCF5\uAD6C\uB97C \uC704\uD55C Echo \uC608\uBE44\uBD84\uC785\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 125
+    m_Localized: "\uC7A5\uBE44 \uD6C4\uBCF4: {0}."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769985
+  - m_Id: 126
+    m_Localized: "\uC784\uC2DC \uBE4C\uB4DC \uBA85\uC81C: {0}."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769985
+  - m_Id: 127
+    m_Localized: "\uC601\uAD6C \uBE4C\uB4DC \uC2AC\uB86F \uBCF4\uC0C1\uC785\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 128
+    m_Localized: "\uC774\uC804 \uBCF4\uC0C1 \uC815\uC0B0\uC744 \uBCF5\uAD6C\uD588\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   references:
@@ -598,3 +624,5 @@ MonoBehaviour:
         - id: 85
         - id: 90
         - id: 108
+        - id: 125
+        - id: 126

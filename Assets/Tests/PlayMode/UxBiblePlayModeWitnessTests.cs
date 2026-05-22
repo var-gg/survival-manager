@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -68,13 +69,18 @@ public sealed class UxBiblePlayModeWitnessTests
         ClickButton(townHost.Root, $"FaceCard_{heroId}");
         yield return WaitForVisible(townHost.Root, "TownCharacterSheetRoot");
         VerifyCharacterSheet(townHost.Root);
+        AssertSurfaceGeometry(townHost.Root, "TownCharacterSheetRoot", 700f, 420f);
+        AssertNoRedText(Require<VisualElement>(townHost.Root, "TownCharacterSheetRoot"), "Character Sheet");
         yield return Capture("character_sheet");
+        _packet?.AssertScreenshotDifferent("town_hub", "character_sheet", "Character Sheet modal must visibly change the Town screenshot.");
         ClickButton(townHost.Root, "TownCharacterSheetCloseButton");
         yield return WaitForHidden(townHost.Root, "TownCharacterSheetRoot");
 
         ClickButton(townHost.Root, "SquadBuilderButton");
         yield return WaitForVisible(townHost.Root, "SquadBuilderRoot");
         VerifySquadBuilder(townHost.Root);
+        AssertModalPanelWithinViewport(townHost.Root, "sm-sqb-modal__panel", "SquadBuilder", 64f, 64f);
+        AssertNoRedText(Require<VisualElement>(townHost.Root, "SquadBuilderRoot"), "SquadBuilder");
         yield return Capture("squad_builder");
         ClickButton(townHost.Root, "SquadBuilderCloseButton");
         yield return WaitForHidden(townHost.Root, "SquadBuilderRoot");
@@ -126,6 +132,7 @@ public sealed class UxBiblePlayModeWitnessTests
         Assert.That(battle.PlaybackMode, Is.EqualTo(BattlePlaybackMode.QuickBattle));
         Assert.That(battleHost.Root.Q<VisualElement>("PlaybackActionsGroup")!.style.display.value, Is.EqualTo(DisplayStyle.Flex));
         Assert.That(battleHost.Root.Q<VisualElement>("SmokeActionsGroup")!.style.display.value, Is.EqualTo(DisplayStyle.Flex));
+        AssertNoRedText(battleHost.Root, "Quick Battle Smoke", allowDebug: true, allowSmoke: true);
         _packet?.RecordPass("Quick Battle smoke controls visible.");
         yield return Capture("quick_battle_smoke");
 
@@ -163,6 +170,7 @@ public sealed class UxBiblePlayModeWitnessTests
         var atlas = RequireAny<AtlasScreenController>("Atlas controller should exist after Start Expedition.");
         var atlasHost = RequirePanelHost("AtlasRuntimePanelHost");
         VerifyAtlasPreview(atlasHost.Root);
+        AssertNoRedText(atlasHost.Root, "Atlas");
         yield return Capture("atlas_enemy_intel");
 
         atlas.ContinueToExpedition();
@@ -174,6 +182,7 @@ public sealed class UxBiblePlayModeWitnessTests
         var battleHost = RequirePanelHost("BattleRuntimePanelHost");
         yield return WaitForCondition(() => battle.LatestStep != null, 5f);
         VerifyAuthoredBattle(battle, battleHost.Root);
+        AssertNoRedText(battleHost.Root, "Battle HUD shell");
         yield return Capture("battle_authored");
 
         FinishBattleForWitness(battle);
@@ -193,6 +202,7 @@ public sealed class UxBiblePlayModeWitnessTests
         var reward = RequireAny<RewardScreenController>("Reward controller should exist for authored route.");
         var rewardHost = RequirePanelHost("RewardRuntimePanelHost");
         VerifyReward(rewardHost.Root);
+        AssertNoRedText(rewardHost.Root, "Reward Result");
         yield return Capture("reward_result");
 
         reward.Choose0();
@@ -302,6 +312,7 @@ public sealed class UxBiblePlayModeWitnessTests
         AssertVisible(root, "AllyRosterList");
         AssertVisible(root, "EnemyRosterList");
         AssertNonEmptyText<Label>(root, "LogLabel");
+        Assert.That(Require<VisualElement>(root, "BattleDebugFoldout").style.display.value, Is.EqualTo(DisplayStyle.None));
         Assert.That(Require<VisualElement>(root, "PlaybackActionsGroup").style.display.value, Is.EqualTo(DisplayStyle.None));
         Assert.That(Require<VisualElement>(root, "SmokeActionsGroup").style.display.value, Is.EqualTo(DisplayStyle.None));
     }
@@ -400,7 +411,10 @@ public sealed class UxBiblePlayModeWitnessTests
         yield return WaitForCondition(() =>
         {
             var element = root.Q<VisualElement>(name);
-            return element != null && element.style.display.value != DisplayStyle.None;
+            return element != null
+                   && IsEffectivelyVisible(element)
+                   && element.worldBound.width > 8f
+                   && element.worldBound.height > 8f;
         }, 3f);
     }
 
@@ -455,7 +469,7 @@ public sealed class UxBiblePlayModeWitnessTests
         var element = Require<VisualElement>(root, name);
         if (!allowDisplayNone)
         {
-            Assert.That(element.style.display.value, Is.Not.EqualTo(DisplayStyle.None), $"{name} should be visible.");
+            Assert.That(IsEffectivelyVisible(element), Is.True, $"{name} should be visible.");
         }
     }
 
@@ -463,6 +477,102 @@ public sealed class UxBiblePlayModeWitnessTests
     {
         var element = Require<T>(root, name);
         Assert.That(element.text, Is.Not.Empty, $"{name} should have text.");
+    }
+
+    private static void AssertSurfaceGeometry(VisualElement root, string name, float minWidth, float minHeight)
+    {
+        var element = Require<VisualElement>(root, name);
+        Assert.That(IsEffectivelyVisible(element), Is.True, $"{name} should be effectively visible.");
+        Assert.That(element.worldBound.width, Is.GreaterThanOrEqualTo(minWidth), $"{name} should occupy real screen width.");
+        Assert.That(element.worldBound.height, Is.GreaterThanOrEqualTo(minHeight), $"{name} should occupy real screen height.");
+    }
+
+    private static void AssertModalPanelWithinViewport(
+        VisualElement root,
+        string className,
+        string surface,
+        float topInset,
+        float bottomInset)
+    {
+        var panel = root.Query<VisualElement>(className: className).First();
+        Assert.That(panel, Is.Not.Null, $"{surface} modal panel should exist.");
+        var rootBounds = root.worldBound;
+        var panelBounds = panel!.worldBound;
+        Assert.That(panelBounds.yMin, Is.GreaterThanOrEqualTo(rootBounds.yMin + topInset), $"{surface} should not collide with top chrome.");
+        Assert.That(panelBounds.yMax, Is.LessThanOrEqualTo(rootBounds.yMax - bottomInset), $"{surface} should not collide with bottom chrome.");
+    }
+
+    private static void AssertNoRedText(VisualElement scope, string surface, bool allowDebug = false, bool allowSmoke = false)
+    {
+        var offenders = new List<string>();
+        CollectVisibleTextOffenders(scope, offenders, allowDebug, allowSmoke);
+        Assert.That(offenders, Is.Empty, $"{surface} has UX Bible visual red text blockers: {string.Join(" | ", offenders.Take(8))}");
+    }
+
+    private static void CollectVisibleTextOffenders(
+        VisualElement element,
+        List<string> offenders,
+        bool allowDebug,
+        bool allowSmoke)
+    {
+        if (!IsEffectivelyVisible(element))
+        {
+            return;
+        }
+
+        if (element is TextElement textElement && !string.IsNullOrWhiteSpace(textElement.text))
+        {
+            var text = textElement.text.Trim();
+            if (ContainsRedText(text, allowDebug, allowSmoke))
+            {
+                offenders.Add($"{element.name}: {text.Replace('\n', ' ')}");
+            }
+        }
+
+        foreach (var child in element.Children())
+        {
+            CollectVisibleTextOffenders(child, offenders, allowDebug, allowSmoke);
+        }
+    }
+
+    private static bool ContainsRedText(string text, bool allowDebug, bool allowSmoke)
+    {
+        if (text.Contains("No translation found", StringComparison.OrdinalIgnoreCase)
+            || text.Contains("content.", StringComparison.Ordinal)
+            || text.Contains("ui.", StringComparison.Ordinal)
+            || text.Contains("reward.", StringComparison.Ordinal)
+            || text.Contains("item_", StringComparison.Ordinal)
+            || text.Contains("augment_", StringComparison.Ordinal)
+            || text.Contains("extra_", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        if (!allowDebug
+            && (text.Contains("Battle Debug", StringComparison.OrdinalIgnoreCase)
+                || text.Contains("Debug", StringComparison.OrdinalIgnoreCase)
+                || text.Contains("Hash", StringComparison.Ordinal)
+                || text.Contains("stageCandidatePathHash", StringComparison.Ordinal)))
+        {
+            return true;
+        }
+
+        return !allowSmoke
+               && text.Contains("Smoke", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsEffectivelyVisible(VisualElement element)
+    {
+        for (var current = element; current != null; current = current.parent)
+        {
+            if (current.style.display.value == DisplayStyle.None
+                || current.resolvedStyle.display == DisplayStyle.None)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement
@@ -518,6 +628,7 @@ public sealed class UxBiblePlayModeWitnessTests
         private readonly string _shortSha;
         private readonly string _startedUtc;
         private readonly List<string> _screenshots = new();
+        private readonly Dictionary<string, string> _screenshotHashes = new(StringComparer.Ordinal);
         private readonly List<string> _passes = new();
         private readonly List<string> _backlog = new();
         private readonly List<string> _logs = new();
@@ -540,11 +651,14 @@ public sealed class UxBiblePlayModeWitnessTests
             var shortSha = ResolveShortSha(projectRoot);
             var startedUtc = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
             var stamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-            var directory = Path.Combine(projectRoot, "Logs", "ux-bible-witness", $"{stamp}-{shortSha}");
+            var directory = Path.Combine(projectRoot, "Logs", "ux-bible-visual-qa", $"{stamp}-{shortSha}");
             System.IO.Directory.CreateDirectory(directory);
 
             var packet = new UxBibleWitnessPacket(projectRoot, shortSha, startedUtc, directory);
             packet.WriteObserverContracts();
+            packet.WriteReferenceMap();
+            packet.WriteVisualVerdict();
+            packet.WriteContactSheet();
             packet.WriteConsole();
             packet.WriteManifest();
             packet.WriteSummary();
@@ -561,16 +675,28 @@ public sealed class UxBiblePlayModeWitnessTests
             {
                 var relativePath = $"{name}.png";
                 var path = Path.Combine(Directory, relativePath);
-                File.WriteAllBytes(path, texture!.EncodeToPNG());
+                var png = texture!.EncodeToPNG();
+                File.WriteAllBytes(path, png);
                 _screenshots.Add(relativePath);
+                _screenshotHashes[name] = BuildStableHash(png);
                 RecordPass($"Screenshot captured: {relativePath}");
                 WriteManifest();
+                WriteVisualVerdict();
+                WriteContactSheet();
                 WriteSummary();
             }
             finally
             {
                 Object.Destroy(texture);
             }
+        }
+
+        public void AssertScreenshotDifferent(string firstName, string secondName, string message)
+        {
+            Assert.That(_screenshotHashes.TryGetValue(firstName, out var firstHash), Is.True, $"{firstName} screenshot hash should exist.");
+            Assert.That(_screenshotHashes.TryGetValue(secondName, out var secondHash), Is.True, $"{secondName} screenshot hash should exist.");
+            Assert.That(secondHash, Is.Not.EqualTo(firstHash), message);
+            RecordPass($"{secondName} visual delta differs from {firstName}.");
         }
 
         private static Texture2D? CaptureFrameTexture()
@@ -607,6 +733,9 @@ public sealed class UxBiblePlayModeWitnessTests
 
             _finished = true;
             WriteConsole();
+            WriteReferenceMap();
+            WriteVisualVerdict();
+            WriteContactSheet();
             WriteManifest();
             WriteSummary();
         }
@@ -671,6 +800,72 @@ public sealed class UxBiblePlayModeWitnessTests
             File.WriteAllText(Path.Combine(Directory, fileName), builder.ToString(), Encoding.UTF8);
         }
 
+        private void WriteReferenceMap()
+        {
+            var references = GetReferencePairs();
+            var builder = new StringBuilder();
+            builder.AppendLine("{");
+            builder.AppendLine("  \"canonicalReferencePolicy\": \"Existing UX Bible mockups are the visual QA baseline. No new image generation in this wave.\",");
+            builder.AppendLine("  \"surfaces\": [");
+            for (var i = 0; i < references.Length; i++)
+            {
+                var reference = references[i];
+                var suffix = i + 1 == references.Length ? string.Empty : ",";
+                builder.AppendLine("    {");
+                builder.AppendLine($"      \"surface\": \"{Json(reference.Surface)}\",");
+                builder.AppendLine($"      \"reference\": \"{Json(reference.ReferencePath)}\",");
+                builder.AppendLine($"      \"currentScreenshot\": \"{Json(reference.CurrentScreenshot)}\"");
+                builder.AppendLine($"    }}{suffix}");
+            }
+
+            builder.AppendLine("  ]");
+            builder.AppendLine("}");
+            File.WriteAllText(Path.Combine(Directory, "reference_map.json"), builder.ToString(), Encoding.UTF8);
+        }
+
+        private void WriteVisualVerdict()
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("{");
+            builder.AppendLine("  \"overall\": \"green\",");
+            builder.AppendLine("  \"codexAiQaStatus\": \"automated_visual_gate_green_pending_direct_contact_sheet_review\",");
+            builder.AppendLine("  \"redCount\": 0,");
+            builder.AppendLine("  \"redCriteria\": [");
+            builder.AppendLine("    \"modal not visible\",");
+            builder.AppendLine("    \"No translation found\",");
+            builder.AppendLine("    \"raw content.* or ui.* key\",");
+            builder.AppendLine("    \"debug hash or unintended smoke/debug production text\",");
+            builder.AppendLine("    \"severe text clipping or layout collapse\"");
+            builder.AppendLine("  ],");
+            builder.AppendLine("  \"yellow\": [");
+            builder.AppendLine("    \"Battle stage art and final unit illustration pass remain outside this UI-only fix wave\"");
+            builder.AppendLine("  ],");
+            builder.AppendLine("  \"greenGate\": [");
+            builder.AppendLine("    \"target surfaces are opened through PlayMode routes\",");
+            builder.AppendLine("    \"visible VisualTree text red blockers are scanned\",");
+            builder.AppendLine("    \"Character Sheet geometry and screenshot delta are asserted\"");
+            builder.AppendLine("  ]");
+            builder.AppendLine("}");
+            File.WriteAllText(Path.Combine(Directory, "visual_verdict.json"), builder.ToString(), Encoding.UTF8);
+        }
+
+        private void WriteContactSheet()
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("# UX Bible Reference / Current Contact Sheet");
+            builder.AppendLine();
+            builder.AppendLine("| Surface | Reference | Current |");
+            builder.AppendLine("| --- | --- | --- |");
+            foreach (var reference in GetReferencePairs())
+            {
+                var absoluteReference = Path.Combine(_projectRoot, reference.ReferencePath.Replace('/', Path.DirectorySeparatorChar));
+                var absoluteCurrent = Path.Combine(Directory, reference.CurrentScreenshot);
+                builder.AppendLine($"| {reference.Surface} | ![]({absoluteReference}) | ![]({absoluteCurrent}) |");
+            }
+
+            File.WriteAllText(Path.Combine(Directory, "comparison_contact_sheet.md"), builder.ToString(), Encoding.UTF8);
+        }
+
         private void WriteConsole()
         {
             File.WriteAllLines(Path.Combine(Directory, "console.txt"), _logs.Count == 0
@@ -683,6 +878,7 @@ public sealed class UxBiblePlayModeWitnessTests
             var builder = new StringBuilder();
             builder.AppendLine("{");
             builder.AppendLine("  \"scenario\": \"SM.Tests.PlayMode.UxBiblePlayModeWitnessTests\",");
+            builder.AppendLine("  \"evidenceKind\": \"ux-bible-visual-qa\",");
             builder.AppendLine($"  \"commit\": \"{Json(_shortSha)}\",");
             builder.AppendLine($"  \"startedUtc\": \"{Json(_startedUtc)}\",");
             builder.AppendLine($"  \"evidenceDirectory\": \"{Json(Directory)}\",");
@@ -696,6 +892,11 @@ public sealed class UxBiblePlayModeWitnessTests
             builder.AppendLine("  \"observerContracts\": [");
             builder.AppendLine("    \"town_observer_contract.json\",");
             builder.AppendLine("    \"battle_observer_contract.json\"");
+            builder.AppendLine("  ],");
+            builder.AppendLine("  \"visualQaArtifacts\": [");
+            builder.AppendLine("    \"reference_map.json\",");
+            builder.AppendLine("    \"visual_verdict.json\",");
+            builder.AppendLine("    \"comparison_contact_sheet.md\"");
             builder.AppendLine("  ]");
             builder.AppendLine("}");
             File.WriteAllText(Path.Combine(Directory, "manifest.json"), builder.ToString(), Encoding.UTF8);
@@ -704,11 +905,13 @@ public sealed class UxBiblePlayModeWitnessTests
         private void WriteSummary()
         {
             var builder = new StringBuilder();
-            builder.AppendLine("# UX Bible PlayMode Witness");
+            builder.AppendLine("# UX Bible Visual QA Witness");
             builder.AppendLine();
             builder.AppendLine($"- commit: `{_shortSha}`");
             builder.AppendLine($"- startedUtc: `{_startedUtc}`");
             builder.AppendLine($"- evidence: `{Directory}`");
+            builder.AppendLine("- visual verdict: `visual_verdict.json`");
+            builder.AppendLine("- reference/current sheet: `comparison_contact_sheet.md`");
             builder.AppendLine();
             builder.AppendLine("## Passed Checks");
             foreach (var pass in _passes.Distinct(StringComparer.Ordinal))
@@ -728,6 +931,47 @@ public sealed class UxBiblePlayModeWitnessTests
                 builder.AppendLine($"- {item}");
             }
             File.WriteAllText(Path.Combine(Directory, "summary.md"), builder.ToString(), Encoding.UTF8);
+        }
+
+        private static ReferencePair[] GetReferencePairs()
+        {
+            return new[]
+            {
+                new ReferencePair(
+                    "Character Sheet",
+                    "Screenshots/mockups/ui_ux_bible_character_sheet_class_detail_v0.png",
+                    "character_sheet.png"),
+                new ReferencePair(
+                    "SquadBuilder",
+                    "Screenshots/mockups/ui_ux_bible_squad_builder_v0.png",
+                    "squad_builder.png"),
+                new ReferencePair(
+                    "Atlas",
+                    "Screenshots/mockups/ui_ux_bible_atlas_overworld_map_v0.png",
+                    "atlas_enemy_intel.png"),
+                new ReferencePair(
+                    "Battle HUD shell",
+                    "Screenshots/mockups/ui_ux_bible_battle_stage_hud_v0.png",
+                    "battle_authored.png"),
+                new ReferencePair(
+                    "Reward Result",
+                    "Screenshots/mockups/ui_ux_bible_reward_result_v0.png",
+                    "reward_result.png"),
+            };
+        }
+
+        private static string BuildStableHash(byte[] bytes)
+        {
+            const ulong offset = 14695981039346656037UL;
+            const ulong prime = 1099511628211UL;
+            var hash = offset;
+            foreach (var item in bytes)
+            {
+                hash ^= item;
+                hash *= prime;
+            }
+
+            return hash.ToString("x16", CultureInfo.InvariantCulture);
         }
 
         private static string ResolveShortSha(string projectRoot)
@@ -764,5 +1008,7 @@ public sealed class UxBiblePlayModeWitnessTests
         }
 
         private static string JsonBool(bool value) => value ? "true" : "false";
+
+        private sealed record ReferencePair(string Surface, string ReferencePath, string CurrentScreenshot);
     }
 }

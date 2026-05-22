@@ -275,14 +275,14 @@ public sealed class AtlasScreenPresenter
             AtlasReadabilityFormatter.BuildRewardPreview(selectedNode, selectedStack),
             recommended,
             AtlasReadabilityFormatter.FormatBoundaryNote(),
-            $"NodeOverlayHash={preview.NodeOverlayHash[..12]} / BattleContextHash={preview.BattleContextHash[..12]} / stageCandidatePathHash={stageCandidatePathHash[..12]} / input=runId>chapterId>siteId>nodeIndex>encounterId>stageCandidatePathHash>NodeOverlayHash>squadSnapshotId",
+            string.Empty,
             ThreatBandLabel: threatBandLabel,
             EnemyIntel: AtlasEnemyIntelViewState.Empty);
     }
 
     private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack, string sigilSnapshotHash, int activeSigilCap)
     {
-        return $"{AtlasReadabilityFormatter.BuildPlacementSummary(_session.Placements, activeSigilCap, _region.SigilPool, _region.SigilAnchorSlots, selectedStack)} SigilSnapshotHash={sigilSnapshotHash[..12]}.";
+        return AtlasReadabilityFormatter.BuildPlacementSummary(_session.Placements, activeSigilCap, _region.SigilPool, _region.SigilAnchorSlots, selectedStack);
     }
 
     private AtlasAnchorVisibilityState ResolveAnchorHighlightState(SigilAnchorSlot? slot)

@@ -134,7 +134,7 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_ProtectCarry"));
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_CollapseWeakSide"));
         Assert.That(uxml, Does.Contain("SquadBuilderPosture_AllInBackline"));
-        Assert.That(uxml, Does.Contain("팀 태세 (Team Posture)"));
+        Assert.That(uxml, Does.Contain("팀 태세"));
         Assert.That(uxml, Does.Not.Contain("자세 (Team Posture)"));
 
         var presenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/SquadBuilderPresenter.cs");

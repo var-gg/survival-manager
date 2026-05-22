@@ -102,7 +102,7 @@ public sealed class RewardScreenView
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
         _helpButton.text = state.HelpButtonLabel;
-        _helpStrip.style.display = state.Help.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
+        _helpStrip.style.display = DisplayStyle.None;
         _helpBodyLabel.text = state.Help.Body;
         _helpDismissButton.text = state.Help.DismissLabel;
         _summaryTitleLabel.text = state.SummaryTitle;

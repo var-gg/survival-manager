@@ -952,24 +952,6 @@ public sealed class BattleUnitMetadataFormatter
 
     private string Localize(string table, string key, string fallback, params object[] args)
     {
-        var localized = _localization.Localize(table, key, args);
-        if (!string.IsNullOrWhiteSpace(localized))
-        {
-            return localized;
-        }
-
-        if (args.Length == 0)
-        {
-            return fallback;
-        }
-
-        try
-        {
-            return string.Format(fallback, args);
-        }
-        catch (FormatException)
-        {
-            return fallback;
-        }
+        return _localization.LocalizeOrFallback(table, key, fallback, args);
     }
 }

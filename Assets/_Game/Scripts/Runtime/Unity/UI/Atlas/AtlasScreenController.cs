@@ -161,7 +161,8 @@ public sealed class AtlasScreenController : MonoBehaviour
             expeditionNode,
             contentText.GetCharacterName,
             contentText.GetArchetypeName,
-            out var preview)
+            out var preview,
+            contentText.GetEncounterName)
             ? BuildEnemyIntel(preview)
             : AtlasEnemyIntelViewState.Empty with
             {
@@ -176,10 +177,10 @@ public sealed class AtlasScreenController : MonoBehaviour
             : $"적 구성 징후: {string.Join(", ", preview.EnemyNames)}";
         var rewards = preview.RewardDropTags.Count == 0
             ? "보상 징후: 미상"
-            : $"보상 징후: {string.Join(", ", preview.RewardDropTags.Take(5))}";
+            : $"보상 징후: {string.Join(", ", preview.RewardDropTags.Take(5).Select(HumanizeIdentifier))}";
         var boss = string.IsNullOrWhiteSpace(preview.BossOverlayName)
             ? string.Empty
-            : $"boss overlay 징후: {preview.BossOverlayName}{FormatOptional(preview.BossAuraTag, " · aura ")}{FormatOptional(preview.BossUtilityTag, " · utility ")}";
+            : $"boss overlay 징후: {preview.BossOverlayName}{FormatOptional(HumanizeIdentifier(preview.BossAuraTag), " · aura ")}{FormatOptional(HumanizeIdentifier(preview.BossUtilityTag), " · utility ")}";
 
         return new AtlasEnemyIntelViewState(
             true,
@@ -187,9 +188,46 @@ public sealed class AtlasScreenController : MonoBehaviour
             $"예상 정보: {preview.EncounterName} ({preview.Kind}) - 정찰 기준",
             enemies,
             $"위협 예상: {preview.ThreatSkulls} skull · {preview.DifficultyBand}",
-            $"세력 징후: {preview.FactionId}",
+            $"세력 징후: {HumanizeIdentifier(preview.FactionId)}",
             rewards,
             boss);
+    }
+
+    private static string HumanizeIdentifier(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var token = value.Trim();
+        if (token.Contains('.', StringComparison.Ordinal))
+        {
+            var parts = token.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            for (var i = parts.Length - 1; i >= 0; i--)
+            {
+                if (!string.Equals(parts[i], "name", StringComparison.Ordinal)
+                    && !string.Equals(parts[i], "desc", StringComparison.Ordinal))
+                {
+                    token = parts[i];
+                    break;
+                }
+            }
+        }
+
+        foreach (var prefix in new[] { "faction_", "reward_", "reward_source_", "item_", "augment_", "boss_", "aura_", "utility_" })
+        {
+            if (token.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                token = token[prefix.Length..];
+                break;
+            }
+        }
+
+        var words = token.Replace('_', ' ').Replace('-', ' ').Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        return words.Length == 0
+            ? value
+            : string.Join(" ", words.Select(word => char.ToUpperInvariant(word[0]) + (word.Length > 1 ? word[1..] : string.Empty)));
     }
 
     private static string FormatOptional(string value, string prefix)

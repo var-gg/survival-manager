@@ -54,11 +54,11 @@
                     <ui:Label name="TimelineTitleLabel" class="panel__title" />
                     <ui:VisualElement name="RewardTimelineTicks" class="reward-timeline-ticks" />
                 </ui:VisualElement>
-                <ui:VisualElement class="panel">
+                <ui:VisualElement class="panel reward-run-delta-panel">
                     <ui:Label name="SummaryTitleLabel" class="panel__title" />
                     <ui:Label name="RunDeltaLabel" class="panel__text" />
                 </ui:VisualElement>
-                <ui:VisualElement class="panel">
+                <ui:VisualElement class="panel reward-build-impact-panel">
                     <ui:Label name="BuildContextTitleLabel" class="panel__title" />
                     <ui:Label name="BuildContextLabel" class="panel__text" />
                 </ui:VisualElement>

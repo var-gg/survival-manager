@@ -289,7 +289,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 56
-    m_Localized: Return to Town / Smoke Complete
+    m_Localized: Return to Town / Quick Battle Complete
     m_Metadata:
       m_Items: []
   - m_Id: 57
@@ -305,7 +305,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 60
-    m_Localized: Quick Battle Smoke
+    m_Localized: Quick Battle
     m_Metadata:
       m_Items: []
   - m_Id: 61
@@ -317,7 +317,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 63
-    m_Localized: 'Quick Battle smoke settlement: pick one card and return to Town.'
+    m_Localized: 'Quick Battle settlement: pick one card and return to Town.'
     m_Metadata:
       m_Items: []
   - m_Id: 64
@@ -506,7 +506,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 106
-    m_Localized: Quick Battle smoke lane closes
+    m_Localized: Quick Battle closes
     m_Metadata:
       m_Items: []
   - m_Id: 107
@@ -537,6 +537,32 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 122
     m_Localized: Event Timeline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123
+    m_Localized: Immediate gold for recruit and service costs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 124
+    m_Localized: Echo reserve for scouting and recovery.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 125
+    m_Localized: 'Equipment candidate: {0}.'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 126
+    m_Localized: 'Temporary run thesis: {0}.'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 127
+    m_Localized: Permanent build slot reward.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 128
+    m_Localized: Recovered previous reward settlement.
     m_Metadata:
       m_Items: []
   references:
@@ -581,3 +607,5 @@ MonoBehaviour:
         - id: 85
         - id: 90
         - id: 108
+        - id: 125
+        - id: 126

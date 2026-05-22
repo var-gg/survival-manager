@@ -61,8 +61,8 @@ public sealed class PlayModeSmokeTests
         // 직접 SessionState.AssignHeroToAnchor / CycleTeamPosture를 호출해 expedition 시드 (line 72-77).
         Assert.That(townHost!.Root.Q<VisualElement>("GridContainer"), Is.Not.Null, "Town hub should expose RosterGrid container in the runtime panel.");
         var quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
-        Assert.That(quickBattleButton, Is.Not.Null, "Town should expose Quick Battle as a secondary smoke button.");
-        Assert.That(quickBattleButton!.text, Is.EqualTo("Quick Battle (Smoke)"));
+        Assert.That(quickBattleButton, Is.Not.Null, "Town should expose Quick Battle as a secondary combat button.");
+        Assert.That(quickBattleButton!.text, Is.EqualTo("빠른 전투"));
         Assert.That(quickBattleButton.enabledSelf, Is.True, "Quick Battle should be available before a normal expedition starts.");
         Assert.That(townHost.Root.Q<Label>("RealmSummaryLabel"), Is.Null, "Town should not expose a realm summary badge.");
         Assert.That(townHost.Root.Q<Button>("ReturnToStartButton"), Is.Not.Null, "Town should expose Return to Start in the active runtime panel.");

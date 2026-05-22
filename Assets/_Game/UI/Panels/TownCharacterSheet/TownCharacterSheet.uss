@@ -7,22 +7,27 @@
 .tcs-backdrop {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(8, 12, 28, 0.72);
+    background-color: rgba(4, 7, 18, 0.92);
 }
 
 .tcs-frame {
-    width: 1040px;
-    height: 620px;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 22px;
-    padding-bottom: 22px;
+    width: 1180px;
+    height: 700px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 26px;
+    padding-bottom: 26px;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
     -unity-slice-left: 96;
     -unity-slice-right: 96;
     -unity-slice-top: 96;
     -unity-slice-bottom: 96;
     -unity-slice-scale: 0.46;
+    background-color: rgba(7, 11, 27, 0.98);
+}
+
+.tcs-frame .sm-modal-frame__texture {
+    opacity: 0.08;
 }
 
 .tcs-header {
@@ -38,9 +43,9 @@
 }
 
 .tcs-portrait-token {
-    width: 72px;
-    height: 72px;
-    margin-right: 14px;
+    width: 96px;
+    height: 112px;
+    margin-right: 18px;
     background-color: rgba(26, 32, 63, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -57,7 +62,7 @@
 }
 
 .tcs-title {
-    font-size: 24px;
+    font-size: 28px;
     color: var(--sm-gold-100);
 }
 
@@ -80,6 +85,7 @@
 .tcs-body {
     flex-direction: row;
     flex-grow: 1;
+    align-items: stretch;
 }
 
 .tcs-column {
@@ -91,7 +97,7 @@
 }
 
 .tcs-column--primary {
-    flex-grow: 1.25;
+    flex-grow: 1.35;
 }
 
 .tcs-panel {
@@ -101,7 +107,15 @@
     padding-right: 12px;
     padding-top: 10px;
     padding-bottom: 10px;
-    background-color: rgba(18, 24, 50, 0.74);
+    background-color: rgba(8, 13, 31, 0.94);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+    border-right-color: rgba(230, 183, 81, 0.18);
+    border-top-color: rgba(230, 183, 81, 0.12);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
 }
 
 .tcs-panel--progression {
@@ -116,7 +130,8 @@
 }
 
 .tcs-panel__body {
-    color: var(--sm-ink-1);
-    font-size: 11px;
+    color: rgb(235, 226, 199);
+    font-size: 12px;
     white-space: normal;
+    overflow: hidden;
 }

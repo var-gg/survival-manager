@@ -71,7 +71,7 @@ public sealed class GameLocalizationController : MonoBehaviour
     public string LocalizeOrFallback(string tableCollection, string entryKey, string fallback, bool allowFallback, params object[] arguments)
     {
         var localized = Localize(tableCollection, entryKey, arguments);
-        if (!string.IsNullOrWhiteSpace(localized))
+        if (!LooksLikeMissingLocalizedString(localized, entryKey))
         {
             return localized;
         }
@@ -169,5 +169,19 @@ public sealed class GameLocalizationController : MonoBehaviour
     private static string BuildMissingPlayerFacingString()
     {
         return "[missing-localization]";
+    }
+
+    private static bool LooksLikeMissingLocalizedString(string value, string entryKey)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+
+        var trimmed = value.Trim();
+        return string.Equals(trimmed, entryKey, StringComparison.Ordinal)
+               || trimmed.StartsWith("No translation found", StringComparison.OrdinalIgnoreCase)
+               || trimmed.StartsWith("content.", StringComparison.Ordinal)
+               || trimmed.StartsWith("ui.", StringComparison.Ordinal);
     }
 }

@@ -124,7 +124,7 @@ public sealed class TownScreenPresenter
         if (!_root.SessionState.CanStartQuickBattleSmoke)
         {
             Refresh(Localize(GameLocalizationTables.UITown, "ui.town.error.quick_battle_locked",
-                "Quick Battle (Smoke) is unavailable while a reward settlement or expedition run is active."));
+                "빠른 전투는 보상 정산이나 원정 진행 중에는 시작할 수 없습니다."));
             return;
         }
 
@@ -246,9 +246,9 @@ public sealed class TownScreenPresenter
             RosterHeroes: rosterCards,
             ExpeditionLabel: BuildExpeditionLabel(session),
             ExpeditionTooltip: BuildExpeditionTooltip(session),
-            QuickBattleLabel: Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle_smoke", "Quick Battle (Smoke)"),
+            QuickBattleLabel: Localize(GameLocalizationTables.UITown, "ui.town.action.quick_battle_smoke", "빠른 전투"),
             QuickBattleTooltip: Localize(GameLocalizationTables.UITown, "ui.town.tooltip.quick_battle_smoke",
-                "Open an integration smoke battle using the current Town build, then return through Reward or direct Town restore."),
+                "현재 마을 편성으로 짧은 전투를 확인하고 보상 정산을 거쳐 돌아옵니다."),
             CanQuickBattle: showDebugActions && session.CanStartQuickBattleSmoke,
             ShowQuickBattle: showDebugActions,
             StatusText: statusText,

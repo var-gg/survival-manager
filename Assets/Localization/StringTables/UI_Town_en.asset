@@ -256,7 +256,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 51
-    m_Localized: Quick Battle (Smoke)
+    m_Localized: Quick Battle
     m_Metadata:
       m_Items: []
   - m_Id: 52
@@ -366,11 +366,11 @@ MonoBehaviour:
       m_Items:
       - rid: 162163771961769987
   - m_Id: 77
-    m_Localized: Quick Battle (Smoke) is available as a secondary debug lane.
+    m_Localized: Quick Battle is available as a secondary combat lane.
     m_Metadata:
       m_Items: []
   - m_Id: 78
-    m_Localized: Quick Battle (Smoke) is locked until the current expedition run
+    m_Localized: Quick Battle is locked until the current expedition run
       is closed.
     m_Metadata:
       m_Items: []
@@ -628,7 +628,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 138
-    m_Localized: Quick Battle (Smoke) is locked while an authored expedition run
+    m_Localized: Quick Battle is locked while an authored expedition run
       is active.
     m_Metadata:
       m_Items: []
@@ -1288,6 +1288,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 17841341873852458
     m_Localized: Tactical Workshop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852459
+    m_Localized: Support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852460
+    m_Localized: Always
     m_Metadata:
       m_Items: []
   references:

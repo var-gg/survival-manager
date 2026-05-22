@@ -96,7 +96,7 @@
         <ui:VisualElement class="town-hub__cta-bar">
             <ui:Label name="StatusLabel" class="town-hub__status" picking-mode="Ignore" />
             <ui:VisualElement class="town-hub__cta-actions">
-                <ui:Button name="QuickBattleButton" class="ui-button sm-cta sm-cta--md sm-cta--utility town-hub__quick-battle-button" text="Quick Battle (Smoke)" />
+                <ui:Button name="QuickBattleButton" class="ui-button sm-cta sm-cta--md sm-cta--utility town-hub__quick-battle-button" text="빠른 전투" />
                 <ui:Button name="ExpeditionButton" class="ui-button sm-cta sm-cta--hero sm-cta--primary town-hub__expedition-cta" />
             </ui:VisualElement>
         </ui:VisualElement>

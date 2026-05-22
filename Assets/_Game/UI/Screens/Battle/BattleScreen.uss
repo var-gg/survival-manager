@@ -6,6 +6,10 @@
     padding-bottom: 0;
 }
 
+.battle-screen .sm-bs-debug-foldout {
+    display: none;
+}
+
 .battle-screen .sm-bs-topbar {
     position: absolute;
     top: 8px;

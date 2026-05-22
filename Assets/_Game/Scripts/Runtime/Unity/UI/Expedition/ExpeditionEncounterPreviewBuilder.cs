@@ -27,7 +27,8 @@ internal static class ExpeditionEncounterPreviewBuilder
         ExpeditionNodeViewModel node,
         Func<string, string, string> resolveCharacterName,
         Func<string, string> resolveArchetypeName,
-        out ExpeditionEncounterPreview preview)
+        out ExpeditionEncounterPreview preview,
+        Func<string, string>? resolveEncounterName = null)
     {
         preview = null!;
         if (!node.RequiresBattle
@@ -59,13 +60,13 @@ internal static class ExpeditionEncounterPreviewBuilder
 
         preview = new ExpeditionEncounterPreview(
             encounter.Id,
-            encounter.Name,
+            ResolveDisplayName(encounter.Id, encounter.Name, resolveEncounterName),
             encounter.Kind,
             Math.Max(1, encounter.ThreatSkulls),
             encounter.DifficultyBand,
             encounter.FactionId,
             encounter.BossOverlayId,
-            hasOverlay ? overlay.Name : string.Empty,
+            hasOverlay ? ResolveDisplayName(overlay.Id, overlay.Name, null) : string.Empty,
             hasOverlay ? overlay.SignatureAuraTag : string.Empty,
             hasOverlay ? overlay.SignatureUtilityTag : string.Empty,
             enemyNames,
@@ -112,6 +113,32 @@ internal static class ExpeditionEncounterPreviewBuilder
         return member.Role == EnemySquadMemberRoleValue.Unit
             ? displayName
             : $"{BattleReadabilityFormatter.HumanizeToken(member.Role.ToString(), member.Role.ToString())}: {displayName}";
+    }
+
+    private static string ResolveDisplayName(string id, string rawName, Func<string, string>? resolver)
+    {
+        var resolved = resolver?.Invoke(id);
+        if (!LooksPlayerFacing(resolved))
+        {
+            resolved = rawName;
+        }
+
+        return LooksPlayerFacing(resolved)
+            ? resolved!
+            : BattleReadabilityFormatter.HumanizeToken(id, id);
+    }
+
+    private static bool LooksPlayerFacing(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        var trimmed = value.Trim();
+        return !trimmed.StartsWith("content.", StringComparison.Ordinal)
+               && !trimmed.StartsWith("ui.", StringComparison.Ordinal)
+               && !trimmed.StartsWith("No translation found", StringComparison.OrdinalIgnoreCase);
     }
 
     private static IReadOnlyList<string> MergeRewardTags(

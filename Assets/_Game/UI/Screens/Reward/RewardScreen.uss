@@ -27,6 +27,37 @@
     color: var(--sm-gold-100);
 }
 
+.reward-screen .help-strip {
+    display: none;
+}
+
+.reward-screen .screen__body {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.reward-screen .screen__column {
+    min-height: 0;
+}
+
+.reward-screen .reward-run-delta-panel {
+    height: 112px;
+    flex-grow: 0;
+    overflow: hidden;
+}
+
+.reward-screen .reward-build-impact-panel {
+    height: 116px;
+    flex-grow: 0;
+    overflow: hidden;
+}
+
+.reward-screen .reward-run-delta-panel .panel__text,
+.reward-screen .reward-build-impact-panel .panel__text {
+    font-size: 10px;
+    overflow: hidden;
+}
+
 .reward-screen .reward-progression-panel,
 .reward-screen .reward-timeline-panel {
     padding-top: 10px;
@@ -113,6 +144,8 @@
 
 .reward-screen .reward-settlement-summary {
     flex-direction: column;
+    height: 150px;
+    overflow: hidden;
     margin-left: 8px;
     margin-right: 8px;
     margin-top: 4px;
@@ -136,31 +169,36 @@
     color: var(--sm-gold-200);
     font-size: 12px;
     -unity-font-style: bold;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .reward-screen .reward-settlement-summary__rows {
     flex-direction: column;
+    width: 100%;
 }
 
 .reward-screen .reward-settlement-summary__row {
     flex-direction: row;
     align-items: center;
-    margin-top: 1px;
-    margin-bottom: 1px;
+    width: 100%;
+    min-height: 18px;
+    height: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .reward-screen .reward-settlement-summary__key {
     min-width: 96px;
     color: var(--sm-ink-2);
-    font-size: 11px;
+    font-size: 10px;
     -unity-font-style: bold;
 }
 
 .reward-screen .reward-settlement-summary__value {
     flex-grow: 1;
+    min-width: 0;
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -268,12 +268,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 54
-    m_Localized: "Quick Battle (Smoke) | \uBC30\uC18D x{0:0}"
+    m_Localized: "빠른 전투 | \uBC30\uC18D x{0:0}"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
   - m_Id: 55
-    m_Localized: "Quick Battle (Smoke) | \uBC30\uC18D x{0:0} | \uC77C\uC2DC\uC815\uC9C0"
+    m_Localized: "빠른 전투 | \uBC30\uC18D x{0:0} | \uC77C\uC2DC\uC815\uC9C0"
     m_Metadata:
       m_Items:
       - rid: 1798213439901401363
@@ -315,12 +315,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 64
-    m_Localized: "Rebattle\uC740 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC \uC0AC\uC6A9\uD560
+    m_Localized: "Rebattle\uC740 빠른 전투\uC5D0\uC11C\uB9CC \uC0AC\uC6A9\uD560
       \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 65
-    m_Localized: "\uC9C1\uC811 Town \uBCF5\uADC0\uB294 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC
+    m_Localized: "\uC9C1\uC811 Town \uBCF5\uADC0\uB294 빠른 전투\uC5D0\uC11C\uB9CC
       \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
@@ -338,7 +338,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 69
-    m_Localized: "Quick Battle (Smoke)\uC5D0\uC11C \uC77C\uC2DC\uC815\uC9C0, \uB2E4\uC2DC
+    m_Localized: "빠른 전투\uC5D0\uC11C \uC77C\uC2DC\uC815\uC9C0, \uB2E4\uC2DC
       \uC7AC\uC0DD, \uBC30\uC18D \uC870\uC808\uC744 \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
@@ -353,22 +353,22 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 72
-    m_Localized: "\uD604\uC7AC Quick Battle (Smoke) timeline\uC744 \uCC98\uC74C\uBD80\uD130
+    m_Localized: "\uD604\uC7AC 빠른 전투 timeline\uC744 \uCC98\uC74C\uBD80\uD130
       \uB2E4\uC2DC \uC7AC\uC0DD\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 73
-    m_Localized: "\uC0C8 seed\uB85C Quick Battle (Smoke)\uB97C \uB2E4\uC2DC \uC2DC\uC791\uD569\uB2C8\uB2E4."
+    m_Localized: "\uC0C8 seed\uB85C 빠른 전투\uB97C \uB2E4\uC2DC \uC2DC\uC791\uD569\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 74
-    m_Localized: "\uC804\uD22C\uAC00 \uB05D\uB09C \uB4A4 Quick Battle (Smoke)\uB97C
+    m_Localized: "\uC804\uD22C\uAC00 \uB05D\uB09C \uB4A4 빠른 전투\uB97C
       \uC815\uB9AC\uD558\uACE0 \uC989\uC2DC Town\uC73C\uB85C \uB3CC\uC544\uAC11\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 75
     m_Localized: "\uD45C\uC2DC \uC124\uC815\uC744 \uC5FD\uB2C8\uB2E4. \uB514\uBC84\uADF8
-      \uC124\uC815\uC740 Quick Battle (Smoke)\uC5D0\uC11C\uB9CC \uBCF4\uC785\uB2C8\uB2E4."
+      \uC124\uC815\uC740 빠른 전투\uC5D0\uC11C\uB9CC \uBCF4\uC785\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 76

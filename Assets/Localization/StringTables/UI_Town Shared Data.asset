@@ -1243,6 +1243,14 @@ MonoBehaviour:
     m_Key: ui.town.entry.tactical_workshop
     m_Metadata:
       m_Items: []
+  - m_Id: 17841341873852459
+    m_Key: ui.town.compendium.intent.support
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852460
+    m_Key: ui.town.compendium.card.no_cooldown
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

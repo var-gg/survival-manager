@@ -261,7 +261,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 51
-    m_Localized: Quick Battle (Smoke)
+    m_Localized: 빠른 전투
     m_Metadata:
       m_Items: []
   - m_Id: 52
@@ -379,13 +379,13 @@ MonoBehaviour:
       m_Items:
       - rid: 162163771961769991
   - m_Id: 77
-    m_Localized: "Quick Battle (Smoke)\uB294 \uBCF4\uC870 debug lane\uC73C\uB85C
+    m_Localized: "빠른 전투\uB294 \uC9E7\uC740 \uC804\uD22C \uD655\uC778\uC73C\uB85C
       \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 78
     m_Localized: "\uD604\uC7AC expedition run\uC774 \uB2EB\uD788\uAE30 \uC804\uAE4C\uC9C0
-      Quick Battle (Smoke)\uB294 \uC7A0\uAE41\uB2C8\uB2E4."
+      빠른 전투\uB294 \uC7A0\uAE41\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 79
@@ -648,7 +648,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 138
     m_Localized: "authored \uC6D0\uC815 \uB7F0\uC774 \uC5F4\uB824 \uC788\uB294 \uB3D9\uC548
-      Quick Battle (Smoke)\uB294 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+      빠른 전투\uB294 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 139
@@ -1317,6 +1317,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 17841341873852458
     m_Localized: "\uC804\uC220 \uACF5\uBC29"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852459
+    m_Localized: "\uC9C0\uC6D0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852460
+    m_Localized: "\uC0C1\uC2DC"
     m_Metadata:
       m_Items: []
   references:

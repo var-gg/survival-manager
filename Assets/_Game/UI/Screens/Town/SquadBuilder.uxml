@@ -42,7 +42,7 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="sm-sqb-modal__section">
-                <ui:Label class="sm-sqb-modal__section-title" text="자세 (Team Posture)" />
+                <ui:Label class="sm-sqb-modal__section-title" text="팀 태세" />
                 <ui:VisualElement class="sm-sqb-modal__posture-row">
                     <ui:Button name="SquadBuilderPosture_HoldLine" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="전열 사수" />
                     <ui:Button name="SquadBuilderPosture_StandardAdvance" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="표준 전진" />

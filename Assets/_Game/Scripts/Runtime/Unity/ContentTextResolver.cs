@@ -1,3 +1,4 @@
+using System.Linq;
 using SM.Content.Definitions;
 using SM.Core.Content;
 
@@ -237,15 +238,86 @@ public sealed class ContentTextResolver
             : siteId;
     }
 
+    public string GetEncounterName(string encounterId)
+    {
+        return _lookup.TryGetEncounterDefinition(encounterId, out var encounter)
+            ? Localize(ContentLocalizationTables.Encounters, encounter.NameKey, encounter.LegacyDisplayName, encounterId)
+            : encounterId;
+    }
+
     private string Localize(string table, string key, string fallback, string finalFallback)
     {
-        var safeFallback = string.IsNullOrWhiteSpace(fallback) ? finalFallback : fallback;
+        var safeFallback = SelectSafeFallback(fallback, finalFallback);
         var result = _localization.LocalizePlayerFacingContent(table, key, safeFallback);
         // Localization init 미완료 또는 key 미정의 시 raw key (예 "content.archetype.warden.name") 반환 케이스 방어.
-        if (string.IsNullOrEmpty(result) || result == key || result.StartsWith("content.", System.StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(result)
+            || result == key
+            || LooksLikeRawLocalizationKey(result))
         {
             return safeFallback;
         }
         return result;
+    }
+
+    private static string SelectSafeFallback(string fallback, string finalFallback)
+    {
+        if (!string.IsNullOrWhiteSpace(fallback) && !LooksLikeRawLocalizationKey(fallback))
+        {
+            return fallback;
+        }
+
+        return string.IsNullOrWhiteSpace(finalFallback)
+            ? "unknown"
+            : HumanizeIdentifier(finalFallback);
+    }
+
+    private static bool LooksLikeRawLocalizationKey(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        var trimmed = value.Trim();
+        return trimmed.StartsWith("content.", System.StringComparison.Ordinal)
+               || trimmed.StartsWith("ui.", System.StringComparison.Ordinal)
+               || trimmed.StartsWith("No translation found", System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string HumanizeIdentifier(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "unknown";
+        }
+
+        var token = value.Trim();
+        if (token.Contains('.', System.StringComparison.Ordinal))
+        {
+            var parts = token.Split(new[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries);
+            for (var i = parts.Length - 1; i >= 0; i--)
+            {
+                if (!string.Equals(parts[i], "name", System.StringComparison.Ordinal)
+                    && !string.Equals(parts[i], "desc", System.StringComparison.Ordinal))
+                {
+                    token = parts[i];
+                    break;
+                }
+            }
+        }
+
+        foreach (var prefix in new[] { "item_", "augment_", "reward_source_", "site_" })
+        {
+            if (token.StartsWith(prefix, System.StringComparison.Ordinal))
+            {
+                token = token[prefix.Length..];
+                break;
+            }
+        }
+
+        var words = token.Replace('_', ' ').Replace('-', ' ').Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+        return words.Length == 0
+            ? value
+            : string.Join(" ", words.Select(word => char.ToUpperInvariant(word[0]) + (word.Length > 1 ? word[1..] : string.Empty)));
     }
 }
