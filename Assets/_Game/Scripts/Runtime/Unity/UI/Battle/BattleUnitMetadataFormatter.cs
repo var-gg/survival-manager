@@ -392,7 +392,7 @@ public sealed class BattleUnitMetadataFormatter
         {
             chips.Add(BuildRuntimeChip(
                 "windup",
-                AxisLabel("ui.battle.status.windup", "시전 중", "Windup"),
+                AxisLabel("ui.battle.axis.windup", "시전 중", "Windup"),
                 characterName,
                 Mathf.Max(0f, 1f - Mathf.Clamp01(unit.WindupProgress)),
                 1f));

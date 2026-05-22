@@ -11,9 +11,9 @@ internal sealed class CompendiumFilterSupport
     private const string AnyFilterValue = "";
 
     private readonly ContentTextResolver _contentText;
-    private readonly Func<string, string, string> _localize;
+    private readonly Func<string, string, object[], string> _localize;
 
-    public CompendiumFilterSupport(ContentTextResolver contentText, Func<string, string, string> localize)
+    public CompendiumFilterSupport(ContentTextResolver contentText, Func<string, string, object[], string> localize)
     {
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
         _localize = localize ?? throw new ArgumentNullException(nameof(localize));
@@ -32,17 +32,17 @@ internal sealed class CompendiumFilterSupport
         return new CompendiumFilterBarViewState(
             ShowSkillFilters: activeTab == CompendiumTab.Skills,
             SearchText: searchText,
-            SearchPlaceholder: _localize("ui.town.compendium.filter.search", "검색"),
-            ClassLabel: _localize("ui.town.compendium.filter.class", "클래스"),
+            SearchPlaceholder: Localize("ui.town.compendium.filter.search", "검색"),
+            ClassLabel: Localize("ui.town.compendium.filter.class", "클래스"),
             ClassValue: classFilter,
             ClassOptions: BuildClassFilterOptions(snapshot),
-            SlotLabel: _localize("ui.town.compendium.filter.slot", "슬롯"),
+            SlotLabel: Localize("ui.town.compendium.filter.slot", "슬롯"),
             SlotValue: slotFilter,
             SlotOptions: BuildSlotFilterOptions(snapshot),
-            VfxFamilyLabel: _localize("ui.town.compendium.filter.vfx_family", "연출"),
+            VfxFamilyLabel: Localize("ui.town.compendium.filter.vfx_family", "연출"),
             VfxFamilyValue: vfxFamilyFilter,
             VfxFamilyOptions: BuildVfxFamilyFilterOptions(snapshot),
-            ResultSummary: string.Format(_localize("ui.town.compendium.filter.count", "{0}/{1}"), shownCount, totalCount));
+            ResultSummary: Localize("ui.town.compendium.filter.count", "{0}/{1}", shownCount, totalCount));
     }
 
     public bool MatchesSkillFilters(BattleSkillSpec skill, string classFilter, string slotFilter, string vfxFamilyFilter)
@@ -136,32 +136,33 @@ internal sealed class CompendiumFilterSupport
     public string FormatStatusRule(StatusFamilyTemplate status)
     {
         var flags = new List<string>();
-        if (status.IsHardControl) flags.Add(_localize("ui.town.compendium.status_rule.hard_control", "하드 제어"));
-        if (status.UsesControlDiminishing) flags.Add(_localize("ui.town.compendium.status_rule.diminishing", "점감"));
+        if (status.IsHardControl) flags.Add(Localize("ui.town.compendium.status_rule.hard_control", "하드 제어"));
+        if (status.UsesControlDiminishing) flags.Add(Localize("ui.town.compendium.status_rule.diminishing", "점감"));
         if (status.AffectedByTenacity)
         {
-            flags.Add(string.Format(
-                _localize("ui.town.compendium.status_rule.tenacity", "강인함 {0}"),
+            flags.Add(Localize(
+                "ui.town.compendium.status_rule.tenacity",
+                "강인함 {0}",
                 status.TenacityScale.ToString("0.##")));
         }
-        if (status.AppliesPeriodicDamage) flags.Add(_localize("ui.town.compendium.status_rule.periodic_damage", "주기 피해"));
-        if (status.IsRuleModifierOnly) flags.Add(_localize("ui.town.compendium.status_rule.rule_modifier", "규칙 보정"));
+        if (status.AppliesPeriodicDamage) flags.Add(Localize("ui.town.compendium.status_rule.periodic_damage", "주기 피해"));
+        if (status.IsRuleModifierOnly) flags.Add(Localize("ui.town.compendium.status_rule.rule_modifier", "규칙 보정"));
         return flags.Count == 0 ? "-" : string.Join(", ", flags);
     }
 
     public string MetricLabel(string key, string fallback)
     {
-        return _localize($"ui.town.compendium.metric.{key}", fallback);
+        return Localize($"ui.town.compendium.metric.{key}", fallback);
     }
 
     public string FormatSlot(string slot)
     {
         return CompiledSkillSlots.Normalize(slot) switch
         {
-            CompiledSkillSlots.CoreActive => _localize("ui.town.compendium.slot.core", "핵심"),
-            CompiledSkillSlots.UtilityActive => _localize("ui.town.compendium.slot.utility", "유틸"),
-            CompiledSkillSlots.Passive => _localize("ui.town.compendium.slot.passive", "패시브"),
-            CompiledSkillSlots.Support => _localize("ui.town.compendium.slot.support", "지원"),
+            CompiledSkillSlots.CoreActive => Localize("ui.town.compendium.slot.core", "핵심"),
+            CompiledSkillSlots.UtilityActive => Localize("ui.town.compendium.slot.utility", "유틸"),
+            CompiledSkillSlots.Passive => Localize("ui.town.compendium.slot.passive", "패시브"),
+            CompiledSkillSlots.Support => Localize("ui.town.compendium.slot.support", "지원"),
             _ => slot,
         };
     }
@@ -182,7 +183,7 @@ internal sealed class CompendiumFilterSupport
     {
         var options = new List<CompendiumFilterOptionViewState>
         {
-            new(AnyFilterValue, _localize("ui.town.compendium.filter.all_classes", "전체 클래스")),
+            new(AnyFilterValue, Localize("ui.town.compendium.filter.all_classes", "전체 클래스")),
         };
         options.AddRange(snapshot.SkillCatalog.Values
             .SelectMany(skill => skill.RequiredClassTags ?? Array.Empty<string>())
@@ -201,7 +202,7 @@ internal sealed class CompendiumFilterSupport
             .Distinct(StringComparer.Ordinal)
             .OrderBy(SlotOrder)
             .ToArray();
-        return new[] { new CompendiumFilterOptionViewState(AnyFilterValue, _localize("ui.town.compendium.filter.all_slots", "전체 슬롯")) }
+        return new[] { new CompendiumFilterOptionViewState(AnyFilterValue, Localize("ui.town.compendium.filter.all_slots", "전체 슬롯")) }
             .Concat(slots.Select(slot => new CompendiumFilterOptionViewState(slot, FormatSlot(slot))))
             .ToList();
     }
@@ -214,9 +215,14 @@ internal sealed class CompendiumFilterSupport
             .Distinct()
             .OrderBy(family => family.ToString(), StringComparer.Ordinal)
             .ToArray();
-        return new[] { new CompendiumFilterOptionViewState(AnyFilterValue, _localize("ui.town.compendium.filter.all_vfx", "전체 연출")) }
+        return new[] { new CompendiumFilterOptionViewState(AnyFilterValue, Localize("ui.town.compendium.filter.all_vfx", "전체 연출")) }
             .Concat(families.Select(family => new CompendiumFilterOptionViewState(family.ToString(), family.ToString())))
             .ToList();
+    }
+
+    private string Localize(string key, string fallback, params object[] arguments)
+    {
+        return _localize(key, fallback, arguments);
     }
 
     private static bool ContainsSearch(string searchText, params string[] values)

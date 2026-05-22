@@ -40,9 +40,9 @@ internal sealed class CompendiumPresenter : ICompendiumActions
         _localization = localization ?? throw new ArgumentNullException(nameof(localization));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
         _iconResolver = iconResolver ?? throw new ArgumentNullException(nameof(iconResolver));
-        _filterSupport = new CompendiumFilterSupport(_contentText, Localize);
-        _skillReadoutFormatter = new CompendiumSkillReadoutFormatter(Localize);
-        _vfxPreviewResolver = new CompendiumVfxPreviewResolver(Localize);
+        _filterSupport = new CompendiumFilterSupport(_contentText, (key, fallback, args) => Localize(key, fallback, args));
+        _skillReadoutFormatter = new CompendiumSkillReadoutFormatter((key, fallback) => Localize(key, fallback));
+        _vfxPreviewResolver = new CompendiumVfxPreviewResolver((key, fallback) => Localize(key, fallback));
         _view = view ?? throw new ArgumentNullException(nameof(view));
     }
 
@@ -331,7 +331,7 @@ internal sealed class CompendiumPresenter : ICompendiumActions
                 var isVisible = isProfileUnlocked || slotIndex <= InitialVisibleCharacterCount;
                 var displayName = isVisible
                     ? _contentText.GetCharacterName(character.Id, character.DefaultArchetypeId)
-                    : string.Format(Localize("ui.town.compendium.character.locked_slot", "Slot {0:00}"), slotIndex);
+                    : Localize("ui.town.compendium.character.locked_slot", "Slot {0:00}", slotIndex);
                 var raceLabel = string.IsNullOrWhiteSpace(character.RaceId) ? "-" : _contentText.GetRaceName(character.RaceId);
                 var classLabel = string.IsNullOrWhiteSpace(character.ClassId) ? "-" : _contentText.GetClassName(character.ClassId);
                 var roleLabel = string.IsNullOrWhiteSpace(character.DefaultRoleInstructionId)
@@ -592,14 +592,14 @@ internal sealed class CompendiumPresenter : ICompendiumActions
         return $"{name} {FormatSeconds(status.DurationSeconds)} / {FormatNumber(status.Magnitude)}";
     }
 
-    private string Localize(string key, string fallback)
+    private string Localize(string key, string fallback, params object[] arguments)
     {
-        return Localize(GameLocalizationTables.UITown, key, fallback);
+        return Localize(GameLocalizationTables.UITown, key, fallback, arguments);
     }
 
-    private string Localize(string table, string key, string fallback)
+    private string Localize(string table, string key, string fallback, params object[] arguments)
     {
-        var resolved = _localization.LocalizeOrFallback(table, key, fallback);
+        var resolved = _localization.LocalizeOrFallback(table, key, fallback, arguments);
         return LooksLikeMissingLocalization(resolved, key) ? fallback : resolved;
     }
 

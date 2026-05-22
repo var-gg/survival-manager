@@ -49,6 +49,32 @@ public sealed class StoryDirectorServiceTests
     }
 
     [Test]
+    public void Advance_DialogueScenePresentation_UsesExactAuthoredSequenceIdBeforeLegacyNormalizer()
+    {
+        var sequence = CreateDialogueSequence(
+            "dialogue_scene_ashen_gate_intro",
+            CreateDialogueLine("line_1", "guide", "loc.guide"));
+        var storyEvent = CreateStoryEvent(
+            "evt.site.intro",
+            NarrativeMoment.SiteEntered,
+            100,
+            StoryOncePolicy.OncePerProfile,
+            Array.Empty<StoryConditionSpec>(),
+            new[]
+            {
+                CreateStoryEffect("fx.present.site", StoryEffectKind.EnqueuePresentation, nameof(StoryPresentationKind.DialogueScene)),
+            },
+            "dialogue_scene_ashen_gate_intro");
+        var director = CreateStoryDirector(new[] { storyEvent }, new[] { sequence });
+
+        director.Advance(NarrativeMoment.SiteEntered, StoryMomentContext.Empty);
+
+        Assert.That(director.Progress.PendingPresentations, Has.Length.EqualTo(1));
+        Assert.That(director.Progress.PendingPresentations[0].PresentationKey, Is.EqualTo("dialogue_scene_ashen_gate_intro"));
+        Assert.That(director.Progress.PendingPresentations[0].SpeakerIds, Is.EqualTo(new[] { "guide" }));
+    }
+
+    [Test]
     public void Advance_EvaluatesHigherPriorityFirst_AndLowerPriorityEventSeesSamePassFlag()
     {
         var seedEvent = CreateStoryEvent(

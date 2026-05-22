@@ -46,10 +46,14 @@ public sealed class DialogueAssemblyService
         string presentationKey,
         int priority)
     {
-        var sequenceId = NarrativePresentationKeyNormalizer.ToDialogueSequenceId(presentationKey);
+        var sequenceId = presentationKey;
         if (!_dialogueSequencesById.TryGetValue(sequenceId, out var sequence))
         {
-            throw new InvalidOperationException($"Dialogue sequence '{sequenceId}' (from presentation key '{presentationKey}') was not found.");
+            sequenceId = NarrativePresentationKeyNormalizer.ToDialogueSequenceId(presentationKey);
+            if (!_dialogueSequencesById.TryGetValue(sequenceId, out sequence))
+            {
+                throw new InvalidOperationException($"Dialogue sequence '{sequenceId}' (from presentation key '{presentationKey}') was not found.");
+            }
         }
 
         var speakers = new List<string>();
