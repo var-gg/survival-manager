@@ -102,22 +102,22 @@ public sealed class TownScreenController : MonoBehaviour
 
         // Modal Presenter 인스턴스화 — 각 modal 별도 try/catch로 격리.
         // 한 modal의 element 누락이 hub 전체를 깨지 않게. sprite loader는 null fallback (production runtime).
-        TryWireRecruit(panelHost.Root, view);
-        TryWireEquipmentRefit(panelHost.Root, view);
-        TryWirePassiveBoard(panelHost.Root, view);
-        TryWireInventory(panelHost.Root, view);
-        TryWirePermanentAugment(panelHost.Root, view);
-        TryWireCompendium(panelHost.Root, view);
-        TryWireCharacterSheet(panelHost.Root, view);
-        TryWireSquadBuilder(panelHost.Root, view);
-        TryWireTacticalWorkshop(panelHost.Root, view);
-        TryWireRoster(panelHost.Root, view);
-
-        view.BindTheaterOpen(() => _presenter?.Refresh("극장 (Theater) — story replay surface 후속 wire."));
+        var corePanelReadyCount = 0;
+        corePanelReadyCount += TryWireRecruit(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireEquipmentRefit(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWirePassiveBoard(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireInventory(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWirePermanentAugment(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireCompendium(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireCharacterSheet(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireSquadBuilder(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireTacticalWorkshop(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireRoster(panelHost.Root, view) ? 1 : 0;
+        _presenter.SetCorePanelReadiness(corePanelReadyCount, 10);
         return true;
     }
 
-    private void TryWireRecruit(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireRecruit(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -126,11 +126,12 @@ public sealed class TownScreenController : MonoBehaviour
             _recruitPresenter.Initialize();
             _recruitPresenter.Close();
             _presenter?.SetNpcOpener("dalmok", _recruitPresenter.Open);
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Recruit wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Recruit wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWireEquipmentRefit(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireEquipmentRefit(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -146,11 +147,12 @@ public sealed class TownScreenController : MonoBehaviour
             _equipmentRefitPresenter.Initialize();
             _equipmentRefitPresenter.Close();
             _presenter?.SetNpcOpener("soemae", _equipmentRefitPresenter.Open);
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] EquipmentRefit wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] EquipmentRefit wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWirePassiveBoard(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWirePassiveBoard(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -159,11 +161,12 @@ public sealed class TownScreenController : MonoBehaviour
             _passiveBoardPresenter.Initialize();
             _passiveBoardPresenter.Close();
             _presenter?.SetNpcOpener("galma", _passiveBoardPresenter.Open);
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] PassiveBoard wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] PassiveBoard wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWireInventory(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireInventory(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -178,11 +181,12 @@ public sealed class TownScreenController : MonoBehaviour
             _inventoryPresenter.Initialize();
             _inventoryPresenter.Close();
             _presenter?.SetNpcOpener("solgil", _inventoryPresenter.Open);
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Inventory wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Inventory wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWirePermanentAugment(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWirePermanentAugment(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -194,11 +198,12 @@ public sealed class TownScreenController : MonoBehaviour
             _permanentAugmentPresenter.Initialize();
             _permanentAugmentPresenter.Close();
             view.BindPermanentAugmentOpen(_permanentAugmentPresenter.Open);
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] PermanentAugment wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] PermanentAugment wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWireCompendium(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireCompendium(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -212,11 +217,12 @@ public sealed class TownScreenController : MonoBehaviour
             _compendiumPresenter.Initialize();
             _compendiumPresenter.Close();
             view.BindCompendiumOpen(_compendiumPresenter.Open);
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Compendium wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Compendium wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWireTacticalWorkshop(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireTacticalWorkshop(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -235,21 +241,23 @@ public sealed class TownScreenController : MonoBehaviour
                 _tacticalWorkshopView.Open();
                 _tacticalWorkshopPresenter.Refresh();
             });
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] TacticalWorkshop wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] TacticalWorkshop wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWireSquadBuilder(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireSquadBuilder(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
             _squadBuilderPresenter = new SquadBuilderPresenter(root, _root, _contentText);
             view.BindSquadBuilderOpen(_squadBuilderPresenter.Open);
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] SquadBuilder wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] SquadBuilder wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWireCharacterSheet(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireCharacterSheet(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -262,11 +270,12 @@ public sealed class TownScreenController : MonoBehaviour
                 _inventoryPresenter?.SetTargetHero(heroId);
                 _characterSheetPresenter.Open(heroId);
             });
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] CharacterSheet wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] CharacterSheet wire 실패: {e.Message}"); return false; }
     }
 
-    private void TryWireRoster(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireRoster(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
@@ -288,8 +297,9 @@ public sealed class TownScreenController : MonoBehaviour
                 _rosterModalView.Open();
                 _rosterGridPresenter.Refresh();
             });
+            return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Roster wire 실패: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Roster wire 실패: {e.Message}"); return false; }
     }
 
     private bool EnsureSessionReady()

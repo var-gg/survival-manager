@@ -147,6 +147,8 @@ public sealed class TownScreenView
         _saveButton.text = state.SaveLabel;
         _loadButton.text = state.LoadLabel;
         _settingsButton.text = state.SettingsLabel;
+        _settingsButton.SetEnabled(state.ShowSettings);
+        _settingsButton.style.display = state.ShowSettings ? DisplayStyle.Flex : DisplayStyle.None;
         _returnToStartButton.text = state.ReturnToStartLabel;
         _returnToStartButton.tooltip = state.ReturnToStartTooltip;
         _returnToStartButton.SetEnabled(state.CanReturnToStart);
@@ -162,6 +164,8 @@ public sealed class TownScreenView
         _tacticalWorkshopEntryLabel.text = state.TacticalWorkshopEntryLabel;
         _permanentAugmentEntryLabel.text = state.PermanentAugmentEntryLabel;
         _theaterEntryLabel.text = state.TheaterEntryLabel;
+        _theaterButton.SetEnabled(state.ShowTheater);
+        _theaterButton.style.display = state.ShowTheater ? DisplayStyle.Flex : DisplayStyle.None;
         _serviceSelectedHeroLabel.text = state.ServiceDecision.SelectedHeroLabel;
         _serviceWalletLabel.text = state.ServiceDecision.WalletLabel;
         _serviceInventoryLabel.text = state.ServiceDecision.InventoryLabel;

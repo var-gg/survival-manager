@@ -43,7 +43,7 @@ public sealed class ScreenHelpState
             return;
         }
 
-        _isVisible = PlayerPrefs.GetInt(_prefsKey, 0) == 0;
+        _isVisible = PlayerPrefs.HasKey(_prefsKey) && PlayerPrefs.GetInt(_prefsKey, 1) == 0;
         _loaded = true;
     }
 }

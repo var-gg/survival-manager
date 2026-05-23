@@ -43,6 +43,7 @@ public sealed record TownScreenViewState(
     string SaveLabel,
     string LoadLabel,
     string SettingsLabel,
+    bool ShowSettings,
     string ReturnToStartLabel,
     string ReturnToStartTooltip,
     bool CanReturnToStart,
@@ -66,4 +67,5 @@ public sealed record TownScreenViewState(
     string TacticalWorkshopEntryLabel,
     string PermanentAugmentEntryLabel,
     string TheaterEntryLabel,
+    bool ShowTheater,
     string ClusterEyebrow);

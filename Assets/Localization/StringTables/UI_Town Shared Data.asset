@@ -1251,6 +1251,110 @@ MonoBehaviour:
     m_Key: ui.town.compendium.card.no_cooldown
     m_Metadata:
       m_Items: []
+  - m_Id: 17841341873852461
+    m_Key: ui.town.compendium.card.quick_stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852462
+    m_Key: ui.town.compendium.damage.physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852463
+    m_Key: ui.town.compendium.damage.magical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852464
+    m_Key: ui.town.compendium.damage.healing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852465
+    m_Key: ui.town.compendium.damage.true
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852466
+    m_Key: ui.town.compendium.delivery.melee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852467
+    m_Key: ui.town.compendium.delivery.ranged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852468
+    m_Key: ui.town.compendium.delivery.projectile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852469
+    m_Key: ui.town.compendium.delivery.nova
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852470
+    m_Key: ui.town.compendium.delivery.aura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852471
+    m_Key: ui.town.compendium.delivery.trap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852472
+    m_Key: ui.town.compendium.delivery.zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852473
+    m_Key: ui.town.compendium.target.nearest_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852474
+    m_Key: ui.town.compendium.target.lowest_hp_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852475
+    m_Key: ui.town.compendium.target.exposed_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852476
+    m_Key: ui.town.compendium.target.lowest_hp_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852477
+    m_Key: ui.town.compendium.target.protected_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852478
+    m_Key: ui.town.compendium.target.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852479
+    m_Key: ui.town.compendium.target.marked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852480
+    m_Key: ui.town.compendium.intent.recovery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852481
+    m_Key: ui.town.compendium.intent.protection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852482
+    m_Key: ui.town.compendium.intent.mobility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852483
+    m_Key: ui.town.compendium.intent.control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852484
+    m_Key: ui.town.compendium.intent.damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852485
+    m_Key: ui.town.compendium.vfx.caster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852486
+    m_Key: ui.town.compendium.vfx.target
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

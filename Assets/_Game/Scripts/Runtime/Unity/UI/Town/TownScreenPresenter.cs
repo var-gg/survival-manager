@@ -27,6 +27,8 @@ public sealed class TownScreenPresenter
     private Action<string>? _heroOpener;
     private Action? _settingsOpener;
     private Action? _theaterOpener;
+    private int _corePanelReadyCount;
+    private int _corePanelTotalCount;
     private string _selectedHeroId = string.Empty;
     private string _pendingStatus = string.Empty;
 
@@ -173,6 +175,11 @@ public sealed class TownScreenPresenter
     public void SetHeroOpener(Action<string> open) => _heroOpener = open;
     public void SetSettingsOpener(Action open) => _settingsOpener = open;
     public void SetTheaterOpener(Action open) => _theaterOpener = open;
+    public void SetCorePanelReadiness(int readyCount, int totalCount)
+    {
+        _corePanelReadyCount = Math.Max(0, readyCount);
+        _corePanelTotalCount = Math.Max(0, totalCount);
+    }
 
     private TownScreenViewState BuildState(GameSessionState session)
     {
@@ -233,6 +240,7 @@ public sealed class TownScreenPresenter
             SaveLabel: Localize(GameLocalizationTables.UICommon, "ui.common.save", "Save"),
             LoadLabel: Localize(GameLocalizationTables.UICommon, "ui.common.load", "Load"),
             SettingsLabel: Localize(GameLocalizationTables.UICommon, "ui.common.settings", "⚙"),
+            ShowSettings: _settingsOpener != null,
             ReturnToStartLabel: Localize(GameLocalizationTables.UICommon, "ui.common.return_start", "Return to Start"),
             ReturnToStartTooltip: BuildReturnToStartTooltip(session),
             CanReturnToStart: !IsReturnToStartBlocked(session),
@@ -260,6 +268,7 @@ public sealed class TownScreenPresenter
             TacticalWorkshopEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.tactical_workshop", "전술 공방"),
             PermanentAugmentEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.permanent_augment", "✦  영구 강화"),
             TheaterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.theater", "▶  극장"),
+            ShowTheater: _theaterOpener != null,
             ClusterEyebrow: Localize(GameLocalizationTables.UITown, "ui.town.cluster.eyebrow", "잿골에 머무는 동료"));
     }
 
@@ -271,18 +280,15 @@ public sealed class TownScreenPresenter
             ? "동료 선택 없음"
             : $"{ResolveHeroDisplayName(selectedHero.HeroId, selectedHero.Name)} · {_contentText.GetClassName(selectedHero.ClassId)}";
         var deployCount = session.ExpeditionSquadHeroIds.Count;
-        var serviceReadyCount = _npcOpeners.Count;
-        if (_heroOpener != null)
-        {
-            serviceReadyCount++;
-        }
+        var panelTotal = _corePanelTotalCount > 0 ? _corePanelTotalCount : 10;
+        var panelReady = _corePanelReadyCount > 0 ? _corePanelReadyCount : _npcOpeners.Count + (_heroOpener != null ? 1 : 0);
 
         return new TownServiceDecisionViewState(
             SelectedHeroLabel: heroLabel,
             WalletLabel: $"{session.Profile.Currencies.Gold:N0} Gold · {session.Profile.Currencies.Echo:N0} Echo",
             InventoryLabel: $"{session.Profile.Inventory.Count} inventory",
             RosterPressureLabel: $"{session.Profile.Heroes.Count}/12 roster · {deployCount}/4 deploy",
-            ModalAvailabilityLabel: $"{serviceReadyCount}/5 services ready");
+            ModalAvailabilityLabel: $"핵심 패널 {panelReady}/{panelTotal} 준비");
     }
 
     private string ResolveHeroDisplayName(string heroId, string? heroName)

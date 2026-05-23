@@ -39,4 +39,73 @@ public sealed class TownServiceHubFastTests
         Assert.That(view, Does.Contain("ServiceDecision.WalletLabel"));
         Assert.That(view, Does.Contain("ServiceDecision.ModalAvailabilityLabel"));
     }
+
+    [Test]
+    public void TownHub_Separates_Production_Core_Panels_From_Deferred_Settings_And_Theater()
+    {
+        var state = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenViewState.cs");
+        Assert.That(state, Does.Contain("bool ShowSettings"));
+        Assert.That(state, Does.Contain("bool ShowTheater"));
+
+        var view = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenView.cs");
+        Assert.That(view, Does.Contain("_settingsButton.style.display = state.ShowSettings"));
+        Assert.That(view, Does.Contain("_theaterButton.style.display = state.ShowTheater"));
+
+        var presenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenPresenter.cs");
+        Assert.That(presenter, Does.Contain("SetCorePanelReadiness"));
+        Assert.That(presenter, Does.Contain("ShowSettings: _settingsOpener != null"));
+        Assert.That(presenter, Does.Contain("ShowTheater: _theaterOpener != null"));
+        Assert.That(presenter, Does.Contain("핵심 패널"));
+        Assert.That(presenter, Does.Not.Contain("Settings/Theater 후속"));
+
+        var controller = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs");
+        Assert.That(controller, Does.Contain("SetCorePanelReadiness(corePanelReadyCount, 10)"));
+        Assert.That(controller, Does.Not.Contain("BindTheaterOpen(() => _presenter?.Refresh"));
+
+        var registry = File.ReadAllText("Assets/_Game/UI/Foundation/ArtBible/artbible-role-registry.json");
+        Assert.That(registry, Does.Not.Contain("Assets/_Game/UI/Panels/SettingsGlobal/SettingsGlobal.uss"));
+    }
+
+    [Test]
+    public void HelpStrip_Defaults_To_Hidden_For_User_Qa_Surface()
+    {
+        var helpState = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/ScreenHelpState.cs");
+        Assert.That(helpState, Does.Contain("PlayerPrefs.HasKey(_prefsKey)"));
+        Assert.That(helpState, Does.Contain("PlayerPrefs.GetInt(_prefsKey, 1) == 0"));
+    }
+
+    [Test]
+    public void TownCompendium_Readout_Localization_Keys_Are_Authored()
+    {
+        var shared = File.ReadAllText("Assets/Localization/StringTables/UI_Town Shared Data.asset");
+        var ko = File.ReadAllText("Assets/Localization/StringTables/UI_Town_ko.asset");
+        var en = File.ReadAllText("Assets/Localization/StringTables/UI_Town_en.asset");
+        var formatter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/CompendiumSkillReadoutFormatter.cs");
+
+        foreach (var key in new[]
+                 {
+                     "ui.town.compendium.card.quick_stats",
+                     "ui.town.compendium.damage.physical",
+                     "ui.town.compendium.damage.magical",
+                     "ui.town.compendium.damage.healing",
+                     "ui.town.compendium.delivery.melee",
+                     "ui.town.compendium.delivery.ranged",
+                     "ui.town.compendium.delivery.projectile",
+                     "ui.town.compendium.delivery.aura",
+                     "ui.town.compendium.target.self",
+                     "ui.town.compendium.target.marked",
+                     "ui.town.compendium.intent.recovery",
+                     "ui.town.compendium.intent.protection",
+                     "ui.town.compendium.intent.mobility",
+                     "ui.town.compendium.intent.control",
+                     "ui.town.compendium.intent.damage",
+                 })
+        {
+            Assert.That(formatter, Does.Contain(key), key);
+            Assert.That(shared, Does.Contain("m_Key: " + key), key);
+        }
+
+        Assert.That(ko, Does.Contain("m_Id: 17841341873852486"));
+        Assert.That(en, Does.Contain("m_Id: 17841341873852486"));
+    }
 }

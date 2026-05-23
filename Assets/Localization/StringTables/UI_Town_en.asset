@@ -1298,6 +1298,110 @@ MonoBehaviour:
     m_Localized: Always
     m_Metadata:
       m_Items: []
+  - m_Id: 17841341873852461
+    m_Localized: Power {0} / {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852462
+    m_Localized: Physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852463
+    m_Localized: Magical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852464
+    m_Localized: Healing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852465
+    m_Localized: True
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852466
+    m_Localized: Melee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852467
+    m_Localized: Ranged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852468
+    m_Localized: Projectile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852469
+    m_Localized: Nova
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852470
+    m_Localized: Aura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852471
+    m_Localized: Trap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852472
+    m_Localized: Zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852473
+    m_Localized: Nearest enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852474
+    m_Localized: Lowest HP enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852475
+    m_Localized: Exposed enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852476
+    m_Localized: Lowest HP ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852477
+    m_Localized: Protected ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852478
+    m_Localized: Self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852479
+    m_Localized: Marked target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852480
+    m_Localized: Recovery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852481
+    m_Localized: Protection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852482
+    m_Localized: Mobility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852483
+    m_Localized: Control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852484
+    m_Localized: Damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852485
+    m_Localized: Caster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17841341873852486
+    m_Localized: Target
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

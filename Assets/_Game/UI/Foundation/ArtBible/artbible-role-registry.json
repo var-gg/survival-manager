@@ -11,8 +11,7 @@
     "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss",
     "Assets/_Game/UI/Panels/TownCharacterSheet/TownCharacterSheet.uss",
     "Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uss",
-    "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uss",
-    "Assets/_Game/UI/Panels/SettingsGlobal/SettingsGlobal.uss"
+    "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uss"
   ],
   "monitoredProductionPanelUss": [
     "Assets/_Game/UI/Screens/Town/SquadBuilder.uss",
