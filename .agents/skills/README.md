@@ -4,3 +4,4 @@
 
 - `code-structure-guard`: 구조 경계, god file, 무분별한 추상화 생성을 막는 구조 검수 스킬
 - `game-image-gen`: Pindoc-owned prompt/spec/style 원본을 repo 밖 JSON 입력으로 받아 게임 이미지 자산을 생성하는 스킬
+- `ux-bible-visual-qa`: PlayMode surface screenshot을 UX Bible 시안과 매칭해 contact sheet와 red/yellow/green 판정을 만드는 시각 QA 스킬
