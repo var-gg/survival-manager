@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "decision": "decision-game-panel-sot-legacy-policy",
+  "states": [
+    "active-production",
+    "planned",
+    "legacy-preview",
+    "retired"
+  ],
+  "surfaces": [
+    {
+      "id": "screen.town",
+      "displayNameKo": "마을",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Screens/Town/TownScreen.uxml",
+      "routeOwner": "TownScreenController",
+      "legacyAliases": [],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_town_service_hub_v0.png"
+    },
+    {
+      "id": "town.tactical_setup",
+      "displayNameKo": "전술 설정",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uxml",
+      "routeOwner": "TownScreenController.TacticalSetupButton",
+      "legacyAliases": [
+        "SquadBuilder",
+        "TownSquadBuilder",
+        "SquadBuilderPresenter"
+      ],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_squad_builder_v0.png"
+    },
+    {
+      "id": "town.character_sheet",
+      "displayNameKo": "캐릭터 시트",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/TownCharacterSheet/TownCharacterSheet.uxml",
+      "routeOwner": "TownScreenController.HeroOpener",
+      "legacyAliases": [],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_character_sheet_class_detail_v0.png"
+    },
+    {
+      "id": "town.roster",
+      "displayNameKo": "동료 명부",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uxml",
+      "routeOwner": "TownScreenController.RosterButton",
+      "legacyAliases": [
+        "RosterGrid"
+      ],
+      "visualReference": ""
+    },
+    {
+      "id": "town.recruit",
+      "displayNameKo": "모집",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uxml",
+      "routeOwner": "TownScreenController.Npc.dalmok",
+      "legacyAliases": [
+        "RecruitPack"
+      ],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_recruit_candidate_choice_v0.png"
+    },
+    {
+      "id": "town.equipment_refit",
+      "displayNameKo": "장비 개조",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uxml",
+      "routeOwner": "TownScreenController.Npc.soemae",
+      "legacyAliases": [
+        "EquipmentRefit"
+      ],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_inventory_equipment_compare_v0.png"
+    },
+    {
+      "id": "town.passive_board",
+      "displayNameKo": "패시브 보드",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/PassiveBoard/PassiveBoard.uxml",
+      "routeOwner": "TownScreenController.Npc.galma",
+      "legacyAliases": [
+        "PassiveBoard"
+      ],
+      "visualReference": ""
+    },
+    {
+      "id": "town.inventory",
+      "displayNameKo": "창고",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uxml",
+      "routeOwner": "TownScreenController.Npc.solgil",
+      "legacyAliases": [
+        "InventoryTab"
+      ],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_inventory_equipment_compare_v0.png"
+    },
+    {
+      "id": "town.compendium",
+      "displayNameKo": "도감",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uxml",
+      "routeOwner": "TownScreenController.CompendiumButton",
+      "legacyAliases": [
+        "SkillCompendium"
+      ],
+      "visualReference": ""
+    },
+    {
+      "id": "town.permanent_augment",
+      "displayNameKo": "영구 강화",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Panels/PermanentAugment/PermanentAugment.uxml",
+      "routeOwner": "TownScreenController.PermanentAugmentButton",
+      "legacyAliases": [
+        "PermanentAugment"
+      ],
+      "visualReference": ""
+    },
+    {
+      "id": "screen.atlas",
+      "displayNameKo": "아틀라스",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Screens/Atlas/AtlasScreen.uxml",
+      "routeOwner": "AtlasScreenController",
+      "legacyAliases": [],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_atlas_overworld_map_v0.png"
+    },
+    {
+      "id": "screen.battle",
+      "displayNameKo": "전투 HUD",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Screens/Battle/BattleScreen.uxml",
+      "routeOwner": "BattleScreenController",
+      "legacyAliases": [],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_battle_stage_hud_v0.png"
+    },
+    {
+      "id": "screen.reward",
+      "displayNameKo": "보상 결과",
+      "state": "active-production",
+      "productionUxml": "Assets/_Game/UI/Screens/Reward/RewardScreen.uxml",
+      "routeOwner": "RewardScreenController",
+      "legacyAliases": [],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_reward_result_v0.png"
+    },
+    {
+      "id": "town.tactical_workshop",
+      "displayNameKo": "전술 공방",
+      "state": "legacy-preview",
+      "productionUxml": "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uxml",
+      "routeOwner": "PreviewOnly",
+      "legacyAliases": [
+        "TacticalWorkshop",
+        "TacticalWorkshopPresenter",
+        "TacticalWorkshopPreview"
+      ],
+      "visualReference": ""
+    },
+    {
+      "id": "town.settings_global",
+      "displayNameKo": "설정",
+      "state": "planned",
+      "productionUxml": "",
+      "routeOwner": "Planned",
+      "legacyAliases": [
+        "SettingsButton"
+      ],
+      "visualReference": ""
+    },
+    {
+      "id": "town.theater",
+      "displayNameKo": "극장",
+      "state": "planned",
+      "productionUxml": "",
+      "routeOwner": "Planned",
+      "legacyAliases": [
+        "Theater"
+      ],
+      "visualReference": ""
+    },
+    {
+      "id": "dialogue.event_choice",
+      "displayNameKo": "대화 / 이벤트 선택",
+      "state": "planned",
+      "productionUxml": "Assets/_Game/UI/Narrative/DialogueOverlay.uxml",
+      "routeOwner": "StorySceneFlowBridge",
+      "legacyAliases": [
+        "DialogueOverlay"
+      ],
+      "visualReference": ""
+    }
+  ]
+}

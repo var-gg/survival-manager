@@ -8,10 +8,12 @@
     "Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uss",
     "Assets/_Game/UI/Panels/InventoryTab/InventoryTab.uss",
     "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uss",
-    "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss",
     "Assets/_Game/UI/Panels/TownCharacterSheet/TownCharacterSheet.uss",
     "Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uss",
     "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uss"
+  ],
+  "legacyPreviewPanelUss": [
+    "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"
   ],
   "monitoredProductionPanelUss": [
     "Assets/_Game/UI/Screens/Town/SquadBuilder.uss",

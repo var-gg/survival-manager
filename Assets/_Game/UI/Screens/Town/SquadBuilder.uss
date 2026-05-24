@@ -11,6 +11,7 @@
     justify-content: center;
     padding-top: 72px;
     padding-bottom: 72px;
+    z-index: 1200;
 }
 
 .sm-sqb-modal--closed { display: none; }
@@ -18,15 +19,22 @@
 
 /* sm-backdrop-dim atom 위에 modal-specific darker tint. */
 .sm-sqb-modal__backdrop {
-    background-color: rgba(4, 7, 18, 0.98);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(2, 5, 16, 0.94);
+    z-index: 1200;
 }
 
 /* Panel — atom token (sm-frame-ceremony-bg / sm-frame-trim-*) + corner cap atom의 absolute parent. */
 .sm-sqb-modal__panel {
     position: relative;
-    width: 1080px;
-    max-height: 884px;
-    background-color: var(--sm-frame-ceremony-bg);
+    z-index: 1201;
+    width: 1660px;
+    max-height: 860px;
+    background-color: rgb(4, 7, 18);
     border-left-width: var(--sm-frame-trim-w);
     border-right-width: var(--sm-frame-trim-w);
     border-top-width: var(--sm-frame-trim-w);

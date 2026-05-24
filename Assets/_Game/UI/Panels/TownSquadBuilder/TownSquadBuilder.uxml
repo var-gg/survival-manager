@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <!--
-      Squad Builder modal (audit §2.2) — anchor 6 (Front 3 + Back 3) + posture 5.
+      Tactical Setup modal — legacy TownSquadBuilder implementation alias.
+      V1 production owner: anchor 6 + team posture 5 + read-only operation / response summary.
       Foundation atom (RuntimePanelTheme.uss) — sm-backdrop-dim + sm-frame-corner-cap × 4 +
       sm-ornament-divider + sm-cta + sm-modal-anim.
     -->
@@ -19,10 +20,16 @@
 
             <ui:VisualElement class="sm-sqb-modal__header">
                 <ui:VisualElement class="sm-sqb-modal__title-group">
-                    <ui:Label name="SquadBuilderEyebrowLabel" class="sm-eyebrow sm-sqb-modal__eyebrow" text="전술 편성" />
-                    <ui:Label name="SquadBuilderTitleLabel" class="sm-headline sm-sqb-modal__title" text="전열 편성" />
+                    <ui:Label name="SquadBuilderEyebrowLabel" class="sm-eyebrow sm-sqb-modal__eyebrow" text="TACTICAL SETUP" />
+                    <ui:Label name="SquadBuilderTitleLabel" class="sm-headline sm-sqb-modal__title" text="전술 설정" />
                 </ui:VisualElement>
                 <ui:Button name="SquadBuilderCloseButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary sm-sqb-modal__close" text="✕" />
+            </ui:VisualElement>
+            <ui:VisualElement name="TacticalSetupSectionTabs" class="sm-sqb-modal__section-tabs">
+                <ui:Label name="TacticalSetupFormationTab" class="sm-sqb-modal__section-tab sm-sqb-modal__section-tab--active" text="전열" />
+                <ui:Label name="TacticalSetupPostureTab" class="sm-sqb-modal__section-tab" text="팀 태세" />
+                <ui:Label name="TacticalSetupOperationTab" class="sm-sqb-modal__section-tab" text="운용" />
+                <ui:Label name="TacticalSetupResponseTab" class="sm-sqb-modal__section-tab" text="대응" />
             </ui:VisualElement>
             <ui:VisualElement class="sm-ornament-divider sm-sqb-modal__divider" picking-mode="Ignore" />
 
@@ -37,7 +44,7 @@
                 </ui:VisualElement>
 
                 <ui:VisualElement name="SquadBuilderFormationBoard" class="sm-sqb-modal__section sm-sqb-modal__section--formation">
-                    <ui:Label class="sm-sqb-modal__section-title" text="3x2 전열 보드" />
+                    <ui:Label name="TacticalSetupFormationSection" class="sm-sqb-modal__section-title" text="전열" />
                     <ui:Label name="SquadBuilderAnchorHint" class="sm-sqb-modal__hint" text="버튼을 누르면 다음 영웅으로 순환합니다." />
                     <ui:VisualElement class="sm-sqb-modal__anchor-grid">
                         <ui:VisualElement class="sm-sqb-modal__anchor-column">
@@ -65,14 +72,25 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement class="sm-sqb-modal__section">
-                <ui:Label class="sm-sqb-modal__section-title" text="팀 태세" />
-                <ui:VisualElement class="sm-sqb-modal__posture-row">
-                    <ui:Button name="SquadBuilderPosture_HoldLine" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="전열 사수" />
-                    <ui:Button name="SquadBuilderPosture_StandardAdvance" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="표준 전진" />
-                    <ui:Button name="SquadBuilderPosture_ProtectCarry" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="캐리 보호" />
-                    <ui:Button name="SquadBuilderPosture_CollapseWeakSide" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="약측 무너뜨리기" />
-                    <ui:Button name="SquadBuilderPosture_AllInBackline" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="후열 깊이 침투" />
+            <ui:VisualElement name="TacticalSetupDecisionRow" class="sm-sqb-modal__decision-row">
+                <ui:VisualElement name="TacticalSetupPostureSection" class="sm-sqb-modal__section sm-sqb-modal__section--posture">
+                    <ui:Label class="sm-sqb-modal__section-title" text="팀 태세" />
+                    <ui:VisualElement class="sm-sqb-modal__posture-row">
+                        <ui:Button name="SquadBuilderPosture_HoldLine" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="전열 사수" />
+                        <ui:Button name="SquadBuilderPosture_StandardAdvance" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="표준 전진" />
+                        <ui:Button name="SquadBuilderPosture_ProtectCarry" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="캐리 보호" />
+                        <ui:Button name="SquadBuilderPosture_CollapseWeakSide" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="약측 무너뜨리기" />
+                        <ui:Button name="SquadBuilderPosture_AllInBackline" class="ui-button sm-cta sm-cta--md sm-cta--utility sm-select-snap sm-sqb-modal__posture-button" text="후열 깊이 침투" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="TacticalSetupOperationSection" class="sm-sqb-modal__section sm-sqb-modal__section--operation">
+                    <ui:Label class="sm-sqb-modal__section-title" text="운용" />
+                    <ui:VisualElement name="SquadBuilderOperationRows" class="sm-sqb-modal__operation-rows" />
+                </ui:VisualElement>
+                <ui:VisualElement name="TacticalSetupResponseSection" class="sm-sqb-modal__section sm-sqb-modal__section--response">
+                    <ui:Label class="sm-sqb-modal__section-title" text="대응" />
+                    <ui:Label name="SquadBuilderResponseSummaryLabel" class="sm-sqb-modal__response-summary" text="선택 전열과 팀 태세를 기준으로 판단합니다." />
+                    <ui:VisualElement name="SquadBuilderSynergyChips" class="sm-sqb-modal__synergy-chips" />
                 </ui:VisualElement>
             </ui:VisualElement>
 

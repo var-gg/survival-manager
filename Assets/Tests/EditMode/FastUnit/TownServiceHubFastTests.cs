@@ -59,11 +59,16 @@ public sealed class TownServiceHubFastTests
         Assert.That(presenter, Does.Not.Contain("Settings/Theater 후속"));
 
         var controller = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs");
-        Assert.That(controller, Does.Contain("SetCorePanelReadiness(corePanelReadyCount, 10)"));
+        Assert.That(controller, Does.Contain("SetCorePanelReadiness(corePanelReadyCount, 9)"));
+        Assert.That(controller, Does.Contain("TryWireTacticalSetup"));
+        Assert.That(controller, Does.Not.Contain("TryWireTacticalWorkshop"));
         Assert.That(controller, Does.Not.Contain("BindTheaterOpen(() => _presenter?.Refresh"));
 
         var registry = File.ReadAllText("Assets/_Game/UI/Foundation/ArtBible/artbible-role-registry.json");
         Assert.That(registry, Does.Not.Contain("Assets/_Game/UI/Panels/SettingsGlobal/SettingsGlobal.uss"));
+        var panelSot = File.ReadAllText("Assets/_Game/UI/Foundation/ArtBible/game-panel-sot-registry.json");
+        Assert.That(panelSot, Does.Contain("\"id\": \"town.tactical_setup\""));
+        Assert.That(panelSot, Does.Contain("\"state\": \"legacy-preview\""));
     }
 
     [Test]

@@ -992,7 +992,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021697
-    m_Key: ui.town.entry.squad_builder
+    m_Key: ui.town.entry.tactical_setup
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021698

@@ -6,7 +6,7 @@
       Modal Instance layer는 Panels/** ArtBible source를 production Town modal로 승격한다.
     -->
     <Style src="../../Foundation/Components/HeroFaceCard.uss" />
-    <ui:Template name="SquadBuilderTemplate" src="../../Panels/TownSquadBuilder/TownSquadBuilder.uxml" />
+    <ui:Template name="TacticalSetupTemplate" src="../../Panels/TownSquadBuilder/TownSquadBuilder.uxml" />
     <ui:Template name="RecruitTemplate" src="../../Panels/RecruitPack/RecruitPack.uxml" />
     <ui:Template name="EquipmentRefitTemplate" src="../../Panels/EquipmentRefit/EquipmentRefit.uxml" />
     <ui:Template name="PassiveBoardTemplate" src="../../Panels/PassiveBoard/PassiveBoard.uxml" />
@@ -15,7 +15,6 @@
     <ui:Template name="RosterTemplate" src="../../Panels/TownRosterGrid/TownRosterGrid.uxml" />
     <ui:Template name="CharacterSheetTemplate" src="../../Panels/TownCharacterSheet/TownCharacterSheet.uxml" />
     <ui:Template name="CompendiumTemplate" src="../../Panels/SkillCompendium/SkillCompendium.uxml" />
-    <ui:Template name="TacticalWorkshopTemplate" src="../../Panels/TacticalWorkshop/TacticalWorkshop.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub town-hub--v3">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
@@ -44,34 +43,129 @@
             <ui:Button name="HelpDismissButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary town-hub__help-dismiss" />
         </ui:VisualElement>
 
+        <ui:VisualElement name="TownBoardFrame" class="town-hub__board-frame sm-modal-frame sm-modal-frame--ceremony" picking-mode="Ignore">
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+        </ui:VisualElement>
+
         <!-- Middle stage — backdrop + Welcome captain center, NPC strip 좌측, utility 우측 -->
         <ui:VisualElement class="town-hub__stage">
             <ui:VisualElement name="NpcStrip" class="town-hub__npc-strip" />
 
             <ui:VisualElement class="town-hub__center">
+                <ui:VisualElement name="TownFeatureArt" class="town-hub__feature-art" picking-mode="Ignore">
+                    <ui:VisualElement class="town-hub__feature-vignette" picking-mode="Ignore" />
+                    <ui:Label name="TownFeatureIconLabel" class="town-hub__feature-icon" text="⚒" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__feature-stats" picking-mode="Ignore">
+                        <ui:VisualElement class="town-hub__feature-stat">
+                            <ui:Label name="TownFeatureStatGoldIconLabel" class="town-hub__feature-stat-icon" text="◆" picking-mode="Ignore" />
+                            <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--gold" picking-mode="Ignore">
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip" />
+                                <ui:VisualElement class="town-hub__pip" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="town-hub__feature-stat">
+                            <ui:Label name="TownFeatureStatBlueIconLabel" class="town-hub__feature-stat-icon" text="◇" picking-mode="Ignore" />
+                            <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--blue" picking-mode="Ignore">
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip" />
+                                <ui:VisualElement class="town-hub__pip" />
+                                <ui:VisualElement class="town-hub__pip" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="town-hub__feature-stat">
+                            <ui:Label name="TownFeatureStatGreenIconLabel" class="town-hub__feature-stat-icon" text="✦" picking-mode="Ignore" />
+                            <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--green" picking-mode="Ignore">
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                                <ui:VisualElement class="town-hub__pip" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
                 <ui:VisualElement name="WelcomeCaptainMount" class="town-hub__welcome-mount" />
                 <ui:Label name="WelcomeCaptainGreeting" class="town-hub__welcome-greeting" picking-mode="Ignore" />
             </ui:VisualElement>
 
             <ui:VisualElement class="town-hub__utility-strip">
                 <ui:Label name="LedgerTitleLabel" class="town-hub__column-eyebrow" text="LEDGER · 마을 비망록" picking-mode="Ignore" />
-                <ui:Button name="RosterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label name="RosterEntryLabel" class="town-hub__utility-name" text="◈  동료 명부" picking-mode="Ignore" />
+                <ui:Button name="RosterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry town-hub__utility-entry--roster">
+                    <ui:Label name="RosterButtonIconLabel" class="town-hub__utility-icon" text="♟" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-copy" picking-mode="Ignore">
+                        <ui:Label name="RosterEntryLabel" class="town-hub__utility-name" text="동료 명부" />
+                        <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--blue">
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="RosterButtonArrowLabel" class="town-hub__utility-arrow" text="›" picking-mode="Ignore" />
                 </ui:Button>
-                <ui:Button name="CompendiumButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label name="CompendiumEntryLabel" class="town-hub__utility-name" text="도감" picking-mode="Ignore" />
+                <ui:Button name="CompendiumButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry town-hub__utility-entry--compendium">
+                    <ui:Label name="CompendiumButtonIconLabel" class="town-hub__utility-icon" text="✧" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-copy" picking-mode="Ignore">
+                        <ui:Label name="CompendiumEntryLabel" class="town-hub__utility-name" text="도감" />
+                        <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--purple">
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip" />
+                            <ui:VisualElement class="town-hub__pip" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="CompendiumButtonArrowLabel" class="town-hub__utility-arrow" text="›" picking-mode="Ignore" />
                 </ui:Button>
-                <ui:Button name="SquadBuilderButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label name="SquadBuilderEntryLabel" class="town-hub__utility-name" text="❖  전열 편성" picking-mode="Ignore" />
+                <ui:Button name="TacticalSetupButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry town-hub__utility-entry--squad">
+                    <ui:Label name="TacticalSetupButtonIconLabel" class="town-hub__utility-icon" text="⚔" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-copy" picking-mode="Ignore">
+                        <ui:Label name="TacticalSetupEntryLabel" class="town-hub__utility-name" text="전술 설정" />
+                        <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--gold">
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="TacticalSetupButtonArrowLabel" class="town-hub__utility-arrow" text="›" picking-mode="Ignore" />
                 </ui:Button>
-                <ui:Button name="TacticalWorkshopButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label name="TacticalWorkshopEntryLabel" class="town-hub__utility-name" text="전술 공방" picking-mode="Ignore" />
+                <ui:Button name="PermanentAugmentButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry town-hub__utility-entry--augment">
+                    <ui:Label name="PermanentAugmentButtonIconLabel" class="town-hub__utility-icon" text="✦" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-copy" picking-mode="Ignore">
+                        <ui:Label name="PermanentAugmentEntryLabel" class="town-hub__utility-name" text="영구 강화" />
+                        <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--red">
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip" />
+                            <ui:VisualElement class="town-hub__pip" />
+                            <ui:VisualElement class="town-hub__pip" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="PermanentAugmentButtonArrowLabel" class="town-hub__utility-arrow" text="›" picking-mode="Ignore" />
                 </ui:Button>
-                <ui:Button name="PermanentAugmentButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label name="PermanentAugmentEntryLabel" class="town-hub__utility-name" text="✦  영구 강화" picking-mode="Ignore" />
-                </ui:Button>
-                <ui:Button name="TheaterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry">
-                    <ui:Label name="TheaterEntryLabel" class="town-hub__utility-name" text="▶  극장" picking-mode="Ignore" />
+                <ui:Button name="TheaterButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry town-hub__utility-entry--theater">
+                    <ui:Label name="TheaterButtonIconLabel" class="town-hub__utility-icon" text="▶" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-copy" picking-mode="Ignore">
+                        <ui:Label name="TheaterEntryLabel" class="town-hub__utility-name" text="극장" />
+                        <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--gold">
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip" />
+                            <ui:VisualElement class="town-hub__pip" />
+                            <ui:VisualElement class="town-hub__pip" />
+                            <ui:VisualElement class="town-hub__pip" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="TheaterButtonArrowLabel" class="town-hub__utility-arrow" text="›" picking-mode="Ignore" />
                 </ui:Button>
                 <ui:VisualElement name="ServiceDecisionPanel" class="town-hub__service-panel">
                     <ui:Label name="ServiceSelectedHeroLabel" class="town-hub__service-line" picking-mode="Ignore" />
@@ -106,7 +200,7 @@
 
         <!-- Modal layer overlays — TemplateContainer height 0 우회 + inline display:none 강제 default closed. -->
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
-            <ui:Instance template="SquadBuilderTemplate" picking-mode="Ignore" />
+            <ui:Instance template="TacticalSetupTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="RecruitTemplate" picking-mode="Ignore" />
@@ -131,9 +225,6 @@
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="CompendiumTemplate" picking-mode="Ignore" />
-        </ui:VisualElement>
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
-            <ui:Instance template="TacticalWorkshopTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -76,12 +76,13 @@ public sealed class UxBiblePlayModeWitnessTests
         ClickButton(townHost.Root, "TownCharacterSheetCloseButton");
         yield return WaitForHidden(townHost.Root, "TownCharacterSheetRoot");
 
-        ClickButton(townHost.Root, "SquadBuilderButton");
+        ClickButton(townHost.Root, "TacticalSetupButton");
         yield return WaitForVisible(townHost.Root, "SquadBuilderRoot");
-        VerifySquadBuilder(townHost.Root);
-        AssertModalPanelWithinViewport(townHost.Root, "sm-sqb-modal__panel", "SquadBuilder", 64f, 64f);
-        AssertNoRedText(Require<VisualElement>(townHost.Root, "SquadBuilderRoot"), "SquadBuilder");
-        yield return Capture("squad_builder");
+        yield return new WaitForSecondsRealtime(0.35f);
+        VerifyTacticalSetup(townHost.Root);
+        AssertModalPanelWithinViewport(townHost.Root, "sm-sqb-modal__panel", "Tactical Setup", 64f, 64f);
+        AssertNoRedText(Require<VisualElement>(townHost.Root, "SquadBuilderRoot"), "Tactical Setup");
+        yield return Capture("tactical_setup");
         ClickButton(townHost.Root, "SquadBuilderCloseButton");
         yield return WaitForHidden(townHost.Root, "SquadBuilderRoot");
 
@@ -244,6 +245,8 @@ public sealed class UxBiblePlayModeWitnessTests
         AssertNonEmptyText<Label>(root, "ServiceRosterPressureLabel");
         AssertNonEmptyText<Label>(root, "ServiceAvailabilityLabel");
         Assert.That(Require<VisualElement>(root, "DeployRow").childCount, Is.GreaterThan(0));
+        Assert.That(root.Q<Button>("TacticalSetupButton"), Is.Not.Null);
+        Assert.That(root.Q<Button>("TacticalWorkshopButton"), Is.Null);
         Assert.That(Require<Button>(root, "ExpeditionButton").text, Is.Not.Empty);
     }
 
@@ -257,15 +260,22 @@ public sealed class UxBiblePlayModeWitnessTests
         AssertNonEmptyText<Label>(root, "TcsProgressionBody");
     }
 
-    private static void VerifySquadBuilder(VisualElement root)
+    private static void VerifyTacticalSetup(VisualElement root)
     {
         AssertVisible(root, "SquadBuilderRoot");
         AssertNonEmptyText<Label>(root, "SquadBuilderRosterCountLabel");
         Assert.That(Require<VisualElement>(root, "SquadBuilderRosterList").childCount, Is.GreaterThan(0));
+        AssertNonEmptyText<Label>(root, "TacticalSetupFormationSection");
+        AssertVisible(root, "TacticalSetupPostureSection");
+        AssertVisible(root, "TacticalSetupOperationSection");
+        AssertVisible(root, "TacticalSetupResponseSection");
         AssertNonEmptyText<Label>(root, "SquadBuilderSelectedAnchorLabel");
         AssertNonEmptyText<Label>(root, "SquadBuilderSelectedHeroName");
         AssertNonEmptyText<Label>(root, "SquadBuilderSelectedHeroMeta");
         AssertNonEmptyText<Label>(root, "SquadBuilderStatusLabel");
+        Assert.That(Require<VisualElement>(root, "SquadBuilderOperationRows").childCount, Is.GreaterThan(0));
+        AssertNonEmptyText<Label>(root, "SquadBuilderResponseSummaryLabel");
+        Assert.That(Require<VisualElement>(root, "SquadBuilderSynergyChips").childCount, Is.GreaterThan(0));
         Assert.That(Require<Button>(root, "SquadBuilderAnchor_FrontCenter").text, Is.Not.Empty);
         Assert.That(Require<Button>(root, "SquadBuilderPosture_StandardAdvance"), Is.Not.Null);
     }
@@ -763,7 +773,7 @@ public sealed class UxBiblePlayModeWitnessTests
                 "CharacterSheetTemplate",
                 "InventoryTemplate",
                 "RecruitTemplate",
-                "SquadBuilderTemplate",
+                "TacticalSetupTemplate",
                 "QuickBattleButton",
                 "ExpeditionButton",
             });
@@ -827,9 +837,12 @@ public sealed class UxBiblePlayModeWitnessTests
         {
             var builder = new StringBuilder();
             builder.AppendLine("{");
-            builder.AppendLine("  \"overall\": \"green\",");
-            builder.AppendLine("  \"codexAiQaStatus\": \"automated_visual_gate_green_pending_direct_contact_sheet_review\",");
-            builder.AppendLine("  \"redCount\": 0,");
+            builder.AppendLine("  \"overall\": \"pending_direct_visual_review\",");
+            builder.AppendLine("  \"automatedGate\": \"green\",");
+            builder.AppendLine("  \"codexAiQaStatus\": \"direct_contact_sheet_review_required\",");
+            builder.AppendLine("  \"manualReviewRequiredBeforeUserHandoff\": true,");
+            builder.AppendLine("  \"redCount\": null,");
+            builder.AppendLine("  \"redCountMeaning\": \"Unity witness only checks route, geometry, and blocker text. Codex must compare the contact sheet against the UX Bible mockups before this can become green.\",");
             builder.AppendLine("  \"redCriteria\": [");
             builder.AppendLine("    \"modal not visible\",");
             builder.AppendLine("    \"No translation found\",");
@@ -839,6 +852,11 @@ public sealed class UxBiblePlayModeWitnessTests
             builder.AppendLine("  ],");
             builder.AppendLine("  \"yellow\": [");
             builder.AppendLine("    \"Battle stage art and final unit illustration pass remain outside this UI-only fix wave\"");
+            builder.AppendLine("  ],");
+            builder.AppendLine("  \"notGreenUntil\": [");
+            builder.AppendLine("    \"Codex has opened comparison_contact_sheet.md or the reference/current screenshot pairs\",");
+            builder.AppendLine("    \"all Red visual blockers are either fixed or explicitly reclassified with rationale\",");
+            builder.AppendLine("    \"visual_verdict.json is updated by the reviewer outcome in the evidence packet\"");
             builder.AppendLine("  ],");
             builder.AppendLine("  \"greenGate\": [");
             builder.AppendLine("    \"target surfaces are opened through PlayMode routes\",");
@@ -910,7 +928,7 @@ public sealed class UxBiblePlayModeWitnessTests
             builder.AppendLine($"- commit: `{_shortSha}`");
             builder.AppendLine($"- startedUtc: `{_startedUtc}`");
             builder.AppendLine($"- evidence: `{Directory}`");
-            builder.AppendLine("- visual verdict: `visual_verdict.json`");
+            builder.AppendLine("- visual verdict: `visual_verdict.json` (automated gate only; direct mockup review required before green)");
             builder.AppendLine("- reference/current sheet: `comparison_contact_sheet.md`");
             builder.AppendLine();
             builder.AppendLine("## Passed Checks");
@@ -942,9 +960,9 @@ public sealed class UxBiblePlayModeWitnessTests
                     "Screenshots/mockups/ui_ux_bible_character_sheet_class_detail_v0.png",
                     "character_sheet.png"),
                 new ReferencePair(
-                    "SquadBuilder",
+                    "Tactical Setup",
                     "Screenshots/mockups/ui_ux_bible_squad_builder_v0.png",
-                    "squad_builder.png"),
+                    "tactical_setup.png"),
                 new ReferencePair(
                     "Atlas",
                     "Screenshots/mockups/ui_ux_bible_atlas_overworld_map_v0.png",

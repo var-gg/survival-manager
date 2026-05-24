@@ -41,7 +41,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1
-    m_Localized: "Town \uC6B4\uC601 \uD654\uBA74"
+    m_Localized: "\uBCC0\uBC29 \uC7BF\uACE8 \uB9C8\uC744"
     m_Metadata:
       m_Items: []
   - m_Id: 2
@@ -1065,7 +1065,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021697
-    m_Localized: "\u2756  \uC804\uC5F4 \uD3B8\uC131"
+    m_Localized: "\u2756  \uC804\uC220 \uC124\uC815"
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021698

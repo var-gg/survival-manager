@@ -1,7 +1,8 @@
 /* =============================================================
-   잿골 Town hub V3 — pindoc://decision-town-hub-v3-ashglen-face-cluster.
-   Layout: top utility / middle (NPC strip + Welcome center + utility column) / bottom hero cluster row /
-   bottom CTA bar. atom (HeroFaceCard / sm-cta / sm-modal-frame) + ThemeTokens + RuntimePanelTheme 위에 layout만.
+   Town Service Hub Bible pass
+   Reference: Screenshots/mockups/ui_ux_bible_town_service_hub_v0.png.
+   Structure: framed top command bar, framed service board, left NPC lane,
+   central featured service panel, right decision lane, bottom roster/CTA rail.
    ============================================================= */
 
 .town-hub {
@@ -9,6 +10,10 @@
     color: var(--sm-ink-1);
     background-color: var(--sm-bg-0);
     position: relative;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .town-hub__backdrop {
@@ -16,31 +21,66 @@
 }
 
 .town-hub__backdrop-dim {
-    background-color: rgba(8, 12, 28, 0.72);
+    background-color: rgba(8, 12, 28, 0.58);
 }
 
-/* Top utility bar */
+.town-hub__board-frame {
+    left: 44px;
+    right: 44px;
+    top: 126px;
+    bottom: 92px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 96;
+    -unity-slice-bottom: 96;
+    -unity-slice-scale: 0.42;
+    background-color: rgba(8, 13, 32, 0.62);
+    border-left-color: rgba(230, 183, 81, 0.72);
+    border-right-color: rgba(230, 183, 81, 0.72);
+    border-top-color: rgba(245, 214, 138, 0.66);
+    border-bottom-color: rgba(138, 100, 24, 0.82);
+}
+
+/* Top command bar */
 .town-hub__header {
+    height: 92px;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
-    padding-top: 16px;
+    align-items: center;
+    margin-top: 24px;
+    margin-left: 44px;
+    margin-right: 44px;
+    padding-top: 12px;
     padding-bottom: 12px;
-    padding-left: 32px;
-    padding-right: 32px;
-    background-color: rgba(20, 26, 53, 0.78);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--sm-gold-300-a32);
+    padding-left: 28px;
+    padding-right: 28px;
+    background-color: rgba(8, 13, 32, 0.86);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.54);
+    border-right-color: rgba(230, 183, 81, 0.54);
+    border-top-color: rgba(245, 214, 138, 0.42);
+    border-bottom-color: rgba(138, 100, 24, 0.72);
 }
 
-.town-hub__header-title { flex-direction: column; }
+.town-hub__header-title {
+    flex-direction: column;
+    min-width: 360px;
+}
 
 .town-hub__eyebrow {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     letter-spacing: 4px;
+    color: var(--sm-gold-200);
 }
 
-.town-hub__title { font-size: 24px; }
+.town-hub__title {
+    font-size: 30px;
+    color: var(--sm-vellum);
+}
 
 .town-hub__header-tools {
     flex-direction: row;
@@ -55,28 +95,38 @@
 
 .town-hub__utility-divider {
     width: 1px;
-    height: 22px;
-    background-color: rgba(230, 183, 81, 0.45);
+    height: 30px;
+    background-color: rgba(230, 183, 81, 0.44);
     margin-left: 10px;
-    margin-right: 6px;
+    margin-right: 8px;
 }
 
 .town-hub__header-tools > .ui-button {
-    margin-left: 5px;
+    margin-left: 8px;
     min-width: 56px;
 }
 
-/* Help strip */
+/* Help strip: opt-in overlay below command bar. */
 .town-hub__help {
+    position: absolute;
+    left: 64px;
+    right: 64px;
+    top: 124px;
     flex-direction: row;
     align-items: center;
-    background-color: rgba(28, 34, 67, 0.92);
+    background-color: rgba(28, 34, 67, 0.94);
     padding-top: 8px;
     padding-bottom: 8px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 18px;
+    padding-right: 18px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
     border-bottom-width: 1px;
-    border-bottom-color: var(--sm-gold-300-a28);
+    border-left-color: rgba(230, 183, 81, 0.32);
+    border-right-color: rgba(230, 183, 81, 0.32);
+    border-top-color: rgba(245, 214, 138, 0.28);
+    border-bottom-color: rgba(138, 100, 24, 0.44);
 }
 
 .town-hub__help-body {
@@ -88,14 +138,18 @@
 
 .town-hub__help-dismiss { margin-left: 12px; }
 
-/* Stage — 3 column (NPC strip / Welcome center / utility) */
+/* Service board */
 .town-hub__stage {
     flex-grow: 1;
     flex-direction: row;
-    padding-top: 20px;
-    padding-bottom: 12px;
-    padding-left: 32px;
-    padding-right: 32px;
+    margin-top: 34px;
+    margin-left: 72px;
+    margin-right: 72px;
+    margin-bottom: 12px;
+    padding-top: 26px;
+    padding-bottom: 18px;
+    padding-left: 28px;
+    padding-right: 28px;
 }
 
 .town-hub__column-eyebrow {
@@ -103,85 +157,293 @@
     font-size: 11px;
     letter-spacing: 4px;
     -unity-font-style: bold;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     -unity-text-align: middle-left;
 }
 
-/* NPC strip (좌) — 4 face card vertical column. View가 BuildFaceCard로 채움. */
+/* Left lane: NPC service cards as wide plates. */
 .town-hub__npc-strip {
-    width: 200px;
+    width: 300px;
     flex-direction: column;
-    margin-right: 24px;
-    align-items: center;
-    padding-top: 22px;
+    margin-right: 28px;
+    align-items: stretch;
 }
 
 .town-hub__npc-strip > * {
     margin-bottom: 14px;
 }
 
-/* Center — Welcome captain face (lg) + greeting */
+.town-hub__npc-strip .sm-face-card--lg {
+    width: 300px;
+    height: 112px;
+    background-color: rgba(13, 20, 45, 0.88);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.62);
+    border-right-color: rgba(230, 183, 81, 0.48);
+    border-top-color: rgba(245, 214, 138, 0.46);
+    border-bottom-color: rgba(138, 100, 24, 0.78);
+}
+
+.town-hub__npc-strip .sm-face-card__portrait {
+    height: 64px;
+    flex-grow: 0;
+    background-color: rgba(24, 31, 63, 0.66);
+}
+
+.town-hub__npc-strip .sm-face-card__name {
+    font-size: 15px;
+    color: var(--sm-vellum);
+}
+
+/* Center feature panel */
 .town-hub__center {
     flex-grow: 1;
     align-items: center;
     justify-content: center;
-}
-
-.town-hub__welcome-mount {
-    margin-bottom: 16px;
-}
-
-.town-hub__welcome-greeting {
-    color: var(--sm-vellum);
-    font-size: 14px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    max-width: 480px;
-    white-space: normal;
-}
-
-/* Utility strip (우) — 4 entry */
-.town-hub__utility-strip {
-    width: 200px;
-    flex-direction: column;
-    margin-left: 24px;
-    padding-top: 0;
-}
-
-.town-hub__utility-entry {
-    width: 100%;
-    margin-bottom: 10px;
-    -unity-text-align: middle-left;
-    padding-left: 14px;
-    padding-right: 14px;
-}
-
-.town-hub__utility-name {
-    -unity-text-align: middle-left;
-    font-size: 13px;
-}
-
-.town-hub__service-panel {
-    margin-top: 4px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    background-color: rgba(18, 24, 52, 0.72);
+    min-height: 430px;
+    background-color: rgba(10, 16, 38, 0.64);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.24);
-    border-right-color: rgba(230, 183, 81, 0.24);
-    border-top-color: rgba(245, 214, 138, 0.22);
-    border-bottom-color: rgba(138, 100, 24, 0.38);
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(245, 214, 138, 0.26);
+    border-bottom-color: rgba(138, 100, 24, 0.44);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+.town-hub__feature-art {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 18px;
+    bottom: 88px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.32;
+    background-color: rgba(8, 13, 31, 0.44);
+    overflow: hidden;
+}
+
+.town-hub__feature-vignette {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    background-color: rgba(6, 9, 22, 0.36);
+}
+
+.town-hub__feature-icon {
+    position: absolute;
+    left: 50%;
+    top: 26px;
+    width: 120px;
+    height: 120px;
+    margin-left: -60px;
+    color: rgba(245, 214, 138, 0.86);
+    font-size: 72px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
+    -unity-slice-left: 56;
+    -unity-slice-right: 56;
+    -unity-slice-top: 56;
+    -unity-slice-bottom: 56;
+    -unity-slice-scale: 0.5;
+    background-color: rgba(11, 17, 39, 0.72);
+}
+
+.town-hub__feature-stats {
+    position: absolute;
+    left: 38px;
+    right: 38px;
+    bottom: 22px;
+    flex-direction: row;
+}
+
+.town-hub__feature-stat {
+    flex-grow: 1;
+    height: 74px;
+    margin-left: 7px;
+    margin-right: 7px;
+    padding-left: 16px;
+    padding-right: 16px;
+    justify-content: center;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+    background-color: rgba(10, 16, 37, 0.82);
+}
+
+.town-hub__feature-stat-icon {
+    color: var(--sm-gold-200);
+    font-size: 18px;
+    margin-bottom: 8px;
+    -unity-text-align: middle-center;
+}
+
+.town-hub__welcome-mount {
+    margin-top: 78px;
+    margin-bottom: 18px;
+}
+
+.town-hub__center .sm-face-card--lg {
+    width: 168px;
+    height: 184px;
+}
+
+.town-hub__center .sm-face-card__portrait {
+    background-color: rgba(24, 31, 63, 0.78);
+}
+
+.town-hub__welcome-greeting {
+    position: absolute;
+    left: 26px;
+    right: 26px;
+    bottom: 26px;
+    color: var(--sm-vellum);
+    font-size: 15px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    max-width: 560px;
+    white-space: normal;
+}
+
+/* Right lane: decision/service list */
+.town-hub__utility-strip {
+    width: 310px;
+    flex-direction: column;
+    margin-left: 28px;
+}
+
+.town-hub__utility-entry {
+    width: 100%;
+    height: 76px;
+    margin-bottom: 11px;
+    -unity-text-align: middle-left;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+    background-color: rgba(10, 16, 37, 0.86);
+}
+
+.town-hub__utility-icon {
+    width: 52px;
+    height: 52px;
+    margin-right: 10px;
+    -unity-text-align: middle-center;
+    font-size: 24px;
+    color: var(--sm-gold-100);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
+    -unity-slice-left: 56;
+    -unity-slice-right: 56;
+    -unity-slice-top: 56;
+    -unity-slice-bottom: 56;
+    -unity-slice-scale: 0.38;
+    background-color: rgba(12, 18, 42, 0.78);
+}
+
+.town-hub__utility-entry--roster .town-hub__utility-icon { color: rgb(129, 184, 245); }
+.town-hub__utility-entry--compendium .town-hub__utility-icon { color: rgb(197, 137, 235); }
+.town-hub__utility-entry--squad .town-hub__utility-icon { color: rgb(245, 214, 138); }
+.town-hub__utility-entry--workshop .town-hub__utility-icon { color: rgb(145, 208, 111); }
+.town-hub__utility-entry--augment .town-hub__utility-icon { color: rgb(235, 116, 91); }
+
+.town-hub__utility-copy {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.town-hub__utility-name {
+    -unity-text-align: middle-left;
+    font-size: 15px;
+    color: var(--sm-vellum);
+    -unity-font-style: bold;
+}
+
+.town-hub__utility-arrow {
+    width: 20px;
+    color: var(--sm-gold-200);
+    font-size: 28px;
+    -unity-text-align: middle-center;
+}
+
+.town-hub__pip-row {
+    flex-direction: row;
+    margin-top: 8px;
+}
+
+.town-hub__pip {
+    width: 9px;
+    height: 9px;
+    margin-right: 6px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.22);
+    border-bottom-color: rgba(230, 183, 81, 0.22);
+    background-color: rgba(30, 37, 68, 0.72);
+    rotate: 45deg;
+}
+
+.town-hub__pip--on {
+    background-color: var(--sm-gold-300);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
+.town-hub__pip-row--blue .town-hub__pip--on { background-color: rgb(95, 154, 229); }
+.town-hub__pip-row--green .town-hub__pip--on { background-color: rgb(135, 190, 92); }
+.town-hub__pip-row--purple .town-hub__pip--on { background-color: rgb(178, 115, 228); }
+.town-hub__pip-row--red .town-hub__pip--on { background-color: rgb(221, 95, 73); }
+
+.town-hub__service-panel {
+    margin-top: 6px;
+    min-height: 150px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: rgba(12, 18, 42, 0.78);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(245, 214, 138, 0.24);
+    border-bottom-color: rgba(138, 100, 24, 0.42);
 }
 
 .town-hub__service-line {
     color: var(--sm-ink-2);
-    font-size: 10px;
-    margin-bottom: 4px;
+    font-size: 11px;
+    margin-bottom: 9px;
     white-space: normal;
 }
 
@@ -190,16 +452,25 @@
     -unity-font-style: bold;
 }
 
-/* Hero cluster — bottom row (deploy md row + roster sm row) */
+/* Bottom roster rail */
 .town-hub__hero-cluster {
     flex-direction: column;
-    padding-top: 8px;
-    padding-bottom: 14px;
-    padding-left: 32px;
-    padding-right: 32px;
-    background-color: rgba(20, 26, 53, 0.56);
+    margin-left: 72px;
+    margin-right: 72px;
+    margin-bottom: 0;
+    padding-top: 14px;
+    padding-bottom: 16px;
+    padding-left: 28px;
+    padding-right: 28px;
+    background-color: rgba(8, 13, 32, 0.82);
+    border-left-width: 1px;
+    border-right-width: 1px;
     border-top-width: 1px;
-    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(245, 214, 138, 0.20);
+    border-bottom-color: rgba(138, 100, 24, 0.38);
 }
 
 .town-hub__cluster-eyebrow {
@@ -228,29 +499,39 @@
     flex-direction: row;
     flex-wrap: wrap;
     flex-grow: 1;
-    margin-left: 14px;
+    margin-left: 16px;
     border-left-width: 1px;
     border-left-color: rgba(230, 183, 81, 0.32);
-    padding-left: 14px;
+    padding-left: 16px;
     align-items: flex-end;
 }
 
 .town-hub__roster-row > * {
-    margin-right: 6px;
+    margin-right: 7px;
     margin-bottom: 6px;
 }
 
-/* Bottom CTA bar */
+/* Bottom CTA rail */
 .town-hub__cta-bar {
+    height: 76px;
     flex-direction: row;
     align-items: center;
+    margin-left: 44px;
+    margin-right: 44px;
+    margin-bottom: 24px;
     padding-top: 12px;
-    padding-bottom: 14px;
-    padding-left: 32px;
-    padding-right: 32px;
-    background-color: var(--sm-frame-ceremony-bg);
-    border-top-width: var(--sm-frame-trim-w);
-    border-top-color: var(--sm-frame-trim-color);
+    padding-bottom: 12px;
+    padding-left: 28px;
+    padding-right: 28px;
+    background-color: rgba(8, 13, 32, 0.92);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.54);
+    border-right-color: rgba(230, 183, 81, 0.54);
+    border-top-color: rgba(245, 214, 138, 0.36);
+    border-bottom-color: rgba(138, 100, 24, 0.72);
 }
 
 .town-hub__status {
@@ -266,26 +547,32 @@
 }
 
 .town-hub__quick-battle-button {
-    min-width: 160px;
+    min-width: 148px;
     margin-right: 14px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_button_dark.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.34;
+    background-color: rgba(32, 41, 75, 0.94);
+    color: var(--sm-vellum);
 }
 
 .town-hub__expedition-cta {
-    min-width: 220px;
+    min-width: 240px;
     -unity-font-style: bold;
-    letter-spacing: 1px;
 }
 
-/* Bark layer — absolute fill above cluster. Phase 8 BarkPopupView가 채움. */
 .town-hub__bark-layer {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
 }
 
-/* Modal overlay wrapper — TemplateContainer height 0 우회. */
 .town-hub__modal-overlay {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
+    z-index: 5000;
 }
 
 .town-hub__modal-overlay > * {

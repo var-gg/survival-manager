@@ -38,10 +38,8 @@ public sealed class TownScreenView
     private readonly Label _rosterEntryLabel;
     private readonly Button _compendiumButton;
     private readonly Label _compendiumEntryLabel;
-    private readonly Button _squadBuilderButton;
-    private readonly Label _squadBuilderEntryLabel;
-    private readonly Button _tacticalWorkshopButton;
-    private readonly Label _tacticalWorkshopEntryLabel;
+    private readonly Button _tacticalSetupButton;
+    private readonly Label _tacticalSetupEntryLabel;
     private readonly Button _permanentAugmentButton;
     private readonly Label _permanentAugmentEntryLabel;
     private readonly Button _theaterButton;
@@ -90,10 +88,8 @@ public sealed class TownScreenView
         _rosterEntryLabel = Require<Label>(root, "RosterEntryLabel");
         _compendiumButton = Require<Button>(root, "CompendiumButton");
         _compendiumEntryLabel = Require<Label>(root, "CompendiumEntryLabel");
-        _squadBuilderButton = Require<Button>(root, "SquadBuilderButton");
-        _squadBuilderEntryLabel = Require<Label>(root, "SquadBuilderEntryLabel");
-        _tacticalWorkshopButton = Require<Button>(root, "TacticalWorkshopButton");
-        _tacticalWorkshopEntryLabel = Require<Label>(root, "TacticalWorkshopEntryLabel");
+        _tacticalSetupButton = Require<Button>(root, "TacticalSetupButton");
+        _tacticalSetupEntryLabel = Require<Label>(root, "TacticalSetupEntryLabel");
         _permanentAugmentButton = Require<Button>(root, "PermanentAugmentButton");
         _permanentAugmentEntryLabel = Require<Label>(root, "PermanentAugmentEntryLabel");
         _theaterButton = Require<Button>(root, "TheaterButton");
@@ -129,8 +125,7 @@ public sealed class TownScreenView
 
     public void BindRosterOpen(Action open) => _rosterButton.clicked += open;
     public void BindCompendiumOpen(Action open) => _compendiumButton.clicked += open;
-    public void BindSquadBuilderOpen(Action open) => _squadBuilderButton.clicked += open;
-    public void BindTacticalWorkshopOpen(Action open) => _tacticalWorkshopButton.clicked += open;
+    public void BindTacticalSetupOpen(Action open) => _tacticalSetupButton.clicked += open;
     public void BindPermanentAugmentOpen(Action open) => _permanentAugmentButton.clicked += open;
     public void BindTheaterOpen(Action open) => _theaterButton.clicked += open;
 
@@ -160,8 +155,7 @@ public sealed class TownScreenView
         _ledgerTitleLabel.text = state.LedgerTitle;
         _rosterEntryLabel.text = state.RosterEntryLabel;
         _compendiumEntryLabel.text = state.CompendiumEntryLabel;
-        _squadBuilderEntryLabel.text = state.SquadBuilderEntryLabel;
-        _tacticalWorkshopEntryLabel.text = state.TacticalWorkshopEntryLabel;
+        _tacticalSetupEntryLabel.text = state.TacticalSetupEntryLabel;
         _permanentAugmentEntryLabel.text = state.PermanentAugmentEntryLabel;
         _theaterEntryLabel.text = state.TheaterEntryLabel;
         _theaterButton.SetEnabled(state.ShowTheater);
@@ -252,6 +246,10 @@ public sealed class TownScreenView
         portrait.AddToClassList("sm-face-card__portrait");
         portrait.AddToClassList($"sm-face-card__emotion--{emotion}");
         portrait.pickingMode = PickingMode.Ignore;
+        var portraitGlyph = new Label(ResolvePortraitGlyph(badge, role, id));
+        portraitGlyph.AddToClassList("sm-face-card__portrait-glyph");
+        portraitGlyph.pickingMode = PickingMode.Ignore;
+        portrait.Add(portraitGlyph);
         card.Add(portrait);
 
         var nameLabel = new Label(displayName);
@@ -259,7 +257,42 @@ public sealed class TownScreenView
         nameLabel.pickingMode = PickingMode.Ignore;
         card.Add(nameLabel);
 
+        var pipRow = new VisualElement();
+        pipRow.AddToClassList("sm-face-card__pip-row");
+        for (var i = 0; i < 5; i++)
+        {
+            var pip = new VisualElement();
+            pip.AddToClassList("sm-face-card__pip");
+            pip.EnableInClassList("sm-face-card__pip--on", i < ResolvePipCount(badge, role, id));
+            pipRow.Add(pip);
+        }
+        pipRow.pickingMode = PickingMode.Ignore;
+        card.Add(pipRow);
+
         return card;
+    }
+
+    private static string ResolvePortraitGlyph(string badge, string role, string id)
+    {
+        return badge switch
+        {
+            "tavern" => "♟",
+            "forge" => "⚒",
+            "clinic" => "✚",
+            "records" => "✧",
+            "captain" => "✦",
+            _ when role.Contains("hero", StringComparison.Ordinal) => "◆",
+            _ when id.Contains("squad", StringComparison.OrdinalIgnoreCase) => "⚔",
+            _ => "◇"
+        };
+    }
+
+    private static int ResolvePipCount(string badge, string role, string id)
+    {
+        if (badge == "captain") return 5;
+        if (role.Contains("hero-deploy", StringComparison.Ordinal)) return 4;
+        if (role.Contains("hero", StringComparison.Ordinal)) return 3;
+        return (id.GetHashCode() & int.MaxValue) % 3 + 2;
     }
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement

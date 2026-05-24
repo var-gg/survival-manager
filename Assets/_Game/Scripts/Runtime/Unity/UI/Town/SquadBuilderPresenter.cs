@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Content.Definitions;
+using SM.Core.Contracts;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using UnityEngine;
@@ -10,8 +12,7 @@ using UnityEngine.UIElements;
 namespace SM.Unity.UI.Town;
 
 /// <summary>
-/// SquadBuilder modal V1 — anchor 6 (Front 3 + Back 3) + posture 5 편집 (audit §2.2).
-/// Town hub bottom toolbar에서 진입. TacticalWorkshop과 같은 panel-overlay 패턴.
+/// TacticalSetup production surface — TownSquadBuilder/SquadBuilderPresenter는 legacy implementation alias.
 ///
 /// V1 동작:
 /// - anchor 버튼 클릭 → SessionState.CycleDeploymentAssignment(anchor) (다음 hero로 cycle, 빈 슬롯 포함)
@@ -37,6 +38,9 @@ public sealed class SquadBuilderPresenter
     private readonly Label _selectedHeroMeta;
     private readonly Label _selectedHeroLoadout;
     private readonly VisualElement _selectedHeroTags;
+    private readonly VisualElement _operationRows;
+    private readonly Label _responseSummaryLabel;
+    private readonly VisualElement _synergyChips;
     private readonly (DeploymentAnchorId Anchor, Button Button)[] _anchorButtons;
     private readonly (TeamPostureType Posture, Button Button)[] _postureButtons;
     private DeploymentAnchorId _selectedAnchor = DeploymentAnchorId.FrontCenter;
@@ -59,6 +63,9 @@ public sealed class SquadBuilderPresenter
         _selectedHeroMeta = Require<Label>(_panelRoot, "SquadBuilderSelectedHeroMeta");
         _selectedHeroLoadout = Require<Label>(_panelRoot, "SquadBuilderSelectedHeroLoadout");
         _selectedHeroTags = Require<VisualElement>(_panelRoot, "SquadBuilderSelectedHeroTags");
+        _operationRows = Require<VisualElement>(_panelRoot, "SquadBuilderOperationRows");
+        _responseSummaryLabel = Require<Label>(_panelRoot, "SquadBuilderResponseSummaryLabel");
+        _synergyChips = Require<VisualElement>(_panelRoot, "SquadBuilderSynergyChips");
 
         _anchorButtons = new[]
         {
@@ -169,7 +176,8 @@ public sealed class SquadBuilderPresenter
         }
 
         RenderRoster(session, loadout, anchorByHeroId);
-        RenderSelectedDetail(session, loadout, heroById, anchorByHeroId);
+        var selectedRow = RenderSelectedDetail(session, loadout, heroById, anchorByHeroId);
+        RenderTacticalDecisionRows(session, anchorByHeroId.Count, selectedRow);
         _statusLabel.text = $"{_statusText} · 현재 팀 태세: {LocalizePosture(selected)}";
     }
 
@@ -195,19 +203,44 @@ public sealed class SquadBuilderPresenter
             container.AddToClassList("sm-sqb-modal__roster-row");
             container.EnableInClassList("sm-sqb-modal__roster-row--deployed", row.IsDeployed);
 
+            var icon = new Label(row.IsDeployed ? "◆" : "◇");
+            icon.AddToClassList("sm-sqb-modal__roster-icon");
+            container.Add(icon);
+
+            var copy = new VisualElement();
+            copy.AddToClassList("sm-sqb-modal__roster-copy");
+
             var name = new Label(row.DisplayName);
             name.AddToClassList("sm-sqb-modal__roster-name");
-            container.Add(name);
+            copy.Add(name);
 
-            var meta = new Label($"{row.MetaLabel} · {row.DeploymentLabel}");
+            var meta = new Label($"{Shorten(row.MetaLabel, 22)} · {row.DeploymentLabel}");
             meta.AddToClassList("sm-sqb-modal__roster-meta");
-            container.Add(meta);
+            copy.Add(meta);
+
+            var pips = new VisualElement();
+            pips.AddToClassList("sm-sqb-modal__roster-pips");
+            for (var i = 0; i < 5; i++)
+            {
+                var pip = new VisualElement();
+                pip.AddToClassList("sm-sqb-modal__roster-pip");
+                pip.EnableInClassList("sm-sqb-modal__roster-pip--on", i < ResolveRosterPipCount(row));
+                pips.Add(pip);
+            }
+            copy.Add(pips);
+            container.Add(copy);
 
             _rosterList.Add(container);
         }
     }
 
-    private void RenderSelectedDetail(
+    private static int ResolveRosterPipCount(SquadBuilderHeroRow row)
+    {
+        if (row.IsDeployed) return 5;
+        return row.DeploymentLabel == "원정 후보" ? 4 : 3;
+    }
+
+    private SquadBuilderHeroRow? RenderSelectedDetail(
         GameSessionState session,
         SM.Meta.Model.LoadoutView? loadout,
         IReadOnlyDictionary<string, HeroInstanceRecord> heroById,
@@ -225,7 +258,7 @@ public sealed class SquadBuilderPresenter
             _selectedHeroLoadout.text = "formation board의 anchor를 누르면 기존 순환 규칙으로 배치가 갱신됩니다.";
             AddDetailTag("empty");
             AddDetailTag(LocalizePosture(session.SelectedTeamPosture));
-            return;
+            return null;
         }
 
         var row = BuildHeroRow(
@@ -239,6 +272,49 @@ public sealed class SquadBuilderPresenter
         AddDetailTag(row.DeploymentLabel);
         AddDetailTag(row.RarityLabel);
         AddDetailTag($"팀 태세 {LocalizePosture(session.SelectedTeamPosture)}");
+        return row;
+    }
+
+    private void RenderTacticalDecisionRows(GameSessionState session, int deployedCount, SquadBuilderHeroRow? selectedRow)
+    {
+        _operationRows.Clear();
+        _synergyChips.Clear();
+
+        AddOperationRow("전열", selectedRow?.DeploymentLabel ?? LocalizeAnchor(_selectedAnchor));
+        AddOperationRow("역할", selectedRow?.RoleLabel ?? "선택 없음");
+        AddOperationRow("거리", selectedRow?.RangeLabel ?? "기본 교전 거리");
+        AddOperationRow("편성", $"배치 {deployedCount}/6 · 원정 {session.ExpeditionSquadHeroIds.Count}/4");
+
+        _responseSummaryLabel.text =
+            $"{LocalizePosture(session.SelectedTeamPosture)} 기준. 확정 전투 예측이 아니라 현재 편성/콘텐츠 read model의 대응 힌트입니다.";
+
+        AddDetailChip(_synergyChips, LocalizePosture(session.SelectedTeamPosture));
+        if (selectedRow == null)
+        {
+            AddDetailChip(_synergyChips, "선택 없음");
+            AddDetailChip(_synergyChips, "가짜 수치 없음");
+            return;
+        }
+
+        AddDetailChip(_synergyChips, selectedRow.RoleLabel);
+        AddDetailChip(_synergyChips, selectedRow.FormationLabel);
+        AddDetailChip(_synergyChips, selectedRow.BiasLabel);
+    }
+
+    private void AddOperationRow(string key, string value)
+    {
+        var row = new VisualElement();
+        row.AddToClassList("sm-sqb-modal__operation-row");
+
+        var keyLabel = new Label(key);
+        keyLabel.AddToClassList("sm-sqb-modal__operation-key");
+        row.Add(keyLabel);
+
+        var valueLabel = new Label(value);
+        valueLabel.AddToClassList("sm-sqb-modal__operation-value");
+        row.Add(valueLabel);
+
+        _operationRows.Add(row);
     }
 
     private SquadBuilderHeroRow BuildHeroRow(
@@ -264,6 +340,24 @@ public sealed class SquadBuilderPresenter
             : expeditionSet.Contains(hero.HeroId)
                 ? "원정 후보"
                 : "대기";
+        var operationAnchor = anchorByHeroId.TryGetValue(hero.HeroId, out var assignedAnchor)
+            ? assignedAnchor
+            : DeploymentAnchorId.FrontCenter;
+        var activeBlueprint = ResolveActiveBlueprint(session);
+        var roleInstructionId = ResolveRoleInstructionId(hero, operationAnchor, activeBlueprint);
+        var fallbackRoleTag = ResolveDefaultRoleTag(hero.ClassId, operationAnchor);
+        RoleInstructionDefinition? roleInstruction = null;
+        if (!string.IsNullOrWhiteSpace(roleInstructionId)
+            && _root.CombatContentLookup.TryGetRoleInstructionDefinition(roleInstructionId, out var resolvedRole))
+        {
+            roleInstruction = resolvedRole;
+        }
+
+        var behaviorProfile = ResolveBehaviorProfile(hero);
+        var roleLabel = _contentText.GetRoleName(roleInstructionId, roleInstruction?.RoleTag ?? fallbackRoleTag);
+        var formationLabel = LocalizeFormation(behaviorProfile?.FormationLine);
+        var rangeLabel = LocalizeRange(behaviorProfile?.RangeDiscipline);
+        var biasLabel = BuildBiasLabel(roleInstruction);
 
         return new SquadBuilderHeroRow(
             HeroId: hero.HeroId,
@@ -271,8 +365,81 @@ public sealed class SquadBuilderPresenter
             MetaLabel: $"{className} / {raceName} · Lv {level} · XP {xpPct}%",
             LoadoutLabel: $"장비 {equippedItemCount} · 스킬 {equippedSkillCount} · 패시브 {passiveCount}",
             DeploymentLabel: deploymentLabel,
+            RoleLabel: roleLabel,
+            FormationLabel: formationLabel,
+            RangeLabel: rangeLabel,
+            BiasLabel: biasLabel,
             RarityLabel: hero.RecruitTier.ToString().ToLowerInvariant(),
             IsDeployed: anchorByHeroId.ContainsKey(hero.HeroId));
+    }
+
+    private SquadBlueprintRecord? ResolveActiveBlueprint(GameSessionState session)
+    {
+        return session.Profile.SquadBlueprints.FirstOrDefault(record =>
+                   string.Equals(record.BlueprintId, session.Profile.ActiveBlueprintId, StringComparison.Ordinal))
+               ?? session.Profile.SquadBlueprints.FirstOrDefault();
+    }
+
+    private string ResolveRoleInstructionId(
+        HeroInstanceRecord hero,
+        DeploymentAnchorId anchor,
+        SquadBlueprintRecord? activeBlueprint)
+    {
+        if (activeBlueprint?.HeroRoleIds != null
+            && activeBlueprint.HeroRoleIds.TryGetValue(hero.HeroId, out var roleInstructionId)
+            && !string.IsNullOrWhiteSpace(roleInstructionId))
+        {
+            return roleInstructionId;
+        }
+
+        return ResolveDefaultRoleInstructionId(hero.ClassId, anchor);
+    }
+
+    private BehaviorProfileDefinition? ResolveBehaviorProfile(HeroInstanceRecord hero)
+    {
+        if (!string.IsNullOrWhiteSpace(hero.ArchetypeId)
+            && _root.CombatContentLookup.TryGetArchetype(hero.ArchetypeId, out var archetype))
+        {
+            return archetype.BehaviorProfile;
+        }
+
+        if (!string.IsNullOrWhiteSpace(hero.HeroId)
+            && _root.CombatContentLookup.TryGetArchetype(hero.HeroId, out var heroArchetype))
+        {
+            return heroArchetype.BehaviorProfile;
+        }
+
+        return null;
+    }
+
+    private static string ResolveDefaultRoleInstructionId(string classId, DeploymentAnchorId anchor)
+        => ResolveDefaultRoleTag(classId, anchor);
+
+    private static string ResolveDefaultRoleTag(string classId, DeploymentAnchorId anchor)
+    {
+        return classId switch
+        {
+            "vanguard" => "anchor",
+            "duelist" => "bruiser",
+            "ranger" => "carry",
+            "mystic" => "support",
+            _ => anchor.IsFrontRow() ? "frontline" : "backline",
+        };
+    }
+
+    private static string BuildBiasLabel(RoleInstructionDefinition? roleInstruction)
+    {
+        if (roleInstruction == null)
+        {
+            return "기본 bias";
+        }
+
+        var protect = Mathf.Clamp01(roleInstruction.ProtectCarryBias);
+        var pressure = Mathf.Clamp01(roleInstruction.BacklinePressureBias);
+        var retreat = Mathf.Clamp01(roleInstruction.RetreatBias);
+        if (protect >= pressure && protect >= retreat) return "보호 bias";
+        if (pressure >= retreat) return "후열 압박";
+        return "후퇴 성향";
     }
 
     private static IReadOnlyDictionary<string, DeploymentAnchorId> BuildAnchorByHeroId(SM.Meta.Model.LoadoutView? loadout)
@@ -293,9 +460,14 @@ public sealed class SquadBuilderPresenter
 
     private void AddDetailTag(string text)
     {
+        AddDetailChip(_selectedHeroTags, text);
+    }
+
+    private static void AddDetailChip(VisualElement parent, string text)
+    {
         var tag = new Label(text);
         tag.AddToClassList("sm-sqb-modal__tag");
-        _selectedHeroTags.Add(tag);
+        parent.Add(tag);
     }
 
     private string ResolveHeroDisplayName(HeroInstanceRecord hero)
@@ -383,12 +555,34 @@ public sealed class SquadBuilderPresenter
         _ => posture.ToString(),
     };
 
+    private static string LocalizeFormation(FormationLine? formation) => formation switch
+    {
+        FormationLine.Frontline => "전열",
+        FormationLine.Midline => "중열",
+        FormationLine.Backline => "후열",
+        _ => "배치 기준",
+    };
+
+    private static string LocalizeRange(RangeDiscipline? range) => range switch
+    {
+        RangeDiscipline.Collapse => "압박 접근",
+        RangeDiscipline.HoldBand => "거리 유지",
+        RangeDiscipline.KiteBackward => "후퇴 카이팅",
+        RangeDiscipline.SideStepHold => "측면 유지",
+        RangeDiscipline.AnchorNearFrontline => "전열 근접",
+        _ => "기본 교전 거리",
+    };
+
     private sealed record SquadBuilderHeroRow(
         string HeroId,
         string DisplayName,
         string MetaLabel,
         string LoadoutLabel,
         string DeploymentLabel,
+        string RoleLabel,
+        string FormationLabel,
+        string RangeLabel,
+        string BiasLabel,
         string RarityLabel,
         bool IsDeployed);
 

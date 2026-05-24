@@ -30,7 +30,10 @@ public sealed class UiArtBibleConformanceFastTests
         var registry = File.ReadAllText(RegistryPath);
         var exceptions = File.ReadAllText(ExceptionsPath);
 
-        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss").Count, Is.GreaterThanOrEqualTo(10));
+        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss").Count, Is.GreaterThanOrEqualTo(9));
+        Assert.That(registry, Does.Contain("\"legacyPreviewPanelUss\""));
+        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss"), Does.Not.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
+        Assert.That(ReadStringArray(registry, "legacyPreviewPanelUss"), Does.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
         Assert.That(registry, Does.Contain("\"monitoredProductionPanelUss\""));
         Assert.That(registry, Does.Contain("\"button.cta.primary\""));
         Assert.That(registry, Does.Contain("\"button.cta.secondary\""));
@@ -83,6 +86,7 @@ public sealed class UiArtBibleConformanceFastTests
         var json = File.ReadAllText(RegistryPath);
         return new ArtBibleRegistry(
             ReadStringArray(json, "enforcedProductionPanelUss"),
+            ReadStringArray(json, "legacyPreviewPanelUss"),
             ReadStringArray(json, "monitoredProductionPanelUss"),
             ReadStringArray(json, "productionUxmlRoots"),
             ReadStringArray(json, "forbiddenInnerChromeImages"));
@@ -94,6 +98,7 @@ public sealed class UiArtBibleConformanceFastTests
 
         AnalyzeRuntimePanelTheme(findings);
         AnalyzeEnforcedPanels(registry, findings);
+        AnalyzeLegacyPreviewPanels(registry, findings);
         AnalyzeMonitoredPanels(registry, findings);
         AnalyzeProductionUxmlImports(registry, findings);
         AnalyzeLocalButtonSliceDuplication(registry, findings);
@@ -179,6 +184,27 @@ public sealed class UiArtBibleConformanceFastTests
 
             AnalyzeForbiddenEquipmentRarityClasses(path, uss, findings);
             AnalyzeCanonicalButtonSlices(path, uss, findings, ArtBibleSeverity.Warning);
+        }
+    }
+
+    private static void AnalyzeLegacyPreviewPanels(ArtBibleRegistry registry, List<ArtBibleFinding> findings)
+    {
+        foreach (var path in registry.LegacyPreviewPanelUss)
+        {
+            if (!File.Exists(path))
+            {
+                findings.Add(Warning("AB160_MISSING_LEGACY_PREVIEW_PANEL_USS", path, "A legacy-preview panel USS is missing."));
+                continue;
+            }
+
+            var uss = File.ReadAllText(path);
+            foreach (var image in registry.ForbiddenInnerChromeImages)
+            {
+                if (uss.Contains(image, StringComparison.Ordinal))
+                {
+                    findings.Add(Warning("AB161_LEGACY_PREVIEW_PANEL_INNER_CHROME", path, "Legacy-preview panel still uses inner ornate chrome image: " + image));
+                }
+            }
         }
     }
 
@@ -494,17 +520,21 @@ public sealed class UiArtBibleConformanceFastTests
     {
         public ArtBibleRegistry(
             IReadOnlyList<string> enforcedProductionPanelUss,
+            IReadOnlyList<string> legacyPreviewPanelUss,
             IReadOnlyList<string> monitoredProductionPanelUss,
             IReadOnlyList<string> productionUxmlRoots,
             IReadOnlyList<string> forbiddenInnerChromeImages)
         {
             EnforcedProductionPanelUss = enforcedProductionPanelUss;
+            LegacyPreviewPanelUss = legacyPreviewPanelUss;
             MonitoredProductionPanelUss = monitoredProductionPanelUss;
             ProductionUxmlRoots = productionUxmlRoots;
             ForbiddenInnerChromeImages = forbiddenInnerChromeImages;
         }
 
         public IReadOnlyList<string> EnforcedProductionPanelUss { get; }
+
+        public IReadOnlyList<string> LegacyPreviewPanelUss { get; }
 
         public IReadOnlyList<string> MonitoredProductionPanelUss { get; }
 

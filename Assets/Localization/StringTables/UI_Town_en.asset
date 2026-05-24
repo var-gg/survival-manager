@@ -40,7 +40,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1
-    m_Localized: Town Operator UI
+    m_Localized: Ashglen Frontier Town
     m_Metadata:
       m_Items: []
   - m_Id: 2
@@ -1038,7 +1038,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021697
-    m_Localized: "\u2756  Squad Builder"
+    m_Localized: "\u2756  Tactical Setup"
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021698

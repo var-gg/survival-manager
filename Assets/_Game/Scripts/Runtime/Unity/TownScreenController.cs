@@ -26,8 +26,6 @@ public sealed class TownScreenController : MonoBehaviour
     private InventoryPresenter? _inventoryPresenter;
     private PermanentAugmentPresenter? _permanentAugmentPresenter;
     private CompendiumPresenter? _compendiumPresenter;
-    private TacticalWorkshopPresenter? _tacticalWorkshopPresenter;
-    private TacticalWorkshopView? _tacticalWorkshopView;
     private TownCharacterSheetPresenter? _characterSheetPresenter;
     private RosterGridView? _rosterModalView;
     private RosterGridPresenter? _rosterGridPresenter;
@@ -110,10 +108,9 @@ public sealed class TownScreenController : MonoBehaviour
         corePanelReadyCount += TryWirePermanentAugment(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireCompendium(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireCharacterSheet(panelHost.Root, view) ? 1 : 0;
-        corePanelReadyCount += TryWireSquadBuilder(panelHost.Root, view) ? 1 : 0;
-        corePanelReadyCount += TryWireTacticalWorkshop(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireTacticalSetup(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireRoster(panelHost.Root, view) ? 1 : 0;
-        _presenter.SetCorePanelReadiness(corePanelReadyCount, 10);
+        _presenter.SetCorePanelReadiness(corePanelReadyCount, 9);
         return true;
     }
 
@@ -222,39 +219,15 @@ public sealed class TownScreenController : MonoBehaviour
         catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] Compendium wire 실패: {e.Message}"); return false; }
     }
 
-    private bool TryWireTacticalWorkshop(UnityEngine.UIElements.VisualElement root, TownScreenView view)
-    {
-        try
-        {
-            _tacticalWorkshopView = new TacticalWorkshopView(root);
-            _tacticalWorkshopPresenter = new TacticalWorkshopPresenter(
-                _root,
-                _tacticalWorkshopView,
-                _contentIconResolver.ResolveAny,
-                _contentIconResolver.ResolveAny,
-                _contentIconResolver.ResolveAny);
-            _tacticalWorkshopPresenter.Initialize();
-            _tacticalWorkshopView.BindClose(_tacticalWorkshopView.Close);
-            _tacticalWorkshopView.Close();
-            view.BindTacticalWorkshopOpen(() =>
-            {
-                _tacticalWorkshopView.Open();
-                _tacticalWorkshopPresenter.Refresh();
-            });
-            return true;
-        }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] TacticalWorkshop wire 실패: {e.Message}"); return false; }
-    }
-
-    private bool TryWireSquadBuilder(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    private bool TryWireTacticalSetup(UnityEngine.UIElements.VisualElement root, TownScreenView view)
     {
         try
         {
             _squadBuilderPresenter = new SquadBuilderPresenter(root, _root, _contentText);
-            view.BindSquadBuilderOpen(_squadBuilderPresenter.Open);
+            view.BindTacticalSetupOpen(_squadBuilderPresenter.Open);
             return true;
         }
-        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] SquadBuilder wire 실패: {e.Message}"); return false; }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] TacticalSetup wire 실패: {e.Message}"); return false; }
     }
 
     private bool TryWireCharacterSheet(UnityEngine.UIElements.VisualElement root, TownScreenView view)
