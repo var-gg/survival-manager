@@ -1,7 +1,20 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:VisualElement name="RewardScreenRoot" class="screen reward-screen">
-        <ui:VisualElement class="screen__topbar">
-            <ui:Label name="TitleLabel" class="screen__title" />
+    <ui:VisualElement name="RewardScreenRoot" class="screen reward-screen reward-bible">
+        <ui:VisualElement class="reward-bible__backdrop" />
+        <ui:VisualElement class="screen__topbar reward-bible__topbar">
+            <ui:VisualElement class="reward-bible__crest" />
+            <ui:VisualElement class="reward-bible__title-stack">
+                <ui:Label name="TitleLabel" class="screen__title reward-bible__title" />
+                <ui:VisualElement class="reward-bible__rune-row">
+                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--active" />
+                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--active" />
+                    <ui:VisualElement class="reward-bible__rune" />
+                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--danger" />
+                    <ui:VisualElement class="reward-bible__rune" />
+                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--active" />
+                    <ui:VisualElement class="reward-bible__rune" />
+                </ui:VisualElement>
+            </ui:VisualElement>
             <ui:VisualElement class="screen__toolbar">
                 <ui:VisualElement class="screen__locale">
                     <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
@@ -17,42 +30,81 @@
             <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
         </ui:VisualElement>
 
-        <ui:VisualElement name="SettlementSummaryPanel" class="panel panel--dense reward-settlement-summary">
-            <ui:Label name="SettlementSummaryTitleLabel" class="panel__title reward-settlement-summary__title" />
-            <ui:VisualElement class="reward-settlement-summary__rows">
-                <ui:VisualElement class="reward-settlement-summary__row">
-                    <ui:Label name="SettlementSiteKeyLabel" class="reward-settlement-summary__key" />
-                    <ui:Label name="SettlementSiteValueLabel" class="reward-settlement-summary__value" />
+        <ui:VisualElement class="screen__body reward-bible__board">
+            <ui:VisualElement class="screen__column reward-bible__left-rail">
+                <ui:VisualElement name="SettlementSummaryPanel" class="panel panel--dense reward-settlement-summary">
+                    <ui:Label name="SettlementSummaryTitleLabel" class="panel__title reward-settlement-summary__title" />
+                    <ui:VisualElement class="reward-settlement-summary__rows">
+                        <ui:VisualElement class="reward-settlement-summary__row">
+                            <ui:Label name="SettlementSiteKeyLabel" class="reward-settlement-summary__key" />
+                            <ui:Label name="SettlementSiteValueLabel" class="reward-settlement-summary__value" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reward-settlement-summary__row">
+                            <ui:Label name="SettlementStageKeyLabel" class="reward-settlement-summary__key" />
+                            <ui:Label name="SettlementStageValueLabel" class="reward-settlement-summary__value" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reward-settlement-summary__row">
+                            <ui:Label name="SettlementEncounterKeyLabel" class="reward-settlement-summary__key" />
+                            <ui:Label name="SettlementEncounterValueLabel" class="reward-settlement-summary__value" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reward-settlement-summary__row">
+                            <ui:Label name="SettlementCommitIdKeyLabel" class="reward-settlement-summary__key" />
+                            <ui:Label name="SettlementCommitIdValueLabel" class="reward-settlement-summary__value" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="SettlementModifierChips" class="reward-settlement-summary__chips">
+                        <ui:Label name="SettlementModifierRewardBiasChip" class="reward-settlement-summary__chip" />
+                        <ui:Label name="SettlementModifierThreatPressureChip" class="reward-settlement-summary__chip" />
+                        <ui:Label name="SettlementModifierAffinityBoostChip" class="reward-settlement-summary__chip" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="reward-settlement-summary__row">
-                    <ui:Label name="SettlementStageKeyLabel" class="reward-settlement-summary__key" />
-                    <ui:Label name="SettlementStageValueLabel" class="reward-settlement-summary__value" />
-                </ui:VisualElement>
-                <ui:VisualElement class="reward-settlement-summary__row">
-                    <ui:Label name="SettlementEncounterKeyLabel" class="reward-settlement-summary__key" />
-                    <ui:Label name="SettlementEncounterValueLabel" class="reward-settlement-summary__value" />
-                </ui:VisualElement>
-                <ui:VisualElement class="reward-settlement-summary__row">
-                    <ui:Label name="SettlementCommitIdKeyLabel" class="reward-settlement-summary__key" />
-                    <ui:Label name="SettlementCommitIdValueLabel" class="reward-settlement-summary__value" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="SettlementModifierChips" class="reward-settlement-summary__chips">
-                <ui:Label name="SettlementModifierRewardBiasChip" class="reward-settlement-summary__chip" />
-                <ui:Label name="SettlementModifierThreatPressureChip" class="reward-settlement-summary__chip" />
-                <ui:Label name="SettlementModifierAffinityBoostChip" class="reward-settlement-summary__chip" />
-            </ui:VisualElement>
-        </ui:VisualElement>
-
-        <ui:VisualElement class="screen__body">
-            <ui:VisualElement class="screen__column">
                 <ui:VisualElement class="panel reward-progression-panel">
                     <ui:Label name="ProgressionTitleLabel" class="panel__title" />
                     <ui:VisualElement name="RewardProgressionRows" class="reward-progression-rows" />
                 </ui:VisualElement>
-                <ui:VisualElement class="panel reward-timeline-panel">
-                    <ui:Label name="TimelineTitleLabel" class="panel__title" />
-                    <ui:VisualElement name="RewardTimelineTicks" class="reward-timeline-ticks" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="screen__column reward-bible__center-stage">
+                <ui:VisualElement class="panel reward-choice-panel">
+                    <ui:Label name="ChoicesHeaderLabel" class="panel__title" />
+                    <ui:VisualElement class="card-row reward-card-row">
+                        <ui:VisualElement class="card reward-card reward-card--gold" name="ChoiceCard1">
+                            <ui:VisualElement class="reward-card__art reward-card__art--gold">
+                                <ui:VisualElement class="reward-card__sigil" />
+                            </ui:VisualElement>
+                            <ui:Label name="ChoiceCard1TitleLabel" class="card__title" />
+                            <ui:Label name="ChoiceCard1KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Label name="ChoiceCard1BodyLabel" class="card__body" />
+                            <ui:Label name="ChoiceCard1ContextLabel" class="panel__text panel__text--muted" />
+                            <ui:Button name="ChoiceCard1Button" class="ui-button" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="card reward-card reward-card--steel" name="ChoiceCard2">
+                            <ui:VisualElement class="reward-card__art reward-card__art--steel">
+                                <ui:VisualElement class="reward-card__sigil" />
+                            </ui:VisualElement>
+                            <ui:Label name="ChoiceCard2TitleLabel" class="card__title" />
+                            <ui:Label name="ChoiceCard2KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Label name="ChoiceCard2BodyLabel" class="card__body" />
+                            <ui:Label name="ChoiceCard2ContextLabel" class="panel__text panel__text--muted" />
+                            <ui:Button name="ChoiceCard2Button" class="ui-button" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="card reward-card reward-card--violet" name="ChoiceCard3">
+                            <ui:VisualElement class="reward-card__art reward-card__art--violet">
+                                <ui:VisualElement class="reward-card__sigil" />
+                            </ui:VisualElement>
+                            <ui:Label name="ChoiceCard3TitleLabel" class="card__title" />
+                            <ui:Label name="ChoiceCard3KindLabel" class="panel__text panel__text--muted" />
+                            <ui:Label name="ChoiceCard3BodyLabel" class="card__body" />
+                            <ui:Label name="ChoiceCard3ContextLabel" class="panel__text panel__text--muted" />
+                            <ui:Button name="ChoiceCard3Button" class="ui-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="screen__column reward-bible__right-rail">
+                <ui:VisualElement class="reward-bible__decision-glyph">
+                    <ui:VisualElement class="reward-bible__decision-icon" />
                 </ui:VisualElement>
                 <ui:VisualElement class="panel reward-run-delta-panel">
                     <ui:Label name="SummaryTitleLabel" class="panel__title" />
@@ -63,38 +115,14 @@
                     <ui:Label name="BuildContextLabel" class="panel__text" />
                 </ui:VisualElement>
             </ui:VisualElement>
-
-            <ui:VisualElement class="screen__column" style="flex-grow: 1.5;">
-                <ui:VisualElement class="panel">
-                    <ui:Label name="ChoicesHeaderLabel" class="panel__title" />
-                    <ui:VisualElement class="card-row">
-                        <ui:VisualElement class="card" name="ChoiceCard1">
-                            <ui:Label name="ChoiceCard1TitleLabel" class="card__title" />
-                            <ui:Label name="ChoiceCard1KindLabel" class="panel__text panel__text--muted" />
-                            <ui:Label name="ChoiceCard1BodyLabel" class="card__body" />
-                            <ui:Label name="ChoiceCard1ContextLabel" class="panel__text panel__text--muted" />
-                            <ui:Button name="ChoiceCard1Button" class="ui-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="card" name="ChoiceCard2">
-                            <ui:Label name="ChoiceCard2TitleLabel" class="card__title" />
-                            <ui:Label name="ChoiceCard2KindLabel" class="panel__text panel__text--muted" />
-                            <ui:Label name="ChoiceCard2BodyLabel" class="card__body" />
-                            <ui:Label name="ChoiceCard2ContextLabel" class="panel__text panel__text--muted" />
-                            <ui:Button name="ChoiceCard2Button" class="ui-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="card" name="ChoiceCard3">
-                            <ui:Label name="ChoiceCard3TitleLabel" class="card__title" />
-                            <ui:Label name="ChoiceCard3KindLabel" class="panel__text panel__text--muted" />
-                            <ui:Label name="ChoiceCard3BodyLabel" class="card__body" />
-                            <ui:Label name="ChoiceCard3ContextLabel" class="panel__text panel__text--muted" />
-                            <ui:Button name="ChoiceCard3Button" class="ui-button" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement class="panel panel--dense status-bar">
+        <ui:VisualElement class="panel reward-timeline-panel">
+            <ui:Label name="TimelineTitleLabel" class="panel__title" />
+            <ui:VisualElement name="RewardTimelineTicks" class="reward-timeline-ticks" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel panel--dense status-bar reward-bible__status-band">
             <ui:VisualElement class="action-group">
                 <ui:VisualElement class="action-row">
                     <ui:Button name="ReturnTownButton" class="ui-button" />

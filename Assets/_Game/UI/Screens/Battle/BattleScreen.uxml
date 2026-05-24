@@ -46,6 +46,40 @@
             <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss sm-bs-control-btn" />
         </ui:VisualElement>
 
+        <ui:VisualElement name="BattleBibleOverlay" class="sm-bs-bible-overlay">
+            <ui:VisualElement name="BattleIconRail" class="sm-bs-icon-rail">
+                <ui:VisualElement class="sm-bs-icon-rail__slot sm-bs-icon-rail__slot--active" />
+                <ui:VisualElement class="sm-bs-icon-rail__slot" />
+                <ui:VisualElement class="sm-bs-icon-rail__slot" />
+                <ui:VisualElement class="sm-bs-icon-rail__slot" />
+                <ui:VisualElement class="sm-bs-icon-rail__slot" />
+            </ui:VisualElement>
+            <ui:VisualElement name="BattleMinimapPanel" class="sm-bs-minimap-panel">
+                <ui:VisualElement class="sm-bs-minimap__path" />
+                <ui:VisualElement class="sm-bs-minimap__node sm-bs-minimap__node--ally" />
+                <ui:VisualElement class="sm-bs-minimap__node sm-bs-minimap__node--enemy" />
+                <ui:VisualElement class="sm-bs-minimap__node sm-bs-minimap__node--boss" />
+                <ui:VisualElement class="sm-bs-minimap__pip-row">
+                    <ui:VisualElement class="sm-bs-minimap__pip sm-bs-minimap__pip--active" />
+                    <ui:VisualElement class="sm-bs-minimap__pip" />
+                    <ui:VisualElement class="sm-bs-minimap__pip" />
+                    <ui:VisualElement class="sm-bs-minimap__pip sm-bs-minimap__pip--danger" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="BattleCommandDock" class="sm-bs-command-dock">
+                <ui:VisualElement class="sm-bs-command-dock__button" />
+                <ui:VisualElement class="sm-bs-command-dock__button" />
+                <ui:VisualElement class="sm-bs-command-dock__button sm-bs-command-dock__button--primary" />
+                <ui:VisualElement class="sm-bs-command-dock__button" />
+                <ui:VisualElement class="sm-bs-command-dock__button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="BattleResourceStack" class="sm-bs-resource-stack">
+                <ui:VisualElement class="sm-bs-resource-stack__row sm-bs-resource-stack__row--blue" />
+                <ui:VisualElement class="sm-bs-resource-stack__row sm-bs-resource-stack__row--red" />
+                <ui:VisualElement class="sm-bs-resource-stack__row sm-bs-resource-stack__row--gold" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <ui:VisualElement name="EnemySummaryPanel" class="sm-bs-threat-strip sm-vellum-card">
             <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--striker" />
             <ui:VisualElement class="sm-bs-strip-header">

@@ -48,15 +48,18 @@
                     <ui:Label name="SquadBuilderAnchorHint" class="sm-sqb-modal__hint" text="버튼을 누르면 다음 영웅으로 순환합니다." />
                     <ui:VisualElement class="sm-sqb-modal__anchor-grid">
                         <ui:VisualElement class="sm-sqb-modal__anchor-column">
-                            <ui:Label class="sm-sqb-modal__column-title" text="전열" />
+                            <ui:Label class="sm-sqb-modal__column-title" text="상단" />
                             <ui:Button name="SquadBuilderAnchor_FrontTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
-                            <ui:Button name="SquadBuilderAnchor_FrontCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
-                            <ui:Button name="SquadBuilderAnchor_FrontBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                            <ui:Button name="SquadBuilderAnchor_BackTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
                         </ui:VisualElement>
                         <ui:VisualElement class="sm-sqb-modal__anchor-column">
-                            <ui:Label class="sm-sqb-modal__column-title" text="후열" />
-                            <ui:Button name="SquadBuilderAnchor_BackTop" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                            <ui:Label class="sm-sqb-modal__column-title" text="중앙" />
+                            <ui:Button name="SquadBuilderAnchor_FrontCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
                             <ui:Button name="SquadBuilderAnchor_BackCenter" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="sm-sqb-modal__anchor-column">
+                            <ui:Label class="sm-sqb-modal__column-title" text="하단" />
+                            <ui:Button name="SquadBuilderAnchor_FrontBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
                             <ui:Button name="SquadBuilderAnchor_BackBottom" class="ui-button sm-cta sm-cta--md sm-cta--secondary sm-select-snap sm-sqb-modal__anchor-button" />
                         </ui:VisualElement>
                     </ui:VisualElement>

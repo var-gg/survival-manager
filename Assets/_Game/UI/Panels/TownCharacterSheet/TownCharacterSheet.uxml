@@ -13,9 +13,17 @@
             <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
             <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
+            <ui:VisualElement class="tcs-top-runes" picking-mode="Ignore">
+                <ui:Label name="TcsRunePrimary" class="tcs-rune tcs-rune--active" text="✦" />
+                <ui:Label name="TcsRuneSecondary" class="tcs-rune" text="✧" />
+                <ui:Label name="TcsRuneDefense" class="tcs-rune" text="◇" />
+                <ui:Label name="TcsRuneAttack" class="tcs-rune" text="◆" />
+                <ui:Label name="TcsRuneSupport" class="tcs-rune" text="✚" />
+                <ui:Label name="TcsRuneTactics" class="tcs-rune" text="◎" />
+            </ui:VisualElement>
+
             <ui:VisualElement class="tcs-header">
                 <ui:VisualElement class="tcs-identity">
-                    <ui:VisualElement name="TcsPortraitToken" class="tcs-portrait-token sm-chrome-l3" picking-mode="Ignore" />
                     <ui:VisualElement class="tcs-identity-copy">
                         <ui:Label name="TcsHeroNameLabel" class="tcs-title sm-cd-title" />
                         <ui:Label name="TcsHeroMetaLabel" class="tcs-meta sm-cd-meta" />
@@ -26,30 +34,54 @@
             </ui:VisualElement>
 
             <ui:VisualElement class="tcs-body">
+                <ui:VisualElement class="tcs-portrait-column">
+                    <ui:VisualElement name="TcsPortraitToken" class="tcs-portrait-token sm-chrome-l3" picking-mode="Ignore">
+                        <ui:Label name="TcsPortraitGlyphLabel" class="tcs-portrait-glyph" text="✦" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="tcs-mini-rail" picking-mode="Ignore">
+                        <ui:VisualElement class="tcs-mini-token tcs-mini-token--active" />
+                        <ui:VisualElement class="tcs-mini-token" />
+                        <ui:VisualElement class="tcs-mini-token" />
+                        <ui:VisualElement class="tcs-mini-token" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="tcs-portrait-pips" picking-mode="Ignore">
+                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
+                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
+                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
+                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
+                        <ui:VisualElement class="tcs-pip" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
                 <ui:VisualElement class="tcs-column tcs-column--primary">
-                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+                    <ui:VisualElement class="tcs-panel tcs-panel--overview sm-chrome-l2">
                         <ui:Label name="TcsOverviewTitle" class="tcs-panel__title" />
                         <ui:Label name="TcsOverviewBody" class="tcs-panel__body" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+                    <ui:VisualElement class="tcs-panel tcs-panel--progression sm-chrome-l2">
+                        <ui:Label name="TcsProgressionTitle" class="tcs-panel__title" />
+                        <ui:Label name="TcsProgressionBody" class="tcs-panel__body" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="tcs-panel tcs-panel--equipment sm-chrome-l2">
                         <ui:Label name="TcsLoadoutTitle" class="tcs-panel__title" />
                         <ui:Label name="TcsLoadoutBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="tcs-column">
-                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+
+                <ui:VisualElement class="tcs-column tcs-column--skills">
+                    <ui:VisualElement class="tcs-tab-strip" picking-mode="Ignore">
+                        <ui:VisualElement class="tcs-tab tcs-tab--active" />
+                        <ui:VisualElement class="tcs-tab" />
+                        <ui:VisualElement class="tcs-tab" />
+                        <ui:VisualElement class="tcs-tab" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="tcs-panel tcs-panel--skill-list sm-chrome-l2">
                         <ui:Label name="TcsPassivesTitle" class="tcs-panel__title" />
                         <ui:Label name="TcsPassivesBody" class="tcs-panel__body" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="tcs-panel sm-chrome-l2">
+                    <ui:VisualElement class="tcs-panel tcs-panel--skill-detail sm-chrome-l2">
                         <ui:Label name="TcsSynergyTitle" class="tcs-panel__title" />
                         <ui:Label name="TcsSynergyBody" class="tcs-panel__body" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-                <ui:VisualElement class="tcs-column">
-                    <ui:VisualElement class="tcs-panel tcs-panel--progression sm-chrome-l2">
-                        <ui:Label name="TcsProgressionTitle" class="tcs-panel__title" />
-                        <ui:Label name="TcsProgressionBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

@@ -14,7 +14,18 @@ public sealed class TownCharacterSheetView
         "tcs-role--beastkin",
     };
 
+    private static readonly string[] FamilyTokenClasses =
+    {
+        "tcs-portrait-token--vanguard",
+        "tcs-portrait-token--duelist",
+        "tcs-portrait-token--ranger",
+        "tcs-portrait-token--mystic",
+        "tcs-portrait-token--beastkin",
+    };
+
     private readonly VisualElement _modalRoot;
+    private readonly VisualElement _portraitToken;
+    private readonly Label _portraitGlyphLabel;
     private readonly Label _heroNameLabel;
     private readonly Label _heroMetaLabel;
     private readonly Label _roleLabel;
@@ -34,6 +45,8 @@ public sealed class TownCharacterSheetView
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
         _modalRoot = Require<VisualElement>(root, "TownCharacterSheetRoot");
+        _portraitToken = Require<VisualElement>(root, "TcsPortraitToken");
+        _portraitGlyphLabel = Require<Label>(root, "TcsPortraitGlyphLabel");
         _heroNameLabel = Require<Label>(root, "TcsHeroNameLabel");
         _heroMetaLabel = Require<Label>(root, "TcsHeroMetaLabel");
         _roleLabel = Require<Label>(root, "TcsRoleLabel");
@@ -84,6 +97,7 @@ public sealed class TownCharacterSheetView
         _heroNameLabel.text = state.DisplayName;
         _heroMetaLabel.text = state.ArchetypeLabel;
         _roleLabel.text = state.RoleLabel;
+        _portraitGlyphLabel.text = BuildPortraitGlyph(state.DisplayName);
         ApplyRoleFamilyClass(state.FamilyKey);
 
         RenderPanel(state.Overview, _overviewTitleLabel, _overviewBodyLabel);
@@ -100,10 +114,31 @@ public sealed class TownCharacterSheetView
             _roleLabel.RemoveFromClassList(roleClass);
         }
 
+        foreach (var familyClass in FamilyTokenClasses)
+        {
+            _portraitToken.RemoveFromClassList(familyClass);
+        }
+
         if (!string.IsNullOrWhiteSpace(familyKey))
         {
-            _roleLabel.AddToClassList($"tcs-role--{familyKey}");
+            var normalized = NormalizeFamilyKey(familyKey);
+            _roleLabel.AddToClassList($"tcs-role--{normalized}");
+            _portraitToken.AddToClassList($"tcs-portrait-token--{normalized}");
         }
+    }
+
+    private static string NormalizeFamilyKey(string familyKey)
+    {
+        var normalized = familyKey.Trim().ToLowerInvariant();
+        return normalized is "vanguard" or "duelist" or "ranger" or "mystic" or "beastkin"
+            ? normalized
+            : "vanguard";
+    }
+
+    private static string BuildPortraitGlyph(string displayName)
+    {
+        var trimmed = displayName?.Trim();
+        return string.IsNullOrWhiteSpace(trimmed) ? "✦" : trimmed[..1];
     }
 
     private static void RenderPanel(TownCharacterSheetPanelViewState panel, Label title, Label body)

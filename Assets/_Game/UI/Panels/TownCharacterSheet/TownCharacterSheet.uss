@@ -2,39 +2,81 @@
     flex-grow: 1;
     align-items: center;
     justify-content: center;
+    z-index: 1300;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgb(28, 34, 54);
+    background-color: rgb(1, 3, 10);
 }
 
 .tcs-backdrop {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(4, 7, 18, 0.92);
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgb(42, 49, 70);
+    background-color: rgb(1, 3, 10);
+    z-index: 1300;
 }
 
 .tcs-frame {
-    width: 1180px;
-    height: 700px;
-    padding-left: 30px;
-    padding-right: 30px;
+    width: 1620px;
+    height: 860px;
+    padding-left: 42px;
+    padding-right: 42px;
     padding-top: 26px;
-    padding-bottom: 26px;
+    padding-bottom: 30px;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
     -unity-slice-left: 96;
     -unity-slice-right: 96;
     -unity-slice-top: 96;
     -unity-slice-bottom: 96;
     -unity-slice-scale: 0.46;
-    background-color: rgba(7, 11, 27, 0.98);
+    background-color: rgb(6, 10, 25);
+    z-index: 1301;
 }
 
 .tcs-frame .sm-modal-frame__texture {
     opacity: 0.08;
 }
 
+.tcs-top-runes {
+    height: 34px;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.tcs-rune {
+    width: 38px;
+    height: 30px;
+    margin-left: 4px;
+    margin-right: 4px;
+    color: rgba(230, 183, 81, 0.68);
+    font-size: 18px;
+    -unity-text-align: middle-center;
+}
+
+.tcs-rune--active {
+    color: var(--sm-gold-100);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Tab/ui_tab_active.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 72;
+    -unity-slice-bottom: 48;
+    -unity-slice-scale: 0.34;
+}
+
 .tcs-header {
+    height: 78px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    padding-left: 12px;
+    padding-right: 6px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.32);
 }
 
 .tcs-identity {
@@ -42,44 +84,34 @@
     align-items: center;
 }
 
-.tcs-portrait-token {
-    width: 96px;
-    height: 112px;
-    margin-right: 18px;
-    background-color: rgba(26, 32, 63, 0.92);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300-a32);
-    border-right-color: var(--sm-gold-300-a32);
-    border-top-color: var(--sm-gold-300-a32);
-    border-bottom-color: var(--sm-gold-300-a32);
-}
-
 .tcs-identity-copy {
     flex-direction: column;
 }
 
 .tcs-title {
-    font-size: 28px;
+    font-size: 36px;
     color: var(--sm-gold-100);
 }
 
 .tcs-meta {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--sm-ink-2);
     margin-top: 4px;
 }
 
 .tcs-role {
     align-self: flex-start;
-    margin-top: 8px;
+    margin-top: 7px;
     color: var(--sm-vellum);
 }
 
 .tcs-close {
+    width: 48px;
+    height: 48px;
     min-width: 48px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Button/ui_close_button.png");
+    -unity-background-scale-mode: scale-to-fit;
+    color: var(--sm-vellum);
 }
 
 .tcs-body {
@@ -88,26 +120,155 @@
     align-items: stretch;
 }
 
+.tcs-portrait-column {
+    width: 350px;
+    margin-right: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: rgba(8, 13, 31, 0.84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.24);
+    border-right-color: rgba(230, 183, 81, 0.24);
+    border-top-color: rgba(245, 214, 138, 0.18);
+    border-bottom-color: rgba(138, 100, 24, 0.36);
+}
+
+.tcs-portrait-token {
+    flex-grow: 1;
+    min-height: 500px;
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(18, 25, 55, 0.88);
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(160, 198, 255, 0.46);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.38);
+    border-right-color: rgba(230, 183, 81, 0.38);
+    border-top-color: rgba(245, 214, 138, 0.32);
+    border-bottom-color: rgba(138, 100, 24, 0.54);
+}
+
+.tcs-portrait-glyph {
+    color: rgba(245, 214, 138, 0.88);
+    font-size: 118px;
+    -unity-text-align: middle-center;
+}
+
+.tcs-mini-rail {
+    height: 72px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.tcs-mini-token {
+    width: 56px;
+    height: 64px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: rgba(22, 29, 60, 0.84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.20);
+    border-right-color: rgba(230, 183, 81, 0.20);
+    border-top-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+}
+
+.tcs-mini-token--active {
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
+.tcs-portrait-pips {
+    height: 28px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.tcs-pip {
+    width: 9px;
+    height: 9px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: rgba(30, 37, 68, 0.76);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+    border-right-color: rgba(230, 183, 81, 0.18);
+    border-top-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+    rotate: 45deg;
+}
+
+.tcs-pip--on {
+    background-color: rgb(86, 150, 226);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
 .tcs-column {
     flex-grow: 1;
     flex-basis: 0;
     flex-direction: column;
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: 6px;
+    margin-right: 6px;
 }
 
 .tcs-column--primary {
-    flex-grow: 1.35;
+    flex-grow: 1.45;
+}
+
+.tcs-column--skills {
+    flex-grow: 1.2;
+}
+
+.tcs-tab-strip {
+    height: 48px;
+    flex-direction: row;
+    margin-bottom: 8px;
+}
+
+.tcs-tab {
+    flex-grow: 1;
+    margin-right: 6px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Tab/ui_tab_inactive.png");
+    -unity-slice-left: 96;
+    -unity-slice-right: 96;
+    -unity-slice-top: 72;
+    -unity-slice-bottom: 48;
+    -unity-slice-scale: 0.34;
+    background-color: rgba(10, 16, 37, 0.78);
+}
+
+.tcs-tab--active {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Tab/ui_tab_active.png");
+    background-color: rgba(98, 72, 28, 0.78);
 }
 
 .tcs-panel {
-    flex-grow: 1;
-    margin-bottom: 10px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    background-color: rgba(8, 13, 31, 0.94);
+    margin-bottom: 12px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: rgba(8, 13, 31, 0.90);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -118,20 +279,60 @@
     border-bottom-color: rgba(230, 183, 81, 0.28);
 }
 
+.tcs-panel--overview {
+    flex-grow: 1.1;
+}
+
 .tcs-panel--progression {
     flex-grow: 1;
 }
 
+.tcs-panel--equipment {
+    height: 220px;
+    flex-grow: 0;
+}
+
+.tcs-panel--skill-list {
+    flex-grow: 1;
+}
+
+.tcs-panel--skill-detail {
+    flex-grow: 1.12;
+}
+
 .tcs-panel__title {
     color: var(--sm-gold-300);
-    font-size: 12px;
+    font-size: 15px;
     -unity-font-style: bold;
-    margin-bottom: 8px;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
 }
 
 .tcs-panel__body {
     color: rgb(235, 226, 199);
-    font-size: 12px;
+    font-size: 11px;
+    line-height: 14px;
     white-space: normal;
     overflow: hidden;
+}
+
+.tcs-panel--equipment .tcs-panel__body {
+    font-size: 10px;
+    line-height: 12px;
+}
+
+.tcs-portrait-token--vanguard {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png");
+}
+
+.tcs-portrait-token--duelist {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png");
+}
+
+.tcs-portrait-token--ranger {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png");
+}
+
+.tcs-portrait-token--mystic {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png");
 }

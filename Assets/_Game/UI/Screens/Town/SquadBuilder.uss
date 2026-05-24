@@ -9,9 +9,9 @@
     left: 0; right: 0; top: 0; bottom: 0;
     align-items: center;
     justify-content: center;
-    padding-top: 72px;
-    padding-bottom: 72px;
-    z-index: 1200;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    z-index: 5200;
 }
 
 .sm-sqb-modal--closed { display: none; }
@@ -24,16 +24,19 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(2, 5, 16, 0.94);
-    z-index: 1200;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgba(78, 92, 128, 0.34);
+    background-color: rgb(1, 3, 10);
+    z-index: 5200;
 }
 
 /* Panel — atom token (sm-frame-ceremony-bg / sm-frame-trim-*) + corner cap atom의 absolute parent. */
 .sm-sqb-modal__panel {
     position: relative;
-    z-index: 1201;
-    width: 1660px;
-    max-height: 860px;
+    z-index: 5201;
+    width: 1840px;
+    max-height: 1010px;
     background-color: rgb(4, 7, 18);
     border-left-width: var(--sm-frame-trim-w);
     border-right-width: var(--sm-frame-trim-w);

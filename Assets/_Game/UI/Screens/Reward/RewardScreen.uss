@@ -1,175 +1,221 @@
 .reward-screen {
-    background-color: var(--sm-bg-0);
     color: var(--sm-ink-1);
+    background-color: rgb(7, 10, 19);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 18px;
+    padding-bottom: 18px;
 }
 
-.reward-screen .screen__title {
-    color: var(--sm-gold-200);
+.reward-screen .reward-bible__backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgba(90, 72, 88, 0.28);
+    background-color: rgba(14, 10, 12, 0.72);
 }
 
-.reward-screen .panel {
-    background-color: var(--sm-bg-1);
-    border-left-color: var(--sm-gold-300-a28);
-    border-right-color: var(--sm-gold-300-a28);
-    border-top-color: var(--sm-gold-300-a28);
-    border-bottom-color: var(--sm-gold-300-a28);
+.reward-screen .reward-bible__topbar {
+    position: relative;
+    height: 96px;
+    min-height: 96px;
+    margin-left: 96px;
+    margin-right: 96px;
+    margin-bottom: 14px;
+    padding-left: 110px;
+    padding-right: 18px;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(13, 17, 29, 0.94);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
 }
 
-.reward-screen .card {
-    background-color: var(--sm-vellum-a07);
-    border-left-color: var(--sm-fam-mystic);
-    border-right-color: var(--sm-gold-300-a24);
-    border-top-color: var(--sm-gold-300-a24);
-    border-bottom-color: var(--sm-gold-300-a24);
+.reward-screen .reward-bible__crest {
+    position: absolute;
+    left: -30px;
+    top: -18px;
+    width: 132px;
+    height: 132px;
+    border-radius: 66px;
+    background-color: rgba(230, 183, 81, 0.14);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Augment/augment_star.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(245, 214, 138, 0.92);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
 }
 
-.reward-screen .card__title {
+.reward-screen .reward-bible__title-stack {
+    flex-grow: 1;
+}
+
+.reward-screen .reward-bible__title {
     color: var(--sm-gold-100);
+    font-size: 25px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-bible__rune-row {
+    margin-top: 12px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.reward-screen .reward-bible__rune {
+    width: 10px;
+    height: 10px;
+    margin-right: 12px;
+    rotate: 45deg;
+    background-color: var(--sm-vellum-a15);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-bible__rune--active {
+    background-color: var(--sm-gold-300);
+}
+
+.reward-screen .reward-bible__rune--danger {
+    background-color: var(--sm-fam-striker);
+}
+
+.reward-screen .screen__toolbar {
+    flex-direction: row;
+    align-items: center;
+}
+
+.reward-screen .screen__locale-status {
+    color: var(--sm-gold-200);
+    font-size: 10px;
+}
+
+.reward-screen .ui-button {
+    min-height: 34px;
+    color: var(--sm-vellum);
+    background-color: rgba(21, 25, 39, 0.88);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .ui-button--accent {
+    color: rgb(38, 25, 8);
+    background-color: var(--sm-gold-300);
 }
 
 .reward-screen .help-strip {
     display: none;
 }
 
-.reward-screen .screen__body {
+.reward-screen .reward-bible__board {
+    position: relative;
     flex-grow: 1;
     min-height: 0;
+    flex-direction: row;
 }
 
 .reward-screen .screen__column {
     min-height: 0;
 }
 
-.reward-screen .reward-run-delta-panel {
-    height: 112px;
-    flex-grow: 0;
-    overflow: hidden;
+.reward-screen .reward-bible__left-rail {
+    width: 29%;
+    min-width: 360px;
+    margin-right: 14px;
 }
 
-.reward-screen .reward-build-impact-panel {
-    height: 116px;
-    flex-grow: 0;
-    overflow: hidden;
-}
-
-.reward-screen .reward-run-delta-panel .panel__text,
-.reward-screen .reward-build-impact-panel .panel__text {
-    font-size: 10px;
-    overflow: hidden;
-}
-
-.reward-screen .reward-progression-panel,
-.reward-screen .reward-timeline-panel {
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.reward-screen .reward-progression-rows,
-.reward-screen .reward-timeline-ticks {
-    flex-direction: column;
-}
-
-.reward-screen .reward-progression-row {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 5px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    background-color: var(--sm-bg-1-a54);
-    border-left-width: 2px;
-    border-left-color: var(--sm-gold-300-a28);
-}
-
-.reward-screen .reward-progression-row--victory,
-.reward-screen .reward-progression-row--applied,
-.reward-screen .reward-progression-row--ready {
-    border-left-color: var(--sm-fam-beastkin);
-}
-
-.reward-screen .reward-progression-row--pending,
-.reward-screen .reward-progression-row--locked {
-    border-left-color: var(--sm-fam-mystic);
-}
-
-.reward-screen .reward-progression-row__key {
-    min-width: 96px;
-    color: var(--sm-ink-2);
-    font-size: 11px;
-    -unity-font-style: bold;
-}
-
-.reward-screen .reward-progression-row__value {
+.reward-screen .reward-bible__center-stage {
     flex-grow: 1;
-    color: var(--sm-vellum);
-    font-size: 11px;
-    white-space: normal;
+    min-width: 0;
+    margin-right: 14px;
 }
 
-.reward-screen .reward-timeline-tick {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 4px;
+.reward-screen .reward-bible__right-rail {
+    width: 23%;
+    min-width: 300px;
 }
 
-.reward-screen .reward-timeline-tick__marker {
-    width: 18px;
-    height: 18px;
-    margin-right: 6px;
-    border-radius: 9px;
-    background-color: var(--sm-bg-1-a54);
-    color: var(--sm-ink-2);
-    -unity-text-align: middle-center;
-    font-size: 11px;
-    -unity-font-style: bold;
-}
-
-.reward-screen .reward-timeline-tick--complete .reward-timeline-tick__marker {
-    background-color: var(--sm-fam-beastkin);
-    color: var(--sm-bg-0);
-}
-
-.reward-screen .reward-timeline-tick--current .reward-timeline-tick__marker {
-    background-color: var(--sm-gold-100);
-    color: var(--sm-bg-0);
-}
-
-.reward-screen .reward-timeline-tick__text {
-    flex-grow: 1;
-    color: var(--sm-ink-2);
-    font-size: 11px;
-    white-space: normal;
-}
-
-.reward-screen .reward-settlement-summary {
-    flex-direction: column;
-    height: 150px;
-    overflow: hidden;
-    margin-left: 8px;
-    margin-right: 8px;
-    margin-top: 4px;
-    margin-bottom: 6px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    background-color: var(--sm-bg-1-a54);
+.reward-screen .panel {
+    background-color: rgba(12, 16, 29, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300-a28);
-    border-right-color: var(--sm-gold-300-a28);
-    border-top-color: var(--sm-gold-300-a28);
-    border-bottom-color: var(--sm-gold-300-a28);
+    border-left-color: var(--sm-gold-300-a36);
+    border-right-color: var(--sm-gold-300-a36);
+    border-top-color: var(--sm-gold-300-a36);
+    border-bottom-color: var(--sm-gold-300-a36);
+}
+
+.reward-screen .panel__title {
+    color: var(--sm-gold-100);
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .panel__text {
+    color: var(--sm-ink-1);
+    font-size: 11px;
+    line-height: 15px;
+    white-space: normal;
+}
+
+.reward-screen .panel__text--muted {
+    color: var(--sm-gold-200);
+}
+
+.reward-screen .reward-settlement-summary {
+    height: 168px;
+    min-height: 168px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+    background-color: rgba(7, 11, 21, 0.96);
+    border-left-width: 2px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300-a34);
+    border-top-color: var(--sm-gold-300-a34);
+    border-bottom-color: var(--sm-gold-300-a34);
 }
 
 .reward-screen .reward-settlement-summary__title {
-    color: var(--sm-gold-200);
-    font-size: 12px;
-    -unity-font-style: bold;
-    margin-bottom: 3px;
+    margin-bottom: 8px;
+    color: var(--sm-gold-100);
+    font-size: 13px;
 }
 
 .reward-screen .reward-settlement-summary__rows {
@@ -181,15 +227,13 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
-    min-height: 18px;
-    height: 18px;
-    margin-top: 0;
-    margin-bottom: 0;
+    height: 20px;
 }
 
 .reward-screen .reward-settlement-summary__key {
-    min-width: 96px;
-    color: var(--sm-ink-2);
+    width: 90px;
+    min-width: 90px;
+    color: var(--sm-gold-200);
     font-size: 10px;
     -unity-font-style: bold;
 }
@@ -207,26 +251,350 @@
 .reward-screen .reward-settlement-summary__chips {
     flex-direction: row;
     flex-wrap: wrap;
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
 .reward-screen .reward-settlement-summary__chip {
     margin-right: 6px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    margin-bottom: 3px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     color: var(--sm-gold-100);
-    font-size: 10px;
-    background-color: var(--sm-vellum-a07);
+    font-size: 9px;
+    background-color: var(--sm-gold-300-a12);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300-a24);
-    border-right-color: var(--sm-gold-300-a24);
-    border-top-color: var(--sm-gold-300-a24);
-    border-bottom-color: var(--sm-gold-300-a24);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-progression-panel {
+    flex-grow: 1;
+    min-height: 0;
+    padding-top: 14px;
+    padding-bottom: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.reward-screen .reward-progression-rows {
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.reward-screen .reward-progression-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 48px;
+    margin-bottom: 7px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: rgba(20, 25, 40, 0.72);
+    border-left-width: 3px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+    border-top-color: var(--sm-vellum-a10);
+    border-bottom-color: var(--sm-vellum-a10);
+    border-right-color: var(--sm-vellum-a10);
+}
+
+.reward-screen .reward-progression-row--victory,
+.reward-screen .reward-progression-row--applied,
+.reward-screen .reward-progression-row--ready {
+    border-left-color: var(--sm-state-safe-a86);
+}
+
+.reward-screen .reward-progression-row--pending,
+.reward-screen .reward-progression-row--locked {
+    border-left-color: var(--sm-fam-mystic);
+}
+
+.reward-screen .reward-progression-row__key {
+    width: 98px;
+    min-width: 98px;
+    color: var(--sm-gold-200);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-progression-row__value {
+    flex-grow: 1;
+    color: var(--sm-vellum);
+    font-size: 10px;
+    line-height: 13px;
+    white-space: normal;
+}
+
+.reward-screen .reward-choice-panel {
+    flex-grow: 1;
+    min-height: 0;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+.reward-screen .reward-card-row {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: stretch;
+    margin-top: 14px;
+}
+
+.reward-screen .reward-card {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 500px;
+    margin-right: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background-color: rgba(17, 18, 28, 0.94);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-card--gold {
+    border-left-width: 2px;
+    border-left-color: var(--sm-gold-300);
+}
+
+.reward-screen .reward-card--steel {
+    border-left-width: 2px;
+    border-left-color: var(--sm-state-shield-a82);
+}
+
+.reward-screen .reward-card--violet {
+    border-left-width: 2px;
+    border-left-color: var(--sm-fam-mystic);
+}
+
+.reward-screen .reward-card__art {
+    height: 210px;
+    margin-bottom: 14px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(230, 183, 81, 0.08);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
+}
+
+.reward-screen .reward-card__art--steel {
+    background-color: rgba(73, 137, 170, 0.12);
+}
+
+.reward-screen .reward-card__art--violet {
+    background-color: rgba(114, 70, 170, 0.14);
+}
+
+.reward-screen .reward-card__sigil {
+    width: 124px;
+    height: 124px;
+    rotate: 0deg;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(245, 214, 138, 0.96);
+}
+
+.reward-screen .reward-card__art--gold .reward-card__sigil {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Currency/currency_gold.png");
+}
+
+.reward-screen .reward-card__art--steel .reward-card__sigil {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Affix/affix_atk.png");
+    -unity-background-image-tint-color: rgba(140, 210, 255, 0.94);
+}
+
+.reward-screen .reward-card__art--violet .reward-card__sigil {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Augment/augment_star.png");
+    -unity-background-image-tint-color: rgba(214, 160, 255, 0.94);
+}
+
+.reward-screen .reward-card .card__title {
+    color: var(--sm-gold-100);
+    font-size: 18px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.reward-screen .reward-card .card__body {
+    min-height: 58px;
+    margin-top: 12px;
+    color: var(--sm-ink-1);
+    font-size: 11px;
+    line-height: 15px;
+    white-space: normal;
+}
+
+.reward-screen .reward-card .panel__text--muted {
+    margin-top: 9px;
+    font-size: 10px;
+    line-height: 13px;
+    white-space: normal;
+}
+
+.reward-screen .reward-card .ui-button {
+    margin-top: 14px;
+    min-height: 42px;
+}
+
+.reward-screen .reward-bible__decision-glyph {
+    height: 190px;
+    min-height: 190px;
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(12, 16, 29, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a36);
+    border-right-color: var(--sm-gold-300-a36);
+    border-top-color: var(--sm-gold-300-a36);
+    border-bottom-color: var(--sm-gold-300-a36);
+}
+
+.reward-screen .reward-bible__decision-icon {
+    width: 118px;
+    height: 118px;
+    border-radius: 59px;
+    background-color: var(--sm-gold-300-a20);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Posture/posture_standard_advance.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(245, 214, 138, 0.95);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.reward-screen .reward-run-delta-panel,
+.reward-screen .reward-build-impact-panel {
+    height: 188px;
+    min-height: 188px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    padding-top: 14px;
+    padding-bottom: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.reward-screen .reward-run-delta-panel .panel__text,
+.reward-screen .reward-build-impact-panel .panel__text {
+    margin-top: 10px;
+    font-size: 10px;
+    line-height: 13px;
+    overflow: hidden;
+}
+
+.reward-screen .reward-timeline-panel {
+    position: relative;
+    height: 106px;
+    min-height: 106px;
+    margin-top: 14px;
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+}
+
+.reward-screen .reward-timeline-ticks {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.reward-screen .reward-timeline-tick {
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    margin-right: 10px;
+}
+
+.reward-screen .reward-timeline-tick__marker {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 5px;
+    border-radius: 14px;
+    background-color: rgba(17, 22, 36, 0.96);
+    color: var(--sm-gold-200);
+    -unity-text-align: middle-center;
+    font-size: 14px;
+    -unity-font-style: bold;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-timeline-tick--complete .reward-timeline-tick__marker {
+    background-color: var(--sm-state-safe-a86);
+    color: rgb(7, 10, 19);
+}
+
+.reward-screen .reward-timeline-tick--current .reward-timeline-tick__marker {
+    background-color: var(--sm-gold-300);
+    color: rgb(7, 10, 19);
+}
+
+.reward-screen .reward-timeline-tick__text {
+    color: var(--sm-ink-2);
+    font-size: 9px;
+    line-height: 11px;
+    -unity-text-align: upper-center;
+    white-space: normal;
+}
+
+.reward-screen .reward-bible__status-band {
+    height: 72px;
+    min-height: 72px;
+    margin-top: 12px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.reward-screen .reward-bible__status-band .action-group {
+    width: 250px;
+}
+
+.reward-screen .reward-bible__status-band .ui-button {
+    min-width: 220px;
 }

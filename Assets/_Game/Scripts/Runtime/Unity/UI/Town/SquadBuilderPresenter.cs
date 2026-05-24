@@ -149,23 +149,19 @@ public sealed class SquadBuilderPresenter
         var loadout = _root.ProfileQueries.GetLoadoutView(_root.ActiveProfileId);
         var heroById = session.Profile.Heroes.ToDictionary(h => h.HeroId, StringComparer.Ordinal);
         var anchorByHeroId = BuildAnchorByHeroId(loadout);
+        var expeditionSet = new HashSet<string>(loadout?.ExpeditionSquadHeroIds ?? Array.Empty<string>(), StringComparer.Ordinal);
 
         foreach (var entry in _anchorButtons)
         {
             var deployment = loadout?.Deployments.FirstOrDefault(d => d.Anchor == entry.Anchor);
             var heroId = deployment?.HeroId ?? string.Empty;
-            string heroLabel;
+            SquadBuilderHeroRow? row = null;
             if (!string.IsNullOrEmpty(heroId) && heroById.TryGetValue(heroId, out var hero))
             {
-                heroLabel = ResolveHeroDisplayName(hero);
-            }
-            else
-            {
-                heroLabel = "비어있음";
+                row = BuildHeroRow(session, hero, anchorByHeroId, expeditionSet);
             }
 
-            entry.Button.text = $"{LocalizeAnchor(entry.Anchor)}\n{Shorten(heroLabel, 12)}";
-            entry.Button.tooltip = heroLabel;
+            RenderAnchorButton(entry.Button, entry.Anchor, row);
             entry.Button.EnableInClassList("sm-sqb-modal__anchor-button--selected", entry.Anchor == _selectedAnchor);
         }
 
@@ -187,8 +183,7 @@ public sealed class SquadBuilderPresenter
         IReadOnlyDictionary<string, DeploymentAnchorId> anchorByHeroId)
     {
         _rosterList.Clear();
-        var expeditionIds = loadout?.ExpeditionSquadHeroIds ?? Array.Empty<string>();
-        var expeditionSet = new HashSet<string>(expeditionIds, StringComparer.Ordinal);
+        var expeditionSet = new HashSet<string>(loadout?.ExpeditionSquadHeroIds ?? Array.Empty<string>(), StringComparer.Ordinal);
         var rows = session.Profile.Heroes
             .OrderByDescending(hero => anchorByHeroId.ContainsKey(hero.HeroId))
             .ThenByDescending(hero => expeditionSet.Contains(hero.HeroId))
@@ -203,8 +198,9 @@ public sealed class SquadBuilderPresenter
             container.AddToClassList("sm-sqb-modal__roster-row");
             container.EnableInClassList("sm-sqb-modal__roster-row--deployed", row.IsDeployed);
 
-            var icon = new Label(row.IsDeployed ? "◆" : "◇");
+            var icon = new Label(BuildRosterGlyph(row));
             icon.AddToClassList("sm-sqb-modal__roster-icon");
+            AddClassIconClass(icon, row.ClassKey);
             container.Add(icon);
 
             var copy = new VisualElement();
@@ -214,7 +210,7 @@ public sealed class SquadBuilderPresenter
             name.AddToClassList("sm-sqb-modal__roster-name");
             copy.Add(name);
 
-            var meta = new Label($"{Shorten(row.MetaLabel, 22)} · {row.DeploymentLabel}");
+            var meta = new Label($"{Shorten(row.MetaLabel, 18)}\n{row.DeploymentLabel}");
             meta.AddToClassList("sm-sqb-modal__roster-meta");
             copy.Add(meta);
 
@@ -234,11 +230,89 @@ public sealed class SquadBuilderPresenter
         }
     }
 
+    private void RenderAnchorButton(Button button, DeploymentAnchorId anchor, SquadBuilderHeroRow? row)
+    {
+        button.Clear();
+        button.text = row?.DisplayName ?? "비어있음";
+        button.tooltip = row?.DisplayName ?? LocalizeAnchor(anchor);
+
+        var card = new VisualElement();
+        card.AddToClassList("sm-sqb-modal__anchor-card");
+        card.EnableInClassList("sm-sqb-modal__anchor-card--front", anchor.IsFrontRow());
+        card.EnableInClassList("sm-sqb-modal__anchor-card--back", !anchor.IsFrontRow());
+        card.EnableInClassList("sm-sqb-modal__anchor-card--empty", row == null);
+
+        var anchorBadge = new Label(ShortAnchorLabel(anchor));
+        anchorBadge.AddToClassList("sm-sqb-modal__anchor-badge");
+        card.Add(anchorBadge);
+
+        var portrait = new VisualElement();
+        portrait.AddToClassList("sm-sqb-modal__anchor-portrait");
+        if (row != null)
+        {
+            AddClassIconClass(portrait, row.ClassKey);
+        }
+
+        var glyph = new Label(row != null ? BuildRosterGlyph(row) : "+");
+        glyph.AddToClassList("sm-sqb-modal__anchor-glyph");
+        portrait.Add(glyph);
+        card.Add(portrait);
+
+        var name = new Label(row != null ? Shorten(row.DisplayName, 14) : "비어있음");
+        name.AddToClassList("sm-sqb-modal__anchor-name");
+        card.Add(name);
+
+        var role = new Label(row != null ? Shorten(row.RoleLabel, 16) : "배치 대기");
+        role.AddToClassList("sm-sqb-modal__anchor-role");
+        card.Add(role);
+
+        var pipRow = new VisualElement();
+        pipRow.AddToClassList("sm-sqb-modal__anchor-pips");
+        for (var i = 0; i < 5; i++)
+        {
+            var pip = new VisualElement();
+            pip.AddToClassList("sm-sqb-modal__anchor-pip");
+            pip.EnableInClassList("sm-sqb-modal__anchor-pip--on", row != null && i < ResolveRosterPipCount(row));
+            pipRow.Add(pip);
+        }
+        card.Add(pipRow);
+
+        button.Add(card);
+    }
+
     private static int ResolveRosterPipCount(SquadBuilderHeroRow row)
     {
         if (row.IsDeployed) return 5;
         return row.DeploymentLabel == "원정 후보" ? 4 : 3;
     }
+
+    private static string BuildRosterGlyph(SquadBuilderHeroRow row)
+    {
+        var name = row.DisplayName?.Trim();
+        if (!string.IsNullOrEmpty(name))
+        {
+            return name[..1];
+        }
+
+        return row.IsDeployed ? "◆" : "◇";
+    }
+
+    private static void AddClassIconClass(VisualElement element, string classKey)
+    {
+        element.AddToClassList("sm-sqb-modal__class-icon");
+        element.AddToClassList($"sm-sqb-modal__class-icon--{classKey}");
+    }
+
+    private static string ShortAnchorLabel(DeploymentAnchorId anchor) => anchor switch
+    {
+        DeploymentAnchorId.FrontTop => "전 상",
+        DeploymentAnchorId.FrontCenter => "전 중",
+        DeploymentAnchorId.FrontBottom => "전 하",
+        DeploymentAnchorId.BackTop => "후 상",
+        DeploymentAnchorId.BackCenter => "후 중",
+        DeploymentAnchorId.BackBottom => "후 하",
+        _ => "배치",
+    };
 
     private SquadBuilderHeroRow? RenderSelectedDetail(
         GameSessionState session,
@@ -369,8 +443,18 @@ public sealed class SquadBuilderPresenter
             FormationLabel: formationLabel,
             RangeLabel: rangeLabel,
             BiasLabel: biasLabel,
+            ClassKey: NormalizeClassKey(hero.ClassId),
             RarityLabel: hero.RecruitTier.ToString().ToLowerInvariant(),
             IsDeployed: anchorByHeroId.ContainsKey(hero.HeroId));
+    }
+
+    private static string NormalizeClassKey(string classId)
+    {
+        if (string.IsNullOrWhiteSpace(classId)) return "unknown";
+        var normalized = classId.Trim().ToLowerInvariant();
+        return normalized is "vanguard" or "duelist" or "ranger" or "mystic"
+            ? normalized
+            : "unknown";
     }
 
     private SquadBlueprintRecord? ResolveActiveBlueprint(GameSessionState session)
@@ -583,6 +667,7 @@ public sealed class SquadBuilderPresenter
         string FormationLabel,
         string RangeLabel,
         string BiasLabel,
+        string ClassKey,
         string RarityLabel,
         bool IsDeployed);
 
