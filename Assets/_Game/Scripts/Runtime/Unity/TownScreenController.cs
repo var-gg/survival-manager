@@ -119,7 +119,12 @@ public sealed class TownScreenController : MonoBehaviour
         try
         {
             var recruitView = new RecruitView(root);
-            _recruitPresenter = new RecruitPresenter(_root, recruitView, _contentText);
+            _recruitPresenter = new RecruitPresenter(
+                _root,
+                recruitView,
+                _contentText,
+                _contentIconResolver.ResolveAny,
+                _contentIconResolver.ResolveCharacterPortrait);
             _recruitPresenter.Initialize();
             _recruitPresenter.Close();
             _presenter?.SetNpcOpener("dalmok", _recruitPresenter.Open);
@@ -235,7 +240,15 @@ public sealed class TownScreenController : MonoBehaviour
         try
         {
             var sheetView = new TownCharacterSheetView(root);
-            _characterSheetPresenter = new TownCharacterSheetPresenter(_root, _localization, _contentText, sheetView);
+            _characterSheetPresenter = new TownCharacterSheetPresenter(
+                _root,
+                _localization,
+                _contentText,
+                sheetView,
+                portraitSprite: key => _contentIconResolver.ResolveCharacterStandee(key),
+                railPortraitSprite: key => _contentIconResolver.ResolveCharacterPortrait(key),
+                skillSprite: key => _contentIconResolver.ResolveSkill(key),
+                itemSprite: key => _contentIconResolver.ResolveItem(key));
             _characterSheetPresenter.Initialize();
             _characterSheetPresenter.Close();
             _presenter?.SetHeroOpener(heroId =>

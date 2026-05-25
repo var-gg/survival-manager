@@ -129,12 +129,19 @@ public sealed class InventoryPresenter : IInventoryActions
             .Select(item =>
             {
                 var iconKey = item.ItemBaseId;
+                var itemName = item.ItemBaseId;
                 var weaponFamilyKey = "item";
                 var slotKey = "item";
                 var presentation = EquipmentPresentationPolicy.Build(slotKey, weaponFamilyKey, "Common", "Baseline", Array.Empty<string>());
                 if (lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
                 {
                     iconKey = string.IsNullOrWhiteSpace(itemDef.IconId) ? item.ItemBaseId : itemDef.IconId;
+                    itemName = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
+                    if (string.IsNullOrWhiteSpace(itemName))
+                    {
+                        itemName = itemDef.Id;
+                    }
+
                     weaponFamilyKey = ResolveFamilyKey(itemDef);
                     slotKey = ResolveSlotKey(itemDef.SlotType);
                     presentation = EquipmentPresentationPolicy.Build(
@@ -147,6 +154,10 @@ public sealed class InventoryPresenter : IInventoryActions
 
                 var itemState = new InventoryItemViewState(
                     ItemInstanceId: item.ItemInstanceId,
+                    Name: itemName,
+                    MetaLabel: string.IsNullOrWhiteSpace(presentation.FamilyLabel)
+                        ? $"{presentation.SlotLabel} / {FormatRarityLabel(presentation.RarityKey)}"
+                        : $"{presentation.SlotLabel} / {FormatRarityLabel(presentation.RarityKey)} / {presentation.FamilyLabel}",
                     IconKey: iconKey,
                     RarityKey: presentation.RarityKey,
                     RawRarityKey: presentation.RawRarityKey,
@@ -230,8 +241,10 @@ public sealed class InventoryPresenter : IInventoryActions
                 : "마을 hero card나 roster에서 대상을 선택",
             SelectedItemLabel: selectedSummary.Name,
             SelectedItemMetaLabel: selectedSummary.MetaLabel,
+            SelectedItemIconSprite: selectedSummary.IconSprite,
             EquippedItemLabel: equippedSummary.Name,
             EquippedItemMetaLabel: equippedSummary.MetaLabel,
+            EquippedItemIconSprite: equippedSummary.IconSprite,
             EquippedOwnerLabel: selectedSummary.OwnerLabel,
             Rows: BuildCompareRows(selectedSummary, equippedSummary),
             EquipCta: new InventoryEquipCtaViewState(
@@ -247,10 +260,13 @@ public sealed class InventoryPresenter : IInventoryActions
     {
         return new[]
         {
-            new InventoryCompareRowViewState("slot", "Slot", selected.SlotLabel, equipped.SlotLabel, CompareTone(selected.SlotKey, equipped.SlotKey)),
-            new InventoryCompareRowViewState("rarity", "Rarity", selected.RarityKey, equipped.RarityKey, CompareTone(selected.RarityKey, equipped.RarityKey)),
-            new InventoryCompareRowViewState("family", "Family", selected.WeaponFamilyLabel, equipped.WeaponFamilyLabel, CompareTone(selected.WeaponFamilyKey, equipped.WeaponFamilyKey)),
-            new InventoryCompareRowViewState("affix", "Affix", $"{selected.AffixCount}", $"{equipped.AffixCount}", CompareTone(selected.AffixCount.ToString(), equipped.AffixCount.ToString())),
+            new InventoryCompareRowViewState("slot", "슬롯", selected.SlotLabel, equipped.SlotLabel, CompareTone(selected.SlotKey, equipped.SlotKey)),
+            new InventoryCompareRowViewState("rarity", "희귀도", FormatRarityLabel(selected.RarityKey), FormatRarityLabel(equipped.RarityKey), CompareTone(selected.RarityKey, equipped.RarityKey)),
+            new InventoryCompareRowViewState("family", "계열", selected.WeaponFamilyLabel, equipped.WeaponFamilyLabel, CompareTone(selected.WeaponFamilyKey, equipped.WeaponFamilyKey)),
+            new InventoryCompareRowViewState("identity", "정체성", FormatIdentityCompareLabel(selected.IdentityKey), FormatIdentityCompareLabel(equipped.IdentityKey), CompareTone(selected.IdentityKey, equipped.IdentityKey)),
+            new InventoryCompareRowViewState("budget", "예산", selected.BudgetLabel, equipped.BudgetLabel, CompareTone(selected.BudgetKey, equipped.BudgetKey)),
+            new InventoryCompareRowViewState("affix", "속성", $"{selected.AffixCount}", $"{equipped.AffixCount}", CompareTone(selected.AffixCount.ToString(), equipped.AffixCount.ToString())),
+            new InventoryCompareRowViewState("refit", "재가공", FormatRefitLabel(selected.RefitKey), FormatRefitLabel(equipped.RefitKey), CompareTone(selected.RefitKey, equipped.RefitKey)),
         };
     }
 
@@ -278,19 +294,19 @@ public sealed class InventoryPresenter : IInventoryActions
         }
 
         return string.IsNullOrWhiteSpace(selectedItem.EquippedHeroId)
-            ? "현재 장비와 슬롯/희귀도/계열만 비교합니다."
+            ? "현재 장비와 슬롯/희귀도/계열/정체성/예산을 비교합니다."
             : "이미 대상 영웅이 장착 중입니다.";
     }
 
     private InventoryDetailViewState BuildDetail(InventoryItemRecord item, string iconKey)
     {
         var name = item.ItemBaseId;
-        var slotLabel = "item";
+        var slotLabel = "장비";
         var slotKey = "item";
         var rarityKey = "common";
         var rawRarityKey = "common";
         var weaponFamilyKey = string.Empty;
-        var weaponFamilyLabel = "item";
+        var weaponFamilyLabel = "장비";
         var identityKey = "baseline";
         var identityLabel = string.Empty;
         var showsIdentityBadge = false;
@@ -324,9 +340,7 @@ public sealed class InventoryPresenter : IInventoryActions
             showsIdentityBadge = presentation.ShowsIdentityBadge;
             canRefit = presentation.CanRefit;
             isLaunchSupportedRarity = presentation.IsLaunchSupportedRarity;
-            setBonusTier = string.IsNullOrWhiteSpace(itemDef.BudgetBand)
-                ? "set bonus schema pending"
-                : $"budget {itemDef.BudgetBand}";
+            setBonusTier = FormatBudgetBand(itemDef.BudgetBand);
             crossLinks.Add(slotLabel);
             if (!string.IsNullOrWhiteSpace(weaponFamilyLabel))
             {
@@ -334,7 +348,7 @@ public sealed class InventoryPresenter : IInventoryActions
             }
             if (!string.IsNullOrWhiteSpace(itemDef.CraftCategory))
             {
-                crossLinks.Add(itemDef.CraftCategory);
+                crossLinks.Add(FormatCraftCategory(itemDef.CraftCategory));
             }
         }
 
@@ -405,17 +419,22 @@ public sealed class InventoryPresenter : IInventoryActions
         string RarityKey,
         string WeaponFamilyKey,
         string WeaponFamilyLabel,
+        string IdentityKey,
+        string BudgetKey,
+        string BudgetLabel,
+        string RefitKey,
         string OwnerLabel,
-        int AffixCount);
+        int AffixCount,
+        Texture2D? IconSprite);
 
     private readonly record struct CategoryCatalogEntry(string Key, string Label, string IconKey);
 
     private static readonly CategoryCatalogEntry[] CategoryCatalog =
     {
-        new("all",       "ALL",       "blade"),
-        new("weapon",    "WEAPON",    "weapon"),
-        new("armor",     "ARMOR",     "armor"),
-        new("accessory", "ACCESSORY", "accessory"),
+        new("all",       "전체",   "blade"),
+        new("weapon",    "무기",   "weapon"),
+        new("armor",     "방어구", "armor"),
+        new("accessory", "장신구", "accessory"),
     };
 
     /// <summary>weapon family → 한국어 표시명. art-pipeline V1 weapon family 4종.</summary>
@@ -474,16 +493,26 @@ public sealed class InventoryPresenter : IInventoryActions
                 RarityKey: "-",
                 WeaponFamilyKey: string.Empty,
                 WeaponFamilyLabel: "-",
+                IdentityKey: "-",
+                BudgetKey: "-",
+                BudgetLabel: "-",
+                RefitKey: "-",
                 OwnerLabel: "미장착",
-                AffixCount: 0);
+                AffixCount: 0,
+                IconSprite: null);
         }
 
         var name = item.ItemBaseId;
+        var iconKey = item.ItemBaseId;
         var slotKey = "item";
-        var slotLabel = "item";
+        var slotLabel = "장비";
         var rarityKey = "common";
         var familyKey = string.Empty;
-        var familyLabel = "item";
+        var familyLabel = "장비";
+        var identityKey = "baseline";
+        var budgetKey = "unknown";
+        var budgetLabel = "세트 보너스 추적 중";
+        var refitKey = "refit";
         if (_root.CombatContentLookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
         {
             name = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
@@ -492,6 +521,7 @@ public sealed class InventoryPresenter : IInventoryActions
                 name = itemDef.Id;
             }
 
+            iconKey = string.IsNullOrWhiteSpace(itemDef.IconId) ? item.ItemBaseId : itemDef.IconId;
             slotKey = ResolveSlotKey(itemDef.SlotType);
             familyKey = ResolveFamilyKey(itemDef);
             var presentation = EquipmentPresentationPolicy.Build(
@@ -504,18 +534,27 @@ public sealed class InventoryPresenter : IInventoryActions
             rarityKey = presentation.RarityKey;
             familyKey = presentation.FamilyKey;
             familyLabel = presentation.FamilyLabel;
+            identityKey = presentation.IdentityKey;
+            budgetKey = string.IsNullOrWhiteSpace(itemDef.BudgetBand) ? "unknown" : itemDef.BudgetBand.Trim().ToLowerInvariant();
+            budgetLabel = FormatBudgetBand(itemDef.BudgetBand);
+            refitKey = presentation.CanRefit ? "refit" : "locked";
         }
 
         return new InventoryCompareItemSummary(
             Name: name,
-            MetaLabel: $"{slotLabel} / {rarityKey} / {familyLabel}",
+            MetaLabel: $"{slotLabel} / {FormatRarityLabel(rarityKey)} / {familyLabel}",
             SlotKey: slotKey,
             SlotLabel: slotLabel,
             RarityKey: rarityKey,
             WeaponFamilyKey: familyKey,
             WeaponFamilyLabel: familyLabel,
+            IdentityKey: identityKey,
+            BudgetKey: budgetKey,
+            BudgetLabel: budgetLabel,
+            RefitKey: refitKey,
             OwnerLabel: ResolveOwnerLabel(item),
-            AffixCount: item.AffixIds?.Count ?? 0);
+            AffixCount: item.AffixIds?.Count ?? 0,
+            IconSprite: _itemIconSprite(iconKey) ?? _itemIconSprite(item.ItemBaseId) ?? _affixIconSprite(iconKey));
     }
 
     private string ResolveOwnerLabel(InventoryItemRecord item)
@@ -546,5 +585,90 @@ public sealed class InventoryPresenter : IInventoryActions
         return string.Equals(selectedValue, equippedValue, StringComparison.OrdinalIgnoreCase)
             ? "same"
             : "different";
+    }
+
+    private static string FormatIdentityCompareLabel(string identityKey)
+    {
+        return (identityKey ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "named" => "이름 있음",
+            "unique" => "전용",
+            "baseline" => "기본",
+            "-" => "-",
+            "" => "-",
+            _ => HumanizeToken(identityKey),
+        };
+    }
+
+    private static string FormatRefitLabel(string refitKey)
+    {
+        return (refitKey ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "refit" => "가능",
+            "locked" => "잠김",
+            "-" => "-",
+            "" => "-",
+            _ => HumanizeToken(refitKey),
+        };
+    }
+
+    private static string FormatRarityLabel(string rarityKey)
+    {
+        return (rarityKey ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "common" => "일반",
+            "rare" => "희귀",
+            "epic" => "영웅",
+            "magic" => "희귀",
+            "legendary" => "영웅",
+            "-" => "-",
+            "" => "-",
+            _ => "일반",
+        };
+    }
+
+    private static string FormatBudgetBand(string budgetBand)
+    {
+        if (string.IsNullOrWhiteSpace(budgetBand))
+        {
+            return "세트 보너스 추적 중";
+        }
+
+        var normalized = budgetBand.Trim();
+        if (normalized.StartsWith("budget_", StringComparison.OrdinalIgnoreCase))
+        {
+            normalized = normalized.Substring("budget_".Length);
+        }
+
+        return normalized.ToLowerInvariant() switch
+        {
+            "personal_power_10" => "개인 화력 예산 10",
+            "personal_guard_10" => "개인 방어 예산 10",
+            "team_support_10" => "팀 지원 예산 10",
+            _ => $"예산 {HumanizeToken(normalized)}",
+        };
+    }
+
+    private static string FormatCraftCategory(string craftCategory)
+    {
+        return (craftCategory ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "vanguard" => "선봉",
+            "duelist" => "결투가",
+            "ranger" => "척후",
+            "mystic" => "술사",
+            "beastkin" => "야성",
+            _ => HumanizeToken(craftCategory),
+        };
+    }
+
+    private static string HumanizeToken(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return string.Empty;
+        }
+
+        return token.Replace('_', ' ').Trim();
     }
 }

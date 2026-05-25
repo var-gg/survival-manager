@@ -938,7 +938,8 @@ public sealed class BattleActorView : MonoBehaviour
 
     private string BuildStatusLine(BattleUnitReadModel actor)
     {
-        return BattleReadabilityFormatter.BuildPlayerFacingState(actor);
+        return _metadataFormatter?.BuildStateText(actor)
+               ?? BattleReadabilityFormatter.BuildPlayerFacingState(actor);
     }
 
     private string BuildOverlayStatusLine(BattleUnitReadModel actor)

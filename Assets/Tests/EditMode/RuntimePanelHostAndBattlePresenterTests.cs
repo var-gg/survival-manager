@@ -134,7 +134,7 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
 
             Assert.That(state.LogText, Does.Contain("hit"));
             Assert.That(state.LogText.Contains("combat.log.damage"), Is.False);
-            Assert.That(state.SpeedText, Is.EqualTo("Authored Expedition Battle"));
+            Assert.That(state.SpeedText, Is.EqualTo("Expedition Battle"));
             Assert.That(state.StatusText.Contains("ui.battle.status"), Is.False);
             Assert.That(state.Settings.TeamSummaryLabel, Does.Contain("Team Summary"));
             Assert.That(state.Settings.IsVisible, Is.True);

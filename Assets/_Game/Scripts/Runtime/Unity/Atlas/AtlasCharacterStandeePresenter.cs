@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Atlas.Model;
+using SM.Atlas.Services;
 using UnityEngine;
 
 namespace SM.Unity.Atlas;
@@ -9,6 +10,8 @@ namespace SM.Unity.Atlas;
 [DisallowMultipleComponent]
 public sealed class AtlasCharacterStandeePresenter : MonoBehaviour
 {
+    private const string CharacterResourcePath = "_Game/Art/Characters";
+
     public readonly struct StandeeEntry
     {
         public StandeeEntry(string characterId, string nodeId, Vector3 worldPosition, float scale, Color accentColor)
@@ -36,6 +39,14 @@ public sealed class AtlasCharacterStandeePresenter : MonoBehaviour
     };
 
     [SerializeField] private Transform standeeRoot = null!;
+
+    private void Start()
+    {
+        if (Application.isPlaying)
+        {
+            Rebuild(AtlasGrayboxDataFactory.CreateRegion());
+        }
+    }
 
     public static IReadOnlyList<StandeeEntry> BuildPlan(AtlasRegionDefinition region)
     {
@@ -87,18 +98,29 @@ public sealed class AtlasCharacterStandeePresenter : MonoBehaviour
         root.transform.SetParent(standeeRoot, false);
         root.transform.position = entry.WorldPosition;
         root.transform.localScale = Vector3.one * entry.Scale;
-        root.transform.rotation = Quaternion.Euler(0f, 145f, 0f);
+        root.transform.rotation = Quaternion.Euler(0f, -145f, 0f);
 
         var material = characterMaterial ?? CreateMaterial(entry.AccentColor);
-        CreatePrimitive(root.transform, PrimitiveType.Capsule, "P09Body", new Vector3(0f, 0.58f, 0f), new Vector3(0.24f, 0.42f, 0.24f), material);
-        CreatePrimitive(root.transform, PrimitiveType.Sphere, "P09Head", new Vector3(0f, 1.10f, 0f), new Vector3(0.28f, 0.28f, 0.28f), material);
+        var poleMaterial = baseMaterial ?? CreateMaterial(new Color(0.08f, 0.06f, 0.04f, 0.82f));
+        CreatePrimitive(root.transform, PrimitiveType.Cylinder, "P09MarkerPole", new Vector3(0f, 0.38f, 0.016f), new Vector3(0.030f, 0.34f, 0.030f), poleMaterial);
         CreatePrimitive(
             root.transform,
             PrimitiveType.Cylinder,
             "P09StandeeBase",
             new Vector3(0f, 0.04f, 0f),
             new Vector3(0.34f, 0.028f, 0.34f),
-            baseMaterial ?? CreateMaterial(new Color(0.08f, 0.07f, 0.06f, 0.72f)));
+            poleMaterial);
+
+        var sprite = LoadStandeeSprite(entry.CharacterId);
+        if (sprite != null)
+        {
+            CreatePortraitSprite(root.transform, sprite);
+            CreatePrimitive(root.transform, PrimitiveType.Sphere, "P09Seal", new Vector3(0f, 1.18f, 0.004f), new Vector3(0.075f, 0.075f, 0.075f), material);
+            return;
+        }
+
+        CreatePrimitive(root.transform, PrimitiveType.Cube, "P09Banner", new Vector3(0.02f, 0.80f, 0f), new Vector3(0.28f, 0.42f, 0.035f), material);
+        CreatePrimitive(root.transform, PrimitiveType.Sphere, "P09Seal", new Vector3(0f, 1.04f, -0.012f), new Vector3(0.12f, 0.12f, 0.12f), material);
     }
 
     private static void CreatePrimitive(Transform parent, PrimitiveType type, string name, Vector3 localPosition, Vector3 localScale, Material material)
@@ -142,6 +164,46 @@ public sealed class AtlasCharacterStandeePresenter : MonoBehaviour
         }
 
         return material;
+    }
+
+    private static Sprite? LoadStandeeSprite(string characterId)
+    {
+        foreach (var stem in new[]
+                 {
+                     "portrait_stance_idle",
+                     "portrait_stance_guard",
+                     "portrait_full",
+                     "portrait_full_body",
+                     "portrait_bust_default_L",
+                     "portrait_bust_default_R",
+                     "portrait_face_default",
+                 })
+        {
+            var sprite = Resources.Load<Sprite>($"{CharacterResourcePath}/{characterId}/{stem}");
+            if (sprite != null)
+            {
+                return sprite;
+            }
+        }
+
+        return null;
+    }
+
+    private static void CreatePortraitSprite(Transform parent, Sprite sprite)
+    {
+        var go = new GameObject("P09PortraitBillboard");
+        go.name = "P09PortraitBillboard";
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = new Vector3(0f, 0.73f, 0.010f);
+        go.transform.localScale = Vector3.one * 0.072f;
+        go.transform.localRotation = Quaternion.identity;
+
+        var renderer = go.AddComponent<SpriteRenderer>();
+        renderer.sprite = sprite;
+        renderer.color = Color.white;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.sortingOrder = 4;
     }
 
     private static void ClearChildren(Transform root)

@@ -12,17 +12,15 @@ internal sealed class BattleUnitPortraitResolver
 
     public Texture2D? Resolve(BattleUnitReadModel unit)
     {
-        if (string.IsNullOrWhiteSpace(unit.CharacterId))
+        foreach (var characterId in EnumerateCharacterIds(unit))
         {
-            return null;
-        }
-
-        foreach (var assetStem in EnumeratePortraitAssetStems(unit))
-        {
-            var texture = LoadRaw(unit.CharacterId, assetStem);
-            if (texture != null)
+            foreach (var assetStem in EnumeratePortraitAssetStems(unit))
             {
-                return texture;
+                var texture = LoadRaw(characterId, assetStem);
+                if (texture != null)
+                {
+                    return texture;
+                }
             }
         }
 
@@ -31,17 +29,15 @@ internal sealed class BattleUnitPortraitResolver
 
     public Texture2D? ResolveFullBody(BattleUnitReadModel unit)
     {
-        if (string.IsNullOrWhiteSpace(unit.CharacterId))
+        foreach (var characterId in EnumerateCharacterIds(unit))
         {
-            return null;
-        }
-
-        foreach (var assetStem in EnumerateFullBodyAssetStems(unit))
-        {
-            var texture = LoadRaw(unit.CharacterId, assetStem);
-            if (texture != null)
+            foreach (var assetStem in EnumerateFullBodyAssetStems(unit))
             {
-                return texture;
+                var texture = LoadRaw(characterId, assetStem);
+                if (texture != null)
+                {
+                    return texture;
+                }
             }
         }
 
@@ -70,6 +66,92 @@ internal sealed class BattleUnitPortraitResolver
 
         yield return "portrait_stance_idle";
         yield return "portrait_full";
+    }
+
+    private static IEnumerable<string> EnumerateCharacterIds(BattleUnitReadModel unit)
+    {
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var candidate in EnumerateRawCharacterIdCandidates(unit))
+        {
+            if (!string.IsNullOrWhiteSpace(candidate) && seen.Add(candidate))
+            {
+                yield return candidate;
+            }
+        }
+    }
+
+    private static IEnumerable<string> EnumerateRawCharacterIdCandidates(BattleUnitReadModel unit)
+    {
+        if (!string.IsNullOrWhiteSpace(unit.CharacterId))
+        {
+            yield return unit.CharacterId.Trim();
+        }
+
+        var token = $"{unit.ArchetypeId} {unit.Id} {unit.Name}".ToLowerInvariant();
+        if (token.Contains("aegis", StringComparison.Ordinal) || token.Contains("sentinel", StringComparison.Ordinal) || token.Contains("guardian", StringComparison.Ordinal) || token.Contains("vanguard", StringComparison.Ordinal))
+        {
+            yield return "hero_aegis_sentinel";
+        }
+        if (token.Contains("수호", StringComparison.Ordinal))
+        {
+            yield return "hero_aegis_sentinel";
+        }
+        if (token.Contains("pale", StringComparison.Ordinal) || token.Contains("executor", StringComparison.Ordinal) || token.Contains("slayer", StringComparison.Ordinal) || token.Contains("duelist", StringComparison.Ordinal))
+        {
+            yield return "hero_pale_executor";
+        }
+        if (token.Contains("학살", StringComparison.Ordinal))
+        {
+            yield return "hero_pale_executor";
+        }
+        if (token.Contains("longshot", StringComparison.Ordinal) || token.Contains("hunter", StringComparison.Ordinal) || token.Contains("ranger", StringComparison.Ordinal))
+        {
+            yield return "hero_longshot_hunter";
+        }
+        if (token.Contains("prism", StringComparison.Ordinal) || token.Contains("seer", StringComparison.Ordinal) || token.Contains("mystic", StringComparison.Ordinal))
+        {
+            yield return "hero_prism_seeker";
+        }
+        if (token.Contains("grave", StringComparison.Ordinal) || token.Contains("reaver", StringComparison.Ordinal) || token.Contains("raider", StringComparison.Ordinal))
+        {
+            yield return "hero_grave_reaver";
+        }
+        if (token.Contains("악탈", StringComparison.Ordinal))
+        {
+            yield return "hero_grave_reaver";
+        }
+        if (token.Contains("echo", StringComparison.Ordinal) || token.Contains("savant", StringComparison.Ordinal))
+        {
+            yield return "hero_echo_savant";
+        }
+        if (token.Contains("감시", StringComparison.Ordinal))
+        {
+            yield return "hero_prism_seeker";
+        }
+        if (token.Contains("gate", StringComparison.Ordinal) || token.Contains("warden", StringComparison.Ordinal) || token.Contains("파수", StringComparison.Ordinal))
+        {
+            yield return "boss_gate_warden";
+        }
+        if (token.Contains("root", StringComparison.Ordinal) || token.Contains("watcher", StringComparison.Ordinal))
+        {
+            yield return "boss_root_watcher";
+        }
+        if (token.Contains("glass", StringComparison.Ordinal) || token.Contains("conduit", StringComparison.Ordinal))
+        {
+            yield return "boss_glass_conduit";
+        }
+        if (token.Contains("menagerie", StringComparison.Ordinal) || token.Contains("overseer", StringComparison.Ordinal))
+        {
+            yield return "boss_menagerie_overseer";
+        }
+        if (token.Contains("scribe", StringComparison.Ordinal) || token.Contains("sigil", StringComparison.Ordinal) || token.Contains("서기", StringComparison.Ordinal))
+        {
+            yield return "npc_archive_scribe";
+        }
+        if (token.Contains("border", StringComparison.Ordinal) || token.Contains("irregular", StringComparison.Ordinal) || token.Contains("carrier", StringComparison.Ordinal) || token.Contains("창병", StringComparison.Ordinal) || token.Contains("운반자", StringComparison.Ordinal))
+        {
+            yield return "npc_galma_mercenary_post";
+        }
     }
 
     private static IEnumerable<string> EnumerateFullBodyAssetStems(BattleUnitReadModel unit)

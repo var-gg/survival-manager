@@ -27,7 +27,7 @@ Material:
     m_Floats:
     - _Alpha: 0.52
     m_Colors:
-    - _BaseColor: {r: 1, g: 0.38, b: 0.32, a: 0.7}
-    - _EmissionColor: {r: 1.15, g: 0.43699998, b: 0.36799997, a: 0.80499995}
+    - _BaseColor: {r: 1, g: 0.38, b: 0.32, a: 0.11}
+    - _EmissionColor: {r: 1.15, g: 0.43699998, b: 0.36799997, a: 0.1265}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

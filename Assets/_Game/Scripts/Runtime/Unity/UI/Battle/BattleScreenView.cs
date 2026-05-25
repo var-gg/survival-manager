@@ -62,6 +62,13 @@ public sealed class BattleScreenView
     private readonly VisualElement _tacticalReadoutPanel;
     private readonly Label _tacticalReadoutTitleLabel;
     private readonly VisualElement _tacticalReadoutRows;
+    private readonly VisualElement _battleIntelPanel;
+    private readonly Label _battleIntelTitleLabel;
+    private readonly VisualElement _battleIntelBoard;
+    private readonly VisualElement _battleIntelLegend;
+    private readonly VisualElement _battleSideRail;
+    private readonly Label _battleSideRailTitleLabel;
+    private readonly VisualElement _battleSideRailSteps;
     private readonly Label _allyHpLabel;
     private readonly Label _enemyHpLabel;
     private readonly Label _logLabel;
@@ -83,6 +90,9 @@ public sealed class BattleScreenView
     private readonly Button _rebattleButton;
     private readonly Button _returnTownButton;
     private readonly Label _utilityGroupTitleLabel;
+    private readonly VisualElement _observerStatusGroup;
+    private readonly Label _observerStatusTitleLabel;
+    private readonly VisualElement _observerStatusChips;
     private readonly Button _settingsButton;
     private readonly VisualElement _progressTrack;
     private readonly VisualElement _progressFill;
@@ -175,6 +185,13 @@ public sealed class BattleScreenView
         _tacticalReadoutPanel = Require<VisualElement>(root, "TacticalReadoutPanel");
         _tacticalReadoutTitleLabel = Require<Label>(root, "TacticalReadoutTitleLabel");
         _tacticalReadoutRows = Require<VisualElement>(root, "TacticalReadoutRows");
+        _battleIntelPanel = Require<VisualElement>(root, "BattleIntelPanel");
+        _battleIntelTitleLabel = Require<Label>(root, "BattleIntelTitleLabel");
+        _battleIntelBoard = Require<VisualElement>(root, "BattleIntelBoard");
+        _battleIntelLegend = Require<VisualElement>(root, "BattleIntelLegend");
+        _battleSideRail = Require<VisualElement>(root, "BattleSideRail");
+        _battleSideRailTitleLabel = Require<Label>(root, "BattleSideRailTitleLabel");
+        _battleSideRailSteps = Require<VisualElement>(root, "BattleSideRailSteps");
         _allyHpLabel = Require<Label>(root, "AllyHpLabel");
         _enemyHpLabel = Require<Label>(root, "EnemyHpLabel");
         _logLabel = Require<Label>(root, "LogLabel");
@@ -196,6 +213,9 @@ public sealed class BattleScreenView
         _rebattleButton = Require<Button>(root, "RebattleButton");
         _returnTownButton = Require<Button>(root, "ReturnTownButton");
         _utilityGroupTitleLabel = Require<Label>(root, "UtilityGroupTitleLabel");
+        _observerStatusGroup = Require<VisualElement>(root, "ObserverStatusGroup");
+        _observerStatusTitleLabel = Require<Label>(root, "ObserverStatusTitleLabel");
+        _observerStatusChips = Require<VisualElement>(root, "ObserverStatusChips");
         _settingsButton = Require<Button>(root, "SettingsButton");
         _progressTrack = Require<VisualElement>(root, "ProgressTrack");
         _progressFill = Require<VisualElement>(root, "ProgressFill");
@@ -270,6 +290,13 @@ public sealed class BattleScreenView
             _tacticalReadoutPanel,
             _tacticalReadoutTitleLabel,
             _tacticalReadoutRows,
+            _battleIntelPanel,
+            _battleIntelTitleLabel,
+            _battleIntelBoard,
+            _battleIntelLegend,
+            _battleSideRail,
+            _battleSideRailTitleLabel,
+            _battleSideRailSteps,
             _allyHpLabel,
             _enemyHpLabel,
             _logLabel,
@@ -280,6 +307,9 @@ public sealed class BattleScreenView
             _continueGroupTitleLabel,
             _smokeGroupTitleLabel,
             _utilityGroupTitleLabel,
+            _observerStatusGroup,
+            _observerStatusTitleLabel,
+            _observerStatusChips,
             _settingsPanel,
             _settingsTitleLabel,
             _settingsDisplayTitleLabel,
@@ -464,6 +494,9 @@ public sealed class BattleScreenView
         RenderTacticalReadout(state.TacticalReadoutTitle, state.TacticalReadoutRows);
         RenderRoster(_allyRosterList, state.AllyRoster, isEnemy: false);
         RenderRoster(_enemyRosterList, state.EnemyRoster, isEnemy: true);
+        RenderBattleIntelPanel(state);
+        RenderBattleSideRail(state);
+        RenderObserverStatusDock(state);
 
         _settingsPanel.style.display = state.Settings.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
         _settingsTitleLabel.text = state.Settings.Title;
@@ -667,6 +700,160 @@ public sealed class BattleScreenView
             row.Add(track);
             _tacticalReadoutRows.Add(row);
         }
+    }
+
+    private void RenderBattleIntelPanel(BattleShellViewState state)
+    {
+        var allies = state.AllyRoster ?? Array.Empty<BattleRosterUnitViewState>();
+        var enemies = state.EnemyRoster ?? Array.Empty<BattleRosterUnitViewState>();
+        if (!state.ShowTeamSummary || allies.Count == 0 && enemies.Count == 0)
+        {
+            _battleIntelPanel.style.display = DisplayStyle.None;
+            return;
+        }
+
+        _battleIntelPanel.style.display = DisplayStyle.Flex;
+        _battleIntelTitleLabel.text = state.TacticalReadoutTitle;
+        _battleIntelBoard.Clear();
+        _battleIntelLegend.Clear();
+
+        var axis = new VisualElement();
+        axis.AddToClassList("sm-bs-intel-axis");
+        _battleIntelBoard.Add(axis);
+
+        var progress = new VisualElement();
+        progress.AddToClassList("sm-bs-intel-progress");
+        progress.style.width = Length.Percent(Mathf.Clamp01(state.ProgressNormalized) * 100f);
+        _battleIntelBoard.Add(progress);
+
+        RenderBattleIntelPips(_battleIntelBoard, enemies, isEnemy: true);
+        RenderBattleIntelPips(_battleIntelBoard, allies, isEnemy: false);
+        AddBattleIntelLegend(_battleIntelLegend, state.AllyTitle, "ally");
+        AddBattleIntelLegend(_battleIntelLegend, state.EnemyTitle, "enemy");
+        AddBattleIntelLegend(_battleIntelLegend, state.SummaryTitle, "progress", BuildProgressText(state.ProgressNormalized));
+    }
+
+    private void RenderBattleSideRail(BattleShellViewState state)
+    {
+        var tokens = state.CombatantTokens ?? Array.Empty<BattleCombatantTokenViewState>();
+        if (tokens.Count == 0)
+        {
+            _battleSideRail.style.display = DisplayStyle.None;
+            return;
+        }
+
+        _battleSideRail.style.display = DisplayStyle.Flex;
+        _battleSideRailTitleLabel.text = state.SummaryTitle;
+        _battleSideRailSteps.Clear();
+        foreach (var token in tokens.Take(7))
+        {
+            var item = new VisualElement();
+            item.AddToClassList("sm-bs-side-rail-token");
+            item.EnableInClassList("sm-bs-side-rail-token--ally", token.IsAlly);
+            item.EnableInClassList("sm-bs-side-rail-token--enemy", !token.IsAlly);
+            item.EnableInClassList("sm-bs-side-rail-token--active", token.IsActive);
+            item.EnableInClassList("sm-bs-side-rail-token--down", token.IsDown);
+            item.tooltip = $"{token.DisplayName}\n{token.ActionText}";
+
+            var mark = new Label(BuildInitial(token.DisplayName));
+            mark.AddToClassList("sm-bs-side-rail-token__mark");
+            item.Add(mark);
+
+            var fillTrack = new VisualElement();
+            fillTrack.AddToClassList("sm-bs-side-rail-token__track");
+            var fill = new VisualElement();
+            fill.AddToClassList("sm-bs-side-rail-token__fill");
+            fill.style.height = Length.Percent(Mathf.Clamp01(token.HealthNormalized) * 100f);
+            fillTrack.Add(fill);
+            item.Add(fillTrack);
+            _battleSideRailSteps.Add(item);
+        }
+    }
+
+    private void RenderObserverStatusDock(BattleShellViewState state)
+    {
+        var showObserverDock = !state.ShowPlaybackControls && !state.ShowContinueAction && !state.ShowSmokeActions;
+        _observerStatusGroup.style.display = showObserverDock ? DisplayStyle.Flex : DisplayStyle.None;
+        _observerStatusTitleLabel.text = state.UtilityGroupTitle;
+        _observerStatusChips.Clear();
+        if (!showObserverDock)
+        {
+            return;
+        }
+
+        AddObserverStatusChip(_observerStatusChips, state.SummaryTitle, state.ResultText, "primary");
+        AddObserverStatusChip(_observerStatusChips, state.PlaybackGroupTitle, state.SpeedText, "speed");
+        AddObserverStatusChip(_observerStatusChips, state.TacticalReadoutTitle, state.StatusText, "status");
+        AddObserverStatusChip(_observerStatusChips, state.SummaryTitle, BuildProgressText(state.ProgressNormalized), "progress");
+    }
+
+    private static void RenderBattleIntelPips(VisualElement board, IReadOnlyList<BattleRosterUnitViewState> roster, bool isEnemy)
+    {
+        var count = Math.Min(roster.Count, 5);
+        for (var index = 0; index < count; index++)
+        {
+            var unit = roster[index];
+            var pip = new Label(BuildInitial(unit.DisplayName));
+            pip.AddToClassList("sm-bs-intel-pip");
+            pip.EnableInClassList("sm-bs-intel-pip--ally", !isEnemy);
+            pip.EnableInClassList("sm-bs-intel-pip--enemy", isEnemy);
+            pip.EnableInClassList("sm-bs-intel-pip--selected", unit.IsSelected);
+            pip.EnableInClassList("sm-bs-intel-pip--down", !unit.IsAlive);
+            pip.tooltip = $"{unit.DisplayName}\n{unit.StatusText}";
+            var column = isEnemy ? 54f + index * 8f : 12f + index * 8f;
+            var row = isEnemy ? 20f + index % 2 * 22f : 58f + index % 2 * 22f;
+            pip.style.left = Length.Percent(Mathf.Clamp(column, 4f, 88f));
+            pip.style.top = Length.Percent(Mathf.Clamp(row, 8f, 80f));
+            board.Add(pip);
+        }
+    }
+
+    private static void AddBattleIntelLegend(VisualElement container, string labelText, string tone, string? valueText = null)
+    {
+        var item = new VisualElement();
+        item.AddToClassList("sm-bs-intel-legend-item");
+        item.AddToClassList($"sm-bs-intel-legend-item--{tone}");
+
+        var marker = new VisualElement();
+        marker.AddToClassList("sm-bs-intel-legend-marker");
+        item.Add(marker);
+
+        var label = new Label(string.IsNullOrWhiteSpace(valueText) ? labelText : $"{labelText} {valueText}");
+        label.AddToClassList("sm-bs-intel-legend-label");
+        item.Add(label);
+        container.Add(item);
+    }
+
+    private static void AddObserverStatusChip(VisualElement container, string labelText, string valueText, string tone)
+    {
+        var chip = new VisualElement();
+        chip.AddToClassList("sm-bs-observer-chip");
+        chip.AddToClassList($"sm-bs-observer-chip--{tone}");
+
+        var label = new Label(labelText);
+        label.AddToClassList("sm-bs-observer-chip__label");
+        chip.Add(label);
+
+        var value = new Label(BuildCompactText(valueText, 38));
+        value.AddToClassList("sm-bs-observer-chip__value");
+        chip.Add(value);
+        container.Add(chip);
+    }
+
+    private static string BuildProgressText(float normalized)
+    {
+        return $"{Mathf.RoundToInt(Mathf.Clamp01(normalized) * 100f)}%";
+    }
+
+    private static string BuildCompactText(string value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "-";
+        }
+
+        var text = value.Replace('\r', ' ').Replace('\n', ' ').Trim();
+        return text.Length <= maxLength ? text : text.Substring(0, Math.Max(0, maxLength - 3)) + "...";
     }
 
     private void HandleRosterPointerDown(PointerDownEvent evt, string unitId)

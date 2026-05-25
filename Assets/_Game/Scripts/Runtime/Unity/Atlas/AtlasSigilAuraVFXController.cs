@@ -76,16 +76,16 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
     {
         return category switch
         {
-            AtlasModifierCategory.RewardBias => new Color(1.00f, 0.72f, 0.22f, 0.34f),
-            AtlasModifierCategory.ThreatPressure => new Color(1.00f, 0.28f, 0.36f, 0.30f),
-            AtlasModifierCategory.AffinityBoost => new Color(0.22f, 0.90f, 0.78f, 0.28f),
-            _ => new Color(1f, 1f, 1f, 0.20f),
+            AtlasModifierCategory.RewardBias => new Color(1.00f, 0.72f, 0.22f, 0.065f),
+            AtlasModifierCategory.ThreatPressure => new Color(1.00f, 0.28f, 0.36f, 0.060f),
+            AtlasModifierCategory.AffinityBoost => new Color(0.22f, 0.90f, 0.78f, 0.060f),
+            _ => new Color(1f, 1f, 1f, 0.045f),
         };
     }
 
     public static Color ResolveOverlapColor()
     {
-        return new Color(1.00f, 0.52f, 0.32f, 0.42f);
+        return new Color(1.00f, 0.52f, 0.32f, 0.080f);
     }
 
     public void Render(
@@ -156,18 +156,18 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
 
         if (entry.IsStageCandidate)
         {
-            CreateOutline(entry, shader, ringMesh, $"StageCandidate_{entry.NodeId}", new Color(1.00f, 0.92f, 0.45f, 0.34f), 1.18f, 0.12f);
+            CreateOutline(entry, shader, ringMesh, $"StageCandidate_{entry.NodeId}", new Color(1.00f, 0.92f, 0.45f, 0.095f), 1.02f, 0.11f);
         }
 
         if (entry.IsSigilAnchor && entry.AnchorVisibilityState == AtlasAnchorVisibilityState.Active)
         {
-            CreateAnchorPillar(entry, shader, new Color(1.00f, 0.78f, 0.22f, 0.88f), 1.0f, 0.64f);
-            CreateOutline(entry, shader, ringMesh, $"AnchorCurrent_{entry.NodeId}", new Color(1.00f, 0.78f, 0.22f, 0.42f), 0.72f, 0.10f);
+            CreateAnchorPillar(entry, shader, new Color(1.00f, 0.78f, 0.22f, 0.18f), 0.58f, 0.30f);
+            CreateOutline(entry, shader, ringMesh, $"AnchorCurrent_{entry.NodeId}", new Color(1.00f, 0.78f, 0.22f, 0.10f), 0.60f, 0.10f);
         }
         else if (entry.IsSigilAnchor && entry.AnchorVisibilityState == AtlasAnchorVisibilityState.Future)
         {
-            CreateAnchorPillar(entry, shader, new Color(0.82f, 0.86f, 0.90f, 0.26f), 0.50f, 0.32f);
-            CreateOutline(entry, shader, ringMesh, $"AnchorFuture_{entry.NodeId}", new Color(0.82f, 0.86f, 0.90f, 0.18f), 0.68f, 0.10f);
+            CreateAnchorPillar(entry, shader, new Color(0.82f, 0.86f, 0.90f, 0.08f), 0.32f, 0.16f);
+            CreateOutline(entry, shader, ringMesh, $"AnchorFuture_{entry.NodeId}", new Color(0.82f, 0.86f, 0.90f, 0.07f), 0.56f, 0.10f);
         }
 
         if (!entry.IsOverlap)
@@ -315,7 +315,7 @@ public sealed class AtlasSigilAuraVFXController : MonoBehaviour
 
         if (material.HasProperty("_EmissionColor"))
         {
-            material.SetColor("_EmissionColor", color * 1.6f);
+        material.SetColor("_EmissionColor", color * 0.72f);
         }
 
         if (material.HasProperty("_RingColor"))

@@ -258,6 +258,11 @@ public sealed class UxBiblePlayModeWitnessTests
         AssertNonEmptyText<Label>(root, "TcsOverviewBody");
         AssertNonEmptyText<Label>(root, "TcsLoadoutBody");
         AssertNonEmptyText<Label>(root, "TcsProgressionBody");
+        Assert.That(Require<VisualElement>(root, "TcsHeroRail").childCount, Is.GreaterThan(0));
+        Assert.That(Require<VisualElement>(root, "TcsStatGrid").childCount, Is.GreaterThan(0));
+        Assert.That(Require<VisualElement>(root, "TcsProgressionTrack").childCount, Is.GreaterThan(0));
+        Assert.That(Require<VisualElement>(root, "TcsSkillList").childCount, Is.GreaterThan(0));
+        Assert.That(Require<VisualElement>(root, "TcsEquipmentRow").childCount, Is.GreaterThan(0));
     }
 
     private static void VerifyTacticalSetup(VisualElement root)
@@ -963,6 +968,10 @@ public sealed class UxBiblePlayModeWitnessTests
                     "Tactical Setup",
                     "Screenshots/mockups/ui_ux_bible_squad_builder_v0.png",
                     "tactical_setup.png"),
+                new ReferencePair(
+                    "Recruit Detail",
+                    "Screenshots/mockups/ui_ux_bible_recruit_candidate_choice_v0.png",
+                    "recruit_detail.png"),
                 new ReferencePair(
                     "Atlas",
                     "Screenshots/mockups/ui_ux_bible_atlas_overworld_map_v0.png",

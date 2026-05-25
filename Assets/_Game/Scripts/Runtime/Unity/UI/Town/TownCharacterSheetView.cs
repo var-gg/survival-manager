@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UIElements;
+using UnityEngine;
 
 namespace SM.Unity.UI.Town;
 
@@ -25,6 +28,12 @@ public sealed class TownCharacterSheetView
 
     private readonly VisualElement _modalRoot;
     private readonly VisualElement _portraitToken;
+    private readonly VisualElement _portraitImage;
+    private readonly VisualElement _heroRail;
+    private readonly VisualElement _statGrid;
+    private readonly VisualElement _skillList;
+    private readonly VisualElement _equipmentRow;
+    private readonly VisualElement _progressionTrack;
     private readonly Label _portraitGlyphLabel;
     private readonly Label _heroNameLabel;
     private readonly Label _heroMetaLabel;
@@ -46,6 +55,12 @@ public sealed class TownCharacterSheetView
         if (root == null) throw new ArgumentNullException(nameof(root));
         _modalRoot = Require<VisualElement>(root, "TownCharacterSheetRoot");
         _portraitToken = Require<VisualElement>(root, "TcsPortraitToken");
+        _portraitImage = Require<VisualElement>(root, "TcsPortraitImage");
+        _heroRail = Require<VisualElement>(root, "TcsHeroRail");
+        _statGrid = Require<VisualElement>(root, "TcsStatGrid");
+        _skillList = Require<VisualElement>(root, "TcsSkillList");
+        _equipmentRow = Require<VisualElement>(root, "TcsEquipmentRow");
+        _progressionTrack = Require<VisualElement>(root, "TcsProgressionTrack");
         _portraitGlyphLabel = Require<Label>(root, "TcsPortraitGlyphLabel");
         _heroNameLabel = Require<Label>(root, "TcsHeroNameLabel");
         _heroMetaLabel = Require<Label>(root, "TcsHeroMetaLabel");
@@ -99,12 +114,195 @@ public sealed class TownCharacterSheetView
         _roleLabel.text = state.RoleLabel;
         _portraitGlyphLabel.text = BuildPortraitGlyph(state.DisplayName);
         ApplyRoleFamilyClass(state.FamilyKey);
+        RenderPortrait(state.PortraitSprite);
+        RenderHeroRail(state.HeroRail);
+        RenderStats(state.Stats);
+        RenderSkills(state.Skills);
+        RenderEquipment(state.Equipment);
+        RenderProgressionTrack(state.ProgressionNodes);
 
         RenderPanel(state.Overview, _overviewTitleLabel, _overviewBodyLabel);
         RenderPanel(state.Loadout, _loadoutTitleLabel, _loadoutBodyLabel);
         RenderPanel(state.Passives, _passivesTitleLabel, _passivesBodyLabel);
         RenderPanel(state.Synergy, _synergyTitleLabel, _synergyBodyLabel);
         RenderPanel(state.Progression, _progressionTitleLabel, _progressionBodyLabel);
+    }
+
+    private void RenderPortrait(Texture2D? portraitSprite)
+    {
+        _portraitImage.style.backgroundImage = StyleKeyword.Null;
+        if (portraitSprite != null)
+        {
+            _portraitImage.style.display = DisplayStyle.Flex;
+            _portraitImage.style.backgroundImage = new StyleBackground(portraitSprite);
+            _portraitGlyphLabel.style.display = DisplayStyle.None;
+            return;
+        }
+
+        _portraitImage.style.display = DisplayStyle.None;
+        _portraitGlyphLabel.style.display = DisplayStyle.Flex;
+    }
+
+    private void RenderHeroRail(IReadOnlyList<TownCharacterSheetHeroRailEntryViewState> entries)
+    {
+        _heroRail.Clear();
+        foreach (var entry in entries)
+        {
+            var item = new VisualElement { name = $"TcsHeroRailEntry_{entry.HeroId}" };
+            item.AddToClassList("tcs-hero-rail__entry");
+            AddClassVariant(item, "tcs-hero-rail__entry--family", entry.FamilyKey);
+            if (entry.IsSelected)
+            {
+                item.AddToClassList("tcs-hero-rail__entry--selected");
+            }
+
+            var portrait = new VisualElement();
+            portrait.AddToClassList("tcs-hero-rail__portrait");
+            AddClassVariant(portrait, "tcs-hero-rail__portrait--family", entry.FamilyKey);
+            if (entry.PortraitSprite != null)
+            {
+                portrait.style.backgroundImage = new StyleBackground(entry.PortraitSprite);
+            }
+            else
+            {
+                var fallback = new Label(BuildInitials(entry.DisplayName));
+                fallback.AddToClassList("tcs-hero-rail__fallback");
+                portrait.Add(fallback);
+            }
+            item.Add(portrait);
+
+            var copy = new VisualElement();
+            copy.AddToClassList("tcs-hero-rail__copy");
+            var name = new Label(entry.DisplayName);
+            name.AddToClassList("tcs-hero-rail__name");
+            copy.Add(name);
+            var meta = new Label(entry.MetaLabel);
+            meta.AddToClassList("tcs-hero-rail__meta");
+            copy.Add(meta);
+            item.Add(copy);
+
+            _heroRail.Add(item);
+        }
+    }
+
+    private void RenderStats(IReadOnlyList<TownCharacterSheetStatViewState> stats)
+    {
+        _statGrid.Clear();
+        foreach (var stat in stats)
+        {
+            var cell = new VisualElement();
+            cell.AddToClassList("tcs-stat");
+            AddClassVariant(cell, "tcs-stat--tone", stat.Tone);
+
+            var label = new Label(stat.Label);
+            label.AddToClassList("tcs-stat__label");
+            cell.Add(label);
+
+            var value = new Label(stat.Value);
+            value.AddToClassList("tcs-stat__value");
+            cell.Add(value);
+
+            if (!string.IsNullOrWhiteSpace(stat.DeltaLabel))
+            {
+                var delta = new Label(stat.DeltaLabel);
+                delta.AddToClassList("tcs-stat__delta");
+                cell.Add(delta);
+            }
+
+            _statGrid.Add(cell);
+        }
+    }
+
+    private void RenderSkills(IReadOnlyList<TownCharacterSheetSkillCardViewState> skills)
+    {
+        _skillList.Clear();
+        foreach (var skill in skills)
+        {
+            var card = new VisualElement();
+            card.AddToClassList("tcs-skill-card");
+            card.AddToClassList(skill.IsSignature ? "tcs-skill-card--signature" : "tcs-skill-card--flex");
+
+            var icon = new VisualElement();
+            icon.AddToClassList("tcs-skill-card__icon");
+            if (skill.IconSprite != null)
+            {
+                icon.style.backgroundImage = new StyleBackground(skill.IconSprite);
+            }
+            else
+            {
+                var fallback = new Label(BuildInitials(skill.Name));
+                fallback.AddToClassList("tcs-skill-card__fallback");
+                icon.Add(fallback);
+            }
+            card.Add(icon);
+
+            var copy = new VisualElement();
+            copy.AddToClassList("tcs-skill-card__copy");
+            var name = new Label(skill.Name);
+            name.AddToClassList("tcs-skill-card__name");
+            copy.Add(name);
+            var meta = new Label(skill.MetaLabel);
+            meta.AddToClassList("tcs-skill-card__meta");
+            copy.Add(meta);
+            var description = new Label(skill.Description);
+            description.AddToClassList("tcs-skill-card__description");
+            description.tooltip = skill.Description;
+            copy.Add(description);
+            card.Add(copy);
+
+            _skillList.Add(card);
+        }
+    }
+
+    private void RenderEquipment(IReadOnlyList<TownCharacterSheetEquipmentSlotViewState> equipment)
+    {
+        _equipmentRow.Clear();
+        foreach (var slot in equipment)
+        {
+            var item = new VisualElement();
+            item.AddToClassList("tcs-equipment");
+            item.AddToClassList(slot.IsFilled ? "tcs-equipment--filled" : "tcs-equipment--empty");
+            AddClassVariant(item, "tcs-equipment--slot", slot.SlotKey);
+
+            var icon = new VisualElement();
+            icon.AddToClassList("tcs-equipment__icon");
+            if (slot.IconSprite != null)
+            {
+                icon.style.backgroundImage = new StyleBackground(slot.IconSprite);
+            }
+            item.Add(icon);
+
+            var slotLabel = new Label(slot.SlotLabel);
+            slotLabel.AddToClassList("tcs-equipment__slot");
+            item.Add(slotLabel);
+
+            var name = new Label(slot.ItemLabel);
+            name.AddToClassList("tcs-equipment__name");
+            item.Add(name);
+
+            var meta = new Label(slot.MetaLabel);
+            meta.AddToClassList("tcs-equipment__meta");
+            item.Add(meta);
+
+            _equipmentRow.Add(item);
+        }
+    }
+
+    private void RenderProgressionTrack(IReadOnlyList<TownCharacterSheetProgressionNodeViewState> nodes)
+    {
+        _progressionTrack.Clear();
+        foreach (var node in nodes)
+        {
+            var element = new VisualElement();
+            element.AddToClassList("tcs-progression-node");
+            AddClassVariant(element, "tcs-progression-node--state", node.State);
+            element.tooltip = node.Label;
+
+            var label = new Label(ShortenNodeLabel(node.Label));
+            label.AddToClassList("tcs-progression-node__label");
+            element.Add(label);
+            _progressionTrack.Add(element);
+        }
     }
 
     private void ApplyRoleFamilyClass(string familyKey)
@@ -146,6 +344,40 @@ public sealed class TownCharacterSheetView
         title.text = panel.Title;
         body.text = panel.Body;
         body.tooltip = panel.Body;
+    }
+
+    private static void AddClassVariant(VisualElement element, string prefix, string key)
+    {
+        if (element == null || string.IsNullOrWhiteSpace(key))
+        {
+            return;
+        }
+
+        element.AddToClassList($"{prefix}-{key.Trim().ToLowerInvariant()}");
+    }
+
+    private static string BuildInitials(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "?";
+        }
+
+        var parts = value.Split(new[] { ' ', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length == 0
+            ? value[..1].ToUpperInvariant()
+            : string.Concat(parts[..Math.Min(2, parts.Length)].Select(part => part[..1].ToUpperInvariant()));
+    }
+
+    private static string ShortenNodeLabel(string label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            return "?";
+        }
+
+        var trimmed = label.Trim();
+        return trimmed.Length <= 2 ? trimmed : trimmed[..1];
     }
 
     private VisualElement? FindModalOverlay()

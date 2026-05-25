@@ -645,7 +645,7 @@ public sealed class BattleScreenController : MonoBehaviour
             OpenRosterUnitDetail,
             CloseUnitDetail,
             SelectUnitDetailTab));
-        _presenter = new BattleScreenPresenter(_localization, _root.SessionState, _presentationOptions);
+        _presenter = new BattleScreenPresenter(_localization, _root.SessionState, _presentationOptions, _contentText);
         presentationController.ConfigureMetadataFormatter(_metadataFormatter);
         _boundRootBuildCount = panelHost.RootBuildCount;
 
@@ -1056,9 +1056,9 @@ public sealed class BattleScreenController : MonoBehaviour
                     : Localize(GameLocalizationTables.UIBattle, "ui.battle.record.target", "Received");
                 var target = string.IsNullOrWhiteSpace(eventData.TargetName)
                     ? string.Empty
-                    : $" -> {eventData.TargetName}";
+                    : $" -> {ResolveBattleEventUnitName(_timeline?.CurrentStep, eventData.TargetId?.Value, eventData.TargetName)}";
                 var value = Mathf.Abs(eventData.Value) > 0.01f ? $" {eventData.Value:0.#}" : string.Empty;
-                return $"{eventData.TimeSeconds:0.0}s  {subject}: {BattleReadabilityFormatter.BuildShortEventVerb(eventData)}{value}{target}";
+                return $"{eventData.TimeSeconds:0.0}s  {subject}: {BattleReadabilityFormatter.BuildShortEventVerb(eventData, LocaleCode)}{value}{target}";
             })
             .ToList();
 
@@ -1200,17 +1200,71 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             if (evt.EventKind == BattleEventKind.Kill)
             {
-                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.TargetName} went down");
+                var target = ResolveBattleEventUnitName(step, evt.TargetId?.Value, evt.TargetName);
+                _decisiveTimeline.Add(IsKoreanLocale
+                    ? $"{step.TimeSeconds:0.0}s | {target} 전투불능"
+                    : $"{step.TimeSeconds:0.0}s | {target} went down");
             }
             else if (evt.LogCode == BattleLogCode.ActiveSkillHeal)
             {
-                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} restored {evt.TargetName} for {evt.Value:0}");
+                var actor = ResolveBattleEventUnitName(step, evt.ActorId.Value, evt.ActorName);
+                var target = ResolveBattleEventUnitName(step, evt.TargetId?.Value, evt.TargetName);
+                _decisiveTimeline.Add(IsKoreanLocale
+                    ? $"{step.TimeSeconds:0.0}s | {actor} -> {target} 회복 {evt.Value:0}"
+                    : $"{step.TimeSeconds:0.0}s | {actor} restored {target} for {evt.Value:0}");
             }
             else if (evt.ActionType == BattleActionType.ActiveSkill && evt.Value > 0)
             {
-                _decisiveTimeline.Add($"{step.TimeSeconds:0.0}s | {evt.ActorName} used a skill on {evt.TargetName} for {evt.Value:0}");
+                var actor = ResolveBattleEventUnitName(step, evt.ActorId.Value, evt.ActorName);
+                var target = ResolveBattleEventUnitName(step, evt.TargetId?.Value, evt.TargetName);
+                _decisiveTimeline.Add(IsKoreanLocale
+                    ? $"{step.TimeSeconds:0.0}s | {actor} -> {target} 스킬 {evt.Value:0}"
+                    : $"{step.TimeSeconds:0.0}s | {actor} used a skill on {target} for {evt.Value:0}");
             }
         }
+    }
+
+    private string ResolveBattleEventUnitName(BattleSimulationStep? step, string? unitId, string? fallbackName)
+    {
+        var unit = step?.Units.FirstOrDefault(candidate =>
+            !string.IsNullOrWhiteSpace(unitId)
+            && string.Equals(candidate.Id, unitId, StringComparison.Ordinal));
+        if (unit == null && step != null && !string.IsNullOrWhiteSpace(fallbackName))
+        {
+            unit = step.Units.FirstOrDefault(candidate =>
+                string.Equals(candidate.Name, fallbackName, StringComparison.Ordinal));
+        }
+
+        if (unit != null)
+        {
+            return _metadataFormatter.BuildOverhead(unit).Header;
+        }
+
+        if (string.IsNullOrWhiteSpace(fallbackName))
+        {
+            return "-";
+        }
+
+        var token = BattleReadabilityFormatter.HumanizeToken(fallbackName, fallbackName);
+        return token.Any(ch => ch > 127) ? token : ToTitleCase(token);
+    }
+
+    private bool IsKoreanLocale => string.Equals(LocaleCode, "ko", StringComparison.OrdinalIgnoreCase);
+
+    private string LocaleCode => _localization?.CurrentLocale?.Identifier.Code ?? string.Empty;
+
+    private static string ToTitleCase(string value)
+    {
+        var words = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        for (var i = 0; i < words.Length; i++)
+        {
+            var word = words[i];
+            words[i] = word.Length == 1
+                ? word.ToUpperInvariant()
+                : char.ToUpperInvariant(word[0]) + word[1..];
+        }
+
+        return words.Length == 0 ? value : string.Join(" ", words);
     }
 
     private static string FormatActionState(BattleUnitReadModel unit)

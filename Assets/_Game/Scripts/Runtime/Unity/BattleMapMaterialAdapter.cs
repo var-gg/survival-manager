@@ -275,10 +275,10 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
         SetFloat(material, "_UnityShadowSharpness", 7f);
         SetFloat(material, "_WindEnabled", 0f);
         SetFloat(material, "_GustEnabled", 0f);
-        SetColor(material, "_ColorBottom", new Color(0.08f, 0.24f, 0.055f, 1f));
-        SetColor(material, "_ColorTop", new Color(0.55f, 0.70f, 0.18f, 1f));
-        SetColor(material, "_SecondaryColor", new Color(0.88f, 0.56f, 0.13f, 1f));
-        SetColor(material, "_PatchesColor", new Color(0.84f, 0.68f, 0.16f, 1f));
+        SetColor(material, "_ColorBottom", new Color(0.020f, 0.070f, 0.025f, 1f));
+        SetColor(material, "_ColorTop", new Color(0.15f, 0.24f, 0.065f, 1f));
+        SetColor(material, "_SecondaryColor", new Color(0.30f, 0.20f, 0.07f, 1f));
+        SetColor(material, "_PatchesColor", new Color(0.25f, 0.22f, 0.08f, 1f));
     }
 
     private static MaterialRole ResolveRole(Material source)
@@ -327,13 +327,13 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
 
         return role switch
         {
-            MaterialRole.Foliage => new Color(0.34f, 0.52f, 0.12f, 1f),
-            MaterialRole.Grass => new Color(0.46f, 0.64f, 0.14f, 1f),
-            MaterialRole.Bark => new Color(0.56f, 0.30f, 0.11f, 1f),
-            MaterialRole.Moss => new Color(0.34f, 0.48f, 0.14f, 1f),
-            MaterialRole.Rock => new Color(0.38f, 0.32f, 0.23f, 1f),
-            MaterialRole.Soil => new Color(0.70f, 0.43f, 0.18f, 1f),
-            _ => new Color(0.48f, 0.36f, 0.20f, 1f)
+            MaterialRole.Foliage => new Color(0.13f, 0.21f, 0.065f, 1f),
+            MaterialRole.Grass => new Color(0.14f, 0.23f, 0.060f, 1f),
+            MaterialRole.Bark => new Color(0.24f, 0.14f, 0.065f, 1f),
+            MaterialRole.Moss => new Color(0.12f, 0.20f, 0.055f, 1f),
+            MaterialRole.Rock => new Color(0.20f, 0.19f, 0.17f, 1f),
+            MaterialRole.Soil => new Color(0.22f, 0.19f, 0.14f, 1f),
+            _ => new Color(0.23f, 0.18f, 0.13f, 1f)
         };
     }
 
@@ -484,8 +484,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
     {
         if (material.shader != null && material.shader.name == "Quibli/Grass")
         {
-            SetColor(material, "_ColorTop", new Color(0.56f, 0.72f, 0.22f, 1f));
-            SetColor(material, "_ColorBottom", new Color(0.08f, 0.24f, 0.06f, 1f));
+            SetColor(material, "_ColorTop", new Color(0.15f, 0.24f, 0.065f, 1f));
+            SetColor(material, "_ColorBottom", new Color(0.020f, 0.070f, 0.025f, 1f));
             return;
         }
 

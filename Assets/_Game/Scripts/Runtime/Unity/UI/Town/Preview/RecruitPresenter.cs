@@ -28,7 +28,7 @@ public sealed class RecruitPresenter : IRecruitActions
     private readonly ContentTextResolver _contentText;
     private readonly SpriteLoader _classSprite;
     private readonly SpriteLoader _portraitLoader;
-    private int _selectedSlotIndex;
+    private int _selectedSlotIndex = -1;
 
     public RecruitPresenter(
         GameSessionRoot root,
@@ -71,7 +71,7 @@ public sealed class RecruitPresenter : IRecruitActions
     void IRecruitActions.OnRecruitConfirmed(int slotIndex)
     {
         _root.SessionState.Recruit(slotIndex);
-        _selectedSlotIndex = 0;
+        _selectedSlotIndex = -1;
         Refresh();
     }
 
@@ -111,7 +111,7 @@ public sealed class RecruitPresenter : IRecruitActions
         var offers = session.RecruitOffers;
         if (offers.Count > 0 && (_selectedSlotIndex < 0 || _selectedSlotIndex >= offers.Count))
         {
-            _selectedSlotIndex = 0;
+            _selectedSlotIndex = FindDefaultSelectedSlot(offers);
         }
 
         var candidates = new List<RecruitCandidateViewState>(offers.Count);
@@ -132,6 +132,7 @@ public sealed class RecruitPresenter : IRecruitActions
                 BlueprintId: offer.UnitBlueprintId,
                 DisplayName: _contentText.GetArchetypeName(offer.UnitBlueprintId),
                 ClassKey: classKey,
+                ClassLabel: DescribeClass(classKey),
                 SlotType: MapSlotType(offer.Metadata.SlotType),
                 Tier: MapTier(offer.Metadata.Tier),
                 PlanFit: MapPlanFit(offer.Metadata.PlanFit),
@@ -171,14 +172,51 @@ public sealed class RecruitPresenter : IRecruitActions
         return new RecruitSelectedCandidateDetailViewState(
             SlotIndex: candidate.SlotIndex,
             DisplayName: candidate.DisplayName,
-            ClassLabel: candidate.ClassKey,
+            ClassLabel: candidate.ClassLabel,
+            ClassKey: candidate.ClassKey,
             TierLabel: candidate.Tier.ToString(),
             PlanFitLabel: candidate.PlanFit.ToString(),
             PlanScoreLabel: $"+{candidate.PlanScore}",
             CostLabel: $"{candidate.GoldCost} Gold",
             StateChips: candidate.StateChips,
             Tags: candidate.Tags,
-            SkillSummary: $"SIG {candidate.SigActive} / {candidate.SigPassive}\nFLX {candidate.FlexActive} / {candidate.FlexPassive}");
+            SkillSummary: $"SIG {candidate.SigActive} / {candidate.SigPassive}\nFLX {candidate.FlexActive} / {candidate.FlexPassive}",
+            PortraitSprite: candidate.PortraitSprite,
+            ClassSprite: candidate.ClassSprite,
+            Metrics: BuildDecisionMetrics(candidate),
+            SkillPips: BuildSkillPips(candidate));
+    }
+
+    private static IReadOnlyList<RecruitDecisionMetricViewState> BuildDecisionMetrics(RecruitCandidateViewState candidate)
+    {
+        var planBase = candidate.PlanFit switch
+        {
+            RecruitPlanFit.OnPlan => 76,
+            RecruitPlanFit.Bridge => 62,
+            _ => 42,
+        };
+        var signalBase = 46 + (candidate.Tags.Count * 10) + (candidate.ScoutBias ? 10 : 0);
+        var safetyBase = candidate.SlotType == RecruitSlotType.Protected || candidate.ProtectedByPity
+            ? 88
+            : 42 + ((int)candidate.Tier * 14);
+
+        return new[]
+        {
+            new RecruitDecisionMetricViewState("계획", ClampPercent(planBase + candidate.PlanScore), "plan"),
+            new RecruitDecisionMetricViewState("보장", ClampPercent(safetyBase), "safety"),
+            new RecruitDecisionMetricViewState("운용", ClampPercent(signalBase), "signal"),
+        };
+    }
+
+    private static IReadOnlyList<RecruitSkillPipViewState> BuildSkillPips(RecruitCandidateViewState candidate)
+    {
+        return new[]
+        {
+            new RecruitSkillPipViewState("SA", candidate.SigActive, "sig"),
+            new RecruitSkillPipViewState("SP", candidate.SigPassive, "sig"),
+            new RecruitSkillPipViewState("FA", candidate.FlexActive, "flex"),
+            new RecruitSkillPipViewState("FP", candidate.FlexPassive, "flex"),
+        };
     }
 
     private RecruitRosterPressureViewState BuildRosterPressure(
@@ -233,6 +271,19 @@ public sealed class RecruitPresenter : IRecruitActions
     private string ResolveSkillName(string? skillId)
         => string.IsNullOrEmpty(skillId) ? "—" : _contentText.GetSkillName(skillId);
 
+    private static int ClampPercent(int value)
+        => value < 0 ? 0 : value > 100 ? 100 : value;
+
+    private static string DescribeClass(string classKey) => classKey switch
+    {
+        "vanguard" => "전열 방패",
+        "duelist" => "돌파 결투",
+        "ranger" => "후열 사격",
+        "mystic" => "주문 지원",
+        _ when string.IsNullOrWhiteSpace(classKey) => "분류 미상",
+        _ => classKey,
+    };
+
     private static string DescribeScoutDirective(ScoutDirectiveKind kind, string synergyTagId) => kind switch
     {
         ScoutDirectiveKind.Frontline  => "전열",
@@ -265,4 +316,18 @@ public sealed class RecruitPresenter : IRecruitActions
         CandidatePlanFit.Bridge => RecruitPlanFit.Bridge,
         _ => RecruitPlanFit.OffPlan,
     };
+
+    private static int FindDefaultSelectedSlot(IReadOnlyList<RecruitUnitPreview> offers)
+    {
+        for (var i = 0; i < offers.Count; i++)
+        {
+            if (offers[i].Metadata.SlotType == RecruitOfferSlotType.OnPlan
+                || offers[i].Metadata.PlanFit == CandidatePlanFit.OnPlan)
+            {
+                return i;
+            }
+        }
+
+        return 0;
+    }
 }

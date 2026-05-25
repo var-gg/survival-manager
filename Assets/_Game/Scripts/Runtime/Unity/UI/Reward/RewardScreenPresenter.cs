@@ -144,10 +144,23 @@ public sealed class RewardScreenPresenter
 
     public RewardSettlementSummaryViewState BuildSettlementSummaryState(GameSessionState session)
     {
-        return BuildSettlementSummaryStateCore(
+        var state = BuildSettlementSummaryStateCore(
             session,
             (key, fallback) => Localize(GameLocalizationTables.UIReward, key, fallback),
-            (key, fallback, percent) => Localize(GameLocalizationTables.UIReward, key, fallback, percent));
+            (key, fallback, percent) => Localize(GameLocalizationTables.UIReward, key, fallback, percent),
+            siteId => SanitizePlayerFacingSummary(_contentText.GetExpeditionSiteName(siteId)),
+            chapterId => SanitizePlayerFacingSummary(_contentText.GetCampaignChapterName(chapterId)),
+            encounterId => SanitizePlayerFacingSummary(_contentText.GetEncounterName(encounterId)));
+
+        if (state == RewardSettlementSummaryViewState.Empty || string.Equals(state.CommitIdValueText, "-", StringComparison.Ordinal))
+        {
+            return state;
+        }
+
+        return state with
+        {
+            CommitIdValueText = Localize(GameLocalizationTables.UIReward, "ui.reward.settlement.commit_value", "Recorded")
+        };
     }
 
     internal static RewardSettlementSummaryViewState BuildSettlementSummaryStateForTest(GameSessionState session)
@@ -177,9 +190,11 @@ public sealed class RewardScreenPresenter
         return BuildProgressionRowsCore(
             session,
             profile,
-            token => token.HasValue ? SanitizePlayerFacingSummary(token.Resolve(_localization, _contentText)) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
+            token => token.HasValue ? SanitizePlayerFacingSummary(ResolveTokenForProgression(token)) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
             BuildContinuationText,
-            SanitizePlayerFacingSummary);
+            SanitizePlayerFacingSummary)
+            .Select(LocalizeProgressionRow)
+            .ToArray();
     }
 
     private static IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRowsCore(
@@ -213,7 +228,9 @@ public sealed class RewardScreenPresenter
 
     private IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicks(GameSessionState session, ProfileView profile)
     {
-        return BuildTimelineTicksCore(session, profile);
+        return BuildTimelineTicksCore(session, profile)
+            .Select(LocalizeTimelineTick)
+            .ToArray();
     }
 
     private static IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicksCore(GameSessionState session, ProfileView profile)
@@ -244,10 +261,147 @@ public sealed class RewardScreenPresenter
         };
     }
 
+    private RewardProgressionRowViewState LocalizeProgressionRow(RewardProgressionRowViewState row)
+    {
+        if (!IsKoreanLocale)
+        {
+            return row;
+        }
+
+        return row with
+        {
+            KeyText = row.KeyText switch
+            {
+                "Battle" => "전투",
+                "Auto Loot" => "자동 전리품",
+                "Reward Choice" => "보상 선택",
+                "Wallet" => "자원",
+                "Inventory" => "인벤토리",
+                "Continuation" => "복귀 상태",
+                _ => row.KeyText,
+            },
+            ValueText = LocalizeProgressionValue(row.ValueText)
+        };
+    }
+
+    private RewardTimelineTickViewState LocalizeTimelineTick(RewardTimelineTickViewState tick)
+    {
+        if (!IsKoreanLocale)
+        {
+            return tick;
+        }
+
+        return tick with
+        {
+            StepText = tick.StepText switch
+            {
+                "Battle" => "전투",
+                "Auto Loot" => "자동 전리품",
+                "Reward Choice" => "보상 선택",
+                "Return" => "마을 복귀",
+                _ => tick.StepText,
+            },
+            DetailText = LocalizeTimelineDetail(tick.DetailText)
+        };
+    }
+
+    private static string LocalizeProgressionValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        return value
+            .Replace("Victory", "승리", StringComparison.Ordinal)
+            .Replace("Defeat", "패배", StringComparison.Ordinal)
+            .Replace("None", "없음", StringComparison.Ordinal)
+            .Replace("Applied", "적용됨", StringComparison.Ordinal)
+            .Replace("Awaiting choice", "선택 대기", StringComparison.Ordinal)
+            .Replace("Gold", "골드", StringComparison.Ordinal)
+            .Replace("Echo", "에코", StringComparison.Ordinal)
+            .Replace("items", "개", StringComparison.Ordinal)
+            .Replace("Run stays active and can resume from Town.", "원정은 유지되고 마을에서 재개할 수 있습니다.", StringComparison.Ordinal)
+            .Replace("Run closes after this return to Town.", "마을로 돌아가면 원정이 종료됩니다.", StringComparison.Ordinal);
+    }
+
+    private static string LocalizeTimelineDetail(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        if (value.EndsWith(" pending choices", StringComparison.Ordinal))
+        {
+            return value.Replace(" pending choices", "개 선택 대기", StringComparison.Ordinal);
+        }
+
+        if (value.StartsWith("town return ready", StringComparison.Ordinal))
+        {
+            var count = value.Split(' ').FirstOrDefault(part => int.TryParse(part, out _));
+            return string.IsNullOrWhiteSpace(count)
+                ? "마을 복귀 준비"
+                : $"마을 복귀 준비 · 인벤토리 {count}개";
+        }
+
+        return value switch
+        {
+            "settlement recorded" => "정산 기록됨",
+            "fallback settlement" => "대체 정산",
+            "no automatic loot" => "자동 전리품 없음",
+            "automatic loot bundled" => "자동 전리품 묶음",
+            "choice applied" => "선택 적용됨",
+            "locked until reward choice" => "보상 선택 전 잠김",
+            _ => value,
+        };
+    }
+
+    private string ResolveTokenForProgression(SessionTextToken token)
+    {
+        if (!token.HasValue)
+        {
+            return string.Empty;
+        }
+
+        var args = token.Arguments.Select(ResolveTokenArgumentForProgression).ToArray();
+        if (args.Length == 0)
+        {
+            return token.Fallback;
+        }
+
+        try
+        {
+            return string.Format(System.Globalization.CultureInfo.InvariantCulture, token.Fallback, args);
+        }
+        catch (FormatException)
+        {
+            return token.Fallback;
+        }
+    }
+
+    private object ResolveTokenArgumentForProgression(SessionTextArg arg)
+    {
+        return arg.Kind switch
+        {
+            SessionTextArgKind.Number => arg.NumberValue,
+            SessionTextArgKind.ItemName => _contentText.GetItemName(arg.TextValue),
+            SessionTextArgKind.AugmentName => _contentText.GetAugmentName(arg.TextValue),
+            SessionTextArgKind.LocalizedKey => string.IsNullOrWhiteSpace(arg.Fallback)
+                ? HumanizeIdentifier(arg.Key)
+                : arg.Fallback,
+            SessionTextArgKind.Token when arg.TokenValue != null => ResolveTokenForProgression(arg.TokenValue),
+            _ => arg.TextValue,
+        };
+    }
+
     private static RewardSettlementSummaryViewState BuildSettlementSummaryStateCore(
         GameSessionState session,
         System.Func<string, string, string> textResolver,
-        System.Func<string, string, int, string> percentResolver)
+        System.Func<string, string, int, string> percentResolver,
+        System.Func<string, string>? siteNameResolver = null,
+        System.Func<string, string>? chapterNameResolver = null,
+        System.Func<string, string>? encounterNameResolver = null)
     {
         var overlay = session?.ActiveRun?.Overlay;
         if (overlay == null)
@@ -261,9 +415,9 @@ public sealed class RewardScreenPresenter
         var encounterKey = textResolver("ui.reward.settlement.encounter_key", "Encounter");
         var commitIdKey = textResolver("ui.reward.settlement.commit_key", "Commit");
 
-        var siteValue = string.IsNullOrWhiteSpace(overlay.SiteId) ? "-" : overlay.SiteId;
-        var stageValue = BuildStageValueText(overlay, textResolver);
-        var encounterValue = string.IsNullOrWhiteSpace(overlay.EncounterId) ? "-" : overlay.EncounterId;
+        var siteValue = ResolveTraceName(overlay.SiteId, siteNameResolver);
+        var stageValue = BuildStageValueText(overlay, textResolver, chapterNameResolver);
+        var encounterValue = ResolveTraceName(overlay.EncounterId, encounterNameResolver);
         var commitIdValue = BuildCommitIdValueText(overlay.RewardCommitId);
 
         var modifierPayload = session!.AtlasExpeditionModifierPayload;
@@ -314,12 +468,26 @@ public sealed class RewardScreenPresenter
             ThreatBandLabelText: threatBandLabel);
     }
 
-    private static string BuildStageValueText(RunOverlayState overlay, System.Func<string, string, string> textResolver)
+    private static string BuildStageValueText(
+        RunOverlayState overlay,
+        System.Func<string, string, string> textResolver,
+        System.Func<string, string>? chapterNameResolver = null)
     {
-        var chapter = string.IsNullOrWhiteSpace(overlay.ChapterId) ? "-" : overlay.ChapterId;
+        var chapter = ResolveTraceName(overlay.ChapterId, chapterNameResolver);
         var siteNodeIndex = overlay.SiteNodeIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
         var format = textResolver("ui.reward.settlement.stage_value", "{0} / Node {1}");
         return string.Format(System.Globalization.CultureInfo.InvariantCulture, format, chapter, siteNodeIndex);
+    }
+
+    private static string ResolveTraceName(string id, System.Func<string, string>? resolver)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return "-";
+        }
+
+        var resolved = resolver?.Invoke(id) ?? id;
+        return string.IsNullOrWhiteSpace(resolved) ? "-" : resolved;
     }
 
     private static string BuildCommitIdValueText(string rewardCommitId)
@@ -423,6 +591,8 @@ public sealed class RewardScreenPresenter
 
         return $"{Localize(GameLocalizationTables.UICommon, "ui.common.current_language", "Current")}: {_localization.GetLocaleButtonLabel(locale)}";
     }
+
+    private bool IsKoreanLocale => string.Equals(_localization.CurrentLocale?.Identifier.Code, "ko", StringComparison.OrdinalIgnoreCase);
 
     private string GetLocaleButtonLabel(string localeCode, string fallback)
     {

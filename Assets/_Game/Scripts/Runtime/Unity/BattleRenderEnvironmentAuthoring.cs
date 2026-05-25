@@ -34,19 +34,21 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 
     [Header("환경광 (Ambient — Trilight 모드)")]
     [Tooltip("위쪽(하늘) 방향에서 오는 환경광. 보통 차가운 색.")]
-    [SerializeField] private Color ambientSky = new(0.36f, 0.44f, 0.52f, 1f);
+    [SerializeField] private Color ambientSky = new(0.22f, 0.27f, 0.34f, 1f);
     [Tooltip("측면(수평) 방향에서 오는 환경광. 중간 톤.")]
-    [SerializeField] private Color ambientEquator = new(0.38f, 0.41f, 0.39f, 1f);
+    [SerializeField] private Color ambientEquator = new(0.20f, 0.23f, 0.22f, 1f);
     [Tooltip("아래(지면 반사)에서 오는 환경광. 보통 따뜻하고 어두움.")]
-    [SerializeField] private Color ambientGround = new(0.14f, 0.13f, 0.10f, 1f);
+    [SerializeField] private Color ambientGround = new(0.07f, 0.065f, 0.052f, 1f);
     [Tooltip("환경광 전반 세기. 1.0이 기본, 1.5+로 올리면 전체 화면이 밝아짐.")]
-    [Range(0f, 2f), SerializeField] private float ambientIntensity = 0.75f;
+    [Range(0f, 2f), SerializeField] private float ambientIntensity = 0.36f;
 
     [Header("스카이박스")]
     [Tooltip("Battle 씬 스카이박스 머티리얼. 비워두면 기존 설정 유지.")]
     [SerializeField] private Material? skybox;
-    [Tooltip("카메라 Clear Flags를 강제로 Skybox로. 비우면 검은 배경.")]
-    [SerializeField] private bool forceCameraClearToSkybox = true;
+    [Tooltip("카메라 Clear Flags를 강제로 Skybox로. 끄면 Bible HUD용 어두운 solid background를 사용.")]
+    [SerializeField] private bool forceCameraClearToSkybox;
+    [Tooltip("Skybox를 쓰지 않을 때 전투 카메라 배경색.")]
+    [SerializeField] private Color cameraBackgroundColor = new(0.018f, 0.024f, 0.034f, 1f);
 
     [Header("포그 (Fog)")]
     [Tooltip("⚠ Stylized cel 셰이더 호환성 주의 — Quibli/lilToon은 URP fog 처리가 불완전해서 " +
@@ -68,9 +70,9 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     [Tooltip("X=피치(위아래 각도, 0=수평, 90=수직), Y=요(좌우 각도). 그림자 방향을 결정.")]
     [SerializeField] private Vector3 sunRotationEuler = new(40f, -55f, 0f);
     [Tooltip("햇빛 색. 따뜻하게: (1, 0.86, 0.66) / 중성: 흰색 / 노을: (1, 0.62, 0.30)")]
-    [ColorUsage(false, true), SerializeField] private Color sunColor = new(1f, 0.86f, 0.66f, 1f);
+    [ColorUsage(false, true), SerializeField] private Color sunColor = new(1f, 0.88f, 0.66f, 1f);
     [Tooltip("햇빛 세기. 2~3이 자연스러운 일중. 5+는 매우 강함.")]
-    [Range(0f, 5f), SerializeField] private float sunIntensity = 2.4f;
+    [Range(0f, 5f), SerializeField] private float sunIntensity = 0.82f;
     [Tooltip("그림자 종류. Soft=부드러운 그림자 / Hard=날카로운 / None=그림자 없음.")]
     [SerializeField] private LightShadows sunShadowType = LightShadows.Soft;
     [Tooltip("그림자 진하기. 1=꽉 찬 검정, 0.5=절반.")]
@@ -84,9 +86,9 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     [Tooltip("Sun과 반대 방향에서 오는 약한 보조광. 그림자 영역이 완전 검정 되지 않게.")]
     [SerializeField] private Vector3 fillRotationEuler = new(35f, 135f, 0f);
     [Tooltip("필 색. 보통 차가운 톤 (Sun이 따뜻한 경우 보색 대비).")]
-    [ColorUsage(false, true), SerializeField] private Color fillColor = new(0.34f, 0.42f, 0.52f, 1f);
+    [ColorUsage(false, true), SerializeField] private Color fillColor = new(0.22f, 0.30f, 0.40f, 1f);
     [Tooltip("필 세기. 0.05~0.20이 적절. 너무 높으면 그림자가 사라지는 느낌.")]
-    [Range(0f, 1f), SerializeField] private float fillIntensity = 0.08f;
+    [Range(0f, 1f), SerializeField] private float fillIntensity = 0.02f;
 
     [Header("카메라 HDR · 후처리 (URP)")]
     [Tooltip("Camera에 UniversalAdditionalCameraData를 강제 attach. URP 후처리 작동에 필수.")]
@@ -115,11 +117,11 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 
     [Header("Volume 후처리 — Color Adjustments (색 보정)")]
     [Tooltip("노출 보정. 양수=밝게, 음수=어둡게. ±0.3 정도가 자연.")]
-    [Range(-3f, 3f), SerializeField] private float postExposure;
+    [Range(-3f, 3f), SerializeField] private float postExposure = -0.78f;
     [Tooltip("대비. 양수=어두운 곳 더 어둡고 밝은 곳 더 밝게. 0=원본.")]
-    [Range(-100f, 100f), SerializeField] private float contrast = 12f;
+    [Range(-100f, 100f), SerializeField] private float contrast = 34f;
     [Tooltip("채도. 양수=색이 진해짐, 음수=흑백 쪽. SDR 디스플레이에서 ~50% 손실되므로 약간 over-push 권장.")]
-    [Range(-100f, 100f), SerializeField] private float saturation = 6f;
+    [Range(-100f, 100f), SerializeField] private float saturation = -4f;
     [Tooltip("전체에 곱해지는 색 필터. 약간 따뜻하게 = (1, 0.96, 0.90) / 차갑게 = (0.95, 0.98, 1) / 흰색 = 변화 없음.")]
     [ColorUsage(false), SerializeField] private Color colorFilter = Color.white;
 
@@ -127,9 +129,9 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     [Tooltip("Neutral=가벼운 압축, ACES=영화같은 부드러운 압축 (채도 더 손실), None=압축 없음 (clip 위험).")]
     [SerializeField] private TonemappingMode tonemapMode = TonemappingMode.Neutral;
     [Tooltip("화면 가장자리 어둡게. 0~0.2가 자연. 0.3+면 시네마틱.")]
-    [Range(0f, 1f), SerializeField] private float vignetteIntensity = 0.12f;
+    [Range(0f, 1f), SerializeField] private float vignetteIntensity = 0.38f;
     [Tooltip("비네팅 부드러움. 1에 가까울수록 페이드 영역 넓음.")]
-    [Range(0.01f, 1f), SerializeField] private float vignetteSmoothness = 0.42f;
+    [Range(0.01f, 1f), SerializeField] private float vignetteSmoothness = 0.46f;
 
     [Header("런타임 적용 옵션")]
     [Tooltip("기존 BattleStageEnvironmentAdapter가 만들던 자동 sun/fill을 끄고 여기 값만 사용. " +
@@ -334,6 +336,11 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
         {
             cam.clearFlags = CameraClearFlags.Skybox;
         }
+        else
+        {
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = cameraBackgroundColor;
+        }
         cam.allowHDR = allowHDR;
 
         var urpData = cam.GetComponent<UniversalAdditionalCameraData>()
@@ -430,39 +437,40 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
 
     public void ApplyGameplayPreset()
     {
-        ambientSky = new Color(0.36f, 0.44f, 0.52f, 1f);
-        ambientEquator = new Color(0.38f, 0.41f, 0.39f, 1f);
-        ambientGround = new Color(0.14f, 0.13f, 0.10f, 1f);
-        ambientIntensity = 0.95f;
+        ambientSky = new Color(0.09f, 0.12f, 0.16f, 1f);
+        ambientEquator = new Color(0.08f, 0.09f, 0.08f, 1f);
+        ambientGround = new Color(0.025f, 0.030f, 0.024f, 1f);
+        ambientIntensity = 0.36f;
 
         fogEnabled = false;
 
-        // 숲 stage 기준: 녹색 leaf 텍스처와 곱해졌을 때 yellow-green 폭주 안 하도록
-        // 약하게-따뜻한 sun + 적당한 강도. cinematic은 별도 preset에서 강하게.
+        // UX Bible witness 기준: authored forest는 밝게 뜨기 쉬워 ambient를 낮추고
+        // 따뜻한 key light만 남겨 dark-gold tactical shell 안에서 읽히게 한다.
         sunRotationEuler = new Vector3(42f, -52f, 0f);
-        sunColor = new Color(1f, 0.96f, 0.88f, 1f);
-        sunIntensity = 1.55f;
+        cameraBackgroundColor = new Color(0.018f, 0.024f, 0.034f, 1f);
+        sunColor = new Color(1f, 0.80f, 0.54f, 1f);
+        sunIntensity = 0.82f;
         sunShadowType = LightShadows.Soft;
         sunShadowStrength = 1.0f;
         sunShadowBias = 0.005f;
         sunShadowNormalBias = 0.03f;
 
         fillRotationEuler = new Vector3(35f, 135f, 0f);
-        fillColor = new Color(0.34f, 0.42f, 0.52f, 1f);
-        fillIntensity = 0.10f;
+        fillColor = new Color(0.16f, 0.22f, 0.32f, 1f);
+        fillIntensity = 0.02f;
 
         // Bloom은 LDR 디스플레이에서 노란 톤을 누적 증폭하므로 forest baseline은 매우 약하게.
         bloomIntensity = 0.04f;
         bloomThreshold = 1.40f;
         bloomScatter = 0.50f;
         bloomTint = Color.white;
-        postExposure = 0f;
-        contrast = 8f;
-        saturation = 2f;
-        colorFilter = Color.white;
+        postExposure = -0.78f;
+        contrast = 34f;
+        saturation = -4f;
+        colorFilter = new Color(0.92f, 0.95f, 1f, 1f);
         tonemapMode = TonemappingMode.Neutral;
-        vignetteIntensity = 0.12f;
-        vignetteSmoothness = 0.42f;
+        vignetteIntensity = 0.38f;
+        vignetteSmoothness = 0.46f;
 
         Apply();
     }

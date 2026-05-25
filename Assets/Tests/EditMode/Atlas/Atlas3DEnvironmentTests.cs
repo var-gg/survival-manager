@@ -1,4 +1,5 @@
 using System.Linq;
+using System.IO;
 using NUnit.Framework;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
@@ -98,12 +99,39 @@ public sealed class Atlas3DEnvironmentTests
             entry.Scale is >= 0.70f and <= 0.85f));
     }
 
+    [Test]
+    public void StandeePresenter_UsesCharacterArtBillboardsBeforePrimitiveFallback()
+    {
+        var source = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/Atlas/AtlasCharacterStandeePresenter.cs");
+
+        Assert.That(source, Does.Contain("Resources.Load<Sprite>"));
+        Assert.That(source, Does.Contain("portrait_stance_idle"));
+        Assert.That(source, Does.Contain("SpriteRenderer"));
+        Assert.That(source, Does.Contain("P09PortraitBillboard"));
+        Assert.That(source, Does.Contain("P09Banner"));
+    }
+
+    [Test]
+    public void AtlasAuthoring_UsesLiveRouteLandmarksInsteadOfStaticMapImage()
+    {
+        var source = File.ReadAllText("Assets/_Game/Scripts/Editor/Authoring/Atlas/AtlasGrayboxAuthoringAssetUtility.cs");
+
+        Assert.That(source, Does.Contain("CreateRoutePathAndLandmarks"));
+        Assert.That(source, Does.Contain("M_Atlas_RouteGlow"));
+        Assert.That(source, Does.Contain("RouteBeacon_"));
+        Assert.That(source, Does.Contain("camera.orthographic = true"));
+        Assert.That(source, Does.Contain("orthographicSize"));
+        Assert.That(source, Does.Not.Contain("Screenshots/mockups"));
+        Assert.That(source, Does.Not.Contain("ui_ux_bible_atlas_overworld_map_v0"));
+    }
+
     private static VisualElement CreateAtlasRoot()
     {
         var root = new VisualElement { name = "atlas-root" };
         var content = new VisualElement { name = "atlas-content" };
         var boardPane = new VisualElement { name = "atlas-board-pane" };
         boardPane.Add(new VisualElement { name = "atlas-board" });
+        boardPane.Add(new VisualElement { name = "atlas-map-overlay" });
         boardPane.Add(new VisualElement { name = "atlas-layer-overlay" });
         boardPane.Add(new VisualElement { name = "atlas-stage-candidate-overlay" });
         content.Add(new VisualElement { name = "atlas-sigil-pool" });
@@ -116,8 +144,10 @@ public sealed class Atlas3DEnvironmentTests
         root.Add(new Label { name = "atlas-placement-summary" });
         root.Add(new Label { name = "atlas-preview-title" });
         root.Add(new Label { name = "atlas-preview-judgement" });
+        root.Add(new Label { name = "atlas-preview-action-ribbon" });
         root.Add(new Label { name = "atlas-preview-threat-band" });
         root.Add(new Label { name = "atlas-preview-enemy" });
+        root.Add(new Label { name = "atlas-preview-enemy-intel" });
         root.Add(new Label { name = "atlas-preview-modifiers" });
         root.Add(new Label { name = "atlas-preview-reward" });
         root.Add(new Label { name = "atlas-preview-recommendations" });

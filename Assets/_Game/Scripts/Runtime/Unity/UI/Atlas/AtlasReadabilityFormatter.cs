@@ -13,7 +13,7 @@ public static class AtlasReadabilityFormatter
     {
         return title switch
         {
-            "Wolfpine Sigil Graybox" => "이리솔 숲길 각인 그레이박스",
+            "Wolfpine Sigil Graybox" => "이리솔 숲길 각인도",
             _ => HumanizeToken(title),
         };
     }
@@ -433,7 +433,7 @@ public static class AtlasReadabilityFormatter
             "Evidence" => "단서 앵커",
             _ => HumanizeToken(slot.AnchorRole),
         };
-        return $"{role}/{slot.StageBand}";
+        return $"{role}/{FormatStageBand(slot.StageBand)}";
     }
 
     public static string FormatCoordinate(AtlasHexCoordinate hex)
@@ -527,9 +527,45 @@ public static class AtlasReadabilityFormatter
 
     private static string HumanizeToken(string value)
     {
-        return string.IsNullOrWhiteSpace(value)
-            ? string.Empty
-            : value.Replace('_', ' ').Trim();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var token = value.Trim();
+        foreach (var prefix in new[] { "site_", "encounter_", "stage_", "faction_", "reward_source_", "reward_", "item_", "augment_" })
+        {
+            if (token.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                token = token[prefix.Length..];
+                break;
+            }
+        }
+
+        return token.Replace('_', ' ').Replace('-', ' ').Trim();
+    }
+
+    private static string FormatStageBand(string stageBand)
+    {
+        if (string.IsNullOrWhiteSpace(stageBand))
+        {
+            return "단계 미상";
+        }
+
+        var tokens = stageBand.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries)
+            .Where(token => !string.Equals(token, "stage", StringComparison.OrdinalIgnoreCase))
+            .Select(token => token switch
+            {
+                "boss" => "보스",
+                "extract" => "추출",
+                _ => int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var stage)
+                    ? $"{stage.ToString(CultureInfo.InvariantCulture)}단계"
+                    : HumanizeToken(token)
+            })
+            .Where(token => !string.IsNullOrWhiteSpace(token))
+            .ToArray();
+
+        return tokens.Length == 0 ? "단계 미상" : string.Join("-", tokens);
     }
 
     private static bool Contains(string value, string token)

@@ -81,6 +81,12 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(characterSheetUxml, Does.Contain("TcsHeroNameLabel"));
         Assert.That(characterSheetUxml, Does.Contain("TcsProgressionBody"));
         Assert.That(characterSheetUxml, Does.Contain("tcs-portrait-column"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsHeroRail"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsPortraitImage"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsStatGrid"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsProgressionTrack"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsSkillList"));
+        Assert.That(characterSheetUxml, Does.Contain("TcsEquipmentRow"));
         Assert.That(characterSheetUxml, Does.Contain("tcs-tab-strip"));
         Assert.That(characterSheetUxml, Does.Contain("tcs-panel--equipment"));
         var townPresenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenPresenter.cs");

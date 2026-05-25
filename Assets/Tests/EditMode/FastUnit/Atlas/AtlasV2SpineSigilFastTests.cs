@@ -88,8 +88,10 @@ public sealed class AtlasV2SpineSigilFastTests
         var state = new AtlasScreenPresenter(AtlasGrayboxDataFactory.CreateRegion()).Build();
 
         Assert.That(state.GetType().GetProperty("Routes"), Is.Null);
+        Assert.That(state.RegionTitle, Does.Not.Contain("그레이박스"));
         Assert.That(state.StageCandidates.Select(candidate => candidate.Badge), Has.Member("1A"));
         Assert.That(state.SpineStages.Select(stage => stage.Label), Is.EqualTo(new[] { "진입", "교전", "단서", "보스", "추출" }));
+        Assert.That(state.SpineStages.Select(stage => stage.NodeId), Has.None.Empty);
     }
 
     [Test]
@@ -177,16 +179,49 @@ public sealed class AtlasV2SpineSigilFastTests
         var uss = File.ReadAllText("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uss");
 
         Assert.That(viewSource, Does.Contain("atlas-preview-action-ribbon"));
+        Assert.That(viewSource, Does.Contain("RenderMapSurface"));
+        Assert.That(viewSource, Does.Contain("AtlasHexOverlayBinder.GetTileCenter"));
+        Assert.That(viewSource, Does.Contain("stage.NodeId"));
         Assert.That(viewSource, Does.Contain("is-stage-candidate-current"));
         Assert.That(viewSource, Does.Contain("is-stage-candidate-future"));
         Assert.That(viewSource, Does.Contain("is-pin-anchor"));
         Assert.That(viewSource, Does.Contain("is-current-selected"));
         Assert.That(uxml, Does.Contain("atlas-preview-action-ribbon"));
+        Assert.That(uxml, Does.Contain("atlas-map-overlay"));
+        Assert.That(uxml, Does.Contain("atlas-decision-card"));
         Assert.That(uss, Does.Contain(".atlas-preview-action-ribbon"));
+        Assert.That(uss, Does.Contain(".atlas-map-node"));
+        Assert.That(uss, Does.Contain(".atlas-map-route-segment"));
+        Assert.That(uss, Does.Contain(".atlas-decision-card"));
+        Assert.That(uss, Does.Contain(".atlas-preview-card--enemy"));
+        Assert.That(uss, Does.Contain(".atlas-preview-card--reward"));
+        Assert.That(uss, Does.Contain(".atlas-preview-card--recommendations"));
         Assert.That(uss, Does.Contain(".atlas-hex-hit-zone.is-stage-candidate-current"));
         Assert.That(uss, Does.Contain(".atlas-hex-hit-zone.is-stage-candidate-future"));
         Assert.That(uss, Does.Contain(".atlas-hex-hit-zone.is-pin-anchor"));
         Assert.That(uss, Does.Contain(".atlas-stage-candidate-button.is-current"));
+    }
+
+    [Test]
+    public void AtlasProductionSurface_UsesSceneDrivenCenter_AndDoesNotEmbedReferenceMockup()
+    {
+        var productionSources = new[]
+        {
+            File.ReadAllText("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uxml"),
+            File.ReadAllText("Assets/_Game/UI/Screens/Atlas/AtlasScreen.uss"),
+            File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenView.cs"),
+        };
+        var joined = string.Join("\n---\n", productionSources);
+
+        Assert.That(joined, Does.Not.Contain("Screenshots/mockups"));
+        Assert.That(joined, Does.Not.Contain("ui_ux_bible"));
+        Assert.That(joined, Does.Not.Contain("atlas_overworld_map_central"));
+        Assert.That(joined, Does.Not.Contain("atlas_overworld_placeholder"));
+        Assert.That(joined, Does.Not.Contain("town_frontier_village_dusk"));
+        Assert.That(joined, Does.Not.Contain("atlas-map-matte"));
+        Assert.That(joined, Does.Not.Contain("atlas-map-land"));
+        Assert.That(joined, Does.Not.Contain("atlas-map-river"));
+        Assert.That(joined, Does.Not.Contain("atlas-map-mist"));
     }
 
     [Test]
@@ -276,6 +311,9 @@ public sealed class AtlasV2SpineSigilFastTests
         Assert.That(controllerSource, Does.Contain("ExpeditionEncounterPreviewBuilder.TryBuild"));
         Assert.That(controllerSource, Does.Contain("SessionState.ExpeditionNodes"));
         Assert.That(controllerSource, Does.Contain("SiteNodeIndex"));
+        Assert.That(controllerSource, Does.Contain("FormatIntelList(preview.EnemyNames, 3"));
+        Assert.That(controllerSource, Does.Contain("FormatIntelList(preview.RewardDropTags, 3"));
+        Assert.That(controllerSource, Does.Contain("FormatIntelToken"));
         Assert.That(uxml, Does.Contain("atlas-preview-enemy-intel"));
 
         var root = CreateAtlasRoot();
@@ -320,6 +358,7 @@ public sealed class AtlasV2SpineSigilFastTests
         var content = new VisualElement { name = "atlas-content" };
         var boardPane = new VisualElement { name = "atlas-board-pane" };
         boardPane.Add(new VisualElement { name = "atlas-board" });
+        boardPane.Add(new VisualElement { name = "atlas-map-overlay" });
         boardPane.Add(new VisualElement { name = "atlas-layer-overlay" });
         boardPane.Add(new VisualElement { name = "atlas-stage-candidate-overlay" });
         content.Add(new VisualElement { name = "atlas-sigil-pool" });

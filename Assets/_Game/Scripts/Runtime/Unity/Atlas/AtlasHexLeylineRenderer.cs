@@ -56,7 +56,7 @@ public sealed class AtlasHexLeylineRenderer : MonoBehaviour
         ClearChildren(leylineRoot);
 
         var shader = Shader.Find("SM/Atlas/HexLeyLine") ?? Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Standard");
-        var mesh = ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.028f, 0.012f);
+        var mesh = ringMesh ?? AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.006f, 0.008f);
         foreach (var entry in BuildPlan(region))
         {
             var go = new GameObject($"LeyLine_{entry.NodeId}");
@@ -87,12 +87,12 @@ public sealed class AtlasHexLeylineRenderer : MonoBehaviour
     {
         var color = kind switch
         {
-            AtlasNodeKind.Boss => new Color(1.00f, 0.38f, 0.32f, 0.70f),
-            AtlasNodeKind.Elite => new Color(0.94f, 0.58f, 0.38f, 0.66f),
-            AtlasNodeKind.SigilAnchor => new Color(0.50f, 0.90f, 0.96f, 0.68f),
-            AtlasNodeKind.Reward => new Color(1.00f, 0.76f, 0.28f, 0.64f),
-            AtlasNodeKind.Event => new Color(0.56f, 0.70f, 1.00f, 0.58f),
-            _ => new Color(1.00f, 0.88f, 0.54f, 0.48f),
+            AtlasNodeKind.Boss => new Color(1.00f, 0.38f, 0.32f, 0.12f),
+            AtlasNodeKind.Elite => new Color(0.94f, 0.58f, 0.38f, 0.10f),
+            AtlasNodeKind.SigilAnchor => new Color(0.50f, 0.90f, 0.96f, 0.11f),
+            AtlasNodeKind.Reward => new Color(1.00f, 0.76f, 0.28f, 0.10f),
+            AtlasNodeKind.Event => new Color(0.56f, 0.70f, 1.00f, 0.08f),
+            _ => new Color(1.00f, 0.88f, 0.54f, 0.05f),
         };
         var material = new Material(shader)
         {
@@ -106,7 +106,7 @@ public sealed class AtlasHexLeylineRenderer : MonoBehaviour
 
         if (material.HasProperty("_EmissionColor"))
         {
-            material.SetColor("_EmissionColor", color * 1.45f);
+            material.SetColor("_EmissionColor", color * 0.65f);
         }
 
         if (material.HasProperty("_Tint"))

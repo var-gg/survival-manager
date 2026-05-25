@@ -144,6 +144,8 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
             var presentation = EquipmentPresentationPolicy.Build("weapon", r.WeaponFamily, r.Rarity, "Baseline", Array.Empty<string>());
             items.Add(new InventoryItemViewState(
                 ItemInstanceId: $"mock_item_{i:D2}",
+                Name: $"전리품 {i + 1:D2}",
+                MetaLabel: $"{presentation.SlotLabel} / {presentation.RarityKey} / {presentation.FamilyLabel}",
                 IconKey: r.Icon,
                 RarityKey: presentation.RarityKey,
                 RawRarityKey: presentation.RawRarityKey,

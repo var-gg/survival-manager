@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
@@ -174,23 +175,78 @@ public sealed class AtlasScreenController : MonoBehaviour
     {
         var enemies = preview.EnemyNames.Count == 0
             ? "적 구성 징후: 미상"
-            : $"적 구성 징후: {string.Join(", ", preview.EnemyNames)}";
+            : $"적 구성 징후: {FormatIntelList(preview.EnemyNames, 3, FormatEnemyName)}";
         var rewards = preview.RewardDropTags.Count == 0
             ? "보상 징후: 미상"
-            : $"보상 징후: {string.Join(", ", preview.RewardDropTags.Take(5).Select(HumanizeIdentifier))}";
+            : $"보상 징후: {FormatIntelList(preview.RewardDropTags, 3, FormatIntelToken)}";
         var boss = string.IsNullOrWhiteSpace(preview.BossOverlayName)
             ? string.Empty
-            : $"boss overlay 징후: {preview.BossOverlayName}{FormatOptional(HumanizeIdentifier(preview.BossAuraTag), " · aura ")}{FormatOptional(HumanizeIdentifier(preview.BossUtilityTag), " · utility ")}";
+            : $"우두머리 징후: {FormatIntelToken(preview.BossOverlayName)}{FormatOptional(FormatIntelToken(preview.BossAuraTag), " · 오라 ")}{FormatOptional(FormatIntelToken(preview.BossUtilityTag), " · 보조 ")}";
 
         return new AtlasEnemyIntelViewState(
             true,
             "부분 정보",
-            $"예상 정보: {preview.EncounterName} ({preview.Kind}) - 정찰 기준",
+            $"예상 정보: {FormatIntelToken(preview.EncounterName)} / {FormatIntelToken(preview.Kind.ToString())} - 정찰 기준",
             enemies,
-            $"위협 예상: {preview.ThreatSkulls} skull · {preview.DifficultyBand}",
-            $"세력 징후: {HumanizeIdentifier(preview.FactionId)}",
+            $"위협 예상: {preview.ThreatSkulls}단계 · {FormatIntelToken(preview.DifficultyBand)}",
+            $"세력 징후: {FormatIntelToken(preview.FactionId)}",
             rewards,
             boss);
+    }
+
+    private static string FormatIntelList(IEnumerable<string> values, int maxCount, Func<string, string> formatter)
+    {
+        var formatted = values
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(formatter)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        if (formatted.Length == 0)
+        {
+            return "미상";
+        }
+
+        var visible = formatted.Take(maxCount).ToArray();
+        var suffix = formatted.Length > visible.Length
+            ? $" 외 {(formatted.Length - visible.Length).ToString(System.Globalization.CultureInfo.InvariantCulture)}"
+            : string.Empty;
+        return $"{string.Join(", ", visible)}{suffix}";
+    }
+
+    private static string FormatEnemyName(string value)
+    {
+        var token = value.Trim();
+        var slashIndex = token.IndexOf(" / ", StringComparison.Ordinal);
+        if (slashIndex > 0)
+        {
+            token = token[..slashIndex];
+        }
+
+        return FormatIntelToken(token);
+    }
+
+    private static string FormatIntelToken(string value)
+    {
+        var readable = HumanizeIdentifier(value);
+        return readable switch
+        {
+            "Ashen Gate Skirmish 1" => "잿빛 관문 접전 1",
+            "Skirmish" => "접전",
+            "Elite" => "정예",
+            "Boss" => "우두머리",
+            "Chapter Entry" => "초입",
+            "Solarium Border" => "솔라리움 변경",
+            "Solarum Border" => "솔라리움 변경",
+            "Source Skirmish" => "접전 보상",
+            "Family Bastion Front" => "방벽 전열",
+            "Answer Lane Guard Anchor" => "전열 고정",
+            "Kojin Gate Warden" => "고진 관문 파수꾼",
+            "Solarium Sgil Scribe" => "솔라리움 서기관",
+            "Solarium Sigil Scribe" => "솔라리움 서기관",
+            "Border Irregular Carrier" => "변경 임시 운반자",
+            _ => readable,
+        };
     }
 
     private static string HumanizeIdentifier(string value)
@@ -215,7 +271,7 @@ public sealed class AtlasScreenController : MonoBehaviour
             }
         }
 
-        foreach (var prefix in new[] { "faction_", "reward_", "reward_source_", "item_", "augment_", "boss_", "aura_", "utility_" })
+        foreach (var prefix in new[] { "site_", "encounter_", "faction_", "reward_", "reward_source_", "item_", "augment_", "boss_", "aura_", "utility_" })
         {
             if (token.StartsWith(prefix, StringComparison.Ordinal))
             {

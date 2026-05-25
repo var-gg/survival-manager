@@ -52,6 +52,12 @@ public sealed class TownCharacterSheetFormatter
                 ArchetypeLabel: string.Empty,
                 RoleLabel: string.Empty,
                 FamilyKey: string.Empty,
+                PortraitSprite: null,
+                HeroRail: Array.Empty<TownCharacterSheetHeroRailEntryViewState>(),
+                Stats: Array.Empty<TownCharacterSheetStatViewState>(),
+                Skills: Array.Empty<TownCharacterSheetSkillCardViewState>(),
+                Equipment: Array.Empty<TownCharacterSheetEquipmentSlotViewState>(),
+                ProgressionNodes: Array.Empty<TownCharacterSheetProgressionNodeViewState>(),
                 Overview: new TownCharacterSheetPanelViewState(titles.Overview, emptyBody),
                 Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, emptyBody),
                 Passives: new TownCharacterSheetPanelViewState(titles.Passives, emptyBody),
@@ -73,9 +79,15 @@ public sealed class TownCharacterSheetFormatter
         return new TownCharacterSheetViewState(
             HeroId: hero.HeroId,
             DisplayName: characterName,
-            ArchetypeLabel: archetypeName,
+            ArchetypeLabel: $"Lv. {progression?.Level ?? 1} / {archetypeName}",
             RoleLabel: roleLabel,
             FamilyKey: hero.ClassId,
+            PortraitSprite: null,
+            HeroRail: BuildHeroRail(session, hero.HeroId),
+            Stats: BuildStatGrid(archetype),
+            Skills: BuildSkillCards(hero, baseline),
+            Equipment: BuildEquipmentSlots(session, hero),
+            ProgressionNodes: BuildProgressionNodes(loadout, progression),
             Overview: new TownCharacterSheetPanelViewState(titles.Overview, BuildOverviewBody(session, hero, archetype)),
             Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, BuildLoadoutBody(session, hero, baseline)),
             Passives: new TownCharacterSheetPanelViewState(titles.Passives, BuildPassivesBody(loadout, board, selectedNode)),
@@ -90,9 +102,172 @@ public sealed class TownCharacterSheetFormatter
         return (
             LocalizeTown("ui.town.sheet.overview", "Overview"),
             LocalizeTown("ui.town.sheet.loadout", "Loadout"),
-            LocalizeTown("ui.town.sheet.passives", "Passives"),
+            "스킬",
             LocalizeTown("ui.town.sheet.synergy", "Synergy"),
             LocalizeTown("ui.town.sheet.progression", "Progression"));
+    }
+
+    private IReadOnlyList<TownCharacterSheetHeroRailEntryViewState> BuildHeroRail(
+        GameSessionState session,
+        string selectedHeroId)
+    {
+        return session.Profile.Heroes
+            .Take(5)
+            .Select(hero => new TownCharacterSheetHeroRailEntryViewState(
+                HeroId: hero.HeroId,
+                DisplayName: _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId),
+                MetaLabel: _contentText.GetClassName(hero.ClassId),
+                FamilyKey: hero.ClassId,
+                PortraitSprite: null,
+                IsSelected: string.Equals(hero.HeroId, selectedHeroId, StringComparison.Ordinal)))
+            .ToList();
+    }
+
+    private static IReadOnlyList<TownCharacterSheetStatViewState> BuildStatGrid(UnitArchetypeDefinition? archetype)
+    {
+        if (archetype == null)
+        {
+            return Array.Empty<TownCharacterSheetStatViewState>();
+        }
+
+        return new[]
+        {
+            BuildStat("hp", "HP", archetype.BaseMaxHealth, "vital"),
+            BuildStat("armor", "ARM", archetype.BaseArmor, "guard"),
+            BuildStat("resist", "RES", archetype.BaseResist, "guard"),
+            BuildStat("phys", "PWR", archetype.BasePhysPower, "attack"),
+            BuildStat("magic", "MAG", archetype.BaseMagPower, "magic"),
+            BuildStat("speed", "SPD", archetype.BaseSpeed, "tempo"),
+            BuildStat("range", "RNG", archetype.BaseAttackRange, "tempo"),
+            BuildStat("haste", "HST", archetype.BaseSkillHaste, "magic"),
+        };
+    }
+
+    private IReadOnlyList<TownCharacterSheetSkillCardViewState> BuildSkillCards(
+        HeroInstanceRecord hero,
+        LaunchCoreUnitBaseline? baseline)
+    {
+        return new[]
+            {
+                BuildSkillCard("SIG A", baseline?.SignatureActiveId ?? string.Empty, isSignature: true),
+                BuildSkillCard("SIG P", baseline?.SignaturePassiveId ?? string.Empty, isSignature: true),
+                BuildSkillCard("FLX A", FirstNonEmpty(hero.FlexActiveId, baseline?.FlexActiveId), isSignature: false),
+                BuildSkillCard("FLX P", FirstNonEmpty(hero.FlexPassiveId, baseline?.FlexPassiveId), isSignature: false),
+            }
+            .ToList();
+    }
+
+    private IReadOnlyList<TownCharacterSheetEquipmentSlotViewState> BuildEquipmentSlots(
+        GameSessionState session,
+        HeroInstanceRecord hero)
+    {
+        var equippedItems = GetEquippedItems(session, hero);
+        return new[]
+        {
+            BuildEquipmentSlot(equippedItems, ItemSlotType.Weapon, "Weapon", "weapon"),
+            BuildEquipmentSlot(equippedItems, ItemSlotType.Armor, "Armor", "armor"),
+            BuildEquipmentSlot(equippedItems, ItemSlotType.Accessory, "Accessory", "accessory"),
+        };
+    }
+
+    private IReadOnlyList<TownCharacterSheetProgressionNodeViewState> BuildProgressionNodes(
+        HeroLoadoutRecord? loadout,
+        HeroProgressionRecord? progression)
+    {
+        IReadOnlyList<string> selectedIds = loadout?.SelectedPassiveNodeIds != null
+            ? loadout.SelectedPassiveNodeIds
+            : Array.Empty<string>();
+        IReadOnlyList<string> unlockedIds = progression?.UnlockedPassiveNodeIds != null
+            ? progression.UnlockedPassiveNodeIds
+            : Array.Empty<string>();
+        var nodes = new List<TownCharacterSheetProgressionNodeViewState>();
+
+        foreach (var nodeId in selectedIds.Where(id => !string.IsNullOrWhiteSpace(id)).Take(6))
+        {
+            nodes.Add(new TownCharacterSheetProgressionNodeViewState(FormatPassiveNodeName(nodeId), "active"));
+        }
+
+        foreach (var nodeId in unlockedIds
+                     .Where(id => !string.IsNullOrWhiteSpace(id))
+                     .Where(id => !selectedIds.Contains(id, StringComparer.Ordinal))
+                     .Take(Math.Max(0, 6 - nodes.Count)))
+        {
+            nodes.Add(new TownCharacterSheetProgressionNodeViewState(FormatPassiveNodeName(nodeId), "unlocked"));
+        }
+
+        while (nodes.Count < 6)
+        {
+            nodes.Add(new TownCharacterSheetProgressionNodeViewState($"{nodes.Count + 1}", "locked"));
+        }
+
+        return nodes;
+    }
+
+    private TownCharacterSheetSkillCardViewState BuildSkillCard(
+        string slotLabel,
+        string skillId,
+        bool isSignature)
+    {
+        if (string.IsNullOrWhiteSpace(skillId))
+        {
+            return new TownCharacterSheetSkillCardViewState(
+                SkillId: string.Empty,
+                Name: CommonNone(),
+                MetaLabel: slotLabel,
+                Description: "No skill assigned.",
+                IconKey: string.Empty,
+                IconSprite: null,
+                IsSignature: isSignature);
+        }
+
+        var description = _contentText.GetSkillDescription(skillId);
+        return new TownCharacterSheetSkillCardViewState(
+            SkillId: skillId,
+            Name: ResolveSkillName(skillId),
+            MetaLabel: FormatSkillMeta(slotLabel, skillId),
+            Description: string.IsNullOrWhiteSpace(description) ? FormatSkillMeta(slotLabel, skillId) : description,
+            IconKey: ResolveSkillIconKey(skillId),
+            IconSprite: null,
+            IsSignature: isSignature);
+    }
+
+    private TownCharacterSheetEquipmentSlotViewState BuildEquipmentSlot(
+        IReadOnlyList<InventoryItemRecord> equippedItems,
+        ItemSlotType slotType,
+        string slotLabel,
+        string fallbackIconKey)
+    {
+        var item = equippedItems.FirstOrDefault(candidate =>
+            _lookup.TryGetItemDefinition(candidate.ItemBaseId, out var definition)
+            && definition.SlotType == slotType);
+        if (item == null)
+        {
+            return new TownCharacterSheetEquipmentSlotViewState(
+                SlotKey: fallbackIconKey,
+                SlotLabel: slotLabel,
+                ItemLabel: CommonNone(),
+                MetaLabel: "Empty slot",
+                IconKey: fallbackIconKey,
+                IconSprite: null,
+                IsFilled: false);
+        }
+
+        var meta = $"{item.AffixIds?.Count ?? 0} affixes";
+        var iconKey = item.ItemBaseId;
+        if (_lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDefinition))
+        {
+            iconKey = string.IsNullOrWhiteSpace(itemDefinition.IconId) ? item.ItemBaseId : itemDefinition.IconId;
+            meta = $"{itemDefinition.RarityTier} / {ResolveItemFamilyLabel(itemDefinition)} / {meta}";
+        }
+
+        return new TownCharacterSheetEquipmentSlotViewState(
+            SlotKey: fallbackIconKey,
+            SlotLabel: slotLabel,
+            ItemLabel: _contentText.GetItemName(item.ItemBaseId),
+            MetaLabel: meta,
+            IconKey: iconKey,
+            IconSprite: null,
+            IsFilled: true);
     }
 
     private string BuildOverviewBody(
@@ -343,6 +518,29 @@ public sealed class TownCharacterSheetFormatter
         return string.IsNullOrWhiteSpace(skillId) ? CommonNone() : _contentText.GetSkillName(skillId);
     }
 
+    private string ResolveSkillIconKey(string skillId)
+    {
+        if (_lookup.TryGetSkillDefinition(skillId, out var skill) && !string.IsNullOrWhiteSpace(skill.IconId))
+        {
+            return skill.IconId;
+        }
+
+        return skillId;
+    }
+
+    private string FormatSkillMeta(string slotLabel, string skillId)
+    {
+        if (!_lookup.TryGetSkillDefinition(skillId, out var skill))
+        {
+            return slotLabel;
+        }
+
+        var cooldown = skill.BaseCooldownSeconds > 0.01f
+            ? $"{skill.BaseCooldownSeconds:0.#}s"
+            : "Always";
+        return $"{slotLabel} / {skill.Kind} / {skill.TargetRule} / {cooldown}";
+    }
+
     private string FormatItemBySlot(IEnumerable<InventoryItemRecord> items, ItemSlotType slotType)
     {
         foreach (var item in items)
@@ -354,6 +552,43 @@ public sealed class TownCharacterSheetFormatter
         }
 
         return CommonNone();
+    }
+
+    private static TownCharacterSheetStatViewState BuildStat(string key, string label, float value, string tone)
+    {
+        return new TownCharacterSheetStatViewState(
+            Key: key,
+            Label: label,
+            Value: FormatStatValue(value),
+            DeltaLabel: string.Empty,
+            Tone: tone);
+    }
+
+    private static string FormatStatValue(float value)
+    {
+        return Math.Abs(value % 1f) < 0.001f
+            ? value.ToString("0")
+            : value.ToString("0.#");
+    }
+
+    private static string ResolveItemFamilyLabel(ItemBaseDefinition item)
+    {
+        if (!string.IsNullOrWhiteSpace(item.WeaponFamilyTag))
+        {
+            return item.WeaponFamilyTag;
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.ItemFamilyTag))
+        {
+            return item.ItemFamilyTag;
+        }
+
+        return item.SlotType.ToString();
+    }
+
+    private static string FirstNonEmpty(params string?[] values)
+    {
+        return values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value)) ?? string.Empty;
     }
 
     private string FormatItem(InventoryItemRecord item)

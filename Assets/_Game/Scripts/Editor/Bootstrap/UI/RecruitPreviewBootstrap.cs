@@ -114,6 +114,7 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
                 BlueprintId: r.BlueprintId,
                 DisplayName: r.Name,
                 ClassKey: r.ClassKey,
+                ClassLabel: DescribeClass(r.ClassKey),
                 SlotType: r.Slot,
                 Tier: r.Tier,
                 PlanFit: r.Plan,
@@ -143,14 +144,19 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
         var detail = new RecruitSelectedCandidateDetailViewState(
             SlotIndex: selected.SlotIndex,
             DisplayName: selected.DisplayName,
-            ClassLabel: selected.ClassKey,
+            ClassLabel: selected.ClassLabel,
+            ClassKey: selected.ClassKey,
             TierLabel: selected.Tier.ToString(),
             PlanFitLabel: selected.PlanFit.ToString(),
             PlanScoreLabel: $"+{selected.PlanScore}",
             CostLabel: $"{selected.GoldCost} Gold",
             StateChips: selected.StateChips,
             Tags: selected.Tags,
-            SkillSummary: $"SIG {selected.SigActive} / {selected.SigPassive}\nFLX {selected.FlexActive} / {selected.FlexPassive}");
+            SkillSummary: $"SIG {selected.SigActive} / {selected.SigPassive}\nFLX {selected.FlexActive} / {selected.FlexPassive}",
+            PortraitSprite: selected.PortraitSprite,
+            ClassSprite: selected.ClassSprite,
+            Metrics: BuildMockMetrics(selected),
+            SkillPips: BuildMockSkillPips(selected));
         var pressure = new RecruitRosterPressureViewState(
             RosterCountLabel: "8/12 roster",
             NeedLabel: "ranger need",
@@ -173,4 +179,34 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
         if (scout) chips.Add("scout");
         return chips;
     }
+
+    private static IReadOnlyList<RecruitDecisionMetricViewState> BuildMockMetrics(RecruitCandidateViewState selected)
+    {
+        return new[]
+        {
+            new RecruitDecisionMetricViewState("계획", Mathf.Clamp(58 + selected.PlanScore, 0, 100), "plan"),
+            new RecruitDecisionMetricViewState("보장", selected.ProtectedByPity ? 88 : 42 + ((int)selected.Tier * 14), "safety"),
+            new RecruitDecisionMetricViewState("운용", Mathf.Clamp(46 + (selected.Tags.Count * 10) + (selected.ScoutBias ? 10 : 0), 0, 100), "signal"),
+        };
+    }
+
+    private static IReadOnlyList<RecruitSkillPipViewState> BuildMockSkillPips(RecruitCandidateViewState selected)
+    {
+        return new[]
+        {
+            new RecruitSkillPipViewState("SA", selected.SigActive, "sig"),
+            new RecruitSkillPipViewState("SP", selected.SigPassive, "sig"),
+            new RecruitSkillPipViewState("FA", selected.FlexActive, "flex"),
+            new RecruitSkillPipViewState("FP", selected.FlexPassive, "flex"),
+        };
+    }
+
+    private static string DescribeClass(string classKey) => classKey switch
+    {
+        "vanguard" => "전열 방패",
+        "duelist" => "돌파 결투",
+        "ranger" => "후열 사격",
+        "mystic" => "주문 지원",
+        _ => classKey,
+    };
 }

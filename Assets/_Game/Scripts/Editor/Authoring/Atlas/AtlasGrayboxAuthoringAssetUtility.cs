@@ -53,6 +53,9 @@ public static class AtlasGrayboxAuthoringAssetUtility
             AtlasScenePath,
             ("SM.Unity::SM.Unity.UI.Atlas.AtlasScreenController", "Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenController.cs"),
             ("SM.Unity::SM.Unity.Atlas.Atlas3DSceneController", "Assets/_Game/Scripts/Runtime/Unity/Atlas/Atlas3DSceneController.cs"));
+        PatchSerializedScriptReferences(
+            AtlasPrefabPath,
+            ("SM.Unity::SM.Unity.Atlas.AtlasCharacterStandeePresenter", "Assets/_Game/Scripts/Runtime/Unity/Atlas/AtlasCharacterStandeePresenter.cs"));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("[AtlasGraybox] Atlas 3D scene rebuilt.");
@@ -78,11 +81,12 @@ public static class AtlasGrayboxAuthoringAssetUtility
         var go = EnsureRootObject("Main Camera");
         var camera = EnsureComponent<Camera>(go);
         go.tag = "MainCamera";
-        go.transform.position = new Vector3(-3.90f, 5.55f, -5.65f);
-        go.transform.rotation = Quaternion.LookRotation(new Vector3(3.90f, -4.75f, 5.65f).normalized, Vector3.up);
+        go.transform.position = new Vector3(-2.80f, 7.40f, -4.90f);
+        go.transform.rotation = Quaternion.LookRotation(new Vector3(2.80f, -7.00f, 4.90f).normalized, Vector3.up);
         camera.clearFlags = CameraClearFlags.SolidColor;
-        camera.backgroundColor = new Color(0.44f, 0.49f, 0.45f, 1f);
-        camera.orthographic = false;
+        camera.backgroundColor = new Color(0.026f, 0.032f, 0.040f, 1f);
+        camera.orthographic = true;
+        camera.orthographicSize = 4.85f;
         camera.fieldOfView = 35f;
         camera.nearClipPlane = 0.1f;
         camera.farClipPlane = 160f;
@@ -115,8 +119,8 @@ public static class AtlasGrayboxAuthoringAssetUtility
         var root = new GameObject("AtlasRegionWolfpineTrail");
         var region = AtlasGrayboxDataFactory.CreateRegion();
         var hitDiscMesh = LoadOrCreateMesh("Mesh_Atlas_HexHitDisc", () => AtlasHexWorldMapper.CreateHexDiscMesh(AtlasHexWorldMapper.HexRadius * 0.98f));
-        var auraRingMesh = LoadOrCreateMesh("Mesh_Atlas_AuraRing", () => AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius * 1.10f, 0.045f));
-        var leylineRingMesh = LoadOrCreateMesh("Mesh_Atlas_LeyLineRing", () => AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius, 0.028f, 0.012f));
+        var auraRingMesh = LoadOrCreateMesh("Mesh_Atlas_AuraRing", () => AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius * 1.06f, 0.026f));
+        var leylineRingMesh = LoadOrCreateMesh("Mesh_Atlas_LeyLineRing", () => AtlasHexWorldMapper.CreateHexRingMesh(AtlasHexWorldMapper.HexRadius * 0.98f, 0.004f, 0.012f));
         CreateForestDiorama(root.transform);
         CreateHexHitboxes(root.transform, region, hitDiscMesh);
 
@@ -141,7 +145,6 @@ public static class AtlasGrayboxAuthoringAssetUtility
             region,
             entry => LoadOrCreateMaterial($"M_Atlas_Standee_{entry.CharacterId}", entry.AccentColor, "lilToon"),
             LoadOrCreateMaterial("M_Atlas_StandeeBase", new Color(0.08f, 0.07f, 0.06f, 0.72f)));
-        UnityEngine.Object.DestroyImmediate(standees);
 
         var prefab = PrefabUtility.SaveAsPrefabAsset(root, AtlasPrefabPath);
         UnityEngine.Object.DestroyImmediate(root);
@@ -162,7 +165,7 @@ public static class AtlasGrayboxAuthoringAssetUtility
             "MossPlateau",
             new Vector3(0f, -0.12f, 0f),
             new Vector3(8.8f, 0.18f, 5.8f),
-            LoadOrCreateMaterial("M_Atlas_Wolfpine_Moss", new Color(0.38f, 0.52f, 0.30f, 1f)));
+            LoadOrCreateMaterial("M_Atlas_Wolfpine_Moss", new Color(0.14f, 0.24f, 0.13f, 1f)));
         ground.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
 
         CreatePrimitiveRenderer(
@@ -171,14 +174,15 @@ public static class AtlasGrayboxAuthoringAssetUtility
             "CliffDrop_FogPlane",
             new Vector3(1.1f, -0.55f, 2.80f),
             new Vector3(8.2f, 0.10f, 1.6f),
-            LoadOrCreateMaterial("M_Atlas_FoggedCliff", new Color(0.54f, 0.58f, 0.54f, 0.62f)));
+            LoadOrCreateMaterial("M_Atlas_FoggedCliff", new Color(0.10f, 0.15f, 0.15f, 0.48f)));
         CreatePrimitiveRenderer(
             terrainRoot.transform,
             PrimitiveType.Cube,
             "WarmStream",
             new Vector3(-2.15f, -0.035f, -0.42f),
-            new Vector3(0.18f, 0.025f, 5.2f),
-            LoadOrCreateMaterial("M_Atlas_Stream", new Color(0.24f, 0.58f, 0.64f, 0.80f)));
+            new Vector3(0.12f, 0.018f, 5.2f),
+            LoadOrCreateMaterial("M_Atlas_Stream", new Color(0.07f, 0.24f, 0.30f, 0.82f)));
+        CreateRoutePathAndLandmarks(terrainRoot.transform);
 
         var mapPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BattleForestMapPrefabPath);
         if (mapPrefab != null)
@@ -195,6 +199,70 @@ public static class AtlasGrayboxAuthoringAssetUtility
 
         CreateTrees(terrainRoot.transform);
         CreateRocksAndRuins(terrainRoot.transform);
+    }
+
+    private static void CreateRoutePathAndLandmarks(Transform parent)
+    {
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+        var pathMaterial = LoadOrCreateMaterial("M_Atlas_RouteGlow", new Color(1.00f, 0.70f, 0.22f, 0.34f), "SM/Atlas/HexLeyLine", pulseOffset: 0.42f);
+        var beaconMaterial = LoadOrCreateMaterial("M_Atlas_NodeBeacon", new Color(1.00f, 0.82f, 0.34f, 0.48f), "SM/Atlas/HexLeyLine", pulseOffset: 0.70f);
+        var bossMaterial = LoadOrCreateMaterial("M_Atlas_BossBeacon", new Color(1.00f, 0.28f, 0.25f, 0.40f), "SM/Atlas/HexLeyLine", pulseOffset: 1.10f);
+        var extractMaterial = LoadOrCreateMaterial("M_Atlas_ExtractBeacon", new Color(0.30f, 0.86f, 0.74f, 0.38f), "SM/Atlas/HexLeyLine", pulseOffset: 1.00f);
+        var nodes = region.Nodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
+        var path = region.StageCandidates
+            .Where(candidate => nodes.ContainsKey(candidate.HexId))
+            .GroupBy(candidate => candidate.SiteStageIndex)
+            .OrderBy(group => group.Key)
+            .Select(group => group.OrderBy(candidate => candidate.CandidateBadge, StringComparer.Ordinal).First())
+            .Select(candidate => (Candidate: candidate, Node: nodes[candidate.HexId], World: AtlasHexWorldMapper.ToWorld(nodes[candidate.HexId].Hex)))
+            .ToArray();
+
+        for (var i = 1; i < path.Length; i++)
+        {
+            CreateRouteSegment(parent, path[i - 1].World, path[i].World, pathMaterial, $"RouteRibbon_{i:00}");
+        }
+
+        foreach (var entry in path)
+        {
+            var material = entry.Node.Kind switch
+            {
+                AtlasNodeKind.Boss => bossMaterial,
+                AtlasNodeKind.Extract => extractMaterial,
+                _ => beaconMaterial,
+            };
+            CreatePrimitiveRenderer(
+                parent,
+                PrimitiveType.Cylinder,
+                $"RouteBeacon_{entry.Candidate.CandidateBadge}",
+                entry.World + Vector3.up * 0.092f,
+                new Vector3(0.115f, 0.007f, 0.115f),
+                material);
+        }
+    }
+
+    private static void CreateRouteSegment(Transform parent, Vector3 from, Vector3 to, Material material, string name)
+    {
+        var delta = to - from;
+        delta.y = 0f;
+        var length = delta.magnitude;
+        if (length <= 0.001f)
+        {
+            return;
+        }
+
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = name;
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = from + delta * 0.5f + Vector3.up * 0.045f;
+        go.transform.localRotation = Quaternion.LookRotation(delta.normalized, Vector3.up);
+        go.transform.localScale = new Vector3(0.026f, 0.006f, length);
+        var renderer = go.GetComponent<Renderer>();
+        renderer.sharedMaterial = material;
+        var collider = go.GetComponent<Collider>();
+        if (collider != null)
+        {
+            UnityEngine.Object.DestroyImmediate(collider);
+        }
     }
 
     private static void CreateHexHitboxes(Transform root, AtlasRegionDefinition region, Mesh hitDiscMesh)
@@ -224,8 +292,8 @@ public static class AtlasGrayboxAuthoringAssetUtility
             new Vector3(4.05f, 0f, -2.45f),
             new Vector3(4.05f, 0f, 2.45f),
         };
-        var trunk = LoadOrCreateMaterial("M_Atlas_TreeTrunk", new Color(0.34f, 0.22f, 0.13f, 1f));
-        var needle = LoadOrCreateMaterial("M_Atlas_PineNeedle", new Color(0.16f, 0.36f, 0.24f, 1f));
+        var trunk = LoadOrCreateMaterial("M_Atlas_TreeTrunk", new Color(0.20f, 0.12f, 0.07f, 1f));
+        var needle = LoadOrCreateMaterial("M_Atlas_PineNeedle", new Color(0.06f, 0.20f, 0.13f, 1f));
         for (var i = 0; i < placements.Length; i++)
         {
             var root = CreateChild(parent, $"WolfpineTree_{i:00}");
@@ -237,8 +305,8 @@ public static class AtlasGrayboxAuthoringAssetUtility
 
     private static void CreateRocksAndRuins(Transform parent)
     {
-        var rock = LoadOrCreateMaterial("M_Atlas_WarmRock", new Color(0.52f, 0.49f, 0.42f, 1f));
-        var gold = LoadOrCreateMaterial("M_Atlas_SigilStoneGlow", new Color(0.88f, 0.63f, 0.26f, 1f), "SM/Atlas/HexLeyLine");
+        var rock = LoadOrCreateMaterial("M_Atlas_WarmRock", new Color(0.32f, 0.28f, 0.22f, 1f));
+        var gold = LoadOrCreateMaterial("M_Atlas_SigilStoneGlow", new Color(0.92f, 0.62f, 0.22f, 0.54f), "SM/Atlas/HexLeyLine");
         foreach (var position in new[] { new Vector3(-1.8f, 0f, -1.6f), new Vector3(0.9f, 0f, 1.3f), new Vector3(2.5f, 0f, -0.8f) })
         {
             CreatePrimitiveRenderer(parent, PrimitiveType.Cube, $"MossRock_{position.x:0.0}_{position.z:0.0}", position + Vector3.up * 0.10f, new Vector3(0.42f, 0.22f, 0.34f), rock);
@@ -248,24 +316,25 @@ public static class AtlasGrayboxAuthoringAssetUtility
         foreach (var anchor in region.SigilAnchors)
         {
             var world = AtlasHexWorldMapper.ToWorld(anchor);
-            CreatePrimitiveRenderer(parent, PrimitiveType.Cube, $"SigilObelisk_{anchor.Q}_{anchor.R}", world + Vector3.up * 0.42f, new Vector3(0.16f, 0.62f, 0.16f), gold);
+            CreatePrimitiveRenderer(parent, PrimitiveType.Cylinder, $"SigilPin_{anchor.Q}_{anchor.R}", world + Vector3.up * 0.25f, new Vector3(0.055f, 0.24f, 0.055f), gold);
+            CreatePrimitiveRenderer(parent, PrimitiveType.Sphere, $"SigilPinGlimmer_{anchor.Q}_{anchor.R}", world + Vector3.up * 0.52f, new Vector3(0.085f, 0.085f, 0.085f), gold);
         }
     }
 
     private static void EnsureGoldenHourLighting()
     {
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.70f, 0.62f, 0.52f, 1f);
+        RenderSettings.ambientLight = new Color(0.24f, 0.20f, 0.16f, 1f);
         RenderSettings.fog = true;
-        RenderSettings.fogColor = new Color(0.60f, 0.64f, 0.58f, 1f);
+        RenderSettings.fogColor = new Color(0.16f, 0.18f, 0.16f, 1f);
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = 0.009f;
+        RenderSettings.fogDensity = 0.014f;
 
         var lightGo = EnsureRootObject("GoldenHour Directional Light");
         var light = EnsureComponent<Light>(lightGo);
         light.type = LightType.Directional;
         light.color = new Color(1.00f, 0.72f, 0.45f, 1f);
-        light.intensity = 1.65f;
+        light.intensity = 1.28f;
         light.shadows = LightShadows.Soft;
         lightGo.transform.rotation = Quaternion.Euler(42f, -34f, 0f);
 
@@ -353,7 +422,10 @@ public static class AtlasGrayboxAuthoringAssetUtility
 
         if (material.HasProperty("_EmissionColor"))
         {
-            material.SetColor("_EmissionColor", color * 1.15f);
+            var emissionMultiplier = string.Equals(shaderName, "Universal Render Pipeline/Lit", StringComparison.Ordinal)
+                ? 0.16f
+                : 1.15f;
+            material.SetColor("_EmissionColor", color * emissionMultiplier);
         }
 
         if (material.HasProperty("_Tint"))
@@ -378,12 +450,12 @@ public static class AtlasGrayboxAuthoringAssetUtility
     {
         return kind switch
         {
-            AtlasNodeKind.Boss => new Color(1.00f, 0.38f, 0.32f, 0.70f),
-            AtlasNodeKind.Elite => new Color(0.94f, 0.58f, 0.38f, 0.66f),
-            AtlasNodeKind.SigilAnchor => new Color(0.50f, 0.90f, 0.96f, 0.68f),
-            AtlasNodeKind.Reward => new Color(1.00f, 0.76f, 0.28f, 0.64f),
-            AtlasNodeKind.Event => new Color(0.56f, 0.70f, 1.00f, 0.58f),
-            _ => new Color(1.00f, 0.88f, 0.54f, 0.48f),
+            AtlasNodeKind.Boss => new Color(1.00f, 0.38f, 0.32f, 0.11f),
+            AtlasNodeKind.Elite => new Color(0.94f, 0.58f, 0.38f, 0.09f),
+            AtlasNodeKind.SigilAnchor => new Color(0.50f, 0.90f, 0.96f, 0.10f),
+            AtlasNodeKind.Reward => new Color(1.00f, 0.76f, 0.28f, 0.09f),
+            AtlasNodeKind.Event => new Color(0.56f, 0.70f, 1.00f, 0.08f),
+            _ => new Color(1.00f, 0.88f, 0.54f, 0.045f),
         };
     }
 

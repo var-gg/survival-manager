@@ -151,6 +151,11 @@ public sealed class BattleUnitMetadataFormatter
             subtitle);
     }
 
+    public string BuildStateText(BattleUnitReadModel unit, BattleSimulationStep? step = null)
+    {
+        return BattleReadabilityFormatter.BuildPlayerFacingState(unit, step, LocaleCode);
+    }
+
     public BattleSelectedUnitViewState BuildSelectedUnitPanel(
         BattleUnitReadModel? unit,
         bool isVisible = true,
@@ -224,7 +229,7 @@ public sealed class BattleUnitMetadataFormatter
                 "Explains entry side and post-attack reset direction only. It does not change damage or defense numbers."),
             Line("ui.battle.axis.hp", "HP", "HP", $"{Mathf.Max(0f, unit.CurrentHealth):0} / {Mathf.Max(1f, unit.MaxHealth):0}", BattleStatLineCategory.Vital),
             Line("ui.battle.axis.shield", "보호막", "Shield", $"{Mathf.Max(0f, unit.Barrier):0}", BattleStatLineCategory.Defense),
-            Line("ui.battle.axis.state", "상태", "State", BattleReadabilityFormatter.BuildPlayerFacingState(unit), BattleStatLineCategory.Defense),
+            Line("ui.battle.axis.state", "상태", "State", BuildStateText(unit), BattleStatLineCategory.Defense),
             Line("ui.battle.axis.energy", "에너지", "Energy", $"{Mathf.Max(0f, unit.CurrentEnergy):0} / {Mathf.Max(1f, unit.MaxEnergy):0}", BattleStatLineCategory.Resource),
             Line("ui.battle.axis.attack_speed", "공격 속도", "Attack Speed", $"{unit.AttackSpeed:0.0}", BattleStatLineCategory.Combat),
             Line("ui.battle.axis.basic_attack_interval", "기본공격 간격", "Basic Attack Interval", $"{unit.BasicAttackCooldown:0.00}s", BattleStatLineCategory.Combat),
@@ -279,7 +284,7 @@ public sealed class BattleUnitMetadataFormatter
             $"{AxisLabel("ui.battle.axis.character", "캐릭터", "Character")}: {character}",
             $"{AxisLabel("ui.battle.axis.role_family", "역할군", "Role Family")}: {roleFamily}",
             $"{AxisLabel("ui.battle.axis.role", "역할", "Role")}: {role} / {roleFamily}",
-            $"{AxisLabel("ui.battle.axis.state", "상태", "State")}: {BattleReadabilityFormatter.BuildPlayerFacingState(unit)}",
+            $"{AxisLabel("ui.battle.axis.state", "상태", "State")}: {BuildStateText(unit)}",
             $"{AxisLabel("ui.battle.axis.anchor", "홈 앵커", "Home Anchor")}: {LocalizeAnchor(positionSummary.HomeAnchor)}",
             $"{AxisLabel("ui.battle.axis.tactic", "팀 전술", "Team Tactic")}: {tacticSummary.PresetName}",
         });
@@ -293,7 +298,7 @@ public sealed class BattleUnitMetadataFormatter
         return string.Join("\n", new[]
         {
             $"{AxisLabel("ui.battle.axis.hp", "HP", "HP")}: {Mathf.Max(0f, unit.CurrentHealth):0} / {Mathf.Max(1f, unit.MaxHealth):0}",
-            $"{AxisLabel("ui.battle.axis.state", "상태", "State")}: {BattleReadabilityFormatter.BuildPlayerFacingState(unit)}",
+            $"{AxisLabel("ui.battle.axis.state", "상태", "State")}: {BuildStateText(unit)}",
             $"{AxisLabel("ui.battle.detail.status.permanent", "영구 효과", "Permanent")}: {(permanent.Length == 0 ? none : string.Join(" / ", permanent))}",
             $"{AxisLabel("ui.battle.detail.status.battle_scoped", "전투 효과", "Battle Scoped")}: {(battleScoped.Length == 0 ? none : string.Join(" / ", battleScoped))}",
         });
@@ -949,6 +954,8 @@ public sealed class BattleUnitMetadataFormatter
                 ? koFallback
                 : enFallback);
     }
+
+    private string LocaleCode => _localization.CurrentLocale?.Identifier.Code ?? string.Empty;
 
     private string Localize(string table, string key, string fallback, params object[] args)
     {

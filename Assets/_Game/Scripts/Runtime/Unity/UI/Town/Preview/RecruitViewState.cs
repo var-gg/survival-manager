@@ -22,6 +22,7 @@ public sealed record RecruitCandidateViewState(
     string BlueprintId,                     // ← RecruitUnitPreview.UnitBlueprintId (archetype id, hero 인스턴스 아님)
     string DisplayName,                     // ◐ archetype NameKey resolved
     string ClassKey,                        // ◐ archetype Class.Id — vanguard / duelist / ranger / mystic
+    string ClassLabel,
     RecruitSlotType SlotType,               // ✅ Metadata.SlotType
     RecruitTier Tier,                       // ✅ Metadata.Tier
     RecruitPlanFit PlanFit,                 // ✅ Metadata.PlanFit
@@ -40,6 +41,18 @@ public sealed record RecruitCandidateViewState(
     IReadOnlyList<string> StateChips
 );
 
+public sealed record RecruitDecisionMetricViewState(
+    string Label,
+    int Value,
+    string Tone
+);
+
+public sealed record RecruitSkillPipViewState(
+    string SlotLabel,
+    string SkillLabel,
+    string Variant
+);
+
 public sealed record RecruitActionBarViewState(
     int ScoutEchoCost,                      // 35 — RecruitmentBalanceCatalog.ScoutEchoCost
     bool CanUseScout,                       // phase당 1회 — !RecruitPhaseState.ScoutUsedThisPhase
@@ -52,13 +65,18 @@ public sealed record RecruitSelectedCandidateDetailViewState(
     int SlotIndex,
     string DisplayName,
     string ClassLabel,
+    string ClassKey,
     string TierLabel,
     string PlanFitLabel,
     string PlanScoreLabel,
     string CostLabel,
     IReadOnlyList<string> StateChips,
     IReadOnlyList<string> Tags,
-    string SkillSummary
+    string SkillSummary,
+    Texture2D? PortraitSprite,
+    Texture2D? ClassSprite,
+    IReadOnlyList<RecruitDecisionMetricViewState> Metrics,
+    IReadOnlyList<RecruitSkillPipViewState> SkillPips
 );
 
 public sealed record RecruitRosterPressureViewState(

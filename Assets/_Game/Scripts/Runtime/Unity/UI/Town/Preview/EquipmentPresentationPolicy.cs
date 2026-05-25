@@ -52,7 +52,7 @@ public static class EquipmentPresentationPolicy
         { "weapon", "무기" },
         { "armor", "방어구" },
         { "accessory", "장신구" },
-        { "item", "ITEM" },
+        { "item", "장비" },
     };
 
     private static readonly IReadOnlyDictionary<string, string> FamilyLabels = new Dictionary<string, string>(StringComparer.Ordinal)

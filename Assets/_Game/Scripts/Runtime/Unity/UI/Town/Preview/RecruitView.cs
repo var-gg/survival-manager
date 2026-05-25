@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,6 +17,10 @@ public sealed class RecruitView
     private readonly VisualElement _cardRow;
     private readonly VisualElement? _detailStateChips;
     private readonly VisualElement? _detailTags;
+    private readonly VisualElement? _detailPortrait;
+    private readonly VisualElement? _detailClassGlyph;
+    private readonly VisualElement? _detailMetricBars;
+    private readonly VisualElement? _detailSkillPips;
     private readonly VisualElement? _pressureNeedChips;
     private readonly VisualElement? _modalRoot;
     private readonly Label? _detailNameLabel;
@@ -42,6 +47,10 @@ public sealed class RecruitView
         _modalRoot = root.Q<VisualElement>("RcpRoot");   // hub modal toggle용 (preview에선 null OK)
         _detailStateChips = root.Q<VisualElement>("SelectedCandidateStateChips");
         _detailTags = root.Q<VisualElement>("SelectedCandidateTags");
+        _detailPortrait = root.Q<VisualElement>("SelectedCandidatePortrait");
+        _detailClassGlyph = root.Q<VisualElement>("SelectedCandidateClassGlyph");
+        _detailMetricBars = root.Q<VisualElement>("SelectedCandidateMetricBars");
+        _detailSkillPips = root.Q<VisualElement>("SelectedCandidateSkillPips");
         _pressureNeedChips = root.Q<VisualElement>("RosterNeedChips");
         _detailNameLabel = root.Q<Label>("SelectedCandidateNameLabel");
         _detailMetaLabel = root.Q<Label>("SelectedCandidateMetaLabel");
@@ -123,6 +132,7 @@ public sealed class RecruitView
         var card = new VisualElement();
         card.AddToClassList("rcp-card");
         card.AddToClassList("sm-hover-raise");   // 콘솔급 motion — hover raise
+        AddClassVariant(card, "rcp-card--class", c.ClassKey);
         if (c.IsSelected) card.AddToClassList("rcp-card--selected");
         if (c.SlotType == RecruitSlotType.Protected) card.AddToClassList("rcp-card--protected");
         if (c.SlotType == RecruitSlotType.OnPlan) card.AddToClassList("rcp-card--on-plan");
@@ -147,7 +157,32 @@ public sealed class RecruitView
         // 2) portrait
         var portrait = new VisualElement();
         portrait.AddToClassList("rcp-card__portrait");
-        if (c.PortraitSprite != null) portrait.style.backgroundImage = new StyleBackground(c.PortraitSprite);
+        AddClassVariant(portrait, "rcp-class", c.ClassKey);
+        if (c.PortraitSprite != null)
+        {
+            portrait.style.backgroundImage = new StyleBackground(c.PortraitSprite);
+        }
+        else
+        {
+            var fallback = new Label(BuildFallbackInitials(c.DisplayName));
+            fallback.AddToClassList("rcp-card__portrait-fallback");
+            portrait.Add(fallback);
+        }
+
+        var portraitShade = new VisualElement();
+        portraitShade.AddToClassList("rcp-card__portrait-shade");
+        portrait.Add(portraitShade);
+
+        var rankPips = new VisualElement();
+        rankPips.AddToClassList("rcp-card__rank-pips");
+        for (var i = 0; i < 3; i++)
+        {
+            var pip = new VisualElement();
+            pip.AddToClassList("rcp-card__rank-pip");
+            if (i < (int)c.Tier) pip.AddToClassList("rcp-card__rank-pip--filled");
+            rankPips.Add(pip);
+        }
+        portrait.Add(rankPips);
         card.Add(portrait);
 
         // 3) display name (◐ archetype NameKey resolved)
@@ -160,9 +195,10 @@ public sealed class RecruitView
         metaRow.AddToClassList("rcp-card__meta-row");
         var classGlyph = new VisualElement();
         classGlyph.AddToClassList("rcp-card__class-glyph");
+        AddClassVariant(classGlyph, "rcp-class", c.ClassKey);
         if (c.ClassSprite != null) classGlyph.style.backgroundImage = new StyleBackground(c.ClassSprite);
         metaRow.Add(classGlyph);
-        var metaText = new Label(c.ClassKey);
+        var metaText = new Label(c.ClassLabel);
         metaText.AddToClassList("rcp-card__meta-text");
         metaRow.Add(metaText);
         card.Add(metaRow);
@@ -214,6 +250,14 @@ public sealed class RecruitView
         }
         card.Add(tagRow);
 
+        var skillIcons = new VisualElement();
+        skillIcons.AddToClassList("rcp-card__skill-icons");
+        skillIcons.Add(BuildSkillPip("SA", c.SigActive, "sig"));
+        skillIcons.Add(BuildSkillPip("SP", c.SigPassive, "sig"));
+        skillIcons.Add(BuildSkillPip("FA", c.FlexActive, "flex"));
+        skillIcons.Add(BuildSkillPip("FP", c.FlexPassive, "flex"));
+        card.Add(skillIcons);
+
         // 7) skill summary block — SIG(archetype 고정) gold / FLX(offer rolled) blue
         var skills = new VisualElement();
         skills.AddToClassList("rcp-card__skills");
@@ -255,6 +299,10 @@ public sealed class RecruitView
             if (_detailSkillLabel != null) _detailSkillLabel.text = string.Empty;
             _detailStateChips?.Clear();
             _detailTags?.Clear();
+            _detailPortrait?.Clear();
+            _detailClassGlyph?.Clear();
+            _detailMetricBars?.Clear();
+            _detailSkillPips?.Clear();
             return;
         }
 
@@ -270,6 +318,10 @@ public sealed class RecruitView
 
         RenderChipRow(_detailStateChips, detail.StateChips, "rcp-detail__state-chip");
         RenderChipRow(_detailTags, detail.Tags, "rcp-detail__tag");
+        RenderPortrait(_detailPortrait, detail.PortraitSprite, detail.DisplayName, detail.ClassKey);
+        RenderClassGlyph(_detailClassGlyph, detail.ClassSprite, detail.ClassKey);
+        RenderMetrics(_detailMetricBars, detail.Metrics);
+        RenderSkillPips(_detailSkillPips, detail.SkillPips);
     }
 
     private void RenderRosterPressure(RecruitRosterPressureViewState pressure)
@@ -318,6 +370,112 @@ public sealed class RecruitView
         return line;
     }
 
+    private static VisualElement BuildSkillPip(string slotKey, string skillText, string variant)
+    {
+        var pip = new VisualElement();
+        pip.AddToClassList("rcp-skill-pip");
+        pip.AddToClassList($"rcp-skill-pip--{variant}");
+        pip.tooltip = $"{slotKey} · {skillText}";
+
+        var slot = new Label(slotKey);
+        slot.AddToClassList("rcp-skill-pip__slot");
+        pip.Add(slot);
+
+        return pip;
+    }
+
+    private static void RenderPortrait(VisualElement? portrait, Texture2D? sprite, string displayName, string classKey)
+    {
+        if (portrait == null)
+        {
+            return;
+        }
+
+        portrait.Clear();
+        portrait.style.backgroundImage = StyleKeyword.Null;
+        AddClassVariant(portrait, "rcp-class", classKey);
+        if (sprite != null)
+        {
+            portrait.style.backgroundImage = new StyleBackground(sprite);
+        }
+        else
+        {
+            var fallback = new Label(BuildFallbackInitials(displayName));
+            fallback.AddToClassList("rcp-detail__portrait-fallback");
+            portrait.Add(fallback);
+        }
+
+        var shade = new VisualElement();
+        shade.AddToClassList("rcp-detail__portrait-shade");
+        portrait.Add(shade);
+    }
+
+    private static void RenderClassGlyph(VisualElement? glyph, Texture2D? sprite, string classKey)
+    {
+        if (glyph == null)
+        {
+            return;
+        }
+
+        glyph.Clear();
+        glyph.style.backgroundImage = StyleKeyword.Null;
+        AddClassVariant(glyph, "rcp-class", classKey);
+        if (sprite != null)
+        {
+            glyph.style.backgroundImage = new StyleBackground(sprite);
+        }
+    }
+
+    private static void RenderMetrics(VisualElement? row, IReadOnlyList<RecruitDecisionMetricViewState> metrics)
+    {
+        if (row == null)
+        {
+            return;
+        }
+
+        row.Clear();
+        foreach (var metric in metrics)
+        {
+            var item = new VisualElement();
+            item.AddToClassList("rcp-detail__metric");
+            item.AddToClassList($"rcp-detail__metric--{metric.Tone}");
+
+            var head = new VisualElement();
+            head.AddToClassList("rcp-detail__metric-head");
+            var label = new Label(metric.Label);
+            label.AddToClassList("rcp-detail__metric-label");
+            head.Add(label);
+            var value = new Label($"{metric.Value}%");
+            value.AddToClassList("rcp-detail__metric-value");
+            head.Add(value);
+            item.Add(head);
+
+            var track = new VisualElement();
+            track.AddToClassList("rcp-detail__metric-track");
+            var fill = new VisualElement();
+            fill.AddToClassList("rcp-detail__metric-fill");
+            fill.style.width = Length.Percent(Mathf.Clamp(metric.Value, 0, 100));
+            track.Add(fill);
+            item.Add(track);
+
+            row.Add(item);
+        }
+    }
+
+    private static void RenderSkillPips(VisualElement? row, IReadOnlyList<RecruitSkillPipViewState> pips)
+    {
+        if (row == null)
+        {
+            return;
+        }
+
+        row.Clear();
+        foreach (var pip in pips)
+        {
+            row.Add(BuildSkillPip(pip.SlotLabel, pip.SkillLabel, pip.Variant));
+        }
+    }
+
     private void RenderActionBar(RecruitActionBarViewState bar)
     {
         if (_scoutLabel != null)
@@ -337,6 +495,32 @@ public sealed class RecruitView
 
     private void HandleScoutClicked() => _actions?.OnScoutClicked();
     private void HandleRefreshClicked() => _actions?.OnRefreshClicked();
+
+    private static void AddClassVariant(VisualElement element, string prefix, string classKey)
+    {
+        if (element == null || string.IsNullOrWhiteSpace(classKey))
+        {
+            return;
+        }
+
+        element.AddToClassList($"{prefix}-{classKey.Trim().ToLowerInvariant()}");
+    }
+
+    private static string BuildFallbackInitials(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "?";
+        }
+
+        var parts = value.Split(new[] { ' ', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+        {
+            return value[..1].ToUpperInvariant();
+        }
+
+        return string.Concat(parts.Take(2).Select(part => part[..1])).ToUpperInvariant();
+    }
 
     private static string SlotLabel(RecruitSlotType slot, bool scoutBias) => slot switch
     {

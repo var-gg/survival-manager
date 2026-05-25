@@ -53,10 +53,15 @@ public sealed class BattleHudShellVisualContractFastTests
         Assert.That(uss, Does.Not.Contain("sm-bs-minimap-panel"));
         Assert.That(uss, Does.Not.Contain("sm-bs-command-dock"));
         Assert.That(uss, Does.Not.Contain("sm-bs-resource-stack"));
+        Assert.That(uxml, Does.Not.Contain("ui_ux_bible"));
+        Assert.That(uxml, Does.Not.Contain("Screenshots/mockups"));
         Assert.That(uxml, Does.Contain("ProgressTrack"));
         Assert.That(uxml, Does.Contain("AllyRosterList"));
         Assert.That(uxml, Does.Contain("EnemyRosterList"));
         Assert.That(uxml, Does.Contain("PlaybackActionsGroup"));
+        Assert.That(uxml, Does.Contain("BattleIntelPanel"));
+        Assert.That(uxml, Does.Contain("BattleSideRail"));
+        Assert.That(uxml, Does.Contain("ObserverStatusGroup"));
     }
 
     [Test]
@@ -75,10 +80,19 @@ public sealed class BattleHudShellVisualContractFastTests
         Assert.That(presenter, Does.Contain("BattleReadabilityFormatter.ComputePressureScore"));
         Assert.That(view, Does.Contain("RenderCombatantTokens"));
         Assert.That(view, Does.Contain("RenderTacticalReadout"));
+        Assert.That(view, Does.Contain("RenderBattleIntelPanel"));
+        Assert.That(view, Does.Contain("RenderBattleSideRail"));
+        Assert.That(view, Does.Contain("RenderObserverStatusDock"));
         Assert.That(uxml, Does.Contain("TurnOrderStrip"));
         Assert.That(uxml, Does.Contain("TacticalReadoutPanel"));
+        Assert.That(uxml, Does.Contain("BattleIntelPanel"));
+        Assert.That(uxml, Does.Contain("BattleSideRail"));
+        Assert.That(uxml, Does.Contain("ObserverStatusGroup"));
         Assert.That(uss, Does.Contain("sm-bs-combatant-token"));
         Assert.That(uss, Does.Contain("sm-bs-readout-panel"));
+        Assert.That(uss, Does.Contain("sm-bs-intel-panel"));
+        Assert.That(uss, Does.Contain("sm-bs-side-rail"));
+        Assert.That(uss, Does.Contain("sm-bs-observer-group"));
         Assert.That(uxml, Does.Not.Contain("BattleMinimapPanel"));
         Assert.That(uxml, Does.Not.Contain("BattleCommandDock"));
     }

@@ -12,6 +12,8 @@ public sealed class RecruitPresenterFastTests
         var state = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/RecruitViewState.cs");
         Assert.That(state, Does.Contain("RecruitSelectedCandidateDetailViewState"));
         Assert.That(state, Does.Contain("RecruitRosterPressureViewState"));
+        Assert.That(state, Does.Contain("RecruitDecisionMetricViewState"));
+        Assert.That(state, Does.Contain("RecruitSkillPipViewState"));
         Assert.That(state, Does.Contain("bool IsSelected"));
         Assert.That(state, Does.Contain("IReadOnlyList<string> StateChips"));
 
@@ -30,6 +32,9 @@ public sealed class RecruitPresenterFastTests
         Assert.That(uxml, Does.Contain("CardRow"));
         Assert.That(uxml, Does.Contain("RecruitDecisionPanel"));
         Assert.That(uxml, Does.Contain("SelectedCandidateDetail"));
+        Assert.That(uxml, Does.Contain("SelectedCandidatePortrait"));
+        Assert.That(uxml, Does.Contain("SelectedCandidateMetricBars"));
+        Assert.That(uxml, Does.Contain("SelectedCandidateSkillPips"));
         Assert.That(uxml, Does.Contain("SelectedCandidateStateChips"));
         Assert.That(uxml, Does.Contain("RosterPressurePanel"));
         Assert.That(uxml, Does.Contain("RosterNeedChips"));
@@ -37,6 +42,8 @@ public sealed class RecruitPresenterFastTests
         var view = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/RecruitView.cs");
         Assert.That(view, Does.Contain("RenderSelectedDetail"));
         Assert.That(view, Does.Contain("RenderRosterPressure"));
+        Assert.That(view, Does.Contain("RenderMetrics"));
+        Assert.That(view, Does.Contain("BuildSkillPip"));
         Assert.That(view, Does.Contain("OnCandidateSelected"));
     }
 }

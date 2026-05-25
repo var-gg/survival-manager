@@ -21,6 +21,8 @@ public sealed record InventoryCategoryViewState(
 
 public sealed record InventoryItemViewState(
     string ItemInstanceId,      // 식별자
+    string Name,
+    string MetaLabel,
     string IconKey,             // item icon id / item base fallback
     string RarityKey,           // common / rare / epic
     string RawRarityKey,        // common / magic / rare / epic / legendary compatibility
@@ -85,8 +87,10 @@ public sealed record InventoryCompareLaneViewState(
     string TargetHeroMetaLabel,
     string SelectedItemLabel,
     string SelectedItemMetaLabel,
+    Texture2D? SelectedItemIconSprite,
     string EquippedItemLabel,
     string EquippedItemMetaLabel,
+    Texture2D? EquippedItemIconSprite,
     string EquippedOwnerLabel,
     IReadOnlyList<InventoryCompareRowViewState> Rows,
     InventoryEquipCtaViewState EquipCta

@@ -73,7 +73,7 @@ public sealed class GameLocalizationController : MonoBehaviour
         var localized = Localize(tableCollection, entryKey, arguments);
         if (!LooksLikeMissingLocalizedString(localized, entryKey))
         {
-            return localized;
+            return FormatLocalizedStringIfNeeded(localized, arguments);
         }
 
         if (IsInitialized)
@@ -169,6 +169,23 @@ public sealed class GameLocalizationController : MonoBehaviour
     private static string BuildMissingPlayerFacingString()
     {
         return "[missing-localization]";
+    }
+
+    private static string FormatLocalizedStringIfNeeded(string localized, object[] arguments)
+    {
+        if (arguments.Length == 0 || localized.IndexOf('{', StringComparison.Ordinal) < 0)
+        {
+            return localized;
+        }
+
+        try
+        {
+            return string.Format(localized, arguments);
+        }
+        catch (FormatException)
+        {
+            return localized;
+        }
     }
 
     private static bool LooksLikeMissingLocalizedString(string value, string entryKey)

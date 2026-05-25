@@ -188,15 +188,22 @@ public sealed class AtlasScreenPresenter
     private IReadOnlyList<AtlasSpineStageViewState> BuildSpineStages(AtlasSessionResolution sessionResolution)
     {
         return Enumerable.Range(1, 5)
-            .Select(stage => new AtlasSpineStageViewState(
-                stage,
-                AtlasReadabilityFormatter.FormatSpineStageLabel(stage),
-                stage <= _session.SiteSpineIndex || (stage == 5 && _session.BossResolved),
-                stage == sessionResolution.CurrentStageIndex,
-                stage == AtlasSpineProgressionService.BossStageIndex && _session.SiteSpineIndex < 3
-                || stage == AtlasSpineProgressionService.ExtractStageIndex && !_session.BossResolved,
-                SiteNodeIndex: stage - 1,
-                StageKind: AtlasReadabilityFormatter.FormatSpineStageKind(stage)))
+            .Select(stage =>
+            {
+                var candidate = _region.StageCandidates
+                    .OrderBy(item => item.CandidateBadge, StringComparer.Ordinal)
+                    .FirstOrDefault(item => item.SiteStageIndex == stage);
+                return new AtlasSpineStageViewState(
+                    stage,
+                    AtlasReadabilityFormatter.FormatSpineStageLabel(stage),
+                    stage <= _session.SiteSpineIndex || (stage == 5 && _session.BossResolved),
+                    stage == sessionResolution.CurrentStageIndex,
+                    stage == AtlasSpineProgressionService.BossStageIndex && _session.SiteSpineIndex < 3
+                    || stage == AtlasSpineProgressionService.ExtractStageIndex && !_session.BossResolved,
+                    SiteNodeIndex: stage - 1,
+                    StageKind: AtlasReadabilityFormatter.FormatSpineStageKind(stage),
+                    NodeId: candidate?.HexId ?? string.Empty);
+            })
             .ToArray();
     }
 

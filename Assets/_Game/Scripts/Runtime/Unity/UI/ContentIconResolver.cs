@@ -13,6 +13,26 @@ internal sealed class ContentIconResolver
     private const string AffixPath = "_Game/Art/Icons/Affix";
     private const string CharacterPath = "_Game/Art/Characters";
 
+    private static readonly IReadOnlyDictionary<string, string> CharacterArtAliases = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["bastion_penitent"] = "hero_bastion_penitent",
+        ["bulwark"] = "hero_fang_bulwark",
+        ["guardian"] = "hero_crypt_guardian",
+        ["hexer"] = "hero_grave_hexer",
+        ["hunter"] = "hero_longshot_hunter",
+        ["marksman"] = "hero_dread_marksman",
+        ["mirror_cantor"] = "hero_mirror_cantor",
+        ["pale_executor"] = "hero_pale_executor",
+        ["priest"] = "hero_dawn_priest",
+        ["raider"] = "hero_pack_raider",
+        ["reaver"] = "hero_grave_reaver",
+        ["rift_stalker"] = "hero_rift_stalker",
+        ["scout"] = "hero_trail_scout",
+        ["shaman"] = "hero_storm_shaman",
+        ["slayer"] = "hero_oath_slayer",
+        ["warden"] = "hero_iron_warden",
+    };
+
     private static readonly IReadOnlyDictionary<string, string> AffixIconIds = new Dictionary<string, string>(StringComparer.Ordinal)
     {
         ["affix_sharp"] = "affix_atk",
@@ -123,10 +143,43 @@ internal sealed class ContentIconResolver
             return null;
         }
 
-        return Load($"{CharacterPath}/{characterId}/portrait_face_default")
-               ?? Load($"{CharacterPath}/{characterId}/portrait_stance_idle")
-               ?? Load($"{CharacterPath}/{characterId}/portrait_full")
-               ?? Load($"{CharacterPath}/{characterId}/portrait_full_body");
+        var artKey = ResolveCharacterArtKey(characterId);
+        return Load($"{CharacterPath}/{artKey}/portrait_face_default")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_stance_idle")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_full")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_full_body");
+    }
+
+    public Texture2D? ResolveCharacterPortrait(string characterId)
+    {
+        if (string.IsNullOrWhiteSpace(characterId))
+        {
+            return null;
+        }
+
+        var artKey = ResolveCharacterArtKey(characterId);
+        return Load($"{CharacterPath}/{artKey}/portrait_bust_default_L")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_bust_default_R")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_full")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_full_body")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_stance_idle")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_face_default");
+    }
+
+    public Texture2D? ResolveCharacterStandee(string characterId)
+    {
+        if (string.IsNullOrWhiteSpace(characterId))
+        {
+            return null;
+        }
+
+        var artKey = ResolveCharacterArtKey(characterId);
+        return Load($"{CharacterPath}/{artKey}/portrait_full")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_full_body")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_stance_idle")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_bust_default_L")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_bust_default_R")
+               ?? Load($"{CharacterPath}/{artKey}/portrait_face_default");
     }
 
     private Texture2D? ResolveDirect(string key)
@@ -248,5 +301,13 @@ internal sealed class ContentIconResolver
         return value.StartsWith(prefix, StringComparison.Ordinal)
             ? value[prefix.Length..]
             : value;
+    }
+
+    private static string ResolveCharacterArtKey(string characterId)
+    {
+        var key = characterId.Trim();
+        return CharacterArtAliases.TryGetValue(key, out var artKey)
+            ? artKey
+            : key;
     }
 }

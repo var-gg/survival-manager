@@ -147,35 +147,49 @@ public static class BattleReadabilityFormatter
         };
     }
 
-    public static string BuildPlayerFacingState(BattleUnitReadModel unit, BattleSimulationStep? step = null)
+    public static string BuildPlayerFacingState(BattleUnitReadModel unit, BattleSimulationStep? step = null, string? localeCode = null)
     {
         if (!unit.IsAlive)
         {
-            return "Down";
+            return IsKorean(localeCode) ? "전투불능" : "Down";
         }
 
         var target = NormalizeTarget(unit.TargetName);
         return unit.ActionState switch
         {
-            CombatActionState.ExecuteAction => $"{BuildStateVerb(ResolveSemantic(unit, step), windup: true)} {Mathf.RoundToInt(unit.WindupProgress * 100f)}% -> {target}",
-            CombatActionState.Recover when unit.IsDefending => "Guarding",
-            CombatActionState.Recover => "Recovering",
-            CombatActionState.Reposition => "Repositioning",
-            CombatActionState.BreakContact => "Breaking Contact",
-            CombatActionState.AdvanceToAnchor => "Returning Home",
-            CombatActionState.Approach => $"Closing -> {target}",
-            CombatActionState.SecurePosition => $"Holding -> {target}",
-            CombatActionState.AcquireTarget => $"Acquiring -> {target}",
-            CombatActionState.Spawn => "Deploying",
-            _ when unit.IsDefending => "Holding",
+            CombatActionState.ExecuteAction => $"{BuildStateVerb(ResolveSemantic(unit, step), windup: true, localeCode)} {Mathf.RoundToInt(unit.WindupProgress * 100f)}% -> {target}",
+            CombatActionState.Recover when unit.IsDefending => IsKorean(localeCode) ? "방어 중" : "Guarding",
+            CombatActionState.Recover => IsKorean(localeCode) ? "재정비" : "Recovering",
+            CombatActionState.Reposition => IsKorean(localeCode) ? "위치 조정" : "Repositioning",
+            CombatActionState.BreakContact => IsKorean(localeCode) ? "거리 벌림" : "Breaking Contact",
+            CombatActionState.AdvanceToAnchor => IsKorean(localeCode) ? "복귀 중" : "Returning Home",
+            CombatActionState.Approach => $"{(IsKorean(localeCode) ? "접근" : "Closing")} -> {target}",
+            CombatActionState.SecurePosition => $"{(IsKorean(localeCode) ? "대기" : "Holding")} -> {target}",
+            CombatActionState.AcquireTarget => $"{(IsKorean(localeCode) ? "대상 탐색" : "Acquiring")} -> {target}",
+            CombatActionState.Spawn => IsKorean(localeCode) ? "배치 중" : "Deploying",
+            _ when unit.IsDefending => IsKorean(localeCode) ? "대기" : "Holding",
             _ => string.IsNullOrEmpty(unit.TargetName)
-                ? BuildSemanticLabel(ResolveSemantic(unit, step))
-                : $"{BuildSemanticLabel(ResolveSemantic(unit, step))} -> {target}",
+                ? BuildSemanticLabel(ResolveSemantic(unit, step), localeCode)
+                : $"{BuildSemanticLabel(ResolveSemantic(unit, step), localeCode)} -> {target}",
         };
     }
 
-    public static string BuildSemanticLabel(BattleActionSemantic semantic)
+    public static string BuildSemanticLabel(BattleActionSemantic semantic, string? localeCode = null)
     {
+        if (IsKorean(localeCode))
+        {
+            return semantic switch
+            {
+                BattleActionSemantic.BasicAttack => "기본 공격",
+                BattleActionSemantic.DamagingSkill => "스킬",
+                BattleActionSemantic.HealSupport => "회복",
+                BattleActionSemantic.DefendHold => "방어",
+                BattleActionSemantic.Reposition => "재배치",
+                BattleActionSemantic.Down => "전투불능",
+                _ => "준비",
+            };
+        }
+
         return semantic switch
         {
             BattleActionSemantic.BasicAttack => "Basic Attack",
@@ -188,8 +202,21 @@ public static class BattleReadabilityFormatter
         };
     }
 
-    public static string BuildShortEventVerb(BattleEvent eventData)
+    public static string BuildShortEventVerb(BattleEvent eventData, string? localeCode = null)
     {
+        if (IsKorean(localeCode))
+        {
+            return ResolveSemantic(eventData) switch
+            {
+                BattleActionSemantic.BasicAttack => "타격",
+                BattleActionSemantic.DamagingSkill => "스킬",
+                BattleActionSemantic.HealSupport => "회복",
+                BattleActionSemantic.DefendHold => "방어",
+                BattleActionSemantic.Down => "전투불능",
+                _ => "행동",
+            };
+        }
+
         return ResolveSemantic(eventData) switch
         {
             BattleActionSemantic.BasicAttack => "hit",
@@ -230,8 +257,21 @@ public static class BattleReadabilityFormatter
         return builder.ToString().Replace('_', ' ').Trim();
     }
 
-    private static string BuildStateVerb(BattleActionSemantic semantic, bool windup)
+    private static string BuildStateVerb(BattleActionSemantic semantic, bool windup, string? localeCode)
     {
+        if (IsKorean(localeCode))
+        {
+            return semantic switch
+            {
+                BattleActionSemantic.BasicAttack => windup ? "준비" : "기본 공격",
+                BattleActionSemantic.DamagingSkill => windup ? "시전" : "스킬",
+                BattleActionSemantic.HealSupport => windup ? "집중" : "회복",
+                BattleActionSemantic.DefendHold => "방어",
+                BattleActionSemantic.Reposition => "재배치",
+                _ => windup ? "준비" : "대기",
+            };
+        }
+
         return semantic switch
         {
             BattleActionSemantic.BasicAttack => windup ? "Windup" : "Basic Attack",
@@ -280,5 +320,10 @@ public static class BattleReadabilityFormatter
     private static string NormalizeTarget(string? targetName)
     {
         return string.IsNullOrWhiteSpace(targetName) ? "-" : targetName;
+    }
+
+    private static bool IsKorean(string? localeCode)
+    {
+        return string.Equals(localeCode, "ko", StringComparison.OrdinalIgnoreCase);
     }
 }
