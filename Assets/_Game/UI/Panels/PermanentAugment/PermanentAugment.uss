@@ -4,9 +4,9 @@
 /* Permanent Augment modal V1 production (시안 갤러리 #4) */
 .pap-root { flex-grow: 1; color: var(--sm-ink-1); }
 .pap-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_permanent_augment_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.32); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .pap-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }

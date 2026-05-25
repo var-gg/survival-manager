@@ -16,13 +16,13 @@
 .twp-backdrop {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_tactical_workshop_dusk.png");
     -unity-background-scale-mode: scale-and-crop;
 }
 .twp-backdrop-dim {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(12, 17, 38, 0.45);
+    background-color: rgba(12, 17, 38, 0.30);
 }
 
 /* --- Modal frame (centered, parchment) ---

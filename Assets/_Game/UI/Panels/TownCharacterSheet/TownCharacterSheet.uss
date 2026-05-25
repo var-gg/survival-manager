@@ -105,6 +105,23 @@
     color: var(--sm-vellum);
 }
 
+.tcs-role--vanguard,
+.tcs-role--beastkin {
+    border-color: rgba(120, 206, 166, 0.50);
+    background-color: rgba(32, 66, 54, 0.58);
+}
+
+.tcs-role--duelist,
+.tcs-role--ranger {
+    border-color: rgba(245, 204, 112, 0.54);
+    background-color: rgba(75, 57, 24, 0.58);
+}
+
+.tcs-role--mystic {
+    border-color: rgba(147, 169, 255, 0.54);
+    background-color: rgba(40, 48, 92, 0.58);
+}
+
 .tcs-close {
     width: 48px;
     height: 48px;
@@ -121,26 +138,123 @@
 }
 
 .tcs-portrait-column {
-    width: 350px;
+    width: 410px;
     margin-right: 20px;
-    padding-left: 16px;
+    padding-left: 96px;
     padding-right: 16px;
     padding-top: 16px;
     padding-bottom: 16px;
-    background-color: rgba(8, 13, 31, 0.84);
+    position: relative;
+    background-color: rgba(28, 22, 12, 0.78);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.28);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.24);
-    border-right-color: rgba(230, 183, 81, 0.24);
-    border-top-color: rgba(245, 214, 138, 0.18);
-    border-bottom-color: rgba(138, 100, 24, 0.36);
+    border-left-color: rgba(230, 183, 81, 0.36);
+    border-right-color: rgba(230, 183, 81, 0.36);
+    border-top-color: rgba(245, 214, 138, 0.30);
+    border-bottom-color: rgba(138, 100, 24, 0.52);
+}
+
+.tcs-hero-rail {
+    position: absolute;
+    left: 14px;
+    top: 16px;
+    bottom: 54px;
+    width: 70px;
+    flex-direction: column;
+}
+
+.tcs-hero-rail__entry {
+    height: 118px;
+    margin-bottom: 9px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgba(12, 18, 39, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.20);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
+.tcs-hero-rail__entry--selected {
+    background-color: rgba(55, 42, 20, 0.94);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
+.tcs-hero-rail__entry--family-vanguard,
+.tcs-hero-rail__entry--family-beastkin {
+    border-left-color: rgba(120, 206, 166, 0.46);
+}
+
+.tcs-hero-rail__entry--family-duelist,
+.tcs-hero-rail__entry--family-ranger {
+    border-left-color: rgba(245, 204, 112, 0.46);
+}
+
+.tcs-hero-rail__entry--family-mystic {
+    border-left-color: rgba(147, 169, 255, 0.48);
+}
+
+.tcs-hero-rail__portrait {
+    height: 72px;
+    background-color: rgba(23, 31, 61, 0.96);
+    -unity-background-scale-mode: scale-and-crop;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 214, 138, 0.24);
+    border-right-color: rgba(245, 214, 138, 0.24);
+    border-top-color: rgba(245, 214, 138, 0.20);
+    border-bottom-color: rgba(245, 214, 138, 0.32);
+    align-items: center;
+    justify-content: center;
+}
+
+.tcs-hero-rail__fallback {
+    color: var(--sm-gold-100);
+    font-size: 18px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.tcs-hero-rail__copy {
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.tcs-hero-rail__name {
+    color: rgb(239, 225, 184);
+    font-size: 9px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.tcs-hero-rail__meta {
+    color: rgba(160, 187, 227, 0.82);
+    font-size: 8px;
+    -unity-text-align: middle-center;
 }
 
 .tcs-portrait-token {
     flex-grow: 1;
-    min-height: 500px;
+    min-height: 560px;
     margin-bottom: 12px;
     align-items: center;
     justify-content: center;
@@ -155,6 +269,32 @@
     border-right-color: rgba(230, 183, 81, 0.38);
     border-top-color: rgba(245, 214, 138, 0.32);
     border-bottom-color: rgba(138, 100, 24, 0.54);
+}
+
+.tcs-portrait-image {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.tcs-portrait-vignette {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(2, 4, 11, 0.08);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 214, 138, 0.16);
+    border-right-color: rgba(245, 214, 138, 0.16);
+    border-top-color: rgba(245, 214, 138, 0.12);
+    border-bottom-color: rgba(245, 214, 138, 0.28);
 }
 
 .tcs-portrait-glyph {
@@ -268,15 +408,21 @@
     padding-right: 18px;
     padding-top: 16px;
     padding-bottom: 16px;
-    background-color: rgba(8, 13, 31, 0.90);
+    background-color: rgba(28, 22, 12, 0.84);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.28);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
-    border-top-color: rgba(230, 183, 81, 0.12);
-    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.48);
 }
 
 .tcs-panel--overview {
@@ -293,11 +439,11 @@
 }
 
 .tcs-panel--skill-list {
-    flex-grow: 1;
+    flex-grow: 1.55;
 }
 
 .tcs-panel--skill-detail {
-    flex-grow: 1.12;
+    flex-grow: 0.72;
 }
 
 .tcs-panel__title {
@@ -306,6 +452,326 @@
     -unity-font-style: bold;
     letter-spacing: 1px;
     margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.20);
+}
+
+.tcs-stat-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.tcs-stat {
+    width: 118px;
+    height: 58px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    background-color: rgba(11, 18, 40, 0.88);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.14);
+    border-right-color: rgba(230, 183, 81, 0.14);
+    border-top-color: rgba(230, 183, 81, 0.12);
+    border-bottom-color: rgba(230, 183, 81, 0.26);
+}
+
+.tcs-stat__label {
+    color: rgba(160, 187, 227, 0.86);
+    font-size: 10px;
+    -unity-font-style: bold;
+}
+
+.tcs-stat__value {
+    color: rgb(245, 214, 138);
+    font-size: 20px;
+    -unity-font-style: bold;
+    margin-top: 2px;
+}
+
+.tcs-stat__delta {
+    color: rgb(126, 196, 96);
+    font-size: 10px;
+}
+
+.tcs-stat--tone-vital {
+    border-left-color: rgba(220, 96, 94, 0.62);
+}
+
+.tcs-stat--tone-vital .tcs-stat__value {
+    color: rgb(245, 162, 132);
+}
+
+.tcs-stat--tone-guard {
+    border-left-color: rgba(120, 206, 166, 0.58);
+}
+
+.tcs-stat--tone-guard .tcs-stat__value {
+    color: rgb(164, 226, 185);
+}
+
+.tcs-stat--tone-attack {
+    border-left-color: rgba(245, 204, 112, 0.64);
+}
+
+.tcs-stat--tone-attack .tcs-stat__value {
+    color: rgb(255, 220, 130);
+}
+
+.tcs-stat--tone-magic {
+    border-left-color: rgba(147, 169, 255, 0.62);
+}
+
+.tcs-stat--tone-magic .tcs-stat__value {
+    color: rgb(180, 195, 255);
+}
+
+.tcs-stat--tone-tempo {
+    border-left-color: rgba(96, 200, 226, 0.56);
+}
+
+.tcs-stat--tone-tempo .tcs-stat__value {
+    color: rgb(151, 221, 239);
+}
+
+.tcs-progression-track {
+    height: 68px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    background-color: rgba(6, 10, 24, 0.52);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.tcs-progression-node {
+    width: 46px;
+    height: 46px;
+    margin-left: 8px;
+    margin-right: 8px;
+    rotate: 45deg;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(19, 28, 55, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: rgba(230, 183, 81, 0.34);
+}
+
+.tcs-progression-node--state-active {
+    background-color: rgba(84, 61, 24, 0.98);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
+.tcs-progression-node--state-unlocked {
+    background-color: rgba(20, 55, 72, 0.92);
+    border-left-color: rgba(120, 192, 238, 0.72);
+    border-right-color: rgba(120, 192, 238, 0.72);
+    border-top-color: rgba(120, 192, 238, 0.72);
+    border-bottom-color: rgba(120, 192, 238, 0.72);
+}
+
+.tcs-progression-node--state-locked {
+    opacity: 0.46;
+}
+
+.tcs-progression-node__label {
+    color: rgb(245, 214, 138);
+    font-size: 13px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    rotate: -45deg;
+}
+
+.tcs-equipment-row {
+    height: 148px;
+    flex-direction: row;
+    margin-bottom: 8px;
+}
+
+.tcs-equipment {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 8px;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: rgba(11, 18, 40, 0.88);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+    border-right-color: rgba(230, 183, 81, 0.18);
+    border-top-color: rgba(230, 183, 81, 0.14);
+    border-bottom-color: rgba(230, 183, 81, 0.30);
+}
+
+.tcs-equipment__icon {
+    width: 58px;
+    height: 58px;
+    align-self: center;
+    margin-bottom: 4px;
+    background-color: rgba(21, 31, 61, 0.92);
+    -unity-background-scale-mode: scale-to-fit;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 214, 138, 0.20);
+    border-right-color: rgba(245, 214, 138, 0.20);
+    border-top-color: rgba(245, 214, 138, 0.18);
+    border-bottom-color: rgba(245, 214, 138, 0.28);
+}
+
+.tcs-equipment__slot {
+    color: rgba(160, 187, 227, 0.92);
+    font-size: 9px;
+    -unity-text-align: middle-center;
+}
+
+.tcs-equipment__name {
+    color: rgb(239, 225, 184);
+    font-size: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.tcs-equipment__meta {
+    color: rgba(211, 202, 173, 0.70);
+    font-size: 8px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.tcs-equipment--empty {
+    opacity: 0.62;
+}
+
+.tcs-equipment--slot-weapon {
+    border-top-color: rgba(245, 204, 112, 0.38);
+}
+
+.tcs-equipment--slot-weapon .tcs-equipment__icon {
+    background-color: rgba(67, 44, 20, 0.90);
+}
+
+.tcs-equipment--slot-armor {
+    border-top-color: rgba(120, 206, 166, 0.34);
+}
+
+.tcs-equipment--slot-armor .tcs-equipment__icon {
+    background-color: rgba(27, 54, 50, 0.90);
+}
+
+.tcs-equipment--slot-accessory {
+    border-top-color: rgba(147, 169, 255, 0.34);
+}
+
+.tcs-equipment--slot-accessory .tcs-equipment__icon {
+    background-color: rgba(36, 43, 84, 0.90);
+}
+
+.tcs-skill-list {
+    flex-grow: 1;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.tcs-skill-card {
+    height: 74px;
+    flex-direction: row;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    background-color: rgba(10, 16, 36, 0.90);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+    border-right-color: rgba(230, 183, 81, 0.18);
+    border-top-color: rgba(230, 183, 81, 0.14);
+    border-bottom-color: rgba(230, 183, 81, 0.32);
+}
+
+.tcs-skill-card--signature {
+    background-color: rgba(51, 35, 13, 0.84);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: rgba(245, 214, 138, 0.34);
+    border-top-color: rgba(245, 214, 138, 0.40);
+    border-bottom-color: rgba(245, 214, 138, 0.52);
+}
+
+.tcs-skill-card__icon {
+    width: 54px;
+    height: 54px;
+    margin-right: 12px;
+    background-color: rgba(17, 25, 55, 0.94);
+    -unity-background-scale-mode: scale-to-fit;
+    align-items: center;
+    justify-content: center;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 214, 138, 0.24);
+    border-right-color: rgba(245, 214, 138, 0.24);
+    border-top-color: rgba(245, 214, 138, 0.20);
+    border-bottom-color: rgba(245, 214, 138, 0.36);
+}
+
+.tcs-skill-card__fallback {
+    color: var(--sm-gold-100);
+    font-size: 17px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.tcs-skill-card__copy {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.tcs-skill-card__name {
+    color: var(--sm-gold-100);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.tcs-skill-card__meta {
+    color: rgba(160, 187, 227, 0.86);
+    font-size: 9px;
+    margin-top: 2px;
+}
+
+.tcs-skill-card__description {
+    color: rgb(226, 218, 195);
+    font-size: 9px;
+    line-height: 10px;
+    margin-top: 3px;
+    white-space: normal;
+    overflow: hidden;
 }
 
 .tcs-panel__body {
@@ -317,8 +783,11 @@
 }
 
 .tcs-panel--equipment .tcs-panel__body {
-    font-size: 10px;
-    line-height: 12px;
+    display: none;
+}
+
+.tcs-panel--skill-list .tcs-panel__body {
+    display: none;
 }
 
 .tcs-portrait-token--vanguard {
@@ -335,4 +804,158 @@
 
 .tcs-portrait-token--mystic {
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png");
+}
+
+/* UX Bible 80 pass — denser class-detail read with stronger portrait/stat/skill hierarchy. */
+.tcs-frame {
+    width: 1840px;
+    height: 956px;
+    padding-left: 34px;
+    padding-right: 34px;
+    padding-top: 30px;
+    padding-bottom: 24px;
+}
+
+.tcs-header {
+    height: 78px;
+    min-height: 78px;
+    margin-bottom: 10px;
+}
+
+.tcs-title {
+    font-size: 32px;
+}
+
+.tcs-body {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.tcs-portrait-column {
+    width: 540px;
+    min-width: 540px;
+    margin-right: 22px;
+    padding-left: 92px;
+    padding-right: 18px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    background-color: rgba(6, 11, 28, 0.68);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.22);
+    border-right-color: rgba(230, 183, 81, 0.22);
+    border-top-color: rgba(245, 214, 138, 0.18);
+    border-bottom-color: rgba(138, 100, 24, 0.36);
+}
+
+.tcs-hero-rail {
+    left: 16px;
+    top: 18px;
+    bottom: 18px;
+}
+
+.tcs-hero-rail__entry {
+    height: 92px;
+    margin-bottom: 9px;
+}
+
+.tcs-portrait-token {
+    min-height: 666px;
+    flex-grow: 1;
+    background-color: rgba(8, 13, 32, 0.92);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.38);
+    border-right-color: rgba(230, 183, 81, 0.38);
+    border-top-color: rgba(245, 214, 138, 0.42);
+    border-bottom-color: rgba(138, 100, 24, 0.62);
+}
+
+.tcs-portrait-image {
+    left: -10px;
+    right: -10px;
+    top: -6px;
+    bottom: -12px;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.tcs-column--primary {
+    width: 560px;
+    min-width: 560px;
+    margin-right: 20px;
+}
+
+.tcs-column--skills {
+    flex-grow: 1;
+}
+
+.tcs-panel {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    margin-bottom: 12px;
+    background-color: rgba(9, 14, 34, 0.92);
+    border-left-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+}
+
+.tcs-panel__title {
+    font-size: 16px;
+    color: var(--sm-gold-100);
+}
+
+.tcs-stat-grid {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.tcs-stat {
+    width: 118px;
+    height: 54px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    background-color: rgba(12, 19, 43, 0.94);
+    border-bottom-color: rgba(245, 214, 138, 0.34);
+}
+
+.tcs-stat__value {
+    font-size: 18px;
+}
+
+.tcs-progression-track {
+    height: 104px;
+}
+
+.tcs-equipment-row {
+    height: 164px;
+}
+
+.tcs-equipment__icon {
+    width: 66px;
+    height: 66px;
+}
+
+.tcs-skill-card {
+    height: 98px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.tcs-skill-card__icon {
+    width: 64px;
+    height: 64px;
+}
+
+.tcs-skill-card__name {
+    font-size: 15px;
+}
+
+.tcs-skill-card__description {
+    font-size: 10px;
+    line-height: 12px;
 }

@@ -21,7 +21,7 @@
 }
 
 .town-hub__backdrop-dim {
-    background-color: rgba(8, 12, 28, 0.58);
+    background-color: rgba(8, 12, 28, 0.32);
 }
 
 .town-hub__board-frame {
@@ -42,44 +42,50 @@
     border-bottom-color: rgba(138, 100, 24, 0.82);
 }
 
-/* Top command bar */
+/* Top command bar — mockup-aligned ribbon, dev locale chrome hidden */
 .town-hub__header {
-    height: 92px;
+    height: 56px;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-top: 24px;
+    margin-top: 18px;
     margin-left: 44px;
     margin-right: 44px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    padding-left: 28px;
-    padding-right: 28px;
-    background-color: rgba(8, 13, 32, 0.86);
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.54);
-    border-right-color: rgba(230, 183, 81, 0.54);
-    border-top-color: rgba(245, 214, 138, 0.42);
-    border-bottom-color: rgba(138, 100, 24, 0.72);
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 22px;
+    padding-right: 16px;
+    background-color: rgba(8, 13, 32, 0.62);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(245, 214, 138, 0.30);
+    border-bottom-color: rgba(138, 100, 24, 0.50);
 }
 
 .town-hub__header-title {
-    flex-direction: column;
-    min-width: 360px;
+    flex-direction: row;
+    align-items: center;
+    min-width: 280px;
 }
 
 .town-hub__eyebrow {
-    margin-bottom: 6px;
-    letter-spacing: 4px;
+    margin-right: 12px;
+    margin-bottom: 0;
+    font-size: 10px;
+    letter-spacing: 2px;
     color: var(--sm-gold-200);
+    -unity-font-style: bold;
 }
 
 .town-hub__title {
-    font-size: 30px;
+    font-size: 16px;
     color: var(--sm-vellum);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
 }
 
 .town-hub__header-tools {
@@ -87,23 +93,29 @@
     align-items: center;
 }
 
-.town-hub__locale-status {
-    font-size: 11px;
-    color: var(--sm-ink-3);
-    margin-right: 10px;
+.town-hub__locale-status,
+#LocaleKoButton,
+#LocaleEnButton,
+#HelpButton,
+#HelpStrip {
+    display: none;
 }
 
 .town-hub__utility-divider {
     width: 1px;
-    height: 30px;
-    background-color: rgba(230, 183, 81, 0.44);
-    margin-left: 10px;
-    margin-right: 8px;
+    height: 22px;
+    background-color: rgba(230, 183, 81, 0.34);
+    margin-left: 8px;
+    margin-right: 6px;
 }
 
 .town-hub__header-tools > .ui-button {
-    margin-left: 8px;
-    min-width: 56px;
+    margin-left: 6px;
+    min-width: 0;
+    height: 30px;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-size: 11px;
 }
 
 /* Help strip: opt-in overlay below command bar. */
@@ -155,7 +167,7 @@
 .town-hub__column-eyebrow {
     color: var(--sm-gold-300);
     font-size: 11px;
-    letter-spacing: 4px;
+    letter-spacing: 0;
     -unity-font-style: bold;
     margin-bottom: 14px;
     -unity-text-align: middle-left;
@@ -231,7 +243,8 @@
     -unity-slice-top: 64;
     -unity-slice-bottom: 64;
     -unity-slice-scale: 0.32;
-    background-color: rgba(8, 13, 31, 0.44);
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.34);
+    background-color: rgba(36, 26, 14, 0.62);
     overflow: hidden;
 }
 
@@ -476,7 +489,7 @@
 .town-hub__cluster-eyebrow {
     color: var(--sm-gold-300);
     font-size: 11px;
-    letter-spacing: 4px;
+    letter-spacing: 0;
     -unity-font-style: bold;
     margin-bottom: 10px;
 }
@@ -578,4 +591,213 @@
 .town-hub__modal-overlay > * {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
+}
+
+/* UX Bible 80 pass — make the hub read as a dense service decision board, not an empty scenic tile. */
+.town-hub__feature-art {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+    border-right-color: rgba(230, 183, 81, 0.42);
+    border-top-color: rgba(245, 214, 138, 0.36);
+    border-bottom-color: rgba(138, 100, 24, 0.58);
+    background-color: rgba(7, 11, 28, 0.86);
+}
+
+.town-hub__feature-service-grid {
+    position: absolute;
+    left: 32px;
+    right: 32px;
+    top: 154px;
+    height: 178px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.town-hub__feature-service {
+    width: 46%;
+    height: 72px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-bottom: 12px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: rgba(28, 22, 12, 0.78);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
+    -unity-slice-left: 64;
+    -unity-slice-right: 64;
+    -unity-slice-top: 64;
+    -unity-slice-bottom: 64;
+    -unity-slice-scale: 0.28;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.32);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.32);
+    border-right-color: rgba(230, 183, 81, 0.32);
+    border-top-color: rgba(245, 214, 138, 0.36);
+    border-bottom-color: rgba(138, 100, 24, 0.50);
+}
+
+.town-hub__feature-service-icon {
+    width: 44px;
+    height: 44px;
+    margin-right: 12px;
+    color: var(--sm-gold-100);
+    font-size: 22px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
+    -unity-slice-left: 56;
+    -unity-slice-right: 56;
+    -unity-slice-top: 56;
+    -unity-slice-bottom: 56;
+    -unity-slice-scale: 0.34;
+    background-color: rgba(13, 20, 45, 0.84);
+}
+
+.town-hub__feature-service-lines {
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.town-hub__feature-service-line {
+    height: 6px;
+    width: 54%;
+    margin-top: 5px;
+    background-color: rgba(230, 183, 81, 0.28);
+}
+
+.town-hub__feature-service-line--wide {
+    width: 84%;
+    background-color: rgba(245, 214, 138, 0.52);
+}
+
+.town-hub__welcome-mount {
+    position: absolute;
+    right: 48px;
+    bottom: 118px;
+    margin-top: 0;
+    margin-bottom: 0;
+    opacity: 0.92;
+}
+
+.town-hub__center .sm-face-card--lg {
+    width: 112px;
+    height: 128px;
+}
+
+.town-hub__center .sm-face-card__portrait {
+    min-height: 74px;
+}
+
+.town-hub__welcome-greeting {
+    bottom: 74px;
+    left: 48px;
+    right: 48px;
+    height: 30px;
+    font-size: 12px;
+    background-color: rgba(7, 12, 29, 0.70);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+    border-right-color: rgba(230, 183, 81, 0.18);
+    border-top-color: rgba(245, 214, 138, 0.18);
+    border-bottom-color: rgba(138, 100, 24, 0.32);
+}
+
+.town-hub__feature-service--blue .town-hub__feature-service-icon,
+.town-hub__feature-service--blue .town-hub__feature-service-line--wide {
+    color: rgb(129, 184, 245);
+    background-color: rgba(129, 184, 245, 0.42);
+}
+
+.town-hub__feature-service--green .town-hub__feature-service-icon,
+.town-hub__feature-service--green .town-hub__feature-service-line--wide {
+    color: rgb(135, 190, 92);
+    background-color: rgba(135, 190, 92, 0.42);
+}
+
+.town-hub__feature-service--red .town-hub__feature-service-icon,
+.town-hub__feature-service--red .town-hub__feature-service-line--wide {
+    color: rgb(235, 116, 91);
+    background-color: rgba(235, 116, 91, 0.40);
+}
+
+/* UX Bible visual QA pass 2: label the service board so the center reads as production IA, not decorative bars. */
+.town-hub__feature-service-grid {
+    top: 142px;
+    height: 206px;
+}
+
+.town-hub__feature-service {
+    height: 88px;
+    background-color: rgba(8, 13, 32, 0.88);
+}
+
+.town-hub__feature-service-icon {
+    width: 50px;
+    height: 50px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.town-hub__feature-service--gold .town-hub__feature-service-icon {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Affix/affix_atk.png");
+    -unity-background-image-tint-color: rgba(245, 214, 138, 0.96);
+}
+
+.town-hub__feature-service--blue .town-hub__feature-service-icon {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png");
+    -unity-background-image-tint-color: rgba(129, 184, 245, 0.96);
+}
+
+.town-hub__feature-service--green .town-hub__feature-service-icon {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Affix/affix_heal.png");
+    -unity-background-image-tint-color: rgba(135, 190, 92, 0.96);
+}
+
+.town-hub__feature-service--red .town-hub__feature-service-icon {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Augment/augment_star.png");
+    -unity-background-image-tint-color: rgba(235, 116, 91, 0.96);
+}
+
+.town-hub__feature-service-name {
+    color: var(--sm-gold-100);
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-bottom: 3px;
+}
+
+.town-hub__feature-service-value {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    margin-bottom: 4px;
+}
+
+.town-hub__feature-service-line {
+    margin-top: 3px;
+}
+
+.town-hub__feature-stats {
+    bottom: 18px;
+}
+
+.town-hub__service-panel {
+    background-color: rgba(8, 13, 32, 0.88);
+    border-left-color: rgba(245, 214, 138, 0.36);
+    border-top-color: rgba(245, 214, 138, 0.32);
+}
+
+.town-hub__service-line {
+    padding-left: 6px;
+    border-left-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.20);
 }

@@ -9,16 +9,21 @@
 }
 
 .sm-sqb-modal__section {
-    background-image: none;
-    background-color: rgba(24, 31, 63, 0.86);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.28);
+    background-color: rgba(28, 22, 12, 0.82);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
-    border-top-color: rgba(230, 183, 81, 0.16);
-    border-bottom-color: rgba(230, 183, 81, 0.24);
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.48);
     padding-left: var(--sm-s-4);
     padding-right: var(--sm-s-4);
     padding-top: var(--sm-s-4);
@@ -54,7 +59,8 @@
     -unity-slice-top: 96;
     -unity-slice-bottom: 96;
     -unity-slice-scale: 0.36;
-    background-color: rgb(3, 7, 18);
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.32);
+    background-color: rgb(18, 14, 8);
 }
 
 .sm-sqb-modal__header {
@@ -528,4 +534,180 @@
     flex-direction: row;
     flex-wrap: wrap;
     margin-top: 9px;
+}
+
+/* UX Bible 80 pass — make Tactical Setup read as one dense tactical console. */
+.sm-sqb-modal__panel {
+    background-color: rgb(4, 8, 20);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(245, 214, 138, 0.28);
+    border-bottom-color: rgba(138, 100, 24, 0.50);
+}
+
+.sm-sqb-modal__section {
+    background-color: rgba(7, 12, 29, 0.94);
+    border-bottom-color: rgba(138, 100, 24, 0.42);
+}
+
+.sm-sqb-modal__section--formation {
+    background-color: rgba(5, 10, 25, 0.96);
+}
+
+.sm-sqb-modal__roster-row {
+    width: 128px;
+    height: 132px;
+    min-height: 132px;
+    background-color: rgba(9, 15, 36, 0.96);
+}
+
+.sm-sqb-modal__roster-row--deployed {
+    background-color: rgba(46, 34, 16, 0.92);
+    border-left-color: rgba(245, 214, 138, 0.62);
+    border-top-color: rgba(245, 214, 138, 0.54);
+}
+
+.sm-sqb-modal__roster-icon {
+    height: 54px;
+    background-color: rgba(17, 26, 57, 0.98);
+}
+
+.sm-sqb-modal__anchor-grid {
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 6px;
+}
+
+.sm-sqb-modal__anchor-column {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.sm-sqb-modal__anchor-button {
+    min-height: 168px;
+    height: 168px;
+    margin-bottom: 16px;
+    background-color: rgba(8, 13, 31, 0.98);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.26);
+    border-right-color: rgba(230, 183, 81, 0.26);
+    border-top-color: rgba(245, 214, 138, 0.24);
+    border-bottom-color: rgba(138, 100, 24, 0.46);
+}
+
+.sm-sqb-modal__anchor-button--selected {
+    background-color: rgba(58, 42, 18, 0.94);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.sm-sqb-modal__anchor-card--front {
+    background-color: rgba(12, 25, 52, 0.56);
+}
+
+.sm-sqb-modal__anchor-card--back {
+    background-color: rgba(35, 16, 22, 0.46);
+}
+
+.sm-sqb-modal__anchor-portrait {
+    width: 96px;
+    height: 84px;
+    margin-top: 10px;
+    background-color: rgba(15, 25, 55, 0.98);
+    border-top-color: rgba(245, 214, 138, 0.42);
+}
+
+.sm-sqb-modal__anchor-glyph {
+    font-size: 30px;
+}
+
+.sm-sqb-modal__detail-name {
+    color: var(--sm-gold-100);
+}
+
+.sm-sqb-modal__detail-meta,
+.sm-sqb-modal__detail-body,
+.sm-sqb-modal__response-summary {
+    color: var(--sm-ink-1);
+}
+
+.sm-sqb-modal__posture-button {
+    min-width: 142px;
+    height: 38px;
+    min-height: 38px;
+    border-bottom-color: rgba(138, 100, 24, 0.42);
+}
+
+.sm-sqb-modal__operation-row {
+    height: 28px;
+    min-height: 28px;
+    background-color: rgba(10, 17, 40, 0.48);
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+/* UX Bible visual QA pass 2: reinforce the formation board as a command map behind real anchor buttons. */
+.sm-sqb-modal__section--formation {
+    position: relative;
+}
+
+.sm-sqb-modal__formation-compass {
+    position: absolute;
+    left: 48px;
+    right: 48px;
+    top: 84px;
+    bottom: 34px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.16);
+    border-right-color: rgba(230, 183, 81, 0.16);
+    border-top-color: rgba(245, 214, 138, 0.14);
+    border-bottom-color: rgba(138, 100, 24, 0.26);
+    background-color: rgba(5, 10, 25, 0.28);
+}
+
+.sm-sqb-modal__formation-line {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    height: 2px;
+    background-color: rgba(230, 183, 81, 0.18);
+}
+
+.sm-sqb-modal__formation-line--top {
+    top: 28%;
+}
+
+.sm-sqb-modal__formation-line--middle {
+    top: 50%;
+    background-color: rgba(129, 184, 245, 0.16);
+}
+
+.sm-sqb-modal__formation-line--bottom {
+    top: 72%;
+    background-color: rgba(235, 116, 91, 0.14);
+}
+
+.sm-sqb-modal__anchor-grid {
+    position: relative;
+}
+
+.sm-sqb-modal__anchor-name {
+    font-size: 15px;
+}
+
+.sm-sqb-modal__anchor-role {
+    font-size: 10px;
+    color: var(--sm-ink-2);
 }

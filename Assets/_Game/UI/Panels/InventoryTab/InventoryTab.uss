@@ -4,9 +4,9 @@
 /* Inventory tab V1 production (시안 갤러리 #6) */
 .inv-root { flex-grow: 1; color: var(--sm-ink-1); }
 .inv-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_inventory_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.inv-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+.inv-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.32); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--parchment + sm-frame-corner-cap. */
 .inv-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
@@ -58,6 +58,11 @@
 .inv-grid { flex-direction: row; flex-wrap: wrap; padding: 6px; }
 .inv-grid__cell { width: 88px; height: 88px; margin: 4px;
     background-color: rgba(28,34,67,0.78);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
+    -unity-slice-left: 16;
+    -unity-slice-right: 16;
+    -unity-slice-top: 16;
+    -unity-slice-bottom: 16;
     border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
     border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
     border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55);
@@ -73,6 +78,22 @@
     left: 0; right: 0; top: 0; bottom: 0;
     -unity-background-scale-mode: scale-to-fit;
 }
+
+/* Mockup-likeness: placeholder가 모두 동일 빨간 검이라 다양성 부족 →
+   family class별 tint로 weapon 종류 시각 차이 부여. data wire-up 전 임시 미적 보강. */
+.inv-grid__cell.inv-grid__cell--blade .inv-grid__cell-icon {
+    -unity-background-image-tint-color: rgba(232, 88, 96, 0.95);
+}
+.inv-grid__cell.inv-grid__cell--shield .inv-grid__cell-icon {
+    -unity-background-image-tint-color: rgba(120, 168, 232, 0.95);
+}
+.inv-grid__cell.inv-grid__cell--bow .inv-grid__cell-icon {
+    -unity-background-image-tint-color: rgba(160, 220, 120, 0.95);
+}
+.inv-grid__cell.inv-grid__cell--focus .inv-grid__cell-icon {
+    -unity-background-image-tint-color: rgba(200, 140, 240, 0.95);
+}
+
 
 .inv-grid__cell-rarity {
     position: absolute;
@@ -161,7 +182,7 @@
 
 .inv-detail__affix-group {
     font-size: 9px;
-    letter-spacing: 2px;
+    letter-spacing: 0;
     -unity-font-style: bold;
     margin-top: 6px;
     margin-bottom: 2px;
@@ -336,15 +357,21 @@
 .inv-main,
 .inv-detail,
 .inv-compare {
-    background-color: var(--sm-bg-1);
+    background-color: rgba(28, 22, 12, 0.84);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.26);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300-a20);
-    border-right-color: var(--sm-gold-300-a20);
-    border-top-color: var(--sm-gold-300-a28);
-    border-bottom-color: var(--sm-line-1);
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.48);
     border-top-left-radius: var(--sm-r-lg);
     border-top-right-radius: var(--sm-r-lg);
     border-bottom-left-radius: var(--sm-r-lg);
@@ -437,4 +464,656 @@
 
 .inv-detail__links {
     margin-top: 5px;
+}
+
+/* UX Bible compare pass — 시안의 inventory/equipment compare IA를 production UXML에 직접 반영. */
+.inv-frame {
+    left: 28px;
+    right: 28px;
+    top: 32px;
+    bottom: 32px;
+}
+
+.inv-currency-header {
+    min-height: 78px;
+    padding-left: 28px;
+    padding-right: 24px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: rgba(12, 17, 38, 0.82);
+}
+
+.inv-title-block {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.inv-title-block__title {
+    color: var(--sm-gold-100);
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+.inv-title-block__subtitle {
+    margin-top: 4px;
+    color: var(--sm-ink-2);
+    font-size: 12px;
+}
+
+.inv-body {
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 12px;
+    padding-bottom: 14px;
+}
+
+.inv-sidebar {
+    width: 118px;
+    margin-right: 8px;
+}
+
+.inv-sidebar__row {
+    min-height: 74px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.inv-sidebar__row-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 7px;
+}
+
+.inv-main {
+    width: 540px;
+    flex-grow: 0;
+    margin-right: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.inv-main__filter-row {
+    justify-content: flex-start;
+    height: 30px;
+    padding-top: 0;
+    padding-bottom: 8px;
+}
+
+.inv-main__filter-glyph {
+    width: 42px;
+    height: 16px;
+    margin-left: 0;
+    margin-right: 5px;
+    background-color: var(--sm-gold-300-a22);
+}
+
+.inv-grid {
+    padding: 0;
+    flex-grow: 1;
+}
+
+.inv-grid__cell {
+    width: 100px;
+    height: 116px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.inv-grid__cell-icon {
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    bottom: 38px;
+}
+
+.inv-grid__cell-copy {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    min-height: 28px;
+}
+
+.inv-grid__cell-name {
+    color: var(--sm-ink-0);
+    font-size: 9px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.inv-grid__cell-meta {
+    margin-top: 1px;
+    color: var(--sm-ink-3);
+    font-size: 8px;
+    white-space: normal;
+}
+
+.inv-grid__cell-family {
+    top: 5px;
+    left: 5px;
+}
+
+.inv-grid__cell-equipped {
+    top: 6px;
+    right: 6px;
+}
+
+.inv-detail {
+    flex-grow: 0;
+    width: 470px;
+    min-width: 470px;
+    max-width: 470px;
+    margin-right: 10px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 16px;
+    padding-bottom: 14px;
+    background-color: rgba(12, 17, 38, 0.90);
+}
+
+.inv-detail__icon {
+    width: 178px;
+    height: 178px;
+    margin-bottom: 10px;
+}
+
+.inv-detail__name-bar {
+    min-height: 76px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 8px;
+    padding-bottom: 10px;
+}
+
+.inv-detail__name-glyph {
+    width: 4px;
+    height: 50px;
+    margin-right: 10px;
+    background-color: var(--sm-gold-200);
+}
+
+.inv-detail__name {
+    font-size: 18px;
+    color: var(--sm-gold-100);
+}
+
+.inv-detail__meta,
+.inv-detail__set {
+    font-size: 11px;
+}
+
+.inv-detail__links {
+    flex-wrap: wrap;
+}
+
+.inv-detail__affixes {
+    margin-top: 12px;
+    flex-grow: 1;
+}
+
+.inv-detail__affix-row {
+    min-height: 30px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.inv-detail__owner {
+    display: none;
+}
+
+.inv-detail__buttons {
+    flex-direction: row;
+    margin-top: 10px;
+}
+
+.inv-detail__btn {
+    flex-grow: 1;
+    height: 40px;
+    margin-right: 8px;
+    margin-bottom: 0;
+    font-size: 12px;
+}
+
+.inv-detail__btn--compare {
+    margin-right: 0;
+}
+
+.inv-detail__btn-glyph {
+    display: none;
+}
+
+.inv-compare {
+    width: 420px;
+    margin-left: 0;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background-color: rgba(12, 17, 38, 0.92);
+}
+
+.inv-compare__target {
+    min-height: 58px;
+    padding-bottom: 10px;
+}
+
+.inv-compare__target-name {
+    font-size: 16px;
+    color: var(--sm-gold-100);
+}
+
+.inv-compare__target-meta {
+    margin-top: 4px;
+}
+
+.inv-compare__cards {
+    flex-direction: row;
+    margin-top: 12px;
+}
+
+.inv-compare__card {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-grow: 1;
+    min-height: 118px;
+    max-width: 190px;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+.inv-compare__card--selected {
+    margin-right: 10px;
+    border-top-color: var(--sm-gold-200);
+}
+
+.inv-compare__card-icon {
+    width: 58px;
+    height: 58px;
+    margin-right: 10px;
+}
+
+.inv-compare__card-copy {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.inv-compare__card-title {
+    font-size: 12px;
+    color: var(--sm-ink-0);
+    white-space: normal;
+}
+
+.inv-compare__card-meta,
+.inv-compare__owner {
+    font-size: 10px;
+    white-space: normal;
+}
+
+.inv-compare__owner {
+    margin-top: 6px;
+    color: var(--sm-gold-200);
+    width: 100%;
+}
+
+.inv-compare__rows {
+    margin-top: 8px;
+    flex-grow: 1;
+}
+
+.inv-compare__row {
+    min-height: 34px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.inv-compare__row-key {
+    width: 64px;
+    font-size: 10px;
+    color: var(--sm-gold-300);
+}
+
+.inv-compare__row-selected,
+.inv-compare__row-equipped {
+    font-size: 10px;
+    white-space: normal;
+}
+
+.inv-compare__status {
+    min-height: 54px;
+    margin-top: 8px;
+    padding: 10px;
+    color: var(--sm-ink-1);
+    border-left-width: 2px;
+    border-left-color: var(--sm-gold-200);
+}
+
+/* Inventory compare fix pass 2 — no grid bleed, stronger selected-item read, profile rows. */
+.inv-main,
+.inv-grid,
+.inv-grid-scroll {
+    overflow: hidden;
+}
+
+.inv-grid-scroll {
+    flex-grow: 1;
+}
+
+.inv-grid__cell {
+    width: 96px;
+    height: 112px;
+}
+
+.inv-grid__cell-icon {
+    bottom: 34px;
+}
+
+.inv-detail__icon {
+    width: 210px;
+    height: 178px;
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-line-2);
+}
+
+.inv-detail__icon-image {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    bottom: 8px;
+}
+
+.inv-detail__affix-group--profile {
+    color: var(--sm-gold-100);
+}
+
+.inv-detail__affix-row--profile {
+    border-left-width: 2px;
+    border-left-color: var(--sm-gold-300);
+}
+
+/* UX Bible 80 pass — increase item-detail dominance and make compare deltas legible at a glance. */
+.inv-frame {
+    left: 22px;
+    right: 22px;
+    top: 26px;
+    bottom: 26px;
+}
+
+.inv-currency-header {
+    min-height: 86px;
+    padding-left: 28px;
+    padding-right: 28px;
+}
+
+.inv-body {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 24px;
+}
+
+.inv-sidebar {
+    width: 156px;
+    min-width: 156px;
+}
+
+.inv-main {
+    width: 560px;
+    min-width: 560px;
+    margin-right: 12px;
+    background-color: rgba(7, 12, 30, 0.80);
+}
+
+.inv-grid__cell {
+    width: 102px;
+    height: 122px;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: rgba(11, 17, 39, 0.92);
+    border-bottom-color: rgba(138, 100, 24, 0.46);
+}
+
+.inv-grid__cell--selected {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-300);
+    background-color: rgba(50, 36, 17, 0.86);
+}
+
+.inv-grid__cell-icon {
+    left: 9px;
+    right: 9px;
+    top: 9px;
+    bottom: 36px;
+}
+
+.inv-detail {
+    width: 510px;
+    min-width: 510px;
+    max-width: 510px;
+    margin-right: 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgba(8, 13, 32, 0.94);
+    border-left-width: 2px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(245, 214, 138, 0.44);
+    border-right-color: rgba(230, 183, 81, 0.24);
+    border-top-color: rgba(245, 214, 138, 0.26);
+    border-bottom-color: rgba(138, 100, 24, 0.58);
+}
+
+.inv-detail__icon {
+    width: 236px;
+    height: 206px;
+    margin-bottom: 14px;
+    align-self: center;
+    background-color: rgba(18, 26, 57, 0.96);
+}
+
+.inv-detail__name-bar {
+    min-height: 88px;
+    margin-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.inv-detail__name {
+    font-size: 21px;
+}
+
+.inv-detail__affixes {
+    margin-top: 10px;
+}
+
+.inv-detail__affix-row {
+    min-height: 34px;
+    margin-bottom: 6px;
+    background-color: rgba(14, 21, 45, 0.82);
+}
+
+.inv-compare {
+    width: 468px;
+    min-width: 468px;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: rgba(7, 12, 30, 0.94);
+    border-left-width: 2px;
+    border-left-color: rgba(129, 184, 245, 0.38);
+}
+
+.inv-compare__cards {
+    margin-top: 14px;
+    margin-bottom: 8px;
+}
+
+.inv-compare__card {
+    min-height: 140px;
+    max-width: none;
+    background-color: rgba(12, 18, 42, 0.92);
+    border-bottom-color: rgba(138, 100, 24, 0.42);
+}
+
+.inv-compare__card-icon {
+    width: 68px;
+    height: 68px;
+}
+
+.inv-compare__row {
+    min-height: 38px;
+    margin-bottom: 5px;
+    background-color: rgba(13, 20, 45, 0.86);
+    border-left-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+}
+
+.inv-compare__row--different {
+    border-left-color: rgba(129, 184, 245, 0.72);
+    background-color: rgba(18, 30, 58, 0.92);
+}
+
+.inv-compare__row--new {
+    border-left-color: rgba(135, 190, 92, 0.76);
+    background-color: rgba(16, 36, 34, 0.88);
+}
+
+.inv-compare__row-key {
+    width: 72px;
+    font-size: 11px;
+}
+
+.inv-compare__row-selected,
+.inv-compare__row-equipped {
+    font-size: 11px;
+}
+
+.inv-compare__status {
+    min-height: 64px;
+    font-size: 11px;
+    line-height: 14px;
+    background-color: rgba(49, 34, 16, 0.76);
+}
+
+/* UX Bible visual QA pass 2: add compact comparison language without introducing new item truth. */
+.inv-detail__rune-track {
+    height: 22px;
+    min-height: 22px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.inv-detail__rune {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    rotate: 45deg;
+    background-color: rgba(245, 214, 138, 0.10);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.30);
+    border-right-color: rgba(230, 183, 81, 0.30);
+    border-top-color: rgba(245, 214, 138, 0.26);
+    border-bottom-color: rgba(138, 100, 24, 0.42);
+}
+
+.inv-detail__rune--on {
+    background-color: var(--sm-gold-300);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
+.inv-compare__target {
+    min-height: 74px;
+    background-color: rgba(12, 19, 43, 0.70);
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+}
+
+.inv-compare__delta-legend {
+    min-height: 28px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
+
+.inv-compare__delta-chip {
+    width: 18px;
+    height: 5px;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.inv-compare__delta-chip--gain {
+    background-color: rgba(135, 190, 92, 0.88);
+}
+
+.inv-compare__delta-chip--change {
+    background-color: rgba(129, 184, 245, 0.84);
+}
+
+.inv-compare__delta-chip--same {
+    background-color: rgba(230, 183, 81, 0.58);
+}
+
+.inv-compare__delta-label {
+    color: var(--sm-ink-2);
+    font-size: 10px;
+}
+
+/* UX Bible visual QA pass 3: denser real compare rows from existing item definition fields. */
+.inv-compare__rows {
+    flex-grow: 0;
+    margin-top: 10px;
+}
+
+.inv-compare__row {
+    min-height: 30px;
+    margin-bottom: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.inv-compare__row-key {
+    width: 68px;
+    font-size: 10px;
+}
+
+.inv-compare__row-selected,
+.inv-compare__row-equipped {
+    font-size: 10px;
+    line-height: 12px;
+}
+
+.inv-compare__delta-legend {
+    margin-top: 6px;
 }

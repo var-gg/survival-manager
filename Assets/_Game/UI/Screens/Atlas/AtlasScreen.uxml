@@ -7,6 +7,12 @@
 
         <ui:VisualElement name="atlas-content" class="atlas-content">
             <ui:VisualElement class="atlas-left-rail">
+                <ui:VisualElement class="atlas-rail-tabs" picking-mode="Ignore">
+                    <ui:Label text="✦" class="atlas-rail-tab atlas-rail-tab--active" />
+                    <ui:Label text="⚔" class="atlas-rail-tab" />
+                    <ui:Label text="◆" class="atlas-rail-tab" />
+                    <ui:Label text="☠" class="atlas-rail-tab" />
+                </ui:VisualElement>
                 <ui:Label text="각인석" class="atlas-section-title" />
                 <ui:VisualElement name="atlas-sigil-pool" class="atlas-sigil-pool" />
                 <ui:Label text="현재 단계 후보" class="atlas-section-title" />
@@ -15,37 +21,61 @@
 
             <ui:VisualElement name="atlas-board-pane" class="atlas-board-pane">
                 <ui:VisualElement name="atlas-board" class="atlas-board" />
+                <ui:VisualElement name="atlas-map-overlay" class="atlas-map-overlay" picking-mode="Ignore" />
                 <ui:VisualElement name="atlas-layer-overlay" class="atlas-layer-overlay" />
                 <ui:VisualElement name="atlas-stage-candidate-overlay" class="atlas-stage-candidate-overlay" />
             </ui:VisualElement>
 
             <ui:VisualElement class="atlas-preview">
-                <ui:Label name="atlas-preview-title" class="atlas-preview-title" />
-                <ui:Label name="atlas-preview-judgement" class="atlas-judgement" />
-                <ui:Label name="atlas-preview-action-ribbon" class="atlas-preview-action-ribbon" />
-                <ui:Label name="atlas-preview-threat-band" class="atlas-preview-threat-band" />
+                <ui:VisualElement class="atlas-decision-card atlas-decision-card--primary">
+                    <ui:VisualElement class="atlas-preview-banner" picking-mode="Ignore">
+                        <ui:VisualElement class="atlas-preview-banner__sigil" picking-mode="Ignore" />
+                        <ui:VisualElement class="atlas-preview-banner__image" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label name="atlas-preview-title" class="atlas-preview-title" />
+                    <ui:Label name="atlas-preview-judgement" class="atlas-judgement" />
+                    <ui:VisualElement class="atlas-preview-status-row">
+                        <ui:Label name="atlas-preview-action-ribbon" class="atlas-preview-action-ribbon" />
+                        <ui:Label name="atlas-preview-threat-band" class="atlas-preview-threat-band" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
 
-                <ui:Label text="적 정보" class="atlas-preview-label" />
-                <ui:Label name="atlas-preview-enemy" class="atlas-preview-body" />
-                <ui:Label text="적 징후" class="atlas-preview-label" />
-                <ui:Label name="atlas-preview-enemy-intel" class="atlas-preview-body atlas-preview-body--intel" />
+                <ui:VisualElement class="atlas-decision-card atlas-preview-card--enemy">
+                    <ui:Label text="적 정보" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-enemy" class="atlas-preview-body" />
+                    <ui:Label text="적 징후" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-enemy-intel" class="atlas-preview-body atlas-preview-body--intel" />
+                </ui:VisualElement>
 
-                <ui:Label text="각인 효과" class="atlas-preview-label" />
-                <ui:Label name="atlas-preview-modifiers" class="atlas-preview-body" />
+                <ui:VisualElement class="atlas-decision-card atlas-preview-card--modifiers">
+                    <ui:Label text="각인 효과" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-modifiers" class="atlas-preview-body" />
+                </ui:VisualElement>
 
-                <ui:Label text="보상" class="atlas-preview-label" />
-                <ui:Label name="atlas-preview-reward" class="atlas-preview-body" />
+                <ui:VisualElement class="atlas-decision-card atlas-preview-card--reward">
+                    <ui:Label text="보상" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-reward" class="atlas-preview-body" />
+                </ui:VisualElement>
 
-                <ui:Label text="추천 캐릭터" class="atlas-preview-label" />
-                <ui:Label name="atlas-preview-recommendations" class="atlas-preview-body" />
+                <ui:VisualElement class="atlas-decision-card atlas-preview-card--recommendations">
+                    <ui:Label text="추천 캐릭터" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-recommendations" class="atlas-preview-body" />
+                </ui:VisualElement>
 
-                <ui:Label name="atlas-boundary-note" class="atlas-boundary-note" />
+                <ui:Label name="atlas-boundary-note" class="atlas-boundary-note atlas-decision-card" />
                 <ui:Button name="atlas-continue-button" text="진행" class="atlas-continue-button" />
                 <ui:Label name="atlas-debug-hash" class="atlas-debug-hash" />
             </ui:VisualElement>
         </ui:VisualElement>
 
         <ui:VisualElement name="atlas-spine-progress-strip" class="atlas-spine-progress-strip" />
+
+        <ui:VisualElement class="atlas-command-legend" picking-mode="Ignore">
+            <ui:Label name="AtlasLegendSafeLabel" class="atlas-command-legend__item atlas-command-legend__item--safe" text="안전권" />
+            <ui:Label name="AtlasLegendThreatLabel" class="atlas-command-legend__item atlas-command-legend__item--threat" text="위험권" />
+            <ui:Label name="AtlasLegendRewardLabel" class="atlas-command-legend__item atlas-command-legend__item--reward" text="보상권" />
+            <ui:Label name="AtlasLegendBossLabel" class="atlas-command-legend__item atlas-command-legend__item--boss" text="보스권" />
+        </ui:VisualElement>
 
         <ui:VisualElement name="atlas-sitetrack-strip" class="sitetrack-strip" />
     </ui:VisualElement>

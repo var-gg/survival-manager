@@ -161,8 +161,8 @@
                      PassiveBoard / Theater (deep navy BG, gold ink)
          modal-sm  = Settings (작은 modal, navy 같지만 corner/border 축소) */
     --sm-frame-parchment-bg: rgba(235, 220, 178, 0.96);
-    --sm-frame-ceremony-bg: rgba(20, 26, 53, 0.96);
-    --sm-frame-modal-bg: rgba(20, 26, 53, 0.96);
+    --sm-frame-ceremony-bg: rgba(38, 28, 14, 0.94);
+    --sm-frame-modal-bg: rgba(36, 26, 14, 0.94);
     --sm-backdrop-dim: rgba(12, 17, 38, 0.55);
 
     --sm-frame-trim-color: var(--sm-gold-400);
@@ -170,9 +170,9 @@
     --sm-frame-trim-w-small: 2px;
 
     --sm-frame-corner-color: var(--sm-gold-300);
-    /* corner = ornament-corner-vine.svg (vector, 34x34 viewBox). 1:1 size로 crisp 렌더. */
-    --sm-frame-corner-size: 34px;
-    --sm-frame-corner-size-small: 28px;
+    /* corner = ui_corner_ornament_{tl,tr,bl,br}.png. mockup-aligned ornate size. */
+    --sm-frame-corner-size: 56px;
+    --sm-frame-corner-size-small: 40px;
 
     --sm-frame-divider-ceremony: rgba(230, 183, 81, 0.32);
     --sm-frame-divider-parchment: rgba(138, 100, 24, 0.45);

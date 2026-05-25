@@ -67,6 +67,22 @@
             <ui:VisualElement class="screen__column reward-bible__center-stage">
                 <ui:VisualElement class="panel reward-choice-panel">
                     <ui:Label name="ChoicesHeaderLabel" class="panel__title" />
+                    <ui:VisualElement class="reward-bible__victory-medallion" picking-mode="Ignore">
+                        <ui:VisualElement class="reward-bible__victory-ring reward-bible__victory-ring--outer" />
+                        <ui:VisualElement class="reward-bible__victory-ring reward-bible__victory-ring--inner" />
+                        <ui:VisualElement class="reward-bible__victory-icon" />
+                        <ui:VisualElement class="reward-bible__victory-banner">
+                            <ui:Label name="RewardVictoryBannerResultLabel" class="reward-bible__victory-banner-text" text="RESULT" />
+                            <ui:Label name="RewardVictoryBannerStatusLabel" class="reward-bible__victory-banner-text reward-bible__victory-banner-text--ko" text="정산 완료" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="reward-bible__victory-runes">
+                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--gold" />
+                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--blue" />
+                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--green" />
+                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--red" />
+                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--gold" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                     <ui:VisualElement class="card-row reward-card-row">
                         <ui:VisualElement class="card reward-card reward-card--gold" name="ChoiceCard1">
                             <ui:VisualElement class="reward-card__art reward-card__art--gold">

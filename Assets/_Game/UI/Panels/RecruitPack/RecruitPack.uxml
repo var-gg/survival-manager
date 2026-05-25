@@ -2,7 +2,7 @@
     <!--
       Recruit modal V1 preview surface
       visual SoT: pindoc://town-ui-ux-시안-갤러리-v1 (3. Recruit modal)
-      structure: navy frame + ornament header + 4 candidate cards + scout/refresh action bar
+      structure: navy frame + ornament header + roster pressure rail + 4 candidate cards + selected candidate decision panel
       카드 컬럼은 runtime offer 모델 (RecruitUnitPreview + RecruitOfferMetadata) 정합 — audit §4.1.
       assets:
         hero portraits (Resources/_Game/Art/Characters/hero_{blueprintId}/portrait_full.png — 12 archetype 중 3장만 존재)
@@ -33,23 +33,56 @@
                 <ui:Button class="rcp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
+            <ui:VisualElement class="rcp-command-strip">
+                <ui:Label class="rcp-command-strip__label" text="CANDIDATE CHOICE" />
+                <ui:VisualElement class="rcp-command-strip__meter rcp-command-strip__meter--gold" />
+                <ui:VisualElement class="rcp-command-strip__meter rcp-command-strip__meter--blue" />
+                <ui:VisualElement class="rcp-command-strip__meter rcp-command-strip__meter--green" />
+                <ui:Label class="rcp-command-strip__hint" text="4 SLOT PACK / SELECTED DETAIL" />
+            </ui:VisualElement>
+
             <ui:VisualElement class="rcp-decision-layout">
-                <ui:VisualElement name="CardRow" class="rcp-card-row" />
+                <ui:VisualElement name="RosterPressurePanel" class="rcp-pressure rcp-left-rail sm-chrome-l2">
+                    <ui:Label class="rcp-rail__eyebrow" text="ROSTER" />
+                    <ui:Label name="RosterPressureCountLabel" class="rcp-pressure__count" />
+                    <ui:Label name="RosterPressureNeedLabel" class="rcp-pressure__need" />
+                    <ui:Label name="RosterPressurePlanLabel" class="rcp-pressure__plan" />
+                    <ui:VisualElement name="RosterNeedChips" class="rcp-pressure__chips" />
+                    <ui:VisualElement class="rcp-rail__stack">
+                        <ui:VisualElement class="rcp-rail__signal">
+                            <ui:Label class="rcp-rail__signal-title" text="ROLE NEED" />
+                            <ui:VisualElement class="rcp-rail__signal-bar rcp-rail__signal-bar--need" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="rcp-rail__signal">
+                            <ui:Label class="rcp-rail__signal-title" text="PLAN FIT" />
+                            <ui:VisualElement class="rcp-rail__signal-bar rcp-rail__signal-bar--plan" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="rcp-rail__signal">
+                            <ui:Label class="rcp-rail__signal-title" text="SCOUT SIGNAL" />
+                            <ui:VisualElement class="rcp-rail__signal-bar rcp-rail__signal-bar--scout" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="rcp-candidate-stage">
+                    <ui:VisualElement name="CardRow" class="rcp-card-row" />
+                </ui:VisualElement>
+
                 <ui:VisualElement name="RecruitDecisionPanel" class="rcp-decision-panel sm-chrome-l2">
                     <ui:VisualElement name="SelectedCandidateDetail" class="rcp-detail">
+                        <ui:VisualElement class="rcp-detail__portrait-frame">
+                            <ui:VisualElement name="SelectedCandidatePortrait" class="rcp-detail__portrait" />
+                            <ui:VisualElement name="SelectedCandidateClassGlyph" class="rcp-detail__class-glyph" />
+                        </ui:VisualElement>
                         <ui:Label name="SelectedCandidateNameLabel" class="rcp-detail__name" />
                         <ui:Label name="SelectedCandidateMetaLabel" class="rcp-detail__meta" />
                         <ui:VisualElement name="SelectedCandidateStateChips" class="rcp-detail__state-row" />
                         <ui:Label name="SelectedCandidatePlanLabel" class="rcp-detail__plan" />
                         <ui:Label name="SelectedCandidateCostLabel" class="rcp-detail__cost" />
+                        <ui:VisualElement name="SelectedCandidateMetricBars" class="rcp-detail__metrics" />
+                        <ui:VisualElement name="SelectedCandidateSkillPips" class="rcp-detail__skill-pips" />
                         <ui:Label name="SelectedCandidateSkillLabel" class="rcp-detail__skills" />
                         <ui:VisualElement name="SelectedCandidateTags" class="rcp-detail__tags" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="RosterPressurePanel" class="rcp-pressure">
-                        <ui:Label name="RosterPressureCountLabel" class="rcp-pressure__count" />
-                        <ui:Label name="RosterPressureNeedLabel" class="rcp-pressure__need" />
-                        <ui:Label name="RosterPressurePlanLabel" class="rcp-pressure__plan" />
-                        <ui:VisualElement name="RosterNeedChips" class="rcp-pressure__chips" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

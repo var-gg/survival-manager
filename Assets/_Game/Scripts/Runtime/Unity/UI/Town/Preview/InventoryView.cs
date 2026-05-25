@@ -15,9 +15,12 @@ public sealed class InventoryView
     private readonly VisualElement _echoIcon;
     private readonly Label _goldAmount;
     private readonly Label _echoAmount;
+    private readonly Label? _titleLabel;
+    private readonly Label? _subtitleLabel;
     private readonly VisualElement _categorySidebar;
     private readonly VisualElement _itemGrid;
     private readonly VisualElement _detailIcon;
+    private readonly Image _detailIconImage;
     private readonly VisualElement _detailAffixes;
     private readonly Label? _detailNameLabel;
     private readonly Label? _detailMetaLabel;
@@ -28,8 +31,10 @@ public sealed class InventoryView
     private readonly Label? _compareTargetMetaLabel;
     private readonly Label? _compareSelectedLabel;
     private readonly Label? _compareSelectedMetaLabel;
+    private readonly VisualElement? _compareSelectedIcon;
     private readonly Label? _compareEquippedLabel;
     private readonly Label? _compareEquippedMetaLabel;
+    private readonly VisualElement? _compareEquippedIcon;
     private readonly Label? _compareOwnerLabel;
     private readonly Label? _compareEquipStatusLabel;
     private readonly VisualElement? _compareRows;
@@ -69,40 +74,52 @@ public sealed class InventoryView
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
         _modalRoot = root.Q<VisualElement>("InvRoot");
-        _closeButton = root.Q<Button>(className: "inv-currency__close");   // UXML currency header에 X 버튼
-        _equipButton = root.Q<Button>(className: "inv-detail__btn--equip");
-        _compareButton = root.Q<Button>(className: "inv-detail__btn--compare");
-        _goldIcon = root.Q<VisualElement>("GoldIcon")
+        var scope = _modalRoot ?? root;
+        _closeButton = scope.Q<Button>(className: "inv-currency__close");   // UXML currency header에 X 버튼
+        _equipButton = scope.Q<Button>(className: "inv-detail__btn--equip");
+        _compareButton = scope.Q<Button>(className: "inv-detail__btn--compare");
+        _titleLabel = scope.Q<Label>("InventoryTitleLabel");
+        _subtitleLabel = scope.Q<Label>("InventorySubtitleLabel");
+        _goldIcon = scope.Q<VisualElement>("GoldIcon")
             ?? throw new ArgumentException("GoldIcon 못 찾음");
-        _echoIcon = root.Q<VisualElement>("EchoIcon")
+        _echoIcon = scope.Q<VisualElement>("EchoIcon")
             ?? throw new ArgumentException("EchoIcon 못 찾음");
-        _categorySidebar = root.Q<VisualElement>("CategorySidebar")
+        _categorySidebar = scope.Q<VisualElement>("CategorySidebar")
             ?? throw new ArgumentException("CategorySidebar 못 찾음");
-        _itemGrid = root.Q<VisualElement>("ItemGrid")
+        _itemGrid = scope.Q<VisualElement>("ItemGrid")
             ?? throw new ArgumentException("ItemGrid 못 찾음");
-        _detailIcon = root.Q<VisualElement>("DetailIcon")
+        _detailIcon = scope.Q<VisualElement>("DetailIcon")
             ?? throw new ArgumentException("DetailIcon 못 찾음");
         _detailIcon.AddToClassList("sm-item-icon");
-        _detailAffixes = root.Q<VisualElement>("DetailAffixes")
+        _detailIconImage = new Image
+        {
+            pickingMode = PickingMode.Ignore,
+            scaleMode = ScaleMode.ScaleToFit
+        };
+        _detailIconImage.AddToClassList("inv-detail__icon-image");
+        _detailIcon.Add(_detailIconImage);
+        _detailAffixes = scope.Q<VisualElement>("DetailAffixes")
             ?? throw new ArgumentException("DetailAffixes 못 찾음");
-        _detailNameLabel = root.Q<Label>("DetailNameLabel");
-        _detailMetaLabel = root.Q<Label>("DetailMetaLabel");
-        _detailSetBonusLabel = root.Q<Label>("DetailSetBonusLabel");
-        _detailCrossLinks = root.Q<VisualElement>("DetailCrossLinks");
-        _compareLane = root.Q<VisualElement>("CompareLane");
-        _compareTargetHeroLabel = root.Q<Label>("CompareTargetHeroLabel");
-        _compareTargetMetaLabel = root.Q<Label>("CompareTargetMetaLabel");
-        _compareSelectedLabel = root.Q<Label>("CompareSelectedItemLabel");
-        _compareSelectedMetaLabel = root.Q<Label>("CompareSelectedItemMetaLabel");
-        _compareEquippedLabel = root.Q<Label>("CompareEquippedItemLabel");
-        _compareEquippedMetaLabel = root.Q<Label>("CompareEquippedItemMetaLabel");
-        _compareOwnerLabel = root.Q<Label>("CompareOwnerLabel");
-        _compareEquipStatusLabel = root.Q<Label>("CompareEquipStatusLabel");
-        _compareRows = root.Q<VisualElement>("CompareRows");
+        _detailNameLabel = scope.Q<Label>("DetailNameLabel");
+        _detailMetaLabel = scope.Q<Label>("DetailMetaLabel");
+        _detailSetBonusLabel = scope.Q<Label>("DetailSetBonusLabel");
+        _detailCrossLinks = scope.Q<VisualElement>("DetailCrossLinks");
+        _compareLane = scope.Q<VisualElement>("CompareLane");
+        _compareTargetHeroLabel = scope.Q<Label>("CompareTargetHeroLabel");
+        _compareTargetMetaLabel = scope.Q<Label>("CompareTargetMetaLabel");
+        _compareSelectedLabel = scope.Q<Label>("CompareSelectedItemLabel");
+        _compareSelectedMetaLabel = scope.Q<Label>("CompareSelectedItemMetaLabel");
+        _compareSelectedIcon = scope.Q<VisualElement>("CompareSelectedItemIcon");
+        _compareEquippedLabel = scope.Q<Label>("CompareEquippedItemLabel");
+        _compareEquippedMetaLabel = scope.Q<Label>("CompareEquippedItemMetaLabel");
+        _compareEquippedIcon = scope.Q<VisualElement>("CompareEquippedItemIcon");
+        _compareOwnerLabel = scope.Q<Label>("CompareOwnerLabel");
+        _compareEquipStatusLabel = scope.Q<Label>("CompareEquipStatusLabel");
+        _compareRows = scope.Q<VisualElement>("CompareRows");
 
         // Currency amount labels — 옛 mock의 hardcoded text는 UXML에 있음 ("9,876,543" 등).
         // V1: currency 부모 element 안의 inv-currency__amount Label 두 개.
-        var amounts = root.Query<Label>(className: "inv-currency__amount").ToList();
+        var amounts = scope.Query<Label>(className: "inv-currency__amount").ToList();
         _goldAmount = amounts.Count > 0 ? amounts[0] : null!;
         _echoAmount = amounts.Count > 1 ? amounts[1] : null!;
     }
@@ -127,6 +144,13 @@ public sealed class InventoryView
         if (state == null) throw new ArgumentNullException(nameof(state));
 
         // Currency header
+        if (_titleLabel != null) _titleLabel.text = "장비 비교";
+        if (_subtitleLabel != null)
+        {
+            var target = state.Compare?.TargetHeroLabel ?? "대상 영웅 없음";
+            _subtitleLabel.text = $"{target} / {state.Items.Count}개 후보 / 슬롯·희귀도·계열 비교";
+        }
+
         if (state.GoldSprite != null) _goldIcon.style.backgroundImage = new StyleBackground(state.GoldSprite);
         if (state.EchoSprite != null) _echoIcon.style.backgroundImage = new StyleBackground(state.EchoSprite);
         if (_goldAmount != null) _goldAmount.text = state.Gold.ToString("N0");
@@ -177,6 +201,8 @@ public sealed class InventoryView
             cell.AddToClassList("sm-item-cell");
             cell.AddToClassList("sm-hover-raise");   // 콘솔급 motion — hover raise
             cell.AddToClassList($"inv-grid__cell--{item.RarityKey}");
+            if (!string.IsNullOrWhiteSpace(item.WeaponFamilyKey))
+                cell.AddToClassList($"inv-grid__cell--{item.WeaponFamilyKey}");
             if (item.IsSelected) cell.AddToClassList("inv-grid__cell--selected");
             if (item.IsSelected) cell.AddToClassList("sm-item-cell--selected");
             if (item.IsEquipped) cell.AddToClassList("sm-item-cell--equipped");
@@ -186,6 +212,16 @@ public sealed class InventoryView
             iconLayer.AddToClassList("sm-item-icon");
             if (item.IconSprite != null) iconLayer.style.backgroundImage = new StyleBackground(item.IconSprite);
             cell.Add(iconLayer);
+
+            var copy = new VisualElement();
+            copy.AddToClassList("inv-grid__cell-copy");
+            var name = new Label(item.Name);
+            name.AddToClassList("inv-grid__cell-name");
+            copy.Add(name);
+            var meta = new Label(item.MetaLabel);
+            meta.AddToClassList("inv-grid__cell-meta");
+            copy.Add(meta);
+            cell.Add(copy);
 
             var rarity = new VisualElement();
             rarity.AddToClassList("inv-grid__cell-rarity");
@@ -205,7 +241,7 @@ public sealed class InventoryView
 
             if (item.ShowsIdentityBadge)
             {
-                var identity = new Label(item.IdentityLabel);
+                var identity = new Label(FormatIdentityLabel(item.IdentityLabel));
                 identity.AddToClassList("inv-grid__cell-identity");
                 identity.AddToClassList("sm-item-identity");
                 identity.AddToClassList($"sm-item-identity--{item.IdentityKey}");
@@ -221,8 +257,8 @@ public sealed class InventoryView
             }
 
             var rarityTooltip = item.IsLaunchSupportedRarity
-                ? item.RarityKey
-                : $"{item.RawRarityKey} as {item.RarityKey}";
+                ? FormatRarityLabel(item.RarityKey)
+                : $"{item.RawRarityKey} -> {FormatRarityLabel(item.RarityKey)}";
             cell.tooltip = $"{item.IconKey} ({item.SlotKey}/{item.WeaponFamilyKey}) · {rarityTooltip}{(item.IsEquipped ? " · equipped" : "")}";
             cell.RegisterCallback<ClickEvent>(_ => _actions?.OnItemSelected(item.ItemInstanceId));
             _itemGrid.Add(cell);
@@ -238,19 +274,24 @@ public sealed class InventoryView
             if (_detailNameLabel != null) _detailNameLabel.text = string.Empty;
             if (_detailMetaLabel != null) _detailMetaLabel.text = string.Empty;
             if (_detailSetBonusLabel != null) _detailSetBonusLabel.text = string.Empty;
+            _detailIconImage.image = null;
             _detailCrossLinks?.Clear();
             ApplyEquipCta(null);
             return;
         }
 
         _currentDetailItemInstanceId = detail.ItemInstanceId;
-        if (detail.IconSprite != null) _detailIcon.style.backgroundImage = new StyleBackground(detail.IconSprite);
+        if (detail.IconSprite != null)
+        {
+            _detailIcon.style.backgroundImage = new StyleBackground(detail.IconSprite);
+            _detailIconImage.image = detail.IconSprite;
+        }
         if (_detailNameLabel != null) _detailNameLabel.text = detail.Name;
         if (_detailMetaLabel != null)
         {
             _detailMetaLabel.text = string.IsNullOrWhiteSpace(detail.WeaponFamilyLabel)
-                ? $"{detail.SlotLabel} / {detail.RarityKey}"
-                : $"{detail.SlotLabel} / {detail.RarityKey} / {detail.WeaponFamilyLabel}";
+                ? $"{detail.SlotLabel} / {FormatRarityLabel(detail.RarityKey)}"
+                : $"{detail.SlotLabel} / {FormatRarityLabel(detail.RarityKey)} / {detail.WeaponFamilyLabel}";
         }
         if (_detailSetBonusLabel != null)
         {
@@ -263,12 +304,13 @@ public sealed class InventoryView
         ApplyEquipCta(null);
 
         _detailAffixes.Clear();
+        RenderDetailProfileRows(detail);
         string? previousGroup = null;
         foreach (var affix in detail.Affixes)
         {
             if (previousGroup != affix.GroupKey)
             {
-                var header = new Label(affix.GroupKey.ToUpperInvariant());
+                var header = new Label(FormatAffixGroupLabel(affix.GroupKey));
                 header.AddToClassList("inv-detail__affix-group");
                 header.AddToClassList($"inv-detail__affix-group--{affix.GroupKey}");
                 _detailAffixes.Add(header);
@@ -312,8 +354,20 @@ public sealed class InventoryView
         if (_compareTargetMetaLabel != null) _compareTargetMetaLabel.text = compare.TargetHeroMetaLabel;
         if (_compareSelectedLabel != null) _compareSelectedLabel.text = compare.SelectedItemLabel;
         if (_compareSelectedMetaLabel != null) _compareSelectedMetaLabel.text = compare.SelectedItemMetaLabel;
+        if (_compareSelectedIcon != null && compare.SelectedItemIconSprite != null)
+        {
+            _compareSelectedIcon.style.backgroundImage = new StyleBackground(compare.SelectedItemIconSprite);
+            _detailIcon.style.backgroundImage = new StyleBackground(compare.SelectedItemIconSprite);
+            _detailIconImage.image = compare.SelectedItemIconSprite;
+        }
+
         if (_compareEquippedLabel != null) _compareEquippedLabel.text = compare.EquippedItemLabel;
         if (_compareEquippedMetaLabel != null) _compareEquippedMetaLabel.text = compare.EquippedItemMetaLabel;
+        if (_compareEquippedIcon != null && compare.EquippedItemIconSprite != null)
+        {
+            _compareEquippedIcon.style.backgroundImage = new StyleBackground(compare.EquippedItemIconSprite);
+        }
+
         if (_compareOwnerLabel != null) _compareOwnerLabel.text = compare.EquippedOwnerLabel;
         if (_compareEquipStatusLabel != null) _compareEquipStatusLabel.text = compare.EquipCta.StatusText;
 
@@ -350,12 +404,59 @@ public sealed class InventoryView
         {
             _equipButton.SetEnabled(cta?.CanEquip == true);
             _equipButton.tooltip = cta?.TooltipText ?? string.Empty;
+            _equipButton.text = cta?.Label ?? "장착";
         }
 
         if (_compareButton != null)
         {
             _compareButton.SetEnabled(!string.IsNullOrEmpty(_currentDetailItemInstanceId));
+            _compareButton.text = "비교";
         }
+    }
+
+    private void RenderDetailProfileRows(InventoryDetailViewState detail)
+    {
+        var header = new Label("장비 정보");
+        header.AddToClassList("inv-detail__affix-group");
+        header.AddToClassList("inv-detail__affix-group--profile");
+        _detailAffixes.Add(header);
+
+        AddDetailMetricRow("슬롯", detail.SlotLabel);
+        AddDetailMetricRow("희귀도", FormatRarityLabel(detail.RarityKey));
+        if (!string.IsNullOrWhiteSpace(detail.WeaponFamilyLabel))
+        {
+            AddDetailMetricRow("계열", detail.WeaponFamilyLabel);
+        }
+
+        if (detail.ShowsIdentityBadge)
+        {
+            AddDetailMetricRow("정체성", FormatIdentityLabel(detail.IdentityLabel));
+        }
+
+        AddDetailMetricRow("재가공", detail.CanRefit ? "가능" : "잠김");
+    }
+
+    private void AddDetailMetricRow(string label, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        var row = new VisualElement();
+        row.AddToClassList("inv-detail__affix-row");
+        row.AddToClassList("sm-affix-row");
+        row.AddToClassList("inv-detail__affix-row--profile");
+
+        var nameEl = new Label(label);
+        nameEl.AddToClassList("inv-detail__affix-name");
+        row.Add(nameEl);
+
+        var valueEl = new Label(value);
+        valueEl.AddToClassList("inv-detail__affix-value");
+        row.Add(valueEl);
+
+        _detailAffixes.Add(row);
     }
 
     private void RenderCrossLinks(System.Collections.Generic.IReadOnlyList<string>? crossLinks)
@@ -398,6 +499,43 @@ public sealed class InventoryView
     {
         if (!string.IsNullOrEmpty(_currentDetailItemInstanceId))
             _actions?.OnCompareItem(_currentDetailItemInstanceId);
+    }
+
+    private static string FormatRarityLabel(string rarityKey)
+    {
+        return (rarityKey ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "common" => "일반",
+            "rare" => "희귀",
+            "epic" => "영웅",
+            "magic" => "희귀",
+            "legendary" => "영웅",
+            "-" => "-",
+            "" => "-",
+            _ => "일반",
+        };
+    }
+
+    private static string FormatIdentityLabel(string identityLabel)
+    {
+        return (identityLabel ?? string.Empty).Trim().ToUpperInvariant() switch
+        {
+            "NAMED" => "이름 있는 장비",
+            "SIGNATURE" => "전용 장비",
+            _ => identityLabel,
+        };
+    }
+
+    private static string FormatAffixGroupLabel(string groupKey)
+    {
+        return (groupKey ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "implicit" => "고유 속성",
+            "prefix" => "접두 속성",
+            "suffix" => "접미 속성",
+            "profile" => "장비 정보",
+            _ => "속성",
+        };
     }
 }
 

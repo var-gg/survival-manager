@@ -68,8 +68,17 @@
 
 .reward-screen .reward-bible__title {
     color: var(--sm-gold-100);
-    font-size: 25px;
+    font-size: 18px;
     -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+/* Hide dev locale chrome — production handoff view. */
+.reward-screen #LocaleStatusLabel,
+.reward-screen #LocaleKoButton,
+.reward-screen #LocaleEnButton,
+.reward-screen #HelpButton {
+    display: none;
 }
 
 .reward-screen .reward-bible__rune-row {
@@ -164,7 +173,13 @@
 }
 
 .reward-screen .panel {
-    background-color: rgba(12, 16, 29, 0.92);
+    background-color: rgba(36, 26, 14, 0.78);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.32);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -597,4 +612,166 @@
 
 .reward-screen .reward-bible__status-band .ui-button {
     min-width: 220px;
+}
+
+/* UX Bible 80 pass — stronger result ceremony while preserving existing reward choice flow. */
+.reward-screen .reward-choice-panel {
+    background-color: rgba(8, 12, 25, 0.94);
+    border-left-width: 2px;
+    border-right-width: 1px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: rgba(245, 214, 138, 0.34);
+    border-bottom-color: rgba(138, 100, 24, 0.56);
+}
+
+.reward-screen .reward-bible__victory-medallion {
+    height: 116px;
+    min-height: 116px;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(13, 18, 34, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.20);
+    border-right-color: rgba(230, 183, 81, 0.20);
+    border-top-color: rgba(245, 214, 138, 0.20);
+    border-bottom-color: rgba(138, 100, 24, 0.34);
+}
+
+.reward-screen .reward-bible__victory-ring {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-radius: 999px;
+}
+
+.reward-screen .reward-bible__victory-ring--outer {
+    width: 96px;
+    height: 96px;
+    border-left-color: rgba(245, 214, 138, 0.48);
+    border-right-color: rgba(245, 214, 138, 0.48);
+    border-top-color: rgba(245, 214, 138, 0.48);
+    border-bottom-color: rgba(245, 214, 138, 0.48);
+}
+
+.reward-screen .reward-bible__victory-ring--inner {
+    width: 68px;
+    height: 68px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(230, 183, 81, 0.28);
+    border-bottom-color: rgba(230, 183, 81, 0.28);
+}
+
+.reward-screen .reward-bible__victory-icon {
+    width: 62px;
+    height: 62px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Augment/augment_star.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgba(245, 214, 138, 0.96);
+}
+
+.reward-screen .reward-bible__victory-runes {
+    position: absolute;
+    left: 34px;
+    right: 34px;
+    bottom: 14px;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.reward-screen .reward-bible__victory-rune {
+    width: 46px;
+    height: 5px;
+    background-color: rgba(230, 183, 81, 0.34);
+}
+
+.reward-screen .reward-bible__victory-rune--blue {
+    background-color: rgba(129, 184, 245, 0.56);
+}
+
+.reward-screen .reward-bible__victory-rune--green {
+    background-color: rgba(135, 190, 92, 0.56);
+}
+
+.reward-screen .reward-bible__victory-rune--red {
+    background-color: rgba(235, 116, 91, 0.50);
+}
+
+.reward-screen .reward-card-row {
+    margin-top: 10px;
+}
+
+.reward-screen .reward-card {
+    min-height: 520px;
+    background-color: rgba(12, 14, 26, 0.96);
+    border-bottom-color: rgba(138, 100, 24, 0.58);
+}
+
+.reward-screen .reward-card__art {
+    height: 232px;
+    background-color: rgba(230, 183, 81, 0.11);
+}
+
+.reward-screen .reward-card__sigil {
+    width: 142px;
+    height: 142px;
+}
+
+.reward-screen .reward-run-delta-panel,
+.reward-screen .reward-build-impact-panel,
+.reward-screen .reward-progression-panel,
+.reward-screen .reward-settlement-summary {
+    background-color: rgba(8, 13, 31, 0.92);
+}
+
+.reward-screen .reward-timeline-panel {
+    height: 116px;
+    min-height: 116px;
+    border-top-width: 2px;
+    border-top-color: rgba(245, 214, 138, 0.26);
+}
+
+/* UX Bible visual QA pass 2: compact ceremony title inside the real result selector panel. */
+.reward-screen .reward-bible__victory-banner {
+    position: absolute;
+    left: 34px;
+    right: 34px;
+    top: 12px;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.22);
+}
+
+.reward-screen .reward-bible__victory-banner-text {
+    color: rgba(245, 214, 138, 0.86);
+    font-size: 10px;
+    -unity-font-style: bold;
+    letter-spacing: 0;
+}
+
+.reward-screen .reward-bible__victory-banner-text--ko {
+    color: var(--sm-ink-2);
+    letter-spacing: 0;
+}
+
+.reward-screen .reward-card {
+    border-left-color: rgba(245, 214, 138, 0.36);
+    border-right-color: rgba(230, 183, 81, 0.24);
+    border-top-color: rgba(245, 214, 138, 0.30);
+}
+
+.reward-screen .reward-card .card__title {
+    font-size: 20px;
 }

@@ -15,13 +15,13 @@
 .rcp-backdrop {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_recruit_dusk.png");
     -unity-background-scale-mode: scale-and-crop;
 }
 .rcp-backdrop-dim {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(12, 17, 38, 0.55);
+    background-color: rgba(12, 17, 38, 0.30);
 }
 
 /* --- Modal frame ---
@@ -100,14 +100,20 @@
     margin-right: 8px;
     padding-bottom: 8px;
     background-color: rgba(245, 234, 208, 0.94);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
+    -unity-slice-left: 32;
+    -unity-slice-right: 32;
+    -unity-slice-top: 32;
+    -unity-slice-bottom: 32;
+    -unity-background-image-tint-color: rgba(245, 220, 170, 0.88);
     border-left-width: 2px;
     border-right-width: 2px;
     border-top-width: 2px;
     border-bottom-width: 2px;
-    border-left-color: rgba(138, 100, 24, 0.65);
-    border-right-color: rgba(138, 100, 24, 0.65);
-    border-top-color: rgba(138, 100, 24, 0.65);
-    border-bottom-color: rgba(138, 100, 24, 0.65);
+    border-left-color: rgba(138, 100, 24, 0.72);
+    border-right-color: rgba(138, 100, 24, 0.72);
+    border-top-color: rgba(138, 100, 24, 0.72);
+    border-bottom-color: rgba(138, 100, 24, 0.72);
 }
 .rcp-card--selected {
     border-left-color: var(--sm-gold-100);
@@ -716,4 +722,468 @@
 .rcp-actions__scout-icon,
 .rcp-actions__refresh-icon {
     display: none;
+}
+
+/* =============================================================
+   Recruit Bible alignment pass — 3-zone candidate choice
+   left: roster pressure / center: four candidates / right: selected detail.
+   ============================================================= */
+
+.rcp-frame {
+    left: 48px;
+    right: 48px;
+    top: 36px;
+    bottom: 36px;
+}
+
+.rcp-header {
+    padding-top: 14px;
+    padding-bottom: 12px;
+}
+
+.rcp-command-strip {
+    height: 34px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 34px;
+    padding-right: 34px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+    background-color: rgba(8, 12, 28, 0.36);
+}
+
+.rcp-command-strip__label,
+.rcp-command-strip__hint {
+    color: rgba(216, 199, 153, 0.82);
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+.rcp-command-strip__hint {
+    margin-left: auto;
+    color: rgba(127, 163, 224, 0.92);
+}
+
+.rcp-command-strip__meter {
+    width: 76px;
+    height: 6px;
+    margin-left: 16px;
+    background-color: rgba(28, 34, 67, 0.92);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: rgba(245, 214, 138, 0.28);
+    border-bottom-color: rgba(26, 42, 82, 0.76);
+}
+
+.rcp-command-strip__meter--gold { background-color: rgba(138, 100, 24, 0.84); }
+.rcp-command-strip__meter--blue { background-color: rgba(26, 42, 82, 0.92); }
+.rcp-command-strip__meter--green { background-color: rgba(43, 82, 52, 0.82); }
+
+.rcp-decision-layout {
+    flex-direction: row;
+    flex-grow: 1;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 18px;
+    padding-bottom: 12px;
+}
+
+.rcp-left-rail {
+    width: 236px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-right: 16px;
+    padding: 16px;
+    background-color: rgba(28, 22, 12, 0.86);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.28);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+    border-right-color: rgba(230, 183, 81, 0.42);
+    border-top-color: rgba(245, 214, 138, 0.36);
+    border-bottom-color: rgba(138, 100, 24, 0.66);
+}
+
+.rcp-rail__eyebrow {
+    color: var(--sm-gold-100);
+    font-size: 11px;
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+}
+
+.rcp-pressure__count {
+    color: var(--sm-gold-100);
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.rcp-pressure__need {
+    color: var(--sm-ink-1);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.rcp-pressure__plan {
+    color: rgba(127, 163, 224, 0.95);
+    font-size: 11px;
+    margin-top: 8px;
+    white-space: normal;
+}
+
+.rcp-pressure__chips {
+    margin-top: 12px;
+}
+
+.rcp-rail__stack {
+    margin-top: auto;
+    padding-top: 18px;
+}
+
+.rcp-rail__signal {
+    margin-top: 12px;
+}
+
+.rcp-rail__signal-title {
+    color: rgba(216, 199, 153, 0.72);
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+.rcp-rail__signal-bar {
+    height: 9px;
+    margin-top: 6px;
+    background-color: rgba(28, 34, 67, 0.92);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: rgba(245, 214, 138, 0.28);
+    border-bottom-color: rgba(26, 42, 82, 0.84);
+}
+
+.rcp-rail__signal-bar--need { background-color: rgba(74, 114, 184, 0.66); width: 78%; }
+.rcp-rail__signal-bar--plan { background-color: rgba(138, 100, 24, 0.82); width: 64%; }
+.rcp-rail__signal-bar--scout { background-color: rgba(43, 82, 52, 0.78); width: 42%; }
+
+.rcp-candidate-stage {
+    flex-grow: 1;
+    min-width: 620px;
+}
+
+.rcp-card-row {
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 0;
+}
+
+.rcp-card {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: auto;
+    min-width: 166px;
+    max-width: 258px;
+    margin-left: 6px;
+    margin-right: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 10px;
+    background-color: rgba(15, 20, 44, 0.98);
+}
+
+.rcp-card--selected {
+    background-color: rgba(31, 30, 44, 0.98);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 2px;
+    border-bottom-width: 3px;
+    border-left-color: rgba(245, 214, 138, 0.92);
+    border-right-color: rgba(245, 214, 138, 0.92);
+    border-top-color: rgba(255, 236, 174, 0.92);
+    border-bottom-color: rgba(200, 147, 42, 0.94);
+}
+
+.rcp-card__slot-badge {
+    align-self: stretch;
+    -unity-text-align: middle-center;
+    margin-top: 0;
+}
+
+.rcp-card__portrait {
+    height: 340px;
+    min-height: 280px;
+    margin-top: 8px;
+    margin-left: 0;
+    margin-right: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(8, 12, 28, 0.82);
+    overflow: hidden;
+}
+
+.rcp-card__portrait-shade,
+.rcp-detail__portrait-shade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.06);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: rgba(245, 214, 138, 0.20);
+    border-bottom-color: rgba(138, 100, 24, 0.38);
+}
+
+.rcp-card__portrait-fallback,
+.rcp-detail__portrait-fallback {
+    align-self: center;
+    margin-top: 86px;
+    color: rgba(245, 214, 138, 0.84);
+    font-size: 34px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.rcp-card__rank-pips {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    flex-direction: row;
+}
+
+.rcp-card--selected .rcp-card__portrait {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgba(245, 214, 138, 0.76);
+    border-right-color: rgba(245, 214, 138, 0.76);
+    border-top-color: rgba(255, 236, 174, 0.84);
+    border-bottom-color: rgba(200, 147, 42, 0.90);
+}
+
+.rcp-card__rank-pip {
+    width: 9px;
+    height: 9px;
+    margin-left: 4px;
+    background-color: rgba(216, 199, 153, 0.28);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.rcp-card__rank-pip--filled {
+    background-color: var(--sm-gold-100);
+}
+
+.rcp-card__name {
+    margin-top: 10px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.rcp-card__meta-row {
+    justify-content: center;
+    min-height: 24px;
+}
+
+.rcp-card__class-glyph,
+.rcp-detail__class-glyph {
+    background-image: none;
+    background-color: rgba(138, 100, 24, 0.82);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.rcp-class-vanguard { background-color: rgba(104, 137, 183, 0.80); }
+.rcp-class-duelist { background-color: rgba(162, 88, 74, 0.80); }
+.rcp-class-ranger { background-color: rgba(89, 137, 96, 0.80); }
+.rcp-class-mystic { background-color: rgba(115, 92, 166, 0.80); }
+
+.rcp-card__skill-icons,
+.rcp-detail__skill-pips {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 9px;
+}
+
+.rcp-skill-pip {
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 3px;
+    margin-right: 3px;
+    background-color: rgba(26, 42, 82, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(127, 163, 224, 0.38);
+    border-right-color: rgba(127, 163, 224, 0.38);
+    border-top-color: rgba(127, 163, 224, 0.44);
+    border-bottom-color: rgba(26, 42, 82, 0.84);
+}
+
+.rcp-skill-pip--sig {
+    background-color: rgba(138, 100, 24, 0.78);
+    border-left-color: rgba(245, 214, 138, 0.42);
+    border-right-color: rgba(245, 214, 138, 0.42);
+    border-top-color: rgba(245, 214, 138, 0.48);
+}
+
+.rcp-skill-pip__slot {
+    color: var(--sm-ink-0);
+    font-size: 9px;
+    -unity-font-style: bold;
+}
+
+.rcp-card__skills {
+    display: none;
+}
+
+.rcp-card__skill-line {
+    min-height: 13px;
+}
+
+.rcp-card__recruit {
+    margin-top: auto;
+    height: 32px;
+}
+
+.rcp-decision-panel {
+    width: 322px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-left: 16px;
+    padding: 16px;
+}
+
+.rcp-detail {
+    padding-bottom: 0;
+    border-bottom-width: 0;
+}
+
+.rcp-detail__portrait-frame {
+    height: 214px;
+    margin-bottom: 14px;
+    background-color: rgba(8, 12, 28, 0.78);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(245, 214, 138, 0.34);
+    border-bottom-color: rgba(138, 100, 24, 0.58);
+    overflow: hidden;
+}
+
+.rcp-detail__portrait {
+    flex-grow: 1;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.rcp-detail__class-glyph {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    width: 34px;
+    height: 34px;
+    border-top-left-radius: 17px;
+    border-top-right-radius: 17px;
+    border-bottom-left-radius: 17px;
+    border-bottom-right-radius: 17px;
+}
+
+.rcp-detail__name {
+    font-size: 18px;
+    -unity-text-align: middle-center;
+}
+
+.rcp-detail__meta,
+.rcp-detail__plan,
+.rcp-detail__cost {
+    -unity-text-align: middle-center;
+}
+
+.rcp-detail__metrics {
+    margin-top: 12px;
+}
+
+.rcp-detail__metric {
+    margin-top: 8px;
+}
+
+.rcp-detail__metric-head {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.rcp-detail__metric-label,
+.rcp-detail__metric-value {
+    color: rgba(216, 199, 153, 0.84);
+    font-size: 10px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.rcp-detail__metric-value {
+    color: rgba(127, 163, 224, 0.95);
+}
+
+.rcp-detail__metric-track {
+    height: 8px;
+    margin-top: 4px;
+    background-color: rgba(8, 12, 28, 0.78);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: rgba(245, 214, 138, 0.16);
+    border-bottom-color: rgba(26, 42, 82, 0.82);
+}
+
+.rcp-detail__metric-fill {
+    height: 100%;
+    background-color: rgba(138, 100, 24, 0.86);
+}
+
+.rcp-detail__metric--safety .rcp-detail__metric-fill {
+    background-color: rgba(74, 114, 184, 0.86);
+}
+
+.rcp-detail__metric--signal .rcp-detail__metric-fill {
+    background-color: rgba(43, 82, 52, 0.86);
+}
+
+.rcp-detail__skills {
+    padding-top: 10px;
+    font-size: 10px;
+    max-height: 48px;
+    overflow: hidden;
+}
+
+.rcp-detail__tags {
+    justify-content: center;
+}
+
+.rcp-actions {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 300px;
+    padding-right: 340px;
 }

@@ -48,6 +48,17 @@
 
         <ui:VisualElement name="TurnOrderStrip" class="sm-bs-turn-order" />
 
+        <ui:VisualElement name="BattleIntelPanel" class="sm-bs-intel-panel sm-vellum-card">
+            <ui:Label name="BattleIntelTitleLabel" class="panel__title sm-bs-section-title sm-bs-intel-title" />
+            <ui:VisualElement name="BattleIntelBoard" class="sm-bs-intel-board" />
+            <ui:VisualElement name="BattleIntelLegend" class="sm-bs-intel-legend" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="BattleSideRail" class="sm-bs-side-rail sm-vellum-card">
+            <ui:Label name="BattleSideRailTitleLabel" class="panel__title sm-bs-section-title sm-bs-side-rail-title" />
+            <ui:VisualElement name="BattleSideRailSteps" class="sm-bs-side-rail-steps" />
+        </ui:VisualElement>
+
         <ui:VisualElement name="EnemySummaryPanel" class="sm-bs-threat-strip sm-vellum-card">
             <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--striker" />
             <ui:VisualElement class="sm-bs-strip-header">
@@ -163,6 +174,11 @@
 
             <ui:VisualElement class="action-group sm-bs-control-group sm-bs-utility-group">
                 <ui:Label name="UtilityGroupTitleLabel" class="action-group__title sm-bs-control-title" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="ObserverStatusGroup" class="action-group sm-bs-control-group sm-bs-observer-group">
+                <ui:Label name="ObserverStatusTitleLabel" class="action-group__title sm-bs-control-title sm-bs-observer-title" />
+                <ui:VisualElement name="ObserverStatusChips" class="sm-bs-observer-chips" />
             </ui:VisualElement>
         </ui:VisualElement>
 

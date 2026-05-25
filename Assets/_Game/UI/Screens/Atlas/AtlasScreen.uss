@@ -1,21 +1,21 @@
 .atlas-root {
     flex-grow: 1;
-    background-color: rgba(20, 23, 27, 0);
+    background-color: rgba(3, 6, 14, 0.08);
     color: rgb(230, 234, 229);
-    padding: 14px;
+    padding: 10px 14px 10px 14px;
 }
 
 .atlas-topbar {
-    min-height: 54px;
+    min-height: 42px;
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
-    background-color: rgba(16, 19, 20, 0.58);
+    background-color: rgba(5, 8, 18, 0.86);
     border-width: 1px;
-    border-color: rgba(255, 218, 138, 0.22);
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-bottom: 10px;
+    border-color: rgba(230, 183, 81, 0.58);
+    border-radius: 2px;
+    padding: 8px 14px;
+    margin-bottom: 8px;
 }
 
 .atlas-title {
@@ -39,14 +39,42 @@
 }
 
 .atlas-left-rail {
-    width: 260px;
-    min-width: 240px;
-    padding: 10px 12px 8px 10px;
-    background-color: rgba(16, 19, 20, 0.58);
+    width: 268px;
+    min-width: 248px;
+    padding: 10px 10px 8px 10px;
+    background-color: rgba(4, 7, 15, 0.88);
     border-width: 1px;
-    border-color: rgba(255, 218, 138, 0.18);
-    border-radius: 8px;
-    margin-right: 12px;
+    border-color: rgba(230, 183, 81, 0.56);
+    border-radius: 2px;
+    margin-right: 10px;
+}
+
+.atlas-rail-tabs {
+    min-height: 38px;
+    flex-direction: row;
+    margin-bottom: 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.32);
+}
+
+.atlas-rail-tab {
+    width: 42px;
+    height: 30px;
+    margin-right: 6px;
+    border-width: 1px;
+    border-color: rgba(230, 183, 81, 0.28);
+    border-radius: 2px;
+    background-color: rgba(11, 16, 28, 0.78);
+    color: rgb(184, 160, 95);
+    font-size: 16px;
+    unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.atlas-rail-tab--active {
+    border-color: rgba(245, 204, 112, 0.92);
+    background-color: rgba(74, 58, 26, 0.76);
+    color: rgb(255, 232, 158);
 }
 
 .atlas-section-title {
@@ -63,14 +91,20 @@
 
 .atlas-sigil-button,
 .atlas-stage-candidate-button {
-    min-height: 54px;
+    min-height: 44px;
     margin-bottom: 6px;
-    border-radius: 6px;
+    border-radius: 2px;
     border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.14);
-    background-color: rgb(40, 47, 53);
-    color: rgb(230, 234, 229);
-    font-size: 12px;
+    border-color: rgba(230, 183, 81, 0.34);
+    background-color: rgba(28, 22, 12, 0.78);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.24);
+    color: rgb(238, 222, 196);
+    font-size: 11px;
     white-space: normal;
 }
 
@@ -102,13 +136,115 @@
     flex-grow: 1;
     min-width: 340px;
     min-height: 520px;
-    margin-right: 12px;
+    margin-right: 10px;
+    position: relative;
+    overflow: hidden;
+    border-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+    border-right-color: rgba(230, 183, 81, 0.42);
+    border-top-color: rgba(245, 214, 138, 0.34);
+    border-bottom-color: rgba(138, 100, 24, 0.58);
+    border-radius: 2px;
+    background-color: rgba(36, 26, 14, 0.62);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.40);
 }
 
 .atlas-board {
     flex-grow: 1;
     position: relative;
     display: none;
+}
+
+.atlas-map-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.atlas-map-node {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border-width: 1px;
+    border-color: rgba(255, 226, 129, 0.34);
+    background-color: rgba(11, 15, 21, 0.44);
+    color: rgb(245, 204, 112);
+    font-size: 16px;
+    unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.atlas-map-node.is-selected,
+.atlas-map-node.is-current {
+    width: 42px;
+    height: 42px;
+    border-radius: 21px;
+    border-width: 2px;
+    border-color: rgba(255, 232, 147, 0.88);
+    background-color: rgba(72, 54, 20, 0.70);
+    color: rgb(255, 235, 160);
+}
+
+.atlas-map-node.is-locked {
+    opacity: 0.42;
+}
+
+.atlas-map-node--skirmish {
+    color: rgb(228, 192, 142);
+}
+
+.atlas-map-node--elite {
+    color: rgb(232, 158, 218);
+    border-color: rgba(232, 158, 218, 0.52);
+}
+
+.atlas-map-node--boss {
+    color: rgb(241, 132, 132);
+    border-color: rgba(241, 132, 132, 0.72);
+}
+
+.atlas-map-node--extract {
+    color: rgb(120, 214, 178);
+    border-color: rgba(120, 214, 178, 0.58);
+}
+
+.atlas-map-node--reward {
+    color: rgb(245, 204, 112);
+}
+
+.atlas-map-node--event,
+.atlas-map-node--anchor {
+    color: rgb(128, 206, 212);
+    border-color: rgba(128, 206, 212, 0.48);
+}
+
+.atlas-map-route-segment {
+    position: absolute;
+    height: 2px;
+    border-radius: 2px;
+    border-width: 1px;
+    border-color: rgba(255, 239, 174, 0.30);
+    background-color: rgba(255, 214, 108, 0.30);
+}
+
+.atlas-map-route-segment--flat {
+    rotate: 0deg;
+}
+
+.atlas-map-route-segment--rise {
+    rotate: -24deg;
+}
+
+.atlas-map-route-segment--fall {
+    rotate: 24deg;
 }
 
 .atlas-stage-candidate-overlay {
@@ -133,12 +269,12 @@
     position: absolute;
     border-width: 1px;
     border-radius: 18px;
-    opacity: 0.05;
+    opacity: 0.025;
 }
 
 .atlas-layer-focus.is-pulsing,
 .atlas-layer-focus:hover {
-    opacity: 0.30;
+    opacity: 0.14;
 }
 
 .atlas-layer-focus--stage-1 {
@@ -173,43 +309,43 @@
 
 .atlas-hex-hit-zone:hover {
     border-width: 1px;
-    border-color: rgba(255, 231, 145, 0.34);
-    background-color: rgba(255, 231, 145, 0.06);
-}
-
-.atlas-hex-hit-zone.is-current {
-    border-width: 1px;
-    border-color: rgba(255, 231, 145, 0.22);
-}
-
-.atlas-hex-hit-zone.is-stage-candidate {
+    border-color: rgba(255, 231, 145, 0.24);
     background-color: rgba(255, 231, 145, 0.025);
 }
 
+.atlas-hex-hit-zone.is-current {
+    border-width: 0;
+    border-color: rgba(255, 231, 145, 0);
+}
+
+.atlas-hex-hit-zone.is-stage-candidate {
+    background-color: rgba(255, 231, 145, 0.006);
+}
+
 .atlas-hex-hit-zone.is-stage-candidate-current {
-    border-width: 2px;
-    border-color: rgba(255, 231, 145, 0.44);
-    background-color: rgba(255, 231, 145, 0.08);
+    border-width: 1px;
+    border-color: rgba(255, 231, 145, 0.24);
+    background-color: rgba(255, 231, 145, 0.024);
 }
 
 .atlas-hex-hit-zone.is-stage-candidate-future {
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.18);
-    background-color: rgba(255, 255, 255, 0.025);
+    border-width: 0;
+    border-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0);
 }
 
 .atlas-hex-hit-zone.is-selected {
-    border-width: 2px;
-    border-color: rgba(255, 238, 180, 0.58);
+    border-width: 1px;
+    border-color: rgba(255, 238, 180, 0.30);
 }
 
 .atlas-hex-hit-zone.is-current-selected {
-    border-width: 3px;
-    border-color: rgb(255, 231, 145);
+    border-width: 2px;
+    border-color: rgba(255, 231, 145, 0.86);
 }
 
 .atlas-hex-hit-zone.is-locked {
-    opacity: 0.58;
+    opacity: 0.18;
 }
 
 .atlas-hex-hit-zone.is-pin-anchor {
@@ -396,19 +532,19 @@
 
 .atlas-stage-badge {
     position: absolute;
-    width: 44px;
+    width: 42px;
     height: 24px;
-    border-radius: 6px;
+    border-radius: 12px;
     border-width: 1px;
     border-color: rgba(255, 231, 145, 0.82);
-    background-color: rgba(24, 28, 29, 0.72);
+    background-color: rgba(24, 28, 29, 0.50);
     color: rgb(255, 231, 145);
     font-size: 12px;
     unity-font-style: bold;
 }
 
 .atlas-stage-badge.is-current {
-    background-color: rgba(245, 204, 112, 0.84);
+    background-color: rgba(245, 204, 112, 0.62);
     color: rgb(18, 19, 18);
 }
 
@@ -434,7 +570,8 @@
     position: absolute;
     flex-direction: row;
     flex-wrap: wrap;
-    max-width: 92px;
+    max-width: 86px;
+    opacity: 0.54;
 }
 
 .atlas-anchor-marker {
@@ -443,8 +580,8 @@
     height: 22px;
     border-radius: 11px;
     border-width: 1px;
-    border-color: rgba(245, 204, 112, 0.34);
-    background-color: rgba(245, 204, 112, 0.08);
+    border-color: rgba(245, 204, 112, 0.42);
+    background-color: rgba(245, 204, 112, 0.10);
 }
 
 .atlas-anchor-marker.is-active {
@@ -463,34 +600,104 @@
 }
 
 .atlas-preview {
-    width: 360px;
-    min-width: 330px;
-    padding: 14px;
-    background-color: rgba(25, 30, 33, 0.72);
+    width: 356px;
+    min-width: 336px;
+    padding: 10px;
+    background-color: rgba(4, 7, 15, 0.90);
     border-width: 1px;
-    border-color: rgba(255, 218, 138, 0.24);
-    border-radius: 8px;
+    border-color: rgba(230, 183, 81, 0.62);
+    border-radius: 2px;
+}
+
+.atlas-decision-card {
+    border-width: 1px;
+    border-color: rgba(230, 183, 81, 0.32);
+    border-radius: 2px;
+    background-color: rgba(28, 22, 12, 0.74);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.26);
+    padding: 8px;
+    margin-bottom: 7px;
+}
+
+.atlas-decision-card--primary {
+    border-color: rgba(230, 183, 81, 0.54);
+    background-color: rgba(36, 26, 14, 0.86);
+}
+
+.atlas-preview-card--enemy {
+    border-color: rgba(230, 183, 81, 0.30);
+}
+
+.atlas-preview-card--modifiers {
+    border-color: rgba(128, 206, 212, 0.24);
+}
+
+.atlas-preview-card--reward {
+    border-color: rgba(245, 204, 112, 0.30);
+}
+
+.atlas-preview-card--recommendations {
+    border-color: rgba(95, 173, 126, 0.28);
+}
+
+.atlas-preview-banner {
+    height: 44px;
+    margin-bottom: 8px;
+    flex-direction: row;
+    border-width: 1px;
+    border-color: rgba(230, 183, 81, 0.24);
+    background-color: rgba(18, 23, 30, 0.56);
+}
+
+.atlas-preview-banner__sigil {
+    width: 54px;
+    margin: 8px;
+    border-width: 1px;
+    border-color: rgba(245, 204, 112, 0.60);
+    background-color: rgba(33, 52, 74, 0.82);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Faction/faction_wolfpine.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.atlas-preview-banner__image {
+    flex-grow: 1;
+    margin: 8px 8px 8px 0;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.10);
+    background-color: rgba(31, 41, 48, 0.22);
 }
 
 .atlas-preview-title {
-    font-size: 20px;
+    font-size: 18px;
     unity-font-style: bold;
     color: rgb(250, 247, 232);
     margin-bottom: 4px;
+    white-space: normal;
 }
 
 .atlas-judgement {
     color: rgb(245, 204, 112);
     unity-font-style: bold;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     white-space: normal;
+}
+
+.atlas-preview-status-row {
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .atlas-preview-action-ribbon {
     align-self: flex-start;
-    margin-bottom: 8px;
+    margin-right: 6px;
+    margin-bottom: 4px;
     padding: 4px 8px;
-    border-radius: 8px;
+    border-radius: 2px;
     border-width: 1px;
     border-color: rgba(245, 204, 112, 0.36);
     background-color: rgba(53, 47, 34, 0.72);
@@ -502,9 +709,9 @@
 .atlas-preview-threat-band {
     align-self: flex-start;
     margin-top: 0;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     padding: 3px 8px;
-    border-radius: 10px;
+    border-radius: 2px;
     border-width: 1px;
     border-color: rgba(95, 173, 126, 0.52);
     background-color: rgba(38, 64, 50, 0.62);
@@ -534,29 +741,31 @@
 .atlas-preview-label {
     font-size: 11px;
     unity-font-style: bold;
-    color: rgb(163, 191, 174);
-    margin-top: 8px;
+    color: rgb(233, 215, 168);
+    margin-top: 0;
+    margin-bottom: 4px;
 }
 
 .atlas-preview-body {
-    font-size: 12px;
+    font-size: 11px;
     white-space: normal;
     color: rgb(230, 234, 229);
 }
 
 .atlas-preview-body--intel {
+    margin-top: 6px;
     padding: 7px 8px;
     border-left-width: 2px;
     border-left-color: rgba(245, 204, 112, 0.46);
-    background-color: rgba(12, 15, 17, 0.28);
+    background-color: rgba(12, 15, 26, 0.74);
     color: rgb(235, 229, 207);
 }
 
 .atlas-boundary-note {
-    margin-top: 12px;
+    margin-top: 0;
     padding: 8px;
-    border-radius: 6px;
-    background-color: rgb(44, 45, 39);
+    border-radius: 2px;
+    background-color: rgba(35, 28, 16, 0.92);
     color: rgb(235, 217, 164);
     font-size: 11px;
     white-space: normal;
@@ -564,8 +773,8 @@
 
 .atlas-continue-button {
     min-height: 42px;
-    margin-top: 10px;
-    border-radius: 6px;
+    margin-top: 2px;
+    border-radius: 2px;
     border-width: 1px;
     border-color: rgb(245, 204, 112);
     background-color: rgb(69, 62, 43);
@@ -607,20 +816,20 @@
 }
 
 .atlas-spine-progress-strip {
-    min-height: 50px;
+    min-height: 32px;
     flex-direction: row;
     justify-content: center;
-    background-color: rgba(16, 19, 20, 0.62);
+    background-color: rgba(5, 8, 18, 0.78);
     border-width: 1px;
-    border-color: rgba(255, 218, 138, 0.22);
-    border-radius: 8px;
-    margin-top: 10px;
-    padding: 8px;
+    border-color: rgba(230, 183, 81, 0.38);
+    border-radius: 2px;
+    margin-top: 7px;
+    padding: 4px;
 }
 
 .atlas-spine-stage {
-    min-width: 82px;
-    height: 32px;
+    min-width: 74px;
+    height: 24px;
     margin-left: 4px;
     margin-right: 4px;
     border-radius: 6px;
@@ -628,7 +837,7 @@
     border-color: rgba(255, 255, 255, 0.16);
     background-color: rgba(40, 47, 53, 0.70);
     color: rgb(196, 206, 198);
-    font-size: 12px;
+    font-size: 11px;
     unity-font-style: bold;
 }
 
@@ -648,21 +857,21 @@
 }
 
 .sitetrack-strip {
-    min-height: 64px;
+    min-height: 46px;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-color: rgba(12, 15, 17, 0.66);
+    background-color: rgba(5, 8, 18, 0.78);
     border-width: 1px;
-    border-color: rgba(255, 218, 138, 0.26);
-    border-radius: 8px;
-    margin-top: 8px;
-    padding: 6px 10px;
+    border-color: rgba(230, 183, 81, 0.38);
+    border-radius: 2px;
+    margin-top: 6px;
+    padding: 5px 8px;
 }
 
 .sitetrack-node {
-    width: 92px;
-    min-height: 48px;
+    width: 84px;
+    min-height: 36px;
     margin-left: 4px;
     margin-right: 4px;
     border-radius: 6px;
@@ -675,14 +884,14 @@
 }
 
 .sitetrack-node__icon {
-    font-size: 18px;
+    font-size: 15px;
     unity-font-style: bold;
     color: rgb(220, 226, 220);
     margin-bottom: 2px;
 }
 
 .sitetrack-node__label {
-    font-size: 11px;
+    font-size: 10px;
     unity-font-style: bold;
     color: rgb(200, 210, 202);
     -unity-text-align: middle-center;
@@ -727,4 +936,188 @@
 
 .sitetrack-node__kind-extract .sitetrack-node__icon {
     color: rgb(120, 214, 178);
+}
+
+/* UX Bible visual QA pass 2: add a compact route legend around the scene-driven atlas, no mock map overlay. */
+.atlas-topbar {
+    min-height: 58px;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: rgba(4, 8, 18, 0.92);
+    border-top-color: rgba(245, 204, 112, 0.42);
+    border-bottom-color: rgba(138, 100, 24, 0.58);
+}
+
+.atlas-left-rail,
+.atlas-preview {
+    background-color: rgba(4, 8, 18, 0.94);
+}
+
+.atlas-board-pane {
+    border-color: rgba(230, 183, 81, 0.28);
+    background-color: rgba(4, 8, 18, 0.12);
+}
+
+.atlas-command-legend {
+    min-height: 30px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    background-color: rgba(4, 8, 18, 0.82);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.24);
+    border-right-color: rgba(230, 183, 81, 0.24);
+    border-top-color: rgba(245, 204, 112, 0.18);
+    border-bottom-color: rgba(138, 100, 24, 0.34);
+}
+
+.atlas-command-legend__item {
+    min-width: 86px;
+    height: 22px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-top: 3px;
+    color: rgb(210, 218, 210);
+    font-size: 10px;
+    -unity-text-align: middle-center;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(255, 255, 255, 0.14);
+    border-right-color: rgba(255, 255, 255, 0.14);
+    border-top-color: rgba(255, 255, 255, 0.14);
+    border-bottom-color: rgba(255, 255, 255, 0.14);
+    background-color: rgba(40, 47, 53, 0.62);
+}
+
+.atlas-command-legend__item--safe {
+    border-left-color: rgba(95, 173, 126, 0.70);
+}
+
+.atlas-command-legend__item--threat {
+    border-left-color: rgba(231, 178, 83, 0.76);
+}
+
+.atlas-command-legend__item--reward {
+    border-left-color: rgba(245, 204, 112, 0.78);
+}
+
+.atlas-command-legend__item--boss {
+    border-left-color: rgba(241, 132, 132, 0.78);
+}
+
+/* UX Bible visual QA pass 3: strengthen scene-driven atlas read without replacing map art. */
+.atlas-map-overlay {
+    background-color: rgba(2, 6, 14, 0.10);
+}
+
+.atlas-map-route-segment {
+    height: 4px;
+    border-left-color: rgba(255, 239, 174, 0.42);
+    border-right-color: rgba(255, 239, 174, 0.42);
+    border-top-color: rgba(255, 239, 174, 0.42);
+    border-bottom-color: rgba(255, 239, 174, 0.42);
+    background-color: rgba(255, 214, 108, 0.52);
+}
+
+.atlas-map-node {
+    width: 34px;
+    height: 34px;
+    border-radius: 17px;
+    background-color: rgba(5, 10, 19, 0.68);
+}
+
+.atlas-map-node.is-selected,
+.atlas-map-node.is-current {
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background-color: rgba(88, 67, 28, 0.86);
+}
+
+.atlas-map-status-strip {
+    position: absolute;
+    left: 16px;
+    top: 14px;
+    min-height: 42px;
+    flex-direction: row;
+    align-items: stretch;
+    background-color: rgba(3, 7, 16, 0.72);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.28);
+    border-right-color: rgba(230, 183, 81, 0.28);
+    border-top-color: rgba(245, 204, 112, 0.22);
+    border-bottom-color: rgba(138, 100, 24, 0.38);
+}
+
+.atlas-map-status-chip {
+    width: 126px;
+    min-height: 40px;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    border-left-width: 2px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+    background-color: rgba(9, 14, 27, 0.62);
+}
+
+.atlas-map-status-chip--selection {
+    border-left-color: rgba(245, 204, 112, 0.70);
+}
+
+.atlas-map-status-chip--threat {
+    border-left-color: rgba(129, 184, 245, 0.70);
+}
+
+.atlas-map-status-chip--reward {
+    border-left-color: rgba(95, 173, 126, 0.70);
+}
+
+.atlas-map-status-chip__key {
+    color: rgb(184, 160, 95);
+    font-size: 9px;
+    -unity-font-style: bold;
+}
+
+.atlas-map-status-chip__value {
+    margin-top: 2px;
+    color: rgb(245, 238, 206);
+    font-size: 11px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.atlas-map-node-label {
+    position: absolute;
+    width: 108px;
+    min-height: 22px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 3px;
+    color: rgb(255, 238, 190);
+    font-size: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    background-color: rgba(4, 8, 18, 0.82);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(245, 204, 112, 0.44);
+    border-right-color: rgba(245, 204, 112, 0.44);
+    border-top-color: rgba(245, 204, 112, 0.36);
+    border-bottom-color: rgba(138, 100, 24, 0.52);
+}
+
+.atlas-map-node-label.is-current {
+    background-color: rgba(74, 58, 26, 0.90);
 }

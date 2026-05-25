@@ -9,10 +9,10 @@
 
 .erp-backdrop {
     position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_equipment_refit_dusk.png");
     -unity-background-scale-mode: scale-and-crop;
 }
-.erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+.erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.32); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .erp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }

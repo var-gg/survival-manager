@@ -35,14 +35,11 @@
 
             <ui:VisualElement class="tcs-body">
                 <ui:VisualElement class="tcs-portrait-column">
+                    <ui:VisualElement name="TcsHeroRail" class="tcs-hero-rail" picking-mode="Ignore" />
                     <ui:VisualElement name="TcsPortraitToken" class="tcs-portrait-token sm-chrome-l3" picking-mode="Ignore">
+                        <ui:VisualElement name="TcsPortraitImage" class="tcs-portrait-image" />
+                        <ui:VisualElement class="tcs-portrait-vignette" picking-mode="Ignore" />
                         <ui:Label name="TcsPortraitGlyphLabel" class="tcs-portrait-glyph" text="✦" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="tcs-mini-rail" picking-mode="Ignore">
-                        <ui:VisualElement class="tcs-mini-token tcs-mini-token--active" />
-                        <ui:VisualElement class="tcs-mini-token" />
-                        <ui:VisualElement class="tcs-mini-token" />
-                        <ui:VisualElement class="tcs-mini-token" />
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-portrait-pips" picking-mode="Ignore">
                         <ui:VisualElement class="tcs-pip tcs-pip--on" />
@@ -56,14 +53,17 @@
                 <ui:VisualElement class="tcs-column tcs-column--primary">
                     <ui:VisualElement class="tcs-panel tcs-panel--overview sm-chrome-l2">
                         <ui:Label name="TcsOverviewTitle" class="tcs-panel__title" />
+                        <ui:VisualElement name="TcsStatGrid" class="tcs-stat-grid" picking-mode="Ignore" />
                         <ui:Label name="TcsOverviewBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--progression sm-chrome-l2">
                         <ui:Label name="TcsProgressionTitle" class="tcs-panel__title" />
+                        <ui:VisualElement name="TcsProgressionTrack" class="tcs-progression-track" picking-mode="Ignore" />
                         <ui:Label name="TcsProgressionBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--equipment sm-chrome-l2">
                         <ui:Label name="TcsLoadoutTitle" class="tcs-panel__title" />
+                        <ui:VisualElement name="TcsEquipmentRow" class="tcs-equipment-row" picking-mode="Ignore" />
                         <ui:Label name="TcsLoadoutBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
@@ -77,6 +77,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--skill-list sm-chrome-l2">
                         <ui:Label name="TcsPassivesTitle" class="tcs-panel__title" />
+                        <ui:VisualElement name="TcsSkillList" class="tcs-skill-list" picking-mode="Ignore" />
                         <ui:Label name="TcsPassivesBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--skill-detail sm-chrome-l2">

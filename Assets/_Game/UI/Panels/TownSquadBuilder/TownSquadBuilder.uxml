@@ -46,6 +46,11 @@
                 <ui:VisualElement name="SquadBuilderFormationBoard" class="sm-sqb-modal__section sm-sqb-modal__section--formation">
                     <ui:Label name="TacticalSetupFormationSection" class="sm-sqb-modal__section-title" text="전열" />
                     <ui:Label name="SquadBuilderAnchorHint" class="sm-sqb-modal__hint" text="버튼을 누르면 다음 영웅으로 순환합니다." />
+                    <ui:VisualElement class="sm-sqb-modal__formation-compass" picking-mode="Ignore">
+                        <ui:VisualElement class="sm-sqb-modal__formation-line sm-sqb-modal__formation-line--top" />
+                        <ui:VisualElement class="sm-sqb-modal__formation-line sm-sqb-modal__formation-line--middle" />
+                        <ui:VisualElement class="sm-sqb-modal__formation-line sm-sqb-modal__formation-line--bottom" />
+                    </ui:VisualElement>
                     <ui:VisualElement class="sm-sqb-modal__anchor-grid">
                         <ui:VisualElement class="sm-sqb-modal__anchor-column">
                             <ui:Label class="sm-sqb-modal__column-title" text="상단" />

@@ -802,7 +802,6 @@
     position: absolute;
     width: var(--sm-frame-corner-size);
     height: var(--sm-frame-corner-size);
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Ornaments/ornament-corner-vine.svg");
     -unity-background-image-tint-color: var(--sm-frame-corner-color);
 }
 
@@ -811,10 +810,22 @@
     height: var(--sm-frame-corner-size-small);
 }
 
-.sm-frame-corner-cap--tl { top: -3px; left: -3px; }
-.sm-frame-corner-cap--tr { top: -3px; right: -3px; scale: -1 1; }
-.sm-frame-corner-cap--bl { bottom: -3px; left: -3px; scale: 1 -1; }
-.sm-frame-corner-cap--br { bottom: -3px; right: -3px; scale: -1 -1; }
+.sm-frame-corner-cap--tl {
+    top: -8px; left: -8px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Ornament/ui_corner_ornament_tl.png");
+}
+.sm-frame-corner-cap--tr {
+    top: -8px; right: -8px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Ornament/ui_corner_ornament_tr.png");
+}
+.sm-frame-corner-cap--bl {
+    bottom: -8px; left: -8px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Ornament/ui_corner_ornament_bl.png");
+}
+.sm-frame-corner-cap--br {
+    bottom: -8px; right: -8px;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Ornament/ui_corner_ornament_br.png");
+}
 
 .sm-frame-corner-cap--small.sm-frame-corner-cap--tl { top: -2px; left: -2px; }
 .sm-frame-corner-cap--small.sm-frame-corner-cap--tr { top: -2px; right: -2px; }
@@ -957,6 +968,12 @@
     right: 0;
     top: 0;
     bottom: 0;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.50);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;

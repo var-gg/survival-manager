@@ -19,6 +19,10 @@
 
             <!-- Top currency header -->
             <ui:VisualElement class="inv-currency-header">
+                <ui:VisualElement class="inv-title-block">
+                    <ui:Label name="InventoryTitleLabel" class="inv-title-block__title" text="장비 비교" />
+                    <ui:Label name="InventorySubtitleLabel" class="inv-title-block__subtitle" text="선택 장비와 대상 영웅의 현재 장비를 비교합니다." />
+                </ui:VisualElement>
                 <ui:VisualElement class="inv-currency">
                     <ui:VisualElement name="GoldIcon" class="inv-currency__icon" picking-mode="Ignore" />
                     <ui:Label class="inv-currency__amount" text="9,876,543" />
@@ -43,7 +47,9 @@
                         <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
                         <ui:VisualElement class="inv-main__filter-glyph" picking-mode="Ignore" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="ItemGrid" class="inv-grid" />
+                    <ui:ScrollView name="ItemGridScroll" class="inv-grid-scroll" mode="Vertical">
+                        <ui:VisualElement name="ItemGrid" class="inv-grid" />
+                    </ui:ScrollView>
                 </ui:VisualElement>
 
                 <!-- Right detail panel -->
@@ -59,6 +65,13 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement name="DetailAffixes" class="inv-detail__affixes" />
+                    <ui:VisualElement class="inv-detail__rune-track" picking-mode="Ignore">
+                        <ui:VisualElement class="inv-detail__rune inv-detail__rune--on" />
+                        <ui:VisualElement class="inv-detail__rune inv-detail__rune--on" />
+                        <ui:VisualElement class="inv-detail__rune inv-detail__rune--on" />
+                        <ui:VisualElement class="inv-detail__rune" />
+                        <ui:VisualElement class="inv-detail__rune" />
+                    </ui:VisualElement>
                     <ui:VisualElement class="inv-detail__owner">
                         <ui:VisualElement class="inv-detail__owner-icon" picking-mode="Ignore" />
                         <ui:VisualElement class="inv-detail__owner-glyph" picking-mode="Ignore" />
@@ -80,16 +93,30 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="inv-compare__cards">
                         <ui:VisualElement class="inv-compare__card inv-compare__card--selected">
-                            <ui:Label name="CompareSelectedItemLabel" class="inv-compare__card-title sm-cd-body-text" />
-                            <ui:Label name="CompareSelectedItemMetaLabel" class="inv-compare__card-meta sm-cd-meta" />
+                            <ui:VisualElement name="CompareSelectedItemIcon" class="inv-compare__card-icon sm-item-icon" picking-mode="Ignore" />
+                            <ui:VisualElement class="inv-compare__card-copy">
+                                <ui:Label name="CompareSelectedItemLabel" class="inv-compare__card-title sm-cd-body-text" />
+                                <ui:Label name="CompareSelectedItemMetaLabel" class="inv-compare__card-meta sm-cd-meta" />
+                            </ui:VisualElement>
                             <ui:Label name="CompareOwnerLabel" class="inv-compare__owner sm-cd-meta" />
                         </ui:VisualElement>
                         <ui:VisualElement class="inv-compare__card inv-compare__card--equipped">
-                            <ui:Label name="CompareEquippedItemLabel" class="inv-compare__card-title sm-cd-body-text" />
-                            <ui:Label name="CompareEquippedItemMetaLabel" class="inv-compare__card-meta sm-cd-meta" />
+                            <ui:VisualElement name="CompareEquippedItemIcon" class="inv-compare__card-icon sm-item-icon" picking-mode="Ignore" />
+                            <ui:VisualElement class="inv-compare__card-copy">
+                                <ui:Label name="CompareEquippedItemLabel" class="inv-compare__card-title sm-cd-body-text" />
+                                <ui:Label name="CompareEquippedItemMetaLabel" class="inv-compare__card-meta sm-cd-meta" />
+                            </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement name="CompareRows" class="inv-compare__rows" />
+                    <ui:VisualElement class="inv-compare__delta-legend" picking-mode="Ignore">
+                        <ui:VisualElement class="inv-compare__delta-chip inv-compare__delta-chip--gain" />
+                        <ui:Label name="CompareDeltaGainLabel" class="inv-compare__delta-label" text="상승" />
+                        <ui:VisualElement class="inv-compare__delta-chip inv-compare__delta-chip--change" />
+                        <ui:Label name="CompareDeltaChangeLabel" class="inv-compare__delta-label" text="변경" />
+                        <ui:VisualElement class="inv-compare__delta-chip inv-compare__delta-chip--same" />
+                        <ui:Label name="CompareDeltaSameLabel" class="inv-compare__delta-label" text="유지" />
+                    </ui:VisualElement>
                     <ui:Label name="CompareEquipStatusLabel" class="inv-compare__status sm-cd-body-text" />
                 </ui:VisualElement>
             </ui:VisualElement>

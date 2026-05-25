@@ -104,6 +104,18 @@
     -unity-background-scale-mode: scale-and-crop;
 }
 
+.sm-face-card__portrait-glyph {
+    flex-grow: 1;
+    color: rgba(245, 214, 138, 0.84);
+    font-size: 24px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+}
+
+.sm-face-card--lg .sm-face-card__portrait-glyph { font-size: 34px; }
+.sm-face-card--md .sm-face-card__portrait-glyph { font-size: 26px; }
+.sm-face-card--sm .sm-face-card__portrait-glyph { font-size: 18px; }
+
 /* emotion swap — face_emotion_sheet은 4×2 (8 cell). cell offset은 Unity USS의
    -unity-background-image-tint-color 또는 background-position-x/y로 cell 1개 노출.
    Phase 7에서는 PNG 자체를 emotion별 별도 file로 export하거나 (atlas slice) sprite로 처리.
@@ -133,6 +145,36 @@
 .sm-face-card--lg .sm-face-card__name { font-size: 13px; }
 .sm-face-card--md .sm-face-card__name { font-size: 11px; }
 .sm-face-card--sm .sm-face-card__name { font-size: 9px; }
+
+.sm-face-card__pip-row {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 3px;
+}
+
+.sm-face-card__pip {
+    width: 5px;
+    height: 5px;
+    margin-left: 2px;
+    margin-right: 2px;
+    background-color: rgba(35, 42, 72, 0.86);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.18);
+    border-right-color: rgba(230, 183, 81, 0.18);
+    border-top-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.sm-face-card__pip--on {
+    background-color: var(--sm-gold-300);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
 
 /* state overlay */
 .sm-face-card__state-overlay {

@@ -12,7 +12,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_compendium_dusk.png");
     -unity-background-scale-mode: scale-and-crop;
 }
 
