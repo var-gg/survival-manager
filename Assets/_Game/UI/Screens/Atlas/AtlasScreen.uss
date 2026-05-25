@@ -133,6 +133,10 @@
 }
 
 .atlas-board-pane {
+    /* atlas board content = 3D forest 풍경 + hex ley-line shader + sigil aura ring VFX
+       (pindoc://task-atlas-3d-environment-v1). 정적 painterly backdrop을 박으면
+       'boardgame 타일 인상' 회피 의도와 충돌 + site별 swap 못 함. UI chrome 영역만 sepia plate.
+       in-game 3D modeling은 90% UI scope 밖 — pindoc 결정 정공법은 3D scene 위 ley-line shader. */
     flex-grow: 1;
     min-width: 340px;
     min-height: 520px;
@@ -145,9 +149,8 @@
     border-top-color: rgba(245, 214, 138, 0.34);
     border-bottom-color: rgba(138, 100, 24, 0.58);
     border-radius: 2px;
-    background-color: rgba(36, 26, 14, 0.78);
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/atlas_wolfpine_overworld.png");
-    -unity-background-scale-mode: scale-and-crop;
+    background-color: rgba(36, 26, 14, 0.62);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
     -unity-slice-left: 48;
     -unity-slice-right: 48;
     -unity-slice-top: 48;
