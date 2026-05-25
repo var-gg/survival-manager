@@ -145,8 +145,9 @@
     border-top-color: rgba(245, 214, 138, 0.34);
     border-bottom-color: rgba(138, 100, 24, 0.58);
     border-radius: 2px;
-    background-color: rgba(36, 26, 14, 0.62);
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    background-color: rgba(36, 26, 14, 0.78);
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/atlas_wolfpine_overworld.png");
+    -unity-background-scale-mode: scale-and-crop;
     -unity-slice-left: 48;
     -unity-slice-right: 48;
     -unity-slice-top: 48;
