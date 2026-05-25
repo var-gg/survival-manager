@@ -39,14 +39,16 @@
 }
 
 .atlas-left-rail {
-    width: 268px;
-    min-width: 248px;
+    /* wave-25 GPT Pro patch: left-rail은 secondary, preview rail이 화면의 왕. opacity로 시각 위계 명시. */
+    width: 250px;
+    min-width: 232px;
     padding: 10px 10px 8px 10px;
-    background-color: rgba(4, 7, 15, 0.88);
+    background-color: rgba(4, 7, 15, 0.82);
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.56);
+    border-color: rgba(230, 183, 81, 0.42);
     border-radius: 2px;
     margin-right: 10px;
+    opacity: 0.88;
 }
 
 .atlas-rail-tabs {
@@ -604,8 +606,10 @@
 }
 
 .atlas-preview {
-    width: 356px;
-    min-width: 336px;
+    /* wave-25 GPT Pro patch: selected node preview "king of the screen" — 356 → 420 + low-density left-rail
+       (Regional Sigil Atlas 결정의 의사결정 주어 = 캐릭터 운용 선택). */
+    width: 420px;
+    min-width: 400px;
     padding: 10px;
     background-color: rgba(4, 7, 15, 0.90);
     border-width: 1px;
@@ -629,8 +633,24 @@
 }
 
 .atlas-decision-card--primary {
-    border-color: rgba(230, 183, 81, 0.54);
-    background-color: rgba(36, 26, 14, 0.86);
+    /* wave-25: primary node card는 화면의 왕. 다른 sub-card 대비 명확히 더 큰 시각 위계. */
+    min-height: 132px;
+    border-color: var(--sm-gold-100);
+    border-width: 2px;
+    background-color: rgba(36, 26, 14, 0.92);
+}
+
+/* wave-25 GPT Pro patch: recommendations(캐릭터 추천 3명)가 enemy intel보다 빠르게 보여야 함.
+   UXML order는 보존(아래 rule들이 시각 강조로 위계 보정). */
+.atlas-preview-card--recommendations {
+    border-color: rgba(95, 173, 126, 0.48);
+    background-color: rgba(28, 32, 18, 0.86);
+}
+
+.atlas-preview-card--scout {
+    /* Guide/Scout slot (squad 4-6 외 1명). decision-atlas-regional-sigil의 별도 layer. */
+    border-color: rgba(128, 206, 212, 0.42);
+    background-color: rgba(14, 24, 28, 0.86);
 }
 
 .atlas-preview-card--enemy {

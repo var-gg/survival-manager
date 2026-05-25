@@ -367,9 +367,11 @@
 }
 
 .reward-screen .reward-card {
+    /* wave-28 GPT Pro patch: reward card 500→400px로 density 낮춤.
+       left progression + right next-choice column이 secondary로 밀리던 문제 회복. */
     flex-grow: 1;
     min-width: 0;
-    min-height: 500px;
+    min-height: 400px;
     margin-right: 12px;
     padding-left: 14px;
     padding-right: 14px;
@@ -402,7 +404,8 @@
 }
 
 .reward-screen .reward-card__art {
-    height: 210px;
+    /* wave-28: card height 축소에 맞춰 art 210→164. */
+    height: 164px;
     margin-bottom: 14px;
     align-items: center;
     justify-content: center;

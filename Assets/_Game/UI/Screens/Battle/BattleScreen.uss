@@ -398,13 +398,38 @@
 }
 
 .battle-screen .sm-bs-control-bar {
-    width: 440px;
-    min-width: 400px;
+    /* wave-27 GPT Pro patch: command ribbon을 화면 중심 고정 (battlefield 위 항상 가운데). */
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    width: 520px;
+    min-width: 480px;
+    margin-left: -260px;
     height: 96px;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
-    margin-left: 12px;
+    justify-content: center;
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: rgba(255, 235, 200, 0.24);
+    background-color: rgba(28, 22, 12, 0.86);
+    border-width: 1px;
+    border-color: rgba(230, 183, 81, 0.42);
+}
+
+/* wave-27 GPT Pro patch: debug foldout과 debug control btn은 production capture에서 hide.
+   battle-screen--debug modifier에서만 표시. */
+.battle-screen .sm-bs-debug-foldout,
+.battle-screen .sm-bs-control-btn--debug {
+    display: none;
+}
+
+.battle-screen.battle-screen--debug .sm-bs-debug-foldout,
+.battle-screen.battle-screen--debug .sm-bs-control-btn--debug {
+    display: flex;
 }
 
 .battle-screen .sm-bs-control-group {
