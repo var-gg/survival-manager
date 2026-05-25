@@ -29,6 +29,7 @@ public sealed class AtlasScreenView
     private readonly Label _modifiers;
     private readonly Label _reward;
     private readonly Label _recommendations;
+    private readonly Label _scout;
     private readonly Label _boundary;
     private readonly Label _hash;
     private readonly Button _continueButton;
@@ -58,6 +59,8 @@ public sealed class AtlasScreenView
         _modifiers = Require<Label>("atlas-preview-modifiers");
         _reward = Require<Label>("atlas-preview-reward");
         _recommendations = Require<Label>("atlas-preview-recommendations");
+        // wave-25 presenter: scout slot label binding. UXML default placeholder text "(정찰원 미선택)" 유지.
+        _scout = Require<Label>("atlas-preview-scout");
         _boundary = Require<Label>("atlas-boundary-note");
         _hash = Require<Label>("atlas-debug-hash");
         _hash.style.display = DisplayStyle.None;
@@ -399,6 +402,11 @@ public sealed class AtlasScreenView
         _modifiers.text = preview.ModifierStack;
         _reward.text = preview.RewardPreview;
         _recommendations.text = preview.RecommendedCharacters;
+        // wave-25 presenter: scout text — empty면 UXML placeholder "(정찰원 미선택)" 유지.
+        if (!string.IsNullOrEmpty(preview.ScoutHint))
+        {
+            _scout.text = preview.ScoutHint;
+        }
         _boundary.text = preview.BoundaryNote;
         _hash.text = string.Empty;
         _hash.style.display = DisplayStyle.None;

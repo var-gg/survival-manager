@@ -95,7 +95,10 @@ public sealed record AtlasPreviewPanelViewState(
     string BoundaryNote,
     string DebugHashLine,
     string ThreatBandLabel = "",
-    AtlasEnemyIntelViewState? EnemyIntel = null);
+    AtlasEnemyIntelViewState? EnemyIntel = null,
+    // wave-25 presenter (GPT Pro P0): Guide/Scout slot — squad 4-6 외 1명, preview depth/reward bias/lore unlock에만 영향.
+    // decision-atlas-regional-sigil 결정의 별도 layer. default = "" (UXML placeholder text "(정찰원 미선택)"이 fallback으로 표시).
+    string ScoutHint = "");
 
 public sealed record AtlasScreenViewState(
     string RegionTitle,
