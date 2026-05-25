@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch5_clear_new_table__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch5_clear_new_table.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB3CC\uC544\uBCF4\uC9C0 \uC54A\uACE0"
   _autoAdvanceHint: 0
 --- !u!114 &-5251445953608196376
 MonoBehaviour:
@@ -105,8 +105,8 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch5_clear_new_table__line__003
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch5_clear_new_table.003
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.small
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC544\uC8FC \uC791\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &-1051227096941928345
 MonoBehaviour:

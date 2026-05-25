@@ -40,7 +40,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1
-    m_Localized: Ashglen Frontier Town
+    m_Localized: Town Operator UI
     m_Metadata:
       m_Items: []
   - m_Id: 2
@@ -231,7 +231,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 45
-    m_Localized: Debug / Smoke
+    m_Localized: Quick Battle
     m_Metadata:
       m_Items: []
   - m_Id: 46
@@ -304,8 +304,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 63
-    m_Localized: Open the smoke-only debug battle lane without altering authored
-      campaign progress.
+    m_Localized: Open a short combat check without altering authored campaign progress.
     m_Metadata:
       m_Items: []
   - m_Id: 64
@@ -366,12 +365,11 @@ MonoBehaviour:
       m_Items:
       - rid: 162163771961769987
   - m_Id: 77
-    m_Localized: Quick Battle is available as a secondary combat lane.
+    m_Localized: Quick Battle is available as a secondary combat check.
     m_Metadata:
       m_Items: []
   - m_Id: 78
-    m_Localized: Quick Battle is locked until the current expedition run
-      is closed.
+    m_Localized: Quick Battle is locked until the current expedition run is closed.
     m_Metadata:
       m_Items: []
   - m_Id: 79
@@ -628,8 +626,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 138
-    m_Localized: Quick Battle is locked while an authored expedition run
-      is active.
+    m_Localized: Quick Battle is locked while an authored expedition run is active.
     m_Metadata:
       m_Items: []
   - m_Id: 139
@@ -1013,8 +1010,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380255539585024
-    m_Localized: Open an integration smoke battle using the current Town build, then
-      return through Reward or direct Town restore.
+    m_Localized: Open a short battle using the current Town build, then return through
+      Reward or direct Town restore.
     m_Metadata:
       m_Items: []
   - m_Id: 17539472987328512
@@ -1400,6 +1397,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 17841341873852486
     m_Localized: Target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19993520462172160
+    m_Localized: "\u2756  Squad Builder"
     m_Metadata:
       m_Items: []
   references:

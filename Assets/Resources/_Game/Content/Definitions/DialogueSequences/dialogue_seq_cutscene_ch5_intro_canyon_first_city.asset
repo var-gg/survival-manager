@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch5_intro_canyon_first_city__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch5_intro_canyon_first_city.003
-  _emote: default
-  _emotionTextKey: loc.story.emotion.light
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAC00\uBCBC\uC6B4 \uCC99"
   _autoAdvanceHint: 0
 --- !u!114 &-805523107206250884
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch5_intro_canyon_first_city__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch5_intro_canyon_first_city.004
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB2E8\uB2E8\uD788"
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -107,8 +107,8 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch5_intro_canyon_first_city__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch5_intro_canyon_first_city.002
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.grim
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC5B5\uB204\uB984"
   _autoAdvanceHint: 0
 --- !u!114 &8041928779572987366
 MonoBehaviour:
@@ -125,6 +125,6 @@ MonoBehaviour:
   _id: dialogue_seq_cutscene_ch5_intro_canyon_first_city__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_cutscene_ch5_intro_canyon_first_city.001
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
   _autoAdvanceHint: 0

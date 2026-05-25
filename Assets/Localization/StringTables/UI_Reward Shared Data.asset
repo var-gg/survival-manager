@@ -551,6 +551,10 @@ MonoBehaviour:
     m_Key: ui.reward.status.recovered_choice
     m_Metadata:
       m_Items: []
+  - m_Id: 129
+    m_Key: ui.reward.settlement.commit_value
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

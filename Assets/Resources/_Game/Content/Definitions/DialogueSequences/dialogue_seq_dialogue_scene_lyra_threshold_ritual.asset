@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_threshold_ritual__line__001
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_threshold_ritual.001
-  _emote: default
-  _emotionTextKey: loc.story.emotion.serene
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uD669\uD640"
   _autoAdvanceHint: 0
 --- !u!114 &-4058413254350873297
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_threshold_ritual__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_threshold_ritual.006
-  _emote: default
-  _emotionTextKey: loc.story.emotion.gentle
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBD80\uB4DC\uB7FD\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &-2425720833301696190
 MonoBehaviour:
@@ -69,8 +69,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_threshold_ritual__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_threshold_ritual.002
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -109,8 +109,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_threshold_ritual__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_threshold_ritual.004
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB2E8\uB2E8\uD788"
   _autoAdvanceHint: 0
 --- !u!114 &3552894360891799216
 MonoBehaviour:
@@ -127,8 +127,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_threshold_ritual__line__003
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_threshold_ritual.003
-  _emote: sad
-  _emotionTextKey: loc.story.emotion.breaking
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB5A8\uB9BC"
   _autoAdvanceHint: 0
 --- !u!114 &5530139595554045610
 MonoBehaviour:
@@ -145,8 +145,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_lyra_threshold_ritual__line__005
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_lyra_threshold_ritual.005
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.almost_whisper
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAC70\uC758 \uC18D\uC0AD\uC784"
   _autoAdvanceHint: 0
 --- !u!114 &7596386277586824990
 MonoBehaviour:

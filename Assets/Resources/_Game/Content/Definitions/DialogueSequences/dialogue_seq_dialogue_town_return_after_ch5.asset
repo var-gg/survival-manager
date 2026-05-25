@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.005
-  _emote: default
-  _emotionTextKey: loc.story.emotion.looking
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uCC3D\uBC16"
   _autoAdvanceHint: 0
 --- !u!114 &-4418141177109581151
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.003
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC870\uC6A9\uD788"
   _autoAdvanceHint: 0
 --- !u!114 &-3801576108330589166
 MonoBehaviour:
@@ -87,8 +87,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.002
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC549\uC73C\uBA70"
   _autoAdvanceHint: 0
 --- !u!114 &-2853348348299475498
 MonoBehaviour:
@@ -105,8 +105,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uD53C\uACE4"
   _autoAdvanceHint: 0
 --- !u!114 &-128281797141230408
 MonoBehaviour:
@@ -123,8 +123,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__006
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.006
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAC70\uC6B8\uC744 \uB2EB\uC74C"
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_town_return_after_ch5__line__001
   _speakerId: npc_han_sae
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_town_return_after_ch5.001
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAE30\uB85D\uC790"
   _autoAdvanceHint: 0

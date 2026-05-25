@@ -531,6 +531,42 @@ MonoBehaviour:
     m_Localized: Return to Town, then resume the expedition
     m_Metadata:
       m_Items: []
+  - m_Id: 112
+    m_Localized: Settlement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113
+    m_Localized: Site
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114
+    m_Localized: Stage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 115
+    m_Localized: Encounter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 116
+    m_Localized: Commit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 117
+    m_Localized: '{0} / Node {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 118
+    m_Localized: Reward Bias +{0}%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 119
+    m_Localized: Threat Pressure +{0}%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 120
+    m_Localized: Affinity Boost +{0}%
+    m_Metadata:
+      m_Items: []
   - m_Id: 121
     m_Localized: Progression
     m_Metadata:
@@ -563,6 +599,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 128
     m_Localized: Recovered previous reward settlement.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 129
+    m_Localized: Recorded
     m_Metadata:
       m_Items: []
   references:

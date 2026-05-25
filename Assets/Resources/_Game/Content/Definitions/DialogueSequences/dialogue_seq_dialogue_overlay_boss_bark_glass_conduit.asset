@@ -31,10 +31,10 @@ MonoBehaviour:
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__002
-  _speakerId: hero_grave_hexer
+  _speakerId: boss_glass_conduit
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.002
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.grim
+  _emote: default
+  _emotionTextKey: loc.story.emotion.flat
   _autoAdvanceHint: 0
 --- !u!114 &-2222798689703292175
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__000
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.000
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.grim
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -72,6 +72,7 @@ MonoBehaviour:
   - {fileID: -4263010059216525872}
   - {fileID: -3387530184504828864}
   - {fileID: 3490996633064454740}
+  - {fileID: 7884206264903712757}
 --- !u!114 &3490996633064454740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,8 +86,26 @@ MonoBehaviour:
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__003
-  _speakerId: hero_pack_raider
+  _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.003
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.dry
+  _autoAdvanceHint: 0
+--- !u!114 &7884206264903712757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_bark_glass_conduit__line__004
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_bark_glass_conduit.004
   _emote: serious
   _emotionTextKey: loc.story.emotion.ready
   _autoAdvanceHint: 0

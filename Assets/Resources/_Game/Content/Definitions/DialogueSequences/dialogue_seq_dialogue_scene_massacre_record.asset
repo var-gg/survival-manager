@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_massacre_record__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.002
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &-526759284794018225
 MonoBehaviour:
@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_massacre_record__line__005
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.005
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAC70\uC6B8\uC744 \uAE30\uC6B8\uC784"
   _autoAdvanceHint: 0
 --- !u!114 &-297940658483660812
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_massacre_record__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.001
-  _emote: shock
-  _emotionTextKey: loc.story.emotion.shaken
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB5A8\uB9BC"
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -90,8 +90,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_massacre_record__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.006
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC228\uC744 \uC0BC\uD0B4"
   _autoAdvanceHint: 0
 --- !u!114 &1424093795478156746
 MonoBehaviour:
@@ -108,8 +108,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_massacre_record__line__004
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.004
-  _emote: sad
-  _emotionTextKey: loc.story.emotion.pained
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uACE0\uD1B5"
   _autoAdvanceHint: 0
 --- !u!114 &4747523536885935779
 MonoBehaviour:
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_massacre_record__line__003
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_massacre_record.003
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.no_joke
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB18D\uB2F4 \uC5C6\uC74C"
   _autoAdvanceHint: 0

@@ -1,5 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5580986092927120766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_cutscene_prologue_arrival_at_gate__line__008
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_arrival_at_gate.008
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
 --- !u!114 &-2746941165319848624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40,6 +58,7 @@ MonoBehaviour:
   - {fileID: 3376269699146715399}
   - {fileID: 3176197813804823993}
   - {fileID: 4638102602515349116}
+  - {fileID: -5580986092927120766}
 --- !u!114 &1928710265903571758
 MonoBehaviour:
   m_ObjectHideFlags: 0

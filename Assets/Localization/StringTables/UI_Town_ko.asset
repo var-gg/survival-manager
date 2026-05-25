@@ -41,7 +41,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1
-    m_Localized: "\uBCC0\uBC29 \uC7BF\uACE8 \uB9C8\uC744"
+    m_Localized: "Town \uC6B4\uC601 \uD654\uBA74"
     m_Metadata:
       m_Items: []
   - m_Id: 2
@@ -236,7 +236,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 45
-    m_Localized: "\uB514\uBC84\uADF8 / \uC2A4\uBAA8\uD06C"
+    m_Localized: "\uBE60\uB978 \uC804\uD22C"
     m_Metadata:
       m_Items: []
   - m_Id: 46
@@ -261,7 +261,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 51
-    m_Localized: 빠른 전투
+    m_Localized: "\uBE60\uB978 \uC804\uD22C"
     m_Metadata:
       m_Items: []
   - m_Id: 52
@@ -311,7 +311,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 63
     m_Localized: "authored \uCEA0\uD398\uC778 \uC9C4\uD589\uC744 \uAC74\uB4DC\uB9AC\uC9C0
-      \uC54A\uACE0 \uC2A4\uBAA8\uD06C \uC804\uD22C\uB9CC \uC5FD\uB2C8\uB2E4."
+      \uC54A\uACE0 \uC9E7\uC740 \uC804\uD22C\uB9CC \uC5FD\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 64
@@ -379,13 +379,13 @@ MonoBehaviour:
       m_Items:
       - rid: 162163771961769991
   - m_Id: 77
-    m_Localized: "빠른 전투\uB294 \uC9E7\uC740 \uC804\uD22C \uD655\uC778\uC73C\uB85C
+    m_Localized: "\uBE60\uB978 \uC804\uD22C\uB97C \uBCF4\uC870 \uC804\uD22C \uD655\uC778\uC73C\uB85C
       \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 78
     m_Localized: "\uD604\uC7AC expedition run\uC774 \uB2EB\uD788\uAE30 \uC804\uAE4C\uC9C0
-      빠른 전투\uB294 \uC7A0\uAE41\uB2C8\uB2E4."
+      \uBE60\uB978 \uC804\uD22C\uB294 \uC7A0\uAE41\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 79
@@ -648,7 +648,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 138
     m_Localized: "authored \uC6D0\uC815 \uB7F0\uC774 \uC5F4\uB824 \uC788\uB294 \uB3D9\uC548
-      빠른 전투\uB294 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+      \uBE60\uB978 \uC804\uD22C\uB294 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 139
@@ -1037,7 +1037,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380255539585024
-    m_Localized: "\uD604\uC7AC Town \uBE4C\uB4DC \uC0C1\uD0DC\uB85C integration smoke
+    m_Localized: "\uD604\uC7AC Town \uBE4C\uB4DC \uC0C1\uD0DC\uB85C \uC9E7\uC740
       \uC804\uD22C\uB97C \uC5F4\uACE0, Reward \uB610\uB294 \uC9C1\uC811 Town \uBCF5\uADC0
       \uC758\uBBF8\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4."
     m_Metadata:
@@ -1429,6 +1429,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 17841341873852486
     m_Localized: "\uB300\uC0C1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19993520462172160
+    m_Localized: "\u2756  \uC804\uC5F4 \uD3B8\uC131"
     m_Metadata:
       m_Items: []
   references:

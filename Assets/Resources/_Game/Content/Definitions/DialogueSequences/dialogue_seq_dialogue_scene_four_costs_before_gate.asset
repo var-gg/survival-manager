@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_costs_before_gate__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_costs_before_gate.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB3D9\uB8CC\uC5D0\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &-5083740113924290799
 MonoBehaviour:
@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_costs_before_gate__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_costs_before_gate.003
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &-1729749737431987725
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_costs_before_gate__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_costs_before_gate.002
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB18D\uB2F4\uC744 \uB204\uB984"
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -90,8 +90,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_costs_before_gate__line__005
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_costs_before_gate.005
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC9E7\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &6728807187380301879
 MonoBehaviour:
@@ -108,8 +108,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_costs_before_gate__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_costs_before_gate.001
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.grim
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAC70\uCE60\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &8279480036865216936
 MonoBehaviour:
@@ -126,8 +126,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_costs_before_gate__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_costs_before_gate.006
-  _emote: smile
-  _emotionTextKey: loc.story.emotion.faint_smile
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBBF8\uC18C"
   _autoAdvanceHint: 0
 --- !u!114 &8688099914130507136
 MonoBehaviour:
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_four_costs_before_gate__line__000
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_four_costs_before_gate.000
-  _emote: default
-  _emotionTextKey: loc.story.emotion.calm
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uCC28\uBD84"
   _autoAdvanceHint: 0

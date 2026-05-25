@@ -13,10 +13,28 @@ MonoBehaviour:
   m_Name: line_16
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__016
-  _speakerId: hero_pack_raider
+  _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.016
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.bitter
+  _emote: shock
+  _emotionTextKey: loc.story.emotion.shock
+  _autoAdvanceHint: 0
+--- !u!114 &-8798901661748854702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_21
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_gate_warden__line__021
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.021
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-7939326764863016470
 MonoBehaviour:
@@ -31,10 +49,10 @@ MonoBehaviour:
   m_Name: line_10
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__010
-  _speakerId: npc_gojin
+  _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.010
-  _emote: sad
-  _emotionTextKey: loc.story.emotion.hollow
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7828446216729675670
 MonoBehaviour:
@@ -49,10 +67,10 @@ MonoBehaviour:
   m_Name: line_17
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__017
-  _speakerId: hero_dawn_priest
+  _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.017
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.grim
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-6233765003963354318
 MonoBehaviour:
@@ -69,8 +87,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__013
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.013
-  _emote: sad
-  _emotionTextKey: loc.story.emotion.breaking
+  _emote: default
+  _emotionTextKey: loc.story.emotion.gentle
   _autoAdvanceHint: 0
 --- !u!114 &-5967463062265078001
 MonoBehaviour:
@@ -85,10 +103,28 @@ MonoBehaviour:
   m_Name: line_05
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__005
-  _speakerId: Narrator
+  _speakerId: npc_gojin
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.005
-  _emote: default
-  _emotionTextKey: 
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.hollow
+  _autoAdvanceHint: 0
+--- !u!114 &-5369593744505461276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_22
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_gate_warden__line__022
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.022
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &-5194608923666039188
 MonoBehaviour:
@@ -121,10 +157,10 @@ MonoBehaviour:
   m_Name: line_15
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__015
-  _speakerId: hero_dawn_priest
+  _speakerId: npc_gojin
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.015
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.hollow
   _autoAdvanceHint: 0
 --- !u!114 &-2406713338252189090
 MonoBehaviour:
@@ -139,10 +175,10 @@ MonoBehaviour:
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__004
-  _speakerId: Narrator
+  _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.004
   _emote: default
-  _emotionTextKey: 
+  _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0
 --- !u!114 &-2230892272474358047
 MonoBehaviour:
@@ -159,8 +195,26 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_gate_warden__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.001
-  _emote: shock
-  _emotionTextKey: loc.story.emotion.shock
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.tense
+  _autoAdvanceHint: 0
+--- !u!114 &-1643300153775495505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_20
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_gate_warden__line__020
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.020
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-562050215799693722
 MonoBehaviour:
@@ -175,10 +229,10 @@ MonoBehaviour:
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__007
-  _speakerId: Narrator
+  _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.007
-  _emote: default
-  _emotionTextKey: 
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -212,6 +266,12 @@ MonoBehaviour:
   - {fileID: -3955021277509813061}
   - {fileID: -8846995623481495180}
   - {fileID: -7828446216729675670}
+  - {fileID: 8580877260735468588}
+  - {fileID: 5457293196548722277}
+  - {fileID: -1643300153775495505}
+  - {fileID: -8798901661748854702}
+  - {fileID: -5369593744505461276}
+  - {fileID: 3465066585680798829}
 --- !u!114 &1405569697519641484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,10 +285,10 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__006
-  _speakerId: npc_gojin
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.006
-  _emote: sad
-  _emotionTextKey: loc.story.emotion.weak
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &2544990727833775557
 MonoBehaviour:
@@ -261,10 +321,28 @@ MonoBehaviour:
   m_Name: line_11
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__011
-  _speakerId: hero_dawn_priest
+  _speakerId: npc_gojin
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.011
-  _emote: shock
-  _emotionTextKey: loc.story.emotion.shock
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.weak
+  _autoAdvanceHint: 0
+--- !u!114 &3465066585680798829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_23
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_gate_warden__line__023
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.023
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &3475245767717428142
 MonoBehaviour:
@@ -300,7 +378,25 @@ MonoBehaviour:
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.002
   _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emotionTextKey: loc.story.emotion.blunt
+  _autoAdvanceHint: 0
+--- !u!114 &5457293196548722277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_19
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_gate_warden__line__019
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.019
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &6017281487206466069
 MonoBehaviour:
@@ -333,10 +429,28 @@ MonoBehaviour:
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__008
-  _speakerId: hero_dawn_priest
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.008
-  _emote: default
-  _emotionTextKey: loc.story.emotion.gentle
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &8580877260735468588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_18
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_gate_warden__line__018
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.018
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.breaking
   _autoAdvanceHint: 0
 --- !u!114 &9009101307567043018
 MonoBehaviour:
@@ -351,8 +465,8 @@ MonoBehaviour:
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_gate_warden__line__003
-  _speakerId: hero_dawn_priest
+  _speakerId: npc_gojin
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_gate_warden.003
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.tense
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.hollow
   _autoAdvanceHint: 0

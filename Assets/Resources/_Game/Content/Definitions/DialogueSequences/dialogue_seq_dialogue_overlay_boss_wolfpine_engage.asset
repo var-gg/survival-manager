@@ -31,10 +31,82 @@ MonoBehaviour:
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__004
-  _speakerId: Narrator
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.004
-  _emote: default
-  _emotionTextKey: 
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.tense
+  _autoAdvanceHint: 0
+--- !u!114 &-4248088937090200909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__007
+  _speakerId: npc_grey_fang
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.007
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.grim
+  _autoAdvanceHint: 0
+--- !u!114 &-3821748285917721468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__005
+  _speakerId: npc_grey_fang
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.005
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-2881269433113792729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__008
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.008
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.hurt
+  _autoAdvanceHint: 0
+--- !u!114 &-899160757548200941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__009
+  _speakerId: npc_grey_fang
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.009
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -55,6 +127,13 @@ MonoBehaviour:
   - {fileID: 1709788864732079903}
   - {fileID: 7351352738415506681}
   - {fileID: -5097271280267736509}
+  - {fileID: -3821748285917721468}
+  - {fileID: 7966733473389414083}
+  - {fileID: -4248088937090200909}
+  - {fileID: -2881269433113792729}
+  - {fileID: -899160757548200941}
+  - {fileID: 4539795133250205137}
+  - {fileID: 9148967108010825189}
 --- !u!114 &1709788864732079903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,8 +147,26 @@ MonoBehaviour:
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__002
-  _speakerId: Narrator
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.002
+  _emote: shock
+  _emotionTextKey: loc.story.emotion.shock
+  _autoAdvanceHint: 0
+--- !u!114 &4539795133250205137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__010
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.010
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -86,10 +183,10 @@ MonoBehaviour:
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__001
-  _speakerId: hero_pack_raider
+  _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.001
-  _emote: shock
-  _emotionTextKey: loc.story.emotion.shock
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &7351352738415506681
 MonoBehaviour:
@@ -104,8 +201,44 @@ MonoBehaviour:
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__003
-  _speakerId: hero_pack_raider
+  _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.003
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.grim
+  _autoAdvanceHint: 0
+--- !u!114 &7966733473389414083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__006
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.006
+  _emote: default
+  _emotionTextKey: loc.story.emotion.careful
+  _autoAdvanceHint: 0
+--- !u!114 &9148967108010825189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_overlay_boss_wolfpine_engage__line__011
+  _speakerId: npc_grey_fang
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_overlay_boss_wolfpine_engage.011
   _emote: serious
   _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0

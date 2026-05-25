@@ -18,6 +18,24 @@ MonoBehaviour:
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
+--- !u!114 &-6672913008726809944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_after_wolfpine__line__008
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.008
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
 --- !u!114 &-5237660988517527502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31,10 +49,64 @@ MonoBehaviour:
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__001
-  _speakerId: hero_dawn_priest
+  _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.001
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.tense
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-4747612342056932161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_after_wolfpine__line__009
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.009
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-1959450937911630129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_after_wolfpine__line__010
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.010
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-368532174247579247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_after_wolfpine__line__012
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.012
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -58,6 +130,29 @@ MonoBehaviour:
   - {fileID: 4532798085509176857}
   - {fileID: 2348437189507625918}
   - {fileID: 473758381104986567}
+  - {fileID: -6672913008726809944}
+  - {fileID: -4747612342056932161}
+  - {fileID: -1959450937911630129}
+  - {fileID: 449474374440490587}
+  - {fileID: -368532174247579247}
+--- !u!114 &449474374440490587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_dialogue_scene_after_wolfpine__line__011
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.011
+  _emote: smile
+  _emotionTextKey: loc.story.emotion.wry
+  _autoAdvanceHint: 0
 --- !u!114 &473758381104986567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,10 +184,10 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__006
-  _speakerId: Narrator
+  _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.006
-  _emote: default
-  _emotionTextKey: 
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &4532798085509176857
 MonoBehaviour:
@@ -107,10 +202,10 @@ MonoBehaviour:
   m_Name: line_05
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__005
-  _speakerId: hero_pack_raider
+  _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.005
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &4848506544527453717
 MonoBehaviour:
@@ -125,10 +220,10 @@ MonoBehaviour:
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__003
-  _speakerId: Narrator
+  _speakerId: npc_grey_fang
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.003
-  _emote: default
-  _emotionTextKey: 
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &5033041088480599136
 MonoBehaviour:
@@ -145,8 +240,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.002
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.bitter
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &6261629097592596208
 MonoBehaviour:
@@ -161,8 +256,8 @@ MonoBehaviour:
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_dialogue_scene_after_wolfpine__line__004
-  _speakerId: hero_dawn_priest
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_after_wolfpine.004
-  _emote: default
-  _emotionTextKey: loc.story.emotion.gentle
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0

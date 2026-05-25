@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_heartforge_gate_intro__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_heartforge_gate_intro.002
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBA48\uCDA4"
   _autoAdvanceHint: 0
 --- !u!114 &-3496876286559865693
 MonoBehaviour:
@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_heartforge_gate_intro__line__003
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_heartforge_gate_intro.003
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.uneasy
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBD88\uD3B8"
   _autoAdvanceHint: 0
 --- !u!114 &-3078914603096040297
 MonoBehaviour:
@@ -69,8 +69,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_heartforge_gate_intro__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_heartforge_gate_intro.004
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.dry
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB2F4\uB2F4"
   _autoAdvanceHint: 0
 --- !u!114 &-514316316929328310
 MonoBehaviour:
@@ -87,8 +87,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_heartforge_gate_intro__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_heartforge_gate_intro.005
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBC1B\uC544\uB4E4\uC784"
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -126,8 +126,8 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_heartforge_gate_intro__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_heartforge_gate_intro.001
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
   _autoAdvanceHint: 0
 --- !u!114 &2484567713412634278
 MonoBehaviour:
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_seq_dialogue_scene_heartforge_gate_intro__line__006
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_dialogue_scene_heartforge_gate_intro.006
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC791\uAC8C"
   _autoAdvanceHint: 0

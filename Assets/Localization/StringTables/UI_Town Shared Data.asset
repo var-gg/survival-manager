@@ -1355,6 +1355,10 @@ MonoBehaviour:
     m_Key: ui.town.compendium.vfx.target
     m_Metadata:
       m_Items: []
+  - m_Id: 19993520462172160
+    m_Key: ui.town.entry.squad_builder
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

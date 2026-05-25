@@ -55,6 +55,25 @@ MonoBehaviour:
   - {fileID: 8022182798665457841}
   - {fileID: -2708659618944605013}
   - {fileID: 8674043684029648921}
+  - {fileID: 5067976940897491743}
+--- !u!114 &5067976940897491743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_cutscene_prologue_first_city_silhouette__line__005
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_cutscene_prologue_first_city_silhouette.005
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
 --- !u!114 &7949287963870280521
 MonoBehaviour:
   m_ObjectHideFlags: 0
