@@ -14,16 +14,19 @@ public sealed class BattleScreenPresenter
     private readonly GameLocalizationController _localization;
     private readonly GameSessionState _sessionState;
     private readonly BattlePresentationOptions _options;
+    private readonly ContentTextResolver? _contentText;
     private readonly BattleUnitPortraitResolver _portraitResolver = new();
 
     public BattleScreenPresenter(
         GameLocalizationController localization,
         GameSessionState sessionState,
-        BattlePresentationOptions options)
+        BattlePresentationOptions options,
+        ContentTextResolver? contentText = null)
     {
         _localization = localization;
         _sessionState = sessionState;
         _options = options;
+        _contentText = contentText;
     }
 
     public BattleDebugFoldoutViewState BuildDebugFoldoutState()
@@ -131,6 +134,8 @@ public sealed class BattleScreenPresenter
             settingsStatusText,
             showHelp,
             isSummaryExpanded,
+            BuildTacticalReadoutRows(step, progressNormalized),
+            BuildCombatantTokens(step, selectedState.UnitId),
             BuildRoster(step, TeamSide.Ally, selectedState.UnitId),
             BuildRoster(step, TeamSide.Enemy, selectedState.UnitId),
             selectedState);
@@ -154,6 +159,8 @@ public sealed class BattleScreenPresenter
         string? settingsStatusText = null,
         bool showHelp = false,
         bool isSummaryExpanded = true,
+        IReadOnlyList<BattleTacticalReadoutRowViewState>? tacticalReadoutRows = null,
+        IReadOnlyList<BattleCombatantTokenViewState>? combatantTokens = null,
         IReadOnlyList<BattleRosterUnitViewState>? allyRoster = null,
         IReadOnlyList<BattleRosterUnitViewState>? enemyRoster = null,
         BattleSelectedUnitViewState? selectedUnit = null)
@@ -161,7 +168,7 @@ public sealed class BattleScreenPresenter
         var isSmoke = _sessionState.IsQuickBattleSmokeActive;
         var isDirect = _sessionState.IsDirectCombatSandboxLane;
         return new BattleShellViewState(
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "Battle"),
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.title", "전투 전황"),
             BuildLocaleStatus(),
             GetLocaleButtonLabel("ko", "한국어"),
             GetLocaleButtonLabel("en", "English"),
@@ -179,7 +186,7 @@ public sealed class BattleScreenPresenter
             allyHpText,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.enemies", "Enemies"),
             enemyHpText,
-            Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.feed", "Battle Feed"),
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.feed", "전투 기록"),
             logText,
             resultText,
             playbackText,
@@ -202,7 +209,7 @@ public sealed class BattleScreenPresenter
             canPause,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.group.primary", isDirect ? "Sandbox Result" : "Primary Action"),
             Localize(GameLocalizationTables.UICommon, "ui.common.continue", "Continue"),
-            !isDirect,
+            !isDirect && isBattleFinished,
             isBattleFinished
                 ? Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.continue_ready", "Proceed to Reward with the resolved battle result.")
                 : Localize(GameLocalizationTables.UIBattle, "ui.battle.tooltip.continue_locked", "Continue activates after the battle is fully resolved."),
@@ -224,6 +231,9 @@ public sealed class BattleScreenPresenter
             true,
             _options.ShowTeamHpSummary,
             !isDirect && isBattleFinished,
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.tactical_readout", "전황 판단"),
+            tacticalReadoutRows,
+            combatantTokens,
             new BattleSettingsViewState(
                 showSettings,
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.settings.title", "Battle View Settings"),
@@ -246,6 +256,91 @@ public sealed class BattleScreenPresenter
             selectedUnit ?? BattleSelectedUnitViewState.Hidden);
     }
 
+    private IReadOnlyList<BattleCombatantTokenViewState> BuildCombatantTokens(BattleSimulationStep step, string selectedUnitId)
+    {
+        return step.Units
+            .OrderByDescending(unit => IsActiveCombatant(unit))
+            .ThenBy(unit => unit.Side)
+            .ThenBy(unit => unit.Anchor)
+            .ThenBy(unit => unit.Id, StringComparer.Ordinal)
+            .Take(10)
+            .Select(unit => new BattleCombatantTokenViewState(
+                unit.Id,
+                ResolveUnitDisplayName(unit),
+                BattleReadabilityFormatter.BuildSemanticLabel(BattleReadabilityFormatter.ResolveSemantic(unit, step), LocaleCode),
+                unit.MaxHealth > 0f ? UnityEngine.Mathf.Clamp01(unit.CurrentHealth / unit.MaxHealth) : 0f,
+                unit.Side == TeamSide.Ally,
+                IsActiveCombatant(unit) || string.Equals(unit.Id, selectedUnitId, StringComparison.Ordinal),
+                !unit.IsAlive))
+            .ToList();
+    }
+
+    private IReadOnlyList<BattleTacticalReadoutRowViewState> BuildTacticalReadoutRows(BattleSimulationStep step, float progressNormalized)
+    {
+        var allies = step.Units.Where(unit => unit.Side == TeamSide.Ally).ToArray();
+        var enemies = step.Units.Where(unit => unit.Side == TeamSide.Enemy).ToArray();
+        var pressure = BattleReadabilityFormatter.ComputePressureScore(step, TeamSide.Ally);
+        var allySustain = ComputeSustain(allies);
+        var enemySustain = ComputeSustain(enemies);
+
+        return new[]
+        {
+            new BattleTacticalReadoutRowViewState(
+                Localize(GameLocalizationTables.UIBattle, "ui.battle.readout.progress", "진행"),
+                $"{step.StepIndex:000} / {step.TimeSeconds:0.0}s",
+                UnityEngine.Mathf.Clamp01(progressNormalized),
+                "neutral"),
+            new BattleTacticalReadoutRowViewState(
+                Localize(GameLocalizationTables.UIBattle, "ui.battle.readout.pressure", "전선 압박"),
+                BuildPressureLabel(step),
+                UnityEngine.Mathf.Clamp01((pressure + 1f) * 0.5f),
+                pressure > 0.08f ? "ally" : pressure < -0.08f ? "enemy" : "neutral"),
+            new BattleTacticalReadoutRowViewState(
+                Localize(GameLocalizationTables.UIBattle, "ui.battle.readout.allies", "아군 유지"),
+                BuildTeamBrief(allies),
+                allySustain,
+                allySustain < 0.35f ? "warning" : "ally"),
+            new BattleTacticalReadoutRowViewState(
+                Localize(GameLocalizationTables.UIBattle, "ui.battle.readout.enemies", "적 전력"),
+                BuildTeamBrief(enemies),
+                enemySustain,
+                enemySustain < 0.35f ? "warning" : "enemy"),
+        };
+    }
+
+    private static bool IsActiveCombatant(BattleUnitReadModel unit)
+    {
+        return unit.IsAlive
+               && (unit.ActionState is CombatActionState.ExecuteAction or CombatActionState.Approach or CombatActionState.Reposition
+                   || unit.PendingActionType != null
+                   || unit.WindupProgress > 0.01f);
+    }
+
+    private static float ComputeSustain(IReadOnlyList<BattleUnitReadModel> units)
+    {
+        if (units.Count == 0)
+        {
+            return 0f;
+        }
+
+        var maxHp = UnityEngine.Mathf.Max(1f, units.Sum(unit => UnityEngine.Mathf.Max(1f, unit.MaxHealth)));
+        var hpRatio = UnityEngine.Mathf.Clamp01(units.Sum(unit => UnityEngine.Mathf.Max(0f, unit.CurrentHealth)) / maxHp);
+        var aliveRatio = units.Count(unit => unit.IsAlive) / (float)units.Count;
+        return UnityEngine.Mathf.Clamp01((hpRatio * 0.65f) + (aliveRatio * 0.35f));
+    }
+
+    private static string BuildTeamBrief(IReadOnlyList<BattleUnitReadModel> units)
+    {
+        if (units.Count == 0)
+        {
+            return "0/0 | 0 HP";
+        }
+
+        var alive = units.Count(unit => unit.IsAlive);
+        var hp = units.Sum(unit => UnityEngine.Mathf.Max(0f, unit.CurrentHealth));
+        return $"{alive}/{units.Count} | {hp:0} HP";
+    }
+
     private IReadOnlyList<BattleRosterUnitViewState> BuildRoster(BattleSimulationStep step, TeamSide side, string selectedUnitId)
     {
         return step.Units
@@ -254,8 +349,8 @@ public sealed class BattleScreenPresenter
             .ThenBy(unit => unit.Name)
             .Select(unit => new BattleRosterUnitViewState(
                 unit.Id,
-                SanitizeUnitName(unit),
-                BattleReadabilityFormatter.BuildPlayerFacingState(unit),
+                ResolveUnitDisplayName(unit),
+                SanitizeBattleStateText(BattleReadabilityFormatter.BuildPlayerFacingState(unit, step, LocaleCode), step),
                 unit.MaxHealth > 0f ? UnityEngine.Mathf.Clamp01(unit.CurrentHealth / unit.MaxHealth) : 0f,
                 unit.IsAlive,
                 string.Equals(unit.Id, selectedUnitId, System.StringComparison.Ordinal),
@@ -306,18 +401,18 @@ public sealed class BattleScreenPresenter
         if (_sessionState.IsDirectCombatSandboxLane)
         {
             return isPaused
-                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.direct_paused", "Combat Sandbox | Speed x{0:0} | Paused", playbackSpeed)
-                : Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.direct", "Combat Sandbox | Speed x{0:0}", playbackSpeed);
+                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.direct_paused", "전투 실험장 | 속도 x{0:0} | 일시정지", playbackSpeed)
+                : Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.direct", "전투 실험장 | 속도 x{0:0}", playbackSpeed);
         }
 
         if (_sessionState.IsQuickBattleSmokeActive)
         {
             return isPaused
-                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick_paused", "빠른 전투 | Speed x{0:0} | Paused", playbackSpeed)
-                : Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick", "빠른 전투 | Speed x{0:0}", playbackSpeed);
+                ? Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick_paused", "빠른 전투 | 속도 x{0:0} | 일시정지", playbackSpeed)
+                : Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.quick", "빠른 전투 | 속도 x{0:0}", playbackSpeed);
         }
 
-        return Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.ingame", "Authored Expedition Battle");
+        return Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.ingame", "원정 전투");
     }
 
     private string BuildTeamSummary(string label, IEnumerable<BattleUnitReadModel> units)
@@ -352,7 +447,9 @@ public sealed class BattleScreenPresenter
 
         if (BattleReadabilityFormatter.TryResolveStepFocus(step, out var focus))
         {
-            var verb = BattleReadabilityFormatter.BuildSemanticLabel(focus.Semantic);
+            var actorName = ResolveUnitDisplayName(step, focus.ActorId, focus.ActorName);
+            var targetName = ResolveUnitDisplayName(step, focus.TargetId, focus.TargetName);
+            var verb = BattleReadabilityFormatter.BuildSemanticLabel(focus.Semantic, LocaleCode);
             if (focus.IsWindup)
             {
                 verb = $"{verb} {UnityEngine.Mathf.RoundToInt(focus.Progress * 100f)}%";
@@ -361,11 +458,11 @@ public sealed class BattleScreenPresenter
             return Localize(
                 GameLocalizationTables.UIBattle,
                 "ui.battle.status.step_focus",
-                "Step {0:000} | {1} {2} -> {3} | {4}{5}",
+                "전황 {0:000} | {1} {2} -> {3} | {4}{5}",
                 step.StepIndex,
-                SanitizePlayerFacingText(focus.ActorName),
+                actorName,
                 verb,
-                SanitizePlayerFacingText(focus.TargetName),
+                targetName,
                 pressure,
                 pausedSuffix);
         }
@@ -373,7 +470,7 @@ public sealed class BattleScreenPresenter
         return Localize(
             GameLocalizationTables.UIBattle,
             "ui.battle.status.step_only",
-            "Step {0:000} | {1}{2}",
+            "전황 {0:000} | {1}{2}",
             step.StepIndex,
             pressure,
             pausedSuffix);
@@ -418,16 +515,16 @@ public sealed class BattleScreenPresenter
             return string.Join("\n", decisiveTimeline.TakeLast(MaxVisibleDecisive).Select(line => $"* {line}"));
         }
 
-        var feed = recentLogs.TakeLast(MaxVisibleLogs).Select(BuildLogLine).ToList();
+        var feed = recentLogs.TakeLast(MaxVisibleLogs).Select(eventData => BuildLogLine(step, eventData)).ToList();
         return feed.Count == 0
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.empty", "Watching for key moments...")
             : string.Join("\n", feed);
     }
 
-    private string BuildLogLine(BattleEvent eventData)
+    private string BuildLogLine(BattleSimulationStep step, BattleEvent eventData)
     {
-        var source = string.IsNullOrWhiteSpace(eventData.ActorName) ? "?" : SanitizePlayerFacingText(eventData.ActorName);
-        var target = string.IsNullOrWhiteSpace(eventData.TargetName) ? "?" : SanitizePlayerFacingText(eventData.TargetName);
+        var source = ResolveUnitDisplayName(step, eventData.ActorId.Value, eventData.ActorName);
+        var target = ResolveUnitDisplayName(step, eventData.TargetId?.Value, eventData.TargetName);
         var time = eventData.TimeSeconds;
         return eventData.LogCode switch
         {
@@ -436,7 +533,7 @@ public sealed class BattleScreenPresenter
             BattleLogCode.ActiveSkillDamage => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.skill", "{0:0.0}s | {1} used a skill on {2} for {3:0}", time, source, target, eventData.Value),
             BattleLogCode.WaitDefend => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.guard", "{0:0.0}s | {1} held guard", time, source),
             BattleLogCode.Generic when eventData.EventKind == BattleEventKind.Kill => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.down", "{0:0.0}s | {1} went down", time, target),
-            _ => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.generic", "{0:0.0}s | {1} {2}", time, source, BattleReadabilityFormatter.BuildShortEventVerb(eventData))
+            _ => Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.generic", "{0:0.0}s | {1} {2}", time, source, BattleReadabilityFormatter.BuildShortEventVerb(eventData, LocaleCode))
         };
     }
 
@@ -445,22 +542,82 @@ public sealed class BattleScreenPresenter
         return _localization.LocalizeOrFallback(table, key, fallback, args);
     }
 
-    private static string SanitizeUnitName(BattleUnitReadModel unit)
+    private string ResolveUnitDisplayName(BattleUnitReadModel unit)
     {
-        return SanitizePlayerFacingText(
+        if (_contentText != null && !string.IsNullOrWhiteSpace(unit.CharacterId))
+        {
+            var characterName = _contentText.GetCharacterName(unit.CharacterId, unit.ArchetypeId);
+            if (!string.IsNullOrWhiteSpace(characterName))
+            {
+                return SanitizePlayerFacingText(characterName, unit.Name);
+            }
+        }
+
+        var name = SanitizePlayerFacingText(
             unit.Name,
             string.IsNullOrWhiteSpace(unit.ArchetypeId) ? unit.Id : unit.ArchetypeId);
+        if (!LooksLikeRawLocalizationKey(name))
+        {
+            return name;
+        }
+
+        return _contentText != null && !string.IsNullOrWhiteSpace(unit.ArchetypeId)
+            ? SanitizePlayerFacingText(_contentText.GetArchetypeName(unit.ArchetypeId), unit.ArchetypeId)
+            : name;
+    }
+
+    private string ResolveUnitDisplayName(BattleSimulationStep step, string? unitId, string? fallbackName)
+    {
+        var unit = step.Units.FirstOrDefault(candidate =>
+            !string.IsNullOrWhiteSpace(unitId)
+            && string.Equals(candidate.Id, unitId, StringComparison.Ordinal));
+        if (unit == null && !string.IsNullOrWhiteSpace(fallbackName))
+        {
+            unit = step.Units.FirstOrDefault(candidate =>
+                string.Equals(candidate.Name, fallbackName, StringComparison.Ordinal));
+        }
+
+        return unit != null
+            ? ResolveUnitDisplayName(unit)
+            : SanitizePlayerFacingText(fallbackName ?? "?", "?");
+    }
+
+    private string SanitizeBattleStateText(string stateText, BattleSimulationStep step)
+    {
+        if (string.IsNullOrWhiteSpace(stateText))
+        {
+            return stateText;
+        }
+
+        var result = stateText;
+        foreach (var unit in step.Units.OrderByDescending(unit => unit.Name?.Length ?? 0))
+        {
+            if (string.IsNullOrWhiteSpace(unit.Name))
+            {
+                continue;
+            }
+
+            result = result.Replace(unit.Name, ResolveUnitDisplayName(unit), StringComparison.Ordinal);
+        }
+
+        return SanitizePlayerFacingText(result, stateText);
     }
 
     private static string SanitizePlayerFacingText(string value, string fallback = "-")
     {
-        if (!LooksLikeRawLocalizationKey(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
-            return value;
+            return fallback;
         }
 
-        var token = ExtractRawKeyLeaf(value);
-        return BattleReadabilityFormatter.HumanizeToken(token, fallback);
+        var trimmed = value.Trim();
+        if (!LooksLikeRawLocalizationKey(trimmed) && !LooksLikeIdentifierPhrase(trimmed))
+        {
+            return trimmed;
+        }
+
+        var token = ExtractRawKeyLeaf(trimmed);
+        return ToTitleCase(BattleReadabilityFormatter.HumanizeToken(token, fallback));
     }
 
     private static bool LooksLikeRawLocalizationKey(string value)
@@ -475,6 +632,19 @@ public sealed class BattleScreenPresenter
                || trimmed.StartsWith("ui.", StringComparison.Ordinal)
                || trimmed.StartsWith("No translation found", StringComparison.OrdinalIgnoreCase)
                || (trimmed.Contains('_', StringComparison.Ordinal) && !trimmed.Contains(' ', StringComparison.Ordinal));
+    }
+
+    private static bool LooksLikeIdentifierPhrase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)
+            || value.Any(ch => ch > 127)
+            || !value.Any(char.IsLetter)
+            || value.Any(char.IsUpper))
+        {
+            return false;
+        }
+
+        return value.All(ch => char.IsLower(ch) || char.IsDigit(ch) || char.IsWhiteSpace(ch) || ch is '-' or '_');
     }
 
     private static string ExtractRawKeyLeaf(string value)
@@ -494,7 +664,7 @@ public sealed class BattleScreenPresenter
             }
         }
 
-        foreach (var prefix in new[] { "extra_", "item_", "augment_", "reward_source_", "site_" })
+        foreach (var prefix in new[] { "extra_", "item_", "augment_", "reward_source_", "site_", "encounter_", "character_", "archetype_", "enemy_", "hero_", "skirmish_" })
         {
             if (token.StartsWith(prefix, StringComparison.Ordinal))
             {
@@ -504,4 +674,25 @@ public sealed class BattleScreenPresenter
 
         return token;
     }
+
+    private static string ToTitleCase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var words = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        for (var i = 0; i < words.Length; i++)
+        {
+            var word = words[i];
+            words[i] = word.Length == 1
+                ? word.ToUpperInvariant()
+                : char.ToUpperInvariant(word[0]) + word[1..];
+        }
+
+        return string.Join(" ", words);
+    }
+
+    private string LocaleCode => _localization.CurrentLocale?.Identifier.Code ?? string.Empty;
 }

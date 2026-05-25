@@ -263,7 +263,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 53
-    m_Localized: Authored Expedition Battle
+    m_Localized: Expedition Battle
     m_Metadata:
       m_Items: []
   - m_Id: 54
@@ -333,8 +333,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 69
-    m_Localized: Quick Battle lets you pause, replay, and change playback
-      speed.
+    m_Localized: Quick Battle lets you pause, replay, and change playback speed.
     m_Metadata:
       m_Items: []
   - m_Id: 70
@@ -375,7 +374,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 79
-    m_Localized: Show targeting lines and battle diagnostics for Quick Battle.
+    m_Localized: Show targeting lines and battle combat details.
     m_Metadata:
       m_Items: []
   - m_Id: 80
@@ -529,6 +528,238 @@ MonoBehaviour:
     m_Localized: Expand the summary panel.
     m_Metadata:
       m_Items: []
+  - m_Id: 3380253606011000
+    m_Localized: Attack Speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011001
+    m_Localized: Basic Attack Interval
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011002
+    m_Localized: Cooldown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011003
+    m_Localized: Energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011004
+    m_Localized: Fallback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011005
+    m_Localized: Footprint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011006
+    m_Localized: HP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011007
+    m_Localized: Position
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011008
+    m_Localized: Positioning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011009
+    m_Localized: Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011010
+    m_Localized: Skill Haste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011011
+    m_Localized: Team Tactic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011012
+    m_Localized: Windup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011013
+    m_Localized: No notable personal events yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011014
+    m_Localized: Battle Scoped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011015
+    m_Localized: Permanent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011016
+    m_Localized: Equipment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011017
+    m_Localized: Overview
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011018
+    m_Localized: Record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011019
+    m_Localized: Skills
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011020
+    m_Localized: Stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011021
+    m_Localized: Status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011022
+    m_Localized: Tactic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011023
+    m_Localized: Accessory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011024
+    m_Localized: Armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011025
+    m_Localized: Offhand
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011026
+    m_Localized: Pending equipment schema
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011027
+    m_Localized: Weapon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011028
+    m_Localized: '{0:0.0}s | {1} hit {2} for {3:0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011029
+    m_Localized: '{0:0.0}s | {1} went down'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011030
+    m_Localized: Watching for key moments...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011031
+    m_Localized: '{0:0.0}s | {1} {2}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011032
+    m_Localized: '{0:0.0}s | {1} held guard'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011033
+    m_Localized: '{0:0.0}s | {1} restored {2} for {3:0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011034
+    m_Localized: '{0:0.0}s | {1} used a skill on {2} for {3:0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011035
+    m_Localized: Battle Log
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011036
+    m_Localized: Acted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011037
+    m_Localized: Received
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011038
+    m_Localized: Empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011039
+    m_Localized: Flex
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011040
+    m_Localized: Flex Passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011041
+    m_Localized: Signature
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011042
+    m_Localized: Signature Passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011043
+    m_Localized: Barrier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011044
+    m_Localized: Cooldown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011045
+    m_Localized: Downed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011046
+    m_Localized: Back Spacing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011047
+    m_Localized: Combat Pace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011048
+    m_Localized: Compactness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011049
+    m_Localized: Depth
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011050
+    m_Localized: Flank Bias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011051
+    m_Localized: Focus Bias
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011052
+    m_Localized: Front Spacing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011053
+    m_Localized: Line Spacing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011054
+    m_Localized: Protect Carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011055
+    m_Localized: Role Range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011056
+    m_Localized: Target Lock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3380253606011057
+    m_Localized: Width
+    m_Metadata:
+      m_Items: []
   - m_Id: 17538112149590016
     m_Localized: Dominant Hand
     m_Metadata:
@@ -548,6 +779,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 17538112183144451
     m_Localized: Ambidextrous
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144500
+    m_Localized: Tactical Readout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144501
+    m_Localized: Progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144502
+    m_Localized: Line Pressure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144503
+    m_Localized: Ally Sustain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144504
+    m_Localized: Enemy Strength
     m_Metadata:
       m_Items: []
   references:

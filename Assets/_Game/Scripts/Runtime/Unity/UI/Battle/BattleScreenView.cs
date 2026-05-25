@@ -58,6 +58,10 @@ public sealed class BattleScreenView
     private readonly VisualElement _enemySummaryPanel;
     private readonly VisualElement _allyRosterList;
     private readonly VisualElement _enemyRosterList;
+    private readonly VisualElement _combatantTokenStrip;
+    private readonly VisualElement _tacticalReadoutPanel;
+    private readonly Label _tacticalReadoutTitleLabel;
+    private readonly VisualElement _tacticalReadoutRows;
     private readonly Label _allyHpLabel;
     private readonly Label _enemyHpLabel;
     private readonly Label _logLabel;
@@ -167,6 +171,10 @@ public sealed class BattleScreenView
         _enemySummaryPanel = Require<VisualElement>(root, "EnemySummaryPanel");
         _allyRosterList = Require<VisualElement>(root, "AllyRosterList");
         _enemyRosterList = Require<VisualElement>(root, "EnemyRosterList");
+        _combatantTokenStrip = Require<VisualElement>(root, "TurnOrderStrip");
+        _tacticalReadoutPanel = Require<VisualElement>(root, "TacticalReadoutPanel");
+        _tacticalReadoutTitleLabel = Require<Label>(root, "TacticalReadoutTitleLabel");
+        _tacticalReadoutRows = Require<VisualElement>(root, "TacticalReadoutRows");
         _allyHpLabel = Require<Label>(root, "AllyHpLabel");
         _enemyHpLabel = Require<Label>(root, "EnemyHpLabel");
         _logLabel = Require<Label>(root, "LogLabel");
@@ -258,6 +266,10 @@ public sealed class BattleScreenView
             _enemySummaryPanel,
             _allyRosterList,
             _enemyRosterList,
+            _combatantTokenStrip,
+            _tacticalReadoutPanel,
+            _tacticalReadoutTitleLabel,
+            _tacticalReadoutRows,
             _allyHpLabel,
             _enemyHpLabel,
             _logLabel,
@@ -448,6 +460,8 @@ public sealed class BattleScreenView
 
         _allySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
         _enemySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
+        RenderCombatantTokens(state.CombatantTokens);
+        RenderTacticalReadout(state.TacticalReadoutTitle, state.TacticalReadoutRows);
         RenderRoster(_allyRosterList, state.AllyRoster, isEnemy: false);
         RenderRoster(_enemyRosterList, state.EnemyRoster, isEnemy: true);
 
@@ -569,6 +583,89 @@ public sealed class BattleScreenView
 
             row.Add(meta);
             container.Add(row);
+        }
+    }
+
+    private void RenderCombatantTokens(IReadOnlyList<BattleCombatantTokenViewState>? tokens)
+    {
+        _combatantTokenStrip.Clear();
+        if (tokens == null || tokens.Count == 0)
+        {
+            _combatantTokenStrip.style.display = DisplayStyle.None;
+            return;
+        }
+
+        _combatantTokenStrip.style.display = DisplayStyle.Flex;
+        foreach (var token in tokens)
+        {
+            var slot = new VisualElement();
+            slot.AddToClassList("sm-bs-combatant-token");
+            slot.EnableInClassList("sm-bs-combatant-token--ally", token.IsAlly);
+            slot.EnableInClassList("sm-bs-combatant-token--enemy", !token.IsAlly);
+            slot.EnableInClassList("sm-bs-combatant-token--active", token.IsActive);
+            slot.EnableInClassList("sm-bs-combatant-token--down", token.IsDown);
+            slot.tooltip = $"{token.DisplayName}\n{token.ActionText}";
+
+            var mark = new Label(BuildInitial(token.DisplayName));
+            mark.AddToClassList("sm-bs-combatant-token__mark");
+            slot.Add(mark);
+
+            var copy = new VisualElement();
+            copy.AddToClassList("sm-bs-combatant-token__copy");
+            var name = new Label(token.DisplayName);
+            name.AddToClassList("sm-bs-combatant-token__name");
+            var action = new Label(token.ActionText);
+            action.AddToClassList("sm-bs-combatant-token__action");
+            copy.Add(name);
+            copy.Add(action);
+            slot.Add(copy);
+
+            var track = new VisualElement();
+            track.AddToClassList("sm-bs-combatant-token__track");
+            var fill = new VisualElement();
+            fill.AddToClassList("sm-bs-combatant-token__fill");
+            fill.style.width = Length.Percent(Mathf.Clamp01(token.HealthNormalized) * 100f);
+            track.Add(fill);
+            slot.Add(track);
+            _combatantTokenStrip.Add(slot);
+        }
+    }
+
+    private void RenderTacticalReadout(string title, IReadOnlyList<BattleTacticalReadoutRowViewState>? rows)
+    {
+        _tacticalReadoutRows.Clear();
+        if (rows == null || rows.Count == 0)
+        {
+            _tacticalReadoutPanel.style.display = DisplayStyle.None;
+            return;
+        }
+
+        _tacticalReadoutPanel.style.display = DisplayStyle.Flex;
+        _tacticalReadoutTitleLabel.text = title;
+        foreach (var rowState in rows)
+        {
+            var row = new VisualElement();
+            row.AddToClassList("sm-bs-readout-row");
+            row.AddToClassList($"sm-bs-readout-row--{rowState.Tone}");
+
+            var header = new VisualElement();
+            header.AddToClassList("sm-bs-readout-row__header");
+            var label = new Label(rowState.Label);
+            label.AddToClassList("sm-bs-readout-row__label");
+            var value = new Label(rowState.Value);
+            value.AddToClassList("sm-bs-readout-row__value");
+            header.Add(label);
+            header.Add(value);
+            row.Add(header);
+
+            var track = new VisualElement();
+            track.AddToClassList("sm-bs-readout-row__track");
+            var fill = new VisualElement();
+            fill.AddToClassList("sm-bs-readout-row__fill");
+            fill.style.width = Length.Percent(Mathf.Clamp01(rowState.NormalizedValue) * 100f);
+            track.Add(fill);
+            row.Add(track);
+            _tacticalReadoutRows.Add(row);
         }
     }
 

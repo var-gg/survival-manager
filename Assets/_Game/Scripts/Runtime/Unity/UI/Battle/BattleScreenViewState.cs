@@ -24,6 +24,21 @@ public sealed record BattleRosterUnitViewState(
     bool IsSelected,
     Texture2D? Portrait);
 
+public sealed record BattleCombatantTokenViewState(
+    string UnitId,
+    string DisplayName,
+    string ActionText,
+    float HealthNormalized,
+    bool IsAlly,
+    bool IsActive,
+    bool IsDown);
+
+public sealed record BattleTacticalReadoutRowViewState(
+    string Label,
+    string Value,
+    float NormalizedValue,
+    string Tone);
+
 public sealed record BattleDebugFoldoutViewState(
     string EncounterId,
     string SiteNodeIndexText,
@@ -99,6 +114,9 @@ public sealed record BattleShellViewState(
     bool ShowProgressTrack,
     bool ShowTeamSummary,
     bool CanContinue,
+    string TacticalReadoutTitle,
+    IReadOnlyList<BattleTacticalReadoutRowViewState>? TacticalReadoutRows,
+    IReadOnlyList<BattleCombatantTokenViewState>? CombatantTokens,
     BattleSettingsViewState Settings,
     IReadOnlyList<BattleRosterUnitViewState>? AllyRoster = null,
     IReadOnlyList<BattleRosterUnitViewState>? EnemyRoster = null,

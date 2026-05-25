@@ -739,6 +739,26 @@ MonoBehaviour:
     m_Key: ui.battle.hand.ambidextrous
     m_Metadata:
       m_Items: []
+  - m_Id: 17538112183144500
+    m_Key: ui.battle.panel.tactical_readout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144501
+    m_Key: ui.battle.readout.progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144502
+    m_Key: ui.battle.readout.pressure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144503
+    m_Key: ui.battle.readout.allies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17538112183144504
+    m_Key: ui.battle.readout.enemies
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
