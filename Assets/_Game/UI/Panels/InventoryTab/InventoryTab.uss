@@ -72,6 +72,72 @@
 .inv-grid__cell--rare { border-left-color: rgba(91,142,209,0.95); border-right-color: rgba(91,142,209,0.95);
     border-top-color: rgba(91,142,209,0.95); border-bottom-color: rgba(91,142,209,0.95); }
 
+/* wave-30 GPT Pro patch: inventory safety state — locked/protected/incompatible.
+   실수로 분해/장착 막는 safety signal (Presenter wire 후속). */
+.inv-grid__cell--locked {
+    opacity: 0.72;
+    border-left-color: rgba(180, 180, 180, 0.62);
+    border-right-color: rgba(180, 180, 180, 0.62);
+    border-top-color: rgba(180, 180, 180, 0.42);
+    border-bottom-color: rgba(180, 180, 180, 0.72);
+}
+.inv-grid__cell--protected {
+    border-left-color: rgba(120, 168, 232, 0.95);
+    border-right-color: rgba(120, 168, 232, 0.95);
+    border-top-color: rgba(120, 168, 232, 0.78);
+    border-bottom-color: rgba(120, 168, 232, 0.95);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+}
+.inv-grid__cell--incompatible {
+    opacity: 0.48;
+    border-left-color: rgba(218, 74, 67, 0.62);
+    border-right-color: rgba(218, 74, 67, 0.62);
+    border-top-color: rgba(218, 74, 67, 0.48);
+    border-bottom-color: rgba(218, 74, 67, 0.78);
+}
+
+/* wave-30: compare delta chip — +N / -N / = visual signal. */
+.inv-compare__delta-chip {
+    min-width: 28px;
+    height: 18px;
+    padding-left: 4px;
+    padding-right: 4px;
+    -unity-text-align: middle-center;
+    font-size: 10px;
+    -unity-font-style: bold;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.42);
+    border-right-color: rgba(230, 183, 81, 0.42);
+    border-top-color: rgba(230, 183, 81, 0.42);
+    border-bottom-color: rgba(230, 183, 81, 0.42);
+}
+.inv-compare__delta-chip--gain {
+    color: rgba(180, 232, 140, 0.98);
+    background-color: rgba(36, 56, 28, 0.86);
+    border-left-color: rgba(160, 220, 120, 0.62);
+    border-right-color: rgba(160, 220, 120, 0.62);
+    border-top-color: rgba(160, 220, 120, 0.62);
+    border-bottom-color: rgba(160, 220, 120, 0.62);
+}
+.inv-compare__delta-chip--same {
+    color: rgba(180, 168, 132, 0.78);
+    background-color: rgba(28, 22, 12, 0.86);
+}
+.inv-compare__delta-chip--loss {
+    color: rgba(232, 140, 132, 0.98);
+    background-color: rgba(48, 22, 22, 0.86);
+    border-left-color: rgba(220, 120, 110, 0.62);
+    border-right-color: rgba(220, 120, 110, 0.62);
+    border-top-color: rgba(220, 120, 110, 0.62);
+    border-bottom-color: rgba(220, 120, 110, 0.62);
+}
+
 /* Item icon — main affix sprite (full cell) */
 .inv-grid__cell-icon {
     position: absolute;
