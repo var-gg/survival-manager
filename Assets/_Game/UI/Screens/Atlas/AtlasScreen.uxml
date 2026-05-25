@@ -40,11 +40,18 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
 
-                <ui:VisualElement class="atlas-decision-card atlas-preview-card--enemy">
-                    <ui:Label text="적 정보" class="atlas-preview-label" />
-                    <ui:Label name="atlas-preview-enemy" class="atlas-preview-body" />
-                    <ui:Label text="적 징후" class="atlas-preview-label" />
-                    <ui:Label name="atlas-preview-enemy-intel" class="atlas-preview-body atlas-preview-body--intel" />
+                <!-- wave-25 closure (GPT Pro P0): recommendations card를 primary 직후로 이동.
+                     decision-atlas-regional-sigil의 "지도 선택이 곧 캐릭터 운용 선택" 정합. -->
+                <ui:VisualElement class="atlas-decision-card atlas-preview-card--recommendations">
+                    <ui:Label text="추천 캐릭터 3" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-recommendations" class="atlas-preview-body" />
+                </ui:VisualElement>
+
+                <!-- wave-25 closure: Guide/Scout slot (squad 4-6 외 1명) — preview depth + reward bias + lore unlock.
+                     decision-atlas-regional-sigil 결정의 별도 layer. Presenter wire는 후속. -->
+                <ui:VisualElement class="atlas-decision-card atlas-preview-card--scout">
+                    <ui:Label text="가이드 / 정찰" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-scout" class="atlas-preview-body" text="(정찰원 미선택)" />
                 </ui:VisualElement>
 
                 <ui:VisualElement class="atlas-decision-card atlas-preview-card--modifiers">
@@ -52,14 +59,16 @@
                     <ui:Label name="atlas-preview-modifiers" class="atlas-preview-body" />
                 </ui:VisualElement>
 
+                <ui:VisualElement class="atlas-decision-card atlas-preview-card--enemy">
+                    <ui:Label text="적 정보" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-enemy" class="atlas-preview-body" />
+                    <ui:Label text="적 징후" class="atlas-preview-label" />
+                    <ui:Label name="atlas-preview-enemy-intel" class="atlas-preview-body atlas-preview-body--intel" />
+                </ui:VisualElement>
+
                 <ui:VisualElement class="atlas-decision-card atlas-preview-card--reward">
                     <ui:Label text="보상" class="atlas-preview-label" />
                     <ui:Label name="atlas-preview-reward" class="atlas-preview-body" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="atlas-decision-card atlas-preview-card--recommendations">
-                    <ui:Label text="추천 캐릭터" class="atlas-preview-label" />
-                    <ui:Label name="atlas-preview-recommendations" class="atlas-preview-body" />
                 </ui:VisualElement>
 
                 <ui:Label name="atlas-boundary-note" class="atlas-boundary-note atlas-decision-card" />

@@ -480,16 +480,16 @@ public sealed class RecruitView
     {
         if (_scoutLabel != null)
         {
-            // scout는 6-kind directive (Frontline/Backline/Physical/Magical/Support/SynergyTag) — directive 표시명 노출
+            // wave-31 GPT Pro patch: English enum → 한국어 localized (production hygiene).
             _scoutLabel.text = bar.CanUseScout
-                ? $"SCOUT · {bar.ScoutDirectiveLabel} (-{bar.ScoutEchoCost} Echo)"
-                : "SCOUT — USED";
+                ? $"정찰 · {bar.ScoutDirectiveLabel} (-{bar.ScoutEchoCost} 잔향)"
+                : "정찰 — 사용됨";
         }
         if (_refreshLabel != null)
         {
             _refreshLabel.text = bar.FreeRefreshesRemaining > 0
-                ? "REFRESH — FREE"
-                : $"REFRESH (-{bar.CurrentPaidRefreshCost} Gold)";
+                ? "무료 갱신"
+                : $"갱신 (-{bar.CurrentPaidRefreshCost} G)";
         }
     }
 
@@ -522,12 +522,13 @@ public sealed class RecruitView
         return string.Concat(parts.Take(2).Select(part => part[..1])).ToUpperInvariant();
     }
 
+    // wave-31 GPT Pro patch: English enum → 한국어 localized (production hygiene).
     private static string SlotLabel(RecruitSlotType slot, bool scoutBias) => slot switch
     {
-        RecruitSlotType.OnPlan    => scoutBias ? "ON PLAN · SCOUT" : "ON PLAN",
-        RecruitSlotType.Protected => "PROTECTED",
-        RecruitSlotType.StandardA => "STANDARD A",
-        RecruitSlotType.StandardB => "STANDARD B",
+        RecruitSlotType.OnPlan    => scoutBias ? "계획 적합 · 정찰" : "계획 적합",
+        RecruitSlotType.Protected => "보호됨",
+        RecruitSlotType.StandardA => "표준 A",
+        RecruitSlotType.StandardB => "표준 B",
         _ => slot.ToString(),
     };
 
@@ -538,11 +539,12 @@ public sealed class RecruitView
         _                          => "standard",
     };
 
+    // wave-31 GPT Pro patch: English enum → 한국어 localized (production hygiene).
     private static string PlanLabel(RecruitPlanFit plan) => plan switch
     {
-        RecruitPlanFit.OnPlan  => "ON PLAN",
-        RecruitPlanFit.Bridge  => "BRIDGE",
-        RecruitPlanFit.OffPlan => "OFF PLAN",
+        RecruitPlanFit.OnPlan  => "계획 적합",
+        RecruitPlanFit.Bridge  => "연결",
+        RecruitPlanFit.OffPlan => "계획 외",
         _ => plan.ToString(),
     };
 

@@ -241,6 +241,12 @@ public sealed class SquadBuilderPresenter
         card.EnableInClassList("sm-sqb-modal__anchor-card--front", anchor.IsFrontRow());
         card.EnableInClassList("sm-sqb-modal__anchor-card--back", !anchor.IsFrontRow());
         card.EnableInClassList("sm-sqb-modal__anchor-card--empty", row == null);
+        // wave-29 GPT Pro patch: --occupied modifier — formation board의 "deployed 4 + empty 2" 위계 명시화.
+        card.EnableInClassList("sm-sqb-modal__anchor-card--occupied", row != null);
+
+        // wave-29: anchor button 자체에도 --empty 토글 (selected와 별개 → USS variant 가능).
+        button.EnableInClassList("sm-sqb-modal__anchor-button--empty", row == null);
+        button.EnableInClassList("sm-sqb-modal__anchor-button--occupied", row != null);
 
         var anchorBadge = new Label(ShortAnchorLabel(anchor));
         anchorBadge.AddToClassList("sm-sqb-modal__anchor-badge");

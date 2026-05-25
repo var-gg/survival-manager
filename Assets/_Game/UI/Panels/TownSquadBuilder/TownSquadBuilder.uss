@@ -285,6 +285,34 @@
 
 .sm-sqb-modal__anchor-button--selected {
     background-color: rgba(54, 42, 23, 0.88);
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-200);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+}
+
+/* wave-29 GPT Pro patch: anchor state hierarchy.
+   --empty는 dim + plus glyph 느낌, --occupied는 normal + 약한 gold tint. */
+.sm-sqb-modal__anchor-button--empty {
+    opacity: 0.48;
+    background-color: rgba(28, 22, 12, 0.62);
+}
+
+.sm-sqb-modal__anchor-button--occupied {
+    background-color: rgba(40, 30, 14, 0.92);
+    border-left-color: rgba(230, 183, 81, 0.42);
+    border-right-color: rgba(230, 183, 81, 0.42);
+    border-top-color: rgba(230, 183, 81, 0.36);
+    border-bottom-color: rgba(230, 183, 81, 0.52);
+}
+
+.sm-sqb-modal__anchor-card--occupied {
+    /* occupied anchor는 portrait token이 위에 올라가는 컨테이너. opacity full + subtle frame. */
+    opacity: 1;
 }
 
 .sm-sqb-modal__anchor-card {
