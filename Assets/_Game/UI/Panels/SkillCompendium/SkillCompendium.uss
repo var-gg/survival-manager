@@ -22,7 +22,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(8, 12, 28, 0.68);
+    background-color: rgba(28, 22, 12, 0.68);
 }
 
 .cmp-frame {
@@ -33,7 +33,7 @@
 }
 
 .cmp-frame.sm-modal-frame--parchment {
-    background-color: rgba(11, 15, 31, 0.95);
+    background-color: rgba(28, 22, 12, 0.95);
     border-left-color: rgba(226, 181, 88, 0.86);
     border-right-color: rgba(226, 181, 88, 0.86);
     border-top-color: rgba(226, 181, 88, 0.86);
@@ -89,7 +89,7 @@
     padding-right: 24px;
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.28);
-    background-color: rgba(15, 20, 40, 0.96);
+    background-color: rgba(28, 22, 12, 0.96);
 }
 
 .cmp-header__seal {
@@ -142,7 +142,7 @@
     padding-bottom: 8px;
     padding-left: 20px;
     padding-right: 20px;
-    background-color: rgba(12, 16, 34, 0.96);
+    background-color: rgba(28, 22, 12, 0.96);
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.16);
 }
@@ -181,7 +181,7 @@
     padding-bottom: 9px;
     padding-left: 20px;
     padding-right: 20px;
-    background-color: rgba(8, 12, 27, 0.96);
+    background-color: rgba(28, 22, 12, 0.96);
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.18);
 }
@@ -250,7 +250,7 @@
     width: 478px;
     margin-right: 14px;
     padding: 8px;
-    background-color: rgba(11, 16, 35, 0.74);
+    background-color: rgba(28, 22, 12, 0.74);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -343,7 +343,7 @@
     padding-bottom: 9px;
     padding-left: 10px;
     padding-right: 10px;
-    background-color: rgba(20, 27, 55, 0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -510,7 +510,7 @@
 }
 
 .cmp-character-card--locked .cmp-character-card__portrait {
-    background-color: rgba(8, 12, 25, 0.82);
+    background-color: rgba(28, 22, 12, 0.82);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -679,7 +679,7 @@
 .cmp-detail {
     flex-grow: 1;
     padding: 18px;
-    background-color: rgba(9, 13, 28, 0.94);
+    background-color: rgba(28, 22, 12, 0.94);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -989,7 +989,7 @@
     padding-right: 6px;
     color: var(--sm-vellum);
     font-size: 9px;
-    background-color: rgba(11, 17, 35, 0.74);
+    background-color: rgba(28, 22, 12, 0.74);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -1018,7 +1018,7 @@
     color: var(--sm-ink-2);
     font-size: 9px;
     -unity-font-style: bold;
-    background-color: rgba(9, 13, 28, 0.62);
+    background-color: rgba(28, 22, 12, 0.62);
 }
 
 .cmp-vfx-actor-label--caster {

@@ -6,7 +6,7 @@
 .pbp-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_passive_board_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.pbp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.32); }
+.pbp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(28, 22, 12, 0.32); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .pbp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
@@ -18,7 +18,7 @@
     border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
 .pbp-header__portrait { width: 52px; height: 52px; margin-right: 14px;
     -unity-background-scale-mode: scale-and-crop;
-    background-color: rgba(20,26,53,0.78);
+    background-color: rgba(28, 22, 12, 0.78);
     border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
     border-left-color: var(--sm-gold-300); border-right-color: var(--sm-gold-300);
     border-top-color: var(--sm-gold-300); border-bottom-color: var(--sm-gold-300); }
@@ -33,7 +33,7 @@
 
 .pbp-body { flex-direction: row; flex-grow: 1; padding: 18px; }
 .pbp-board { flex-grow: 1; margin-right: 14px;
-    background-color: rgba(16,21,44,0.86);
+    background-color: rgba(28, 22, 12, 0.86);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
@@ -127,7 +127,7 @@
 /* Detail panel — dark navy card. ceremony frame texture가 parchment라
    near-transparent bg면 dark용 text가 저대비 → solid navy로 보정. */
 .pbp-detail { width: 280px;
-    background-color: rgba(20,26,53,0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);

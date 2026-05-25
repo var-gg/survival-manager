@@ -29,7 +29,7 @@
 .rgp-backdrop-dim {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(12, 17, 38, 0.55);
+    background-color: rgba(28, 22, 12, 0.55);
 }
 
 /* --------- Header (z=2) ------------------------------------- */
@@ -42,7 +42,7 @@
     padding-bottom: 16px;
     padding-left: 40px;
     padding-right: 40px;
-    background-color: rgba(20, 26, 53, 0.78);
+    background-color: rgba(28, 22, 12, 0.78);
     border-bottom-width: 1px;
     border-bottom-color: var(--sm-gold-400);
 }
@@ -97,7 +97,7 @@
     padding-bottom: 12px;
     padding-left: 40px;
     padding-right: 40px;
-    background-color: rgba(20, 26, 53, 0.62);
+    background-color: rgba(28, 22, 12, 0.62);
 }
 
 .rgp-filter-chip {
@@ -179,7 +179,7 @@
     bottom: 22px;
     flex-direction: row;
     align-items: center;
-    background-color: rgba(20, 26, 53, 0.78);
+    background-color: rgba(28, 22, 12, 0.78);
     padding-left: 4px;
     padding-right: 4px;
     padding-top: 2px;
@@ -245,7 +245,7 @@
 .rgp-header,
 .rgp-filter-strip {
     background-image: none;
-    background-color: rgba(20, 26, 53, 0.78);
+    background-color: rgba(28, 22, 12, 0.78);
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.30);
 }

@@ -6,7 +6,7 @@
 .pap-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_permanent_augment_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.32); }
+.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(28, 22, 12, 0.32); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .pap-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
@@ -125,7 +125,7 @@
 }
 /* Locked — 미해금. dark 배경 유지 + 살짝 dim (parchment bleed 최소화). */
 .pap-augment-cell--locked {
-    background-color: rgba(18, 22, 44, 0.94);
+    background-color: rgba(28, 22, 12, 0.94);
     opacity: 0.72;
 }
 
@@ -257,7 +257,7 @@
 .pap-col--detail,
 .pap-col--equip {
     background-image: none;
-    background-color: rgba(18, 24, 52, 0.90);
+    background-color: rgba(28, 22, 12, 0.90);
     border-left-color: rgba(230, 183, 81, 0.20);
     border-right-color: rgba(230, 183, 81, 0.20);
     border-top-color: rgba(230, 183, 81, 0.18);
@@ -269,7 +269,7 @@
 .pap-detail-effect,
 .pap-detail-flavor {
     background-image: none;
-    background-color: rgba(24, 31, 63, 0.86);
+    background-color: rgba(28, 22, 12, 0.86);
     border-left-color: rgba(230, 183, 81, 0.20);
     border-right-color: rgba(230, 183, 81, 0.20);
     border-top-color: rgba(230, 183, 81, 0.18);
@@ -288,7 +288,7 @@
 .pap-augment-cell__icon,
 .pap-equip-slot {
     background-image: none;
-    background-color: rgba(8, 12, 28, 0.62);
+    background-color: rgba(28, 22, 12, 0.62);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;

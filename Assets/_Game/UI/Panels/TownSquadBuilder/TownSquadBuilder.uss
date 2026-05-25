@@ -5,7 +5,8 @@
     -unity-slice-top: 96;
     -unity-slice-bottom: 96;
     -unity-slice-scale: 0.5;
-    background-color: var(--sm-bg-0);
+    /* sepia 통합 (다른 production panel과 동일 mood). 기존 var(--sm-bg-0) navy는 cross-panel drift 원인. */
+    background-color: rgba(28, 22, 12, 0.92);
 }
 
 .sm-sqb-modal__section {
@@ -85,7 +86,7 @@
 }
 
 .sm-sqb-modal__section {
-    background-color: rgb(7, 12, 29);
+    background-color: rgb(28, 22, 12);
     overflow: hidden;
 }
 
@@ -127,7 +128,7 @@
     padding-top: 5px;
     padding-bottom: 5px;
     color: var(--sm-ink-3);
-    background-color: rgba(10, 17, 40, 0.88);
+    background-color: rgba(28, 22, 12, 0.88);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -165,7 +166,7 @@
     padding-right: 8px;
     padding-top: 8px;
     padding-bottom: 8px;
-    background-color: rgb(9, 15, 36);
+    background-color: rgb(28, 22, 12);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -184,7 +185,7 @@
     color: rgb(130, 185, 245);
     font-size: 26px;
     -unity-text-align: middle-center;
-    background-color: rgb(12, 19, 43);
+    background-color: rgb(28, 22, 12);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -275,7 +276,7 @@
     margin-bottom: 14px;
     font-size: 0;
     line-height: 17px;
-    background-color: rgb(9, 15, 36);
+    background-color: rgb(28, 22, 12);
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 8px;
@@ -318,7 +319,7 @@
     padding-left: 5px;
     padding-right: 5px;
     color: rgb(245, 214, 138);
-    background-color: rgba(8, 12, 28, 0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -338,7 +339,7 @@
     margin-bottom: 8px;
     align-items: center;
     justify-content: center;
-    background-color: rgb(12, 19, 43);
+    background-color: rgb(28, 22, 12);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -465,7 +466,7 @@
     margin-right: 8px;
     margin-bottom: 8px;
     font-size: 12px;
-    background-color: rgba(14, 21, 45, 0.88);
+    background-color: rgba(28, 22, 12, 0.88);
 }
 
 .sm-sqb-modal__posture-button--selected {
@@ -538,7 +539,7 @@
 
 /* UX Bible 80 pass — make Tactical Setup read as one dense tactical console. */
 .sm-sqb-modal__panel {
-    background-color: rgb(4, 8, 20);
+    background-color: rgb(28, 22, 12);
     border-left-width: 2px;
     border-right-width: 2px;
     border-top-width: 2px;
@@ -550,19 +551,20 @@
 }
 
 .sm-sqb-modal__section {
-    background-color: rgba(7, 12, 29, 0.94);
+    background-color: rgba(28, 22, 12, 0.94);
     border-bottom-color: rgba(138, 100, 24, 0.42);
 }
 
 .sm-sqb-modal__section--formation {
-    background-color: rgba(5, 10, 25, 0.96);
+    /* sepia 통합 (formation board base). 기존 navy(5,10,25,0.96)는 cross-panel drift. */
+    background-color: rgba(28, 22, 12, 0.94);
 }
 
 .sm-sqb-modal__roster-row {
     width: 128px;
     height: 132px;
     min-height: 132px;
-    background-color: rgba(9, 15, 36, 0.96);
+    background-color: rgba(28, 22, 12, 0.96);
 }
 
 .sm-sqb-modal__roster-row--deployed {
@@ -573,7 +575,7 @@
 
 .sm-sqb-modal__roster-icon {
     height: 54px;
-    background-color: rgba(17, 26, 57, 0.98);
+    background-color: rgba(28, 22, 12, 0.98);
 }
 
 .sm-sqb-modal__anchor-grid {
@@ -591,7 +593,7 @@
     min-height: 168px;
     height: 168px;
     margin-bottom: 16px;
-    background-color: rgba(8, 13, 31, 0.98);
+    background-color: rgba(28, 22, 12, 0.98);
     border-left-width: 2px;
     border-right-width: 2px;
     border-top-width: 2px;
@@ -611,7 +613,7 @@
 }
 
 .sm-sqb-modal__anchor-card--front {
-    background-color: rgba(12, 25, 52, 0.56);
+    background-color: rgba(28, 22, 12, 0.56);
 }
 
 .sm-sqb-modal__anchor-card--back {
@@ -622,7 +624,7 @@
     width: 96px;
     height: 84px;
     margin-top: 10px;
-    background-color: rgba(15, 25, 55, 0.98);
+    background-color: rgba(28, 22, 12, 0.98);
     border-top-color: rgba(245, 214, 138, 0.42);
 }
 
@@ -650,7 +652,7 @@
 .sm-sqb-modal__operation-row {
     height: 28px;
     min-height: 28px;
-    background-color: rgba(10, 17, 40, 0.48);
+    background-color: rgba(28, 22, 12, 0.48);
     padding-left: 6px;
     padding-right: 6px;
 }
@@ -674,7 +676,7 @@
     border-right-color: rgba(230, 183, 81, 0.16);
     border-top-color: rgba(245, 214, 138, 0.14);
     border-bottom-color: rgba(138, 100, 24, 0.26);
-    background-color: rgba(5, 10, 25, 0.28);
+    background-color: rgba(28, 22, 12, 0.28);
 }
 
 .sm-sqb-modal__formation-line {

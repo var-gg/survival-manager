@@ -32,7 +32,7 @@
     -unity-slice-top: 96;
     -unity-slice-bottom: 96;
     -unity-slice-scale: 0.46;
-    background-color: rgb(6, 10, 25);
+    background-color: rgb(28, 22, 12);
     z-index: 1301;
 }
 
@@ -178,7 +178,7 @@
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
-    background-color: rgba(12, 18, 39, 0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -213,7 +213,7 @@
 
 .tcs-hero-rail__portrait {
     height: 72px;
-    background-color: rgba(23, 31, 61, 0.96);
+    background-color: rgba(28, 22, 12, 0.96);
     -unity-background-scale-mode: scale-and-crop;
     border-left-width: 1px;
     border-right-width: 1px;
@@ -258,7 +258,7 @@
     margin-bottom: 12px;
     align-items: center;
     justify-content: center;
-    background-color: rgba(18, 25, 55, 0.88);
+    background-color: rgba(28, 22, 12, 0.88);
     -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: rgba(160, 198, 255, 0.46);
     border-left-width: 1px;
@@ -314,7 +314,7 @@
     height: 64px;
     margin-left: 5px;
     margin-right: 5px;
-    background-color: rgba(22, 29, 60, 0.84);
+    background-color: rgba(28, 22, 12, 0.84);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -394,7 +394,7 @@
     -unity-slice-top: 72;
     -unity-slice-bottom: 48;
     -unity-slice-scale: 0.34;
-    background-color: rgba(10, 16, 37, 0.78);
+    background-color: rgba(28, 22, 12, 0.78);
 }
 
 .tcs-tab--active {
@@ -472,7 +472,7 @@
     padding-right: 10px;
     padding-top: 7px;
     padding-bottom: 7px;
-    background-color: rgba(11, 18, 40, 0.88);
+    background-color: rgba(28, 22, 12, 0.88);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -560,7 +560,7 @@
     rotate: 45deg;
     align-items: center;
     justify-content: center;
-    background-color: rgba(19, 28, 55, 0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -613,7 +613,7 @@
     padding-right: 9px;
     padding-top: 8px;
     padding-bottom: 8px;
-    background-color: rgba(11, 18, 40, 0.88);
+    background-color: rgba(28, 22, 12, 0.88);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -629,7 +629,7 @@
     height: 58px;
     align-self: center;
     margin-bottom: 4px;
-    background-color: rgba(21, 31, 61, 0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     -unity-background-scale-mode: scale-to-fit;
     border-left-width: 1px;
     border-right-width: 1px;
@@ -704,7 +704,7 @@
     padding-right: 10px;
     padding-top: 9px;
     padding-bottom: 9px;
-    background-color: rgba(10, 16, 36, 0.90);
+    background-color: rgba(28, 22, 12, 0.90);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -727,7 +727,7 @@
     width: 54px;
     height: 54px;
     margin-right: 12px;
-    background-color: rgba(17, 25, 55, 0.94);
+    background-color: rgba(28, 22, 12, 0.94);
     -unity-background-scale-mode: scale-to-fit;
     align-items: center;
     justify-content: center;
@@ -839,7 +839,7 @@
     padding-right: 18px;
     padding-top: 18px;
     padding-bottom: 18px;
-    background-color: rgba(6, 11, 28, 0.68);
+    background-color: rgba(28, 22, 12, 0.68);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -864,7 +864,7 @@
 .tcs-portrait-token {
     min-height: 666px;
     flex-grow: 1;
-    background-color: rgba(8, 13, 32, 0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 2px;
     border-right-width: 2px;
     border-top-width: 2px;
@@ -899,7 +899,7 @@
     padding-top: 14px;
     padding-bottom: 14px;
     margin-bottom: 12px;
-    background-color: rgba(9, 14, 34, 0.92);
+    background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 2px;
     border-left-color: rgba(230, 183, 81, 0.42);
 }
@@ -919,7 +919,7 @@
     height: 54px;
     margin-right: 8px;
     margin-bottom: 8px;
-    background-color: rgba(12, 19, 43, 0.94);
+    background-color: rgba(28, 22, 12, 0.94);
     border-bottom-color: rgba(245, 214, 138, 0.34);
 }
 

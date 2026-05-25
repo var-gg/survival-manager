@@ -21,7 +21,7 @@
 .rcp-backdrop-dim {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(12, 17, 38, 0.30);
+    background-color: rgba(28, 22, 12, 0.30);
 }
 
 /* --- Modal frame ---
@@ -442,7 +442,7 @@
     margin-top: 22px;
     margin-bottom: 22px;
     padding: 14px;
-    background-color: rgba(18, 24, 52, 0.94);
+    background-color: rgba(28, 22, 12, 0.94);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -547,7 +547,7 @@
 
 .rcp-card {
     background-image: none;
-    background-color: rgba(18, 24, 52, 0.96);
+    background-color: rgba(28, 22, 12, 0.96);
     border-left-width: 2px;
     border-right-width: 2px;
     border-top-width: 1px;
@@ -574,7 +574,7 @@
 
 .rcp-card--protected {
     background-image: none;
-    background-color: rgba(18, 24, 55, 0.96);
+    background-color: rgba(28, 22, 12, 0.96);
     border-left-color: rgba(127, 163, 224, 0.68);
     border-right-color: rgba(127, 163, 224, 0.68);
     border-top-color: rgba(180, 205, 255, 0.70);
@@ -609,7 +609,7 @@
 .rcp-actions__scout-icon,
 .rcp-actions__refresh-icon {
     background-image: none;
-    background-color: rgba(8, 12, 28, 0.58);
+    background-color: rgba(28, 22, 12, 0.58);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -749,7 +749,7 @@
     padding-right: 34px;
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.18);
-    background-color: rgba(8, 12, 28, 0.36);
+    background-color: rgba(28, 22, 12, 0.36);
 }
 
 .rcp-command-strip__label,
@@ -900,7 +900,7 @@
     padding-right: 10px;
     padding-top: 8px;
     padding-bottom: 10px;
-    background-color: rgba(15, 20, 44, 0.98);
+    background-color: rgba(28, 22, 12, 0.98);
 }
 
 .rcp-card--selected {
@@ -928,7 +928,7 @@
     margin-left: 0;
     margin-right: 0;
     -unity-background-scale-mode: scale-to-fit;
-    background-color: rgba(8, 12, 28, 0.82);
+    background-color: rgba(28, 22, 12, 0.82);
     overflow: hidden;
 }
 
@@ -1082,7 +1082,7 @@
 .rcp-detail__portrait-frame {
     height: 214px;
     margin-bottom: 14px;
-    background-color: rgba(8, 12, 28, 0.78);
+    background-color: rgba(28, 22, 12, 0.78);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -1150,7 +1150,7 @@
 .rcp-detail__metric-track {
     height: 8px;
     margin-top: 4px;
-    background-color: rgba(8, 12, 28, 0.78);
+    background-color: rgba(28, 22, 12, 0.78);
     border-top-width: 1px;
     border-bottom-width: 1px;
     border-top-color: rgba(245, 214, 138, 0.16);
