@@ -196,19 +196,24 @@
        유지. RecruitPack.uss부터 점진적 인용.
        ========================================================= */
 
-    /* chip 4 variants — analysis-design-tokens-v1 §4 */
+    /* state info accent — Design Tokens v1 §1.4 (cyan vivid) */
+    --sm-state-info: rgb(118, 212, 255);    /* #76d4ff */
+
+    /* chip 4 variants — analysis-design-tokens-v1 §4
+       v1.1: alpha 강화 (0.12 → 0.28), color vividness (vanguard-glow → state-info cyan)
+       이전 v1은 시각 차이 미묘했음 — 사용자 PlayMode 확인 후 강화. */
     /* state chip: 계획 적합/보호/정찰/보정/need (gold tint) */
-    --sm-chip-state-text: var(--sm-gold-200);
-    --sm-chip-state-bg: var(--sm-vellum-a18);
-    --sm-chip-state-border: var(--sm-gold-300-a42);
-    /* tag chip: archetype tag 전열/결투/폭발/방패술 (info-blue tint) */
-    --sm-chip-tag-text: var(--sm-fam-vanguard-glow);
-    --sm-chip-tag-bg: rgba(127, 163, 224, 0.12);
-    --sm-chip-tag-border: rgba(127, 163, 224, 0.32);
+    --sm-chip-state-text: var(--sm-gold-100);
+    --sm-chip-state-bg: rgba(245, 214, 138, 0.22);
+    --sm-chip-state-border: rgba(245, 214, 138, 0.55);
+    /* tag chip: archetype tag 전열/결투/폭발/방패술 (info-cyan tint, vivid) */
+    --sm-chip-tag-text: var(--sm-state-info);
+    --sm-chip-tag-bg: rgba(118, 212, 255, 0.18);
+    --sm-chip-tag-border: rgba(118, 212, 255, 0.55);
     /* category chip: 무기/방어구/액세서리 (ink) */
-    --sm-chip-category-text: var(--sm-ink-1);
-    --sm-chip-category-bg: var(--sm-vellum-a08);
-    --sm-chip-category-border: rgba(245, 234, 208, 0.22);
+    --sm-chip-category-text: var(--sm-ink-0);
+    --sm-chip-category-bg: rgba(245, 234, 208, 0.10);
+    --sm-chip-category-border: rgba(245, 234, 208, 0.32);
     /* hint chip: 보유 골드/잔향 (transparent, dashed) */
     --sm-chip-hint-text: var(--sm-ink-2);
     --sm-chip-hint-bg: rgba(0, 0, 0, 0);
