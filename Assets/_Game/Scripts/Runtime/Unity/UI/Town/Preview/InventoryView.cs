@@ -391,6 +391,15 @@ public sealed class InventoryView
                 equipped.AddToClassList("inv-compare__row-equipped");
                 row.Add(equipped);
 
+                // wave-30 GPT Pro patch: delta chip — Presenter가 채운 +N/-N/= 빠른 visual.
+                if (!string.IsNullOrEmpty(rowState.DeltaChipText))
+                {
+                    var deltaChip = new Label(rowState.DeltaChipText);
+                    deltaChip.AddToClassList("inv-compare__delta-chip");
+                    deltaChip.AddToClassList($"inv-compare__delta-chip--{rowState.DeltaChipKind}");
+                    row.Add(deltaChip);
+                }
+
                 _compareRows.Add(row);
             }
         }

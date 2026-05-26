@@ -71,7 +71,11 @@ public sealed record InventoryCompareRowViewState(
     string Label,
     string SelectedValue,
     string EquippedValue,
-    string ToneKey
+    string ToneKey,
+    // wave-30 GPT Pro patch: delta chip — Presenter가 +N/-N/= visual signal 공급.
+    // DeltaChipText 비어있으면 chip 안 보임. DeltaChipKind = "gain"/"same"/"loss" → USS class.
+    string DeltaChipText = "",
+    string DeltaChipKind = "same"
 );
 
 public sealed record InventoryEquipCtaViewState(

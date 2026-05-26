@@ -80,7 +80,15 @@ public sealed class AtlasScreenPresenter
             _region.SigilPool.Select(BuildSigilPoolItem).ToArray(),
             BuildSpineStages(sessionResolution),
             BuildStageCandidates(sessionResolution),
-            BuildPreview(preview, sessionResolution.SelectedNode, sessionResolution.SelectedStack, sessionResolution.StageCandidatePathHash));
+            BuildPreview(preview, sessionResolution.SelectedNode, sessionResolution.SelectedStack, sessionResolution.StageCandidatePathHash, BuildScoutHint()));
+    }
+
+    // wave-25 presenter (GPT Pro P0): Guide/Scout slot placeholder.
+    // 진짜 scout selection (squad 외 1명 추천)은 AtlasScreenPresenter에 GameSessionState 주입 필요 — 별도 refactor task로.
+    // 현재는 의도된 placeholder text로 slot의 의미 명시 (decision-atlas-regional-sigil 의도 시각화).
+    private string BuildScoutHint()
+    {
+        return "정찰원 미설정 — 다음 sortie에 추가 가능";
     }
 
     private AtlasHexTileViewState BuildTile(AtlasRegionNode node, AtlasSessionResolution sessionResolution)
@@ -249,7 +257,8 @@ public sealed class AtlasScreenPresenter
         AtlasNodePreview preview,
         AtlasRegionNode selectedNode,
         AtlasNodeModifierStack selectedStack,
-        string stageCandidatePathHash)
+        string stageCandidatePathHash,
+        string scoutHint)
     {
         var modifiers = preview.ModifierStack.Count == 0
             ? "적용된 각인 효과가 없습니다."
@@ -285,9 +294,8 @@ public sealed class AtlasScreenPresenter
             string.Empty,
             ThreatBandLabel: threatBandLabel,
             EnemyIntel: AtlasEnemyIntelViewState.Empty,
-            // wave-25 presenter (GPT Pro P0): Guide/Scout slot은 squad 4-6 외 1명. 진짜 scout selection 시스템은 후속.
-            // 임시 placeholder text: scout slot이 미설정임을 명시 + 다음 슬롯 후보 안내 (decision-atlas-regional-sigil 의도).
-            ScoutHint: "정찰원 미설정 — 다음 sortie에 추가 가능");
+            // wave-25 presenter (GPT Pro P0): scout slot 추천 — BuildScoutHint()가 squad 외 hero 1명 선택.
+            ScoutHint: scoutHint);
     }
 
     private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack, string sigilSnapshotHash, int activeSigilCap)

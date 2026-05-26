@@ -258,6 +258,11 @@ public sealed class InventoryPresenter : IInventoryActions
         InventoryCompareItemSummary selected,
         InventoryCompareItemSummary equipped)
     {
+        // wave-30 GPT Pro patch: affix count는 정수 비교라 delta chip 적합 (+N/-N/=).
+        var affixDelta = selected.AffixCount - equipped.AffixCount;
+        var affixChipText = affixDelta == 0 ? "=" : (affixDelta > 0 ? $"+{affixDelta}" : $"{affixDelta}");
+        var affixChipKind = affixDelta == 0 ? "same" : (affixDelta > 0 ? "gain" : "loss");
+
         return new[]
         {
             new InventoryCompareRowViewState("slot", "슬롯", selected.SlotLabel, equipped.SlotLabel, CompareTone(selected.SlotKey, equipped.SlotKey)),
@@ -265,7 +270,7 @@ public sealed class InventoryPresenter : IInventoryActions
             new InventoryCompareRowViewState("family", "계열", selected.WeaponFamilyLabel, equipped.WeaponFamilyLabel, CompareTone(selected.WeaponFamilyKey, equipped.WeaponFamilyKey)),
             new InventoryCompareRowViewState("identity", "정체성", FormatIdentityCompareLabel(selected.IdentityKey), FormatIdentityCompareLabel(equipped.IdentityKey), CompareTone(selected.IdentityKey, equipped.IdentityKey)),
             new InventoryCompareRowViewState("budget", "예산", selected.BudgetLabel, equipped.BudgetLabel, CompareTone(selected.BudgetKey, equipped.BudgetKey)),
-            new InventoryCompareRowViewState("affix", "속성", $"{selected.AffixCount}", $"{equipped.AffixCount}", CompareTone(selected.AffixCount.ToString(), equipped.AffixCount.ToString())),
+            new InventoryCompareRowViewState("affix", "속성", $"{selected.AffixCount}", $"{equipped.AffixCount}", CompareTone(selected.AffixCount.ToString(), equipped.AffixCount.ToString()), affixChipText, affixChipKind),
             new InventoryCompareRowViewState("refit", "재가공", FormatRefitLabel(selected.RefitKey), FormatRefitLabel(equipped.RefitKey), CompareTone(selected.RefitKey, equipped.RefitKey)),
         };
     }
