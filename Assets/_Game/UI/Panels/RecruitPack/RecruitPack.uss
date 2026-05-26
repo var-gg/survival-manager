@@ -749,11 +749,19 @@
    left: roster pressure / center: four candidates / right: selected detail.
    ============================================================= */
 
+/* frame 9-slice border 96px * scale 0.5 = 시각 두께 48px. child가 frame
+   border 그래픽 위로 올라가지 않도록 inner padding 48px로 inset.
+   기존 .rcp-header / .rcp-command-strip / .rcp-decision-layout / .rcp-actions /
+   .rcp-footer 다 이 padding 안으로 자연 들어감. */
 .rcp-frame {
     left: 48px;
     right: 48px;
     top: 36px;
     bottom: 36px;
+    padding-left: 48px;
+    padding-right: 48px;
+    padding-top: 36px;
+    padding-bottom: 36px;
 }
 
 .rcp-header {
