@@ -790,7 +790,8 @@
 }
 
 .rcp-left-rail {
-    width: 236px;
+    width: 220px;
+    align-self: flex-start;
     margin-top: 4px;
     margin-bottom: 4px;
     margin-right: 16px;
@@ -844,8 +845,10 @@
 }
 
 .rcp-rail__stack {
-    margin-top: auto;
-    padding-top: 18px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top-width: 1px;
+    border-top-color: rgba(230, 183, 81, 0.18);
 }
 
 .rcp-rail__signal {

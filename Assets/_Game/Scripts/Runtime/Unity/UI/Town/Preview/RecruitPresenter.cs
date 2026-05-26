@@ -121,9 +121,10 @@ public sealed class RecruitPresenter : IRecruitActions
             _root.CombatContentLookup.TryGetArchetype(offer.UnitBlueprintId, out var archetype);
             var classKey = archetype?.Class?.Id ?? string.Empty;
             // Tags = archetype RecruitPlanTags 파생 (offer엔 tag 리스트 없음). ≤3.
+            // raw t.Id는 영문(duelist/frontline 등) → DescribePlanTag로 한국어 매핑.
             var tags = archetype?.RecruitPlanTags?
                 .Where(t => t != null && !string.IsNullOrEmpty(t.Id))
-                .Select(t => t.Id)
+                .Select(t => DescribePlanTag(t.Id, t.LegacyDisplayName))
                 .Take(3)
                 .ToList() ?? new List<string>();
 
@@ -331,6 +332,45 @@ public sealed class RecruitPresenter : IRecruitActions
         "mystic"   => "주문 보강 필요",
         _ => $"{classKey} 보강",
     };
+
+    // RecruitPlanTags raw id → 한국어. 데이터 측 LegacyDisplayName이 한국어이면 그걸 우선.
+    private static string DescribePlanTag(string tagId, string legacyDisplayName)
+    {
+        if (!string.IsNullOrWhiteSpace(legacyDisplayName) && !IsAsciiOnly(legacyDisplayName))
+        {
+            return legacyDisplayName;
+        }
+        return tagId switch
+        {
+            "vanguard"      => "전열",
+            "duelist"       => "결투",
+            "ranger"        => "사격",
+            "mystic"        => "주문",
+            "frontline"     => "전열 배치",
+            "backline"      => "후열 배치",
+            "burst"         => "폭발",
+            "magical"       => "마법",
+            "physical"      => "물리",
+            "pierce"        => "관통",
+            "shield_skill"  => "방패술",
+            "support"       => "지원",
+            "skirmish"      => "교전",
+            "control"       => "통제",
+            "sustain"       => "지속",
+            "anti_magic"    => "대마법",
+            "anti_armor"    => "대장갑",
+            _ => tagId,
+        };
+    }
+
+    private static bool IsAsciiOnly(string value)
+    {
+        foreach (var ch in value)
+        {
+            if (ch > 127) return false;
+        }
+        return true;
+    }
 
     private static RecruitSlotType MapSlotType(RecruitOfferSlotType slotType) => slotType switch
     {
