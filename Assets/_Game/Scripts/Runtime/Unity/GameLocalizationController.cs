@@ -44,6 +44,19 @@ public sealed class GameLocalizationController : MonoBehaviour
         LocalizationSettings.SelectedLocaleChanged += HandleSelectedLocaleChanged;
         IsInitialized = true;
 
+        // V1 narrative_korean_first 정책: PlayerPref/SystemLocale chain이 en으로
+        // 떨어져도 ko로 강제 보정. 사용자가 명시적 locale switcher로 en 선택
+        // 시점에만 다른 locale 허용 (그건 SetLocale 호출로 표현).
+        var currentCode = LocalizationSettings.SelectedLocale?.Identifier.Code;
+        if (!string.Equals(currentCode, "ko", StringComparison.OrdinalIgnoreCase))
+        {
+            var koLocale = LocalizationSettings.AvailableLocales?.GetLocale("ko");
+            if (koLocale != null)
+            {
+                LocalizationSettings.SelectedLocale = koLocale;
+            }
+        }
+
         if (LocalizationSettings.SelectedLocale != null)
         {
             LocaleChanged?.Invoke(LocalizationSettings.SelectedLocale);
