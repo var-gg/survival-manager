@@ -68,9 +68,20 @@ public sealed class AtlasScreenController : MonoBehaviour
     {
         EnsureSessionReady();
         _region ??= AtlasGrayboxDataFactory.CreateRegion();
-        _presenter ??= _root == null
-            ? new AtlasScreenPresenter(_region)
-            : new AtlasScreenPresenter(_region, _root.SessionState.EnsureAtlasSession(_region));
+        if (_presenter == null)
+        {
+            _presenter = _root == null
+                ? new AtlasScreenPresenter(_region)
+                : new AtlasScreenPresenter(_region, _root.SessionState.EnsureAtlasSession(_region));
+            // wave-25 presenter: scout candidate selection을 위한 hero source inject.
+            if (_root != null)
+            {
+                _presenter.SetHeroSource(
+                    () => _root.SessionState.Profile.Heroes,
+                    () => _root.SessionState.ExpeditionSquadHeroIds ?? Array.Empty<string>(),
+                    () => _root.SessionState.BattleDeployHeroIds ?? Array.Empty<string>());
+            }
+        }
         if (_view != null && _viewRootBuildCount == panelHost.RootBuildCount)
         {
             SyncPresenterFromSession();

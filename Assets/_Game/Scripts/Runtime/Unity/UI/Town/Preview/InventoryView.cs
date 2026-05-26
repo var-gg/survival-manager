@@ -206,6 +206,10 @@ public sealed class InventoryView
             if (item.IsSelected) cell.AddToClassList("inv-grid__cell--selected");
             if (item.IsSelected) cell.AddToClassList("sm-item-cell--selected");
             if (item.IsEquipped) cell.AddToClassList("sm-item-cell--equipped");
+            // wave-30 GPT Pro patch: lock/protected/incompatible safety state binding.
+            if (item.IsLocked) cell.AddToClassList("inv-grid__cell--locked");
+            if (item.IsProtected) cell.AddToClassList("inv-grid__cell--protected");
+            if (item.IsIncompatible) cell.AddToClassList("inv-grid__cell--incompatible");
 
             var iconLayer = new VisualElement();
             iconLayer.AddToClassList("inv-grid__cell-icon");

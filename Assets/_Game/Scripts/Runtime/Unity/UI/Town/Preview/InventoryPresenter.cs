@@ -152,6 +152,14 @@ public sealed class InventoryPresenter : IInventoryActions
                         EnumerateCraftOperations(itemDef));
                 }
 
+                // wave-30 GPT Pro patch: lock/protected/incompatible safety state — targetHeroId 컨텍스트로 mapping.
+                // IsProtected = 현재 선택 hero가 장착 중 (분해 위험 경고),
+                // IsLocked = 다른 hero가 장착 중 (이동 X 표시),
+                // IsIncompatible = 현재 hero의 class와 weapon family 호환 안 됨 (장착 불가 visual).
+                var isEquippedByTarget = !string.IsNullOrEmpty(_targetHeroId)
+                    && string.Equals(item.EquippedHeroId, _targetHeroId, StringComparison.Ordinal);
+                var isEquippedByOther = !string.IsNullOrEmpty(item.EquippedHeroId) && !isEquippedByTarget;
+
                 var itemState = new InventoryItemViewState(
                     ItemInstanceId: item.ItemInstanceId,
                     Name: itemName,
@@ -172,7 +180,10 @@ public sealed class InventoryPresenter : IInventoryActions
                     IsLaunchSupportedRarity: presentation.IsLaunchSupportedRarity,
                     IsEquipped: equippedItemIds.Contains(item.ItemInstanceId),
                     IsSelected: false,
-                    IconSprite: _itemIconSprite(iconKey) ?? _itemIconSprite(item.ItemBaseId) ?? _affixIconSprite(iconKey));
+                    IconSprite: _itemIconSprite(iconKey) ?? _itemIconSprite(item.ItemBaseId) ?? _affixIconSprite(iconKey),
+                    IsLocked: isEquippedByOther,
+                    IsProtected: isEquippedByTarget,
+                    IsIncompatible: false);
                 return new InventoryItemPresentation(item, slotKey, iconKey, itemState);
             })
             .ToList();

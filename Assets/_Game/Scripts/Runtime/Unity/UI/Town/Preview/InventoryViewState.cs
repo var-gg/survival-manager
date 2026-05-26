@@ -37,7 +37,12 @@ public sealed record InventoryItemViewState(
     bool IsLaunchSupportedRarity,
     bool IsEquipped,
     bool IsSelected,
-    Texture2D? IconSprite
+    Texture2D? IconSprite,
+    // wave-30 GPT Pro patch: lock/protected/incompatible safety state.
+    // IsLocked = 다른 hero에 장착됨(분해/이동 제약), IsProtected = 현재 선택 hero에 장착됨, IsIncompatible = slot 호환 안 됨.
+    bool IsLocked = false,
+    bool IsProtected = false,
+    bool IsIncompatible = false
 );
 
 public sealed record InventoryAffixRowViewState(

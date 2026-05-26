@@ -13,6 +13,11 @@ public sealed class AtlasScreenPresenter
     private readonly AtlasNodePreviewBuilder _previewBuilder = new();
     private readonly AtlasRegionDefinition _region;
     private AtlasSessionState _session;
+    // wave-25 presenter (GPT Pro P0): optional hero source for scout candidate selection.
+    // null이면 placeholder text fallback (EditMode test 시나리오 등). Runtime caller가 inject.
+    private Func<IReadOnlyList<SM.Persistence.Abstractions.Models.HeroInstanceRecord>>? _heroSource;
+    private Func<IReadOnlyList<string>>? _expeditionSquadSource;
+    private Func<IReadOnlyList<string>>? _deploySquadSource;
 
     public AtlasScreenPresenter(AtlasRegionDefinition region, AtlasTraversalMode traversalMode = AtlasTraversalMode.StoryFirstClear)
     {
@@ -28,6 +33,19 @@ public sealed class AtlasScreenPresenter
     {
         _region = region ?? throw new ArgumentNullException(nameof(region));
         _session = session ?? throw new ArgumentNullException(nameof(session));
+    }
+
+    /// wave-25 presenter — Atlas scout candidate selection을 위한 hero source 주입.
+    /// Runtime caller가 GameSessionRoot/GameSessionState에서 lambda로 공급.
+    /// 미주입 시 BuildScoutHint는 placeholder text 반환.
+    public void SetHeroSource(
+        Func<IReadOnlyList<SM.Persistence.Abstractions.Models.HeroInstanceRecord>> heroSource,
+        Func<IReadOnlyList<string>> expeditionSquadSource,
+        Func<IReadOnlyList<string>> deploySquadSource)
+    {
+        _heroSource = heroSource;
+        _expeditionSquadSource = expeditionSquadSource;
+        _deploySquadSource = deploySquadSource;
     }
 
     public int SiteSpineIndex => _session.SiteSpineIndex;
@@ -83,12 +101,26 @@ public sealed class AtlasScreenPresenter
             BuildPreview(preview, sessionResolution.SelectedNode, sessionResolution.SelectedStack, sessionResolution.StageCandidatePathHash, BuildScoutHint()));
     }
 
-    // wave-25 presenter (GPT Pro P0): Guide/Scout slot placeholder.
-    // 진짜 scout selection (squad 외 1명 추천)은 AtlasScreenPresenter에 GameSessionState 주입 필요 — 별도 refactor task로.
-    // 현재는 의도된 placeholder text로 slot의 의미 명시 (decision-atlas-regional-sigil 의도 시각화).
+    // wave-25 presenter (GPT Pro P0): Guide/Scout slot — squad 4-6 외 1명 자동 추천.
+    // hero source가 주입되면 squad 외 first hero pick. 미주입(EditMode test 등)이면 placeholder.
     private string BuildScoutHint()
     {
-        return "정찰원 미설정 — 다음 sortie에 추가 가능";
+        if (_heroSource == null || _expeditionSquadSource == null || _deploySquadSource == null)
+        {
+            return "정찰원 미설정 — 다음 sortie에 추가 가능";
+        }
+        var heroes = _heroSource();
+        var expedition = new HashSet<string>(_expeditionSquadSource() ?? Array.Empty<string>(), StringComparer.Ordinal);
+        var deploy = new HashSet<string>(_deploySquadSource() ?? Array.Empty<string>(), StringComparer.Ordinal);
+        var candidate = heroes?
+            .Where(h => !expedition.Contains(h.HeroId) && !deploy.Contains(h.HeroId))
+            .FirstOrDefault();
+        if (candidate == null)
+        {
+            return "정찰원 미설정 — 가용 인원 없음";
+        }
+        var displayName = string.IsNullOrEmpty(candidate.Name) ? candidate.HeroId : candidate.Name;
+        return $"정찰 후보: {displayName} (preview 깊이·보상 가산)";
     }
 
     private AtlasHexTileViewState BuildTile(AtlasRegionNode node, AtlasSessionResolution sessionResolution)
