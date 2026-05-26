@@ -993,10 +993,13 @@ public sealed class BattleScreenController : MonoBehaviour
             BattleDebugLogWriter.Write(replay, result.FinalUnits);
         }
 
+        // wave-33-progression: result.FinalUnits를 함께 전달 → ally hero unit별 surviving HP가
+        // HeroInstanceRecord에, victory XP가 HeroProgressionRecord에 반영된다.
         _root.SessionState.MarkBattleResolved(
             winner == TeamSide.Ally,
             result.StepCount,
-            _totalEventCount);
+            _totalEventCount,
+            result.FinalUnits);
         var checkpoint = _root.SaveProfile(SessionCheckpointKind.BattleResolved);
         if (checkpoint.Status == SessionCheckpointStatus.Failed)
         {

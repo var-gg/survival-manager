@@ -1416,8 +1416,12 @@ public sealed partial class GameSessionState
     public void SetLastBattleResult(bool victory, string summary) =>
         _rewardSettlementFlow.SetLastBattleResult(victory, summary);
 
-    public void MarkBattleResolved(bool victory, int stepCount, int eventCount) =>
-        _rewardSettlementFlow.MarkBattleResolved(victory, stepCount, eventCount);
+    public void MarkBattleResolved(
+        bool victory,
+        int stepCount,
+        int eventCount,
+        IReadOnlyList<BattleUnitReadModel>? finalUnits = null) =>
+        _rewardSettlementFlow.MarkBattleResolved(victory, stepCount, eventCount, finalUnits);
 
     public bool ApplyRewardChoice(int index) => _rewardSettlementFlow.ApplyRewardChoice(index);
 

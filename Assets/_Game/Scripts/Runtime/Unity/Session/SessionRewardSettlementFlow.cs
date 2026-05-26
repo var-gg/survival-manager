@@ -109,7 +109,7 @@ public sealed partial class GameSessionState
             _session.SyncActiveRunIfPresent();
         }
 
-        internal void MarkBattleResolved(bool victory, int stepCount, int eventCount)
+        internal void MarkBattleResolved(bool victory, int stepCount, int eventCount, IReadOnlyList<BattleUnitReadModel>? finalUnits = null)
         {
             var resolvedNode = _session.GetSelectedExpeditionNode() ?? _session.GetCurrentExpeditionNode();
             var shouldCreateRewardSettlement = !_session.IsDirectCombatSandboxLane;
@@ -118,6 +118,13 @@ public sealed partial class GameSessionState
             _session.LastPermanentUnlockSummary = SessionTextToken.Empty;
             _session._lastAutomaticLootBundle = null;
             _session._hasPendingRewardSettlement = shouldCreateRewardSettlement;
+
+            // wave-33-progression: combat result → HeroInstanceRecord HP + HeroProgressionRecord Exp 갱신.
+            // finalUnits == null이면 (sandbox/balance runner처럼 raw 결과를 안 전달하는 path) 건너뜀 — 기존 호환.
+            if (finalUnits != null && !_session.IsDirectCombatSandboxLane)
+            {
+                ApplyHeroBattleAftermath(finalUnits, victory);
+            }
 
             if (resolvedNode != null && !_session.IsQuickBattleSmokeActive)
             {
@@ -209,6 +216,49 @@ public sealed partial class GameSessionState
             }
 
             _session.SyncActiveRunIfPresent();
+        }
+
+        // wave-33-progression: combat result 직후 ally hero 4명의 HP/EXP를 HeroInstanceRecord +
+        // HeroProgressionRecord에 반영. summon/소환물(EntityKind != RosterUnit)은 제외.
+        // - HP: MaxHealth/CurrentHealth → int 반올림. 사망 unit은 CurrentHp = 0.
+        // - EXP: victory 시 squad hero 각 +50 base XP, curve 임계치 넘으면 lv-up + 잔여 exp carry.
+        // 진짜 XP 차등(보스/일반, K/D 가중)은 별도 balance sprint — 본 turn은 baseline.
+        private const int BattleXpGainPerVictory = 50;
+
+        private void ApplyHeroBattleAftermath(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory)
+        {
+            var heroById = _session.Profile.Heroes
+                .GroupBy(h => h.HeroId, StringComparer.Ordinal)
+                .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+            var progressionById = _session.Profile.HeroProgressions
+                .GroupBy(p => p.HeroId, StringComparer.Ordinal)
+                .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+
+            foreach (var unit in finalUnits)
+            {
+                if (unit.Side != TeamSide.Ally) continue;
+                if (unit.EntityKind != CombatEntityKind.RosterUnit) continue;
+                if (!heroById.TryGetValue(unit.Id, out var hero)) continue;
+
+                hero.MaxHp = (int)Math.Max(1, Math.Round(unit.MaxHealth));
+                hero.CurrentHp = (int)Math.Max(0, Math.Round(unit.CurrentHealth));
+
+                if (!victory) continue;
+
+                if (!progressionById.TryGetValue(hero.HeroId, out var progression))
+                {
+                    progression = new HeroProgressionRecord { HeroId = hero.HeroId, Level = 1 };
+                    _session.Profile.HeroProgressions.Add(progression);
+                    progressionById[hero.HeroId] = progression;
+                }
+
+                progression.Experience += BattleXpGainPerVictory;
+                while (progression.Experience >= HeroProgressionCurve.ExperienceToNextLevel(progression.Level))
+                {
+                    progression.Experience -= HeroProgressionCurve.ExperienceToNextLevel(progression.Level);
+                    progression.Level += 1;
+                }
+            }
         }
 
         internal bool ApplyRewardChoice(int index)
