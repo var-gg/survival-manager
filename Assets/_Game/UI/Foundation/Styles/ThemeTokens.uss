@@ -188,6 +188,61 @@
     --sm-cta-h-hero: 56px;
 
     /* =========================================================
+       DESIGN TOKENS V1 — chip 4 variants / portrait 3 size / CTA 3 weight
+       source: pindoc://analysis-design-tokens-v1
+       기존 ThemeTokens는 surface/gold/ink/state까지 정의됨. 본 section은
+       정보 위계 implementation 토큰 (chip 종류별 색/높이, CTA weight,
+       portrait frame 크기, eyebrow/2xl fs)을 추가한다. legacy alias는
+       유지. RecruitPack.uss부터 점진적 인용.
+       ========================================================= */
+
+    /* chip 4 variants — analysis-design-tokens-v1 §4 */
+    /* state chip: 계획 적합/보호/정찰/보정/need (gold tint) */
+    --sm-chip-state-text: var(--sm-gold-200);
+    --sm-chip-state-bg: var(--sm-vellum-a18);
+    --sm-chip-state-border: var(--sm-gold-300-a42);
+    /* tag chip: archetype tag 전열/결투/폭발/방패술 (info-blue tint) */
+    --sm-chip-tag-text: var(--sm-fam-vanguard-glow);
+    --sm-chip-tag-bg: rgba(127, 163, 224, 0.12);
+    --sm-chip-tag-border: rgba(127, 163, 224, 0.32);
+    /* category chip: 무기/방어구/액세서리 (ink) */
+    --sm-chip-category-text: var(--sm-ink-1);
+    --sm-chip-category-bg: var(--sm-vellum-a08);
+    --sm-chip-category-border: rgba(245, 234, 208, 0.22);
+    /* hint chip: 보유 골드/잔향 (transparent, dashed) */
+    --sm-chip-hint-text: var(--sm-ink-2);
+    --sm-chip-hint-bg: rgba(0, 0, 0, 0);
+    --sm-chip-hint-border: var(--sm-ink-4);
+    /* chip common dimension */
+    --sm-chip-h: 20px;
+    --sm-chip-px: 6px;
+    --sm-chip-py: 2px;
+
+    /* portrait frame 3 size — §6 */
+    --sm-portrait-s: 48px;            /* identity row mini */
+    --sm-portrait-m-w: 96px;          /* roster grid card */
+    --sm-portrait-m-h: 128px;
+    --sm-portrait-l-w: 190px;         /* recruit card hero */
+    --sm-portrait-l-h: 260px;
+
+    /* CTA weight 3 — §5 (height는 기존 --sm-cta-h-* 재사용) */
+    --sm-cta-primary-text: rgb(36, 25, 8);
+    --sm-cta-primary-bg: var(--sm-gold-300);
+    --sm-cta-primary-bg-hover: var(--sm-gold-100);
+    --sm-cta-primary-border: var(--sm-gold-100);
+    --sm-cta-secondary-text: var(--sm-gold-200);
+    --sm-cta-secondary-bg: var(--sm-bg-2);
+    --sm-cta-secondary-bg-hover: var(--sm-bg-1);
+    --sm-cta-secondary-border: var(--sm-gold-400);
+    --sm-cta-tertiary-text: var(--sm-ink-2);
+
+    /* fs scale extension — §2.2 */
+    --sm-fs-xs: 9px;                  /* chip body */
+    --sm-fs-eb: 11px;                 /* eyebrow / meta */
+    --sm-fs-2xl: 24px;                /* hero count (Roster 8/12) */
+    --sm-fs-3xl: 28px;                /* display 강조 (battle result) */
+
+    /* =========================================================
        LEGACY ALIASES — backward-compat for existing screen USS
        기존 4 screen + Narrative USS의 var() reference가 깨지지
        않도록 v0.2 token에 alias. v0.2 적용 = 자동 톤 swap.

@@ -497,27 +497,54 @@
     margin-top: 7px;
 }
 
+/* chip 4 variants — Design Tokens v1 §4
+   state(gold tint) / tag(info-blue tint) / category(ink) / hint(transparent).
+   기존 셋이 같은 navy/blue 톤으로 묶여있어 의미 구분 X였음. variant별 토큰으로 분리. */
+
+/* common chip dimension (variant 공통) */
 .rcp-detail__state-chip,
 .rcp-detail__tag,
 .rcp-pressure__need-chip {
     margin-right: 4px;
     margin-bottom: 4px;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    background-color: rgba(26, 42, 82, 0.62);
+    padding-left: var(--sm-chip-px);
+    padding-right: var(--sm-chip-px);
+    padding-top: var(--sm-chip-py);
+    padding-bottom: var(--sm-chip-py);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(127, 163, 224, 0.34);
-    border-right-color: rgba(127, 163, 224, 0.34);
-    border-top-color: rgba(127, 163, 224, 0.38);
-    border-bottom-color: rgba(26, 42, 82, 0.78);
-    color: rgb(196, 214, 250);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
+}
+
+/* state chip (gold tint) — 계획 적합/보호/정찰/보정 + roster need */
+.rcp-detail__state-chip,
+.rcp-pressure__need-chip,
+.rcp-card__state-chip {
+    background-color: var(--sm-chip-state-bg);
+    border-left-color: var(--sm-chip-state-border);
+    border-right-color: var(--sm-chip-state-border);
+    border-top-color: var(--sm-chip-state-border);
+    border-bottom-color: var(--sm-chip-state-border);
+    color: var(--sm-chip-state-text);
+}
+
+/* tag chip (info-blue tint) — archetype tag 전열/결투/폭발/방패술 */
+.rcp-detail__tag,
+.rcp-card__tag {
+    background-color: var(--sm-chip-tag-bg);
+    border-left-color: var(--sm-chip-tag-border);
+    border-right-color: var(--sm-chip-tag-border);
+    border-top-color: var(--sm-chip-tag-border);
+    border-bottom-color: var(--sm-chip-tag-border);
+    color: var(--sm-chip-tag-text);
+}
+
+/* hint chip (transparent dashed) — 보유 골드/잔향 wallet */
+.rcp-command-strip__wallet {
+    color: var(--sm-chip-hint-text);
 }
 
 .rcp-pressure {
