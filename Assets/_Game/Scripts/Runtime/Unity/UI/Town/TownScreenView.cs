@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SM.Unity.UI;
+using SM.Unity.UI.Bark;
 using UnityEngine.UIElements;
 
 namespace SM.Unity.UI.Town;
@@ -58,6 +59,11 @@ public sealed class TownScreenView
     private Action<string>? _onNpcClick;
     private Action<string>? _onHeroClick;
     private string _welcomeHeroId = string.Empty;
+
+    // wave-36-barkbus: bark popup attach 대상 face card lookup table.
+    // 매 Render마다 재구축 — face card는 list mutation 시 재생성되므로 stale ref 방지.
+    private readonly Dictionary<string, VisualElement> _faceCardsBySourceId = new(StringComparer.Ordinal);
+    private IDisposable? _barkSubscription;
 
     public TownScreenView(VisualElement root)
     {
@@ -129,6 +135,27 @@ public sealed class TownScreenView
     public void BindPermanentAugmentOpen(Action open) => _permanentAugmentButton.clicked += open;
     public void BindTheaterOpen(Action open) => _theaterButton.clicked += open;
 
+    // wave-36-barkbus: bus 주입. Render 이후에도 face card lookup이 stale하지 않도록
+    // popup attach는 lookup miss 시 silently 무시 (race 안전).
+    public void BindBarkBus(BarkBus bus)
+    {
+        _barkSubscription?.Dispose();
+        _barkSubscription = bus?.Subscribe(OnBarkReceived);
+    }
+
+    public void UnbindBarkBus()
+    {
+        _barkSubscription?.Dispose();
+        _barkSubscription = null;
+    }
+
+    private void OnBarkReceived(BarkEvent evt)
+    {
+        if (evt == null) return;
+        if (!_faceCardsBySourceId.TryGetValue(evt.SourceId, out var faceCard) || faceCard == null) return;
+        BarkPopupView.Attach(faceCard, evt);
+    }
+
     public void Render(TownScreenViewState state)
     {
         if (state == null) throw new ArgumentNullException(nameof(state));
@@ -167,6 +194,9 @@ public sealed class TownScreenView
         _serviceAvailabilityLabel.text = state.ServiceDecision.ModalAvailabilityLabel;
         _clusterEyebrowLabel.text = state.ClusterEyebrow;
 
+        // wave-36-barkbus: 매 Render마다 face card lookup 재구축. 이전 ref는 mutation으로 무효.
+        _faceCardsBySourceId.Clear();
+
         // NPC strip — 4 face card lg.
         _npcStrip.Clear();
         foreach (var npc in state.NpcEntries)
@@ -175,6 +205,7 @@ public sealed class TownScreenView
             var npcId = npc.NpcId;
             card.clicked += () => _onNpcClick?.Invoke(npcId);
             _npcStrip.Add(card);
+            _faceCardsBySourceId[npcId] = card;
         }
 
         // Welcome captain — 큰 face card + greeting.
@@ -192,6 +223,7 @@ public sealed class TownScreenView
             var heroId = state.WelcomeCaptain.HeroId;
             welcome.clicked += () => _onHeroClick?.Invoke(heroId);
             _welcomeMount.Add(welcome);
+            _faceCardsBySourceId[heroId] = welcome;
         }
         _welcomeGreeting.text = state.WelcomeCaptain.Greeting;
 
@@ -203,6 +235,8 @@ public sealed class TownScreenView
             var heroId = h.HeroId;
             card.clicked += () => _onHeroClick?.Invoke(heroId);
             _deployRow.Add(card);
+            // welcome captain은 deploy first hero라 dict 이미 있을 수 있음 — 덮어쓰기는 안전.
+            _faceCardsBySourceId[heroId] = card;
         }
 
         // Roster row — face card sm (deploy 제외 8).
@@ -213,6 +247,7 @@ public sealed class TownScreenView
             var heroId = h.HeroId;
             card.clicked += () => _onHeroClick?.Invoke(heroId);
             _rosterRow.Add(card);
+            _faceCardsBySourceId[heroId] = card;
         }
 
         _expeditionButton.text = state.ExpeditionLabel;

@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Meta;
 using SM.Meta.Model;
 using SM.Unity.UI;
+using SM.Unity.UI.Bark;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town;
@@ -24,6 +25,9 @@ public sealed class TownScreenPresenter
     private readonly TownScreenView _view;
     private readonly ScreenHelpState _helpState;
     private readonly Dictionary<string, Action> _npcOpeners = new(StringComparer.Ordinal);
+    // wave-36-barkbus: Town view 내 face cluster의 ambient bark 발사 채널.
+    // Presenter가 단일 인스턴스 보유, view에 bind, NPC click 등 cue에서 publish.
+    private readonly BarkBus _barkBus = new();
     private Action<string>? _heroOpener;
     private Action? _settingsOpener;
     private Action? _theaterOpener;
@@ -45,7 +49,9 @@ public sealed class TownScreenPresenter
         _helpState = new ScreenHelpState(HelpPrefsKey);
     }
 
-    public void Initialize() { _view.Bind(this); Refresh(); }
+    public void Initialize() { _view.Bind(this); _view.BindBarkBus(_barkBus); Refresh(); }
+
+    public BarkBus BarkBus => _barkBus;
 
     public void Refresh(string message = "")
     {
@@ -153,8 +159,27 @@ public sealed class TownScreenPresenter
     /// <summary>NPC 거점 click 라우팅 — controller가 SetNpcOpener로 inject한 modal opener invoke.</summary>
     public void OnNpcClick(string npcId)
     {
+        // wave-36-barkbus: NPC click 시 contextual ambient bark 발사 — minimal viable demo.
+        // 진짜 narrative bark catalog는 Phase 8 EmotionReactor + bark line table.
+        PublishNpcAmbientBark(npcId);
+
         if (_npcOpeners.TryGetValue(npcId, out var open)) open.Invoke();
         else Refresh($"NPC 거점 미연결: {npcId}");
+    }
+
+    private void PublishNpcAmbientBark(string npcId)
+    {
+        // hardcoded baseline — 4 잿골 NPC ambient line. localization table 등록은 narrative pass.
+        var (emotion, line) = npcId switch
+        {
+            "dalmok"  => ("amused",    "어이, 한 잔 하고 가시지요."),
+            "soemae"  => ("neutral",   "쇠는 정직합니다. 두드리면 답이 옵지요."),
+            "galma"   => ("concerned", "다친 곳은 없으십니까?"),
+            "solgil"  => ("neutral",   "장부는 여기 다 있습니다."),
+            _ => (string.Empty, string.Empty),
+        };
+        if (string.IsNullOrEmpty(line)) return;
+        _barkBus.Publish(new BarkEvent(npcId, emotion, line));
     }
 
     /// <summary>Hero face card click — Phase 3 CharacterSheet modal 후속.</summary>

@@ -214,7 +214,7 @@
     border-bottom-width: 2px;
 }
 
-/* bark anchor — BarkPopupView (Phase 8) attach point */
+/* bark anchor — BarkPopupView attach point */
 .sm-face-card__bark-anchor {
     position: absolute;
     left: 50%;
@@ -222,3 +222,42 @@
     width: 1px;
     height: 1px;
 }
+
+/* =========================================================
+   sm-bark-popup — face card 위에 잠깐 떠오르는 1-liner.
+   wave-36-barkbus: BarkBus + BarkPopupView 최소 viable.
+   다키스트 던전 ambient — emotion key swap class로 색조 변형.
+   ========================================================= */
+.sm-bark-popup {
+    position: absolute;
+    left: -52px;
+    right: -52px;
+    top: -36px;
+    padding-top: 4px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgba(28, 22, 12, 0.94);
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 2px;
+    border-top-color: var(--sm-gold-100);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+    color: var(--sm-vellum);
+    font-size: 11px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.sm-bark-popup--neutral    { border-top-color: var(--sm-gold-100); }
+.sm-bark-popup--confident  { border-top-color: rgba(255, 234, 174, 0.95); }
+.sm-bark-popup--amused     { border-top-color: rgba(245, 200, 122, 0.95); }
+.sm-bark-popup--surprised  { border-top-color: rgba(180, 200, 248, 0.95); }
+.sm-bark-popup--concerned  { border-top-color: rgba(166, 220, 154, 0.92); }
+.sm-bark-popup--pained     { border-top-color: rgba(220, 138, 138, 0.92); }
+.sm-bark-popup--angry      { border-top-color: rgba(232, 120, 96, 0.92); }
+.sm-bark-popup--determined { border-top-color: rgba(245, 214, 138, 0.95); }
