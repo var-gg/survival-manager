@@ -223,13 +223,28 @@ public sealed class OfflineLocalSessionAdapter :
     ProfileView IProfileQueryService.GetProfileView(string playerId)
     {
         EnsureProfileMatches(playerId);
+        // wave-33-progression: HeroProgressionRecord (Level/Exp) + HeroInstanceRecord (HP) lookup —
+        // ProfileHeroView가 reward survivor row / atlas hero card / town builder card에 같은 view로 사용된다.
+        var progressionById = _sessionState.Profile.HeroProgressions
+            .GroupBy(record => record.HeroId)
+            .ToDictionary(group => group.Key, group => group.First());
         var heroes = _sessionState.Profile.Heroes
-            .Select(hero => new ProfileHeroView(
-                hero.HeroId,
-                hero.Name,
-                hero.RaceId,
-                hero.ClassId,
-                _sessionState.ExpeditionSquadHeroIds.Contains(hero.HeroId)))
+            .Select(hero =>
+            {
+                progressionById.TryGetValue(hero.HeroId, out var progression);
+                var level = progression?.Level ?? 1;
+                return new ProfileHeroView(
+                    hero.HeroId,
+                    hero.Name,
+                    hero.RaceId,
+                    hero.ClassId,
+                    _sessionState.ExpeditionSquadHeroIds.Contains(hero.HeroId),
+                    Level: level,
+                    Experience: progression?.Experience ?? 0,
+                    ExperienceToNextLevel: HeroProgressionCurve.ExperienceToNextLevel(level),
+                    CurrentHp: hero.CurrentHp,
+                    MaxHp: hero.MaxHp);
+            })
             .ToArray();
         return new ProfileView(
             ActiveProfileId,

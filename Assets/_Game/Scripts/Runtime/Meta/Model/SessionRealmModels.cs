@@ -32,7 +32,14 @@ public sealed record ProfileHeroView(
     string DisplayName,
     string RaceId,
     string ClassId,
-    bool IsInExpeditionSquad);
+    bool IsInExpeditionSquad,
+    // wave-33-progression: 진짜 progression 노출. Level/Experience는 HeroProgressionRecord에서,
+    // CurrentHp/MaxHp는 HeroInstanceRecord에서. 0/0이면 "데이터 없음" → 표시 fallback.
+    int Level = 1,
+    int Experience = 0,
+    int ExperienceToNextLevel = 100,
+    int CurrentHp = 0,
+    int MaxHp = 0);
 
 public sealed record ProfileView(
     string ProfileId,

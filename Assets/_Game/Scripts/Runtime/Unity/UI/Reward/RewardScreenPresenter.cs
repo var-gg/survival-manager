@@ -187,9 +187,10 @@ public sealed class RewardScreenPresenter
         return BuildTimelineTicksCore(session, profile);
     }
 
-    // wave-28-survivor GPT Pro patch: squad 4명 survivor list.
-    // BattleDeployHeroIds 기반 — HP/Level은 HeroInstanceRecord에 없어 placeholder, battle victory chip만 실제.
-    // 진짜 HP/EXP data plumbing은 별도 sprint (HeroProgressionRecord 연동 + combat resolution result).
+    // wave-33-progression: ProfileHeroView가 Level/Experience/HP를 실데이터로 노출하므로
+    // placeholder("체력 회복" / "경험치 +") 대신 ProfileHeroView lookup으로 진짜 progression을 표시.
+    // HP가 0/0이면 "데이터 없음" → "체력 만전" fallback (combat resolution이 아직 HP를 기록하지 않은 hero).
+    // 진짜 HP delta(battle 직후 surviving HP) wire는 별도 sprint — schema는 본 turn에 준비 완료.
     private IReadOnlyList<RewardSurvivorRowViewState> BuildSurvivorRows(GameSessionState session, ProfileView profile)
     {
         var deployIds = session.BattleDeployHeroIds ?? Array.Empty<string>();
@@ -197,26 +198,52 @@ public sealed class RewardScreenPresenter
         {
             return Array.Empty<RewardSurvivorRowViewState>();
         }
+
+        var profileHeroById = profile.Heroes.ToDictionary(h => h.HeroId, h => h, StringComparer.Ordinal);
         var victory = session.LastBattleVictory;
         var rows = new List<RewardSurvivorRowViewState>();
         foreach (var heroId in deployIds.Take(4))
         {
-            var hero = session.Profile.Heroes.FirstOrDefault(h => string.Equals(h.HeroId, heroId, StringComparison.Ordinal));
-            if (hero == null) continue;
+            if (!profileHeroById.TryGetValue(heroId, out var hero))
+            {
+                continue;
+            }
+
             var glyph = ResolveSurvivorGlyph(hero.ClassId);
+            // raw localization key fallback — "content.archetype..." 같은 미해결 key면 HeroId로.
+            var displayName = (string.IsNullOrEmpty(hero.DisplayName) || hero.DisplayName.StartsWith("content.", StringComparison.Ordinal))
+                ? hero.HeroId
+                : hero.DisplayName;
+
+            // HP: 데이터 있으면 "62 / 80" + 실제 ratio, 없으면 victory/retreat fallback 텍스트.
+            string hpText;
+            float hpPercent;
+            if (hero.MaxHp > 0)
+            {
+                hpText = $"{hero.CurrentHp} / {hero.MaxHp}";
+                hpPercent = Math.Clamp((float)hero.CurrentHp / hero.MaxHp, 0f, 1f);
+            }
+            else
+            {
+                hpText = victory ? "체력 만전" : "체력 손상";
+                hpPercent = victory ? 1f : 0.5f;
+            }
+
+            // Lv {L} · {exp}/{threshold}. ExperienceToNextLevel은 ProfileHeroView가 curve에서 계산해 제공.
+            var expText = hero.MaxHp > 0
+                ? $"Lv {hero.Level} · {hero.Experience} / {hero.ExperienceToNextLevel}"
+                : $"Lv {hero.Level}";
+
             var statusKind = victory ? "victory" : "retreat";
             var statusText = victory ? "생존" : "복귀";
-            // raw localization key fallback — "content.archetype..." 같은 미해결 key면 HeroId로.
-            var displayName = (string.IsNullOrEmpty(hero.Name) || hero.Name.StartsWith("content.", StringComparison.Ordinal))
-                ? hero.HeroId
-                : hero.Name;
+
             rows.Add(new RewardSurvivorRowViewState(
                 HeroId: hero.HeroId,
                 DisplayName: displayName,
                 PortraitGlyph: glyph,
-                HpText: "체력 회복",
-                HpPercent: victory ? 1f : 0.6f,
-                ExpText: "경험치 +",
+                HpText: hpText,
+                HpPercent: hpPercent,
+                ExpText: expText,
                 StatusChipText: statusText,
                 StatusChipKind: statusKind));
         }
