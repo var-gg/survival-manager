@@ -155,14 +155,20 @@ public sealed class RecruitPresenter : IRecruitActions
 
         var selected = candidates.FirstOrDefault(candidate => candidate.IsSelected)
             ?? candidates.FirstOrDefault();
+        var wallet = new RecruitWalletViewState(
+            GoldHeld: session.Profile.Currencies.Gold,
+            EchoHeld: session.Profile.Currencies.Echo);
         return new RecruitViewState(
             Candidates: candidates,
             ActionBar: actionBar,
-            SelectedCandidateDetail: BuildSelectedDetail(selected),
+            Wallet: wallet,
+            SelectedCandidateDetail: BuildSelectedDetail(selected, wallet),
             RosterPressure: BuildRosterPressure(session, candidates));
     }
 
-    private RecruitSelectedCandidateDetailViewState? BuildSelectedDetail(RecruitCandidateViewState? candidate)
+    private RecruitSelectedCandidateDetailViewState? BuildSelectedDetail(
+        RecruitCandidateViewState? candidate,
+        RecruitWalletViewState wallet)
     {
         if (candidate == null)
         {
@@ -174,17 +180,23 @@ public sealed class RecruitPresenter : IRecruitActions
             DisplayName: candidate.DisplayName,
             ClassLabel: candidate.ClassLabel,
             ClassKey: candidate.ClassKey,
-            TierLabel: candidate.Tier.ToString(),
-            PlanFitLabel: candidate.PlanFit.ToString(),
-            PlanScoreLabel: $"+{candidate.PlanScore}",
-            CostLabel: $"{candidate.GoldCost} Gold",
+            TierLabel: DescribeTier(candidate.Tier),
+            PlanFitLabel: DescribePlanFit(candidate.PlanFit),
+            PlanScoreLabel: candidate.PlanScore > 0 ? $"+{candidate.PlanScore}" : candidate.PlanScore.ToString(),
+            CostLabel: $"{candidate.GoldCost} 골드",
+            CanAfford: wallet.GoldHeld >= candidate.GoldCost,
             StateChips: candidate.StateChips,
             Tags: candidate.Tags,
-            SkillSummary: $"SIG {candidate.SigActive} / {candidate.SigPassive}\nFLX {candidate.FlexActive} / {candidate.FlexPassive}",
+            SkillSummary: BuildSkillSummary(candidate),
             PortraitSprite: candidate.PortraitSprite,
             ClassSprite: candidate.ClassSprite,
             Metrics: BuildDecisionMetrics(candidate),
             SkillPips: BuildSkillPips(candidate));
+    }
+
+    private static string BuildSkillSummary(RecruitCandidateViewState candidate)
+    {
+        return $"고정 액티브 — {candidate.SigActive}\n고정 패시브 — {candidate.SigPassive}\n유연 액티브 — {candidate.FlexActive}\n유연 패시브 — {candidate.FlexPassive}";
     }
 
     private static IReadOnlyList<RecruitDecisionMetricViewState> BuildDecisionMetrics(RecruitCandidateViewState candidate)
@@ -212,10 +224,10 @@ public sealed class RecruitPresenter : IRecruitActions
     {
         return new[]
         {
-            new RecruitSkillPipViewState("SA", candidate.SigActive, "sig"),
-            new RecruitSkillPipViewState("SP", candidate.SigPassive, "sig"),
-            new RecruitSkillPipViewState("FA", candidate.FlexActive, "flex"),
-            new RecruitSkillPipViewState("FP", candidate.FlexPassive, "flex"),
+            new RecruitSkillPipViewState("고·액", candidate.SigActive, "sig"),
+            new RecruitSkillPipViewState("고·패", candidate.SigPassive, "sig"),
+            new RecruitSkillPipViewState("유·액", candidate.FlexActive, "flex"),
+            new RecruitSkillPipViewState("유·패", candidate.FlexPassive, "flex"),
         };
     }
 
@@ -232,16 +244,16 @@ public sealed class RecruitPresenter : IRecruitActions
             .OrderBy(key => classCounts.TryGetValue(key, out var count) ? count : 0)
             .ThenBy(key => key, StringComparer.Ordinal)
             .Take(2)
-            .Select(key => $"{key} need")
+            .Select(DescribeClassNeed)
             .ToList();
         var onPlanCount = candidates.Count(candidate => candidate.PlanFit == RecruitPlanFit.OnPlan);
         var protectedCount = candidates.Count(candidate => candidate.ProtectedByPity || candidate.SlotType == RecruitSlotType.Protected);
         var scoutCount = candidates.Count(candidate => candidate.ScoutBias);
 
         return new RecruitRosterPressureViewState(
-            RosterCountLabel: $"{heroes.Count}/{rosterSoftCap} roster",
-            NeedLabel: heroes.Count >= rosterSoftCap ? "압박 높음" : "보강 여지",
-            PlanSummaryLabel: $"{onPlanCount} on-plan · {protectedCount} protected · {scoutCount} scout",
+            RosterCountLabel: $"{heroes.Count} / {rosterSoftCap} 명",
+            NeedLabel: heroes.Count >= rosterSoftCap ? "로스터 압박 높음" : "보강 여지 있음",
+            PlanSummaryLabel: $"이번 후보 · 계획 적합 {onPlanCount} · 보호 {protectedCount} · 정찰 {scoutCount}",
             NeedChips: needChips);
     }
 
@@ -250,19 +262,19 @@ public sealed class RecruitPresenter : IRecruitActions
         var chips = new List<string>(4);
         if (offer.Metadata.PlanFit == CandidatePlanFit.OnPlan || offer.Metadata.SlotType == RecruitOfferSlotType.OnPlan)
         {
-            chips.Add("on-plan");
+            chips.Add("계획 적합");
         }
         if (offer.Metadata.SlotType == RecruitOfferSlotType.Protected)
         {
-            chips.Add("protected");
+            chips.Add("보호");
         }
         if (offer.Metadata.ProtectedByPity)
         {
-            chips.Add("pity");
+            chips.Add("보정");
         }
         if (offer.Metadata.BiasedByScout)
         {
-            chips.Add("scout");
+            chips.Add("정찰");
         }
 
         return chips;
@@ -293,6 +305,31 @@ public sealed class RecruitPresenter : IRecruitActions
         ScoutDirectiveKind.Support    => "지원",
         ScoutDirectiveKind.SynergyTag => string.IsNullOrEmpty(synergyTagId) ? "시너지" : synergyTagId,
         _ => "미지정",
+    };
+
+    private static string DescribeTier(RecruitTier tier) => tier switch
+    {
+        RecruitTier.Common => "일반",
+        RecruitTier.Rare   => "희귀",
+        RecruitTier.Epic   => "영웅",
+        _ => tier.ToString(),
+    };
+
+    private static string DescribePlanFit(RecruitPlanFit plan) => plan switch
+    {
+        RecruitPlanFit.OnPlan  => "계획 적합",
+        RecruitPlanFit.Bridge  => "연결",
+        RecruitPlanFit.OffPlan => "계획 외",
+        _ => plan.ToString(),
+    };
+
+    private static string DescribeClassNeed(string classKey) => classKey switch
+    {
+        "vanguard" => "전열 보강 필요",
+        "duelist"  => "결투 보강 필요",
+        "ranger"   => "사격 보강 필요",
+        "mystic"   => "주문 보강 필요",
+        _ => $"{classKey} 보강",
     };
 
     private static RecruitSlotType MapSlotType(RecruitOfferSlotType slotType) => slotType switch

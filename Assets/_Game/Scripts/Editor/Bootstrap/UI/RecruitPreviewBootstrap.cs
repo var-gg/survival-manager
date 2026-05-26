@@ -141,30 +141,48 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
             CurrentPaidRefreshCost: 4);    // 2→4→6 cap의 2회차
 
         var selected = candidates[2];
+        var wallet = new RecruitWalletViewState(GoldHeld: 18, EchoHeld: 92);
         var detail = new RecruitSelectedCandidateDetailViewState(
             SlotIndex: selected.SlotIndex,
             DisplayName: selected.DisplayName,
             ClassLabel: selected.ClassLabel,
             ClassKey: selected.ClassKey,
-            TierLabel: selected.Tier.ToString(),
-            PlanFitLabel: selected.PlanFit.ToString(),
+            TierLabel: DescribeMockTier(selected.Tier),
+            PlanFitLabel: DescribeMockPlanFit(selected.PlanFit),
             PlanScoreLabel: $"+{selected.PlanScore}",
-            CostLabel: $"{selected.GoldCost} Gold",
+            CostLabel: $"{selected.GoldCost} 골드",
+            CanAfford: wallet.GoldHeld >= selected.GoldCost,
             StateChips: selected.StateChips,
             Tags: selected.Tags,
-            SkillSummary: $"SIG {selected.SigActive} / {selected.SigPassive}\nFLX {selected.FlexActive} / {selected.FlexPassive}",
+            SkillSummary: $"고정 액티브 — {selected.SigActive}\n고정 패시브 — {selected.SigPassive}\n유연 액티브 — {selected.FlexActive}\n유연 패시브 — {selected.FlexPassive}",
             PortraitSprite: selected.PortraitSprite,
             ClassSprite: selected.ClassSprite,
             Metrics: BuildMockMetrics(selected),
             SkillPips: BuildMockSkillPips(selected));
         var pressure = new RecruitRosterPressureViewState(
-            RosterCountLabel: "8/12 roster",
-            NeedLabel: "ranger need",
-            PlanSummaryLabel: "2 on-plan · 1 protected · 1 scout",
-            NeedChips: new[] { "ranger need", "vanguard need" });
+            RosterCountLabel: "8 / 12 명",
+            NeedLabel: "보강 여지 있음",
+            PlanSummaryLabel: "이번 후보 · 계획 적합 2 · 보호 1 · 정찰 1",
+            NeedChips: new[] { "사격 보강 필요", "전열 보강 필요" });
 
-        return new RecruitViewState(candidates, actionBar, detail, pressure);
+        return new RecruitViewState(candidates, actionBar, wallet, detail, pressure);
     }
+
+    private static string DescribeMockTier(RecruitTier tier) => tier switch
+    {
+        RecruitTier.Common => "일반",
+        RecruitTier.Rare   => "희귀",
+        RecruitTier.Epic   => "영웅",
+        _ => tier.ToString(),
+    };
+
+    private static string DescribeMockPlanFit(RecruitPlanFit plan) => plan switch
+    {
+        RecruitPlanFit.OnPlan  => "계획 적합",
+        RecruitPlanFit.Bridge  => "연결",
+        RecruitPlanFit.OffPlan => "계획 외",
+        _ => plan.ToString(),
+    };
 
     private static IReadOnlyList<string> BuildMockStateChips(
         RecruitSlotType slot,
@@ -173,10 +191,10 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
         bool scout)
     {
         var chips = new List<string>(4);
-        if (slot == RecruitSlotType.OnPlan || plan == RecruitPlanFit.OnPlan) chips.Add("on-plan");
-        if (slot == RecruitSlotType.Protected) chips.Add("protected");
-        if (pity) chips.Add("pity");
-        if (scout) chips.Add("scout");
+        if (slot == RecruitSlotType.OnPlan || plan == RecruitPlanFit.OnPlan) chips.Add("계획 적합");
+        if (slot == RecruitSlotType.Protected) chips.Add("보호");
+        if (pity) chips.Add("보정");
+        if (scout) chips.Add("정찰");
         return chips;
     }
 

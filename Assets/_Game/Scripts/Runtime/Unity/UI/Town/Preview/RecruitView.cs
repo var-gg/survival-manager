@@ -33,9 +33,13 @@ public sealed class RecruitView
     private readonly Label? _pressurePlanLabel;
     private readonly Label? _scoutLabel;
     private readonly Label? _refreshLabel;
+    private readonly Label? _walletGoldLabel;
+    private readonly Label? _walletEchoLabel;
     private readonly Button? _scoutButton;
     private readonly Button? _refreshButton;
+    private readonly Button? _detailRecruitButton;
     private readonly Button? _closeButton;
+    private int _detailRecruitSlotIndex = -1;
 
     private IRecruitActions? _actions;
 
@@ -62,8 +66,11 @@ public sealed class RecruitView
         _pressurePlanLabel = root.Q<Label>("RosterPressurePlanLabel");
         _scoutLabel = root.Q<Label>("ScoutLabel");
         _refreshLabel = root.Q<Label>("RefreshLabel");
+        _walletGoldLabel = root.Q<Label>("WalletGoldLabel");
+        _walletEchoLabel = root.Q<Label>("WalletEchoLabel");
         _scoutButton = root.Q<Button>(className: "rcp-actions__scout");
         _refreshButton = root.Q<Button>(className: "rcp-actions__refresh");
+        _detailRecruitButton = root.Q<Button>("SelectedCandidateRecruitButton");
         _closeButton = root.Q<Button>(className: "rcp-header__close");
     }
 
@@ -79,6 +86,11 @@ public sealed class RecruitView
         {
             _refreshButton.clicked -= HandleRefreshClicked;
             _refreshButton.clicked += HandleRefreshClicked;
+        }
+        if (_detailRecruitButton != null)
+        {
+            _detailRecruitButton.clicked -= HandleDetailRecruitClicked;
+            _detailRecruitButton.clicked += HandleDetailRecruitClicked;
         }
     }
 
@@ -116,6 +128,13 @@ public sealed class RecruitView
         RenderSelectedDetail(state.SelectedCandidateDetail);
         RenderRosterPressure(state.RosterPressure);
         RenderActionBar(state.ActionBar);
+        RenderWallet(state.Wallet);
+    }
+
+    private void RenderWallet(RecruitWalletViewState wallet)
+    {
+        if (_walletGoldLabel != null) _walletGoldLabel.text = $"보유 골드 {wallet.GoldHeld}";
+        if (_walletEchoLabel != null) _walletEchoLabel.text = $"보유 잔향 {wallet.EchoHeld}";
     }
 
     private void RenderCards(IReadOnlyList<RecruitCandidateViewState> candidates)
@@ -252,31 +271,31 @@ public sealed class RecruitView
 
         var skillIcons = new VisualElement();
         skillIcons.AddToClassList("rcp-card__skill-icons");
-        skillIcons.Add(BuildSkillPip("SA", c.SigActive, "sig"));
-        skillIcons.Add(BuildSkillPip("SP", c.SigPassive, "sig"));
-        skillIcons.Add(BuildSkillPip("FA", c.FlexActive, "flex"));
-        skillIcons.Add(BuildSkillPip("FP", c.FlexPassive, "flex"));
+        skillIcons.Add(BuildSkillPip("고·액", c.SigActive, "sig"));
+        skillIcons.Add(BuildSkillPip("고·패", c.SigPassive, "sig"));
+        skillIcons.Add(BuildSkillPip("유·액", c.FlexActive, "flex"));
+        skillIcons.Add(BuildSkillPip("유·패", c.FlexPassive, "flex"));
         card.Add(skillIcons);
 
-        // 7) skill summary block — SIG(archetype 고정) gold / FLX(offer rolled) blue
+        // 7) skill summary block — 고정(archetype 고정) gold / 유연(offer rolled) blue
         var skills = new VisualElement();
         skills.AddToClassList("rcp-card__skills");
-        skills.Add(BuildSkillLine("SIG A", c.SigActive, "sig"));
-        skills.Add(BuildSkillLine("SIG P", c.SigPassive, "sig"));
-        skills.Add(BuildSkillLine("FLX A", c.FlexActive, "flex"));
-        skills.Add(BuildSkillLine("FLX P", c.FlexPassive, "flex"));
+        skills.Add(BuildSkillLine("고·액", c.SigActive, "sig"));
+        skills.Add(BuildSkillLine("고·패", c.SigPassive, "sig"));
+        skills.Add(BuildSkillLine("유·액", c.FlexActive, "flex"));
+        skills.Add(BuildSkillLine("유·패", c.FlexPassive, "flex"));
         card.Add(skills);
 
         // 8) gold cost
         var costRow = new VisualElement();
         costRow.AddToClassList("rcp-card__cost-row");
-        var costLabel = new Label($"{c.GoldCost} Gold");
+        var costLabel = new Label($"{c.GoldCost} 골드");
         costLabel.AddToClassList("rcp-card__cost-label");
         costRow.Add(costLabel);
         card.Add(costRow);
 
         // 9) per-card Recruit button
-        var recruitBtn = new Button { text = "RECRUIT" };
+        var recruitBtn = new Button { text = "영입" };
         recruitBtn.AddToClassList("rcp-card__recruit");
         recruitBtn.AddToClassList("sm-cta");
         recruitBtn.AddToClassList("sm-cta--md");
@@ -303,11 +322,17 @@ public sealed class RecruitView
             _detailClassGlyph?.Clear();
             _detailMetricBars?.Clear();
             _detailSkillPips?.Clear();
+            _detailRecruitSlotIndex = -1;
+            if (_detailRecruitButton != null)
+            {
+                _detailRecruitButton.SetEnabled(false);
+                _detailRecruitButton.text = "후보를 선택하세요";
+            }
             return;
         }
 
         if (_detailNameLabel != null) _detailNameLabel.text = detail.DisplayName;
-        if (_detailMetaLabel != null) _detailMetaLabel.text = $"{detail.ClassLabel} / {detail.TierLabel}";
+        if (_detailMetaLabel != null) _detailMetaLabel.text = $"{detail.ClassLabel} · {detail.TierLabel}";
         if (_detailPlanLabel != null) _detailPlanLabel.text = $"{detail.PlanFitLabel} {detail.PlanScoreLabel}";
         if (_detailCostLabel != null) _detailCostLabel.text = detail.CostLabel;
         if (_detailSkillLabel != null)
@@ -322,6 +347,19 @@ public sealed class RecruitView
         RenderClassGlyph(_detailClassGlyph, detail.ClassSprite, detail.ClassKey);
         RenderMetrics(_detailMetricBars, detail.Metrics);
         RenderSkillPips(_detailSkillPips, detail.SkillPips);
+
+        _detailRecruitSlotIndex = detail.SlotIndex;
+        if (_detailRecruitButton != null)
+        {
+            _detailRecruitButton.SetEnabled(detail.CanAfford);
+            _detailRecruitButton.text = detail.CanAfford
+                ? $"이 후보 영입 · {detail.CostLabel}"
+                : $"골드 부족 · {detail.CostLabel}";
+        }
+        if (_detailCostLabel != null)
+        {
+            _detailCostLabel.EnableInClassList("rcp-detail__cost--insufficient", !detail.CanAfford);
+        }
     }
 
     private void RenderRosterPressure(RecruitRosterPressureViewState pressure)
@@ -495,6 +533,11 @@ public sealed class RecruitView
 
     private void HandleScoutClicked() => _actions?.OnScoutClicked();
     private void HandleRefreshClicked() => _actions?.OnRefreshClicked();
+    private void HandleDetailRecruitClicked()
+    {
+        if (_detailRecruitSlotIndex < 0) return;
+        _actions?.OnRecruitConfirmed(_detailRecruitSlotIndex);
+    }
 
     private static void AddClassVariant(VisualElement element, string prefix, string classKey)
     {
@@ -522,13 +565,13 @@ public sealed class RecruitView
         return string.Concat(parts.Take(2).Select(part => part[..1])).ToUpperInvariant();
     }
 
-    // wave-31 GPT Pro patch: English enum → 한국어 localized (production hygiene).
+    // 의미축 통일: StandardA/B 구분은 사용자에게 의미 없음 — "표준"으로 합치고 분류는 색·badge로만.
     private static string SlotLabel(RecruitSlotType slot, bool scoutBias) => slot switch
     {
         RecruitSlotType.OnPlan    => scoutBias ? "계획 적합 · 정찰" : "계획 적합",
-        RecruitSlotType.Protected => "보호됨",
-        RecruitSlotType.StandardA => "표준 A",
-        RecruitSlotType.StandardB => "표준 B",
+        RecruitSlotType.Protected => "보호 후보",
+        RecruitSlotType.StandardA => scoutBias ? "표준 · 정찰" : "표준",
+        RecruitSlotType.StandardB => scoutBias ? "표준 · 정찰" : "표준",
         _ => slot.ToString(),
     };
 

@@ -32,10 +32,13 @@ public sealed class RecruitPresenterFastTests
         Assert.That(uxml, Does.Contain("CardRow"));
         Assert.That(uxml, Does.Contain("RecruitDecisionPanel"));
         Assert.That(uxml, Does.Contain("SelectedCandidateDetail"));
-        Assert.That(uxml, Does.Contain("SelectedCandidatePortrait"));
+        Assert.That(uxml, Does.Contain("SelectedCandidateClassGlyph"));
         Assert.That(uxml, Does.Contain("SelectedCandidateMetricBars"));
         Assert.That(uxml, Does.Contain("SelectedCandidateSkillPips"));
         Assert.That(uxml, Does.Contain("SelectedCandidateStateChips"));
+        Assert.That(uxml, Does.Contain("SelectedCandidateRecruitButton"));
+        Assert.That(uxml, Does.Contain("WalletGoldLabel"));
+        Assert.That(uxml, Does.Contain("WalletEchoLabel"));
         Assert.That(uxml, Does.Contain("RosterPressurePanel"));
         Assert.That(uxml, Does.Contain("RosterNeedChips"));
 

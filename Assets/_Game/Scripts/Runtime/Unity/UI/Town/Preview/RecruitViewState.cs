@@ -61,6 +61,11 @@ public sealed record RecruitActionBarViewState(
     int CurrentPaidRefreshCost              // 2 / 4 / 6 — paid escalation
 );
 
+public sealed record RecruitWalletViewState(
+    int GoldHeld,
+    int EchoHeld
+);
+
 public sealed record RecruitSelectedCandidateDetailViewState(
     int SlotIndex,
     string DisplayName,
@@ -70,6 +75,7 @@ public sealed record RecruitSelectedCandidateDetailViewState(
     string PlanFitLabel,
     string PlanScoreLabel,
     string CostLabel,
+    bool CanAfford,
     IReadOnlyList<string> StateChips,
     IReadOnlyList<string> Tags,
     string SkillSummary,
@@ -89,6 +95,7 @@ public sealed record RecruitRosterPressureViewState(
 public sealed record RecruitViewState(
     IReadOnlyList<RecruitCandidateViewState> Candidates,
     RecruitActionBarViewState ActionBar,
+    RecruitWalletViewState Wallet,
     RecruitSelectedCandidateDetailViewState? SelectedCandidateDetail,
     RecruitRosterPressureViewState RosterPressure
 );

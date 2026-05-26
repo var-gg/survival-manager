@@ -1187,3 +1187,113 @@
     padding-left: 300px;
     padding-right: 340px;
 }
+
+/* =============================================================
+   Wallet strip — 보유 자원 노출 (command strip 안)
+   ============================================================= */
+.rcp-command-strip__divider {
+    width: 1px;
+    height: 20px;
+    margin-left: 18px;
+    margin-right: 18px;
+    background-color: rgba(230, 183, 81, 0.32);
+}
+
+.rcp-command-strip__wallet {
+    margin-left: 18px;
+    color: var(--sm-gold-100);
+    font-size: 11px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.rcp-command-strip__wallet--gold {
+    color: var(--sm-gold-100);
+}
+
+.rcp-command-strip__wallet--echo {
+    color: rgb(180, 205, 255);
+}
+
+/* =============================================================
+   Detail panel — identity row (이중 표시 완화: portrait-frame 제거,
+   class glyph + name + meta만 가로 배치)
+   ============================================================= */
+.rcp-detail__identity-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.rcp-detail__identity-text {
+    flex-grow: 1;
+    margin-left: 12px;
+}
+
+.rcp-detail__identity-row .rcp-detail__class-glyph {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    right: auto;
+    bottom: auto;
+    border-top-left-radius: 22px;
+    border-top-right-radius: 22px;
+    border-bottom-left-radius: 22px;
+    border-bottom-right-radius: 22px;
+}
+
+.rcp-detail__identity-row .rcp-detail__name {
+    -unity-text-align: middle-left;
+    font-size: 16px;
+}
+
+.rcp-detail__identity-row .rcp-detail__meta {
+    -unity-text-align: middle-left;
+    margin-top: 2px;
+}
+
+/* Cost row — plan label + cost를 한 줄에 (균형) */
+.rcp-detail__cost-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-top-width: 1px;
+    border-top-color: rgba(230, 183, 81, 0.18);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(230, 183, 81, 0.18);
+}
+
+.rcp-detail__cost-row .rcp-detail__plan,
+.rcp-detail__cost-row .rcp-detail__cost {
+    margin-top: 0;
+    -unity-text-align: middle-left;
+}
+
+.rcp-detail__cost-row .rcp-detail__cost {
+    -unity-text-align: middle-right;
+}
+
+.rcp-detail__cost--insufficient {
+    color: rgb(232, 124, 110);
+}
+
+/* Detail RECRUIT button — 액션 흐름 fix (이 panel에서 바로 영입) */
+.rcp-detail__recruit {
+    margin-top: 14px;
+    height: 38px;
+    color: rgb(36, 25, 8);
+    font-size: 12px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    border-top-color: var(--sm-gold-100);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-500);
+}
+
+.rcp-detail__recruit:disabled {
+    opacity: 0.55;
+}
