@@ -695,14 +695,7 @@
     color: var(--sm-gold-200);
 }
 
-.rcp-card__tag {
-    background-color: rgba(26, 42, 82, 0.46);
-    border-left-color: rgba(127, 163, 224, 0.34);
-    border-right-color: rgba(127, 163, 224, 0.34);
-    border-top-color: rgba(127, 163, 224, 0.38);
-    border-bottom-color: rgba(26, 42, 82, 0.78);
-    color: rgb(196, 214, 250);
-}
+/* Panel-local override moved to Design Tokens v1 chip tokens — see L535. */
 
 .rcp-card__skills {
     border-top-color: rgba(230, 183, 81, 0.20);
