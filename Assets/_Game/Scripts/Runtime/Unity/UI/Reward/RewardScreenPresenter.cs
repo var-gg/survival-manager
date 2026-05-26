@@ -139,7 +139,9 @@ public sealed class RewardScreenPresenter
             canReturnToTown,
             BuildSettlementSummaryState(session),
             BuildProgressionRows(session, profile),
-            BuildTimelineTicks(session, profile));
+            BuildTimelineTicks(session, profile),
+            // wave-28-survivor GPT Pro patch: squad 4명 survivor row — BattleDeployHeroIds 기반.
+            BuildSurvivorRows(session, profile));
     }
 
     public RewardSettlementSummaryViewState BuildSettlementSummaryState(GameSessionState session)
@@ -183,6 +185,53 @@ public sealed class RewardScreenPresenter
     internal static IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicksForTest(GameSessionState session, ProfileView profile)
     {
         return BuildTimelineTicksCore(session, profile);
+    }
+
+    // wave-28-survivor GPT Pro patch: squad 4명 survivor list.
+    // BattleDeployHeroIds 기반 — HP/Level은 HeroInstanceRecord에 없어 placeholder, battle victory chip만 실제.
+    // 진짜 HP/EXP data plumbing은 별도 sprint (HeroProgressionRecord 연동 + combat resolution result).
+    private IReadOnlyList<RewardSurvivorRowViewState> BuildSurvivorRows(GameSessionState session, ProfileView profile)
+    {
+        var deployIds = session.BattleDeployHeroIds ?? Array.Empty<string>();
+        if (deployIds.Count == 0)
+        {
+            return Array.Empty<RewardSurvivorRowViewState>();
+        }
+        var victory = session.LastBattleVictory;
+        var rows = new List<RewardSurvivorRowViewState>();
+        foreach (var heroId in deployIds.Take(4))
+        {
+            var hero = session.Profile.Heroes.FirstOrDefault(h => string.Equals(h.HeroId, heroId, StringComparison.Ordinal));
+            if (hero == null) continue;
+            var glyph = ResolveSurvivorGlyph(hero.ClassId);
+            var statusKind = victory ? "victory" : "retreat";
+            var statusText = victory ? "생존" : "복귀";
+            // raw localization key fallback — "content.archetype..." 같은 미해결 key면 HeroId로.
+            var displayName = (string.IsNullOrEmpty(hero.Name) || hero.Name.StartsWith("content.", StringComparison.Ordinal))
+                ? hero.HeroId
+                : hero.Name;
+            rows.Add(new RewardSurvivorRowViewState(
+                HeroId: hero.HeroId,
+                DisplayName: displayName,
+                PortraitGlyph: glyph,
+                HpText: "체력 회복",
+                HpPercent: victory ? 1f : 0.6f,
+                ExpText: "경험치 +",
+                StatusChipText: statusText,
+                StatusChipKind: statusKind));
+        }
+        return rows;
+    }
+
+    private static string ResolveSurvivorGlyph(string? classId)
+    {
+        if (string.IsNullOrEmpty(classId)) return "◆";
+        var key = classId.ToLowerInvariant();
+        if (key.Contains("vanguard")) return "◈";
+        if (key.Contains("duelist")) return "⚔";
+        if (key.Contains("ranger")) return "❖";
+        if (key.Contains("mystic")) return "✦";
+        return "◆";
     }
 
     private IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRows(GameSessionState session, ProfileView profile)

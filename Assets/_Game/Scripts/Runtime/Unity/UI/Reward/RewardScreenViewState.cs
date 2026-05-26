@@ -50,6 +50,17 @@ public sealed record RewardProgressionRowViewState(
     string ValueText,
     string ToneKey);
 
+// wave-28-survivor GPT Pro patch: squad 4명 survivor row (portrait glyph + HP/MaxHP + Level/Exp).
+public sealed record RewardSurvivorRowViewState(
+    string HeroId,
+    string DisplayName,
+    string PortraitGlyph,        // ◆ ⚔ ♟ etc — class별 또는 generic
+    string HpText,                // "62 / 80"
+    float HpPercent,              // 0.0~1.0
+    string ExpText,               // "Lv 4 · 320 / 500"
+    string StatusChipText,        // "생존" / "기절" / "EXP +120" (PVE 결과)
+    string StatusChipKind);       // "victory" / "downed" / "exp-gain"
+
 public sealed record RewardTimelineTickViewState(
     string StepText,
     string DetailText,
@@ -78,4 +89,7 @@ public sealed record RewardScreenViewState(
     bool ReturnTownIsPrimary,
     RewardSettlementSummaryViewState SettlementSummary,
     IReadOnlyList<RewardProgressionRowViewState> ProgressionRows,
-    IReadOnlyList<RewardTimelineTickViewState> TimelineTicks);
+    IReadOnlyList<RewardTimelineTickViewState> TimelineTicks,
+    // wave-28-survivor GPT Pro patch: squad 4명 survivor list (portrait + HP/EXP).
+    // default empty이면 View가 survivor section을 hide.
+    IReadOnlyList<RewardSurvivorRowViewState>? SurvivorRows = null);

@@ -22,6 +22,7 @@ public sealed class RewardScreenView
     private readonly Label _progressionTitleLabel;
     private readonly Label _timelineTitleLabel;
     private readonly VisualElement _progressionRows;
+    private readonly VisualElement _survivorRows;
     private readonly VisualElement _timelineTicks;
     private readonly Label _choicesHeaderLabel;
     private readonly Label _statusLabel;
@@ -57,6 +58,8 @@ public sealed class RewardScreenView
         _progressionTitleLabel = Require<Label>(root, "ProgressionTitleLabel");
         _timelineTitleLabel = Require<Label>(root, "TimelineTitleLabel");
         _progressionRows = Require<VisualElement>(root, "RewardProgressionRows");
+        // wave-28-survivor GPT Pro patch: squad 4명 survivor list.
+        _survivorRows = Require<VisualElement>(root, "RewardSurvivorRows");
         _timelineTicks = Require<VisualElement>(root, "RewardTimelineTicks");
         _choicesHeaderLabel = Require<Label>(root, "ChoicesHeaderLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
@@ -112,6 +115,7 @@ public sealed class RewardScreenView
         _progressionTitleLabel.text = state.ProgressionTitle;
         _timelineTitleLabel.text = state.TimelineTitle;
         RenderProgressionRows(state.ProgressionRows);
+        RenderSurvivorRows(state.SurvivorRows);
         RenderTimelineTicks(state.TimelineTicks);
         _choicesHeaderLabel.text = state.ChoicesHeaderText;
         _statusLabel.text = state.StatusText;
@@ -160,6 +164,62 @@ public sealed class RewardScreenView
             container.Add(value);
 
             _progressionRows.Add(container);
+        }
+    }
+
+    // wave-28-survivor GPT Pro patch: squad 4명 survivor row (portrait glyph + name + HP bar + EXP + status).
+    private void RenderSurvivorRows(IReadOnlyList<RewardSurvivorRowViewState>? rows)
+    {
+        _survivorRows.Clear();
+        if (rows == null || rows.Count == 0)
+        {
+            _survivorRows.style.display = DisplayStyle.None;
+            return;
+        }
+        _survivorRows.style.display = DisplayStyle.Flex;
+        foreach (var row in rows)
+        {
+            var container = new VisualElement();
+            container.AddToClassList("reward-survivor-row");
+            container.AddToClassList($"reward-survivor-row--{row.StatusChipKind}");
+
+            var portrait = new Label(row.PortraitGlyph);
+            portrait.AddToClassList("reward-survivor-row__portrait");
+            container.Add(portrait);
+
+            var copy = new VisualElement();
+            copy.AddToClassList("reward-survivor-row__copy");
+            var nameLabel = new Label(row.DisplayName);
+            nameLabel.AddToClassList("reward-survivor-row__name");
+            copy.Add(nameLabel);
+
+            var stats = new VisualElement();
+            stats.AddToClassList("reward-survivor-row__stats");
+            var hpLabel = new Label(row.HpText);
+            hpLabel.AddToClassList("reward-survivor-row__hp");
+            stats.Add(hpLabel);
+            var hpBar = new VisualElement();
+            hpBar.AddToClassList("reward-survivor-row__hp-bar");
+            var hpFill = new VisualElement();
+            hpFill.AddToClassList("reward-survivor-row__hp-fill");
+            hpFill.style.width = new StyleLength(new Length(Math.Clamp(row.HpPercent * 100f, 0f, 100f), LengthUnit.Percent));
+            hpBar.Add(hpFill);
+            stats.Add(hpBar);
+            var expLabel = new Label(row.ExpText);
+            expLabel.AddToClassList("reward-survivor-row__exp");
+            stats.Add(expLabel);
+            copy.Add(stats);
+            container.Add(copy);
+
+            if (!string.IsNullOrEmpty(row.StatusChipText))
+            {
+                var chip = new Label(row.StatusChipText);
+                chip.AddToClassList("reward-survivor-row__chip");
+                chip.AddToClassList($"reward-survivor-row__chip--{row.StatusChipKind}");
+                container.Add(chip);
+            }
+
+            _survivorRows.Add(container);
         }
     }
 

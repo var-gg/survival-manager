@@ -58,6 +58,11 @@
                         <ui:Label name="SettlementModifierAffinityBoostChip" class="reward-settlement-summary__chip" />
                     </ui:VisualElement>
                 </ui:VisualElement>
+                <!-- wave-28-survivor GPT Pro patch: squad 4 survivor list (portrait + HP/EXP). -->
+                <ui:VisualElement class="panel reward-survivor-panel">
+                    <ui:Label class="panel__title" text="전투 생존자" />
+                    <ui:VisualElement name="RewardSurvivorRows" class="reward-survivor-rows" />
+                </ui:VisualElement>
                 <ui:VisualElement class="panel reward-progression-panel">
                     <ui:Label name="ProgressionTitleLabel" class="panel__title" />
                     <ui:VisualElement name="RewardProgressionRows" class="reward-progression-rows" />
