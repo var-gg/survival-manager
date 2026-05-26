@@ -1084,9 +1084,10 @@
     min-height: 13px;
 }
 
+/* card recruit CTA: detail "이 후보 영입" CTA(38px)와 height 통일 — CTA primary weight 일관성 */
 .rcp-card__recruit {
     margin-top: auto;
-    height: 32px;
+    height: 38px;
 }
 
 .rcp-decision-panel {
@@ -1204,11 +1205,13 @@
     justify-content: center;
 }
 
+/* action bar — hardcoded padding 300/340 양쪽 비대칭 fix. justify-content space-around로 균등 정렬. */
 .rcp-actions {
     padding-top: 12px;
     padding-bottom: 12px;
-    padding-left: 300px;
-    padding-right: 340px;
+    padding-left: 56px;
+    padding-right: 56px;
+    justify-content: space-around;
 }
 
 /* =============================================================
