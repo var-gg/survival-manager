@@ -808,13 +808,15 @@
 .rcp-command-strip__meter--blue { background-color: rgba(26, 42, 82, 0.92); }
 .rcp-command-strip__meter--green { background-color: rgba(43, 82, 52, 0.82); }
 
+/* frame padding 48/36이 이미 child를 inset 시킴. decision-layout 자체 padding은
+   중복이라 0으로 reset. 단 top/bottom은 header/footer와 간격 유지 위해 작은 값. */
 .rcp-decision-layout {
     flex-direction: row;
     flex-grow: 1;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 18px;
-    padding-bottom: 12px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 12px;
+    padding-bottom: 8px;
 }
 
 .rcp-left-rail {
@@ -1213,12 +1215,12 @@
     justify-content: center;
 }
 
-/* action bar — hardcoded padding 300/340 양쪽 비대칭 fix. justify-content space-around로 균등 정렬. */
+/* action bar — frame padding 48이 이미 좌우 inset. 추가 padding 0, justify-content space-around. */
 .rcp-actions {
     padding-top: 12px;
     padding-bottom: 12px;
-    padding-left: 56px;
-    padding-right: 56px;
+    padding-left: 0;
+    padding-right: 0;
     justify-content: space-around;
 }
 
