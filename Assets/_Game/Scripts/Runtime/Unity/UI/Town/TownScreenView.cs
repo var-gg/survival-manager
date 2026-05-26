@@ -245,6 +245,11 @@ public sealed class TownScreenView
         var portrait = new VisualElement { name = "Portrait" };
         portrait.AddToClassList("sm-face-card__portrait");
         portrait.AddToClassList($"sm-face-card__emotion--{emotion}");
+        // wave-35-placeholder: NPC role 4명별 portrait BG tint — P09 import 전 visually distinct하게.
+        if (!string.IsNullOrEmpty(badge) && badge != "none")
+        {
+            portrait.AddToClassList($"sm-face-card__portrait--{badge}");
+        }
         portrait.pickingMode = PickingMode.Ignore;
         var portraitGlyph = new Label(ResolvePortraitGlyph(badge, role, id));
         portraitGlyph.AddToClassList("sm-face-card__portrait-glyph");

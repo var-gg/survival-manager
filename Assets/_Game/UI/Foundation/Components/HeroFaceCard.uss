@@ -90,11 +90,14 @@
 .sm-face-card__badge--captain { background-color: rgba(245, 214, 138, 0.95); }   /* gold-200 — captain */
 .sm-face-card__badge--none    { display: none; }
 
-/* portrait — 얼굴 close-up 영역. face_emotion_sheet 1 cell. */
+/* portrait — 얼굴 close-up 영역. face_emotion_sheet 1 cell.
+   P09 emotion sheet import 후 이 element의 background-image를 cell 1개로 채운다 (Phase 8).
+   현재는 glyph(♟⚒✚✧✦) placeholder가 fallback으로 노출. */
 .sm-face-card__portrait {
     flex-grow: 1;
     width: 100%;
-    background-color: rgba(8, 12, 28, 0.45);
+    /* wave-35-placeholder: navy(8,12,28) → sepia 통일 (다른 production panel과 mood 일관). */
+    background-color: rgba(28, 22, 12, 0.55);
     margin-bottom: 4px;
     border-top-width: 1px;
     border-left-width: 1px;
@@ -109,11 +112,22 @@
 
 .sm-face-card__portrait-glyph {
     flex-grow: 1;
-    color: rgba(245, 214, 138, 0.84);
+    /* wave-35-placeholder: glyph 가시성 ↑ — P09 import 전 임시 placeholder가 의도되어 보이도록 */
+    color: rgba(255, 226, 153, 0.92);
     font-size: 24px;
     -unity-text-align: middle-center;
     -unity-font-style: bold;
 }
+
+/* wave-35-placeholder: NPC role 4명별 portrait BG 미세 tint 차등.
+   P09 emotion sheet 도착 전까지 placeholder glyph만으로도 4 NPC가 visually distinct하도록.
+   badge color와 같은 hue family로 5-8% tint만 mix → mood drift 없음.
+   USS sibling combinator(~)는 Unity USS 미지원이라 portrait element 자체에
+   `sm-face-card__portrait--{badge}` class를 View가 직접 추가한다. */
+.sm-face-card__portrait--tavern  { background-color: rgba(60, 70, 100, 0.55); }
+.sm-face-card__portrait--forge   { background-color: rgba(72, 56, 28, 0.62); }
+.sm-face-card__portrait--clinic  { background-color: rgba(40, 58, 36, 0.55); }
+.sm-face-card__portrait--records { background-color: rgba(64, 50, 80, 0.55); }
 
 .sm-face-card--lg .sm-face-card__portrait-glyph { font-size: 34px; }
 .sm-face-card--md .sm-face-card__portrait-glyph { font-size: 26px; }
