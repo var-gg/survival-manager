@@ -819,9 +819,11 @@
     padding-bottom: 8px;
 }
 
+/* round 7: align-self flex-start + width 220 → stretch + width 260.
+   카드 row height와 align. 너비도 mockup의 240-260px에 맞춤. */
 .rcp-left-rail {
-    width: 220px;
-    align-self: flex-start;
+    width: 260px;
+    align-self: stretch;
     margin-top: 4px;
     margin-bottom: 4px;
     margin-right: 16px;

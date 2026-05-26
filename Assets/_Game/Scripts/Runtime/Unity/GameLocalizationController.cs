@@ -27,6 +27,14 @@ public sealed class GameLocalizationController : MonoBehaviour
             ? LocalizationSettings.AvailableLocales.Locales
             : Array.Empty<Locale>();
 
+    private void Awake()
+    {
+        // GameBootstrap이 명시적 init 호출하는 게 정상 흐름이지만, Town scene 직접
+        // 더블클릭 진입 같은 dev/playtest entry에서도 ko locale 보장하려면 controller
+        // 자체가 Awake에서 init 시도. 이미 init된 경우 EnsureInitialized 첫 줄에서 yield break.
+        StartCoroutine(EnsureInitialized());
+    }
+
     public IEnumerator EnsureInitialized()
     {
         if (IsInitialized)
