@@ -335,18 +335,20 @@
 }
 
 .reward-screen .reward-progression-row__key {
-    width: 98px;
-    min-width: 98px;
+    /* wave-28-continue GPT Pro patch: key width 98→120, font 11→12. */
+    width: 120px;
+    min-width: 120px;
     color: var(--sm-gold-200);
-    font-size: 11px;
+    font-size: 12px;
     -unity-font-style: bold;
 }
 
 .reward-screen .reward-progression-row__value {
+    /* wave-28-continue: value font 10→12, line-height 13→16. survivor row readability. */
     flex-grow: 1;
     color: var(--sm-vellum);
-    font-size: 10px;
-    line-height: 13px;
+    font-size: 12px;
+    line-height: 16px;
     white-space: normal;
 }
 

@@ -284,7 +284,10 @@ public sealed class AtlasScreenPresenter
             AtlasReadabilityFormatter.FormatBoundaryNote(),
             string.Empty,
             ThreatBandLabel: threatBandLabel,
-            EnemyIntel: AtlasEnemyIntelViewState.Empty);
+            EnemyIntel: AtlasEnemyIntelViewState.Empty,
+            // wave-25 presenter (GPT Pro P0): Guide/Scout slot은 squad 4-6 외 1명. 진짜 scout selection 시스템은 후속.
+            // 임시 placeholder text: scout slot이 미설정임을 명시 + 다음 슬롯 후보 안내 (decision-atlas-regional-sigil 의도).
+            ScoutHint: "정찰원 미설정 — 다음 sortie에 추가 가능");
     }
 
     private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack, string sigilSnapshotHash, int activeSigilCap)
