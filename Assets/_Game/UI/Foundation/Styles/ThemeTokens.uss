@@ -200,20 +200,21 @@
     --sm-state-info: rgb(118, 212, 255);    /* #76d4ff */
 
     /* chip 4 variants — analysis-design-tokens-v1 §4
-       v1.1: alpha 강화 (0.12 → 0.28), color vividness (vanguard-glow → state-info cyan)
-       이전 v1은 시각 차이 미묘했음 — 사용자 PlayMode 확인 후 강화. */
-    /* state chip: 계획 적합/보호/정찰/보정/need (gold tint) */
+       v1.2: round 3 추가 강화 — contact sheet에서 색 punch 약했음.
+       bg alpha 0.22 → 0.32 (state), 0.18 → 0.30 (tag).
+       border alpha 0.55 → 0.78 + width 인지 강화. */
+    /* state chip: 계획 적합/보호/정찰/보정/need (gold tint, vivid) */
     --sm-chip-state-text: var(--sm-gold-100);
-    --sm-chip-state-bg: rgba(245, 214, 138, 0.22);
-    --sm-chip-state-border: rgba(245, 214, 138, 0.55);
+    --sm-chip-state-bg: rgba(245, 214, 138, 0.32);
+    --sm-chip-state-border: rgba(245, 214, 138, 0.78);
     /* tag chip: archetype tag 전열/결투/폭발/방패술 (info-cyan tint, vivid) */
     --sm-chip-tag-text: var(--sm-state-info);
-    --sm-chip-tag-bg: rgba(118, 212, 255, 0.18);
-    --sm-chip-tag-border: rgba(118, 212, 255, 0.55);
-    /* category chip: 무기/방어구/액세서리 (ink) */
+    --sm-chip-tag-bg: rgba(118, 212, 255, 0.30);
+    --sm-chip-tag-border: rgba(118, 212, 255, 0.78);
+    /* category chip: 무기/방어구/액세서리 (ink, subtle but readable) */
     --sm-chip-category-text: var(--sm-ink-0);
-    --sm-chip-category-bg: rgba(245, 234, 208, 0.10);
-    --sm-chip-category-border: rgba(245, 234, 208, 0.32);
+    --sm-chip-category-bg: rgba(245, 234, 208, 0.14);
+    --sm-chip-category-border: rgba(245, 234, 208, 0.42);
     /* hint chip: 보유 골드/잔향 (transparent, dashed) */
     --sm-chip-hint-text: var(--sm-ink-2);
     --sm-chip-hint-bg: rgba(0, 0, 0, 0);
