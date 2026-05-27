@@ -155,7 +155,8 @@ public sealed class TownScreenUxmlHubLayoutTests
         var uxml = File.ReadAllText("Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uxml");
         Assert.That(uxml, Does.Contain("SquadBuilderRoot"));
         Assert.That(uxml, Does.Contain("SquadBuilderCloseButton"));
-        Assert.That(uxml, Does.Contain("전술 설정"));
+        // wave-58 mockup-align: title을 "전술 설정" → "전술 편성"으로 변경 (시안 갤러리 squad workshop v1).
+        Assert.That(uxml, Does.Contain("전술 편성"));
         Assert.That(uxml, Does.Not.Contain("전열 편성"));
         Assert.That(uxml, Does.Contain("SquadBuilderThreeZoneLayout"));
         Assert.That(uxml, Does.Contain("SquadBuilderRosterRail"));

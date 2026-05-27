@@ -151,6 +151,8 @@ public sealed class Atlas3DEnvironmentTests
         root.Add(new Label { name = "atlas-preview-modifiers" });
         root.Add(new Label { name = "atlas-preview-reward" });
         root.Add(new Label { name = "atlas-preview-recommendations" });
+        // wave-25 closure: scout slot label. AtlasScreenView ctor가 Require<Label>로 강제.
+        root.Add(new Label { name = "atlas-preview-scout" });
         root.Add(new Label { name = "atlas-boundary-note" });
         root.Add(new Button { name = "atlas-continue-button" });
         root.Add(new Label { name = "atlas-debug-hash" });

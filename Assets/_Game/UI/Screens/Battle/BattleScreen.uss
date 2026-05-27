@@ -409,7 +409,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    /* wave-test-cleanup: art bible AB151 정책 위반. */
+    background-image: none;
     -unity-slice-left: 48;
     -unity-slice-right: 48;
     -unity-slice-top: 48;

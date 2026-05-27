@@ -174,7 +174,8 @@
 
 .reward-screen .panel {
     background-color: rgba(36, 26, 14, 0.78);
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
+    /* wave-test-cleanup: art bible AB151 정책 위반. */
+    background-image: none;
     -unity-slice-left: 48;
     -unity-slice-right: 48;
     -unity-slice-top: 48;
