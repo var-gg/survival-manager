@@ -49,6 +49,11 @@ public sealed class TownCharacterSheetView
     private readonly Label _progressionTitleLabel;
     private readonly Label _progressionBodyLabel;
     private readonly Button _closeButton;
+    // wave-50 P2 action bar — 미존재 UXML(이전 build)에서도 panel 부팅이 깨지지 않게 nullable.
+    private readonly Button? _dismissButton;
+    private readonly Button? _retrainButton;
+    private readonly Button? _passiveBoardButton;
+    private readonly Button? _refitButton;
 
     public TownCharacterSheetView(VisualElement root)
     {
@@ -76,12 +81,20 @@ public sealed class TownCharacterSheetView
         _progressionTitleLabel = Require<Label>(root, "TcsProgressionTitle");
         _progressionBodyLabel = Require<Label>(root, "TcsProgressionBody");
         _closeButton = Require<Button>(root, "TownCharacterSheetCloseButton");
+        _dismissButton = root.Q<Button>("TcsDismissButton");
+        _retrainButton = root.Q<Button>("TcsRetrainButton");
+        _passiveBoardButton = root.Q<Button>("TcsPassiveBoardButton");
+        _refitButton = root.Q<Button>("TcsRefitButton");
     }
 
     public void Bind(TownCharacterSheetPresenter presenter)
     {
         if (presenter == null) throw new ArgumentNullException(nameof(presenter));
         _closeButton.clicked += presenter.Close;
+        if (_dismissButton != null) _dismissButton.clicked += presenter.OnDismissClicked;
+        if (_retrainButton != null) _retrainButton.clicked += presenter.OnRetrainClicked;
+        if (_passiveBoardButton != null) _passiveBoardButton.clicked += presenter.OnPassiveBoardClicked;
+        if (_refitButton != null) _refitButton.clicked += presenter.OnRefitClicked;
     }
 
     public void Open()

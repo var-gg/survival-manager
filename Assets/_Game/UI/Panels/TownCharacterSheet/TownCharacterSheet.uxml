@@ -6,23 +6,11 @@
     <Style src="TownCharacterSheet.uss" />
     <ui:VisualElement name="TownCharacterSheetRoot" class="tcs-root sm-modal-anim sm-modal-anim--enter">
         <ui:VisualElement name="TownCharacterSheetBackdrop" class="tcs-backdrop" picking-mode="Ignore" />
-        <ui:VisualElement name="TownCharacterSheetFrame" class="tcs-frame sm-modal-frame sm-modal-frame--parchment">
-            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
-
-            <ui:VisualElement class="tcs-top-runes" picking-mode="Ignore">
-                <ui:Label name="TcsRunePrimary" class="tcs-rune tcs-rune--active" text="✦" />
-                <ui:Label name="TcsRuneSecondary" class="tcs-rune" text="✧" />
-                <ui:Label name="TcsRuneDefense" class="tcs-rune" text="◇" />
-                <ui:Label name="TcsRuneAttack" class="tcs-rune" text="◆" />
-                <ui:Label name="TcsRuneSupport" class="tcs-rune" text="✚" />
-                <ui:Label name="TcsRuneTactics" class="tcs-rune" text="◎" />
-            </ui:VisualElement>
+        <ui:VisualElement name="TownCharacterSheetFrame" class="tcs-frame sm-modal-anim">
+            <!-- wave-39 chrome budget cleanup: corner caps + top runes 제거 (책임 매트릭스 §3 chrome budget 3 layer 준수) -->
 
             <ui:VisualElement class="tcs-header">
+                <ui:Label class="tcs-eyebrow" text="영웅 정보" />
                 <ui:VisualElement class="tcs-identity">
                     <ui:VisualElement class="tcs-identity-copy">
                         <ui:Label name="TcsHeroNameLabel" class="tcs-title sm-cd-title" />
@@ -85,6 +73,15 @@
                         <ui:Label name="TcsSynergyBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- wave-50 P2: action bar 4 CTA (해고/재훈련/패시브 보드/장비 정련). inline layout은 USS 의존성
+                 회피용 fallback — .tcs-action-bar 정식 USS 정의는 후속 wave에서 layout 세션이 처리. -->
+            <ui:VisualElement name="TcsActionBar" class="tcs-action-bar" style="flex-direction: row; gap: 12px; padding: 16px 24px; justify-content: flex-end; align-items: center;">
+                <ui:Button name="TcsDismissButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary" text="해고" />
+                <ui:Button name="TcsRetrainButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary" text="재훈련" />
+                <ui:Button name="TcsPassiveBoardButton" class="ui-button sm-cta sm-cta--md sm-cta--primary" text="패시브 보드" />
+                <ui:Button name="TcsRefitButton" class="ui-button sm-cta sm-cta--md sm-cta--primary" text="장비 정련" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

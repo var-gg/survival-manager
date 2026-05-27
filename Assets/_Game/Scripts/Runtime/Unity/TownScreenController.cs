@@ -251,6 +251,20 @@ public sealed class TownScreenController : MonoBehaviour
                 itemSprite: key => _contentIconResolver.ResolveItem(key));
             _characterSheetPresenter.Initialize();
             _characterSheetPresenter.Close();
+            // wave-50 P2 — character sheet 4 CTA action bar cross-presenter wire.
+            // dismiss/retrain은 후속 wave에서 service wire (DismissService.Commit, RetrainOperationKind 적용).
+            _characterSheetPresenter.BindActionBar(
+                passiveBoardOpener: heroId =>
+                {
+                    _passiveBoardPresenter?.SetSelectedHero(heroId);
+                    _passiveBoardPresenter?.Open();
+                },
+                refitOpener: heroId =>
+                {
+                    // EquipmentRefit은 item 중심 — hero forward는 후속 wave 과제
+                    // (hero가 장착한 item 자동 선택). 본 wave는 panel open만.
+                    _equipmentRefitPresenter?.Open();
+                });
             _presenter?.SetHeroOpener(heroId =>
             {
                 _inventoryPresenter?.SetTargetHero(heroId);

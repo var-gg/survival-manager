@@ -19,6 +19,12 @@ public sealed class TownCharacterSheetPresenter
     private readonly SpriteLoader _railPortraitSprite;
     private readonly SpriteLoader _skillSprite;
     private readonly SpriteLoader _itemSprite;
+    // wave-50 P2 action bar callback. controller가 cross-presenter open / service wire.
+    // null이면 no-op + Debug.Log (사용자에게 안전한 placeholder).
+    private Action<string>? _passiveBoardOpener;
+    private Action<string>? _refitOpener;
+    private Action<string>? _dismissHandler;
+    private Action<string>? _retrainHandler;
     private string _selectedHeroId = string.Empty;
 
     public TownCharacterSheetPresenter(
@@ -43,6 +49,57 @@ public sealed class TownCharacterSheetPresenter
     public void Initialize()
     {
         _view.Bind(this);
+    }
+
+    /// <summary>wave-50 P2 action bar — cross-presenter Open과 service wire를 controller에서 주입.</summary>
+    public void BindActionBar(
+        Action<string>? passiveBoardOpener = null,
+        Action<string>? refitOpener = null,
+        Action<string>? dismissHandler = null,
+        Action<string>? retrainHandler = null)
+    {
+        _passiveBoardOpener = passiveBoardOpener;
+        _refitOpener = refitOpener;
+        _dismissHandler = dismissHandler;
+        _retrainHandler = retrainHandler;
+    }
+
+    public void OnDismissClicked()
+    {
+        if (string.IsNullOrEmpty(_selectedHeroId)) return;
+        if (_dismissHandler != null)
+        {
+            _dismissHandler(_selectedHeroId);
+        }
+        else
+        {
+            Debug.Log($"[TownCharacterSheet] 해고 wire 미연결 — hero='{_selectedHeroId}' (DismissService.CalculateRefund는 BuildState에서 계산됨, 실제 dismiss commit은 후속 wave).");
+        }
+    }
+
+    public void OnRetrainClicked()
+    {
+        if (string.IsNullOrEmpty(_selectedHeroId)) return;
+        if (_retrainHandler != null)
+        {
+            _retrainHandler(_selectedHeroId);
+        }
+        else
+        {
+            Debug.Log($"[TownCharacterSheet] 재훈련 wire 미연결 — hero='{_selectedHeroId}' (RetrainOperationKind cost는 BuildState에서 계산됨, 실제 retrain commit은 후속 wave).");
+        }
+    }
+
+    public void OnPassiveBoardClicked()
+    {
+        if (string.IsNullOrEmpty(_selectedHeroId)) return;
+        _passiveBoardOpener?.Invoke(_selectedHeroId);
+    }
+
+    public void OnRefitClicked()
+    {
+        if (string.IsNullOrEmpty(_selectedHeroId)) return;
+        _refitOpener?.Invoke(_selectedHeroId);
     }
 
     public void Open(string heroId)
