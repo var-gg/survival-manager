@@ -5,14 +5,16 @@
    SoT: pindoc://town-ui-ux-시안-갤러리-v1 (2)
    tone: deep navy frame + gold trim + 3 section (standee / affix list / inventory pool) */
 
-.erp-root { flex-grow: 1; color: var(--sm-ink-1); }
+.erp-root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; color: var(--sm-ink-1); }
+/* wave-41: flex-grow: 1 -> position: absolute. host flex 슬롯에 갇혀 화면 절반만 차지하던 z-order 이슈 해소. */
 
 .erp-backdrop {
     position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_equipment_refit_dusk.png");
     -unity-background-scale-mode: scale-and-crop;
 }
-.erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(28, 22, 12, 0.32); }
+.erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12, 17, 38, 0.78); }
+/* wave-41: dim 0.32 -> 0.78. Town hub UI가 backdrop edge로 새던 z-order 이슈 해소. */
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .erp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }

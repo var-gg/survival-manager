@@ -10,12 +10,8 @@
         <ui:VisualElement class="pap-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="pap-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="pap-frame sm-modal-frame sm-modal-frame--ceremony sm-modal-anim">
-            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+        <ui:VisualElement class="pap-frame sm-modal-anim">
+            <!-- wave-39 chrome cleanup: ceremony frame + texture + corner caps 제거 (책임 매트릭스 §8 chrome budget) -->
 
             <ui:VisualElement class="pap-header">
                 <ui:Label class="pap-header__title" text="영구 증강 — PERMANENT" />

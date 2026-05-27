@@ -10,12 +10,8 @@
         <ui:VisualElement class="inv-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="inv-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="inv-frame sm-modal-frame sm-modal-frame--parchment sm-modal-anim">
-            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+        <ui:VisualElement class="inv-frame sm-modal-anim">
+            <!-- wave-39 chrome cleanup: parchment frame + texture + corner caps 제거 (책임 매트릭스 §5 chrome budget) -->
 
             <!-- Top currency header -->
             <ui:VisualElement class="inv-currency-header">

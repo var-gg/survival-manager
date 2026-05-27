@@ -12,12 +12,8 @@
         <ui:VisualElement class="erp-backdrop" picking-mode="Ignore" />
         <ui:VisualElement class="erp-backdrop-dim" picking-mode="Ignore" />
 
-        <ui:VisualElement class="erp-frame sm-modal-frame sm-modal-frame--ceremony sm-modal-anim">
-            <ui:VisualElement class="sm-modal-frame__texture" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+        <ui:VisualElement class="erp-frame sm-modal-anim">
+            <!-- wave-39 chrome cleanup: ceremony frame + texture + corner caps 제거 (책임 매트릭스 §6 chrome budget) -->
 
             <ui:VisualElement class="erp-header">
                 <ui:Label class="erp-header__title" text="장비 — REFIT" />

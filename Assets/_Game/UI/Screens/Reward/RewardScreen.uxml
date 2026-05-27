@@ -2,18 +2,9 @@
     <ui:VisualElement name="RewardScreenRoot" class="screen reward-screen reward-bible">
         <ui:VisualElement class="reward-bible__backdrop" />
         <ui:VisualElement class="screen__topbar reward-bible__topbar">
-            <ui:VisualElement class="reward-bible__crest" />
+            <!-- wave-39 chrome cleanup: crest + rune row 제거 (책임 매트릭스 §11 chrome budget) -->
             <ui:VisualElement class="reward-bible__title-stack">
                 <ui:Label name="TitleLabel" class="screen__title reward-bible__title" />
-                <ui:VisualElement class="reward-bible__rune-row">
-                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--active" />
-                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--active" />
-                    <ui:VisualElement class="reward-bible__rune" />
-                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--danger" />
-                    <ui:VisualElement class="reward-bible__rune" />
-                    <ui:VisualElement class="reward-bible__rune reward-bible__rune--active" />
-                    <ui:VisualElement class="reward-bible__rune" />
-                </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="screen__toolbar">
                 <ui:VisualElement class="screen__locale">
@@ -72,21 +63,10 @@
             <ui:VisualElement class="screen__column reward-bible__center-stage">
                 <ui:VisualElement class="panel reward-choice-panel">
                     <ui:Label name="ChoicesHeaderLabel" class="panel__title" />
-                    <ui:VisualElement class="reward-bible__victory-medallion" picking-mode="Ignore">
-                        <ui:VisualElement class="reward-bible__victory-ring reward-bible__victory-ring--outer" />
-                        <ui:VisualElement class="reward-bible__victory-ring reward-bible__victory-ring--inner" />
-                        <ui:VisualElement class="reward-bible__victory-icon" />
-                        <ui:VisualElement class="reward-bible__victory-banner">
-                            <ui:Label name="RewardVictoryBannerResultLabel" class="reward-bible__victory-banner-text" text="RESULT" />
-                            <ui:Label name="RewardVictoryBannerStatusLabel" class="reward-bible__victory-banner-text reward-bible__victory-banner-text--ko" text="정산 완료" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="reward-bible__victory-runes">
-                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--gold" />
-                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--blue" />
-                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--green" />
-                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--red" />
-                            <ui:VisualElement class="reward-bible__victory-rune reward-bible__victory-rune--gold" />
-                        </ui:VisualElement>
+                    <!-- wave-39 chrome cleanup: victory medallion + runes 제거 (선택 결정 surface, mood ornament 불필요) -->
+                    <ui:VisualElement class="reward-bible__victory-banner reward-bible__victory-banner--flat">
+                        <ui:Label name="RewardVictoryBannerResultLabel" class="reward-bible__victory-banner-text" text="RESULT" />
+                        <ui:Label name="RewardVictoryBannerStatusLabel" class="reward-bible__victory-banner-text reward-bible__victory-banner-text--ko" text="정산 완료" />
                     </ui:VisualElement>
                     <ui:VisualElement class="card-row reward-card-row">
                         <ui:VisualElement class="card reward-card reward-card--gold" name="ChoiceCard1">
