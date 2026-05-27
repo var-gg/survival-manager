@@ -41,6 +41,12 @@ public sealed class SquadBuilderPresenter
     private readonly VisualElement _operationRows;
     private readonly Label _responseSummaryLabel;
     private readonly VisualElement _synergyChips;
+    // wave-58 mockup-align header chip strip + footer CTA (optional, UXML 미존재 시 null fallback)
+    private readonly Label? _deploymentChip;
+    private readonly Label? _postureChip;
+    private readonly Label? _riskChip;
+    private readonly Button? _resetButton;
+    private readonly Button? _confirmButton;
     private readonly (DeploymentAnchorId Anchor, Button Button)[] _anchorButtons;
     private readonly (TeamPostureType Posture, Button Button)[] _postureButtons;
     private DeploymentAnchorId _selectedAnchor = DeploymentAnchorId.FrontCenter;
@@ -66,6 +72,12 @@ public sealed class SquadBuilderPresenter
         _operationRows = Require<VisualElement>(_panelRoot, "SquadBuilderOperationRows");
         _responseSummaryLabel = Require<Label>(_panelRoot, "SquadBuilderResponseSummaryLabel");
         _synergyChips = Require<VisualElement>(_panelRoot, "SquadBuilderSynergyChips");
+        // wave-58: nullable — 이전 UXML build에서도 panel 부팅 깨지지 않게 optional.
+        _deploymentChip = _panelRoot.Q<Label>("SquadBuilderDeploymentChip");
+        _postureChip = _panelRoot.Q<Label>("SquadBuilderPostureChip");
+        _riskChip = _panelRoot.Q<Label>("SquadBuilderRiskChip");
+        _resetButton = _panelRoot.Q<Button>("SquadBuilderResetButton");
+        _confirmButton = _panelRoot.Q<Button>("SquadBuilderConfirmButton");
 
         _anchorButtons = new[]
         {
@@ -99,6 +111,8 @@ public sealed class SquadBuilderPresenter
             var posture = entry.Posture;
             entry.Button.clicked += () => OnPostureClicked(posture);
         }
+        if (_resetButton != null) _resetButton.clicked += OnResetClicked;
+        if (_confirmButton != null) _confirmButton.clicked += OnConfirmClicked;
 
         Render();
     }
@@ -175,6 +189,49 @@ public sealed class SquadBuilderPresenter
         var selectedRow = RenderSelectedDetail(session, loadout, heroById, anchorByHeroId);
         RenderTacticalDecisionRows(session, anchorByHeroId.Count, selectedRow);
         _statusLabel.text = $"{_statusText} · 현재 팀 태세: {LocalizePosture(selected)}";
+
+        // wave-58 mockup chip strip update — 배치 X/6, 태세, 위험 점수 (heuristic).
+        var deployedCount = loadout?.Deployments?.Count(d => !string.IsNullOrEmpty(d.HeroId)) ?? 0;
+        const int deploymentCap = 6;
+        if (_deploymentChip != null) _deploymentChip.text = $"배치 {deployedCount}/{deploymentCap}";
+        if (_postureChip != null) _postureChip.text = $"태세 {LocalizePosture(selected)}";
+        if (_riskChip != null)
+        {
+            // V1 단순 heuristic: 배치 미달 + posture 위험성 가중. 정식 risk score는 wave-59+ Atlas/Encounter wire.
+            var riskScore = Math.Max(0, deploymentCap - deployedCount) * 3 + PostureRiskWeight(selected);
+            _riskChip.text = deployedCount == 0 ? "위험 점수 —" : $"위험 점수 {riskScore}";
+        }
+    }
+
+    private static int PostureRiskWeight(TeamPostureType posture) => posture switch
+    {
+        TeamPostureType.HoldLine => 4,
+        TeamPostureType.StandardAdvance => 8,
+        TeamPostureType.ProtectCarry => 6,
+        TeamPostureType.CollapseWeakSide => 12,
+        TeamPostureType.AllInBackline => 14,
+        _ => 8,
+    };
+
+    private void OnResetClicked()
+    {
+        var session = _root.SessionState;
+        foreach (var entry in _anchorButtons)
+        {
+            session.AssignHeroToAnchor(entry.Anchor, null);
+        }
+        session.SetTeamPosture(TeamPostureType.StandardAdvance);
+        _selectedAnchor = DeploymentAnchorId.FrontCenter;
+        _statusText = "편성을 초기화했습니다.";
+        Render();
+    }
+
+    private void OnConfirmClicked()
+    {
+        _root.SaveProfile();
+        _statusText = "편성을 저장하고 출정 준비를 마쳤습니다.";
+        Render();
+        Close();
     }
 
     private void RenderRoster(

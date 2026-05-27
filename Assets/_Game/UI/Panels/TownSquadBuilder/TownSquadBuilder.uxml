@@ -13,15 +13,18 @@
     <ui:VisualElement name="SquadBuilderRoot" class="sm-sqb-modal sm-sqb-modal--closed sm-modal-anim sm-modal-anim--enter" picking-mode="Position">
         <ui:VisualElement class="sm-backdrop-dim sm-sqb-modal__backdrop" picking-mode="Position" />
         <ui:VisualElement class="sm-sqb-modal__panel">
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
-            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+            <!-- wave-39 chrome cleanup: 4 corner caps 제거 (책임 매트릭스 §2 chrome budget 3 layer) -->
 
             <ui:VisualElement class="sm-sqb-modal__header">
                 <ui:VisualElement class="sm-sqb-modal__title-group">
                     <ui:Label name="SquadBuilderEyebrowLabel" class="sm-eyebrow sm-sqb-modal__eyebrow" text="TACTICAL SETUP" />
-                    <ui:Label name="SquadBuilderTitleLabel" class="sm-headline sm-sqb-modal__title" text="전술 설정" />
+                    <ui:Label name="SquadBuilderTitleLabel" class="sm-headline sm-sqb-modal__title" text="전술 편성" />
+                </ui:VisualElement>
+                <!-- wave-58 mockup chip strip: 배치 / 태세 / 위험 점수 (시안 갤러리 squad workshop v1) -->
+                <ui:VisualElement name="SquadBuilderHeaderChips" class="sm-sqb-modal__header-chips" style="flex-direction: row; align-items: center; margin-right: 16px;" picking-mode="Ignore">
+                    <ui:Label name="SquadBuilderDeploymentChip" class="sm-sqb-modal__chip" style="padding: 4px 10px; margin-right: 8px; background-color: rgba(28, 34, 67, 0.78); color: rgb(245, 214, 138); font-size: 11px; -unity-font-style: bold;" text="배치 0/6" />
+                    <ui:Label name="SquadBuilderPostureChip" class="sm-sqb-modal__chip" style="padding: 4px 10px; margin-right: 8px; background-color: rgba(28, 34, 67, 0.78); color: rgb(180, 205, 255); font-size: 11px; -unity-font-style: bold;" text="태세 표준 전진" />
+                    <ui:Label name="SquadBuilderRiskChip" class="sm-sqb-modal__chip" style="padding: 4px 10px; background-color: rgba(82, 38, 44, 0.78); color: rgb(255, 198, 174); font-size: 11px; -unity-font-style: bold;" text="위험 점수 —" />
                 </ui:VisualElement>
                 <ui:Button name="SquadBuilderCloseButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary sm-sqb-modal__close" text="✕" />
             </ui:VisualElement>
@@ -103,6 +106,12 @@
             </ui:VisualElement>
 
             <ui:Label name="SquadBuilderStatusLabel" class="sm-sqb-modal__status" />
+
+            <!-- wave-58 mockup footer CTA bar: 초기화 / 저장 · 출정 준비 (시안 갤러리 squad workshop v1) -->
+            <ui:VisualElement name="SquadBuilderFooterActions" class="sm-sqb-modal__footer-actions" style="flex-direction: row; justify-content: flex-end; gap: 12px; padding: 16px 24px; align-items: center;">
+                <ui:Button name="SquadBuilderResetButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary" text="초기화" />
+                <ui:Button name="SquadBuilderConfirmButton" class="ui-button sm-cta sm-cta--md sm-cta--primary" text="저장 · 출정 준비" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
