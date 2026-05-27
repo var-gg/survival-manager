@@ -68,7 +68,8 @@ public sealed class PlayModeSmokeTests
         Assert.That(townHost.Root.Q<Button>("ReturnToStartButton"), Is.Not.Null, "Town should expose Return to Start in the active runtime panel.");
         var expeditionButton = townHost.Root.Q<Button>("ExpeditionButton");
         Assert.That(expeditionButton, Is.Not.Null, "Town should expose a single expedition action.");
-        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition"));
+        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition").Or.EqualTo("원정 시작"),
+            $"ExpeditionButton label은 영문 또는 한국어로 표시 (실제: '{expeditionButton.text}').");
 
         var root = GameSessionRoot.Instance!;
         var heroA = root.SessionState.ExpeditionSquadHeroIds[0];
@@ -145,7 +146,8 @@ public sealed class PlayModeSmokeTests
         expeditionButton = townHost!.Root.Q<Button>("ExpeditionButton");
         quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
         Assert.That(expeditionButton, Is.Not.Null);
-        Assert.That(expeditionButton!.text, Is.EqualTo("Resume Expedition"));
+        Assert.That(expeditionButton!.text, Is.EqualTo("Resume Expedition").Or.EqualTo("원정 재개"),
+            $"ExpeditionButton label은 영문 또는 한국어로 표시 (실제: '{expeditionButton.text}').");
         // Town V1 hub: chapter/site cycle은 hub에 없음 — 후속 ExpeditionRouteModal로 분리.
         // run 활성 시 "Resume Expedition" label/CanStartQuickBattleSmoke=false로 lock 효과 검증 (아래 quickBattleButton).
         Assert.That(quickBattleButton, Is.Not.Null);
@@ -206,7 +208,8 @@ public sealed class PlayModeSmokeTests
         var expeditionButton = townHost!.Root.Q<Button>("ExpeditionButton");
         var quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
         Assert.That(expeditionButton, Is.Not.Null);
-        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition"));
+        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition").Or.EqualTo("원정 시작"),
+            $"ExpeditionButton label은 영문 또는 한국어로 표시 (실제: '{expeditionButton.text}').");
         Assert.That(quickBattleButton, Is.Not.Null);
         Assert.That(quickBattleButton!.enabledSelf, Is.True);
     }
@@ -228,7 +231,8 @@ public sealed class PlayModeSmokeTests
         var expeditionButton = townHost!.Root.Q<Button>("ExpeditionButton");
         var quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
         Assert.That(expeditionButton, Is.Not.Null);
-        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition"));
+        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition").Or.EqualTo("원정 시작"),
+            $"ExpeditionButton label은 영문 또는 한국어로 표시 (실제: '{expeditionButton.text}').");
         Assert.That(quickBattleButton, Is.Not.Null);
         Assert.That(quickBattleButton!.enabledSelf, Is.True);
 
@@ -266,7 +270,8 @@ public sealed class PlayModeSmokeTests
         Assert.That(root.SessionState.SelectedCampaignSiteId, Is.EqualTo(selectedSiteId));
         Assert.That(root.SessionState.Profile.CampaignProgress.ClearedSiteIds, Is.EqualTo(clearedSiteIds));
         Assert.That(expeditionButton, Is.Not.Null);
-        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition"));
+        Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition").Or.EqualTo("원정 시작"),
+            $"ExpeditionButton label은 영문 또는 한국어로 표시 (실제: '{expeditionButton.text}').");
         Assert.That(quickBattleButton, Is.Not.Null);
         Assert.That(quickBattleButton!.enabledSelf, Is.True);
     }
