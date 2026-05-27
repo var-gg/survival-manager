@@ -201,19 +201,16 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
 
     private string ResolveHeroDisplayName(HeroInstanceRecord hero)
     {
-        if (!string.IsNullOrWhiteSpace(hero.Name))
-        {
-            return hero.Name;
-        }
-
-        if (!string.IsNullOrWhiteSpace(hero.CharacterId))
+        // hero.Name은 SessionProfileSync가 archetype.Id ("warden") 같은 raw id를 박아두므로
+        // ContentTextResolver 없이 직접 사용하면 UI에 raw id가 노출된다. Character → archetype
+        // fallback chain을 가진 GetCharacterName으로 일관 처리한다 (CharacterId가 비면 NormalizeCharacterId가
+        // ArchetypeId로 채워두므로 결과가 자연스럽다).
+        if (!string.IsNullOrWhiteSpace(hero.CharacterId) || !string.IsNullOrWhiteSpace(hero.ArchetypeId))
         {
             return _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
         }
 
-        return !string.IsNullOrWhiteSpace(hero.ArchetypeId)
-            ? _contentText.GetArchetypeName(hero.ArchetypeId)
-            : hero.HeroId;
+        return string.IsNullOrWhiteSpace(hero.Name) ? hero.HeroId : hero.Name;
     }
 
     private string ResolveRoleInstructionId(HeroInstanceRecord hero, DeploymentAnchorId anchor, SquadBlueprintRecord? activeBlueprint)

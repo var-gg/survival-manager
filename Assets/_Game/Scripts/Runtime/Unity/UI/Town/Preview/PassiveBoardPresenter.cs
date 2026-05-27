@@ -115,9 +115,14 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
             heroLoadout?.SelectedPassiveNodeIds ?? Enumerable.Empty<string>(),
             StringComparer.Ordinal);
 
+        // hero.Name은 SessionProfileSync가 archetype.Id ("warden") 같은 raw id를 박아둔다.
+        // ContentTextResolver.GetCharacterName으로 character → archetype 한국어 표시명 fallback chain 사용.
+        var heroDisplayName = hero != null
+            ? _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId)
+            : heroId;
         var header = new PassiveBoardHeaderViewState(
             HeroId: heroId,
-            HeroDisplayName: !string.IsNullOrEmpty(hero?.Name) ? hero!.Name : heroId,
+            HeroDisplayName: heroDisplayName,
             ClassKey: classKey,
             ClassLabel: _contentText.GetPassiveBoardName(boardId),
             BoardId: boardId,
