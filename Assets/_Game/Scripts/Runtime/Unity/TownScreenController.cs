@@ -88,6 +88,12 @@ public sealed class TownScreenController : MonoBehaviour
             return false;
         }
 
+        // wave-visual-qa: Town hub flow는 EquipmentRefitController(SerializeField scene 의존)를 거치지 않고
+        // panel modal을 직접 instantiate한다. 그래서 EquipmentRefitController.EnsureReady의 dev seed
+        // 호출이 안 일어나 Equipment Refit / Inventory panel이 빈약하게 보인다. Town 진입 시 한 번
+        // 호출해 inventory + affix 패딩 보장. production gameplay에서는 ifEmpty 가드로 no-op.
+        _root.SessionState.SeedDevDemoInventoryIfEmpty();
+
         if (_presenter != null)
         {
             panelHost.EnsureReady();

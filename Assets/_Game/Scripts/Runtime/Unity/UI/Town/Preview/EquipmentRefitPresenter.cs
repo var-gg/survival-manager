@@ -109,7 +109,11 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 string.Equals(i.ItemInstanceId, _selectedItemInstanceId, StringComparison.Ordinal));
             if (match != null) return match;
         }
-        return inventory.Count > 0 ? inventory[0] : null;
+        // wave-visual-qa: 첫 inventory item이 Common이면 affix list가 1-2줄로 빈약 보임.
+        // affix 가장 많은 item을 default selected로 — 시연 cut의 시각 quality 보장.
+        return inventory
+            .OrderByDescending(i => i.AffixIds?.Count ?? 0)
+            .FirstOrDefault();
     }
 
     private EquipmentRefitViewState BuildState()
