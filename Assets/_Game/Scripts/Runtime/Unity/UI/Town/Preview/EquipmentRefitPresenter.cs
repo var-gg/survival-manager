@@ -226,7 +226,11 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             {
                 var hero = session.Profile.Heroes
                     .FirstOrDefault(h => string.Equals(h.HeroId, selectedItem.EquippedHeroId, StringComparison.Ordinal));
-                var heroName = !string.IsNullOrEmpty(hero?.Name) ? hero!.Name : selectedItem.EquippedHeroId;
+                // hero.Name은 SessionProfileSync가 raw archetype.Id ("warden") 박아둠.
+                // ContentTextResolver로 character → archetype localized 표시명 fallback chain 사용.
+                var heroName = hero != null
+                    ? _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId)
+                    : selectedItem.EquippedHeroId;
                 equippedHeroLabel = $"장착: {heroName}";
                 equippedHeroPortrait = _portraitLoader(selectedItem.EquippedHeroId);
             }

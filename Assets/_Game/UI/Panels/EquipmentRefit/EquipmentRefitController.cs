@@ -57,6 +57,9 @@ public sealed class EquipmentRefitController : MonoBehaviour
         }
 
         var root = GameSessionRoot.EnsureInstance();
+        // SeedDemoProfile은 4 hero에만 item을 주므로 dev/preview 진입 시 inventory가 비어있어 panel이
+        // 텅 빈 상태가 보이는 케이스가 있다. 모든 hero에 baseline item을 채워 visual surface를 확보한다.
+        root.SessionState.SeedDevDemoInventoryIfEmpty();
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
         var iconResolver = new ContentIconResolver(root.CombatContentLookup);
         var view = new EquipmentRefitView(document.rootVisualElement);

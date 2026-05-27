@@ -57,6 +57,9 @@ public sealed class InventoryTabController : MonoBehaviour
         }
 
         var root = GameSessionRoot.EnsureInstance();
+        // Inventory panel도 EquipmentRefit과 마찬가지로 SeedDemoProfile의 4-item로는 dev/preview 진입 시
+        // pool이 빈약하게 보인다. 모든 hero에 baseline item 1개씩 채워 시각 표면 확보.
+        root.SessionState.SeedDevDemoInventoryIfEmpty();
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
         var iconResolver = new ContentIconResolver(root.CombatContentLookup);
         var view = new InventoryView(document.rootVisualElement);
