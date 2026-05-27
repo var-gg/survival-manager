@@ -222,7 +222,12 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(townController, Does.Not.Contain("TacticalWorkshopView"));
 
         var uxml = File.ReadAllText("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uxml");
-        Assert.That(uxml, Does.Contain("TEAM POSTURE — 팀 태세"));
+        // wave-38 Phase 4 refactor: legacy "TEAM POSTURE — 팀 태세" eyebrow 폐기.
+        // 새 marker = 책임 매트릭스 §2 zone labels (전술 편성 / 팀 태세 / 발동 시너지 / 위협 답수).
+        Assert.That(uxml, Does.Contain("전술 편성"));
+        Assert.That(uxml, Does.Contain("팀 태세"));
+        Assert.That(uxml, Does.Contain("발동 시너지"));
+        Assert.That(uxml, Does.Contain("위협 답수"));
         Assert.That(uxml, Does.Not.Contain("팀 자세"));
         Assert.That(uxml, Does.Contain("PostureCardRow"));
         Assert.That(uxml, Does.Contain("TacticPresetRows"));

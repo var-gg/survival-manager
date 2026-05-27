@@ -105,6 +105,32 @@ public sealed class UxBiblePlayModeWitnessTests
         ClickFirstButtonWithClass(townHost.Root, "rcp-header__close");
         yield return WaitForHidden(townHost.Root, "RcpRoot");
 
+        // wave-40: 4 missing panel capture wiring (Roster Grid / Permanent Augment / Equipment Refit / Passive Board)
+        // 매트릭스 §4, §8, §6, §7 visual QA pipeline 진입 가능하도록.
+        ClickButton(townHost.Root, "RosterButton");
+        yield return WaitForVisible(townHost.Root, "RosterGridPreviewRoot");
+        yield return Capture("roster_grid");
+        ClickFirstButtonWithClass(townHost.Root, "rgp-header__close");
+        yield return WaitForHidden(townHost.Root, "RosterGridPreviewRoot");
+
+        ClickButton(townHost.Root, "PermanentAugmentButton");
+        yield return WaitForVisible(townHost.Root, "PapRoot");
+        yield return Capture("permanent_augment");
+        ClickFirstButtonWithClass(townHost.Root, "pap-header__close");
+        yield return WaitForHidden(townHost.Root, "PapRoot");
+
+        ClickButton(townHost.Root, "FaceCard_soemae");
+        yield return WaitForVisible(townHost.Root, "ErpRoot");
+        yield return Capture("equipment_refit");
+        ClickFirstButtonWithClass(townHost.Root, "erp-header__close");
+        yield return WaitForHidden(townHost.Root, "ErpRoot");
+
+        ClickButton(townHost.Root, "FaceCard_galma");
+        yield return WaitForVisible(townHost.Root, "PbpRoot");
+        yield return Capture("passive_board");
+        ClickFirstButtonWithClass(townHost.Root, "pbp-footer__close");
+        yield return WaitForHidden(townHost.Root, "PbpRoot");
+
         yield return RunQuickBattleSmokeWitness(root, town);
         yield return RunNormalRouteWitness(root);
 
