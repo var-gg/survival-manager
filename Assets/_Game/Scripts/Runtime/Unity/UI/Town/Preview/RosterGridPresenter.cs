@@ -78,12 +78,16 @@ public sealed class RosterGridPresenter : IRosterGridActions
         var heroes = session.Profile.Heroes
             .Select(h =>
             {
-                _root.CombatContentLookup.TryGetArchetype(h.HeroId, out var archetype);
+                // HeroId는 "hero-{Guid}" instance 식별자 — archetype lookup은 ArchetypeId로.
+                _root.CombatContentLookup.TryGetArchetype(h.ArchetypeId, out var archetype);
                 var raceId = archetype?.Race.Id ?? h.RaceId ?? "human";
                 var classId = archetype?.Class.Id ?? h.ClassId ?? "vanguard";
                 var className = _contentText.GetClassName(classId);
                 var raceName = _contentText.GetRaceName(raceId);
-                var archetypeName = _contentText.GetArchetypeName(h.HeroId);
+                // SessionProfileSync.ResolveArchetypeDisplayName은 LegacyDisplayName이 비면 archetype.Id ("warden")를
+                // h.Name으로 박는다 (raw id, ContentTextResolver 미경유). presenter가 GetCharacterName으로
+                // localized 표시명을 가져온다 (character → archetype fallback chain 내장).
+                var displayName = _contentText.GetCharacterName(h.CharacterId, h.ArchetypeId);
 
                 // 진행도 — HeroProgressionRecord (HeroId join). XP 커브 미정이라 pct는 근사.
                 var progression = session.Profile.HeroProgressions
@@ -95,7 +99,7 @@ public sealed class RosterGridPresenter : IRosterGridActions
 
                 return new RosterGridHeroCardViewState(
                     HeroId: h.HeroId,
-                    DisplayName: !string.IsNullOrEmpty(h.Name) ? h.Name : archetypeName,
+                    DisplayName: displayName,
                     ArchetypeLabel: $"{className} / {raceName}",
                     FamilyKey: classId,
                     RarityKey: h.RecruitTier.ToString().ToLowerInvariant(),
