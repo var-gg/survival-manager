@@ -80,7 +80,35 @@ public sealed class BuildBoundaryGuardFastTests
     public void GameSessionState_FacadeFileStaysBelowBoundaryBudget()
     {
         var path = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionState.cs");
-        Assert.That(File.ReadLines(path).Count(), Is.LessThanOrEqualTo(2500));
+        Assert.That(File.ReadLines(path).Count(), Is.LessThanOrEqualTo(1500));
+        Assert.That(
+            CountRegexMatches(ReadCodeText(path), @"^\s*public\s+(?:[\w<>?,\.]+\s+)+\w+\s*\("),
+            Is.LessThanOrEqualTo(65),
+            "GameSessionState public facade must not keep growing; move new flow work into focused collaborators.");
+    }
+
+    [Test]
+    public void SessionItemGeneration_StaysThinFacade()
+    {
+        var path = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "Session", "SessionItemGeneration.cs");
+        var codeText = ReadCodeText(path);
+        var forbiddenTokens = new[]
+        {
+            "ItemRarityTierValue",
+            "ItemIdentityValue",
+            "AffixTierValue",
+            "TryGetAffixDefinition",
+            "GetCanonicalAffixIds",
+        };
+
+        Assert.That(File.ReadLines(path).Count(), Is.LessThanOrEqualTo(80));
+        foreach (var token in forbiddenTokens)
+        {
+            Assert.That(
+                codeText,
+                Does.Not.Contain(token),
+                $"{path} must stay as a thin session facade; item/affix selection policy belongs in SessionInventoryItemBuilder.");
+        }
     }
 
     [Test]
@@ -417,6 +445,11 @@ public sealed class BuildBoundaryGuardFastTests
         return text.Contains("[Test]", StringComparison.Ordinal)
                || text.Contains("[TestCase", StringComparison.Ordinal)
                || text.Contains("[UnityTest]", StringComparison.Ordinal);
+    }
+
+    private static int CountRegexMatches(string text, string pattern)
+    {
+        return Regex.Matches(text, pattern, RegexOptions.Multiline).Count;
     }
 
     private static string ReadCodeText(string path)

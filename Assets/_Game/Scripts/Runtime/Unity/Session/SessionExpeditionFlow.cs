@@ -30,6 +30,15 @@ public sealed partial class GameSessionState
 
         internal void BeginNewExpedition()
         {
+            ResetExpeditionRunState();
+            PrepareExpeditionTrack();
+            StartExpeditionRun();
+            _session.SyncActiveRunRecord();
+            _session.SyncExpeditionState();
+        }
+
+        private void ResetExpeditionRunState()
+        {
             _session.IsQuickBattleSmokeActive = false;
             _session.QuickBattleLaneKind = CombatSandboxLaneKind.None;
             _session.HasActiveExpeditionRun = true;
@@ -47,14 +56,20 @@ public sealed partial class GameSessionState
             _session.ResetAtlasSession();
             _session._runtimeTelemetryEvents.Clear();
             _session._resolvedExpeditionNodeIds.Clear();
+        }
+
+        private void PrepareExpeditionTrack()
+        {
             _session.EnsureBattleDeployReady();
             _session.EnsureCampaignSelection();
             _session.EnsureExpeditionNodes(reset: true);
             _session.AutoSelectNextExpeditionNode();
             _session.EnsureRewardChoices(reset: true);
+        }
+
+        private void StartExpeditionRun()
+        {
             _session.ActiveRun = RunStateService.StartRun(_session.GetExpeditionRunId(), _session.CaptureBlueprintState(), false);
-            _session.SyncActiveRunRecord();
-            _session.SyncExpeditionState();
         }
 
         internal void PrepareQuickBattleSmoke()
