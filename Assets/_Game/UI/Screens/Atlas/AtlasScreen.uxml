@@ -72,7 +72,11 @@
                 </ui:VisualElement>
 
                 <ui:Label name="atlas-boundary-note" class="atlas-boundary-note atlas-decision-card" />
-                <ui:Button name="atlas-continue-button" text="진행" class="atlas-continue-button" />
+                <!-- wave-59 mockup-align: 출정 (primary) + 정찰 (secondary, -35 Echo). 시안 갤러리 atlas v1. -->
+                <ui:VisualElement name="atlas-action-row" class="atlas-action-row" style="flex-direction: row; gap: 8px; margin-top: 12px; align-items: center;">
+                    <ui:Button name="atlas-continue-button" text="출정" class="atlas-continue-button ui-button sm-cta sm-cta--md sm-cta--primary" style="flex-grow: 1;" />
+                    <ui:Button name="atlas-scout-button" text="정찰 (-35)" class="atlas-scout-button ui-button sm-cta sm-cta--md sm-cta--secondary" style="flex-grow: 1;" />
+                </ui:VisualElement>
                 <ui:Label name="atlas-debug-hash" class="atlas-debug-hash" />
             </ui:VisualElement>
         </ui:VisualElement>
@@ -87,5 +91,11 @@
         </ui:VisualElement>
 
         <ui:VisualElement name="atlas-sitetrack-strip" class="sitetrack-strip" />
+
+        <!-- wave-59 mockup-align: 하단 footer — 마을 복귀 + 원정 진행도 X/Y. 시안 갤러리 atlas v1. -->
+        <ui:VisualElement name="atlas-footer" class="atlas-footer" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 12px 24px; margin-top: 4px;">
+            <ui:Button name="atlas-return-town-button" text="◀ 마을 복귀" class="ui-button sm-cta sm-cta--md sm-cta--secondary" />
+            <ui:Label name="atlas-progress-label" class="atlas-progress-label" style="color: rgb(216, 199, 153); font-size: 12px; -unity-font-style: bold; letter-spacing: 1px;" text="원정 진행도 —" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

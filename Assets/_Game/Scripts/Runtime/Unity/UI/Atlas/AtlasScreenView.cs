@@ -33,6 +33,10 @@ public sealed class AtlasScreenView
     private readonly Label _boundary;
     private readonly Label _hash;
     private readonly Button _continueButton;
+    // wave-59 mockup-align — optional elements (UXML 이전 build 호환 위해 nullable)
+    private readonly Button? _scoutButton;
+    private readonly Button? _returnTownButton;
+    private readonly Label? _progressLabel;
     private int? _lastLayerStageIndex;
 
     public AtlasScreenView(VisualElement root)
@@ -66,6 +70,12 @@ public sealed class AtlasScreenView
         _hash.style.display = DisplayStyle.None;
         _continueButton = Require<Button>("atlas-continue-button");
         _continueButton.clicked += () => ContinueSelected?.Invoke();
+        // wave-59 mockup-align — optional buttons / label.
+        _scoutButton = _root.Q<Button>("atlas-scout-button");
+        if (_scoutButton != null) _scoutButton.clicked += () => ScoutSelected?.Invoke();
+        _returnTownButton = _root.Q<Button>("atlas-return-town-button");
+        if (_returnTownButton != null) _returnTownButton.clicked += () => ReturnTownSelected?.Invoke();
+        _progressLabel = _root.Q<Label>("atlas-progress-label");
 
         _boardPane.pickingMode = PickingMode.Position;
         _board.pickingMode = PickingMode.Ignore;
@@ -83,6 +93,9 @@ public sealed class AtlasScreenView
     public event Action<string>? AnchorSelected;
     public event Action<string>? StageCandidateSelected;
     public event Action? ContinueSelected;
+    // wave-59 mockup-align events.
+    public event Action? ScoutSelected;
+    public event Action? ReturnTownSelected;
 
     public void Render(AtlasScreenViewState state)
     {
@@ -94,6 +107,12 @@ public sealed class AtlasScreenView
         RenderSiteTrack(state);
         RenderStageCandidates(state);
         RenderPreview(state.Preview);
+        // wave-59 mockup-align: 진행도 X/Y label — spine stage completed / total.
+        if (_progressLabel != null && state.SpineStages != null && state.SpineStages.Count > 0)
+        {
+            var done = state.SpineStages.Count(stage => stage.IsCompleted);
+            _progressLabel.text = $"원정 진행도 {done} / {state.SpineStages.Count}";
+        }
         _content.MarkDirtyRepaint();
     }
 

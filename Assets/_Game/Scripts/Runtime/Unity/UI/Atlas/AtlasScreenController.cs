@@ -106,7 +106,25 @@ public sealed class AtlasScreenController : MonoBehaviour
             Render();
         };
         _view.ContinueSelected += ContinueToExpedition;
+        // wave-59 mockup-align: 정찰 / 마을 복귀 cross-flow.
+        _view.ScoutSelected += OnScoutClicked;
+        _view.ReturnTownSelected += OnReturnTownClicked;
         SyncPresenterFromSession();
+    }
+
+    private void OnScoutClicked()
+    {
+        // 정찰 (-35 Echo)은 wave-61+ 본격 wire. 본 wave는 surface 노출만 — Debug.Log placeholder.
+        // SessionState.UseScoutDirective 또는 별도 ScoutFlow가 후속 정합 단계에서 적용된다.
+        Debug.Log("[AtlasScreen] 정찰 wire 미연결 — surface UI만 노출. 후속 wave에서 Atlas 정찰 service wire.");
+    }
+
+    private void OnReturnTownClicked()
+    {
+        if (_root == null) return;
+        // 진행 중 expedition은 abandon하지 않고 그대로 두고 Town 진입 (mockup 의도: "마을 복귀" = scene 전환만).
+        // active run이 있으면 Town에서 "Resume Expedition" 노출. CanResumeExpedition 정합.
+        _root.SceneFlow.GoToTown();
     }
 
     private void Render()
