@@ -276,11 +276,12 @@ public sealed class PlayModeSmokeTests
         townHost = FindPanelHost("TownRuntimePanelHost");
         expeditionButton = townHost!.Root.Q<Button>("ExpeditionButton");
         quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
-        // wave-55c: production bug 별도 — RestoreCanonicalProfileAfterTransientSmoke이 SessionState의
-        // IsQuickBattleSmokeActive flag를 명시적으로 false reset하지 않는다. BindProfileCore는 reset
-        // 하지만 lane 변경만 발생하는 path가 있어 flag가 잔존. canonical lane 격리의 의도는 유지되어야
-        // 하므로 별도 wave에서 RestoreCanonicalProfile 안에 명시적 SmokeActive reset 추가가 필요.
-        // 본 test는 smoke flow의 "Town 복귀까지 끊김 없음 + campaign progress 보존" 핵심 invariant만 검증.
+        // wave-55d: RestoreCanonicalProfileAfterTransientSmoke이 SessionState.ClearQuickBattleSmokeStatus
+        // 호출로 SmokeActive flag 명시 reset. canonical lane 격리 invariant 회복.
+        Assert.That(root.SessionState.IsQuickBattleSmokeActive, Is.False,
+            "Quick Battle smoke 복원 후 SmokeActive flag는 false여야 한다 (wave-55d ClearQuickBattleSmokeStatus).");
+        Assert.That(root.SessionState.CanResumeExpedition, Is.False,
+            "Quick Battle smoke가 canonical ActiveRun을 건드리면 안 된다 (transient lane 격리).");
         Assert.That(root.SessionState.SelectedCampaignChapterId, Is.EqualTo(selectedChapterId));
         Assert.That(root.SessionState.SelectedCampaignSiteId, Is.EqualTo(selectedSiteId));
         Assert.That(root.SessionState.Profile.CampaignProgress.ClearedSiteIds, Is.EqualTo(clearedSiteIds));

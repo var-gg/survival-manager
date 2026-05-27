@@ -130,6 +130,9 @@ public sealed class GameSessionRoot : MonoBehaviour
     {
         Sessions.ReturnToCanonicalLane();
         var result = BindProfile(SessionCheckpointKind.QuickBattleRestore);
+        // wave-55d: BindProfile path가 일부 lane 복원에서 SmokeActive flag를 reset하지 않는 corner case가
+        // 있어 명시적으로 호출한다. canonical 복원 후 SessionState의 SmokeActive=false 보장.
+        SessionState.ClearQuickBattleSmokeStatus();
         if (result.IsSuccessful)
         {
             SessionState.RecordOperationalTelemetry(RuntimeOperationalTelemetry.CreateSmokeRestoreFromDisk(

@@ -389,6 +389,20 @@ public sealed partial class GameSessionState
 
     public void ReturnToTownAfterReward() => _expeditionFlow.ReturnToTownAfterReward();
 
+    /// <summary>
+    /// wave-55d: transient Town smoke → canonical lane 복원 후 SessionState 자체의 SmokeActive flag를
+    /// 명시적으로 false reset. BindProfileCore가 일반 BindProfile path에서는 reset하지만 일부 lane 복원
+    /// path에서는 reset되지 않는 corner case가 있어 GameSessionRoot.RestoreCanonicalProfileAfterTransientSmoke
+    /// 에서 호출한다.
+    /// </summary>
+    public void ClearQuickBattleSmokeStatus()
+    {
+        IsQuickBattleSmokeActive = false;
+        QuickBattleLaneKind = CombatSandboxLaneKind.None;
+        _quickBattleSeedOverride = null;
+        _compiledQuickBattleScenario = null;
+    }
+
     public void SetCurrentScene(string sceneName) => _profileSync.SetCurrentScene(sceneName);
 
     public bool CanManualProfileReload(out string reason) => _profileSync.CanManualProfileReload(out reason);
