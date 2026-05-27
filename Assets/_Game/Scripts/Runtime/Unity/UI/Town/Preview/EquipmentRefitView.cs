@@ -35,6 +35,10 @@ public sealed class EquipmentRefitView
     {
         if (_modalRoot == null) return;
         _modalRoot.style.display = DisplayStyle.Flex;
+        // wave-57 fix: USS의 .erp-root position absolute가 TemplateContainer size 0과 결합되어
+        // 부분만 차지하던 issue. Recruit (.rcp-root { flex-grow: 1 }) 패턴 inline 강제로 USS 우회.
+        _modalRoot.style.position = Position.Relative;
+        _modalRoot.style.flexGrow = 1;
         _modalRoot.RemoveFromClassList("sm-modal-anim--enter");
         var wrapper = _modalRoot.parent?.parent;
         if (wrapper != null) wrapper.style.display = DisplayStyle.Flex;
