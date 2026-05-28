@@ -19,6 +19,7 @@ public sealed class UnitSnapshot
     private const float AttackSpeedBaseline = 3f;
 
     private readonly List<AppliedStatusState> _statuses = new();
+    private readonly HashSet<string> _firedTriggers = new(StringComparer.Ordinal);
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -377,6 +378,12 @@ public sealed class UnitSnapshot
     public bool HasStatus(string statusId)
     {
         return _statuses.Any(status => string.Equals(status.StatusId, statusId, StringComparison.Ordinal));
+    }
+
+    /// <summary>전투당 1회성 트리거(OnHpBelow 등) latch. 처음 호출이면 true, 이후 동일 key 는 false.</summary>
+    public bool TryLatchTrigger(string key)
+    {
+        return _firedTriggers.Add(key);
     }
 
     public float GetStatusMagnitude(string statusId)

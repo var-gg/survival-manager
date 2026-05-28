@@ -88,11 +88,14 @@ public record BattleUnitLoadout(
     string ArchetypeId = "",
     string CharacterId = "",
     string RoleInstructionId = "",
-    DominantHand DominantHand = DominantHand.Right)
+    DominantHand DominantHand = DominantHand.Right,
+    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null)
 {
     public IReadOnlyList<TacticRule> Tactics => RuleChains.SelectMany(chain => chain.Rules).ToList();
 
     public IReadOnlyList<CombatModifierPackage> NumericPackages => Packages ?? System.Array.Empty<CombatModifierPackage>();
+
+    public IReadOnlyList<CombatTriggeredEffect> EffectiveTriggeredEffects => TriggeredEffects ?? System.Array.Empty<CombatTriggeredEffect>();
 
     public ManaEnvelope EffectiveMana => Mana ?? new ManaEnvelope(0f, 0f, 0f, 0f);
 

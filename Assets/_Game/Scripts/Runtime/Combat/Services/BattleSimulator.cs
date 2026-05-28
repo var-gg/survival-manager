@@ -29,6 +29,7 @@ public sealed class BattleSimulator
             Array.Empty<BattleEvent>(),
             isFinished: false,
             winner: null);
+        CombatTriggerEngine.OnBattleStart(State);
     }
 
     public BattleState State { get; }
@@ -165,6 +166,23 @@ public sealed class BattleSimulator
                 MovementResolver.MoveForIntent(State, actor, evaluated);
             }
         }
+
+        foreach (var resolvedEvent in stepEvents)
+        {
+            if (resolvedEvent.EventKind != BattleEventKind.Kill)
+            {
+                continue;
+            }
+
+            var killerId = resolvedEvent.KillPayload?.ActualKiller ?? resolvedEvent.ActorId;
+            var killer = State.FindUnit(killerId);
+            if (killer != null)
+            {
+                CombatTriggerEngine.OnKill(State, killer);
+            }
+        }
+
+        CombatTriggerEngine.OnPostStep(State);
 
         MovementResolver.ResolveFormationSpacing(State);
         State.ActivityTelemetry.RecordClusterTradeoff(EffectMembershipSampler.SampleStep(State));
