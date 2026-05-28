@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using SM.Unity.Tools;
 using UnityEditor;
 using UnityEditor.Recorder;
 using UnityEditor.Recorder.Encoder;
@@ -71,6 +72,67 @@ public static class DemoVideoCaptureTool
         s_Controller = null;
         Debug.Log($"[DemoVideoCaptureTool] Stop — output: {Path.Combine(CaptureDirectory, s_PendingOutputBaseName ?? "wave_62_demo")}.mp4");
         s_PendingOutputBaseName = null;
+    }
+
+    /// <summary>
+    /// wave-62-2 — Demo walkthrough + record 통합 trigger.
+    /// PlayMode 진입 → entered 콜백에서 record start + DemoWalkthroughRunner GameObject 생성 + StartCoroutine.
+    /// Runner OnComplete (success/fail) → record stop + PlayMode exit.
+    /// </summary>
+    [MenuItem("SM/Internal/Capture/Run Demo Walkthrough")]
+    public static void RunDemoWalkthroughFromMenu()
+    {
+        if (s_Controller != null)
+        {
+            Debug.LogWarning("[DemoVideoCaptureTool] Already recording — Stop 먼저.");
+            return;
+        }
+        Directory.CreateDirectory(CaptureDirectory);
+        s_PendingOutputBaseName = $"wave_62_walkthrough_{DateTime.Now:yyyyMMdd_HHmmss}";
+
+        if (!Application.isPlaying)
+        {
+            EditorApplication.playModeStateChanged += OnPlayModeStateChangedForWalkthrough;
+            EditorApplication.isPlaying = true;
+            Debug.Log("[DemoVideoCaptureTool] Walkthrough — PlayMode 진입 trigger.");
+            return;
+        }
+
+        BeginRecordingNow();
+        SpawnWalkthroughRunner();
+    }
+
+    private static void OnPlayModeStateChangedForWalkthrough(PlayModeStateChange change)
+    {
+        if (change != PlayModeStateChange.EnteredPlayMode)
+        {
+            return;
+        }
+        EditorApplication.playModeStateChanged -= OnPlayModeStateChangedForWalkthrough;
+        BeginRecordingNow();
+        SpawnWalkthroughRunner();
+    }
+
+    private static void SpawnWalkthroughRunner()
+    {
+        var go = new GameObject("DemoWalkthroughRunner");
+        UnityEngine.Object.DontDestroyOnLoad(go);
+        var runner = go.AddComponent<DemoWalkthroughRunner>();
+        runner.OnComplete = success =>
+        {
+            Debug.Log($"[DemoVideoCaptureTool] Walkthrough complete (success={success}). record stop + PlayMode exit 예약.");
+            EditorApplication.delayCall += () =>
+            {
+                if (s_Controller != null)
+                {
+                    s_Controller.StopRecording();
+                    s_Controller = null;
+                    Debug.Log($"[DemoVideoCaptureTool] Walkthrough record stopped — output: {Path.Combine(CaptureDirectory, s_PendingOutputBaseName ?? "wave_62_walkthrough")}.mp4");
+                }
+                s_PendingOutputBaseName = null;
+                EditorApplication.isPlaying = false;
+            };
+        };
     }
 
     private static void OnPlayModeStateChangedForStart(PlayModeStateChange change)
