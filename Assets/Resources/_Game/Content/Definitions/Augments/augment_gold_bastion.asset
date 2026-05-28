@@ -64,5 +64,14 @@ MonoBehaviour:
   - StatId: max_health
     Op: 0
     Value: 4
+  TriggeredEffects:
+  - Trigger: 0
+    Op: 2
+    Scope: 0
+    Magnitude: 40
+    ThresholdRatio: 0
+    StatusId:
+    DurationSeconds: 0
+    MaxStacks: 1
   legacyDisplayName: 
   legacyDescription: 

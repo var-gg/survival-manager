@@ -64,5 +64,14 @@ MonoBehaviour:
   - StatId: armor
     Op: 0
     Value: 1
+  TriggeredEffects:
+  - Trigger: 0
+    Op: 0
+    Scope: 4
+    Magnitude: 0
+    ThresholdRatio: 0
+    StatusId: guarded
+    DurationSeconds: 8
+    MaxStacks: 1
   legacyDisplayName: 
   legacyDescription: 

@@ -128,4 +128,20 @@ public sealed class CombatTriggerEngineTests
 
         Assert.That(killer.CurrentHealth, Is.GreaterThan(hpBefore), "OnKill Heal should restore killer health");
     }
+
+    [Test]
+    public void BattleSimulator_Ctor_FiresBattleStartTriggersViaEngineHook()
+    {
+        var effect = new CombatTriggeredEffect(
+            "aug_sim_hook", CombatTriggerKind.BattleStart, TriggeredEffectOp.Barrier,
+            EffectScope.Self, Magnitude: 20f);
+        var ally = CreateUnit("ally_sim", TeamSide.Ally, new[] { effect });
+        var enemy = CreateUnit("enemy_sim", TeamSide.Enemy);
+        var state = CreateState(new[] { ally }, new[] { enemy });
+
+        _ = new BattleSimulator(state);
+
+        Assert.That(ally.Barrier, Is.EqualTo(20f),
+            "BattleSimulator construction should fire BattleStart triggers through the engine hook");
+    }
 }

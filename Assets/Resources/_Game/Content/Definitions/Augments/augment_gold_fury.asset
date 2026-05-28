@@ -64,5 +64,14 @@ MonoBehaviour:
   - StatId: phys_power
     Op: 0
     Value: 2
+  TriggeredEffects:
+  - Trigger: 1
+    Op: 1
+    Scope: 0
+    Magnitude: 8
+    ThresholdRatio: 0
+    StatusId:
+    DurationSeconds: 0
+    MaxStacks: 1
   legacyDisplayName: 
   legacyDescription: 
