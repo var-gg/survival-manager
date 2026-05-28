@@ -230,8 +230,53 @@ public sealed class DemoWalkthroughRunner : MonoBehaviour
             yield return WaitSeconds(3f);
         }
 
+        // === Scene transition cut sheet 3:00-5:00 ===
+        // SceneFlow API 직접 활용 (button click 안 하고). Atlas → Battle → Reward → Town 복귀.
+
+        // Atlas cut — SceneFlow.GoToAtlas → WaitForScene 8s → 12s hold (Atlas 보드 / node 시각화)
+        Debug.Log("[DemoWalkthroughRunner] Atlas scene 진입 trigger.");
+        sessionRoot.SceneFlow.GoToAtlas();
+        yield return WaitForScene("Atlas", 8f);
+        Debug.Log("[DemoWalkthroughRunner] Atlas visible. 12s hold.");
+        yield return WaitSeconds(12f);
+
+        // Battle cut — SceneFlow.GoToBattle → WaitForScene 8s → 30s hold (자동전투 일부)
+        Debug.Log("[DemoWalkthroughRunner] Battle scene 진입 trigger.");
+        sessionRoot.SceneFlow.GoToBattle();
+        yield return WaitForScene("Battle", 8f);
+        Debug.Log("[DemoWalkthroughRunner] Battle visible. 30s hold (자동전투).");
+        yield return WaitSeconds(30f);
+
+        // Reward cut — SceneFlow.GoToReward → WaitForScene 8s → 8s hold (보상 그리드)
+        Debug.Log("[DemoWalkthroughRunner] Reward scene 진입 trigger.");
+        sessionRoot.SceneFlow.GoToReward();
+        yield return WaitForScene("Reward", 8f);
+        Debug.Log("[DemoWalkthroughRunner] Reward visible. 8s hold.");
+        yield return WaitSeconds(8f);
+
+        // Town 복귀 cut — SceneFlow.GoToTown → WaitForScene 8s → 5s hold (outro)
+        Debug.Log("[DemoWalkthroughRunner] Town 복귀 trigger.");
+        sessionRoot.SceneFlow.GoToTown();
+        yield return WaitForScene("Town", 8f);
+        Debug.Log("[DemoWalkthroughRunner] Town 복귀 완료. 5s outro hold.");
+        yield return WaitSeconds(5f);
+
         Debug.Log("[DemoWalkthroughRunner] Walkthrough complete.");
         OnComplete?.Invoke(true);
+    }
+
+    private static IEnumerator WaitForScene(string sceneName, float timeout)
+    {
+        var elapsed = 0f;
+        while (SceneManager.GetActiveScene().name != sceneName && elapsed < timeout)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+        if (SceneManager.GetActiveScene().name != sceneName)
+        {
+            Debug.LogError($"[DemoWalkthroughRunner] WaitForScene '{sceneName}' timeout {timeout}s. 현재 scene: {SceneManager.GetActiveScene().name}");
+        }
     }
 
     private static RuntimePanelHost? FindTownPanelHost()
