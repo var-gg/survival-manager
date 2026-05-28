@@ -9,6 +9,7 @@ namespace SM.Tests.EditMode;
 /// wave-augment-depth Inc 1b-content — 실제 augment .asset 에 author된 starter 트리거 효과가
 /// 올바른 값으로 역직렬화되는지 검증 (enum int 매핑 실수까지 포착 = 실제 콘텐츠 경로 확인).
 /// </summary>
+[Category("BatchOnly")]
 public sealed class AugmentTriggeredEffectAssetTests
 {
     private static AugmentDefinition Load(string id)
