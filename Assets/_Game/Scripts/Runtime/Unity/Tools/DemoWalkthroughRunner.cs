@@ -240,12 +240,13 @@ public sealed class DemoWalkthroughRunner : MonoBehaviour
         Debug.Log("[DemoWalkthroughRunner] Atlas visible. 12s hold.");
         yield return WaitSeconds(12f);
 
-        // Battle cut — SceneFlow.GoToBattle → WaitForScene 8s → 30s hold (자동전투 일부)
+        // Battle cut — SceneFlow.GoToBattle → WaitForScene 8s → 90s hold (자동전투 1 turn 1.5분 압축 cut)
+        // cut sheet 3:00-4:30 단계. Battle 자동전투 full turn 시각화에 필요한 시간.
         Debug.Log("[DemoWalkthroughRunner] Battle scene 진입 trigger.");
         sessionRoot.SceneFlow.GoToBattle();
         yield return WaitForScene("Battle", 8f);
-        Debug.Log("[DemoWalkthroughRunner] Battle visible. 30s hold (자동전투).");
-        yield return WaitSeconds(30f);
+        Debug.Log("[DemoWalkthroughRunner] Battle visible. 90s hold (자동전투 1.5분 압축 cut).");
+        yield return WaitSeconds(90f);
 
         // Reward cut — SceneFlow.GoToReward → WaitForScene 8s → 8s hold (보상 그리드)
         Debug.Log("[DemoWalkthroughRunner] Reward scene 진입 trigger.");
