@@ -3558,8 +3558,8 @@ public static class SampleSeedGenerator
                 Members(Member("rift_stalker", "extra_wolfpine_outrider"), Member("shaman", "extra_grey_fang_vanguard")),
                 "boss_overlay_wolfpine_trail", "boss_aura_pack_hunt", "boss_utility_ambush_call", "marked"),
             new CampaignSiteSeed(
-                "chapter_sunken_bastion", 2, "Sunken Bastion", "침몰 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
-                "site_sunken_bastion", 1, "Sunken Bastion", "침몰 보루", "Shielded adjudicators protect a submerged reliquary.", "방패 든 심판관들이 잠긴 성물고를 지킨다.",
+                "chapter_sunken_bastion", 2, "Sunken Bastion", "가라앉은 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
+                "site_sunken_bastion", 1, "Sunken Bastion", "가라앉은 보루", "Shielded adjudicators protect a submerged reliquary.", "방패 든 심판관들이 잠긴 성물고를 지킨다.",
                 "faction_sunken_adjudicators", ThreatTierValue.Tier2, "answer_lane_break_formation",
                 new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry" },
                 Members(Member("guardian", "extra_bastion_line_guard"), Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant"), Member("marksman", "extra_sunken_bastion_adjudicator")),
@@ -3569,7 +3569,7 @@ public static class SampleSeedGenerator
                 Members(Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant")),
                 "boss_overlay_sunken_bastion", "boss_aura_drowned_bastion", "boss_utility_reliquary_seal", "barrier"),
             new CampaignSiteSeed(
-                "chapter_sunken_bastion", 2, "Sunken Bastion", "침몰 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
+                "chapter_sunken_bastion", 2, "Sunken Bastion", "가라앉은 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
                 "site_tithe_road", 2, "Tithe Road", "십일조로", "Marked carriers and pureflame escorts test cleanse timing.", "표식을 짊어진 징수 행렬과 순화 호위가 해제 타이밍을 시험한다.",
                 "faction_tithe_road", ThreatTierValue.Tier2, "answer_lane_anti_mark_cleanse",
                 new[] { "encounter_family_mark_execute", "encounter_family_control_cleanse", "encounter_family_weakside_dive", "encounter_family_sustain_grind" },
@@ -3580,8 +3580,8 @@ public static class SampleSeedGenerator
                 Members(Member("pale_executor", "extra_tithe_executioner_proxy"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
                 "boss_overlay_tithe_road", "boss_aura_pureflame_tithe", "boss_utility_mark_chain", "marked"),
             new CampaignSiteSeed(
-                "chapter_ruined_crypts", 3, "Ruined Crypts", "폐허 묘실", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
-                "site_ruined_crypts", 1, "Ruined Crypts", "폐허 묘실", "Archive keepers turn memorial records into attrition pressure.", "기록 수호자들이 추모 기록을 소모전 압박으로 바꾼다.",
+                "chapter_ruined_crypts", 3, "Ruined Crypts", "무너진 묘역", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
+                "site_ruined_crypts", 1, "Ruined Crypts", "무너진 묘역", "Archive keepers turn memorial records into attrition pressure.", "기록 수호자들이 추모 기록을 소모전 압박으로 바꾼다.",
                 "faction_pale_archive", ThreatTierValue.Tier3, "answer_lane_anti_sustain_finish",
                 new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry", "encounter_family_summon_pressure" },
                 Members(Member("guardian", "extra_pale_memorial_keeper"), Member("hexer", "extra_pale_tomb_sentinel"), Member("mirror_cantor", "extra_black_roll_bailiff"), Member("hunter", "extra_crypt_list_keeper")),
@@ -3591,7 +3591,7 @@ public static class SampleSeedGenerator
                 Members(Member("priest", "extra_pale_memorial_keeper"), Member("guardian", "extra_pale_tomb_sentinel")),
                 "boss_overlay_ruined_crypts", "boss_aura_pale_record", "boss_utility_memorial_loop", "silence"),
             new CampaignSiteSeed(
-                "chapter_ruined_crypts", 3, "Ruined Crypts", "폐허 묘실", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
+                "chapter_ruined_crypts", 3, "Ruined Crypts", "무너진 묘역", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
                 "site_bone_orchard", 2, "Bone Orchard", "뼈 과수원", "Lattice-root watchers flood the lane with summoned bodies.", "격자뿌리 감시자들이 소환체로 전선을 채운다.",
                 "faction_bone_orchard", ThreatTierValue.Tier3, "answer_lane_anti_summon_burst",
                 new[] { "encounter_family_summon_pressure", "encounter_family_tempo_swarm", "encounter_family_mark_execute", "encounter_family_control_cleanse" },
