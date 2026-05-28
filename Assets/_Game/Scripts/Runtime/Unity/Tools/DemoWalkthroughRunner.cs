@@ -194,6 +194,42 @@ public sealed class DemoWalkthroughRunner : MonoBehaviour
             }
         }
 
+        // Squad Workshop cut — cut sheet 2:00-2:30. TacticalSetupButton → SquadBuilderRoot visible 8s → close
+        if (ClickButtonByName(root, "TacticalSetupButton"))
+        {
+            yield return WaitForVisible(root, "SquadBuilderRoot", 4f);
+            Debug.Log("[DemoWalkthroughRunner] Squad Workshop visible. 8s hold.");
+            yield return WaitSeconds(8f);
+            ClickButtonByName(root, "SquadBuilderCloseButton");
+            yield return WaitForHidden(root, "SquadBuilderRoot", 3f);
+            Debug.Log("[DemoWalkthroughRunner] Squad Workshop hidden. 3s hold.");
+            yield return WaitSeconds(3f);
+        }
+
+        // Permanent Augment cut — PermanentAugmentButton → PapRoot visible 8s → close
+        if (ClickButtonByName(root, "PermanentAugmentButton"))
+        {
+            yield return WaitForVisible(root, "PapRoot", 4f);
+            Debug.Log("[DemoWalkthroughRunner] Permanent Augment visible. 8s hold.");
+            yield return WaitSeconds(8f);
+            ClickFirstButtonWithClass(root, "pap-header__close");
+            yield return WaitForHidden(root, "PapRoot", 3f);
+            Debug.Log("[DemoWalkthroughRunner] Permanent Augment hidden. 3s hold.");
+            yield return WaitSeconds(3f);
+        }
+
+        // Inventory cut — FaceCard_solgil click → InvRoot visible 8s → close
+        if (ClickButtonByName(root, "FaceCard_solgil"))
+        {
+            yield return WaitForVisible(root, "InvRoot", 4f);
+            Debug.Log("[DemoWalkthroughRunner] Inventory visible. 8s hold.");
+            yield return WaitSeconds(8f);
+            ClickFirstButtonWithClass(root, "inv-currency__close");
+            yield return WaitForHidden(root, "InvRoot", 3f);
+            Debug.Log("[DemoWalkthroughRunner] Inventory hidden. 3s hold.");
+            yield return WaitSeconds(3f);
+        }
+
         Debug.Log("[DemoWalkthroughRunner] Walkthrough complete.");
         OnComplete?.Invoke(true);
     }
