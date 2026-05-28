@@ -662,11 +662,14 @@ public static class SampleSeedGenerator
 
     private static Dictionary<string, RaceDefinition> CreateRaces()
     {
+        // 표시명/설명: ko는 ADR-0024 인간 세력 reskin SoT(wiki-combat-v1-index settled).
+        // human→솔라룸 / beastkin→이리솔 부족 / undead→회상 결사. race id는 보존(id/label 분리).
+        // en name·desc는 다국어 단계(narrative reskin task 6/8)에서 별도 authoring — 현재 id 기반 fallback 유지.
         return new[]
         {
-            ("human", "Human", "인간", "Flexible baseline race.", "기본이 탄탄한 균형 종족."),
-            ("beastkin", "Beastkin", "수인", "Aggressive feral pressure.", "공세적인 야수형 압박 종족."),
-            ("undead", "Undead", "언데드", "Attrition-oriented deathless fighters.", "소모전에 강한 불사 전사 종족."),
+            ("human", "Human", "솔라룸", "Flexible baseline race.", "질서와 정화를 신봉하는 균형 잡힌 변경 세력."),
+            ("beastkin", "Beastkin", "이리솔 부족", "Aggressive feral pressure.", "씨족 결속으로 공세를 펼치는 강인한 부족 세력."),
+            ("undead", "Undead", "회상 결사", "Attrition-oriented deathless fighters.", "기억을 지키며 소모전에 강한 끈질긴 결사."),
         }.ToDictionary(tuple => tuple.Item1, tuple =>
         {
             var path = $"{ResourcesRoot}/Races/race_{tuple.Item1}.asset";
