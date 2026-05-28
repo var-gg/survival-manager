@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>영웅 명부 · Roster Grid — Survival Manager</title>
+<meta name="viewport" content="width=1664" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* ============================================================
+   ROSTER GRID — Unity USS-portable subset.
+   • flexbox only · no CSS grid
+   • no transform · no @keyframes animation
+   • no box-shadow · no gradient
+   • allowed: position absolute/relative, border, border-radius,
+     background-color, color, opacity, transition (USS-supported props)
+   ============================================================ */
+:root{
+  /* Design system tokens — solids only, USS-safe */
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad;
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a;  --fam-striker-deep:#5a0e1c;  --fam-striker-glow:#f08a3c;
+  --fam-mystic:#8a5cb8;   --fam-mystic-deep:#3a1f5a;   --fam-mystic-glow:#d4b4f0;
+  --fam-ranger:#b58a36;   --fam-ranger-deep:#4d3a14;   --fam-ranger-glow:#e6c878;
+
+  --rare-rare:#5b8ed1; --rare-rare-glow:#9bbeed;
+
+  --state-locked:#6b6e85;
+
+  --f-ko:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;
+  --f-en-display:"Cinzel","Trajan Pro",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background-color:#070a18;
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* ============================================================
+   ROOT PANEL — 1664 × 936 (matches Unity panel canvas)
+   flex column: header · filter · grid · footer
+   ============================================================ */
+.roster-root{
+  width:1600px;
+  height:900px;
+  display:flex;
+  flex-direction:column;
+  background-color:var(--bg-0);
+  border:1px solid var(--gold-500);
+  padding:28px 36px 24px;
+  position:relative;
+}
+/* outer corner caps — absolute-positioned bordered spans, no transform */
+.root-cc{ position:absolute; width:14px; height:14px; border:1px solid var(--gold-300); pointer-events:none; }
+.root-cc.tl{ top:-1px; left:-1px; border-right-width:0; border-bottom-width:0; }
+.root-cc.tr{ top:-1px; right:-1px; border-left-width:0; border-bottom-width:0; }
+.root-cc.bl{ bottom:-1px; left:-1px; border-right-width:0; border-top-width:0; }
+.root-cc.br{ bottom:-1px; right:-1px; border-left-width:0; border-top-width:0; }
+
+/* ============================================================
+   HEADER  ▸ title · counter · close
+   ============================================================ */
+.roster-head{
+  display:flex; align-items:center; justify-content:space-between;
+  height:60px;
+  margin-bottom:8px;
+}
+.roster-title{
+  margin:0;
+  font-family:var(--f-ko);
+  font-weight:800;
+  font-size:32px;
+  letter-spacing:-0.01em;
+  color:var(--gold-100);
+  white-space:nowrap;
+}
+.head-right{
+  display:flex; align-items:center; gap:18px;
+}
+.roster-count{
+  display:flex; align-items:center; justify-content:center;
+  height:42px;
+  padding:0 22px;
+  white-space:nowrap;
+  border:1px solid var(--gold-400);
+  border-radius:21px;
+  background-color:rgba(20,26,53,0.6);
+  font-family:var(--f-ko);
+  font-size:16px;
+  font-weight:700;
+  color:var(--gold-100);
+  letter-spacing:0.04em;
+}
+.roster-count .now{ color:var(--gold-100); }
+.roster-count .sep{ color:var(--gold-500); margin:0 6px; font-weight:500; }
+.roster-count .max{ color:var(--ink-2); }
+.roster-count .unit{ color:var(--ink-2); margin-left:6px; font-size:14px; font-weight:600; }
+
+.icon-btn{
+  width:42px; height:42px;
+  display:flex; align-items:center; justify-content:center;
+  background-color:transparent;
+  border:0;
+  cursor:pointer;
+  color:var(--ink-2);
+  padding:0;
+}
+.icon-btn:hover{ color:var(--gold-100); }
+.icon-btn svg{ width:22px; height:22px; }
+
+/* ============================================================
+   FILTER ROW  ▸ class tabs · sort dropdown
+   ============================================================ */
+.filter-row{
+  display:flex; align-items:center; justify-content:space-between;
+  height:44px;
+  margin-bottom:18px;
+  border-bottom:1px solid var(--line-1);
+}
+.tabs{
+  display:flex; align-items:stretch; gap:0;
+  height:100%;
+}
+.tab{
+  display:flex; align-items:center; justify-content:center;
+  height:100%;
+  padding:0 22px;
+  white-space:nowrap;
+  background-color:transparent;
+  border:0;
+  border-bottom:2px solid transparent;
+  font-family:var(--f-ko);
+  font-size:16px;
+  font-weight:600;
+  color:var(--ink-3);
+  letter-spacing:0.01em;
+  cursor:pointer;
+  margin-bottom:-1px;
+}
+.tab:hover{ color:var(--ink-2); }
+.tab.is-active{
+  color:var(--gold-100);
+  border-bottom-color:var(--gold-300);
+  font-weight:800;
+}
+
+.sort-btn{
+  display:flex; align-items:center; gap:10px;
+  height:36px;
+  white-space:nowrap;
+  padding:0 14px 0 16px;
+  background-color:rgba(20,26,53,0.7);
+  border:1px solid var(--line-2);
+  border-radius:4px;
+  font-family:var(--f-ko);
+  font-size:14px;
+  font-weight:600;
+  color:var(--ink-1);
+  letter-spacing:0.02em;
+  cursor:pointer;
+  min-width:120px;
+  justify-content:space-between;
+}
+.sort-btn:hover{ border-color:var(--gold-400); color:var(--gold-100); }
+.sort-btn svg{ width:14px; height:14px; color:var(--ink-2); }
+
+/* ============================================================
+   CARD GRID  ▸ 4 cols × 3 rows via flex-wrap (no CSS grid)
+   ============================================================ */
+.card-grid{
+  flex:1;
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  align-content:flex-start;
+}
+.hero-card{
+  /* 4 cols across 1528px (= 1600 - 36*2 padding) minus 3 gaps of 14 = 1486/4 = 371.5 */
+  width:371px;
+  height:180px;
+  background-color:var(--bg-1);
+  border:1px solid var(--line-2);
+  position:relative;
+  padding:0;
+  display:flex;
+  flex-direction:row;
+  cursor:pointer;
+  font-family:inherit;
+  color:inherit;
+  text-align:left;
+  overflow:hidden;
+  transition:border-color 160ms ease, background-color 160ms ease;
+}
+.hero-card:hover{ border-color:var(--gold-400); background-color:var(--bg-2); }
+
+/* family color theming via custom property */
+.hero-card.fam-vanguard{ --hp-c:var(--fam-vanguard); --hp-c-deep:var(--fam-vanguard-deep); --hp-c-glow:var(--fam-vanguard-glow); --hp-bg:#1a2540; }
+.hero-card.fam-striker{  --hp-c:var(--fam-striker);  --hp-c-deep:var(--fam-striker-deep);  --hp-c-glow:var(--fam-striker-glow);  --hp-bg:#2a1622; }
+.hero-card.fam-ranger{   --hp-c:var(--rare-rare);    --hp-c-deep:#1f3b66;                   --hp-c-glow:var(--rare-rare-glow);     --hp-bg:#16213d; }
+.hero-card.fam-mystic{   --hp-c:var(--fam-mystic);   --hp-c-deep:var(--fam-mystic-deep);   --hp-c-glow:var(--fam-mystic-glow);   --hp-bg:#241b3a; }
+
+/* ----- SELECTED — gold halo (no box-shadow: use double border + bright bg) */
+.hero-card.is-selected{
+  border-color:var(--gold-300);
+  background-color:var(--bg-2);
+}
+.hero-card.is-selected .card-inner-border{
+  border-color:var(--gold-200);
+}
+
+/* inner 1px hairline (replaces inset box-shadow) */
+.card-inner-border{
+  position:absolute; top:2px; left:2px; right:2px; bottom:2px;
+  border:1px solid rgba(245,214,138,0.0);
+  pointer-events:none;
+  transition:border-color 160ms ease;
+}
+.hero-card:hover .card-inner-border{ border-color:rgba(245,214,138,0.18); }
+
+/* ----- PORTRAIT (left side, ~46%) ----- */
+.card-portrait{
+  width:170px;
+  height:100%;
+  flex-shrink:0;
+  background-color:var(--hp-bg);
+  border-right:1px solid var(--line-1);
+  position:relative;
+  overflow:hidden;
+  display:flex; align-items:flex-end; justify-content:center;
+}
+/* family color wash — flat solid layer at bottom (no gradient) */
+.card-portrait .wash-top{
+  position:absolute; top:0; left:0; right:0; height:60%;
+  background-color:var(--hp-c-deep);
+  opacity:0.55;
+}
+.card-portrait .wash-mid{
+  position:absolute; top:30%; left:0; right:0; height:50%;
+  background-color:var(--hp-c);
+  opacity:0.18;
+}
+.card-portrait .vignette{
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  border:6px solid #060814;
+  border-top-width:0;
+  opacity:0.7;
+  pointer-events:none;
+}
+.card-portrait .silh{
+  position:relative;
+  width:140px; height:170px;
+  margin-bottom:-10px;
+  color:#0a0d20;
+  opacity:0.92;
+}
+.card-portrait .silh-glow{
+  position:absolute; left:0; right:0; bottom:0;
+  width:140px; height:170px;
+  color:var(--hp-c-glow);
+  opacity:0.35;
+  margin-bottom:-10px;
+  margin-left:auto; margin-right:auto;
+  left:50%; margin-left:-70px;
+}
+
+/* class-icon (top-left diamond) — single SVG, no rotate */
+.class-icon{
+  position:absolute; top:8px; left:8px;
+  width:38px; height:38px;
+  z-index:3;
+  pointer-events:none;
+  color:var(--gold-200);
+}
+
+/* ----- INFO (right side) ----- */
+.card-info{
+  flex:1;
+  padding:18px 18px 14px 20px;
+  display:flex; flex-direction:column;
+  position:relative;
+  min-width:0;
+}
+.card-info-top{
+  display:flex; align-items:flex-start; justify-content:flex-end;
+  height:14px;
+  margin-bottom:8px;
+}
+.tier-dots{
+  display:flex; align-items:center; gap:5px;
+}
+.tier-dots .dot{
+  width:6px; height:6px; border-radius:3px;
+  background-color:var(--gold-200);
+}
+.tier-dots .dot.empty{
+  background-color:transparent;
+  border:1px solid var(--ink-4);
+}
+
+.card-name{
+  font-family:var(--f-ko);
+  font-size:28px;
+  font-weight:800;
+  color:var(--vellum);
+  line-height:1.1;
+  letter-spacing:-0.01em;
+  margin-top:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.card-class-chip{
+  display:inline-flex; align-items:center; justify-content:center;
+  align-self:flex-start;
+  height:24px;
+  padding:0 12px;
+  white-space:nowrap;
+  margin-top:10px;
+  background-color:rgba(0,0,0,0.35);
+  border:1px solid var(--cls-c, var(--ink-3));
+  border-radius:3px;
+  font-family:var(--f-ko);
+  font-size:13px;
+  font-weight:700;
+  color:var(--cls-glow, var(--ink-2));
+  letter-spacing:0.04em;
+}
+.hero-card.fam-vanguard .card-class-chip{ --cls-c:var(--fam-vanguard); --cls-glow:var(--fam-vanguard-glow); }
+.hero-card.fam-striker .card-class-chip{ --cls-c:var(--ink-3);          --cls-glow:var(--vellum-2); }
+.hero-card.fam-ranger .card-class-chip{  --cls-c:var(--rare-rare);      --cls-glow:var(--rare-rare-glow); }
+.hero-card.fam-mystic .card-class-chip{  --cls-c:var(--fam-mystic);     --cls-glow:var(--fam-mystic-glow); }
+
+.card-level{
+  margin-top:auto;
+  align-self:flex-end;
+  font-family:var(--f-en-display);
+  font-size:32px;
+  font-weight:700;
+  color:var(--gold-200);
+  letter-spacing:0.02em;
+  line-height:1;
+  white-space:nowrap;
+}
+.card-level .lv{
+  font-size:18px;
+  color:var(--ink-2);
+  font-weight:600;
+  margin-right:6px;
+  letter-spacing:0.08em;
+}
+
+/* ============================================================
+   EMPTY SLOT
+   ============================================================ */
+.empty-slot{
+  width:371px;
+  height:180px;
+  white-space:nowrap;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px;
+  background-color:transparent;
+  border:1px dashed var(--line-2);
+  color:var(--ink-3);
+  cursor:pointer;
+  padding:0;
+  font-family:inherit;
+  transition:border-color 160ms ease, color 160ms ease;
+}
+.empty-slot:hover{ border-color:var(--gold-400); color:var(--gold-200); }
+.empty-slot .symbol{
+  width:54px; height:54px;
+  color:var(--ink-4);
+  opacity:0.55;
+}
+.empty-slot .lbl{
+  font-family:var(--f-ko);
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:0.02em;
+}
+
+/* ============================================================
+   FOOTER  ▸ close · hint · primary action
+   ============================================================ */
+.roster-foot{
+  display:flex; align-items:center; justify-content:space-between;
+  height:60px;
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--line-1);
+}
+.foot-close{
+  display:flex; align-items:center; gap:10px;
+  height:44px;
+  padding:0 22px;
+  white-space:nowrap;
+  background-color:transparent;
+  border:1px solid var(--line-2);
+  border-radius:3px;
+  font-family:var(--f-ko);
+  font-size:15px;
+  font-weight:700;
+  color:var(--ink-1);
+  cursor:pointer;
+  letter-spacing:0.02em;
+}
+.foot-close:hover{ border-color:var(--gold-400); color:var(--gold-100); }
+.foot-close svg{ width:14px; height:14px; }
+
+.foot-hint{
+  font-family:var(--f-ko);
+  font-size:14px;
+  color:var(--ink-3);
+  letter-spacing:0.01em;
+  white-space:nowrap;
+}
+
+.foot-primary{
+  display:flex; align-items:center; justify-content:center;
+  height:44px;
+  min-width:160px;
+  padding:0 28px;
+  white-space:nowrap;
+  background-color:var(--gold-300);
+  border:1px solid var(--gold-400);
+  border-radius:3px;
+  font-family:var(--f-ko);
+  font-size:16px;
+  font-weight:800;
+  color:#1a1308;
+  cursor:pointer;
+  letter-spacing:0.04em;
+  position:relative;
+}
+.foot-primary:hover{ background-color:var(--gold-200); border-color:var(--gold-300); }
+.foot-primary .inner-edge{
+  position:absolute; top:2px; left:2px; right:2px; bottom:2px;
+  border:1px solid rgba(138,100,24,0.55);
+  pointer-events:none;
+}
+
+/* ============================================================
+   DIMMED (filter-out) state
+   ============================================================ */
+.hero-card.is-dim{
+  opacity:0.28;
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<main class="roster-root" data-screen-label="01 Roster Grid">
+  <span class="root-cc tl"></span>
+  <span class="root-cc tr"></span>
+  <span class="root-cc bl"></span>
+  <span class="root-cc br"></span>
+
+  <!-- =================== HEADER =================== -->
+  <header class="roster-head">
+    <h1 class="roster-title">영웅 명부</h1>
+    <div class="head-right">
+      <div class="roster-count" id="RgpRosterCount">
+        <span class="now">11</span><span class="sep">/</span><span class="max">12</span><span class="unit">명</span>
+      </div>
+      <button class="icon-btn" name="RgpClose" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M6 6 L18 18 M18 6 L6 18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- =================== FILTER ROW =================== -->
+  <div class="filter-row">
+    <div class="tabs" id="RgpTabs">
+      <button class="tab is-active" name="RgpFilterAll" data-filter="all">전체 <span class="cnt">(11)</span></button>
+      <button class="tab" name="RgpFilterFrontline" data-filter="vanguard">전열 <span class="cnt">(3)</span></button>
+      <button class="tab" name="RgpFilterDuel" data-filter="striker">결투 <span class="cnt">(3)</span></button>
+      <button class="tab" name="RgpFilterRanged" data-filter="ranger">사격 <span class="cnt">(3)</span></button>
+      <button class="tab" name="RgpFilterSpell" data-filter="mystic">주문 <span class="cnt">(2)</span></button>
+    </div>
+    <button class="sort-btn" name="RgpSort">
+      <span>Lv 순</span>
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5 L7 9 L11 5"/></svg>
+    </button>
+  </div>
+
+  <!-- =================== CARD GRID =================== -->
+  <div class="card-grid" id="RgpGrid">
+    <!-- cards injected by script for clarity -->
+  </div>
+
+  <!-- =================== FOOTER =================== -->
+  <footer class="roster-foot">
+    <button class="foot-close" name="RgpFooterClose">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 3 L11 11 M11 3 L3 11"/></svg>
+      <span>닫기</span>
+    </button>
+    <div class="foot-hint">카드를 클릭하면 영웅 정보가 열립니다</div>
+    <button class="foot-primary" name="RgpQuickBattle">
+      <span class="inner-edge"></span>
+      <span>빠른 전투</span>
+    </button>
+  </footer>
+</main>
+
+<!-- ============================================================
+     SVG sprite — class icons (diamond + glyph), portrait silhouettes
+     One <symbol> per icon; reused via <use href="#id">.
+     No transforms used — diamonds drawn as <path>.
+============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- ===== CLASS ICONS (diamond + class glyph) ===== -->
+    <symbol id="ico-frontline" viewBox="0 0 38 38">
+      <path d="M19 2 L36 19 L19 36 L2 19 Z" fill="rgba(0,0,0,0.55)" stroke="currentColor" stroke-width="1.2"/>
+      <!-- shield -->
+      <path d="M19 11 L25 13 L25 19 Q25 24 19 27 Q13 24 13 19 L13 13 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M19 14 L19 24 M15 17 L23 17" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+    </symbol>
+    <symbol id="ico-duel" viewBox="0 0 38 38">
+      <path d="M19 2 L36 19 L19 36 L2 19 Z" fill="rgba(0,0,0,0.55)" stroke="currentColor" stroke-width="1.2"/>
+      <!-- single longsword -->
+      <path d="M19 9 L20.5 11 L20.5 23 L22.5 25 L15.5 25 L17.5 23 L17.5 11 Z" fill="currentColor" opacity="0.92"/>
+      <path d="M14 25 L24 25" stroke="currentColor" stroke-width="1.4"/>
+    </symbol>
+    <symbol id="ico-ranged" viewBox="0 0 38 38">
+      <path d="M19 2 L36 19 L19 36 L2 19 Z" fill="rgba(0,0,0,0.55)" stroke="currentColor" stroke-width="1.2"/>
+      <!-- bow + arrow -->
+      <path d="M12 10 Q24 14 24 26" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M12 10 L24 26" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+      <path d="M14 14 L22 22" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M21 21 L24 22 L22 19 Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="ico-spell" viewBox="0 0 38 38">
+      <path d="M19 2 L36 19 L19 36 L2 19 Z" fill="rgba(0,0,0,0.55)" stroke="currentColor" stroke-width="1.2"/>
+      <!-- treble-clef-ish swirl -->
+      <path d="M19 10 Q15 10 15 14 Q15 18 19 18 Q23 18 23 22 Q23 26 19 26 Q17 26 17 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="19" cy="28" r="1.6" fill="currentColor"/>
+    </symbol>
+
+    <!-- ===== PORTRAIT SILHOUETTES (stylized placeholders, no transforms) ===== -->
+    <!-- generic vanguard knight: helmet + plate shoulders -->
+    <symbol id="silh-vanguard" viewBox="0 0 140 170">
+      <!-- helmet -->
+      <path d="M50 30 Q50 18 70 18 Q90 18 90 30 L92 56 Q92 64 80 66 L60 66 Q48 64 48 56 Z" fill="currentColor"/>
+      <!-- visor slit -->
+      <rect x="56" y="42" width="28" height="3" fill="#000" opacity="0.5"/>
+      <!-- crest -->
+      <path d="M68 8 L72 8 L72 18 L68 18 Z" fill="currentColor"/>
+      <!-- pauldrons -->
+      <path d="M20 100 Q20 80 50 78 L90 78 Q120 80 120 100 L120 170 L20 170 Z" fill="currentColor"/>
+      <path d="M30 100 Q30 88 50 88 L90 88 Q110 88 110 100" fill="none" stroke="#000" stroke-width="1.5" opacity="0.4"/>
+    </symbol>
+
+    <!-- striker — hooded duelist -->
+    <symbol id="silh-striker" viewBox="0 0 140 170">
+      <!-- hood -->
+      <path d="M38 50 Q38 18 70 18 Q102 18 102 50 L100 70 Q92 76 70 76 Q48 76 40 70 Z" fill="currentColor"/>
+      <!-- face shadow -->
+      <ellipse cx="70" cy="56" rx="20" ry="14" fill="#000" opacity="0.45"/>
+      <!-- shoulders/cloak -->
+      <path d="M14 110 Q14 84 50 80 L90 80 Q126 84 126 110 L126 170 L14 170 Z" fill="currentColor"/>
+      <!-- sash diagonal -->
+      <path d="M30 110 L110 170" stroke="#000" stroke-width="3" opacity="0.35"/>
+    </symbol>
+
+    <!-- ranger — hood + bow strap -->
+    <symbol id="silh-ranger" viewBox="0 0 140 170">
+      <!-- pointed hat -->
+      <path d="M40 50 Q42 20 70 14 Q98 20 100 50 L98 60 Q90 66 70 66 Q50 66 42 60 Z" fill="currentColor"/>
+      <path d="M30 50 L110 50 L100 58 L40 58 Z" fill="currentColor"/>
+      <!-- head -->
+      <ellipse cx="70" cy="58" rx="18" ry="12" fill="#000" opacity="0.4"/>
+      <!-- shoulders -->
+      <path d="M20 110 Q20 84 50 80 L90 80 Q120 84 120 110 L120 170 L20 170 Z" fill="currentColor"/>
+      <!-- quiver strap -->
+      <path d="M35 88 L100 160" stroke="#000" stroke-width="3" opacity="0.35"/>
+    </symbol>
+
+    <!-- mystic — tall cowl + glow gem -->
+    <symbol id="silh-mystic" viewBox="0 0 140 170">
+      <!-- cowl -->
+      <path d="M40 56 Q42 16 70 12 Q98 16 100 56 L96 78 Q88 84 70 84 Q52 84 44 78 Z" fill="currentColor"/>
+      <ellipse cx="70" cy="60" rx="18" ry="14" fill="#000" opacity="0.45"/>
+      <!-- robe shoulders -->
+      <path d="M16 110 Q16 90 50 86 L90 86 Q124 90 124 110 L124 170 L16 170 Z" fill="currentColor"/>
+      <!-- pendant gem -->
+      <path d="M70 100 L74 106 L70 114 L66 106 Z" fill="#000" opacity="0.5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<script>
+/* ============================================================
+   Hero data — 11 heroes + 1 empty slot, matching mockup
+   class: vanguard | striker | ranger | mystic
+   tiers: 1..3 (gold dots); empty dot drawn for missing pip
+   ============================================================ */
+const HEROES = [
+  { id:1,  name:"리퍼",     cls:"duel",      fam:"striker",  lvl:8, tiers:3, selected:true },
+  { id:2,  name:"명사수",   cls:"ranged",    fam:"ranger",   lvl:6, tiers:3 },
+  { id:3,  name:"방벽병",   cls:"frontline", fam:"vanguard", lvl:5, tiers:3 },
+  { id:4,  name:"무당",     cls:"spell",     fam:"mystic",   lvl:7, tiers:3 },
+  { id:5,  name:"솔길",     cls:"ranged",    fam:"ranger",   lvl:4, tiers:2 },
+  { id:6,  name:"단린",     cls:"spell",     fam:"mystic",   lvl:3, tiers:3 },
+  { id:7,  name:"강철검",   cls:"duel",      fam:"striker",  lvl:6, tiers:3 },
+  { id:8,  name:"향로지기", cls:"spell",     fam:"mystic",   lvl:5, tiers:3 },
+  { id:9,  name:"새벽보병", cls:"frontline", fam:"vanguard", lvl:4, tiers:3 },
+  { id:10, name:"늪걸음",   cls:"ranged",    fam:"ranger",   lvl:3, tiers:3 },
+  { id:11, name:"동족검",   cls:"duel",      fam:"striker",  lvl:2, tiers:3 },
+];
+
+const CLS_KO = {
+  frontline:"전열",
+  duel:"결투",
+  ranged:"사격",
+  spell:"주문",
+};
+const CLS_ICON = {
+  frontline:"#ico-frontline",
+  duel:"#ico-duel",
+  ranged:"#ico-ranged",
+  spell:"#ico-spell",
+};
+const FAM_SILH = {
+  vanguard:"#silh-vanguard",
+  striker:"#silh-striker",
+  ranger:"#silh-ranger",
+  mystic:"#silh-mystic",
+};
+
+const grid = document.getElementById('RgpGrid');
+
+function makeCard(h){
+  const card = document.createElement('button');
+  card.className = `hero-card fam-${h.fam}${h.selected?' is-selected':''}`;
+  card.setAttribute('name', `RgpCard${h.id}`);
+  card.dataset.heroId = h.id;
+  card.dataset.cls = h.cls;
+  card.dataset.fam = h.fam;
+
+  // tier dots HTML
+  let dots = '';
+  for(let i=0;i<3;i++){
+    dots += `<span class="dot${i<h.tiers?'':' empty'}"></span>`;
+  }
+
+  card.innerHTML = `
+    <span class="card-inner-border"></span>
+    <div class="card-portrait">
+      <div class="wash-top"></div>
+      <div class="wash-mid"></div>
+      <svg class="silh-glow" viewBox="0 0 140 170"><use href="${FAM_SILH[h.fam]}"/></svg>
+      <svg class="silh" viewBox="0 0 140 170"><use href="${FAM_SILH[h.fam]}"/></svg>
+      <div class="vignette"></div>
+      <svg class="class-icon"><use href="${CLS_ICON[h.cls]}"/></svg>
+    </div>
+    <div class="card-info">
+      <div class="card-info-top">
+        <div class="tier-dots">${dots}</div>
+      </div>
+      <div class="card-name">${h.name}</div>
+      <div class="card-class-chip">${CLS_KO[h.cls]}</div>
+      <div class="card-level"><span class="lv">Lv</span>${h.lvl}</div>
+    </div>
+  `;
+  return card;
+}
+
+HEROES.forEach(h => grid.appendChild(makeCard(h)));
+
+// empty slot
+const empty = document.createElement('button');
+empty.className = 'empty-slot';
+empty.setAttribute('name','RgpEmptySlot');
+empty.innerHTML = `
+  <svg class="symbol" viewBox="0 0 54 54" fill="none" stroke="currentColor" stroke-width="1.4">
+    <path d="M27 8 L46 27 L27 46 L8 27 Z"/>
+    <path d="M27 18 L27 36 M18 27 L36 27"/>
+  </svg>
+  <div class="lbl">＋ 빈 슬롯</div>
+`;
+grid.appendChild(empty);
+
+/* ============================================================
+   Interactivity
+   ============================================================ */
+const cards = () => Array.from(grid.querySelectorAll('.hero-card'));
+
+// Card selection
+grid.addEventListener('click', e => {
+  const card = e.target.closest('.hero-card');
+  if(!card) return;
+  cards().forEach(c => c.classList.remove('is-selected'));
+  card.classList.add('is-selected');
+});
+
+// Filter tabs
+const tabs = document.querySelectorAll('#RgpTabs .tab');
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.classList.remove('is-active'));
+  t.classList.add('is-active');
+  const f = t.dataset.filter;
+  cards().forEach(c => {
+    if(f === 'all' || c.dataset.fam === f) c.classList.remove('is-dim');
+    else c.classList.add('is-dim');
+  });
+}));
+
+// Close buttons (demo only)
+document.querySelector('[name="RgpClose"]').addEventListener('click', () => {
+  document.querySelector('.roster-root').style.opacity = '0.3';
+  setTimeout(() => document.querySelector('.roster-root').style.opacity = '1', 220);
+});
+document.querySelector('[name="RgpFooterClose"]').addEventListener('click', () => {
+  document.querySelector('[name="RgpClose"]').click();
+});
+</script>
+
+</body>
+</html>

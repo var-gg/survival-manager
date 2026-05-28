@@ -1,0 +1,1662 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Survival Manager · 캐릭터 시트</title>
+<meta name="viewport" content="width=1664" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* =========================================================
+   SURVIVAL MANAGER · CHARACTER SHEET
+   Unity USS-safe subset: flexbox only.
+   NO transform, NO grid, NO animation, NO box-shadow, NO gradient.
+   ========================================================= */
+:root{
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad; --vellum-3:#c9b88a;
+  --parchment:#efe2bf; --parchment-deep:#c9b88a;
+  --ink-parchment:#3d2f12;
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+  --fam-vanguard:#4a72b8; --fam-vanguard-deep:#1a2a52; --fam-vanguard-glow:#7fa3e0;
+  --fam-striker:#b6334a;  --fam-striker-deep:#5a0e1c;  --fam-striker-glow:#f08a3c;
+  --fam-ranger:#b58a36;   --fam-ranger-deep:#4d3a14;   --fam-ranger-glow:#e6c878;
+  --fam-mystic:#8a5cb8;   --fam-mystic-deep:#3a1f5a;   --fam-mystic-glow:#d4b4f0;
+  --fam-beastkin:#7a8a52; --fam-beastkin-deep:#2e3818; --fam-beastkin-glow:#b9c980;
+  --rare-rare:#5b8ed1; --rare-epic:#b561d6; --rare-epic-2:#f08a3c;
+  --rare-common:#cdc4a8; --rare-legend:#f5d68a;
+  --state-safe:#6dbf78; --state-warn:#e8a93b; --state-danger:#e25548;
+  --state-info:#7fa3e0; --state-locked:#6b6e85;
+  --f-ko:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;
+  --f-en-display:"Cinzel","Trajan Pro",serif;
+  --f-en-italic:"Cormorant Garamond","Playfair Display",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+body{
+  background-color:#05071a;
+  color:var(--vellum);
+  font-family:var(--f-ko);
+  min-height:100vh;
+  display:flex; justify-content:center; align-items:center;
+  padding:32px;
+  word-break:keep-all;
+  word-wrap:normal;
+  overflow-wrap:normal;
+}
+/* Belt-and-suspenders: every short label gets nowrap so renderers that
+   ignore word-break: keep-all still produce single-line output. */
+.tb-back, .tb-back span, .tb-back .ko,
+.tb-crumb, .tb-crumb span, .tb-crumb b, .tb-crumb .ko,
+.tb-eyebrow .label, .tb-coin .cell, .tb-coin .cell .k, .tb-pn .lbl,
+.rail-head .top .lbl, .rail-head .top .ko, .rail-head .top .count,
+.rail-fchip,
+.rail-item .name, .rail-item .meta, .rail-item .meta span, .rail-item .state,
+.stage-cap .pill, .stage-cap .pill .ko,
+.stance-pip .l, .stance-pip .ko,
+.sn-eyebrow, .sn-eyebrow span,
+.sn-title, .sn-title .lv, .sn-title .sep, .sn-title .role-ko,
+.sn-sub, .sn-sub .ko-name, .sn-sub .en-name, .sn-sub .arch, .sn-sub .arch span,
+.sn-pips, .sn-pips-lbl,
+.sn-xp-lbl, .sn-xp-lbl span,
+.cs-tab, .cs-tab .num, .cs-tab .ko, .cs-tab .en,
+.tab-meta .legend,
+.stat-col-head .num, .stat-col-head .cap, .stat-col-head .ko, .stat-col-head .meta,
+.sr-lbl .ko, .sr-lbl .en, .sr-val, .sr-val .delta,
+.syn-lbl .nm, .syn-val,
+.rt-head .num, .rt-head .en, .rt-head .ko, .rt-head .meta,
+.sk-tier, .sk-tier span, .sk-tier .ko,
+.sk-name, .sk-name .en,
+.sk-meta, .sk-meta span,
+.eq-slot, .eq-slot span, .eq-slot .ko, .eq-slot .rare,
+.eq-name, .eq-stats, .eq-stats span,
+.eq-empty-lbl, .eq-empty-lbl .ko,
+.rm-head .num, .rm-head .en, .rm-head .ko, .rm-head .desc,
+.rm-node .lvl, .rm-node .nm, .rm-node .badge,
+.cta .ko, .cta .en, .cta .hint {
+  white-space:nowrap;
+}
+
+/* ============================================================
+   FRAME
+   ============================================================ */
+.cs-root{
+  width:1600px; height:1000px;
+  background-color:#070a1c;
+  border:1px solid var(--gold-500);
+  display:flex; flex-direction:column;
+  position:relative;
+}
+.cs-trim{
+  position:absolute; top:3px; left:3px; right:3px; bottom:3px;
+  border:1px solid var(--gold-500);
+  opacity:.35;
+  pointer-events:none;
+}
+.cs-cnr{ position:absolute; width:14px; height:14px; border:1px solid var(--gold-200); pointer-events:none; }
+.cs-cnr.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cs-cnr.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.cs-cnr.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.cs-cnr.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* small corner caps (re-usable) */
+.tc{ position:absolute; width:6px; height:6px; border:1px solid var(--gold-300); pointer-events:none; }
+.tc.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.tc.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.tc.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.tc.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.cs-topbar{
+  flex:0 0 56px;
+  display:flex; align-items:center; gap:16px;
+  padding:0 18px;
+  background-color:#0c1228;
+  border-bottom:1px solid var(--gold-500);
+  position:relative;
+}
+.tb-back{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 14px;
+  background-color:#000;
+  border:1px solid var(--gold-500);
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.18em;
+  color:var(--gold-200); text-transform:uppercase; cursor:pointer;
+  position:relative;
+}
+.tb-back svg{ width:11px; height:11px; }
+.tb-back .ko{ font-family:var(--f-ko); font-weight:700; font-size:12px; color:var(--vellum); letter-spacing:.02em; text-transform:none; }
+
+.tb-crumb{
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.16em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.tb-crumb .sep{ color:var(--gold-500); }
+.tb-crumb b{ color:var(--gold-200); font-weight:500; }
+.tb-crumb .ko{ font-family:var(--f-ko); font-weight:700; font-size:12px; color:var(--vellum); letter-spacing:.02em; text-transform:none; margin-left:4px; }
+
+.tb-eyebrow{
+  margin-left:auto;
+  display:flex; align-items:center; gap:14px;
+}
+.tb-eyebrow .label{
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.22em;
+  color:var(--gold-400); text-transform:uppercase;
+}
+.tb-pn{ display:flex; align-items:center; gap:6px; }
+.tb-pn .b{
+  width:30px; height:30px;
+  display:flex; align-items:center; justify-content:center;
+  background-color:#000; border:1px solid var(--gold-500);
+  color:var(--gold-200); cursor:pointer; position:relative;
+}
+.tb-pn .b svg{ width:13px; height:13px; }
+.tb-pn .lbl{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.16em; color:var(--ink-3); padding:0 4px;
+}
+.tb-pn .lbl b{ color:var(--gold-200); font-weight:500; }
+
+.tb-coin{
+  display:flex; align-items:center; gap:10px;
+  padding:6px 12px;
+  background-color:#000;
+  border:1px solid var(--gold-500);
+}
+.tb-coin .cell{ display:flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:11px; color:var(--gold-100); letter-spacing:.06em; }
+.tb-coin .cell + .cell{ padding-left:10px; border-left:1px solid var(--gold-500); }
+.tb-coin .cell .k{ color:var(--ink-3); font-size:9px; letter-spacing:.16em; text-transform:uppercase; }
+.tb-coin .cell svg{ width:13px; height:13px; color:var(--gold-300); }
+
+/* ============================================================
+   BODY (3 column)
+   ============================================================ */
+.cs-body{
+  flex:1 1 auto;
+  display:flex;
+  min-height:0;
+}
+
+/* ===== LEFT — hero rail ===== */
+.cs-left{
+  flex:0 0 268px;
+  display:flex; flex-direction:column;
+  background-color:#0a0e22;
+  border-right:1px solid var(--line-1);
+  min-height:0;
+}
+.rail-head{
+  flex:0 0 auto;
+  padding:14px 14px 10px;
+  border-bottom:1px solid var(--gold-500);
+}
+.rail-head .top{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; }
+.rail-head .top .lbl{ font-family:var(--f-en-display); font-size:13px; letter-spacing:.22em; color:var(--gold-200); font-weight:600; }
+.rail-head .top .ko{ font-family:var(--f-ko); font-size:12px; color:var(--vellum); font-weight:700; letter-spacing:.04em; }
+.rail-head .top .count{ font-family:var(--f-mono); font-size:11px; color:var(--gold-200); letter-spacing:.1em; }
+.rail-head .top .count b{ color:var(--vellum); font-weight:700; }
+
+.rail-filter{ display:flex; gap:4px; }
+.rail-fchip{
+  flex:1;
+  text-align:center;
+  padding:4px 0;
+  background-color:#000; border:1px solid var(--line-2);
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase;
+  cursor:pointer;
+}
+.rail-fchip.is-on{ border-color:var(--gold-300); color:var(--gold-200); background-color:var(--bg-2); }
+
+.rail-list{
+  flex:1 1 auto;
+  overflow:hidden; /* USS uses scroll-view; emulate fixed height */
+  padding:8px 6px 8px 8px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.rail-item{
+  position:relative;
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px 8px 12px;
+  background-color:#0c1228;
+  border:1px solid var(--line-1);
+  border-left:3px solid var(--fam-c, var(--fam-vanguard));
+  cursor:pointer;
+}
+.rail-item.fam-vanguard{ --fam-c:var(--fam-vanguard); }
+.rail-item.fam-striker { --fam-c:var(--fam-striker); }
+.rail-item.fam-ranger  { --fam-c:var(--fam-ranger); }
+.rail-item.fam-mystic  { --fam-c:var(--fam-mystic); }
+.rail-item.fam-beastkin{ --fam-c:var(--fam-beastkin); }
+
+.rail-item .av{
+  position:relative;
+  width:40px; height:40px; flex:0 0 40px;
+  background-color:var(--fam-c-deep, var(--fam-vanguard-deep));
+  border:1px solid var(--gold-500);
+  display:flex; align-items:flex-end; justify-content:center;
+  overflow:hidden;
+}
+.rail-item.fam-vanguard .av{ background-color:var(--fam-vanguard-deep); }
+.rail-item.fam-striker  .av{ background-color:var(--fam-striker-deep); }
+.rail-item.fam-ranger   .av{ background-color:var(--fam-ranger-deep); }
+.rail-item.fam-mystic   .av{ background-color:var(--fam-mystic-deep); }
+.rail-item.fam-beastkin .av{ background-color:var(--fam-beastkin-deep); }
+.rail-item .av svg{
+  width:34px; height:38px;
+  color:var(--fam-c, var(--fam-vanguard));
+  display:block;
+}
+.rail-item .av .lv{
+  position:absolute; top:-1px; right:-1px;
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.04em;
+  padding:1px 3px;
+  background-color:var(--gold-300); color:#0c1126; font-weight:700; line-height:1;
+}
+.rail-item .info{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.rail-item .name{ font-family:var(--f-ko); font-weight:700; font-size:13px; color:var(--vellum); letter-spacing:.02em; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rail-item .meta{ display:flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:9px; letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase; }
+.rail-item .meta .cls{ color:var(--fam-c, var(--fam-vanguard-glow)); font-weight:500; }
+.rail-item .meta .role{ color:var(--ink-3); }
+.rail-item .meta .ko{ font-family:var(--f-ko); font-weight:700; font-size:10.5px; color:var(--vellum-2); letter-spacing:.02em; text-transform:none; }
+
+.rail-item.fam-vanguard .meta .cls{ color:var(--fam-vanguard-glow); }
+.rail-item.fam-striker  .meta .cls{ color:var(--fam-striker-glow); }
+.rail-item.fam-ranger   .meta .cls{ color:var(--fam-ranger-glow); }
+.rail-item.fam-mystic   .meta .cls{ color:var(--fam-mystic-glow); }
+.rail-item.fam-beastkin .meta .cls{ color:var(--fam-beastkin-glow); }
+
+.rail-item .state{
+  font-family:var(--f-mono); font-size:8px; letter-spacing:.14em;
+  padding:1px 4px;
+  border:1px solid var(--ink-3); color:var(--ink-3); text-transform:uppercase;
+  line-height:1.2;
+}
+.rail-item .state.safe{ border-color:var(--state-safe); color:var(--state-safe); }
+.rail-item .state.warn{ border-color:var(--state-warn); color:var(--state-warn); }
+.rail-item .state.injured{ border-color:var(--state-danger); color:var(--state-danger); }
+
+.rail-item.is-active{
+  background-color:var(--bg-2);
+  border-color:var(--gold-300);
+  border-left-width:3px;
+}
+.rail-item.is-active .name{ color:var(--gold-100); }
+
+/* ===== CENTER — portrait + tabs + tab content ===== */
+.cs-center{
+  flex:1 1 auto;
+  display:flex; flex-direction:column;
+  background-color:#070a1c;
+  min-width:0;
+}
+
+/* portrait stage */
+.cs-stage{
+  flex:0 0 412px;
+  position:relative;
+  display:flex;
+  background-color:#080b1d;
+  border-bottom:1px solid var(--gold-500);
+  overflow:hidden;
+}
+.stage-bg{
+  position:absolute; inset:0;
+  background-color:#0b1130;
+}
+/* stage-grid (decorative chamber tint) — in USS this slot holds a 9-slice texture; flat color stand-in here */
+.stage-grid{ position:absolute; inset:0; background-color:rgba(74,114,184,.04); }
+/* faint horizon line above the figure */
+.stage-horizon{ position:absolute; left:80px; right:80px; top:200px; height:1px; background-color:rgba(245,214,138,.12); }
+.stage-vignette-l{ position:absolute; top:0; bottom:0; left:0; width:120px; background-color:rgba(0,0,0,.7); opacity:.6; }
+.stage-vignette-r{ position:absolute; top:0; bottom:0; right:0; width:120px; background-color:rgba(0,0,0,.7); opacity:.6; }
+.stage-floor{
+  position:absolute; left:0; right:0; bottom:0; height:90px;
+  background-color:#050714;
+  border-top:1px solid var(--gold-500);
+  opacity:.85;
+}
+.stage-floor-shadow{
+  position:absolute; left:50%; bottom:60px;
+  margin-left:-180px;
+  width:360px; height:60px;
+  background-color:#000;
+  opacity:.55;
+}
+
+/* upper-left meta tags on stage */
+.stage-cap{
+  position:absolute; top:14px; left:14px;
+  display:flex; flex-direction:column; gap:6px;
+  z-index:3;
+}
+.stage-cap .pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 8px;
+  background-color:#000; border:1px solid var(--gold-500);
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em;
+  color:var(--gold-200); text-transform:uppercase;
+}
+.stage-cap .pill.epic{ border-color:var(--rare-epic); color:#f0c9ff; }
+.stage-cap .pill .ko{ font-family:var(--f-ko); color:var(--vellum); font-weight:700; font-size:10.5px; letter-spacing:.04em; text-transform:none; }
+.stage-cap .pill svg{ width:11px; height:11px; }
+
+.stage-stance{
+  position:absolute; top:14px; right:14px;
+  display:flex; gap:6px;
+  z-index:3;
+}
+.stance-pip{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:5px 9px 6px;
+  background-color:#000; border:1px solid var(--line-2);
+  cursor:pointer;
+  min-width:48px;
+}
+.stance-pip svg{ width:18px; height:20px; color:var(--ink-3); }
+.stance-pip .l{ font-family:var(--f-mono); font-size:8px; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; }
+.stance-pip .ko{ font-family:var(--f-ko); font-size:10px; color:var(--ink-2); font-weight:700; letter-spacing:.02em; }
+.stance-pip.is-active{
+  border-color:var(--gold-300);
+  background-color:#101638;
+}
+.stance-pip.is-active svg{ color:var(--fam-vanguard-glow); }
+.stance-pip.is-active .l{ color:var(--gold-200); }
+.stance-pip.is-active .ko{ color:var(--vellum); }
+
+/* hero silhouette (huge, centered) */
+.stage-figure{
+  position:absolute; left:50%; bottom:64px;
+  margin-left:-160px;
+  width:320px; height:340px;
+  display:flex; align-items:flex-end; justify-content:center;
+  z-index:2;
+}
+.stage-figure svg.silh{ width:100%; height:100%; color:var(--fam-vanguard); opacity:.95; }
+.stage-figure .floor-disc{
+  position:absolute; left:50%; bottom:-12px; margin-left:-160px;
+  width:320px; height:36px;
+  background-color:var(--fam-vanguard-deep);
+  border:1px solid var(--fam-vanguard);
+  opacity:.5;
+}
+.stage-figure .floor-disc-inner{
+  position:absolute; left:50%; bottom:-4px; margin-left:-120px;
+  width:240px; height:18px;
+  background-color:var(--fam-vanguard);
+  opacity:.35;
+}
+
+/* nameplate at bottom of stage */
+.stage-name{
+  position:absolute; left:0; right:0; bottom:0;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding:14px 22px 14px;
+  background-color:#050714;
+  border-top:1px solid var(--gold-500);
+  z-index:4;
+}
+.sn-left{ display:flex; flex-direction:column; gap:4px; }
+.sn-eyebrow{
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.22em;
+  color:var(--gold-400); text-transform:uppercase;
+}
+.sn-eyebrow .diamond{
+  width:6px; height:6px;
+  background-color:var(--gold-300);
+  display:inline-block;
+}
+.sn-title{
+  display:flex; align-items:baseline; gap:14px;
+  font-family:var(--f-en-display); font-weight:700;
+  font-size:36px; letter-spacing:.06em;
+  color:var(--gold-200);
+  line-height:1;
+}
+.sn-title .lv{ color:var(--gold-100); }
+.sn-title .sep{ color:var(--gold-500); font-weight:500; }
+.sn-title .role-ko{
+  font-family:var(--f-ko); font-weight:800; font-size:28px;
+  color:var(--vellum); letter-spacing:.04em;
+}
+.sn-sub{
+  display:flex; align-items:center; gap:12px;
+  margin-top:2px;
+}
+.sn-sub .ko-name{
+  font-family:var(--f-ko); font-weight:700; font-size:15px;
+  color:var(--vellum-2); letter-spacing:.02em;
+}
+.sn-sub .en-name{
+  font-family:var(--f-en-italic); font-style:italic; font-weight:500;
+  font-size:15px; color:var(--fam-vanguard-glow);
+}
+.sn-sub .arch{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:2px 7px;
+  background-color:#000; border:1px solid var(--fam-vanguard);
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em;
+  color:var(--fam-vanguard-glow); text-transform:uppercase;
+}
+.sn-sub .arch svg{ width:11px; height:11px; }
+
+.sn-right{
+  display:flex; flex-direction:column; align-items:flex-end; gap:6px;
+  min-width:280px;
+}
+.sn-pips{
+  display:flex; align-items:center; gap:5px;
+}
+.pip{
+  width:14px; height:14px;
+  background-color:var(--gold-300);
+  border:1px solid var(--gold-200);
+  display:inline-block;
+  position:relative;
+}
+.pip.empty{ background-color:#000; border-color:var(--ink-4); }
+.pip .corner{
+  position:absolute; width:4px; height:4px;
+  background-color:var(--gold-500);
+}
+.pip .corner.tl{ top:0; left:0; }
+.pip .corner.br{ bottom:0; right:0; }
+.sn-pips-lbl{ font-family:var(--f-mono); font-size:9px; letter-spacing:.18em; color:var(--ink-3); text-transform:uppercase; margin-left:8px; }
+.sn-pips-lbl b{ color:var(--gold-200); }
+
+.sn-xp{
+  width:300px;
+  display:flex; flex-direction:column; gap:3px;
+}
+.sn-xp-bar{
+  position:relative; height:8px;
+  background-color:#000; border:1px solid var(--gold-500);
+}
+.sn-xp-bar .fill{
+  position:absolute; top:0; bottom:0; left:0;
+  width:62%;
+  background-color:var(--gold-300);
+}
+.sn-xp-bar .fill-cap{
+  position:absolute; top:-1px; bottom:-1px;
+  width:2px; background-color:var(--gold-100);
+  left:62%; margin-left:-1px;
+}
+.sn-xp-lbl{
+  display:flex; justify-content:space-between;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.1em;
+  color:var(--ink-3);
+}
+.sn-xp-lbl b{ color:var(--gold-200); font-weight:500; }
+
+/* TABS */
+.cs-tabs{
+  flex:0 0 56px;
+  display:flex; align-items:stretch;
+  background-color:#0a0e22;
+  border-bottom:1px solid var(--gold-500);
+  padding:0 14px;
+  gap:0;
+}
+.cs-tab{
+  flex:0 0 auto;
+  display:flex; align-items:center; gap:10px;
+  padding:0 22px;
+  background-color:transparent;
+  border:none;
+  border-right:1px solid var(--line-1);
+  cursor:pointer;
+  position:relative;
+}
+.cs-tab .num{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.16em;
+  color:var(--ink-3);
+}
+.cs-tab .ko{
+  font-family:var(--f-ko); font-weight:800; font-size:16px;
+  color:var(--ink-2); letter-spacing:.04em;
+}
+.cs-tab .en{
+  font-family:var(--f-en-display); font-size:11px; letter-spacing:.22em;
+  color:var(--ink-4); text-transform:uppercase; font-weight:600;
+}
+.cs-tab.is-active{
+  background-color:#101638;
+  border-top:2px solid var(--gold-300);
+  border-bottom:2px solid var(--gold-300);
+}
+.cs-tab.is-active .num{ color:var(--gold-400); }
+.cs-tab.is-active .ko{ color:var(--gold-100); }
+.cs-tab.is-active .en{ color:var(--gold-300); }
+
+.tab-meta{
+  margin-left:auto;
+  display:flex; align-items:center; gap:14px;
+}
+.tab-meta .legend{
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.tab-meta .legend .dot{ width:8px; height:8px; background-color:var(--state-safe); display:inline-block; }
+.tab-meta .legend .dot.warn{ background-color:var(--state-warn); }
+.tab-meta .legend .dot.dn{ background-color:var(--state-danger); }
+
+/* TAB CONTENT (stat sheet) */
+.cs-tab-body{
+  flex:1 1 auto;
+  display:flex;
+  padding:14px;
+  gap:14px;
+  min-height:0;
+}
+.stat-col{
+  flex:1 1 50%;
+  display:flex; flex-direction:column;
+  background-color:#0c1228;
+  border:1px solid var(--gold-500);
+  position:relative;
+}
+.stat-col-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  padding:9px 14px 8px;
+  border-bottom:1px solid var(--line-1);
+}
+.stat-col-head .num{ font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--gold-400); }
+.stat-col-head .cap{ font-family:var(--f-en-display); font-size:12px; letter-spacing:.22em; color:var(--gold-200); font-weight:600; text-transform:uppercase; }
+.stat-col-head .ko{ font-family:var(--f-ko); font-weight:800; font-size:13px; color:var(--vellum); letter-spacing:.04em; margin-left:6px; }
+.stat-col-head .meta{ margin-left:auto; font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; }
+
+.stat-rows{
+  flex:1 1 auto;
+  display:flex; flex-direction:column;
+  padding:6px 14px;
+}
+.stat-row{
+  display:flex; align-items:center; gap:12px;
+  padding:7px 0;
+  border-bottom:1px solid var(--line-1);
+}
+.stat-row:last-child{ border-bottom:none; }
+.sr-icn{
+  position:relative;
+  width:26px; height:26px; flex:0 0 26px;
+  background-color:var(--sr-c, var(--gold-500));
+  border:1px solid var(--gold-500);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff8e0;
+}
+.stat-row.hp  .sr-icn{ background-color:var(--state-danger); }
+.stat-row.atk .sr-icn{ background-color:var(--state-danger); }
+.stat-row.def .sr-icn{ background-color:var(--state-info); }
+.stat-row.crt .sr-icn{ background-color:var(--rare-epic-2); }
+.stat-row.spd .sr-icn{ background-color:var(--state-safe); }
+.stat-row.hst .sr-icn{ background-color:var(--rare-epic); }
+.stat-row.res .sr-icn{ background-color:var(--fam-mystic-glow); color:#0c1126; }
+.stat-row.mag .sr-icn{ background-color:var(--fam-mystic); }
+.sr-icn svg{ width:15px; height:15px; }
+.sr-lbl{
+  display:flex; flex-direction:column; gap:0;
+  flex:1 1 auto; min-width:0;
+}
+.sr-lbl .ko{ font-family:var(--f-ko); font-weight:700; font-size:13px; color:var(--vellum); letter-spacing:.02em; line-height:1.1; }
+.sr-lbl .en{ font-family:var(--f-mono); font-size:9px; letter-spacing:.18em; color:var(--ink-3); text-transform:uppercase; }
+
+.sr-bar{
+  flex:0 0 110px;
+  height:6px;
+  background-color:#000; border:1px solid var(--line-2);
+  position:relative;
+}
+.sr-bar .fill{ position:absolute; top:0; bottom:0; left:0; background-color:var(--bar-c, var(--gold-300)); }
+.stat-row.hp  .sr-bar .fill{ background-color:var(--state-danger); }
+.stat-row.atk .sr-bar .fill{ background-color:var(--state-danger); }
+.stat-row.def .sr-bar .fill{ background-color:var(--state-info); }
+.stat-row.crt .sr-bar .fill{ background-color:var(--rare-epic-2); }
+.stat-row.spd .sr-bar .fill{ background-color:var(--state-safe); }
+.stat-row.hst .sr-bar .fill{ background-color:var(--rare-epic); }
+.stat-row.res .sr-bar .fill{ background-color:var(--fam-mystic-glow); }
+
+.sr-val{
+  flex:0 0 auto;
+  display:flex; align-items:baseline; gap:8px;
+  font-family:var(--f-en-display); font-weight:700; font-size:18px;
+  color:var(--gold-100); letter-spacing:.02em;
+  min-width:108px; justify-content:flex-end;
+}
+.sr-val .delta{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.04em;
+  padding:1px 5px;
+  border:1px solid var(--state-safe); color:var(--state-safe);
+  background-color:#0a1c10;
+  font-weight:500;
+}
+.sr-val .delta.down{ border-color:var(--state-danger); color:var(--state-danger); background-color:#1c0a0a; }
+.sr-val .delta.none{ border-color:var(--line-2); color:var(--ink-3); background-color:#0a0e22; }
+
+/* synergy / resistance side block (right half of stat tab) */
+.synergy-list{ flex:1 1 auto; display:flex; flex-direction:column; padding:6px 14px; }
+.syn-row{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid var(--line-1);
+}
+.syn-row:last-child{ border-bottom:none; }
+.syn-icn{
+  width:30px; height:30px; flex:0 0 30px;
+  background-color:#000; border:1px solid var(--gold-500);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold-200);
+  position:relative;
+}
+.syn-icn svg{ width:17px; height:17px; }
+.syn-lbl{ flex:1 1 auto; min-width:0; }
+.syn-lbl .nm{ font-family:var(--f-ko); font-weight:700; font-size:13px; color:var(--vellum); letter-spacing:.02em; line-height:1.1; }
+.syn-lbl .en{ font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; margin-top:2px; display:block; }
+.syn-val{
+  font-family:var(--f-en-display); font-weight:700; font-size:15px;
+  color:var(--state-safe); letter-spacing:.02em;
+  min-width:60px; text-align:right;
+}
+.syn-val.warn{ color:var(--state-warn); }
+.syn-val.dmg{ color:var(--state-danger); }
+.syn-val .small{ font-family:var(--f-mono); font-size:9px; color:var(--ink-3); margin-left:3px; letter-spacing:.08em; }
+
+.syn-icn.boon{ background-color:var(--state-safe); color:#0c1126; }
+.syn-icn.fire{ background-color:var(--state-danger); color:#fff8e0; }
+.syn-icn.holy{ background-color:var(--gold-300); color:#0c1126; }
+.syn-icn.bind{ background-color:var(--state-warn); color:#0c1126; }
+.syn-icn.set { background-color:var(--rare-epic); color:#fff8e0; }
+
+/* ===== RIGHT — skill list + equipment list ===== */
+.cs-right{
+  flex:0 0 380px;
+  display:flex; flex-direction:column;
+  background-color:#0a0e22;
+  border-left:1px solid var(--line-1);
+  min-height:0;
+}
+.rt-panel{
+  flex:0 1 auto;
+  display:flex; flex-direction:column;
+  border-bottom:1px solid var(--line-1);
+}
+.rt-panel:last-child{ border-bottom:none; }
+.rt-head{
+  display:flex; align-items:baseline; gap:8px;
+  padding:10px 14px 8px;
+  border-bottom:1px solid var(--gold-500);
+  background-color:#0c1228;
+}
+.rt-head .num{ font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--gold-400); }
+.rt-head .en{ font-family:var(--f-en-display); font-size:12px; letter-spacing:.22em; color:var(--gold-200); font-weight:600; text-transform:uppercase; }
+.rt-head .ko{ font-family:var(--f-ko); font-weight:800; font-size:13px; color:var(--vellum); letter-spacing:.04em; }
+.rt-head .meta{ margin-left:auto; font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; }
+.rt-head .meta b{ color:var(--gold-200); }
+
+.rt-list{
+  flex:1 1 auto;
+  display:flex; flex-direction:column;
+  gap:0;
+  padding:6px 10px 10px;
+}
+
+/* skill rows */
+.sk-row{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 8px;
+  border:1px solid var(--line-1);
+  background-color:#0c1228;
+  border-left:3px solid var(--tier-c, var(--gold-300));
+  cursor:pointer;
+  margin-top:6px;
+  position:relative;
+}
+.sk-row.tier-signature{ --tier-c:var(--gold-200); }
+.sk-row.tier-flex{ --tier-c:var(--state-safe); }
+.sk-row.tier-retrain{ --tier-c:var(--ink-3); }
+.sk-row.tier-locked{ --tier-c:var(--rare-epic); }
+
+.sk-icon{
+  position:relative;
+  width:46px; height:46px; flex:0 0 46px;
+  background-color:var(--fam-vanguard);
+  border:1px solid var(--gold-500);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff8e0;
+}
+.sk-row.tier-retrain .sk-icon{ background-color:#26304a; color:var(--ink-2); }
+.sk-row.tier-locked  .sk-icon{ background-color:#1c1430; color:var(--ink-3); }
+.sk-icon svg{ width:24px; height:24px; }
+.sk-icon .badge{
+  position:absolute; top:-5px; right:-5px;
+  width:18px; height:18px;
+  display:flex; align-items:center; justify-content:center;
+  background-color:var(--gold-300); color:#0c1126;
+  border:1px solid #0c1126;
+}
+.sk-icon .badge svg{ width:11px; height:11px; }
+.sk-row.tier-flex .sk-icon .badge{ background-color:var(--state-safe); }
+.sk-row.tier-retrain .sk-icon .badge{ background-color:#1c2243; color:var(--ink-2); border-color:var(--ink-3); }
+.sk-row.tier-locked .sk-icon .badge{ background-color:var(--rare-epic); color:#fff8e0; }
+
+.sk-info{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.sk-tier{
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--f-mono); font-size:8px; letter-spacing:.18em;
+  color:var(--tier-c); text-transform:uppercase;
+}
+.sk-tier .ko{ font-family:var(--f-ko); font-weight:700; font-size:10px; color:var(--vellum-2); letter-spacing:.02em; text-transform:none; }
+.sk-name{ font-family:var(--f-ko); font-weight:800; font-size:14px; color:var(--vellum); letter-spacing:.02em; line-height:1.05; }
+.sk-name .en{ font-family:var(--f-en-italic); font-style:italic; font-weight:500; font-size:12px; color:var(--ink-3); margin-left:5px; }
+.sk-meta{ display:flex; align-items:center; gap:8px; font-family:var(--f-mono); font-size:9px; letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase; }
+.sk-meta .cd{ color:var(--state-warn); }
+.sk-meta .cost{ color:var(--state-info); }
+.sk-meta .sep{ color:var(--ink-4); }
+
+/* equipment rows */
+.eq-row{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px 8px 8px;
+  border:1px solid var(--line-1);
+  background-color:#0c1228;
+  border-left:3px solid var(--rare-c, var(--rare-rare));
+  cursor:pointer;
+  margin-top:6px;
+}
+.eq-row.r-common{ --rare-c:var(--rare-common); }
+.eq-row.r-rare{ --rare-c:var(--rare-rare); }
+.eq-row.r-epic{ --rare-c:var(--rare-epic); }
+.eq-row.r-legend{ --rare-c:var(--rare-legend); }
+.eq-row.r-empty{
+  border-style:dashed; border-color:var(--ink-3); border-left-color:var(--ink-3);
+  background-color:#0a0d20;
+  justify-content:center;
+}
+.eq-icon{
+  position:relative;
+  width:44px; height:44px; flex:0 0 44px;
+  background-color:#000; border:1px solid var(--gold-500);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--rare-c, var(--rare-rare));
+}
+.eq-icon svg{ width:22px; height:22px; }
+.eq-icon .tier{
+  position:absolute; top:-3px; left:-3px;
+  font-family:var(--f-mono); font-size:8px; padding:1px 4px;
+  background-color:var(--rare-c); color:#0c1126;
+  font-weight:700; line-height:1; letter-spacing:.04em;
+}
+.eq-info{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.eq-slot{
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.16em; color:var(--ink-3); text-transform:uppercase;
+}
+.eq-slot .ko{ font-family:var(--f-ko); font-weight:700; font-size:10px; color:var(--vellum-3); letter-spacing:.02em; text-transform:none; }
+.eq-slot .rare{ padding:0 4px; border:1px solid var(--rare-c); color:var(--rare-c); font-size:8px; letter-spacing:.14em; }
+.eq-name{ font-family:var(--f-ko); font-weight:800; font-size:13.5px; color:var(--vellum); letter-spacing:.02em; line-height:1.05; }
+.eq-stats{
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.06em; color:var(--ink-3);
+}
+.eq-stats b{ color:var(--state-safe); font-weight:600; font-family:var(--f-en-display); font-size:11px; }
+.eq-stats .sep{ color:var(--ink-4); }
+.eq-empty-lbl{ font-family:var(--f-mono); font-size:10px; letter-spacing:.18em; color:var(--ink-3); text-transform:uppercase; }
+.eq-empty-lbl .ko{ font-family:var(--f-ko); font-weight:700; font-size:11px; color:var(--ink-2); letter-spacing:.02em; text-transform:none; margin-left:5px; }
+
+/* ============================================================
+   BOTTOM — roadmap + CTA bar
+   ============================================================ */
+.cs-bottom{
+  flex:0 0 168px;
+  display:flex;
+  background-color:#0c1228;
+  border-top:1px solid var(--gold-500);
+}
+.cs-roadmap{
+  flex:1 1 auto;
+  display:flex; flex-direction:column;
+  padding:12px 18px 12px;
+  border-right:1px solid var(--gold-500);
+  min-width:0;
+}
+.rm-head{
+  display:flex; align-items:baseline; gap:10px;
+  margin-bottom:10px;
+}
+.rm-head .num{ font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em; color:var(--gold-400); }
+.rm-head .en{ font-family:var(--f-en-display); font-size:13px; letter-spacing:.22em; color:var(--gold-200); font-weight:600; text-transform:uppercase; }
+.rm-head .ko{ font-family:var(--f-ko); font-weight:800; font-size:14px; color:var(--vellum); letter-spacing:.04em; }
+.rm-head .desc{
+  margin-left:auto;
+  font-family:var(--f-en-italic); font-style:italic; font-size:13px;
+  color:var(--ink-3);
+}
+.rm-head .desc .ko{ font-family:var(--f-ko); font-style:normal; color:var(--vellum-3); margin-left:8px; font-size:11px; font-weight:600; }
+
+.rm-track{
+  flex:1 1 auto;
+  display:flex; align-items:stretch;
+  gap:0;
+}
+.rm-node{
+  flex:1 1 0;
+  display:flex; flex-direction:column; align-items:center;
+  padding:0 6px;
+  position:relative;
+}
+.rm-connector{
+  position:absolute; top:24px; left:50%; width:100%; height:2px;
+  background-color:var(--line-2);
+  z-index:1;
+}
+.rm-connector.done{ background-color:var(--gold-300); }
+.rm-node .dot{
+  position:relative;
+  width:48px; height:48px;
+  border:1px solid var(--gold-500);
+  background-color:#000;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--ink-3);
+  z-index:2;
+}
+.rm-node .dot svg{ width:22px; height:22px; }
+.rm-node.done .dot{ border-color:var(--gold-300); background-color:#101638; color:var(--gold-200); }
+.rm-node.now .dot{
+  border-color:var(--gold-200);
+  background-color:var(--gold-300);
+  color:#0c1126;
+  border-width:2px;
+}
+.rm-node.now .dot::after{
+  content:"";
+  position:absolute; top:-6px; left:-6px; right:-6px; bottom:-6px;
+  border:1px solid var(--gold-200);
+  pointer-events:none;
+}
+.rm-node.locked .dot{ background-color:#0a0d20; color:var(--ink-4); }
+
+.rm-node .lvl{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.16em;
+  color:var(--ink-3); margin-top:6px; text-transform:uppercase;
+}
+.rm-node.done .lvl{ color:var(--gold-200); }
+.rm-node.now  .lvl{ color:var(--gold-100); font-weight:700; }
+.rm-node .nm{
+  font-family:var(--f-ko); font-weight:700; font-size:11.5px;
+  color:var(--ink-2); letter-spacing:.02em; line-height:1.15;
+  text-align:center; max-width:120px;
+  margin-top:1px;
+}
+.rm-node.now .nm{ color:var(--gold-100); }
+.rm-node.locked .nm{ color:var(--ink-4); }
+.rm-node .badge{
+  margin-top:3px;
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.14em;
+  padding:1px 5px;
+  border:1px solid var(--ink-3); color:var(--ink-3); text-transform:uppercase;
+  background-color:#000;
+}
+.rm-node.done .badge{ border-color:var(--state-safe); color:var(--state-safe); }
+.rm-node.now  .badge{ border-color:var(--gold-200); color:var(--gold-100); background-color:#1a1430; }
+.rm-node.locked .badge{ border-color:var(--ink-4); color:var(--ink-4); }
+
+/* CTA bar */
+.cs-ctas{
+  flex:0 0 540px;
+  display:flex;
+  padding:12px 14px 12px;
+  gap:8px;
+  background-color:#0a0e22;
+}
+.cta{
+  flex:1 1 0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px;
+  padding:14px 8px 12px;
+  background-color:#000;
+  border:1px solid var(--gold-500);
+  cursor:pointer;
+  position:relative;
+  text-align:center;
+}
+.cta .icn{
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px;
+  color:var(--gold-200);
+}
+.cta .icn svg{ width:24px; height:24px; }
+.cta .ko{ font-family:var(--f-ko); font-weight:800; font-size:14px; color:var(--vellum); letter-spacing:.04em; line-height:1.1; }
+.cta .en{ font-family:var(--f-mono); font-size:9px; letter-spacing:.22em; color:var(--ink-3); text-transform:uppercase; }
+.cta .hint{ font-family:var(--f-mono); font-size:9px; letter-spacing:.1em; color:var(--gold-300); text-transform:uppercase; }
+.cta.danger{ border-color:var(--state-danger); }
+.cta.danger .icn{ color:var(--state-danger); }
+.cta.danger .ko{ color:#ffd9d3; }
+.cta.danger .en{ color:var(--state-danger); }
+.cta.primary{ background-color:var(--gold-300); border-color:var(--gold-200); }
+.cta.primary .icn{ color:#0c1126; }
+.cta.primary .ko{ color:#0c1126; }
+.cta.primary .en{ color:#0c1126; }
+.cta.primary .hint{ color:#0c1126; }
+</style>
+</head>
+<body>
+
+<!-- ====== ICON LIBRARY (used by use href) ====== -->
+<svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 9h4a2 2 0 0 1 0 4H9m0 0h5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-favor" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" fill="currentColor" fill-opacity=".5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-vanguard" viewBox="0 0 24 24"><path d="M12 3l8 3v5c0 5-4 9-8 10-4-1-8-5-8-10V6z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 12l2 2 4-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-striker" viewBox="0 0 24 24"><path d="M14.5 4.5L20 10l-2 2-1.5-1.5L7 20l-3-3 9.5-9.5L12 6z" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-ranger" viewBox="0 0 24 24"><path d="M4 19c4-6 9-9 16-13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4 4l3 3M4 4l3 0M4 4l0 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-mystic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2 2M16.4 16.4l2 2M5.6 18.4l2-2M16.4 7.6l2-2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-beastkin" viewBox="0 0 24 24"><path d="M4 11c0-3 2-5 4-5l2 2 2-2c2 0 4 2 4 5v3c0 3-2 5-5 6h-2c-3-1-5-3-5-6z" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+
+    <symbol id="i-hp" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-atk" viewBox="0 0 24 24"><path d="M14.5 4.5L20 10l-2 2-1.5-1.5L7 20l-3-3 9.5-9.5L12 6z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-def" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-crit" viewBox="0 0 24 24"><path d="M12 3l2.5 6 6.5.6-5 4.4 1.5 6.4L12 17l-5.5 3.4L8 14 3 9.6l6.5-.6z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-spd" viewBox="0 0 24 24"><path d="M5 12h11M12 6l6 6-6 6M3 8h3M3 16h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-haste" viewBox="0 0 24 24"><path d="M13 3L4 14h6l-1 7 9-11h-6z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-res" viewBox="0 0 24 24"><path d="M12 4l7 4v5c0 4-3 7-7 8-4-1-7-4-7-8V8z" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.4"/><path d="M12 9v6M9 12h6" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></symbol>
+
+    <symbol id="i-sigil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor" fill-opacity=".2" stroke="currentColor" stroke-width="1.4"/><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="1.2" fill="none"/></symbol>
+    <symbol id="i-aegis" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4"/><path d="M8 12l3 3 5-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-ash" viewBox="0 0 24 24"><path d="M12 3c1 4 5 4 5 9a5 5 0 1 1-10 0c0-3 2-3 2-6 1 2 3 2 3-3z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-faithless" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 5l14 14" stroke="currentColor" stroke-width="1.4"/></symbol>
+
+    <symbol id="i-weapon" viewBox="0 0 24 24"><path d="M14 4l6 6-9 9-3-3z" fill="currentColor" fill-opacity=".2" stroke="currentColor" stroke-width="1.4"/><path d="M3 17l4 4M11 13l-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-armor" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-amulet" viewBox="0 0 24 24"><circle cx="12" cy="14" r="5" fill="currentColor" fill-opacity=".2" stroke="currentColor" stroke-width="1.4"/><path d="M9 9V5h6v4M12 11v6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-relic" viewBox="0 0 24 24"><path d="M12 3l3 5 5 1-3.5 4 1 6L12 16l-5.5 3 1-6L4 9l5-1z" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" fill="currentColor" fill-opacity=".4" stroke="currentColor" stroke-width="1.4"/><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 4v4h-4M21 12a9 9 0 0 1-15 6.7L3 16M3 20v-4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chain" viewBox="0 0 24 24"><rect x="3" y="9" width="9" height="6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="9" width="9" height="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+
+    <symbol id="i-shield2" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 4 5 4 5 9a5 5 0 1 1-10 0c0-3 2-3 2-6 1 2 3 2 3-3z" fill="currentColor" fill-opacity=".4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-light" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor" fill-opacity=".4" stroke="currentColor" stroke-width="1.4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-bind" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="9" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.4"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-rite" viewBox="0 0 24 24"><path d="M12 3l2 4 4 1-2.5 3 .5 4L12 13l-4 2 .5-4L6 8l4-1z" fill="currentColor" fill-opacity=".4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 21h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+
+    <!-- stance posture silhouettes -->
+    <symbol id="p-idle" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" fill="currentColor"/><path d="M12 7v8M9 10l3 1 3-1M9 22l3-8 3 8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="p-attack" viewBox="0 0 24 24"><circle cx="11" cy="5" r="2" fill="currentColor"/><path d="M11 7v6M7 22l4-9 3 4M14 12l6-4M14 12l4 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="p-guard" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" fill="currentColor"/><path d="M12 7v8M9 22l3-7 3 7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 9l4-2v9l-4-2z" fill="currentColor" fill-opacity=".5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+    <symbol id="p-cast" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2" fill="currentColor"/><path d="M12 7v8M9 22l3-7 3 7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="5.5" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/></symbol>
+
+    <!-- big figure silhouette: guardian/vanguard, holds shield -->
+    <symbol id="fig-guardian" viewBox="0 0 240 280">
+      <!-- floor plane shadow already external -->
+      <!-- cape billow -->
+      <path d="M85 80 Q60 130 70 200 L80 250 L110 210 L100 130z" fill="currentColor" fill-opacity=".55"/>
+      <path d="M155 80 Q180 130 170 200 L160 250 L130 210 L140 130z" fill="currentColor" fill-opacity=".55"/>
+      <!-- legs -->
+      <path d="M105 200 L98 270 L114 270 L118 210z" fill="currentColor" fill-opacity=".95"/>
+      <path d="M135 200 L142 270 L126 270 L122 210z" fill="currentColor" fill-opacity=".95"/>
+      <!-- torso plate -->
+      <path d="M95 95 L145 95 L150 200 L90 200z" fill="currentColor" fill-opacity=".95"/>
+      <!-- plate seam -->
+      <path d="M120 100 L120 195" stroke="#000" stroke-width="1.5" opacity=".35"/>
+      <path d="M95 130 L145 130" stroke="#000" stroke-width="1.5" opacity=".35"/>
+      <!-- pauldrons -->
+      <path d="M85 92 Q88 75 100 80 L100 110 Q90 115 85 105z" fill="currentColor" fill-opacity=".95"/>
+      <path d="M155 92 Q152 75 140 80 L140 110 Q150 115 155 105z" fill="currentColor" fill-opacity=".95"/>
+      <!-- right arm holding sword -->
+      <path d="M150 110 L165 160 L160 170 L145 130z" fill="currentColor" fill-opacity=".95"/>
+      <!-- sword pommel + blade -->
+      <rect x="158" y="160" width="6" height="4" fill="currentColor"/>
+      <rect x="150" y="164" width="22" height="3" fill="currentColor"/>
+      <path d="M160 167 L164 167 L162 240z" fill="currentColor" fill-opacity=".75"/>
+      <!-- left arm holding shield -->
+      <path d="M90 110 L85 165 L75 165 L80 130z" fill="currentColor" fill-opacity=".95"/>
+      <!-- big tower shield -->
+      <path d="M40 130 L75 122 L78 220 Q60 230 42 220z" fill="currentColor" fill-opacity=".88"/>
+      <path d="M40 130 L75 122 L78 220 Q60 230 42 220z" stroke="#000" stroke-width="1.5" fill="none" opacity=".35"/>
+      <path d="M58 145 L62 145 L62 200 L58 200z M48 168 L72 168 L72 174 L48 174z" fill="#000" opacity=".3"/>
+      <!-- helmet -->
+      <path d="M100 50 Q100 32 120 32 Q140 32 140 50 L142 88 Q140 100 120 100 Q100 100 98 88z" fill="currentColor" fill-opacity=".95"/>
+      <!-- helmet visor slit -->
+      <rect x="106" y="62" width="28" height="4" fill="#000" opacity=".55"/>
+      <rect x="106" y="72" width="28" height="2" fill="#000" opacity=".35"/>
+      <!-- helmet crest -->
+      <path d="M120 18 L114 32 L126 32z" fill="currentColor"/>
+      <path d="M120 18 L120 12" stroke="currentColor" stroke-width="3"/>
+      <!-- belt -->
+      <rect x="92" y="155" width="58" height="8" fill="#000" opacity=".4"/>
+      <rect x="116" y="153" width="8" height="12" fill="currentColor" fill-opacity=".9"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="cs-root" data-screen-label="01 캐릭터 시트">
+  <span class="cs-cnr tl"></span><span class="cs-cnr tr"></span><span class="cs-cnr bl"></span><span class="cs-cnr br"></span>
+  <span class="cs-trim"></span>
+
+  <!-- ====== TOP BAR ====== -->
+  <header class="cs-topbar">
+    <button class="tb-back" name="TcsBackToTown">
+      <span class="tc tl"></span><span class="tc br"></span>
+      <svg viewBox="0 0 24 24"><use href="#i-chev-l"/></svg>
+      <span>BACK</span><span class="ko">마을로</span>
+    </button>
+    <nav class="tb-crumb">
+      <span>TOWN</span><span class="sep">/</span>
+      <span>ROSTER</span><span class="sep">/</span>
+      <b>CHARACTER SHEET</b><span class="ko">캐릭터 시트</span>
+    </nav>
+
+    <div class="tb-eyebrow">
+      <span class="label">— SURFACE · TOWN.CHARACTER.SHEET · V0.6 —</span>
+
+      <div class="tb-coin">
+        <div class="cell"><svg viewBox="0 0 24 24"><use href="#i-coin"/></svg><span class="k">GOLD</span><span>12,840</span></div>
+        <div class="cell"><svg viewBox="0 0 24 24"><use href="#i-favor"/></svg><span class="k">FAVOR</span><span>32</span></div>
+      </div>
+
+      <div class="tb-pn">
+        <button class="b" name="TcsPrevHero"><svg viewBox="0 0 24 24"><use href="#i-chev-l"/></svg></button>
+        <span class="lbl">HERO <b>3 / 12</b></span>
+        <button class="b" name="TcsNextHero"><svg viewBox="0 0 24 24"><use href="#i-chev-r"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== BODY ====== -->
+  <div class="cs-body">
+
+    <!-- LEFT — hero rail -->
+    <aside class="cs-left">
+      <div class="rail-head">
+        <div class="top">
+          <div>
+            <span class="lbl">ROSTER</span>
+            <span class="ko">내 영웅</span>
+          </div>
+          <div class="count">활성 <b>12</b> / 정원 16</div>
+        </div>
+        <div class="rail-filter">
+          <button class="rail-fchip is-on" name="TcsFilterAll">전체</button>
+          <button class="rail-fchip" name="TcsFilterVanguard">전열</button>
+          <button class="rail-fchip" name="TcsFilterStriker">기습</button>
+          <button class="rail-fchip" name="TcsFilterRanger">사격</button>
+          <button class="rail-fchip" name="TcsFilterMystic">시전</button>
+        </div>
+      </div>
+
+      <div class="rail-list" name="TcsHeroList">
+
+        <div class="rail-item fam-vanguard" name="TcsHero_Garon">
+          <div class="av"><span class="lv">25</span><svg viewBox="0 0 24 24"><use href="#i-vanguard"/></svg></div>
+          <div class="info">
+            <div class="name">가론</div>
+            <div class="meta"><span class="cls">VANGUARD</span><span>·</span><span class="ko">방벽병</span></div>
+          </div>
+          <div class="state safe">대기</div>
+        </div>
+
+        <div class="rail-item fam-striker" name="TcsHero_Kael">
+          <div class="av"><span class="lv">23</span><svg viewBox="0 0 24 24"><use href="#i-striker"/></svg></div>
+          <div class="info">
+            <div class="name">카엘</div>
+            <div class="meta"><span class="cls">STRIKER</span><span>·</span><span class="ko">리퍼</span></div>
+          </div>
+          <div class="state warn">출진</div>
+        </div>
+
+        <div class="rail-item fam-vanguard is-active" name="TcsHero_Dawnrin">
+          <div class="av"><span class="lv">27</span><svg viewBox="0 0 24 24"><use href="#i-vanguard"/></svg></div>
+          <div class="info">
+            <div class="name">단린</div>
+            <div class="meta"><span class="cls">VANGUARD</span><span>·</span><span class="ko">감시자</span></div>
+          </div>
+          <div class="state safe">선택</div>
+        </div>
+
+        <div class="rail-item fam-ranger" name="TcsHero_Vinya">
+          <div class="av"><span class="lv">21</span><svg viewBox="0 0 24 24"><use href="#i-ranger"/></svg></div>
+          <div class="info">
+            <div class="name">비냐</div>
+            <div class="meta"><span class="cls">RANGER</span><span>·</span><span class="ko">명사수</span></div>
+          </div>
+          <div class="state safe">대기</div>
+        </div>
+
+        <div class="rail-item fam-mystic" name="TcsHero_Mira">
+          <div class="av"><span class="lv">19</span><svg viewBox="0 0 24 24"><use href="#i-mystic"/></svg></div>
+          <div class="info">
+            <div class="name">미라</div>
+            <div class="meta"><span class="cls">MYSTIC</span><span>·</span><span class="ko">파장술사</span></div>
+          </div>
+          <div class="state injured">부상</div>
+        </div>
+
+        <div class="rail-item fam-beastkin" name="TcsHero_Hru">
+          <div class="av"><span class="lv">22</span><svg viewBox="0 0 24 24"><use href="#i-beastkin"/></svg></div>
+          <div class="info">
+            <div class="name">흐루</div>
+            <div class="meta"><span class="cls">BEASTKIN</span><span>·</span><span class="ko">사슬꾼</span></div>
+          </div>
+          <div class="state safe">대기</div>
+        </div>
+
+        <div class="rail-item fam-vanguard" name="TcsHero_Oril">
+          <div class="av"><span class="lv">18</span><svg viewBox="0 0 24 24"><use href="#i-vanguard"/></svg></div>
+          <div class="info">
+            <div class="name">오릴</div>
+            <div class="meta"><span class="cls">VANGUARD</span><span>·</span><span class="ko">방벽병</span></div>
+          </div>
+          <div class="state safe">대기</div>
+        </div>
+
+        <div class="rail-item fam-striker" name="TcsHero_Yumi">
+          <div class="av"><span class="lv">20</span><svg viewBox="0 0 24 24"><use href="#i-striker"/></svg></div>
+          <div class="info">
+            <div class="name">유미</div>
+            <div class="meta"><span class="cls">STRIKER</span><span>·</span><span class="ko">단검수</span></div>
+          </div>
+          <div class="state warn">출진</div>
+        </div>
+
+        <div class="rail-item fam-ranger" name="TcsHero_Tael">
+          <div class="av"><span class="lv">17</span><svg viewBox="0 0 24 24"><use href="#i-ranger"/></svg></div>
+          <div class="info">
+            <div class="name">태일</div>
+            <div class="meta"><span class="cls">RANGER</span><span>·</span><span class="ko">석궁수</span></div>
+          </div>
+          <div class="state safe">대기</div>
+        </div>
+
+        <div class="rail-item fam-mystic" name="TcsHero_Solveig">
+          <div class="av"><span class="lv">15</span><svg viewBox="0 0 24 24"><use href="#i-mystic"/></svg></div>
+          <div class="info">
+            <div class="name">솔베이</div>
+            <div class="meta"><span class="cls">MYSTIC</span><span>·</span><span class="ko">한기사</span></div>
+          </div>
+          <div class="state safe">대기</div>
+        </div>
+
+        <div class="rail-item fam-beastkin" name="TcsHero_Rann">
+          <div class="av"><span class="lv">14</span><svg viewBox="0 0 24 24"><use href="#i-beastkin"/></svg></div>
+          <div class="info">
+            <div class="name">란</div>
+            <div class="meta"><span class="cls">BEASTKIN</span><span>·</span><span class="ko">송곳니</span></div>
+          </div>
+          <div class="state safe">대기</div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- CENTER — portrait stage + tabs + tab content -->
+    <main class="cs-center">
+
+      <!-- portrait stage -->
+      <section class="cs-stage" name="TcsHeroStage">
+        <div class="stage-bg"></div>
+        <div class="stage-grid"></div>
+        <div class="stage-horizon"></div>
+        <div class="stage-vignette-l"></div>
+        <div class="stage-vignette-r"></div>
+        <div class="stage-floor"></div>
+        <div class="stage-floor-shadow"></div>
+
+        <div class="stage-cap">
+          <span class="pill epic"><span class="tc tl"></span><span class="tc br"></span>— EPIC · 에픽 —</span>
+          <span class="pill"><span class="tc tl"></span><span class="tc br"></span><svg viewBox="0 0 24 24"><use href="#i-vanguard"/></svg>VANGUARD <span class="ko">전열</span></span>
+          <span class="pill"><span class="tc tl"></span><span class="tc br"></span>CONTRACT · <span class="ko">서약</span></span>
+        </div>
+
+        <div class="stage-stance" name="TcsStanceRow">
+          <button class="stance-pip" name="TcsStanceIdle">
+            <svg viewBox="0 0 24 24"><use href="#p-idle"/></svg>
+            <span class="l">IDLE</span><span class="ko">대기</span>
+          </button>
+          <button class="stance-pip" name="TcsStanceAttack">
+            <svg viewBox="0 0 24 24"><use href="#p-attack"/></svg>
+            <span class="l">ATTACK</span><span class="ko">공격</span>
+          </button>
+          <button class="stance-pip is-active" name="TcsStanceGuard">
+            <svg viewBox="0 0 24 24"><use href="#p-guard"/></svg>
+            <span class="l">GUARD</span><span class="ko">방어</span>
+          </button>
+          <button class="stance-pip" name="TcsStanceCast">
+            <svg viewBox="0 0 24 24"><use href="#p-cast"/></svg>
+            <span class="l">CAST</span><span class="ko">시전</span>
+          </button>
+        </div>
+
+        <div class="stage-figure">
+          <svg class="silh" viewBox="0 0 240 280"><use href="#fig-guardian"/></svg>
+        </div>
+
+        <div class="stage-name">
+          <div class="sn-left">
+            <div class="sn-eyebrow">
+              <span class="diamond"></span>
+              <span>— HERO 03 / 12 · VANGUARD · CHAPTER 4 —</span>
+              <span class="diamond"></span>
+            </div>
+            <div class="sn-title">
+              <span class="lv">Lv 27</span>
+              <span class="sep">·</span>
+              <span class="role-ko">감시자</span>
+            </div>
+            <div class="sn-sub">
+              <span class="ko-name">단린</span>
+              <span class="en-name">Dawnrin · Watch-priest of the Pale Vow</span>
+              <span class="arch">
+                <span class="tc tl"></span><span class="tc br"></span>
+                <svg viewBox="0 0 24 24"><use href="#i-vanguard"/></svg>FRONT-LINE
+              </span>
+            </div>
+          </div>
+          <div class="sn-right">
+            <div class="sn-pips">
+              <span class="pip"><span class="corner tl"></span><span class="corner br"></span></span>
+              <span class="pip"><span class="corner tl"></span><span class="corner br"></span></span>
+              <span class="pip"><span class="corner tl"></span><span class="corner br"></span></span>
+              <span class="pip"><span class="corner tl"></span><span class="corner br"></span></span>
+              <span class="pip empty"></span>
+              <span class="sn-pips-lbl">ASCEND <b>4</b> / 5</span>
+            </div>
+            <div class="sn-xp">
+              <div class="sn-xp-bar"><span class="fill"></span><span class="fill-cap"></span></div>
+              <div class="sn-xp-lbl">
+                <span>XP <b>18,420</b> / 29,500</span>
+                <span><b>62%</b> · NEXT Lv28</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABS -->
+      <nav class="cs-tabs" name="TcsTabBar">
+        <button class="cs-tab is-active" name="TcsTabStat">
+          <span class="num">A</span>
+          <span class="ko">스탯</span>
+          <span class="en">STAT</span>
+        </button>
+        <button class="cs-tab" name="TcsTabEquip">
+          <span class="num">B</span>
+          <span class="ko">장비</span>
+          <span class="en">EQUIP</span>
+        </button>
+        <button class="cs-tab" name="TcsTabPassive">
+          <span class="num">C</span>
+          <span class="ko">패시브</span>
+          <span class="en">PASSIVE</span>
+        </button>
+        <button class="cs-tab" name="TcsTabSynergy">
+          <span class="num">D</span>
+          <span class="ko">시너지</span>
+          <span class="en">SYNERGY</span>
+        </button>
+        <div class="tab-meta">
+          <div class="legend"><span class="dot"></span>강화</div>
+          <div class="legend"><span class="dot warn"></span>대치 효과</div>
+          <div class="legend"><span class="dot dn"></span>감쇠</div>
+        </div>
+      </nav>
+
+      <!-- TAB BODY -->
+      <section class="cs-tab-body" name="TcsTabContent">
+        <!-- LEFT half: core stats -->
+        <div class="stat-col">
+          <span class="tc tl"></span><span class="tc tr"></span><span class="tc bl"></span><span class="tc br"></span>
+          <div class="stat-col-head">
+            <span class="num">A.01</span>
+            <span class="cap">CORE STAT</span>
+            <span class="ko">핵심 능력치</span>
+            <span class="meta"><b>+ROSTER</b> · MOD APPLIED</span>
+          </div>
+          <div class="stat-rows">
+            <div class="stat-row hp">
+              <span class="sr-icn"><svg viewBox="0 0 24 24"><use href="#i-hp"/></svg></span>
+              <span class="sr-lbl"><span class="ko">생명력</span><span class="en">HP</span></span>
+              <span class="sr-bar"><span class="fill" style="width:92%"></span></span>
+              <span class="sr-val">1,840<span class="delta">+120</span></span>
+            </div>
+            <div class="stat-row atk">
+              <span class="sr-icn"><svg viewBox="0 0 24 24"><use href="#i-atk"/></svg></span>
+              <span class="sr-lbl"><span class="ko">공격력</span><span class="en">ATK</span></span>
+              <span class="sr-bar"><span class="fill" style="width:54%"></span></span>
+              <span class="sr-val">214<span class="delta">+8</span></span>
+            </div>
+            <div class="stat-row def">
+              <span class="sr-icn"><svg viewBox="0 0 24 24"><use href="#i-def"/></svg></span>
+              <span class="sr-lbl"><span class="ko">방어력</span><span class="en">DEF</span></span>
+              <span class="sr-bar"><span class="fill" style="width:78%"></span></span>
+              <span class="sr-val">186<span class="delta">+22</span></span>
+            </div>
+            <div class="stat-row crt">
+              <span class="sr-icn"><svg viewBox="0 0 24 24"><use href="#i-crit"/></svg></span>
+              <span class="sr-lbl"><span class="ko">치명</span><span class="en">CRIT</span></span>
+              <span class="sr-bar"><span class="fill" style="width:36%"></span></span>
+              <span class="sr-val">18%<span class="delta">+3%</span></span>
+            </div>
+            <div class="stat-row hst">
+              <span class="sr-icn"><svg viewBox="0 0 24 24"><use href="#i-haste"/></svg></span>
+              <span class="sr-lbl"><span class="ko">스킬 가속</span><span class="en">HASTE</span></span>
+              <span class="sr-bar"><span class="fill" style="width:48%"></span></span>
+              <span class="sr-val">12<span class="delta">+2</span></span>
+            </div>
+            <div class="stat-row spd">
+              <span class="sr-icn"><svg viewBox="0 0 24 24"><use href="#i-spd"/></svg></span>
+              <span class="sr-lbl"><span class="ko">속도</span><span class="en">SPEED</span></span>
+              <span class="sr-bar"><span class="fill" style="width:62%"></span></span>
+              <span class="sr-val">104<span class="delta down">-3</span></span>
+            </div>
+            <div class="stat-row res">
+              <span class="sr-icn"><svg viewBox="0 0 24 24"><use href="#i-res"/></svg></span>
+              <span class="sr-lbl"><span class="ko">저항</span><span class="en">RES</span></span>
+              <span class="sr-bar"><span class="fill" style="width:44%"></span></span>
+              <span class="sr-val">66<span class="delta none">—</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT half: affix + set + traits -->
+        <div class="stat-col">
+          <span class="tc tl"></span><span class="tc tr"></span><span class="tc bl"></span><span class="tc br"></span>
+          <div class="stat-col-head">
+            <span class="num">A.02</span>
+            <span class="cap">AFFIX · TRAIT</span>
+            <span class="ko">접사 · 특성</span>
+            <span class="meta"><b>5</b> AFFIX · 2 BOON · 1 BANE</span>
+          </div>
+          <div class="synergy-list">
+            <div class="syn-row">
+              <span class="syn-icn boon"><svg viewBox="0 0 24 24"><use href="#i-shield2"/></svg></span>
+              <span class="syn-lbl">
+                <span class="nm">방어 강화 <span style="font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--state-safe); border:1px solid var(--state-safe); padding:0 4px; margin-left:5px;">BOON</span></span>
+                <span class="en">DEF UP · 결계 효과 지속시간 +1턴</span>
+              </span>
+              <span class="syn-val">+12<span class="small">%</span></span>
+            </div>
+            <div class="syn-row">
+              <span class="syn-icn fire"><svg viewBox="0 0 24 24"><use href="#i-flame"/></svg></span>
+              <span class="syn-lbl">
+                <span class="nm">화염 저항</span>
+                <span class="en">FIRE RES · 받는 화염 피해 감소</span>
+              </span>
+              <span class="syn-val">+18</span>
+            </div>
+            <div class="syn-row">
+              <span class="syn-icn holy"><svg viewBox="0 0 24 24"><use href="#i-light"/></svg></span>
+              <span class="syn-lbl">
+                <span class="nm">신성 적성 <span style="font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--state-safe); border:1px solid var(--state-safe); padding:0 4px; margin-left:5px;">BOON</span></span>
+                <span class="en">HOLY AFFINITY · 신성 피해 / 회복 +</span>
+              </span>
+              <span class="syn-val">+22<span class="small">%</span></span>
+            </div>
+            <div class="syn-row">
+              <span class="syn-icn bind"><svg viewBox="0 0 24 24"><use href="#i-bind"/></svg></span>
+              <span class="syn-lbl">
+                <span class="nm">결박 저항 <span style="font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--state-danger); border:1px solid var(--state-danger); padding:0 4px; margin-left:5px;">BANE</span></span>
+                <span class="en">BIND RES · 결박 효과 노출 증가</span>
+              </span>
+              <span class="syn-val warn">-8</span>
+            </div>
+            <div class="syn-row">
+              <span class="syn-icn set"><svg viewBox="0 0 24 24"><use href="#i-rite"/></svg></span>
+              <span class="syn-lbl">
+                <span class="nm">동틀녘의 의식 <span style="font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--rare-epic); border:1px solid var(--rare-epic); padding:0 4px; margin-left:5px;">SET 2/5</span></span>
+                <span class="en">RITE OF DAYBREAK · 시작 시 아군 전체 SP +1</span>
+              </span>
+              <span class="syn-val">+1<span class="small">SP</span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT — skill list + equipment list -->
+    <aside class="cs-right">
+
+      <!-- SKILL PANEL -->
+      <section class="rt-panel" name="TcsSkillPanel">
+        <div class="rt-head">
+          <span class="num">B.01</span>
+          <span class="en">SKILL</span><span class="ko">스킬</span>
+          <span class="meta">활성 <b>2</b> / 4</span>
+        </div>
+        <div class="rt-list">
+
+          <div class="sk-row tier-signature" name="TcsSkill_Sigil">
+            <span class="sk-icon">
+              <svg viewBox="0 0 24 24"><use href="#i-sigil"/></svg>
+              <span class="badge"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></span>
+            </span>
+            <div class="sk-info">
+              <div class="sk-tier"><span>SIGNATURE LOCK</span><span class="ko">정체성 · 불변</span></div>
+              <div class="sk-name">봉인의 방패<span class="en">Sigil Shield</span></div>
+              <div class="sk-meta"><span class="cd">CD 4T</span><span class="sep">·</span><span class="cost">2 SP</span><span class="sep">·</span><span>CONE 3</span></div>
+            </div>
+          </div>
+
+          <div class="sk-row tier-flex" name="TcsSkill_Aegis">
+            <span class="sk-icon">
+              <svg viewBox="0 0 24 24"><use href="#i-aegis"/></svg>
+              <span class="badge"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></span>
+            </span>
+            <div class="sk-info">
+              <div class="sk-tier"><span>FLEX ACTIVE</span><span class="ko">현재 활성</span></div>
+              <div class="sk-name">백금의 호위<span class="en">Platinum Aegis</span></div>
+              <div class="sk-meta"><span class="cd">CD 3T</span><span class="sep">·</span><span class="cost">1 SP</span><span class="sep">·</span><span>ALLY 1</span></div>
+            </div>
+          </div>
+
+          <div class="sk-row tier-retrain" name="TcsSkill_Ash">
+            <span class="sk-icon">
+              <svg viewBox="0 0 24 24"><use href="#i-ash"/></svg>
+              <span class="badge"><svg viewBox="0 0 24 24"><use href="#i-refresh"/></svg></span>
+            </span>
+            <div class="sk-info">
+              <div class="sk-tier"><span>RETRAIN POOL</span><span class="ko">재훈련 가능</span></div>
+              <div class="sk-name">재의 정화<span class="en">Ash Purification</span></div>
+              <div class="sk-meta"><span class="cd">CD 5T</span><span class="sep">·</span><span class="cost">2 SP</span><span class="sep">·</span><span>AOE 2</span></div>
+            </div>
+          </div>
+
+          <div class="sk-row tier-locked" name="TcsSkill_Faithless">
+            <span class="sk-icon">
+              <svg viewBox="0 0 24 24"><use href="#i-faithless"/></svg>
+              <span class="badge"><svg viewBox="0 0 24 24"><use href="#i-chain"/></svg></span>
+            </span>
+            <div class="sk-info">
+              <div class="sk-tier"><span>CH·5 LATE UNLOCK</span><span class="ko">5장 해금</span></div>
+              <div class="sk-name">신앙의 부재<span class="en">Faith Absent</span></div>
+              <div class="sk-meta"><span class="cd">CD 6T</span><span class="sep">·</span><span class="cost">3 SP</span><span class="sep">·</span><span>SELF</span></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- EQUIP PANEL -->
+      <section class="rt-panel" name="TcsEquipPanel">
+        <div class="rt-head">
+          <span class="num">B.02</span>
+          <span class="en">EQUIPMENT</span><span class="ko">장비</span>
+          <span class="meta">착용 <b>4</b> / 5</span>
+        </div>
+        <div class="rt-list">
+
+          <div class="eq-row r-rare" name="TcsEquip_Weapon">
+            <span class="eq-icon"><span class="tier">T3</span><svg viewBox="0 0 24 24"><use href="#i-weapon"/></svg></span>
+            <div class="eq-info">
+              <div class="eq-slot"><span>WEAPON</span><span class="ko">무기</span><span class="rare">RARE</span></div>
+              <div class="eq-name">서약의 종</div>
+              <div class="eq-stats"><span>ATK</span><b>+42</b><span class="sep">·</span><span>HASTE</span><b>+3</b></div>
+            </div>
+          </div>
+
+          <div class="eq-row r-epic" name="TcsEquip_Armor">
+            <span class="eq-icon"><span class="tier">T4</span><svg viewBox="0 0 24 24"><use href="#i-armor"/></svg></span>
+            <div class="eq-info">
+              <div class="eq-slot"><span>ARMOR</span><span class="ko">갑옷</span><span class="rare">EPIC</span></div>
+              <div class="eq-name">백금 흉갑</div>
+              <div class="eq-stats"><span>DEF</span><b>+58</b><span class="sep">·</span><span>HP</span><b>+220</b></div>
+            </div>
+          </div>
+
+          <div class="eq-row r-rare" name="TcsEquip_Accessory">
+            <span class="eq-icon"><span class="tier">T2</span><svg viewBox="0 0 24 24"><use href="#i-amulet"/></svg></span>
+            <div class="eq-info">
+              <div class="eq-slot"><span>ACCESSORY</span><span class="ko">장신구</span><span class="rare">RARE</span></div>
+              <div class="eq-name">성수 부적</div>
+              <div class="eq-stats"><span>RES</span><b>+12</b><span class="sep">·</span><span>CRIT</span><b>+3%</b></div>
+            </div>
+          </div>
+
+          <div class="eq-row r-legend" name="TcsEquip_Relic">
+            <span class="eq-icon"><span class="tier">T5</span><svg viewBox="0 0 24 24"><use href="#i-relic"/></svg></span>
+            <div class="eq-info">
+              <div class="eq-slot"><span>RELIC</span><span class="ko">유물</span><span class="rare">LEGEND</span></div>
+              <div class="eq-name">동튼 별편</div>
+              <div class="eq-stats"><span>ALL</span><b>+6%</b><span class="sep">·</span><span>SET</span><b>2/5</b></div>
+            </div>
+          </div>
+
+          <div class="eq-row r-empty" name="TcsEquip_Charm">
+            <span class="eq-empty-lbl">EMPTY<span class="ko">장식 — 미장착</span></span>
+          </div>
+
+        </div>
+      </section>
+
+    </aside>
+
+  </div>
+
+  <!-- ====== BOTTOM — roadmap + CTA bar ====== -->
+  <footer class="cs-bottom">
+
+    <section class="cs-roadmap" name="TcsPassiveRoadmap">
+      <div class="rm-head">
+        <span class="num">C · 04</span>
+        <span class="en">PASSIVE ROADMAP</span>
+        <span class="ko">패시브 로드맵</span>
+        <span class="desc">'Each oath leaves a deeper rut in the stone.'<span class="ko">— 다음 해금 Lv28 · 결계 숙련 II</span></span>
+      </div>
+      <div class="rm-track">
+
+        <div class="rm-node done">
+          <span class="rm-connector done"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></span>
+          <span class="lvl">Lv 5</span>
+          <span class="nm">전열 적성</span>
+          <span class="badge">통과</span>
+        </div>
+
+        <div class="rm-node done">
+          <span class="rm-connector done"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-shield2"/></svg></span>
+          <span class="lvl">Lv 12</span>
+          <span class="nm">새벽 기도</span>
+          <span class="badge">통과</span>
+        </div>
+
+        <div class="rm-node done">
+          <span class="rm-connector done"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-light"/></svg></span>
+          <span class="lvl">Lv 18</span>
+          <span class="nm">결계 숙련 I</span>
+          <span class="badge">통과</span>
+        </div>
+
+        <div class="rm-node done">
+          <span class="rm-connector done"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-rite"/></svg></span>
+          <span class="lvl">Lv 24</span>
+          <span class="nm">동틀녘의 의식</span>
+          <span class="badge">통과</span>
+        </div>
+
+        <div class="rm-node now">
+          <span class="rm-connector"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-vanguard"/></svg></span>
+          <span class="lvl">Lv 27 · 현재</span>
+          <span class="nm">감시자 각성</span>
+          <span class="badge">62%</span>
+        </div>
+
+        <div class="rm-node locked">
+          <span class="rm-connector"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-shield2"/></svg></span>
+          <span class="lvl">Lv 28</span>
+          <span class="nm">결계 숙련 II</span>
+          <span class="badge">곧</span>
+        </div>
+
+        <div class="rm-node locked">
+          <span class="rm-connector"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-faithless"/></svg></span>
+          <span class="lvl">Lv 32</span>
+          <span class="nm">신앙의 부재</span>
+          <span class="badge">잠김</span>
+        </div>
+
+        <div class="rm-node locked">
+          <span class="rm-connector"></span>
+          <span class="dot"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></span>
+          <span class="lvl">Lv 30 · 한계</span>
+          <span class="nm">초월 가능</span>
+          <span class="badge">한계</span>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="cs-ctas" name="TcsActionBar">
+      <button class="cta danger" name="TcsActionDismiss">
+        <span class="icn"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        <span class="ko">해고</span>
+        <span class="en">DISMISS</span>
+        <span class="hint" style="color:var(--state-danger)">서약 파기 · -10 호의</span>
+      </button>
+
+      <button class="cta" name="TcsActionRetrain">
+        <span class="icn"><svg viewBox="0 0 24 24"><use href="#i-refresh"/></svg></span>
+        <span class="ko">재훈련</span>
+        <span class="en">RETRAIN</span>
+        <span class="hint">스킬 슬롯 재배치</span>
+      </button>
+
+      <button class="cta" name="TcsActionPassiveBoard">
+        <span class="icn"><svg viewBox="0 0 24 24"><use href="#i-vanguard"/></svg></span>
+        <span class="ko">패시브 보드</span>
+        <span class="en">PASSIVE BOARD</span>
+        <span class="hint">3 포인트 사용 가능</span>
+      </button>
+
+      <button class="cta primary" name="TcsActionRefine">
+        <span class="icn"><svg viewBox="0 0 24 24"><use href="#i-relic"/></svg></span>
+        <span class="ko">장비 정련</span>
+        <span class="en">GEAR REFINE</span>
+        <span class="hint">유물 1 · 강화석 4</span>
+      </button>
+    </section>
+
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>영구 증강 — Permanent Augment</title>
+<meta name="viewport" content="width=1680" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* =================================================================
+   SURVIVAL MANAGER — PERMANENT AUGMENT PANEL
+   Unity USS-compatible CSS subset:
+     ✓ flexbox, border, color, padding, margin, font, position, opacity
+     ✗ no transform, no grid, no animation, no box-shadow, no gradient
+   Visual richness comes from inline SVG (treated as sprites in USS).
+   ================================================================= */
+
+:root{
+  --bg-0:#0c1126;
+  --bg-1:#141a35;
+  --bg-2:#1c2243;
+  --bg-3:#262d54;
+  --line-1:#2c3568;
+  --line-2:#3b467f;
+
+  --vellum:#f5ead0;
+  --ink-1:#f5ead0;
+  --ink-2:#d8c799;
+  --ink-3:#9d8a5e;
+  --ink-4:#6b5d3f;
+
+  --gold-100:#ffe9a8;
+  --gold-200:#f5d68a;
+  --gold-300:#e6b751;
+  --gold-400:#c8932a;
+  --gold-500:#8a6418;
+
+  --fam-mystic:#8a5cb8;
+  --fam-mystic-glow:#d4b4f0;
+  --fam-vanguard:#4a72b8;
+  --fam-vanguard-glow:#7fa3e0;
+  --state-locked:#6b6e85;
+  --state-safe:#6dbf78;
+
+  --f-ko:"Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --f-en:"Cinzel", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+*{ box-sizing:border-box; }
+html, body{ margin:0; padding:0; }
+body{
+  background-color:var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+}
+
+/* ============================================================
+   STAGE — outer dimming (USS would render this as the modal veil)
+   ============================================================ */
+.pap-stage{
+  width:1640px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+
+/* ============================================================
+   ROOT PANEL
+   ============================================================ */
+.pap-panel{
+  width:100%;
+  background-color:#0a0e23;
+  border-width:1px;
+  border-style:solid;
+  border-color:var(--gold-500);
+  display:flex;
+  flex-direction:column;
+  padding:0;
+  position:relative;
+}
+/* Inner hair-line (a sibling element, not box-shadow) */
+.pap-panel-inner-rule{
+  position:absolute;
+  left:5px; right:5px; top:5px; bottom:5px;
+  border-width:1px;
+  border-style:solid;
+  border-color:rgba(245,214,138,0.20);
+  pointer-events:none;
+}
+/* Four gold corner caps (USS-friendly — borders only, no transform) */
+.pap-cc{
+  position:absolute;
+  width:14px; height:14px;
+  border-width:1px;
+  border-style:solid;
+  border-color:var(--gold-300);
+  pointer-events:none;
+}
+.pap-cc-tl{ top:-1px; left:-1px; border-right-width:0; border-bottom-width:0; }
+.pap-cc-tr{ top:-1px; right:-1px; border-left-width:0; border-bottom-width:0; }
+.pap-cc-bl{ bottom:-1px; left:-1px; border-right-width:0; border-top-width:0; }
+.pap-cc-br{ bottom:-1px; right:-1px; border-left-width:0; border-top-width:0; }
+
+/* ============================================================
+   01 · HEADER ROW
+   ============================================================ */
+.pap-header{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  padding:20px 28px 18px 28px;
+  border-bottom-width:1px;
+  border-bottom-style:solid;
+  border-bottom-color:var(--gold-500);
+  background-color:#091022;
+}
+.pap-title{
+  font-family:var(--f-ko);
+  font-weight:800;
+  font-size:24px;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+  margin:0;
+  padding-right:18px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.pap-unlock-chip{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  padding:6px 14px;
+  border-width:1px;
+  border-style:solid;
+  border-color:var(--gold-500);
+  background-color:rgba(0,0,0,0.45);
+  position:relative;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.pap-unlock-chip > span{ white-space:nowrap; flex-shrink:0; }
+.pap-unlock-chip > .pap-cc{ width:5px; height:5px; }
+.pap-unlock-label{
+  font-family:var(--f-mono);
+  font-size:11px;
+  letter-spacing:0.18em;
+  color:var(--ink-3);
+  text-transform:uppercase;
+  padding-right:10px;
+}
+.pap-unlock-value{
+  font-family:var(--f-en);
+  font-weight:700;
+  font-size:14px;
+  color:var(--gold-200);
+  letter-spacing:0.06em;
+}
+.pap-unlock-value-ko{
+  font-family:var(--f-ko);
+  font-weight:700;
+  font-size:13px;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+}
+.pap-header-spacer{ flex:1; }
+.pap-close{
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background-color:transparent;
+  border-width:1px;
+  border-style:solid;
+  border-color:transparent;
+  cursor:pointer;
+  color:var(--ink-2);
+  padding:0;
+}
+.pap-close:hover{
+  border-color:var(--gold-400);
+  color:var(--gold-200);
+}
+
+/* ============================================================
+   02 · EQUIPPED STRIP
+   Currently-equipped augment, full-width feature row
+   ============================================================ */
+.pap-equipped{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  padding:18px 28px;
+  background-color:#0d1330;
+  border-bottom-width:1px;
+  border-bottom-style:solid;
+  border-bottom-color:var(--line-1);
+}
+.pap-equipped-icon{
+  width:84px;
+  height:84px;
+  flex-shrink:0;
+  margin-right:20px;
+  position:relative;
+}
+.pap-equipped-info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.pap-equipped-name{
+  font-family:var(--f-ko);
+  font-weight:800;
+  font-size:30px;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+  line-height:1.15;
+  margin:0 0 4px 0;
+  white-space:nowrap;
+}
+.pap-equipped-name-suffix{
+  font-family:var(--f-en);
+  font-weight:700;
+  color:var(--fam-mystic-glow);
+  font-size:24px;
+  margin-left:8px;
+  letter-spacing:0.06em;
+}
+.pap-equipped-effect{
+  font-family:var(--f-ko);
+  font-size:15px;
+  color:var(--ink-2);
+  margin:0;
+  letter-spacing:0.02em;
+  white-space:nowrap;
+}
+.pap-equipped-badge{
+  flex-shrink:0;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  padding:10px 22px;
+  border-width:1px;
+  border-style:solid;
+  border-color:var(--gold-400);
+  background-color:rgba(230,183,81,0.06);
+  position:relative;
+  white-space:nowrap;
+}
+.pap-equipped-badge > .pap-cc{ width:6px; height:6px; }
+.pap-equipped-badge-text{
+  font-family:var(--f-ko);
+  font-weight:700;
+  font-size:15px;
+  color:var(--gold-200);
+  letter-spacing:0.04em;
+  white-space:nowrap;
+}
+
+/* ============================================================
+   03 · GRID — 4 rows × 4 cards (flexbox only, no grid)
+   ============================================================ */
+.pap-grid{
+  display:flex;
+  flex-direction:column;
+  padding:22px 28px 18px 28px;
+}
+.pap-grid-row{
+  display:flex;
+  flex-direction:row;
+  margin-bottom:12px;
+}
+.pap-grid-row:last-child{ margin-bottom:0; }
+
+/* ----- AUGMENT CARD ----- */
+.pap-card{
+  flex:1;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  padding:14px 16px;
+  margin-right:12px;
+  background-color:#101733;
+  border-width:1px;
+  border-style:solid;
+  border-color:var(--line-1);
+  cursor:pointer;
+  min-height:84px;
+  position:relative;
+}
+.pap-card:last-child{ margin-right:0; }
+.pap-card:hover{
+  border-color:var(--gold-400);
+  background-color:#141d3c;
+}
+.pap-card.is-selected{
+  border-width:2px;
+  border-color:var(--gold-300);
+  background-color:#152044;
+  padding:13px 15px;
+}
+.pap-card.is-selected > .pap-cc{ display:flex; }
+.pap-card > .pap-cc{ display:none; width:8px; height:8px; border-color:var(--gold-200); }
+
+.pap-card.is-locked{
+  background-color:#0c1228;
+  border-color:#22284a;
+  cursor:default;
+}
+.pap-card.is-locked:hover{
+  border-color:#22284a;
+  background-color:#0c1228;
+}
+
+.pap-card-icon{
+  width:56px;
+  height:56px;
+  flex-shrink:0;
+  margin-right:14px;
+  position:relative;
+}
+.pap-card-body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+}
+.pap-card-name{
+  font-family:var(--f-ko);
+  font-weight:700;
+  font-size:17px;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+  margin:0 0 4px 0;
+  white-space:nowrap;
+}
+.pap-card.is-locked .pap-card-name{
+  color:var(--state-locked);
+  font-weight:600;
+}
+.pap-card-effect{
+  font-family:var(--f-ko);
+  font-size:13px;
+  color:var(--ink-3);
+  margin:0;
+  letter-spacing:0.01em;
+  line-height:1.35;
+  white-space:nowrap;
+}
+.pap-card.is-locked .pap-card-effect{
+  color:#4f5474;
+}
+.pap-card-lock-icon{
+  display:inline-flex;
+  width:14px;
+  height:14px;
+  margin-right:6px;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+}
+.pap-card-effect-row{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+}
+
+/* ============================================================
+   04 · DETAIL PANEL
+   ============================================================ */
+.pap-detail{
+  display:flex;
+  flex-direction:row;
+  align-items:stretch;
+  padding:22px 28px 24px 28px;
+  border-top-width:1px;
+  border-top-style:solid;
+  border-top-color:var(--line-1);
+  background-color:#091022;
+}
+.pap-detail-icon{
+  width:96px;
+  height:96px;
+  flex-shrink:0;
+  margin-right:22px;
+}
+.pap-detail-info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding-right:28px;
+  min-width:0;
+}
+.pap-detail-head{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  margin-bottom:8px;
+}
+.pap-detail-name{
+  font-family:var(--f-ko);
+  font-weight:800;
+  font-size:26px;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+  margin:0 14px 0 0;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.pap-detail-tag{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  padding:5px 12px;
+  border-width:1px;
+  border-style:solid;
+  border-color:var(--gold-400);
+  background-color:rgba(230,183,81,0.05);
+  position:relative;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.pap-detail-tag > .pap-cc{ width:4px; height:4px; }
+.pap-detail-tag-text{
+  font-family:var(--f-ko);
+  font-weight:700;
+  font-size:13px;
+  color:var(--gold-200);
+  letter-spacing:0.04em;
+  white-space:nowrap;
+}
+.pap-detail-desc{
+  font-family:var(--f-ko);
+  font-size:15px;
+  color:var(--ink-1);
+  line-height:1.6;
+  margin:0;
+  letter-spacing:0.01em;
+}
+.pap-detail-desc-line{
+  display:flex;
+  flex-direction:row;
+  white-space:nowrap;
+}
+.pap-detail-desc-line + .pap-detail-desc-line{ margin-top:2px; }
+.pap-detail-desc em{
+  font-style:normal;
+  color:var(--gold-200);
+  font-weight:700;
+}
+.pap-detail-flavor{
+  font-family:var(--f-ko);
+  font-size:13px;
+  color:var(--ink-4);
+  margin:8px 0 0 0;
+  letter-spacing:0.02em;
+  font-style:italic;
+  white-space:nowrap;
+}
+
+/* equip button — large gold tile */
+.pap-equip-btn{
+  flex-shrink:0;
+  width:220px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background-color:#c8932a;
+  border-width:2px;
+  border-style:solid;
+  border-color:#8a6418;
+  cursor:pointer;
+  padding:0;
+  position:relative;
+}
+.pap-equip-btn-inner{
+  position:absolute;
+  left:4px; right:4px; top:4px; bottom:4px;
+  border-width:1px;
+  border-style:solid;
+  border-color:#fce3a0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background-color:transparent;
+  pointer-events:none;
+}
+.pap-equip-btn-text{
+  font-family:var(--f-ko);
+  font-weight:800;
+  font-size:36px;
+  color:#2a1f06;
+  letter-spacing:0.32em;
+  padding-left:0.32em; /* optical balance for letter-spacing */
+}
+.pap-equip-btn:hover{ background-color:#e6b751; }
+.pap-equip-btn:disabled, .pap-equip-btn.is-disabled{
+  background-color:#3a3a48;
+  border-color:#26263a;
+  cursor:not-allowed;
+}
+.pap-equip-btn.is-disabled .pap-equip-btn-text{
+  color:#787688;
+}
+.pap-equip-btn.is-disabled .pap-equip-btn-inner{
+  border-color:#26263a;
+}
+
+/* ============================================================
+   ICON UTILS (positioning of SVG sprites inside slots)
+   ============================================================ */
+.pap-icon-svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+</style>
+</head>
+<body>
+
+<!-- =============================================================
+     SVG DEFS — Augment glyph templates (one symbol per augment)
+     Inline SVG is USS-compatible (rendered as Vector sprite).
+     ============================================================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- shared diamond frame: outer + inner stroke -->
+    <symbol id="frm-diamond" viewBox="0 0 64 64">
+      <path d="M 32 4 L 60 32 L 32 60 L 4 32 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M 32 9 L 55 32 L 32 55 L 9 32 Z" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+    </symbol>
+
+    <!-- glyphs -->
+    <symbol id="g-charge" viewBox="0 0 64 64">
+      <!-- upward sword + chevrons -->
+      <path d="M 32 16 L 28 32 L 36 32 Z" fill="currentColor" opacity="0.95"/>
+      <path d="M 32 32 L 30 44 L 34 44 Z" fill="currentColor" opacity="0.7"/>
+      <path d="M 22 20 L 32 12 L 42 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M 22 26 L 32 18 L 42 26" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55" stroke-linecap="round"/>
+      <path d="M 28 48 L 32 52 L 36 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="g-precise" viewBox="0 0 64 64">
+      <!-- 4-pointed star with rays -->
+      <path d="M 32 14 L 35 28 L 50 32 L 35 36 L 32 50 L 29 36 L 14 32 L 29 28 Z" fill="currentColor"/>
+      <path d="M 32 20 L 33.5 30 L 44 32 L 33.5 34 L 32 44 L 30.5 34 L 20 32 L 30.5 30 Z" fill="#0a0e23" opacity="0.5"/>
+      <circle cx="32" cy="32" r="2" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="g-resolve" viewBox="0 0 64 64">
+      <!-- shield with cross -->
+      <path d="M 32 14 L 46 19 L 46 34 Q 46 44 32 50 Q 18 44 18 34 L 18 19 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M 32 22 L 32 40" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M 24 30 L 40 30" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="g-timewarp" viewBox="0 0 64 64">
+      <!-- hourglass -->
+      <path d="M 20 16 L 44 16 L 44 22 L 36 32 L 44 42 L 44 48 L 20 48 L 20 42 L 28 32 L 20 22 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M 24 20 L 40 20" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M 24 44 L 40 44" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M 30 28 L 34 28 L 32 32 Z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="g-mana-res" viewBox="0 0 64 64">
+      <!-- pyramid with eye -->
+      <path d="M 32 16 L 50 46 L 14 46 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M 24 36 Q 32 30 40 36 Q 32 42 24 36 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="32" cy="36" r="2.2" fill="currentColor"/>
+      <path d="M 23 28 L 41 28" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+    </symbol>
+
+    <symbol id="g-flame" viewBox="0 0 64 64">
+      <!-- flame -->
+      <path d="M 32 12 Q 38 22 38 28 Q 42 22 42 32 Q 46 30 46 38 Q 46 50 32 52 Q 18 50 18 38 Q 18 30 22 32 Q 22 22 26 28 Q 26 22 32 12 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M 32 26 Q 35 32 35 38 Q 32 42 29 38 Q 29 32 32 26 Z" fill="currentColor" opacity="0.75"/>
+    </symbol>
+
+    <symbol id="g-mana-cycle" viewBox="0 0 64 64">
+      <!-- circular flow -->
+      <path d="M 48 32 A 16 16 0 1 1 32 16" fill="none" stroke="currentColor" stroke-width="2.0" stroke-linecap="round"/>
+      <path d="M 32 16 L 38 12 L 38 20 Z" fill="currentColor"/>
+      <circle cx="32" cy="32" r="6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="32" cy="32" r="2" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="g-feather" viewBox="0 0 64 64">
+      <!-- feather -->
+      <path d="M 18 46 Q 22 26 36 18 Q 46 14 48 22 Q 46 38 28 46 Q 22 48 18 46 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M 22 42 L 44 22" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M 28 42 L 30 38 M 34 38 L 36 34 M 40 34 L 42 30" stroke="currentColor" stroke-width="1.0" opacity="0.7"/>
+    </symbol>
+
+    <symbol id="g-sword" viewBox="0 0 64 64">
+      <!-- vertical sword -->
+      <path d="M 32 14 L 30 38 L 34 38 Z" fill="currentColor"/>
+      <path d="M 32 38 L 32 48" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M 24 38 L 40 38" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M 30 48 L 34 48 L 33 52 L 31 52 Z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="g-burst" viewBox="0 0 64 64">
+      <!-- jagged radial burst (break) -->
+      <path d="M 32 12 L 36 28 L 50 26 L 40 36 L 50 46 L 34 42 L 32 54 L 30 42 L 14 46 L 24 36 L 14 26 L 28 28 Z" fill="currentColor"/>
+      <circle cx="32" cy="34" r="3" fill="#0a0e23"/>
+    </symbol>
+
+    <symbol id="g-chain" viewBox="0 0 64 64">
+      <!-- two interlocking ovals -->
+      <path d="M 18 26 A 8 8 0 1 1 18 38 A 8 8 0 1 1 18 26 Z M 22 32 L 32 32" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M 46 26 A 8 8 0 1 1 46 38 A 8 8 0 1 1 46 26 Z M 32 32 L 42 32" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <path d="M 28 32 L 36 32" stroke="currentColor" stroke-width="2.4"/>
+    </symbol>
+
+    <symbol id="g-cross" viewBox="0 0 64 64">
+      <!-- holy cross in circle -->
+      <circle cx="32" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M 32 20 L 32 44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 22 32 L 42 32" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- locked: dim diamond + lock -->
+    <symbol id="g-lock" viewBox="0 0 64 64">
+      <path d="M 26 30 L 26 26 Q 26 20 32 20 Q 38 20 38 26 L 38 30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <rect x="22" y="30" width="20" height="16" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <circle cx="32" cy="38" r="1.8" fill="currentColor"/>
+    </symbol>
+
+    <!-- jagged ranger glyph (for last locked tile, just a placeholder) -->
+    <symbol id="g-jagged-1" viewBox="0 0 64 64"><path d="M 32 18 L 36 28 L 46 30 L 38 38 L 40 48 L 32 42 L 24 48 L 26 38 L 18 30 L 28 28 Z" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="g-jagged-2" viewBox="0 0 64 64"><path d="M 22 22 L 32 14 L 42 22 L 32 50 Z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M 32 22 L 32 42" stroke="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="g-jagged-3" viewBox="0 0 64 64"><circle cx="32" cy="32" r="12" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M 32 20 L 32 44 M 20 32 L 44 32 M 24 24 L 40 40 M 24 40 L 40 24" stroke="currentColor" stroke-width="1.0" opacity="0.55"/></symbol>
+    <symbol id="g-jagged-4" viewBox="0 0 64 64"><path d="M 32 12 L 40 30 L 32 28 L 24 30 Z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M 24 30 L 32 52 L 40 30" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+
+    <!-- close X -->
+    <symbol id="g-close" viewBox="0 0 24 24">
+      <path d="M 5 5 L 19 19 M 19 5 L 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+
+<!-- =============================================================
+     MARKUP — Permanent Augment Panel
+     ============================================================= -->
+
+<div class="pap-stage">
+  <div class="pap-panel" name="PapRoot">
+
+    <!-- corner caps (USS-friendly: pure borders, no transform) -->
+    <div class="pap-cc pap-cc-tl"></div>
+    <div class="pap-cc pap-cc-tr"></div>
+    <div class="pap-cc pap-cc-bl"></div>
+    <div class="pap-cc pap-cc-br"></div>
+    <div class="pap-panel-inner-rule"></div>
+
+    <!-- ============== 01 · HEADER ============== -->
+    <div class="pap-header">
+      <h1 class="pap-title">영구 증강</h1>
+      <div class="pap-unlock-chip" name="PapUnlockChip">
+        <div class="pap-cc pap-cc-tl"></div>
+        <div class="pap-cc pap-cc-br"></div>
+        <span class="pap-unlock-label">UNLOCKED</span>
+        <span class="pap-unlock-value-ko">해금</span>
+        <span class="pap-unlock-value" style="margin:0 6px;">12&nbsp;/&nbsp;16</span>
+      </div>
+      <div class="pap-header-spacer"></div>
+      <button class="pap-close" name="PapCloseButton" aria-label="닫기">
+        <svg class="pap-icon-svg" style="width:22px;height:22px;"><use href="#g-close"/></svg>
+      </button>
+    </div>
+
+    <!-- ============== 02 · CURRENTLY EQUIPPED STRIP ============== -->
+    <div class="pap-equipped" name="PapEquippedStrip">
+
+      <!-- icon -->
+      <div class="pap-equipped-icon" style="color:var(--fam-mystic-glow);">
+        <svg class="pap-icon-svg" viewBox="0 0 64 64">
+          <use href="#frm-diamond"/>
+          <g style="color:var(--fam-mystic-glow);">
+            <use href="#g-mana-res"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="pap-equipped-info">
+        <h2 class="pap-equipped-name">
+          잔향 공명
+          <span class="pap-equipped-name-suffix">II</span>
+        </h2>
+        <p class="pap-equipped-effect">시전 후 다음 스킬 -1 cd</p>
+      </div>
+
+      <div class="pap-equipped-badge" name="PapEquippedBadge">
+        <div class="pap-cc pap-cc-tl"></div>
+        <div class="pap-cc pap-cc-br"></div>
+        <span class="pap-equipped-badge-text">장착 중</span>
+      </div>
+    </div>
+
+    <!-- ============== 03 · 4×4 AUGMENT GRID ============== -->
+    <div class="pap-grid" name="PapAugmentGrid">
+
+      <!-- ROW 1 -->
+      <div class="pap-grid-row">
+
+        <div class="pap-card is-selected" name="PapCard_DolgyeokGasok" data-id="dolgyeok-gasok">
+          <div class="pap-cc pap-cc-tl"></div><div class="pap-cc pap-cc-tr"></div>
+          <div class="pap-cc pap-cc-bl"></div><div class="pap-cc pap-cc-br"></div>
+          <div class="pap-card-icon" style="color:#6ec3ff;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-charge"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">돌격 가속</p>
+            <p class="pap-card-effect">돌진 스킬 쿨타임 -1.5초</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_JeongmilJipjung" data-id="jeongmil-jipjung">
+          <div class="pap-card-icon" style="color:#c98fff;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-precise"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">정밀 집중</p>
+            <p class="pap-card-effect">치명타 피해 +12%</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_BulgulUiji" data-id="bulgul-uiji">
+          <div class="pap-card-icon" style="color:#5fd0b5;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-resolve"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">불굴 의지</p>
+            <p class="pap-card-effect">HP 50% 이하 시 방어력 +15%</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_SiganWaegok" data-id="sigan-waegok">
+          <div class="pap-card-icon" style="color:#7fb3ff;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-timewarp"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">시간 왜곡</p>
+            <p class="pap-card-effect">모든 스킬 쿨타임 -5%</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="pap-grid-row">
+
+        <div class="pap-card" name="PapCard_MaryeokGongmyeong" data-id="maryeok-gongmyeong">
+          <div class="pap-card-icon" style="color:#b283f0;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-mana-res"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">마력 공명</p>
+            <p class="pap-card-effect">스킬 피해 +12%</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_SaengmyeongSunhwan" data-id="saengmyeong-sunhwan">
+          <div class="pap-card-icon" style="color:#7ed664;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-flame"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">생명의 순환</p>
+            <p class="pap-card-effect">치유 효과 +15%</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_ManaSunhwan" data-id="mana-sunhwan">
+          <div class="pap-card-icon" style="color:#5cb8e6;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-mana-cycle"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">마나 순환</p>
+            <p class="pap-card-effect">스킬 사용 시 MP 5% 회복</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_SinsokGidong" data-id="sinsok-gidong">
+          <div class="pap-card-icon" style="color:#caa3ff;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-feather"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">신속 기동</p>
+            <p class="pap-card-effect">이동 속도 +10%</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 3 -->
+      <div class="pap-grid-row">
+
+        <div class="pap-card" name="PapCard_YakjeomTagyeok" data-id="yakjeom-tagyeok">
+          <div class="pap-card-icon" style="color:#f3c54a;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-sword"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">약점 타격</p>
+            <p class="pap-card-effect">보스 대상 피해 +10%</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_PagoeJeungpok" data-id="pagoe-jeungpok">
+          <div class="pap-card-icon" style="color:#ff9249;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-burst"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">파괴 증폭</p>
+            <p class="pap-card-effect">브레이크 시 피해 +20%</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_YeonsoeBaneung" data-id="yeonsoe-baneung">
+          <div class="pap-card-icon" style="color:#4ac8e8;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-chain"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">연쇄 반응</p>
+            <p class="pap-card-effect">연계 공격 피해 +10%</p>
+          </div>
+        </div>
+
+        <div class="pap-card" name="PapCard_EunchongUiBit" data-id="eunchong-ui-bit">
+          <div class="pap-card-icon" style="color:#6dd483;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-cross"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">은총의 빛</p>
+            <p class="pap-card-effect">아군 전체 회복량 +10%</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 4 — LOCKED -->
+      <div class="pap-grid-row">
+
+        <div class="pap-card is-locked" name="PapCard_Locked1" data-id="locked-1">
+          <div class="pap-card-icon" style="color:#3d4565;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-jagged-1"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">
+              <span class="pap-card-effect-row">
+                <span class="pap-card-lock-icon" style="color:#5b607f;">
+                  <svg viewBox="0 0 64 64" width="14" height="14"><use href="#g-lock"/></svg>
+                </span>
+                잠금 — 1장 보스 처치
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div class="pap-card is-locked" name="PapCard_Locked2" data-id="locked-2">
+          <div class="pap-card-icon" style="color:#3d4565;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-jagged-2"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">
+              <span class="pap-card-effect-row">
+                <span class="pap-card-lock-icon" style="color:#5b607f;">
+                  <svg viewBox="0 0 64 64" width="14" height="14"><use href="#g-lock"/></svg>
+                </span>
+                잠금 — 1장 보스 처치
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div class="pap-card is-locked" name="PapCard_Locked3" data-id="locked-3">
+          <div class="pap-card-icon" style="color:#3d4565;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-jagged-3"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">
+              <span class="pap-card-effect-row">
+                <span class="pap-card-lock-icon" style="color:#5b607f;">
+                  <svg viewBox="0 0 64 64" width="14" height="14"><use href="#g-lock"/></svg>
+                </span>
+                잠금 — 1장 보스 처치
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div class="pap-card is-locked" name="PapCard_Locked4" data-id="locked-4">
+          <div class="pap-card-icon" style="color:#3d4565;">
+            <svg class="pap-icon-svg" viewBox="0 0 64 64"><use href="#frm-diamond"/><use href="#g-jagged-4"/></svg>
+          </div>
+          <div class="pap-card-body">
+            <p class="pap-card-name">
+              <span class="pap-card-effect-row">
+                <span class="pap-card-lock-icon" style="color:#5b607f;">
+                  <svg viewBox="0 0 64 64" width="14" height="14"><use href="#g-lock"/></svg>
+                </span>
+                잠금 — 1장 보스 처치
+              </span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /.pap-grid -->
+
+    <!-- ============== 04 · DETAIL PANEL ============== -->
+    <div class="pap-detail" name="PapDetailPanel">
+
+      <div class="pap-detail-icon" name="PapDetailIcon" id="papDetailIcon" style="color:#6ec3ff;">
+        <svg class="pap-icon-svg" viewBox="0 0 64 64">
+          <use href="#frm-diamond"/>
+          <use href="#g-charge" id="papDetailGlyph"/>
+        </svg>
+      </div>
+
+      <div class="pap-detail-info">
+        <div class="pap-detail-head">
+          <h2 class="pap-detail-name" id="papDetailName">돌격 가속</h2>
+          <div class="pap-detail-tag" id="papDetailTag">
+            <div class="pap-cc pap-cc-tl"></div>
+            <div class="pap-cc pap-cc-br"></div>
+            <span class="pap-detail-tag-text" id="papDetailTagText">공격형</span>
+          </div>
+        </div>
+        <p class="pap-detail-desc">
+          <span class="pap-detail-desc-line" id="papDetailDesc1">
+            돌진 계열 스킬의 쿨타임이&nbsp;<em>1.5초</em>&nbsp;감소합니다.
+          </span>
+          <span class="pap-detail-desc-line" id="papDetailDesc2">
+            해당 스킬이 적을 타격 시 2초 동안 공격력이&nbsp;<em>6%</em>&nbsp;증가합니다.
+          </span>
+        </p>
+        <p class="pap-detail-flavor" id="papDetailFlavor">
+          전장을 가르는 선봉의 기세는, 신속함을 통해 승리의 문을 엽니다.
+        </p>
+      </div>
+
+      <button class="pap-equip-btn" name="PapEquipButton" id="papEquipButton">
+        <span class="pap-equip-btn-inner"></span>
+        <span class="pap-equip-btn-text">장&nbsp;착</span>
+      </button>
+
+    </div><!-- /.pap-detail -->
+
+  </div><!-- /.pap-panel -->
+</div><!-- /.pap-stage -->
+
+
+<!-- =============================================================
+     INTERACTIVITY — card selection, equip handler.
+     Keeps DOM updates minimal and USS-mappable (text + class swaps).
+     ============================================================= -->
+<script>
+(function(){
+  const DATA = {
+    'dolgyeok-gasok': {
+      name:'돌격 가속', tag:'공격형', tagColor:'#f5d68a', glyph:'g-charge', color:'#6ec3ff',
+      desc1:'돌진 계열 스킬의 쿨타임이&nbsp;<em>1.5초</em>&nbsp;감소합니다.',
+      desc2:'해당 스킬이 적을 타격 시 2초 동안 공격력이&nbsp;<em>6%</em>&nbsp;증가합니다.',
+      flavor:'전장을 가르는 선봉의 기세는, 신속함을 통해 승리의 문을 엽니다.'
+    },
+    'jeongmil-jipjung': {
+      name:'정밀 집중', tag:'공격형', tagColor:'#f5d68a', glyph:'g-precise', color:'#c98fff',
+      desc1:'치명타 발생 시 피해량이&nbsp;<em>12%</em>&nbsp;증가합니다.',
+      desc2:'치명타로 처치 시 다음 공격의 치명타 확률이 10% 상승합니다.',
+      flavor:'호흡을 멈춘 찰나, 결과는 이미 정해져 있다.'
+    },
+    'bulgul-uiji': {
+      name:'불굴 의지', tag:'방어형', tagColor:'#7fa3e0', glyph:'g-resolve', color:'#5fd0b5',
+      desc1:'HP가 50% 이하일 때 방어력이&nbsp;<em>15%</em>&nbsp;증가합니다.',
+      desc2:'치명타 피해 감소 5%가 추가로 적용됩니다.',
+      flavor:'쓰러질 수 없는 자에게만 다음 새벽이 허락된다.'
+    },
+    'sigan-waegok': {
+      name:'시간 왜곡', tag:'유틸리티', tagColor:'#d4b4f0', glyph:'g-timewarp', color:'#7fb3ff',
+      desc1:'모든 스킬의 쿨타임이&nbsp;<em>5%</em>&nbsp;감소합니다.',
+      desc2:'쿨타임 감소 효과는 다른 쿨타임 보너스와 중첩됩니다.',
+      flavor:'순간을 늘려 쓰는 자만이 운명을 재단할 수 있다.'
+    },
+    'maryeok-gongmyeong': {
+      name:'마력 공명', tag:'공격형', tagColor:'#f5d68a', glyph:'g-mana-res', color:'#b283f0',
+      desc1:'스킬 피해량이&nbsp;<em>12%</em>&nbsp;증가합니다.',
+      desc2:'마법 계열 스킬에 대해 효과량 2%가 추가 적용됩니다.',
+      flavor:'고요한 파장은 파괴의 화음을 부른다.'
+    },
+    'saengmyeong-sunhwan': {
+      name:'생명의 순환', tag:'지원형', tagColor:'#b9c980', glyph:'g-flame', color:'#7ed664',
+      desc1:'모든 치유 효과량이&nbsp;<em>15%</em>&nbsp;증가합니다.',
+      desc2:'전투 종료 시 잃은 HP의 5%를 회복합니다.',
+      flavor:'타오르는 불씨도 결국, 다시 돌아온다.'
+    },
+    'mana-sunhwan': {
+      name:'마나 순환', tag:'유틸리티', tagColor:'#d4b4f0', glyph:'g-mana-cycle', color:'#5cb8e6',
+      desc1:'스킬 사용 시 최대 MP의&nbsp;<em>5%</em>를 회복합니다.',
+      desc2:'기본 공격 적중 시 MP 회복량이 1 추가됩니다.',
+      flavor:'바다가 강에게 가르치는 첫 번째 문장.'
+    },
+    'sinsok-gidong': {
+      name:'신속 기동', tag:'유틸리티', tagColor:'#d4b4f0', glyph:'g-feather', color:'#caa3ff',
+      desc1:'이동 속도가&nbsp;<em>10%</em>&nbsp;증가합니다.',
+      desc2:'회피 후 1.5초 동안 추가로 이동 속도 5%가 적용됩니다.',
+      flavor:'발끝이 흙을 거의 스치지 않는 자만이 길을 새로 낸다.'
+    },
+    'yakjeom-tagyeok': {
+      name:'약점 타격', tag:'공격형', tagColor:'#f5d68a', glyph:'g-sword', color:'#f3c54a',
+      desc1:'보스 등급 적에게 주는 피해가&nbsp;<em>10%</em>&nbsp;증가합니다.',
+      desc2:'적의 약점 부위 적중 시 추가 피해 5%가 적용됩니다.',
+      flavor:'거인의 무릎에는, 거인 스스로의 무게가 실려 있다.'
+    },
+    'pagoe-jeungpok': {
+      name:'파괴 증폭', tag:'공격형', tagColor:'#f5d68a', glyph:'g-burst', color:'#ff9249',
+      desc1:'적이 브레이크 상태일 때 주는 피해가&nbsp;<em>20%</em>&nbsp;증가합니다.',
+      desc2:'브레이크 게이지 누적량 8%가 추가됩니다.',
+      flavor:'벌어진 균열은, 더 큰 균열을 부른다.'
+    },
+    'yeonsoe-baneung': {
+      name:'연쇄 반응', tag:'공격형', tagColor:'#f5d68a', glyph:'g-chain', color:'#4ac8e8',
+      desc1:'연계 공격 피해가&nbsp;<em>10%</em>&nbsp;증가합니다.',
+      desc2:'동일 적에게 3회 이상 연계 시 추가 피해 5%가 적용됩니다.',
+      flavor:'시작된 파동은 멈추지 않는다.'
+    },
+    'eunchong-ui-bit': {
+      name:'은총의 빛', tag:'지원형', tagColor:'#b9c980', glyph:'g-cross', color:'#6dd483',
+      desc1:'아군 전체의 회복량이&nbsp;<em>10%</em>&nbsp;증가합니다.',
+      desc2:'전투 시작 시 모든 아군이 최대 HP의 3%를 회복합니다.',
+      flavor:'그늘 속에서도 누군가는 한 줄기를 들고 서 있다.'
+    }
+  };
+
+  const EQUIPPED_ID = 'mana-resonance-II';
+
+  const cards = document.querySelectorAll('.pap-card[data-id]');
+  const detailIcon  = document.getElementById('papDetailIcon');
+  const detailName  = document.getElementById('papDetailName');
+  const detailTagTx = document.getElementById('papDetailTagText');
+  const detailDesc1 = document.getElementById('papDetailDesc1');
+  const detailDesc2 = document.getElementById('papDetailDesc2');
+  const detailFlav  = document.getElementById('papDetailFlavor');
+  const equipBtn    = document.getElementById('papEquipButton');
+
+  let currentId = 'dolgyeok-gasok';
+
+  function setDetail(id){
+    const d = DATA[id];
+    if(!d) return;
+    currentId = id;
+
+    // swap icon glyph
+    detailIcon.style.color = d.color;
+    detailIcon.innerHTML =
+      '<svg class="pap-icon-svg" viewBox="0 0 64 64">'
+      + '<use href="#frm-diamond"/>'
+      + '<use href="#'+ d.glyph +'"/>'
+      + '</svg>';
+
+    detailName.textContent = d.name;
+    detailTagTx.textContent = d.tag;
+    detailTagTx.style.color = d.tagColor;
+    detailDesc1.innerHTML = d.desc1;
+    detailDesc2.innerHTML = d.desc2;
+    detailFlav.textContent = d.flavor;
+  }
+
+  cards.forEach(function(card){
+    card.addEventListener('click', function(){
+      if(card.classList.contains('is-locked')) return;
+      cards.forEach(function(c){ c.classList.remove('is-selected'); });
+      card.classList.add('is-selected');
+      setDetail(card.dataset.id);
+    });
+  });
+
+  equipBtn.addEventListener('click', function(){
+    // visual-only stub — would post a USS event to Unity
+    const d = DATA[currentId];
+    if(!d) return;
+    // brief, lightweight feedback (no animation libs)
+    equipBtn.disabled = true;
+    const txt = equipBtn.querySelector('.pap-equip-btn-text');
+    const original = txt.textContent;
+    txt.textContent = '완료';
+    setTimeout(function(){ txt.textContent = original; equipBtn.disabled = false; }, 700);
+  });
+})();
+</script>
+
+</body>
+</html>

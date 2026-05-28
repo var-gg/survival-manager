@@ -1,0 +1,1686 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>장비 — REFIT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* =========================================================
+   ERP — EQUIPMENT REFIT MODAL
+   Unity USS-safe subset:
+     - flexbox only (no grid)
+     - solid colors only (no gradient)
+     - no transform / animation / box-shadow
+     - inline SVG fine; transitions via state-class swaps in JS
+   Tokens from Survival Manager DS v0.2+ (battle-shell.css).
+   ========================================================= */
+:root{
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --bg-pool:#171c39; --bg-affix:#1a2040;
+  --line-1:#2c3568; --line-2:#3b467f;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad;
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418; --gold-600:#4d3a14;
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+  --fam-ranger:#b58a36; --fam-ranger-deep:#4d3a14; --fam-ranger-glow:#e6c878;
+  --rare-common:#cdc4a8; --rare-rare:#5b8ed1; --rare-epic:#b561d6; --rare-epic-2:#f08a3c;
+  --state-safe:#6dbf78; --state-warn:#e8a93b; --state-danger:#e25548;
+  --f-ko:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;
+  --f-jp:"Shippori Mincho","Yu Mincho",serif;
+  --f-en-display:"Cinzel","Trajan Pro",serif;
+  --f-en-italic:"Cormorant Garamond","Playfair Display",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#06080f;color:var(--ink-1);font-family:var(--f-ko);}
+/* Page chrome (NOT part of USS payload — scales preview only) */
+.page{
+  min-height:100vh; min-width:100vw;
+  background-color:#06080f;
+  background-image:
+    radial-gradient(1100px 700px at 18% -8%, rgba(40,28,84,.7), transparent 55%),
+    radial-gradient(900px 600px at 96% 24%, rgba(74,26,46,.55), transparent 55%),
+    radial-gradient(700px 600px at 50% 110%, rgba(26,32,80,.7), transparent 60%);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+}
+.scale-wrap{
+  width:1664px; height:936px;
+  transform-origin:center center;
+}
+
+/* =========== USS-SAFE CONTENT BELOW =========== */
+
+/* ---- modal frame ---- */
+.erp-modal{
+  width:1664px; height:936px;
+  background-color:var(--bg-1);
+  border:1px solid var(--gold-500);
+  padding:6px;
+  display:flex; flex-direction:column;
+  position:relative;
+}
+.erp-modal-inner{
+  flex:1;
+  background-color:var(--bg-1);
+  border:1px solid var(--gold-300);
+  display:flex; flex-direction:column;
+  padding:24px 28px;
+  position:relative;
+}
+/* outer corner caps */
+.cap{ position:absolute; width:14px; height:14px; border:1px solid var(--gold-200); pointer-events:none; }
+.cap.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.cap.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.cap.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.cap.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+/* ---- header ---- */
+.erp-h{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--gold-500);
+  margin-bottom:22px;
+  position:relative;
+}
+.erp-h::after{
+  content:""; position:absolute; left:0; right:0; bottom:-4px; height:1px;
+  background-color:var(--gold-500); opacity:.5;
+}
+.erp-h-left{ display:flex; flex-direction:column; gap:4px; flex-shrink:0; min-width:0; }
+.erp-h-eyebrow{
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.24em; color:var(--gold-300);
+  text-transform:uppercase;
+}
+.erp-h-title{
+  display:flex; align-items:baseline; gap:18px;
+  margin:0;
+  white-space:nowrap;
+}
+.erp-h-title .ko, .erp-h-title .en{ white-space:nowrap; }
+.erp-h-title .ko{
+  font-family:var(--f-ko); font-weight:800; font-size:30px;
+  color:var(--vellum); letter-spacing:.01em;
+}
+.erp-h-title .dot{
+  width:7px; height:7px; background-color:var(--gold-300); display:inline-block;
+}
+.erp-h-title .en{
+  font-family:var(--f-en-display); font-weight:700; font-size:24px;
+  letter-spacing:.32em; color:var(--gold-200);
+}
+.erp-h-sub{
+  font-family:var(--f-en-italic); font-style:italic; font-size:13px;
+  color:var(--ink-3); margin-top:4px;
+}
+
+.erp-h-right{ display:flex; align-items:center; gap:14px; }
+.erp-echo-chip{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 14px;
+  background-color:rgba(20,15,5,.35);
+  border:1px solid var(--gold-500);
+  position:relative;
+}
+.erp-echo-chip .gem{ width:14px; height:14px; }
+.erp-echo-chip .lbl{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.18em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.erp-echo-chip .val{
+  font-family:var(--f-en-display); font-size:18px; font-weight:700;
+  color:var(--gold-200); letter-spacing:.04em;
+}
+.erp-echo-chip .val .max{ color:var(--ink-3); font-size:12px; margin-left:2px; }
+.erp-close{
+  width:42px; height:42px;
+  background-color:transparent;
+  border:1px solid var(--gold-500);
+  color:var(--gold-200);
+  font-family:var(--f-ko);
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  padding:0;
+}
+.erp-close:hover{ border-color:var(--gold-200); background-color:rgba(245,214,138,.06); }
+.erp-close .cap{ width:5px; height:5px; border-color:var(--gold-300); }
+
+/* ---- body 3 columns ---- */
+.erp-body{
+  flex:1;
+  display:flex; flex-direction:row;
+  gap:22px;
+  min-height:0;
+}
+.erp-col{
+  display:flex; flex-direction:column;
+  min-height:0;
+}
+.erp-col-left{ width:400px; }
+.erp-col-center{ flex:1; min-width:520px; }
+.erp-col-right{ width:420px; }
+
+/* ---- panel base ---- */
+.panel{
+  position:relative;
+  background-color:var(--bg-2);
+  border:1px solid var(--gold-500);
+  display:flex; flex-direction:column;
+}
+.panel-inner{
+  border:1px solid var(--line-2);
+  margin:5px;
+  flex:1;
+  display:flex; flex-direction:column;
+  background-color:var(--bg-2);
+}
+.panel-head{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 14px 8px;
+  border-bottom:1px solid var(--gold-500);
+  background-color:var(--bg-3);
+}
+.panel-head .num{
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.2em;
+  color:var(--gold-300); text-transform:uppercase;
+}
+.panel-head .title{
+  font-family:var(--f-ko); font-weight:700; font-size:13px;
+  color:var(--vellum); letter-spacing:.02em;
+  white-space:nowrap;
+}
+.panel-head .title .en{
+  font-family:var(--f-en-display); font-size:11px; letter-spacing:.16em;
+  color:var(--gold-300); margin-left:8px; font-weight:600;
+}
+.panel-head .count{
+  margin-left:auto;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.06em; color:var(--ink-3);
+}
+.panel-head .count b{ color:var(--vellum); font-family:var(--f-en-display); font-size:12px; font-weight:700; margin-right:2px; }
+
+/* ---- LEFT: hero/slot panel ---- */
+.hero-port{
+  position:relative;
+  width:100%;
+  height:332px;
+  background-color:var(--fam-ranger-deep);
+  border-bottom:1px solid var(--gold-500);
+  overflow:hidden;
+}
+.hero-port .scene{
+  position:absolute; inset:0;
+  background-color:#1a1418;
+}
+.hero-port .ground{
+  position:absolute; left:0; right:0; bottom:0; height:64px;
+  background-color:#080610;
+  border-top:1px solid rgba(180,138,54,.35);
+}
+.hero-port .vignette{
+  position:absolute; inset:0;
+  border:18px solid #0a0612;
+  border-image:none;
+  pointer-events:none;
+  opacity:.5;
+}
+.hero-port .tag{
+  position:absolute; top:10px; left:10px;
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.18em;
+  color:var(--gold-200);
+  background-color:rgba(0,0,0,.7);
+  padding:3px 7px;
+  border:1px solid var(--gold-500);
+  text-transform:uppercase;
+  z-index:3;
+}
+.hero-port .rarity{
+  position:absolute; top:10px; right:10px;
+  display:flex; gap:4px;
+  z-index:3;
+}
+.hero-port .rarity svg{ width:11px; height:11px; }
+.hero-port .silh{
+  position:absolute; bottom:-6px; left:50%;
+  margin-left:-120px;
+  width:240px; height:300px;
+  z-index:2;
+}
+.hero-port .inset-frame{
+  position:absolute; top:5px; left:5px; right:5px; bottom:5px;
+  border:1px solid rgba(230,183,81,.3);
+  pointer-events:none; z-index:4;
+}
+.hero-port .fam-rib{
+  position:absolute; top:5px; left:5px; right:5px; height:3px;
+  background-color:var(--fam-ranger);
+  z-index:5;
+}
+.hero-port .fam-rib .pip{
+  position:absolute; left:50%; top:-4px; margin-left:-5px;
+  width:10px; height:10px; background-color:var(--fam-ranger-glow);
+  border:1px solid var(--gold-200);
+}
+
+.hero-meta{
+  display:flex; flex-direction:column;
+  padding:12px 14px 10px;
+  border-bottom:1px solid var(--line-2);
+}
+.hero-name-row{ display:flex; align-items:baseline; gap:10px; }
+.hero-name{
+  font-family:var(--f-ko); font-weight:800; font-size:18px; color:var(--vellum);
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
+.hero-name .en{
+  display:block;
+  font-family:var(--f-en-italic); font-style:italic; font-weight:500;
+  font-size:11px; color:var(--ink-3); letter-spacing:.04em;
+  margin-top:1px;
+}
+.hero-arch{
+  margin-left:auto;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em;
+  color:var(--fam-ranger-glow); text-transform:uppercase;
+  padding:3px 6px;
+  border:1px solid var(--fam-ranger);
+  background-color:rgba(181,138,54,.08);
+}
+.hero-status{
+  display:flex; gap:14px; margin-top:8px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.1em; color:var(--ink-3);
+  text-transform:uppercase;
+  align-items:baseline;
+}
+.hero-status > span{ display:inline-flex; align-items:baseline; gap:6px; white-space:nowrap; }
+.hero-status b{ color:var(--vellum); font-family:var(--f-en-display); font-size:13px; font-weight:700; margin-left:4px; }
+
+/* slot row */
+.slot-row{
+  display:flex; gap:10px;
+  padding:14px;
+  border-bottom:1px solid var(--line-2);
+}
+.slot{
+  flex:1;
+  display:flex; flex-direction:column;
+  background-color:var(--bg-1);
+  border:1px solid var(--gold-500);
+  padding:4px;
+  cursor:pointer;
+  position:relative;
+}
+.slot:hover{ border-color:var(--gold-300); }
+.slot.selected{
+  border-color:var(--gold-200);
+  background-color:rgba(245,214,138,.06);
+}
+.slot.empty{ border-style:dashed; border-color:var(--ink-4); background-color:var(--bg-0); }
+.slot-icon-box{
+  height:64px;
+  background-color:#0a0e1c;
+  border:1px solid rgba(200,147,42,.3);
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.slot.selected .slot-icon-box{ border-color:var(--gold-200); }
+.slot-icon-box .ph{
+  font-family:var(--f-mono); font-size:9px; color:var(--ink-4); letter-spacing:.16em;
+}
+.slot-icon-box svg{ width:36px; height:36px; }
+.slot-label{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; color:var(--ink-3);
+  text-align:center; padding:5px 0 2px; text-transform:uppercase;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.slot.selected .slot-label{ color:var(--gold-200); }
+
+/* selected item readout */
+.selected-readout{
+  padding:14px;
+  display:flex; flex-direction:column; gap:6px;
+  flex:1;
+}
+.selected-readout .kicker{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.2em;
+  color:var(--gold-400); text-transform:uppercase;
+}
+.selected-readout .name{
+  font-family:var(--f-ko); font-weight:800; font-size:20px; color:var(--vellum);
+  letter-spacing:.01em; line-height:1.1;
+  white-space:nowrap;
+}
+.selected-readout .name .ilvl{
+  margin-left:8px;
+  font-family:var(--f-mono); font-size:11px; color:var(--gold-200);
+  font-weight:500; letter-spacing:.04em;
+}
+.selected-readout .name .en{
+  display:block; font-family:var(--f-en-italic); font-style:italic;
+  font-weight:500; font-size:12px; color:var(--ink-3); margin-top:2px;
+}
+.selected-readout .tags{ display:flex; gap:5px; margin-top:4px; flex-wrap:wrap; }
+.tag-chip{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+  padding:2px 7px;
+  border:1px solid var(--gold-500); color:var(--ink-2);
+  background-color:rgba(0,0,0,.2);
+}
+.tag-chip.r-rare{ border-color:var(--rare-rare); color:var(--rare-rare); background-color:rgba(91,142,209,.1); }
+.tag-chip.r-epic{ border-color:var(--rare-epic); color:var(--rare-epic); background-color:rgba(181,97,214,.1); }
+.tag-chip.r-common{ border-color:var(--rare-common); color:var(--rare-common); background-color:rgba(205,196,168,.06); }
+
+/* ---- CENTER: affix panel ---- */
+.affix-list{
+  padding:14px 16px;
+  display:flex; flex-direction:column;
+  gap:10px;
+  flex:1;
+  overflow:auto;
+}
+.affix-row{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px;
+  background-color:var(--bg-affix);
+  border:1px solid var(--line-2);
+  cursor:pointer;
+  position:relative;
+}
+.affix-row:hover{ border-color:var(--gold-500); background-color:rgba(245,214,138,.04); }
+.affix-row.selected{
+  border:1px solid var(--gold-200);
+  background-color:rgba(245,214,138,.08);
+}
+.affix-row.selected::after{
+  content:""; position:absolute; left:-1px; top:-1px; bottom:-1px; width:3px;
+  background-color:var(--gold-300);
+}
+.affix-row.implicit{ border-left:3px solid var(--gold-400); }
+.affix-row.locked{ opacity:.55; }
+.affix-row.locked:hover{ border-color:var(--line-2); background-color:var(--bg-affix); cursor:not-allowed; }
+
+.affix-num{
+  width:26px;
+  font-family:var(--f-en-display); font-size:18px; font-weight:700;
+  color:var(--gold-300); letter-spacing:.04em;
+  text-align:center;
+  flex-shrink:0;
+}
+.affix-row.selected .affix-num{ color:var(--gold-100); }
+
+.affix-icon-box{
+  width:46px; height:46px;
+  background-color:#0a0e1c;
+  border:1px solid var(--gold-500);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  position:relative;
+}
+.affix-row.selected .affix-icon-box{ border-color:var(--gold-200); background-color:rgba(245,214,138,.06); }
+.affix-icon-box svg{ width:26px; height:26px; }
+.affix-icon-box .corner{
+  position:absolute; width:5px; height:5px; border:1px solid var(--gold-400);
+}
+.affix-icon-box .corner.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.affix-icon-box .corner.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.affix-body{
+  flex:1; display:flex; flex-direction:column; gap:3px;
+  min-width:0;
+}
+.affix-name{
+  font-family:var(--f-ko); font-weight:700; font-size:16px;
+  color:var(--vellum); letter-spacing:.01em;
+  white-space:nowrap;
+}
+.affix-name .pfx{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.16em;
+  margin-right:8px;
+  padding:2px 5px;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  border:1px solid var(--ink-4);
+}
+.affix-name .pfx.prefix{ color:var(--rare-rare); border-color:var(--rare-rare); }
+.affix-name .pfx.suffix{ color:var(--rare-epic); border-color:var(--rare-epic); }
+.affix-name .pfx.implicit{ color:var(--gold-300); border-color:var(--gold-400); }
+.affix-stat{
+  font-family:var(--f-ko); font-size:12.5px; color:var(--ink-2);
+  line-height:1.4;
+  white-space:nowrap;
+}
+.affix-stat .em{ color:var(--vellum); font-weight:600; }
+.affix-stat em{
+  font-family:var(--f-jp); font-style:italic; font-size:11.5px;
+  color:var(--ink-3); margin-left:6px;
+}
+
+.affix-value{
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:2px;
+  flex-shrink:0;
+  min-width:140px;
+}
+.affix-value .now{
+  font-family:var(--f-en-display); font-size:22px; font-weight:700;
+  color:var(--gold-100); letter-spacing:.04em; line-height:1;
+}
+.affix-row.locked .affix-value .now{ color:var(--ink-2); }
+.affix-value .range{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.06em;
+  color:var(--ink-3);
+}
+.affix-value .range b{ color:var(--ink-2); font-weight:500; }
+.affix-row.selected .affix-value .now{ color:var(--gold-100); }
+
+.affix-tier{
+  flex-shrink:0;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.12em;
+  color:var(--ink-3); text-transform:uppercase;
+  padding:3px 6px;
+  border:1px solid var(--line-2);
+  background-color:rgba(0,0,0,.2);
+  min-width:42px; text-align:center;
+}
+.affix-tier.t1{ color:var(--state-warn); border-color:var(--state-warn); background-color:rgba(232,169,59,.08); }
+.affix-tier.t2{ color:var(--rare-rare-glow,#9bbeed); border-color:var(--rare-rare); background-color:rgba(91,142,209,.08); }
+.affix-tier.t3{ color:var(--gold-200); border-color:var(--gold-400); background-color:rgba(230,183,81,.08); }
+.affix-tier.fixed{ color:var(--ink-3); border-color:var(--ink-4); }
+
+/* refit CTA area */
+.refit-foot{
+  padding:14px 16px;
+  border-top:1px solid var(--gold-500);
+  background-color:var(--bg-3);
+  display:flex; flex-direction:column; gap:10px;
+}
+.refit-summary{
+  display:flex; align-items:center; justify-content:space-between;
+  font-family:var(--f-ko); font-size:13px; color:var(--ink-2);
+  gap:14px;
+}
+.refit-summary .target{
+  display:flex; align-items:center; gap:8px;
+  flex:1; min-width:0;
+}
+.refit-summary .target .lbl{
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.18em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.refit-summary .target .nm{ color:var(--vellum); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.refit-summary .target .nm.empty{ color:var(--ink-4); font-style:italic; font-weight:500; }
+.refit-summary .warn{
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.12em;
+  color:var(--state-danger);
+  display:flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.refit-summary .warn svg{ width:14px; height:14px; }
+
+.refit-btn{
+  position:relative;
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  padding:14px 18px;
+  background-color:var(--gold-400);
+  border:1px solid var(--gold-200);
+  color:#2a1f06;
+  cursor:pointer;
+  font-family:var(--f-ko);
+}
+.refit-btn:hover{ background-color:var(--gold-300); }
+.refit-btn[disabled]{
+  background-color:var(--bg-3); border-color:var(--ink-4); color:var(--ink-3);
+  cursor:not-allowed;
+}
+.refit-btn .ko{ font-family:var(--f-ko); font-weight:800; font-size:18px; letter-spacing:.04em; white-space:nowrap; }
+.refit-btn .en{
+  font-family:var(--f-en-display); font-weight:700; font-size:14px;
+  letter-spacing:.24em; white-space:nowrap;
+}
+.refit-btn .cost{
+  font-family:var(--f-mono); font-size:13px; font-weight:500;
+  letter-spacing:.08em;
+  padding:4px 10px;
+  background-color:rgba(20,15,5,.55);
+  color:var(--gold-100);
+  border:1px solid rgba(138,100,24,.5);
+  white-space:nowrap;
+}
+.refit-btn[disabled] .cost{ color:var(--state-danger); border-color:var(--state-danger); background-color:rgba(226,85,72,.1); }
+.refit-btn .cap{ border-color:#2a1f06; width:7px; height:7px; }
+
+/* ---- RIGHT: inventory pool ---- */
+.pool-filters{
+  display:flex; gap:6px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--line-2);
+  background-color:var(--bg-2);
+}
+.pool-filter{
+  font-family:var(--f-ko); font-weight:600; font-size:12px;
+  padding:5px 12px;
+  background-color:transparent;
+  border:1px solid var(--ink-4);
+  color:var(--ink-3);
+  cursor:pointer;
+  letter-spacing:.02em;
+}
+.pool-filter:hover{ border-color:var(--gold-500); color:var(--ink-2); }
+.pool-filter.active{
+  background-color:rgba(245,214,138,.1);
+  border-color:var(--gold-300); color:var(--gold-100);
+}
+.pool-filter .en{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; margin-left:6px;
+  color:var(--ink-4);
+}
+.pool-filter.active .en{ color:var(--gold-300); }
+
+.pool-list{
+  flex:1;
+  padding:8px 8px;
+  display:flex; flex-direction:column; gap:4px;
+  overflow:auto;
+}
+.pool-row{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px;
+  background-color:var(--bg-pool);
+  border:1px solid var(--line-1);
+  cursor:pointer;
+  position:relative;
+}
+.pool-row:hover{ border-color:var(--gold-500); background-color:rgba(245,214,138,.04); }
+.pool-row.active{
+  border-color:var(--gold-200);
+  background-color:rgba(245,214,138,.08);
+}
+.pool-row.active::after{
+  content:""; position:absolute; left:-1px; top:-1px; bottom:-1px; width:2px;
+  background-color:var(--gold-300);
+}
+.pool-row.equipped{ border-left:3px solid var(--fam-ranger); }
+
+.pool-icon-box{
+  width:46px; height:46px;
+  background-color:#0a0e1c;
+  border:1px solid var(--gold-500);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  position:relative;
+}
+.pool-icon-box.r-rare{ border-color:var(--rare-rare); }
+.pool-icon-box.r-epic{ border-color:var(--rare-epic); }
+.pool-icon-box.r-common{ border-color:var(--rare-common-deep,#6b6248); }
+.pool-icon-box svg{ width:26px; height:26px; }
+.pool-icon-box .ilvl{
+  position:absolute; bottom:-1px; right:-1px;
+  font-family:var(--f-mono); font-size:8px; color:var(--gold-200);
+  background-color:rgba(0,0,0,.85);
+  border:1px solid var(--gold-500);
+  padding:0 3px;
+  letter-spacing:.04em;
+}
+
+.pool-body{ flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
+.pool-name{
+  font-family:var(--f-ko); font-weight:700; font-size:13.5px; color:var(--vellum);
+  letter-spacing:.01em;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.pool-name .en{
+  font-family:var(--f-en-italic); font-style:italic; font-weight:500;
+  font-size:10px; color:var(--ink-3); margin-left:5px;
+}
+.pool-stats{
+  display:flex; gap:8px; align-items:center;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.04em; color:var(--ink-3);
+  white-space:nowrap;
+}
+.pool-stats > span{ white-space:nowrap; }
+.pool-stats .div{ width:2px; height:2px; background-color:var(--ink-4); }
+
+.pool-meta{
+  display:flex; flex-direction:column; align-items:flex-end; gap:4px;
+  flex-shrink:0;
+}
+.slot-chip{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  padding:2px 6px;
+  border:1px solid var(--gold-500);
+  color:var(--gold-200);
+  background-color:rgba(0,0,0,.25);
+  white-space:nowrap;
+}
+.slot-chip.armor{ border-color:var(--fam-ranger); color:var(--fam-ranger-glow); background-color:rgba(181,138,54,.08); }
+.slot-chip.weapon{ border-color:var(--gold-400); color:var(--gold-200); background-color:rgba(200,147,42,.08); }
+
+.rarity-gem{
+  width:14px; height:14px; flex-shrink:0;
+}
+.equipped-badge{
+  font-family:var(--f-mono); font-size:8px; letter-spacing:.14em;
+  color:var(--fam-ranger-glow); text-transform:uppercase;
+  margin-top:2px;
+}
+
+/* ---- footer ---- */
+.erp-foot{
+  display:flex; align-items:center; justify-content:space-between;
+  padding-top:18px;
+  border-top:1px solid var(--gold-500);
+  margin-top:22px;
+  position:relative;
+}
+.erp-foot::before{
+  content:""; position:absolute; top:-4px; left:0; right:0; height:1px;
+  background-color:var(--gold-500); opacity:.5;
+}
+.erp-foot .note{
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.08em; color:var(--state-warn);
+  white-space:nowrap;
+}
+.erp-foot .note svg{ width:15px; height:15px; }
+.erp-foot .crumbs{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.18em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.erp-foot .crumbs .arr{ color:var(--gold-500); }
+.erp-foot .crumbs .here{ color:var(--gold-200); }
+.erp-foot .key-hints{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.12em; color:var(--ink-3);
+  text-transform:uppercase;
+}
+.erp-foot .kbd{
+  display:inline-flex; align-items:center; padding:2px 6px;
+  border:1px solid var(--gold-500); color:var(--gold-200); background-color:rgba(0,0,0,.3);
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.06em;
+}
+
+/* Selected-affix preview row (above CTA) */
+.preview-bar{
+  display:flex; align-items:stretch; gap:0;
+  padding:10px 16px;
+  border-top:1px dashed var(--line-2);
+  background-color:var(--bg-1);
+}
+.preview-col{ flex:1; display:flex; flex-direction:column; gap:3px; padding:0 14px; border-right:1px solid var(--line-2); }
+.preview-col:last-child{ border-right:none; }
+.preview-col:first-child{ padding-left:0; }
+.preview-col .k{
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; color:var(--ink-3); text-transform:uppercase;
+}
+.preview-col .v{
+  font-family:var(--f-en-display); font-size:18px; font-weight:700; color:var(--vellum);
+  letter-spacing:.04em; line-height:1.1;
+}
+.preview-col .v.gold{ color:var(--gold-100); }
+.preview-col .v small{ font-family:var(--f-mono); font-size:10px; color:var(--ink-3); margin-left:4px; font-weight:400; }
+.preview-col .v .arr{ color:var(--gold-300); margin:0 5px; font-weight:400; font-size:14px; }
+.preview-col .v .delta-up{ color:var(--state-safe); font-size:14px; margin-left:4px; }
+.preview-col .v .delta-down{ color:var(--state-danger); font-size:14px; margin-left:4px; }
+
+/* ---- toast / log ---- */
+.toast{
+  position:absolute;
+  left:50%; bottom:80px;
+  margin-left:-200px;
+  width:400px;
+  padding:10px 14px;
+  background-color:var(--bg-2);
+  border:1px solid var(--gold-300);
+  color:var(--vellum);
+  font-family:var(--f-ko); font-size:13px;
+  display:flex; align-items:center; gap:10px;
+  z-index:100;
+}
+.toast .cap{ width:6px; height:6px; }
+.toast b{ color:var(--gold-100); font-family:var(--f-en-display); font-weight:700; }
+.toast.danger{ border-color:var(--state-danger); color:var(--state-danger); }
+.toast.danger b{ color:var(--state-danger); }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="scale-wrap" id="scale-wrap">
+    <div id="root"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" data-presets="react">
+/* ===========================================================
+   ERP — SVG ICON LIBRARY
+   All icons monochrome currentColor strokes — render via:
+     <Icon name="sword" />
+   =========================================================== */
+
+const IconSword = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 4 L26 8 L14 20 L10 22 L12 18 L24 6 Z" />
+    <path d="M10 22 L6 26" />
+    <path d="M4 28 L8 24 L10 26 L6 30 Z" fill="currentColor" opacity=".4"/>
+    <path d="M19 11 L21 13" opacity=".5"/>
+  </svg>
+);
+
+const IconShield = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 4 L26 8 L26 16 Q26 24 16 28 Q6 24 6 16 L6 8 Z" />
+    <path d="M16 10 L16 22" opacity=".5"/>
+    <path d="M11 14 L21 14" opacity=".5"/>
+  </svg>
+);
+
+const IconRing = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="16" cy="20" r="8" />
+    <path d="M12 13 L16 8 L20 13" />
+    <path d="M16 8 L14 11 L18 11 Z" fill="currentColor" opacity=".5"/>
+  </svg>
+);
+
+const IconBow = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 4 Q 22 16 8 28" />
+    <path d="M8 4 L8 28" opacity=".5" strokeDasharray="2 2"/>
+    <path d="M24 16 L8 16" />
+    <path d="M24 16 L20 14 L20 18 Z" fill="currentColor"/>
+  </svg>
+);
+
+const IconDagger = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 4 L19 6 L19 20 L13 20 L13 6 Z" />
+    <path d="M11 20 L21 20 L21 23 L11 23 Z" fill="currentColor" opacity=".25"/>
+    <path d="M16 23 L16 30" />
+    <path d="M13 28 L19 28" />
+  </svg>
+);
+
+const IconPlate = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 8 L22 8 L24 14 L24 26 L8 26 L8 14 Z" />
+    <path d="M16 8 L16 26" opacity=".4"/>
+    <path d="M12 14 L20 14" opacity=".4"/>
+    <circle cx="16" cy="18" r="1.6" fill="currentColor"/>
+  </svg>
+);
+
+const IconCloak = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 6 L16 4 L24 6 L26 12 L22 28 L10 28 L6 12 Z" />
+    <path d="M16 4 L16 28" opacity=".4"/>
+    <path d="M12 10 L20 10" opacity=".4"/>
+  </svg>
+);
+
+const IconSigil = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="16" cy="16" r="10" />
+    <path d="M16 6 L19 13 L26 13 L20 18 L23 25 L16 21 L9 25 L12 18 L6 13 L13 13 Z" fill="currentColor" opacity=".25"/>
+    <circle cx="16" cy="16" r="3" fill="currentColor"/>
+  </svg>
+);
+
+const IconMail = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="10" cy="11" r="2"/>
+    <circle cx="16" cy="11" r="2"/>
+    <circle cx="22" cy="11" r="2"/>
+    <circle cx="13" cy="16" r="2"/>
+    <circle cx="19" cy="16" r="2"/>
+    <circle cx="10" cy="21" r="2"/>
+    <circle cx="16" cy="21" r="2"/>
+    <circle cx="22" cy="21" r="2"/>
+    <circle cx="13" cy="26" r="2"/>
+    <circle cx="19" cy="26" r="2"/>
+  </svg>
+);
+
+const IconStaff = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 6 L14 8 L18 8 L18 6 Z M10 4 L22 4" />
+    <circle cx="16" cy="7" r="3.4" fill="currentColor" opacity=".25"/>
+    <path d="M16 11 L16 28" />
+    <path d="M14 28 L18 28" />
+  </svg>
+);
+
+const IconHelm = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 16 Q6 8 16 8 Q26 8 26 16 L26 22 L6 22 Z" />
+    <path d="M6 22 L26 22 L26 24 L6 24 Z" fill="currentColor" opacity=".25"/>
+    <path d="M12 16 L14 16 M18 16 L20 16" strokeWidth="2"/>
+  </svg>
+);
+
+/* affix icons */
+const IconAtk = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 4 L20 14 L28 16 L20 18 L16 28 L12 18 L4 16 L12 14 Z" />
+  </svg>
+);
+const IconCrit = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="16" cy="16" r="10" />
+    <circle cx="16" cy="16" r="3.2" fill="currentColor"/>
+    <path d="M16 2 L16 7 M16 25 L16 30 M2 16 L7 16 M25 16 L30 16" />
+  </svg>
+);
+const IconPierce = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 26 L26 6" />
+    <path d="M22 4 L28 4 L28 10" />
+    <path d="M8 22 L13 22 L13 27" opacity=".5"/>
+    <circle cx="16" cy="16" r="2" fill="currentColor"/>
+  </svg>
+);
+const IconEcho = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="16" cy="16" r="4" />
+    <circle cx="16" cy="16" r="9" opacity=".6"/>
+    <circle cx="16" cy="16" r="13" opacity=".3"/>
+    <circle cx="16" cy="16" r="1.6" fill="currentColor"/>
+  </svg>
+);
+const IconHaste = () => (
+  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 4 L8 18 L14 18 L12 28 L24 14 L18 14 Z" fill="currentColor" opacity=".25"/>
+    <path d="M18 4 L8 18 L14 18 L12 28 L24 14 L18 14 Z" />
+  </svg>
+);
+
+/* hero portrait — ranger / marksman, anime cell-shaded */
+const HeroSilhouette = () => (
+  <svg viewBox="0 0 240 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* cape outer */}
+    <path d="M30 300 L30 230 Q30 195 60 178 L80 168 Q92 162 100 150 L100 130 L140 130 L140 150 Q148 162 160 168 L180 178 Q210 195 210 230 L210 300 Z" fill="#3a2810"/>
+    {/* cape inner — ranger gold */}
+    <path d="M60 300 L60 232 Q60 210 78 196 L94 188 L94 300 Z" fill="#5a4220"/>
+    <path d="M180 300 L180 232 Q180 210 162 196 L146 188 L146 300 Z" fill="#5a4220"/>
+    {/* leather chest */}
+    <path d="M88 130 L152 130 L156 174 Q140 184 120 184 Q100 184 84 174 Z" fill="#2d1f0c" stroke="#7a5818" strokeWidth="1.2"/>
+    {/* shoulder straps */}
+    <path d="M92 134 L100 152 L140 152 L148 134" fill="none" stroke="#b58a36" strokeWidth="1.4"/>
+    {/* chest crest */}
+    <path d="M115 152 L120 142 L125 152 L120 162 Z" fill="#e6b751" stroke="#ffe9a8" strokeWidth="0.6"/>
+    <circle cx="120" cy="152" r="1.4" fill="#fff8e0"/>
+    {/* quiver strap diagonal */}
+    <path d="M88 142 L160 178" stroke="#5a4220" strokeWidth="3" opacity=".8"/>
+    <path d="M88 142 L160 178" stroke="#b58a36" strokeWidth="0.8"/>
+    {/* arrows in quiver behind shoulder */}
+    <path d="M168 152 L172 116" stroke="#2a1810" strokeWidth="1.4"/>
+    <path d="M173 152 L178 118" stroke="#2a1810" strokeWidth="1.4"/>
+    <path d="M163 154 L165 120" stroke="#2a1810" strokeWidth="1.4"/>
+    <path d="M170 116 L174 114 L178 116 L176 119 L172 121 Z" fill="#b58a36"/>
+    {/* neck */}
+    <path d="M108 124 L132 124 L130 132 L110 132 Z" fill="#d8b58a"/>
+    {/* head */}
+    <ellipse cx="120" cy="100" rx="24" ry="28" fill="#e8c89c"/>
+    {/* hair — long ranger braid */}
+    <path d="M94 110 Q 86 60 120 56 Q 154 60 146 110 Q 136 88 128 80 Q 120 90 112 82 Q 104 76 100 88 Q 96 100 94 110 Z" fill="#3a2410"/>
+    {/* side hair strands */}
+    <path d="M96 108 Q 90 134 92 168 Q 96 152 100 144 Z" fill="#3a2410"/>
+    <path d="M144 108 Q 150 134 148 168 Q 144 152 140 144 Z" fill="#3a2410"/>
+    {/* hood (down) */}
+    <path d="M86 108 Q 80 124 88 138 L94 132 Z" fill="#2a1a08"/>
+    <path d="M154 108 Q 160 124 152 138 L146 132 Z" fill="#2a1a08"/>
+    {/* eyes (closed cell-shaded) */}
+    <path d="M108 100 L116 100" stroke="#3a2410" strokeWidth="1.6" strokeLinecap="round"/>
+    <path d="M124 100 L132 100" stroke="#3a2410" strokeWidth="1.6" strokeLinecap="round"/>
+    {/* eye glints */}
+    <circle cx="111" cy="98" r="1.2" fill="#fff8e0"/>
+    <circle cx="127" cy="98" r="1.2" fill="#fff8e0"/>
+    {/* nose / mouth */}
+    <path d="M120 106 L120 110" stroke="#b58a36" strokeWidth="0.8" strokeLinecap="round"/>
+    <path d="M116 116 Q 120 119 124 116" stroke="#b58a36" strokeWidth="0.8" fill="none" strokeLinecap="round"/>
+    {/* facemark */}
+    <path d="M114 90 L118 86" stroke="#b58a36" strokeWidth="0.6"/>
+    {/* hair highlights ranger gold */}
+    <path d="M104 76 Q 110 64 120 60" stroke="#e6c878" strokeWidth="1.4" fill="none" opacity=".7"/>
+    <path d="M134 78 Q 132 64 124 60" stroke="#e6c878" strokeWidth="1" fill="none" opacity=".7"/>
+    {/* circlet */}
+    <path d="M100 80 Q 120 70 140 80 L138 86 Q 120 78 102 86 Z" fill="#8a6418" stroke="#e6b751" strokeWidth="0.6"/>
+    <circle cx="120" cy="78" r="1.8" fill="#e6b751"/>
+    {/* shoulder pauldrons */}
+    <path d="M74 162 Q 80 132 102 132 L106 162 Z" fill="#3a2410" stroke="#b58a36" strokeWidth="1"/>
+    <path d="M166 162 Q 160 132 138 132 L134 162 Z" fill="#3a2410" stroke="#b58a36" strokeWidth="1"/>
+    {/* pauldron studs */}
+    <circle cx="86" cy="148" r="1.4" fill="#e6b751"/>
+    <circle cx="154" cy="148" r="1.4" fill="#e6b751"/>
+    {/* bow strap edge on hip */}
+    <path d="M70 178 L84 178" stroke="#b58a36" strokeWidth="1"/>
+    <path d="M156 178 L170 178" stroke="#b58a36" strokeWidth="1"/>
+  </svg>
+);
+
+/* rarity diamond gem */
+const RarityGem = ({rarity}) => {
+  const fills = {
+    common: { a:'#cdc4a8', b:'#6b6248', stroke:'#9d8a5e' },
+    rare:   { a:'#9bbeed', b:'#1f3b66', stroke:'#5b8ed1' },
+    epic:   { a:'#f08a3c', b:'#3a1f5a', stroke:'#b561d6' },
+  };
+  const f = fills[rarity] || fills.common;
+  return (
+    <svg viewBox="0 0 14 14" fill="none">
+      <path d="M7 1 L13 7 L7 13 L1 7 Z" fill={f.a} stroke={f.stroke} strokeWidth="1"/>
+      <path d="M7 1 L7 13 L1 7 Z" fill={f.b} opacity=".65"/>
+      <path d="M7 4 L9 6" stroke="#fff8e0" strokeWidth="0.6" opacity=".8"/>
+    </svg>
+  );
+};
+
+/* small echo crystal */
+const EchoCrystal = ({size=14}) => (
+  <svg viewBox="0 0 14 18" fill="none" width={size} height={size*18/14}>
+    <path d="M7 0 L13 6 L9 18 L5 18 L1 6 Z" fill="#e6b751" stroke="#ffe9a8" strokeWidth="0.6"/>
+    <path d="M7 0 L7 18 L1 6 Z" fill="#8a6418" opacity=".6"/>
+    <path d="M3 5 L6 3" stroke="#fff8e0" strokeWidth="0.6"/>
+  </svg>
+);
+
+/* alert triangle */
+const IconAlert = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 2 L14.5 13.5 L1.5 13.5 Z"/>
+    <path d="M8 6 L8 9.5"/>
+    <circle cx="8" cy="11.5" r="0.8" fill="currentColor"/>
+  </svg>
+);
+
+/* chevron */
+const IconChevron = ({dir='left'}) => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    {dir === 'left' ? <path d="M10 3 L5 8 L10 13"/> : <path d="M6 3 L11 8 L6 13"/>}
+  </svg>
+);
+
+const IconClose = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+    <path d="M4 4 L12 12 M12 4 L4 12"/>
+  </svg>
+);
+
+const ICONS = {
+  sword: IconSword, shield: IconShield, ring: IconRing,
+  bow: IconBow, dagger: IconDagger, plate: IconPlate,
+  cloak: IconCloak, sigil: IconSigil, mail: IconMail, staff: IconStaff,
+  helm: IconHelm,
+  atk: IconAtk, crit: IconCrit, pierce: IconPierce, echo: IconEcho, haste: IconHaste,
+};
+function Icon({name, ...rest}){
+  const C = ICONS[name] || IconSword;
+  return <C {...rest}/>;
+}
+
+Object.assign(window, { Icon, HeroSilhouette, RarityGem, EchoCrystal, IconAlert, IconChevron, IconClose });
+
+
+/* ===========================================================
+   ERP — DATA
+   =========================================================== */
+
+const HERO = {
+  name: '카에데',
+  nameEn: 'Kaede',
+  arch: '명사수',
+  archEn: 'MARKSMAN',
+  fam: 'ranger',
+  level: 27,
+  hpCur: 248, hpMax: 320,
+};
+
+// each item carries its own affix list (1 implicit + 2 prefix + 2 suffix)
+const POOL = [
+  {
+    id: 'I_swd_jh2',
+    name: '잔향검 II', nameEn: 'Echo Blade II',
+    icon: 'sword', slot: 'weapon', slotKo: '한손검',
+    rarity: 'rare', ilvl: 42,
+    equipped: true,
+    affixes: [
+      { kind:'implicit', icon:'atk',    name:'한손검 숙련',       statKo:'공격력',           val:'+28',  range:[28,28],   fixed:true,  tier:'고정' },
+      { kind:'prefix',   icon:'pierce', name:'분쇄의',            statKo:'방어 관통',        val:'+14%', range:[12,18],   pct:true,    tier:'T2' },
+      { kind:'prefix',   icon:'crit',   name:'광휘의',            statKo:'치명타 확률',      val:'+7%',  range:[5,9],     pct:true,    tier:'T2' },
+      { kind:'suffix',   icon:'echo',   name:'~의 분노',          statKo:'처치 시 잔향 회수', val:'+6',   range:[4,8],     pct:false,   tier:'T2' },
+      { kind:'suffix',   icon:'haste',  name:'~의 진언',          statKo:'스킬 가속',        val:'+8%',  range:[6,10],    pct:true,    tier:'T2' },
+    ],
+  },
+  {
+    id: 'I_dgr_dlf',
+    name: '어둠늑대 송곳니', nameEn: 'Direwolf Fang',
+    icon: 'dagger', slot: 'weapon', slotKo: '단검',
+    rarity: 'epic', ilvl: 48,
+    affixes: [
+      { kind:'implicit', icon:'atk',    name:'단검 숙련',          statKo:'공격력',           val:'+22',  range:[22,22],   fixed:true, tier:'고정' },
+      { kind:'prefix',   icon:'crit',   name:'야성의',            statKo:'치명타 확률',      val:'+11%', range:[8,14],    pct:true,   tier:'T3' },
+      { kind:'prefix',   icon:'haste',  name:'민첩한',            statKo:'공격 속도',        val:'+12%', range:[8,16],    pct:true,   tier:'T3' },
+      { kind:'suffix',   icon:'pierce', name:'~의 추적',          statKo:'생명력 흡수',      val:'+8%',  range:[5,12],    pct:true,   tier:'T3' },
+      { kind:'suffix',   icon:'echo',   name:'~의 야조',          statKo:'처치 시 잔향 회수', val:'+9',   range:[6,12],    pct:false,  tier:'T3' },
+    ],
+  },
+  {
+    id: 'I_bow_msm',
+    name: '명사수의 장궁', nameEn: "Marksman's Longbow",
+    icon: 'bow', slot: 'weapon', slotKo: '활',
+    rarity: 'rare', ilvl: 39,
+    affixes: [
+      { kind:'implicit', icon:'atk',    name:'활 숙련',           statKo:'원거리 공격력',     val:'+24',  range:[24,24],   fixed:true, tier:'고정' },
+      { kind:'prefix',   icon:'crit',   name:'정밀한',            statKo:'치명타 피해',      val:'+18%', range:[14,22],   pct:true,   tier:'T2' },
+      { kind:'prefix',   icon:'pierce', name:'관통의',            statKo:'방어 관통',        val:'+10%', range:[8,14],    pct:true,   tier:'T2' },
+      { kind:'suffix',   icon:'haste',  name:'~의 응시',          statKo:'명중',             val:'+12',  range:[8,16],    pct:false,  tier:'T2' },
+      { kind:'suffix',   icon:'atk',    name:'~의 비조',          statKo:'스킬 피해',        val:'+9%',  range:[6,12],    pct:true,   tier:'T2' },
+    ],
+  },
+  {
+    id: 'I_swd_kdg',
+    name: '백금 의례검', nameEn: 'Platinum Ritual',
+    icon: 'sword', slot: 'weapon', slotKo: '한손검',
+    rarity: 'epic', ilvl: 46,
+    affixes: [
+      { kind:'implicit', icon:'atk',    name:'한손검 숙련',       statKo:'공격력',           val:'+32',  range:[32,32],   fixed:true, tier:'고정' },
+      { kind:'prefix',   icon:'pierce', name:'성령의',            statKo:'신성 피해',        val:'+22%', range:[16,28],   pct:true,   tier:'T3' },
+      { kind:'prefix',   icon:'crit',   name:'고결한',            statKo:'치명타 확률',      val:'+9%',  range:[6,12],    pct:true,   tier:'T3' },
+      { kind:'suffix',   icon:'echo',   name:'~의 서원',          statKo:'스킬 시전 시 보호막', val:'+18', range:[12,24],  pct:false,  tier:'T3' },
+      { kind:'suffix',   icon:'haste',  name:'~의 가호',          statKo:'재사용 감소',      val:'+8%',  range:[5,11],    pct:true,   tier:'T3' },
+    ],
+  },
+  {
+    id: 'A_pl_str',
+    name: '강철 흉갑', nameEn: 'Steel Cuirass',
+    icon: 'plate', slot: 'armor', slotKo: '판금',
+    rarity: 'common', ilvl: 28,
+    affixes: [
+      { kind:'implicit', icon:'shield', name:'판금 숙련',         statKo:'방어',             val:'+44',  range:[44,44],   fixed:true, tier:'고정' },
+      { kind:'prefix',   icon:'shield', name:'단단한',            statKo:'최대 생명',        val:'+12%', range:[8,14],    pct:true,   tier:'T1' },
+      { kind:'prefix',   icon:'shield', name:'질긴',              statKo:'물리 저항',        val:'+8%',  range:[5,10],    pct:true,   tier:'T1' },
+      { kind:'suffix',   icon:'shield', name:'~의 굳건',          statKo:'경직 저항',        val:'+15%', range:[10,18],   pct:true,   tier:'T1' },
+      { kind:'suffix',   icon:'shield', name:'~의 인내',          statKo:'재생',             val:'+4',   range:[2,6],     pct:false,  tier:'T1' },
+    ],
+  },
+  {
+    id: 'A_ck_dwn',
+    name: '여명 망토', nameEn: 'Daybreak Cloak',
+    icon: 'cloak', slot: 'armor', slotKo: '경갑',
+    rarity: 'rare', ilvl: 35,
+    affixes: [
+      { kind:'implicit', icon:'shield', name:'경갑 숙련',         statKo:'회피',             val:'+18',  range:[18,18],   fixed:true, tier:'고정' },
+      { kind:'prefix',   icon:'haste',  name:'민첩한',            statKo:'이동 속도',        val:'+10%', range:[6,12],    pct:true,   tier:'T2' },
+      { kind:'prefix',   icon:'shield', name:'유연한',            statKo:'회피',             val:'+8',   range:[5,11],    pct:false,  tier:'T2' },
+      { kind:'suffix',   icon:'echo',   name:'~의 새벽',          statKo:'잔향 획득량',      val:'+6%',  range:[4,8],     pct:true,   tier:'T2' },
+      { kind:'suffix',   icon:'pierce', name:'~의 비행',          statKo:'기습 피해',        val:'+12%', range:[8,16],    pct:true,   tier:'T2' },
+    ],
+  },
+  {
+    id: 'A_ml_chr',
+    name: '사슬갑주', nameEn: 'Chain Hauberk',
+    icon: 'mail', slot: 'armor', slotKo: '사슬',
+    rarity: 'rare', ilvl: 40,
+    affixes: [
+      { kind:'implicit', icon:'shield', name:'사슬 숙련',         statKo:'방어',             val:'+34',  range:[34,34],   fixed:true, tier:'고정' },
+      { kind:'prefix',   icon:'shield', name:'견고한',            statKo:'최대 생명',        val:'+15%', range:[10,18],   pct:true,   tier:'T2' },
+      { kind:'prefix',   icon:'crit',   name:'반격의',            statKo:'반격 확률',        val:'+6%',  range:[4,9],     pct:true,   tier:'T2' },
+      { kind:'suffix',   icon:'shield', name:'~의 결속',          statKo:'마법 저항',        val:'+18',  range:[12,22],   pct:false,  tier:'T2' },
+      { kind:'suffix',   icon:'pierce', name:'~의 가시',          statKo:'반사 피해',        val:'+8',   range:[5,12],    pct:false,  tier:'T2' },
+    ],
+  },
+  {
+    id: 'A_pl_pla',
+    name: '백금 호위 갑주', nameEn: 'Platinum Aegis',
+    icon: 'plate', slot: 'armor', slotKo: '판금',
+    rarity: 'epic', ilvl: 44,
+    affixes: [
+      { kind:'implicit', icon:'shield', name:'판금 숙련',         statKo:'방어',             val:'+58',  range:[58,58],   fixed:true, tier:'고정' },
+      { kind:'prefix',   icon:'shield', name:'성좌의',            statKo:'최대 생명',        val:'+20%', range:[14,24],   pct:true,   tier:'T3' },
+      { kind:'prefix',   icon:'shield', name:'수호의',            statKo:'피해 감소',        val:'+8%',  range:[5,11],    pct:true,   tier:'T3' },
+      { kind:'suffix',   icon:'echo',   name:'~의 서원',          statKo:'보호막 흡수',      val:'+16%', range:[12,22],   pct:true,   tier:'T3' },
+      { kind:'suffix',   icon:'haste',  name:'~의 봉인',          statKo:'상태이상 저항',     val:'+15%', range:[10,20],   pct:true,   tier:'T3' },
+    ],
+  },
+];
+
+const ECHO_MAX = 120;
+const ECHO_START = 88;
+const REFIT_COST = 15;
+
+Object.assign(window, { HERO, POOL, ECHO_MAX, ECHO_START, REFIT_COST });
+
+
+/* ===========================================================
+   ERP — EQUIPMENT REFIT APP
+   =========================================================== */
+const { useState, useMemo, useRef, useEffect } = React;
+
+function ErpApp(){
+  const [selectedItemId, setSelectedItemId] = useState(POOL[0].id);
+  const [selectedAffixIdx, setSelectedAffixIdx] = useState(2); // default: prefix2
+  const [poolFilter, setPoolFilter] = useState('all');
+  const [echo, setEcho] = useState(ECHO_START);
+  const [items, setItems] = useState(POOL);
+  const [toast, setToast] = useState(null);
+
+  const currentItem = items.find(i => i.id === selectedItemId) || items[0];
+  const filtered = items.filter(i => poolFilter === 'all' ? true : i.slot === poolFilter);
+
+  const selectedAffix = currentItem.affixes[selectedAffixIdx];
+  const canRefit = !!selectedAffix && !selectedAffix.fixed && echo >= REFIT_COST;
+  const refitReason = selectedAffix?.fixed
+    ? '고정 어픽스 — 재시전 불가'
+    : echo < REFIT_COST
+      ? `잔향 부족 (-${REFIT_COST - echo})`
+      : null;
+
+  // When user clicks an item from pool, reset affix selection to a reasonable default
+  function pickItem(id){
+    setSelectedItemId(id);
+    const it = items.find(i => i.id === id);
+    // default-select first non-fixed affix
+    const idx = it.affixes.findIndex(a => !a.fixed);
+    setSelectedAffixIdx(idx >= 0 ? idx : 0);
+  }
+
+  function pickAffix(idx){
+    const a = currentItem.affixes[idx];
+    if(a.fixed){
+      setToast({ kind:'danger', msg:<>고정 어픽스는 <b>재시전</b>할 수 없습니다.</> });
+      setTimeout(()=>setToast(null), 1800);
+    }
+    setSelectedAffixIdx(idx);
+  }
+
+  function rollAffix(){
+    if(!canRefit) return;
+    const a = selectedAffix;
+    const [lo, hi] = a.range;
+    let next;
+    if(a.pct){
+      next = lo + Math.floor(Math.random()*(hi-lo+1));
+    } else {
+      next = lo + Math.floor(Math.random()*(hi-lo+1));
+    }
+    const sign = next >= 0 ? '+' : '';
+    const newVal = `${sign}${next}${a.pct ? '%' : ''}`;
+    const oldVal = a.val;
+
+    setItems(prev => prev.map(it => {
+      if(it.id !== currentItem.id) return it;
+      const newAffixes = it.affixes.map((x, i) => i === selectedAffixIdx ? { ...x, val:newVal } : x);
+      return { ...it, affixes:newAffixes };
+    }));
+    setEcho(e => e - REFIT_COST);
+    setToast({ kind:'safe', msg:<><b>재시전</b> &nbsp;{a.name} {a.statKo} &nbsp;{oldVal} → <b>{newVal}</b></> });
+    setTimeout(()=>setToast(null), 2200);
+  }
+
+  /* compute "previewed" delta from middle */
+  const midVal = useMemo(()=>{
+    if(!selectedAffix || selectedAffix.fixed) return null;
+    const [lo,hi] = selectedAffix.range;
+    return Math.round((lo+hi)/2);
+  }, [selectedAffix]);
+
+  return (
+    <div className="erp-modal" role="dialog" aria-label="장비 — Refit">
+      <span className="cap tl"></span><span className="cap tr"></span>
+      <span className="cap bl"></span><span className="cap br"></span>
+
+      <div className="erp-modal-inner">
+
+        {/* ============== HEADER ============== */}
+        <header className="erp-h">
+          <div className="erp-h-left">
+            <div className="erp-h-eyebrow">— SURVIVAL MANAGER · TOWN · FORGE —</div>
+            <h1 className="erp-h-title">
+              <span className="ko">장비</span>
+              <span className="dot"></span>
+              <span className="en">REFIT</span>
+            </h1>
+            <div className="erp-h-sub">An echo recasts the metal, but not the will.</div>
+          </div>
+          <div className="erp-h-right">
+            <div className="erp-echo-chip">
+              <span className="cap tl" style={{borderColor:'var(--gold-300)'}}></span>
+              <span className="cap br" style={{borderColor:'var(--gold-300)'}}></span>
+              <span className="gem"><EchoCrystal size={14}/></span>
+              <span className="lbl">잔향 · Echo</span>
+              <span className="val">{echo}<span className="max">/{ECHO_MAX}</span></span>
+            </div>
+            <button
+              type="button"
+              name="ErpCloseButton"
+              className="erp-close"
+              aria-label="닫기"
+              onClick={()=>{
+                setToast({ kind:'safe', msg:<><b>닫기</b> &nbsp;ErpCloseButton fired</>});
+                setTimeout(()=>setToast(null), 1400);
+              }}
+            >
+              <span className="cap tl"></span><span className="cap tr"></span>
+              <span className="cap bl"></span><span className="cap br"></span>
+              <IconClose/>
+            </button>
+          </div>
+        </header>
+
+        {/* ============== BODY ============== */}
+        <div className="erp-body">
+
+          {/* ---------- LEFT ---------- */}
+          <aside className="erp-col erp-col-left panel">
+            <span className="cap tl"></span><span className="cap tr"></span>
+            <span className="cap bl"></span><span className="cap br"></span>
+
+            <div className="panel-head">
+              <span className="num">L · I</span>
+              <span className="title">장비 슬롯<span className="en">EQUIP</span></span>
+              <span className="count"><b>{HERO.name}</b></span>
+            </div>
+
+            {/* hero portrait window */}
+            <div className="hero-port">
+              <div className="scene"></div>
+              <div className="fam-rib"><span className="pip"></span></div>
+              <span className="tag">P09 · HERO RT · {HERO.archEn}</span>
+              <div className="rarity">
+                <RarityGem rarity="epic"/><RarityGem rarity="epic"/><RarityGem rarity="epic"/>
+              </div>
+              <div className="silh"><HeroSilhouette/></div>
+              <div className="ground"></div>
+              <div className="inset-frame"></div>
+            </div>
+
+            {/* hero meta */}
+            <div className="hero-meta">
+              <div className="hero-name-row">
+                <div className="hero-name">
+                  {HERO.name} · 녹스
+                  <span className="en">{HERO.nameEn} Nox</span>
+                </div>
+                <span className="hero-arch">{HERO.arch}</span>
+              </div>
+              <div className="hero-status">
+                <span>LV<b>{HERO.level}</b></span>
+                <span>HP<b>{HERO.hpCur}/{HERO.hpMax}</b></span>
+                <span>SET<b>2 / 4</b></span>
+              </div>
+            </div>
+
+            {/* slot row */}
+            <div className="slot-row">
+              <SlotCard
+                name="ErpEquipSlot_Weapon"
+                label="무기 · WEAPON"
+                icon={currentItem.slot === 'weapon' ? currentItem.icon : 'sword'}
+                selected={currentItem.slot === 'weapon'}
+                rarity={currentItem.slot === 'weapon' ? currentItem.rarity : null}
+              />
+              <SlotCard
+                name="ErpEquipSlot_Armor"
+                label="방어구 · ARMOR"
+                icon={currentItem.slot === 'armor' ? currentItem.icon : 'plate'}
+                selected={currentItem.slot === 'armor'}
+                rarity={currentItem.slot === 'armor' ? currentItem.rarity : null}
+              />
+              <SlotCard
+                name="ErpEquipSlot_Trinket"
+                label="장신구 · TRINKET"
+                empty
+              />
+            </div>
+
+            {/* selected readout */}
+            <div className="selected-readout">
+              <div className="kicker">선택 · IN FORGE</div>
+              <div className="name">
+                {currentItem.name}
+                <span className="ilvl">iL {currentItem.ilvl}</span>
+                <span className="en">{currentItem.nameEn}</span>
+              </div>
+              <div className="tags">
+                <span className={`tag-chip r-${currentItem.rarity}`}>
+                  {currentItem.rarity === 'common' ? 'COMMON · 1★'
+                    : currentItem.rarity === 'rare' ? 'RARE · 2★'
+                    : 'EPIC · 3★'}
+                </span>
+                <span className="tag-chip">{currentItem.slotKo} · {currentItem.slot === 'weapon' ? 'WEAPON' : 'ARMOR'}</span>
+                <span className="tag-chip">BIND · SOULBOUND</span>
+              </div>
+              <div style={{
+                marginTop:'auto',
+                paddingTop:10,
+                borderTop:'1px dashed var(--line-2)',
+                fontFamily:'var(--f-jp)', fontStyle:'italic', fontSize:'12px',
+                color:'var(--ink-3)', lineHeight:1.55,
+              }}>
+                « {currentItem.rarity === 'epic'
+                  ? '残光の刃は、誓いを忘れない。'
+                  : currentItem.rarity === 'rare'
+                  ? '冷えた鋼の上に、新たな祈り。'
+                  : '名もなき鍛冶の、たしかな手仕事。'} »
+              </div>
+            </div>
+          </aside>
+
+          {/* ---------- CENTER ---------- */}
+          <section className="erp-col erp-col-center panel">
+            <span className="cap tl"></span><span className="cap tr"></span>
+            <span className="cap bl"></span><span className="cap br"></span>
+
+            <div className="panel-head">
+              <span className="num">L · II</span>
+              <span className="title">어픽스<span className="en">AFFIX · 5</span></span>
+              <span className="count">암묵 <b>1</b> · 접두 <b>2</b> · 접미 <b>2</b></span>
+            </div>
+
+            <div className="affix-list" role="listbox" aria-label="어픽스 5">
+              {currentItem.affixes.map((a, i) => (
+                <AffixRow
+                  key={`${currentItem.id}_${i}`}
+                  index={i}
+                  affix={a}
+                  selected={i === selectedAffixIdx}
+                  onSelect={()=>pickAffix(i)}
+                />
+              ))}
+            </div>
+
+            {/* preview row */}
+            <div className="preview-bar">
+              <div className="preview-col">
+                <div className="k">대상 · TARGET</div>
+                <div className="v">
+                  #{selectedAffixIdx+1}{' '}
+                  <span style={{fontFamily:'var(--f-ko)', fontSize:13, color:'var(--vellum)'}}>
+                    {selectedAffix?.name || '—'}
+                  </span>
+                </div>
+              </div>
+              <div className="preview-col">
+                <div className="k">현재 · NOW</div>
+                <div className="v gold">{selectedAffix?.val || '—'}</div>
+              </div>
+              <div className="preview-col">
+                <div className="k">예상 분포 · RANGE</div>
+                <div className="v">
+                  {selectedAffix && !selectedAffix.fixed
+                    ? <>{selectedAffix.range[0]}{selectedAffix.pct?'%':''}<span className="arr">~</span>{selectedAffix.range[1]}{selectedAffix.pct?'%':''}</>
+                    : <>—</>
+                  }
+                  <small>중앙값 {midVal != null ? `${midVal}${selectedAffix.pct?'%':''}` : '—'}</small>
+                </div>
+              </div>
+            </div>
+
+            {/* refit foot */}
+            <div className="refit-foot">
+              <div className="refit-summary">
+                <div className="target">
+                  <span className="lbl">RE-ROLL TARGET</span>
+                  <span className={`nm ${!selectedAffix || selectedAffix.fixed ? 'empty' : ''}`}>
+                    {selectedAffix?.fixed
+                      ? '— 대상 미선택 —'
+                      : `#${selectedAffixIdx+1} · ${selectedAffix?.name} · ${selectedAffix?.statKo}`}
+                  </span>
+                </div>
+                <div className="warn">
+                  <IconAlert/>
+                  <span>재시전은 영구 변경이며 되돌릴 수 없습니다.</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                name="ErpRefitButton"
+                className="refit-btn"
+                disabled={!canRefit}
+                onClick={rollAffix}
+              >
+                <span className="cap tl"></span><span className="cap tr"></span>
+                <span className="cap bl"></span><span className="cap br"></span>
+                <span className="en">REFIT</span>
+                <span className="ko">정련</span>
+                <span className="cost">
+                  {refitReason
+                    ? refitReason
+                    : <>– {REFIT_COST} ECHO &nbsp;·&nbsp; 잔향 {echo} → {echo - REFIT_COST}</>}
+                </span>
+              </button>
+            </div>
+          </section>
+
+          {/* ---------- RIGHT ---------- */}
+          <aside className="erp-col erp-col-right panel">
+            <span className="cap tl"></span><span className="cap tr"></span>
+            <span className="cap bl"></span><span className="cap br"></span>
+
+            <div className="panel-head">
+              <span className="num">L · III</span>
+              <span className="title">인벤토리<span className="en">FORGE POOL</span></span>
+              <span className="count"><b>{filtered.length}</b><span style={{color:'var(--ink-3)'}}> / {items.length}</span></span>
+            </div>
+
+            <div className="pool-filters">
+              <PoolFilter active={poolFilter==='all'} onClick={()=>setPoolFilter('all')} ko="전체" en="ALL"/>
+              <PoolFilter active={poolFilter==='weapon'} onClick={()=>setPoolFilter('weapon')} ko="무기" en="WPN"/>
+              <PoolFilter active={poolFilter==='armor'} onClick={()=>setPoolFilter('armor')} ko="방어구" en="ARM"/>
+            </div>
+
+            <div className="pool-list" role="listbox" aria-label="장비 인벤토리 8">
+              {filtered.map((it, i) => (
+                <PoolRow
+                  key={it.id}
+                  index={items.indexOf(it)}
+                  item={it}
+                  active={it.id === currentItem.id}
+                  onClick={()=>pickItem(it.id)}
+                />
+              ))}
+            </div>
+          </aside>
+
+        </div>
+
+        {/* ============== FOOTER ============== */}
+        <footer className="erp-foot">
+          <div className="crumbs">
+            <span>TOWN</span><span className="arr">›</span>
+            <span>FORGE</span><span className="arr">›</span>
+            <span className="here">REFIT</span>
+          </div>
+          <div className="note">
+            <IconAlert/>
+            <span>EQUIP REFIT · ECHO COST {REFIT_COST} · LOCALE KO</span>
+          </div>
+          <div className="key-hints">
+            <span><span className="kbd">↑↓</span> 어픽스</span>
+            <span><span className="kbd">←→</span> 인벤토리</span>
+            <span><span className="kbd">SPACE</span> 정련</span>
+            <span><span className="kbd">ESC</span> 닫기</span>
+          </div>
+        </footer>
+
+        {toast && (
+          <div className={`toast ${toast.kind === 'danger' ? 'danger' : ''}`}>
+            <span className="cap tl"></span><span className="cap tr"></span>
+            <span className="cap bl"></span><span className="cap br"></span>
+            <span>{toast.msg}</span>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+/* ============== SlotCard ============== */
+function SlotCard({ name, label, icon, selected, empty, rarity }){
+  const cls = `slot ${selected?'selected':''} ${empty?'empty':''}`;
+  return (
+    <button type="button" name={name} className={cls}>
+      <div className="slot-icon-box">
+        {empty
+          ? <span className="ph">EMPTY</span>
+          : <Icon name={icon}/>}
+      </div>
+      <div className="slot-label">{label}</div>
+      {selected && rarity && (
+        <span style={{
+          position:'absolute', top:-1, right:-1,
+          width:8, height:8,
+          backgroundColor: rarity==='epic'?'var(--rare-epic)':rarity==='rare'?'var(--rare-rare)':'var(--rare-common)',
+          border:'1px solid var(--gold-200)',
+        }}></span>
+      )}
+    </button>
+  );
+}
+
+/* ============== AffixRow ============== */
+function AffixRow({ index, affix, selected, onSelect }){
+  const rowName = `ErpAffixRow_${index}`;
+  const cls = `affix-row ${affix.kind} ${selected?'selected':''} ${affix.fixed?'locked':''}`;
+  // tier color: t1 warn / t2 rare-blue / t3 gold / fixed
+  const tierCls = affix.fixed ? 'fixed' : (affix.tier === 'T3' ? 't3' : affix.tier === 'T2' ? 't2' : 't1');
+
+  // icon color tint via family
+  let iconColor = 'var(--gold-200)';
+  if(affix.kind === 'prefix') iconColor = 'var(--rare-rare-glow,#9bbeed)';
+  if(affix.kind === 'suffix') iconColor = 'var(--rare-epic)';
+  if(affix.fixed) iconColor = 'var(--ink-3)';
+  if(selected) iconColor = 'var(--gold-100)';
+
+  return (
+    <div role="option" aria-selected={selected} className={cls} tabIndex={0}
+         data-erp-name={rowName}
+         onClick={onSelect}>
+      <button type="button" name={rowName}
+              style={{display:'none'}} aria-hidden="true" tabIndex={-1}/>
+      <span className="affix-num">{index+1}</span>
+
+      <div className="affix-icon-box" style={{color: iconColor}}>
+        <span className="corner tl"></span>
+        <span className="corner br"></span>
+        <Icon name={affix.icon}/>
+      </div>
+
+      <div className="affix-body">
+        <div className="affix-name">
+          <span className={`pfx ${affix.kind}`}>
+            {affix.kind === 'implicit' ? '암묵' : affix.kind === 'prefix' ? '접두' : '접미'}
+          </span>
+          {affix.name}
+        </div>
+        <div className="affix-stat">
+          <span className="em">{affix.statKo}</span>
+          {affix.kind === 'implicit' && <em>{`base · ${affix.range[0]}`}</em>}
+          {affix.kind !== 'implicit' && (
+            <em>{`roll ${affix.range[0]}${affix.pct?'%':''} – ${affix.range[1]}${affix.pct?'%':''}`}</em>
+          )}
+        </div>
+      </div>
+
+      <div className="affix-value">
+        <div className="now">{affix.val}</div>
+        <div className="range">
+          {affix.fixed
+            ? <b>고정값</b>
+            : <>분포 <b>{affix.range[0]}{affix.pct?'%':''}</b> ~ <b>{affix.range[1]}{affix.pct?'%':''}</b></>}
+        </div>
+      </div>
+
+      <div className={`affix-tier ${tierCls}`}>{affix.tier}</div>
+    </div>
+  );
+}
+
+/* ============== PoolFilter ============== */
+function PoolFilter({ active, onClick, ko, en }){
+  return (
+    <button type="button" className={`pool-filter ${active?'active':''}`} onClick={onClick}>
+      {ko}<span className="en">{en}</span>
+    </button>
+  );
+}
+
+/* ============== PoolRow ============== */
+function PoolRow({ index, item, active, onClick }){
+  const rowName = `ErpPoolRow_${index}`;
+  const slotCls = item.slot === 'armor' ? 'armor' : 'weapon';
+  return (
+    <div className={`pool-row ${active?'active':''} ${item.equipped?'equipped':''}`}
+         onClick={onClick}
+         role="option" aria-selected={active}
+         data-erp-name={rowName}>
+      <button type="button" name={rowName}
+              style={{display:'none'}} aria-hidden="true" tabIndex={-1}/>
+      <div className={`pool-icon-box r-${item.rarity}`}>
+        <Icon name={item.icon}/>
+        <span className="ilvl">{item.ilvl}</span>
+      </div>
+      <div className="pool-body">
+        <div className="pool-name">
+          {item.name}
+          <span className="en">{item.nameEn}</span>
+        </div>
+        <div className="pool-stats">
+          <span>iL {item.ilvl}</span>
+          <span className="div"></span>
+          <span>{item.slotKo}</span>
+          <span className="div"></span>
+          <span style={{
+            color: item.rarity==='epic'?'var(--rare-epic)':
+                   item.rarity==='rare'?'var(--rare-rare)':'var(--rare-common)',
+          }}>
+            {item.rarity.toUpperCase()}
+          </span>
+        </div>
+        {item.equipped && <div className="equipped-badge">— 장착중 · EQUIPPED —</div>}
+      </div>
+      <div className="pool-meta">
+        <span className={`slot-chip ${slotCls}`}>
+          {item.slot === 'armor' ? '방어구' : '무기'}
+        </span>
+        <span className="rarity-gem"><RarityGem rarity={item.rarity}/></span>
+      </div>
+    </div>
+  );
+}
+
+/* mount */
+ReactDOM.createRoot(document.getElementById('root')).render(<ErpApp/>);
+
+</script>
+
+<script>
+/* viewport scaler (preview only — not part of USS payload) */
+(function(){
+  function fit(){
+    var w = window.innerWidth - 48;
+    var h = window.innerHeight - 48;
+    var s = Math.min(w / 1664, h / 936, 1);
+    var el = document.getElementById('scale-wrap');
+    if(el){
+      el.style.transform = 'scale(' + s + ')';
+      el.style.transformOrigin = 'center center';
+    }
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+  fit();
+})();
+</script>
+
+</body>
+</html>

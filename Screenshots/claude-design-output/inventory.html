@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>장비 — Survival Manager</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* ============================================================
+   장비 (INVENTORY) — Survival Manager
+   Unity USS-compatible subset:
+     - flexbox only (no grid)
+     - no CSS gradient, transform, animation, box-shadow
+     - solid color fills + border lines for ornament
+   SVG-internal gradients are fine (they compile to textures).
+   ============================================================ */
+
+/* tokens (from design system) */
+:root {
+  --bg-0:#0c1126; --bg-1:#141a35; --bg-2:#1c2243; --bg-3:#262d54;
+  --line-1:#2c3568; --line-2:#3b467f; --line-3:#4e5b9a;
+  --gold-100:#ffe9a8; --gold-200:#f5d68a; --gold-300:#e6b751;
+  --gold-400:#c8932a; --gold-500:#8a6418;
+  --vellum:#f5ead0; --vellum-2:#e2d4ad;
+  --ink-1:#f5ead0; --ink-2:#d8c799; --ink-3:#9d8a5e; --ink-4:#6b5d3f;
+  --state-safe:#6dbf78; --state-danger:#e25548; --state-info:#7fa3e0;
+  --rare-rare:#5b8ed1; --rare-rare-glow:#9bbeed;
+  --fam-vanguard:#4a72b8; --fam-striker:#b6334a; --fam-mystic:#8a5cb8;
+  --f-ko:"Pretendard",system-ui,-apple-system,sans-serif;
+  --f-en:"Cinzel","Trajan Pro",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  background-color: var(--bg-0);
+  color: var(--ink-1);
+  font-family: var(--f-ko);
+  font-feature-settings: "ss06","tnum";
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Korean: never split at character boundaries */
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+.inv-root, .inv-root * { word-break: keep-all; }
+
+/* ============================================================
+   ROOT — 1680 × 945 (the inventory panel itself)
+   ============================================================ */
+.inv-root {
+  width: 1680px;
+  height: 945px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-0);
+  padding: 28px 36px 32px;
+  border: 1px solid var(--line-1);
+  position: relative;
+}
+
+/* 4 gold corner caps on the panel */
+.inv-root > .cap {
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 1px solid var(--gold-400);
+  pointer-events: none;
+}
+.inv-root > .cap.tl { top:-1px; left:-1px;  border-right:none; border-bottom:none; }
+.inv-root > .cap.tr { top:-1px; right:-1px; border-left:none;  border-bottom:none; }
+.inv-root > .cap.bl { bottom:-1px; left:-1px;  border-right:none; border-top:none; }
+.inv-root > .cap.br { bottom:-1px; right:-1px; border-left:none;  border-top:none; }
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.inv-topbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  flex-shrink: 0;
+}
+.inv-title {
+  font-family: var(--f-ko);
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--vellum);
+  letter-spacing: -0.01em;
+  margin: 0;
+  line-height: 1;
+}
+.inv-topright {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+.inv-gold {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  padding: 0 22px 0 12px;
+  border: 1px solid var(--gold-400);
+  background-color: var(--bg-1);
+  position: relative;
+}
+.inv-gold .coin {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background-color: var(--gold-300);
+  border: 1px solid var(--gold-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.inv-gold .coin svg { width: 16px; height: 16px; }
+.inv-gold .label {
+  font-family: var(--f-ko);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vellum-2);
+}
+.inv-gold .amount {
+  font-family: var(--f-en);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--gold-100);
+  letter-spacing: 0.04em;
+}
+.inv-close {
+  width: 44px; height: 44px;
+  background-color: transparent;
+  border: none;
+  color: var(--ink-2);
+  font-family: var(--f-ko);
+  font-size: 30px;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.inv-close:hover { color: var(--gold-200); }
+
+/* ============================================================
+   BODY — split left (grid) | right (detail)
+   ============================================================ */
+.inv-body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  gap: 24px;
+  margin-top: 18px;
+  min-height: 0;
+}
+.inv-left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* tab strip */
+.inv-tabstrip {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 64px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--line-1);
+  margin-bottom: 22px;
+}
+.inv-tab {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  font-family: var(--f-ko);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink-3);
+  letter-spacing: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+}
+.inv-tab:hover { color: var(--vellum-2); }
+.inv-tab.active {
+  color: var(--gold-200);
+  font-weight: 700;
+  font-size: 19px;
+}
+.inv-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 96px;
+  margin-left: -48px;
+  height: 2px;
+  background-color: var(--gold-300);
+}
+.inv-tab.active::before {
+  /* small flourish dot below the underline */
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  background-color: var(--gold-300);
+  border: 1px solid var(--gold-500);
+  border-radius: 50%;
+}
+
+.inv-sort {
+  flex-shrink: 0;
+  width: 180px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin: 12px 0 12px 14px;
+  height: 40px;
+  border: 1px solid var(--line-2);
+  background-color: var(--bg-1);
+  cursor: pointer;
+  font-family: var(--f-ko);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.inv-sort:hover { border-color: var(--gold-500); }
+.inv-sort .chev { color: var(--ink-3); font-size: 11px; }
+
+/* ============================================================
+   ITEM GRID — flex-rows of 6
+   ============================================================ */
+.inv-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.inv-grid::-webkit-scrollbar { width: 6px; }
+.inv-grid::-webkit-scrollbar-track { background-color: var(--bg-1); }
+.inv-grid::-webkit-scrollbar-thumb { background-color: var(--gold-500); }
+
+.inv-row {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.inv-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-2);
+  border: 1px solid var(--line-1);
+  cursor: pointer;
+  position: relative;
+  min-width: 0;
+  padding: 0;
+}
+.inv-card:hover { border-color: var(--gold-500); }
+.inv-card.selected {
+  border-color: var(--gold-300);
+  background-color: var(--bg-3);
+}
+.inv-card.selected .sel-inner {
+  position: absolute;
+  top: 3px; left: 3px; right: 3px; bottom: 3px;
+  border: 1px solid var(--gold-200);
+  pointer-events: none;
+}
+.inv-card-image {
+  height: 122px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0c1024;
+  border-bottom: 1px solid var(--line-1);
+  position: relative;
+  overflow: hidden;
+}
+.inv-card.selected .inv-card-image { border-bottom-color: var(--gold-500); }
+.inv-card-image svg { width: 100%; height: 100%; display: block; }
+.inv-card-name {
+  font-family: var(--f-ko);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vellum);
+  text-align: center;
+  padding: 9px 4px 3px;
+  letter-spacing: -0.01em;
+}
+.inv-card.selected .inv-card-name { color: var(--gold-100); font-weight: 700; }
+.inv-card-rarity {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 4px 9px;
+}
+.inv-card-rarity i {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background-color: var(--gold-300);
+  border: 1px solid var(--gold-500);
+  display: block;
+}
+.inv-card-rarity i.empty {
+  background-color: transparent;
+  border-color: var(--line-2);
+}
+
+/* equipped ribbon + portrait */
+.inv-card .equipped-ribbon {
+  position: absolute;
+  top: 0; left: 0;
+  background-color: var(--gold-300);
+  color: #2a1f06;
+  font-family: var(--f-en);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  padding: 4px 8px 3px;
+  z-index: 2;
+  border-right: 1px solid var(--gold-500);
+  border-bottom: 1px solid var(--gold-500);
+}
+.inv-card .equipped-port {
+  position: absolute;
+  top: 0; right: 0;
+  width: 48px; height: 60px;
+  background-color: #0a0d20;
+  border-left: 1px solid var(--gold-500);
+  border-bottom: 1px solid var(--gold-500);
+  overflow: hidden;
+  z-index: 2;
+}
+.inv-card .equipped-port svg { width: 100%; height: 100%; display: block; }
+
+/* ============================================================
+   DETAIL PANEL (right)
+   ============================================================ */
+.inv-right {
+  width: 560px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-1);
+  border: 1px solid var(--gold-500);
+  position: relative;
+}
+.inv-right > .cap {
+  position: absolute;
+  width: 10px; height: 10px;
+  border: 1px solid var(--gold-300);
+  pointer-events: none;
+  z-index: 2;
+}
+.inv-right > .cap.tl { top:-1px; left:-1px;  border-right:none; border-bottom:none; }
+.inv-right > .cap.tr { top:-1px; right:-1px; border-left:none;  border-bottom:none; }
+.inv-right > .cap.bl { bottom:-1px; left:-1px;  border-right:none; border-top:none; }
+.inv-right > .cap.br { bottom:-1px; right:-1px; border-left:none;  border-top:none; }
+
+.detail-hero {
+  display: flex;
+  flex-direction: row;
+  gap: 22px;
+  padding: 26px 26px 20px;
+  flex-shrink: 0;
+}
+.detail-portrait {
+  flex: 1;
+  height: 320px;
+  background-color: #0a0d20;
+  border: 1px solid var(--line-2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.detail-portrait .ph-tag {
+  position: absolute;
+  top: 10px; left: 12px;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--gold-300);
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+.detail-portrait svg { width: 92%; height: 92%; display: block; }
+.detail-portrait > .cap {
+  position: absolute;
+  width: 8px; height: 8px;
+  border: 1px solid var(--gold-400);
+}
+.detail-portrait > .cap.tl { top:-1px; left:-1px;  border-right:none; border-bottom:none; }
+.detail-portrait > .cap.br { bottom:-1px; right:-1px; border-left:none;  border-top:none; }
+
+.detail-info {
+  width: 224px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+}
+.detail-name {
+  font-family: var(--f-ko);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--vellum);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+}
+.detail-rarity {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+  margin-top: 14px;
+}
+.detail-rarity i {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background-color: var(--gold-300);
+  border: 1px solid var(--gold-500);
+  display: block;
+}
+.detail-rarity i.empty { background-color: transparent; border-color: var(--line-2); }
+
+.detail-badge {
+  align-self: flex-start;
+  margin-top: 16px;
+  font-family: var(--f-ko);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vellum-2);
+  background-color: var(--bg-3);
+  border: 1px solid var(--line-2);
+  padding: 4px 14px;
+}
+
+.detail-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 22px;
+  flex-shrink: 0;
+}
+.stat-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--f-ko);
+  font-size: 16px;
+}
+.stat-row .k { color: var(--ink-2); font-weight: 500; }
+.stat-row {
+  font-size: 15px;
+}
+.stat-row .v {
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--rare-rare-glow);
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 5px;
+}
+.stat-row .v.neg { color: var(--state-danger); }
+.stat-row .v.pos { color: var(--state-safe); }
+.stat-row .v .note {
+  font-family: var(--f-ko);
+  font-size: 12px;
+  color: var(--ink-3);
+  font-weight: 400;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.detail-divider {
+  height: 1px;
+  background-color: var(--line-1);
+  margin: 0 24px;
+  flex-shrink: 0;
+}
+
+.detail-equipped-by {
+  padding: 16px 28px 10px;
+  font-family: var(--f-ko);
+  font-size: 13.5px;
+  color: var(--ink-3);
+  flex-shrink: 0;
+}
+.detail-equipped-by b { color: var(--vellum-2); font-weight: 600; }
+
+.detail-char-select {
+  margin: 0 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.char-portrait {
+  width: 56px; height: 56px;
+  background-color: var(--bg-3);
+  border: 1px solid var(--gold-400);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.char-portrait svg { width: 100%; height: 100%; display: block; }
+.char-dropdown {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 18px;
+  background-color: var(--bg-2);
+  border: 1px solid var(--line-2);
+  font-family: var(--f-ko);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vellum);
+  cursor: pointer;
+}
+.char-dropdown:hover { border-color: var(--gold-500); }
+.char-dropdown .chev { color: var(--ink-3); font-size: 11px; }
+
+.detail-actions {
+  margin-top: auto;
+  padding: 24px 24px 24px;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.action-btn {
+  flex: 1;
+  height: 60px;
+  font-family: var(--f-ko);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gold-500);
+  position: relative;
+}
+.action-btn.primary {
+  background-color: var(--gold-300);
+  color: #2a1f06;
+}
+.action-btn.primary:hover { background-color: var(--gold-200); }
+.action-btn.primary > .cap {
+  position: absolute;
+  width: 6px; height: 6px;
+  border: 1px solid #2a1f06;
+}
+.action-btn.primary > .cap.tl { top:3px; left:3px;  border-right:none; border-bottom:none; }
+.action-btn.primary > .cap.tr { top:3px; right:3px; border-left:none;  border-bottom:none; }
+.action-btn.primary > .cap.bl { bottom:3px; left:3px;  border-right:none; border-top:none; }
+.action-btn.primary > .cap.br { bottom:3px; right:3px; border-left:none;  border-top:none; }
+.action-btn.secondary {
+  background-color: transparent;
+  color: var(--vellum);
+  border-color: var(--line-3);
+}
+.action-btn.secondary:hover { border-color: var(--gold-400); color: var(--gold-100); }
+.action-btn.secondary .gold-amt {
+  color: var(--gold-200);
+  font-family: var(--f-mono);
+  font-weight: 600;
+  margin-left: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="inv-root">
+  <span class="cap tl"></span>
+  <span class="cap tr"></span>
+  <span class="cap bl"></span>
+  <span class="cap br"></span>
+
+  <!-- ========== TOP BAR ========== -->
+  <div class="inv-topbar">
+    <h1 class="inv-title">장비</h1>
+    <div class="inv-topright">
+      <div class="inv-gold" name="InvGoldDisplay">
+        <span class="coin">
+          <svg viewBox="0 0 16 16" fill="none">
+            <path d="M8 1 L9.8 6.2 L15 6.2 L10.8 9.4 L12.4 14.6 L8 11.4 L3.6 14.6 L5.2 9.4 L1 6.2 L6.2 6.2 Z"
+                  fill="#8a6418" stroke="#5a3e08" stroke-width="0.6"/>
+          </svg>
+        </span>
+        <span class="label">보유 골드</span>
+        <span class="amount" id="goldAmount">1240</span>
+      </div>
+      <button class="inv-close" name="InvCloseButton" aria-label="close">×</button>
+    </div>
+  </div>
+
+  <!-- ========== BODY ========== -->
+  <div class="inv-body">
+
+    <!-- ========== LEFT: tabs + grid ========== -->
+    <div class="inv-left">
+      <div class="inv-tabstrip">
+        <button class="inv-tab active" name="InvTabWeapon" data-tab="weapon">무기 <span class="count">(24)</span></button>
+        <button class="inv-tab" name="InvTabArmor" data-tab="armor">방어구 <span class="count">(18)</span></button>
+        <button class="inv-tab" name="InvTabAccessory" data-tab="accessory">액세서리 <span class="count">(12)</span></button>
+        <div class="inv-sort" name="InvSortDropdown" id="sortDropdown">
+          <span>tier 순</span>
+          <span class="chev">▼</span>
+        </div>
+      </div>
+      <div class="inv-grid" id="invGrid"></div>
+    </div>
+
+    <!-- ========== RIGHT: detail panel ========== -->
+    <div class="inv-right" id="detailPanel">
+      <span class="cap tl"></span>
+      <span class="cap tr"></span>
+      <span class="cap bl"></span>
+      <span class="cap br"></span>
+
+      <div class="detail-hero">
+        <div class="detail-portrait" id="detailPortrait">
+          <span class="cap tl"></span>
+          <span class="cap br"></span>
+          <span class="ph-tag">P02 · ITEM ART</span>
+          <!-- weapon hero SVG injected here -->
+        </div>
+        <div class="detail-info">
+          <h2 class="detail-name" id="detailName">잔향검 II</h2>
+          <div class="detail-rarity" id="detailRarity">
+            <i></i><i></i><i></i>
+          </div>
+          <div class="detail-badge" id="detailBadge">한손검</div>
+          <div class="detail-stats" id="detailStats">
+            <!-- stat rows injected -->
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-divider"></div>
+
+      <div class="detail-equipped-by" id="detailEquippedBy">
+        equipped by: <b>명사수</b> 장착 중
+      </div>
+
+      <div class="detail-char-select">
+        <div class="char-portrait" id="charPortrait"></div>
+        <div class="char-dropdown" name="InvCharacterSelector" id="charDropdown">
+          <span id="charName">명사수</span>
+          <span class="chev">▼</span>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="action-btn primary" name="InvEquipButton" id="equipBtn">
+          <span class="cap tl"></span>
+          <span class="cap tr"></span>
+          <span class="cap bl"></span>
+          <span class="cap br"></span>
+          장착
+        </button>
+        <button class="action-btn secondary" name="InvSellButton" id="sellBtn">
+          판매 <span class="gold-amt">(+45 골드)</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="weapons.js?v=5"></script>
+<script src="characters.js?v=5"></script>
+<script src="inventory.js?v=5"></script>
+
+</body>
+</html>

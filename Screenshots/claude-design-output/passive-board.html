@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Survival Manager · Passive Board — 리퍼</title>
+<meta name="viewport" content="width=1728" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="passive-board.css" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root" data-screen-label="01 Passive Board"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useMemo, useEffect, useRef } = React;
+
+/* ===========================================================
+   TWEAK DEFAULTS — persisted via host
+   =========================================================== */
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "hero": "reaper",
+  "showGuides": true,
+  "ringDensity": "rich"
+}/*EDITMODE-END*/;
+
+/* ===========================================================
+   ICONS (inline SVG — USS supports VectorImage)
+   =========================================================== */
+const I = {
+  Star: (p) => <svg viewBox="0 0 32 32" fill="currentColor" {...p}><path d="M16 2 L18 13 L29 14 L20 21 L23 31 L16 25 L9 31 L12 21 L3 14 L14 13 Z"/></svg>,
+  Burst: (p) => <svg viewBox="0 0 32 32" fill="currentColor" {...p}><path d="M16 3 L19 12 L28 9 L22 16 L29 22 L20 22 L17 30 L13 22 L4 22 L11 16 L5 9 L14 12 Z"/></svg>,
+  CrossArrows: (p) => <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" {...p}>
+    <path d="M6 26 L26 6"/><path d="M19 6 L26 6 L26 13"/>
+    <path d="M6 19 L6 26 L13 26"/>
+  </svg>,
+  Compass: (p) => <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2" {...p}>
+    <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
+    <path d="M16 4 L18 14 L16 16 L14 14 Z" fill="currentColor"/>
+    <path d="M16 28 L14 18 L16 16 L18 18 Z" fill="currentColor"/>
+    <path d="M4 16 L14 14 L16 16 L14 18 Z" fill="currentColor"/>
+    <path d="M28 16 L18 18 L16 16 L18 14 Z" fill="currentColor"/>
+  </svg>,
+  Boot: (p) => <svg viewBox="0 0 32 32" fill="currentColor" {...p}>
+    <path d="M11 4 L18 4 L18 18 L26 22 L26 28 L7 28 L7 22 L11 22 Z"/>
+    <path d="M11 8 L16 8 L16 10 L11 10 Z" opacity=".4"/>
+  </svg>,
+  Lotus: (p) => <svg viewBox="0 0 32 32" fill="currentColor" {...p}>
+    <path d="M16 3 L18 12 L20 8 L21 14 L25 12 L23 18 L16 22 L9 18 L7 12 L11 14 L12 8 L14 12 Z"/>
+  </svg>,
+  Sword: (p) => <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" {...p}>
+    <path d="M22 6 L26 6 L26 10 L12 24 L8 24 L8 20 Z" fill="currentColor"/>
+    <path d="M14 22 L20 22" />
+  </svg>,
+  Slash: (p) => <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" {...p}>
+    <path d="M6 25 L26 7"/>
+    <path d="M9 28 L29 10" opacity=".5"/>
+    <path d="M22 5 L27 8 L24 13"/>
+  </svg>,
+  Heart: (p) => <svg viewBox="0 0 32 32" fill="currentColor" {...p}>
+    <path d="M16 27 C 4 18 4 8 11 8 C 14 8 16 11 16 11 C 16 11 18 8 21 8 C 28 8 28 18 16 27 Z"/>
+    <path d="M16 13 L16 21 M12 17 L20 17" stroke="#0c1126" strokeWidth="1.6" fill="none"/>
+  </svg>,
+  Shield: (p) => <svg viewBox="0 0 32 32" fill="currentColor" {...p}>
+    <path d="M16 3 L27 7 L27 17 C 27 23 22 27 16 29 C 10 27 5 23 5 17 L 5 7 Z"/>
+    <path d="M12 14 L15 17 L20 11" stroke="#0c1126" strokeWidth="2" fill="none"/>
+  </svg>,
+  Lock: (p) => <svg viewBox="0 0 32 32" fill="currentColor" {...p}>
+    <path d="M10 14 L10 10 C 10 6 13 4 16 4 C 19 4 22 6 22 10 L 22 14" stroke="currentColor" strokeWidth="2.2" fill="none"/>
+    <rect x="7" y="14" width="18" height="14"/>
+    <circle cx="16" cy="20" r="1.8" fill="#0c1126"/>
+    <rect x="15" y="20" width="2" height="5" fill="#0c1126"/>
+  </svg>,
+  Swords: (p) => <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" {...p}>
+    <path d="M8 8 L8 12 L24 28 L28 24 L12 8 Z" fill="currentColor" opacity=".85"/>
+    <path d="M40 8 L40 12 L24 28 L20 24 L36 8 Z" fill="currentColor" opacity=".85"/>
+    <path d="M22 30 L18 34 L20 36 L24 32 Z" fill="currentColor"/>
+    <path d="M26 30 L30 34 L28 36 L24 32 Z" fill="currentColor"/>
+    <path d="M14 38 L20 44 M34 38 L28 44"/>
+  </svg>,
+  PointDiamond: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" {...p}>
+    <path d="M12 2 L18 8 L16 12 L20 16 L12 22 L4 16 L8 12 L6 8 Z" fill="currentColor" fillOpacity=".15"/>
+    <path d="M12 6 L12 18 M6 12 L18 12" />
+  </svg>,
+  Check: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M5 13 L10 18 L19 7"/></svg>,
+  X: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}><path d="M6 6 L18 18 M18 6 L6 18"/></svg>,
+  ChevL: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M15 5 L8 12 L15 19"/></svg>,
+  Refresh: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M21 12 A 9 9 0 1 1 18 5.5"/>
+    <path d="M21 4 L21 9 L16 9"/>
+  </svg>,
+  Info: (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}>
+    <circle cx="12" cy="12" r="9.5"/>
+    <path d="M12 7.5 L12 8" /><path d="M12 11 L12 17"/>
+  </svg>,
+};
+
+/* ===========================================================
+   NODE GRAPH — angles in degrees from top, clockwise
+   =========================================================== */
+const R_OUTER = 270;   // outer ring radius (board is 720x720, center 360,360)
+const R_INNER = 130;
+const CX = 360, CY = 360;
+
+const posOf = (angle, r) => ({
+  x: CX + r * Math.sin(angle * Math.PI / 180),
+  y: CY - r * Math.cos(angle * Math.PI / 180),
+});
+
+// each node: id, ring, angle, icon, name(ko), tier(passive cost), max ranks,
+// effects per rank, prereq node ids, current rank
+const NODES = [
+  // OUTER RING — 8 compass points (0=N, 45=NE, …)
+  { id:"n_pierce",  ring:"outer", angle:   0, icon:"Star",        name:"관통",         en:"PIERCE",
+    desc:"공격이 일부 방어력을 무시한다.",
+    stats:[{k:"방어 무시",v:"+8%"},{k:"치명타 피해",v:"+4%"}], cost:1, max:5, rank:1, req:[] },
+  { id:"n_evade",   ring:"outer", angle:  45, icon:"Lock",        name:"회피의 칼날",   en:"EVADER",
+    desc:"회피 후 1회 공격이 강화된다.",
+    stats:[{k:"회피 후 피해",v:"+15%"},{k:"회피율",v:"+3%"}], cost:1, max:5, rank:0, req:["n_pierce"], locked:true },
+  { id:"n_crit",    ring:"outer", angle:  90, icon:"Burst",       name:"치명타 확률 강화", en:"CRIT EDGE",
+    desc:"치명타 적중·피해가 모두 상승한다.",
+    stats:[{k:"치명타 확률",v:"+5%"},{k:"치명타 피해",v:"+12%"}], cost:1, max:5, rank:3, req:["n_pierce"] },
+  { id:"n_swift",   ring:"outer", angle: 135, icon:"Boot",        name:"신속한 발걸음",  en:"SWIFTFOOT",
+    desc:"이동 속도와 행동 게이지 회복이 증가한다.",
+    stats:[{k:"이동 속도",v:"+6%"},{k:"행동 회복",v:"+4%"}], cost:1, max:5, rank:0, req:["n_crit"] },
+  { id:"n_focus",   ring:"outer", angle: 180, icon:"Lotus",       name:"집중의 불꽃",    en:"EMBER FOCUS",
+    desc:"집중 게이지가 차오를수록 피해가 누적된다.",
+    stats:[{k:"누적 피해",v:"+3%/초"},{k:"최대 누적",v:"+25%"}], cost:1, max:5, rank:0, req:["i_lifesteal","i_bleed"] },
+  { id:"n_will",    ring:"outer", angle: 225, icon:"Lock",        name:"강철 의지",      en:"IRON WILL",
+    desc:"체력이 낮을 때 받는 피해가 감소한다.",
+    stats:[{k:"피해 감소",v:"+10%"},{k:"발동 체력",v:"30% 이하"}], cost:1, max:3, rank:0, req:["n_focus"], locked:true },
+  { id:"n_aim",     ring:"outer", angle: 270, icon:"Compass",     name:"정조준",         en:"TRUE AIM",
+    desc:"명중률과 첫 타격 피해가 상승한다.",
+    stats:[{k:"명중",v:"+8%"},{k:"선제 피해",v:"+10%"}], cost:1, max:5, rank:0, req:["i_bleed"] },
+  { id:"n_double",  ring:"outer", angle: 315, icon:"CrossArrows", name:"이중 공격",      en:"DOUBLE STRIKE",
+    desc:"기본 공격이 일정 확률로 두 번 발동한다.",
+    stats:[{k:"2회 공격 확률",v:"+12%"},{k:"2번째 피해",v:"60%"}], cost:1, max:5, rank:0, req:["n_aim","n_pierce"] },
+
+  // INNER RING — 4 cardinal points
+  { id:"i_pierce",   ring:"inner", angle:   0, icon:"Sword",   name:"관통 강화",       en:"PIERCE+",
+    desc:"관통 효과가 적의 방어를 더 깊게 뚫는다.",
+    stats:[{k:"방어 무시",v:"+5%"}], cost:1, max:3, rank:0, req:["n_pierce"] },
+  { id:"i_bleed",    ring:"inner", angle: 270, icon:"Slash",   name:"출혈 강화",       en:"BLEED+",
+    desc:"치명타 적중 시 출혈 효과를 부여한다.",
+    stats:[{k:"출혈 확률",v:"+15%"},{k:"출혈 피해",v:"40%"}], cost:1, max:3, rank:1, req:["n_pierce"] },
+  { id:"i_lifesteal",ring:"inner", angle:  90, icon:"Heart",   name:"흡혈",            en:"LIFEDRAW",
+    desc:"피해의 일부를 체력으로 회복한다.",
+    stats:[{k:"흡혈",v:"+4%"}], cost:1, max:3, rank:0, req:["i_bleed"] },
+  { id:"i_resolve",  ring:"inner", angle: 180, icon:"Lock",    name:"결의",            en:"RESOLVE",
+    desc:"피해를 입을 때마다 다음 공격이 강화된다.",
+    stats:[{k:"누적 공격력",v:"+2%"},{k:"최대 누적",v:"+20%"}], cost:1, max:3, rank:0, req:["i_bleed","i_lifesteal"], locked:true },
+];
+
+/* prebuilt connection edges:
+   - outer ring: 8 arcs along circle (drawn as the ring itself)
+   - radial spokes: each inner node → corresponding outer node + neighbors
+*/
+const EDGES = [
+  // outer ring arcs (each pair of adjacent outer nodes)
+  ["n_pierce","n_evade"], ["n_evade","n_crit"], ["n_crit","n_swift"],
+  ["n_swift","n_focus"], ["n_focus","n_will"], ["n_will","n_aim"],
+  ["n_aim","n_double"], ["n_double","n_pierce"],
+  // radial: inner ↔ outer (each inner connects to its nearest outer along ring)
+  ["i_pierce","n_pierce"], ["i_pierce","n_crit"],
+  ["i_bleed","n_aim"], ["i_bleed","n_pierce"],
+  ["i_lifesteal","n_crit"], ["i_lifesteal","n_focus"],
+  ["i_resolve","n_focus"], ["i_resolve","n_aim"],
+];
+
+/* ===========================================================
+   PORTRAITS / HEROES — minimal SVG silhouettes
+   =========================================================== */
+const HEROES = {
+  reaper: {
+    name:"리퍼", en:"REAPER", classKo:"돌파 결투", classEn:"DUELIST",
+    fam:"#8a5cb8", famDeep:"#3a1f5a", famGlow:"#d4b4f0",
+    moodA:"#2a1340", moodB:"#0d0518",
+    Silhouette: ReaperSilhouette,
+  },
+  striker: {
+    name:"카에데", en:"KAEDE NOX", classKo:"화염 일격", classEn:"STRIKER",
+    fam:"#b6334a", famDeep:"#5a0e1c", famGlow:"#f08a3c",
+    moodA:"#3a0e1c", moodB:"#1a0510",
+    Silhouette: StrikerSilhouette,
+  },
+  vanguard: {
+    name:"에리히", en:"ERICH STERN", classKo:"강철 방벽", classEn:"VANGUARD",
+    fam:"#4a72b8", famDeep:"#1a2a52", famGlow:"#7fa3e0",
+    moodA:"#142a52", moodB:"#050a1a",
+    Silhouette: VanguardSilhouette,
+  },
+};
+
+function ReaperSilhouette() {
+  return (
+    <svg viewBox="0 0 280 340" fill="none">
+      {/* scythe staff */}
+      <path d="M48 50 L52 50 L52 320 L48 320 Z" fill="#1a1224"/>
+      <path d="M52 36 Q 28 28 16 56 Q 14 70 22 76 Q 32 64 52 66 Z" fill="#0e0814" stroke="#3a1f5a" strokeWidth="1"/>
+      <path d="M52 36 Q 18 22 8 60" fill="none" stroke="#6a4490" strokeWidth=".5" opacity=".6"/>
+      {/* arrow quiver back */}
+      <path d="M178 36 L196 28 L184 56 Z" fill="#1a1224"/>
+      <path d="M186 26 L192 22 M182 32 L188 28 M178 38 L184 34" stroke="#5a3a78" strokeWidth="1"/>
+      {/* cape */}
+      <path d="M70 340 L60 200 Q 60 150 90 130 L 110 120 L 170 120 L 190 130 Q 220 150 220 200 L 210 340 Z" fill="#1c0e2e"/>
+      <path d="M75 340 L70 220 Q 72 180 95 160 L 110 152" stroke="#3a1f5a" strokeWidth=".7" fill="none" opacity=".8"/>
+      <path d="M205 340 L210 220 Q 208 180 185 160 L 170 152" stroke="#3a1f5a" strokeWidth=".7" fill="none" opacity=".8"/>
+      {/* shoulder armor */}
+      <path d="M95 142 Q 102 124 122 124 L 122 150 Z" fill="#0a0512" stroke="#6a4490" strokeWidth=".8"/>
+      <path d="M185 142 Q 178 124 158 124 L 158 150 Z" fill="#0a0512" stroke="#6a4490" strokeWidth=".8"/>
+      {/* torso armor */}
+      <path d="M118 134 L162 134 L 160 200 L 140 210 L 120 200 Z" fill="#1a0e26"/>
+      <path d="M140 138 L144 156 L 140 164 L 136 156 Z" fill="#6a4490" opacity=".7"/>
+      <circle cx="140" cy="152" r="1.5" fill="#d4b4f0"/>
+      {/* exposed midriff */}
+      <path d="M126 200 L154 200 L 152 224 L 140 230 L 128 224 Z" fill="#3a2840" opacity=".55"/>
+      {/* neck */}
+      <path d="M132 116 L148 116 L 148 132 L 132 132 Z" fill="#3a2a40"/>
+      {/* head */}
+      <ellipse cx="140" cy="98" rx="22" ry="26" fill="#3a2a40"/>
+      {/* long silver hair */}
+      <path d="M116 92 Q 110 60 140 56 Q 170 60 164 92 Q 168 130 174 170 L 154 168 Q 152 130 148 100 Q 146 88 140 88 Q 134 88 132 100 Q 128 130 126 168 L 106 170 Q 112 130 116 92 Z" fill="#d8d4e0"/>
+      <path d="M116 92 Q 100 90 96 80 Q 96 64 116 66 Z" fill="#d8d4e0"/>
+      <path d="M164 92 Q 180 90 184 80 Q 184 64 164 66 Z" fill="#d8d4e0"/>
+      {/* bangs */}
+      <path d="M122 88 Q 130 78 140 80 Q 150 78 158 88 Q 152 76 140 74 Q 128 76 122 88 Z" fill="#bcb6cc"/>
+      {/* eyes hint — violet glow */}
+      <ellipse cx="132" cy="98" rx="3" ry="2" fill="#0a0512"/>
+      <ellipse cx="148" cy="98" rx="3" ry="2" fill="#0a0512"/>
+      <circle cx="132" cy="98" r="1" fill="#d4b4f0"/>
+      <circle cx="148" cy="98" r="1" fill="#d4b4f0"/>
+      {/* lips */}
+      <path d="M135 112 L145 112" stroke="#4a2a4a" strokeWidth=".7"/>
+      {/* belt buckle */}
+      <path d="M132 218 L148 218 L 146 226 L 134 226 Z" fill="#6a4490"/>
+    </svg>
+  );
+}
+function StrikerSilhouette() {
+  return (
+    <svg viewBox="0 0 280 340" fill="none">
+      <path d="M70 340 L60 200 Q 60 150 90 130 L 110 120 L 170 120 L 190 130 Q 220 150 220 200 L 210 340 Z" fill="#3a0e1c"/>
+      <path d="M95 142 Q 102 120 124 120 L 124 150 Z" fill="#5a0e1c" stroke="#e6b751" strokeWidth=".8"/>
+      <path d="M185 142 Q 178 120 156 120 L 156 150 Z" fill="#5a0e1c" stroke="#e6b751" strokeWidth=".8"/>
+      <path d="M120 134 L160 134 L 156 200 L 140 210 L 124 200 Z" fill="#2a0a16"/>
+      <path d="M140 142 L146 162 L 140 172 L 134 162 Z" fill="#f08a3c"/>
+      <circle cx="140" cy="158" r="1.5" fill="#fff8e0"/>
+      <ellipse cx="140" cy="100" rx="22" ry="26" fill="#3a2018"/>
+      <path d="M116 96 Q 110 60 140 56 Q 170 60 164 96 Q 166 88 158 76 Q 152 88 142 88 Q 134 88 130 76 Q 124 88 116 96 Z" fill="#1a0a08"/>
+      <path d="M116 96 Q 110 110 100 124 L 110 108 Z" fill="#1a0a08"/>
+      <ellipse cx="132" cy="100" rx="2" ry="3" fill="#f08a3c" opacity=".8"/>
+      <ellipse cx="148" cy="100" rx="2" ry="3" fill="#f08a3c" opacity=".8"/>
+    </svg>
+  );
+}
+function VanguardSilhouette() {
+  return (
+    <svg viewBox="0 0 280 340" fill="none">
+      <path d="M70 340 L60 210 Q 60 160 95 140 L 115 130 L 165 130 L 185 140 Q 220 160 220 210 L 210 340 Z" fill="#142a52"/>
+      <path d="M90 150 Q 100 124 130 124 L 130 158 Z" fill="#1a3a72" stroke="#e6b751" strokeWidth="1"/>
+      <path d="M190 150 Q 180 124 150 124 L 150 158 Z" fill="#1a3a72" stroke="#e6b751" strokeWidth="1"/>
+      <path d="M122 138 L 158 138 L 156 210 L 140 218 L 124 210 Z" fill="#0e2042"/>
+      <path d="M140 148 L 144 168 L 140 178 L 136 168 Z" fill="#7fa3e0"/>
+      <circle cx="140" cy="164" r="1.5" fill="#fff8e0"/>
+      <ellipse cx="140" cy="106" rx="22" ry="26" fill="#2a3050"/>
+      <path d="M118 102 Q 116 70 140 66 Q 164 70 162 102 Q 162 90 156 80 L 150 96 L 130 96 L 124 80 Q 118 90 118 102 Z" fill="#1a1f3a"/>
+      <ellipse cx="132" cy="106" rx="2" ry="3" fill="#7fa3e0" opacity=".7"/>
+      <ellipse cx="148" cy="106" rx="2" ry="3" fill="#7fa3e0" opacity=".7"/>
+    </svg>
+  );
+}
+
+/* ===========================================================
+   BOARD SVG — rings + ornament + connection lines
+   =========================================================== */
+function BoardSvg({ nodes, selectedId, showGuides, ringDensity }) {
+  const nodeById = useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
+  const isActive = (n) => n && n.rank > 0;
+
+  // small dot ornaments around outer perimeter
+  const ornamentDots = useMemo(() => {
+    if (ringDensity === "minimal") return [];
+    const count = ringDensity === "rich" ? 60 : 32;
+    const arr = [];
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * 360;
+      const p = posOf(a, R_OUTER + 38);
+      arr.push({ x: p.x, y: p.y, big: i % 8 === 0 });
+    }
+    return arr;
+  }, [ringDensity]);
+
+  // mid decorative arcs (small star marks around inner ring)
+  const innerOrnaments = useMemo(() => {
+    if (ringDensity === "minimal") return [];
+    const arr = [];
+    const count = 8;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * 360 + 22.5;
+      const p = posOf(a, R_INNER + 70);
+      arr.push({ x: p.x, y: p.y });
+    }
+    return arr;
+  }, [ringDensity]);
+
+  return (
+    <svg className="board-svg" viewBox="0 0 720 720">
+      {/* outer ornament ring (dotted decoration) */}
+      <circle cx={CX} cy={CY} r={R_OUTER + 56} fill="none" stroke="#3a4c84" strokeWidth="0.7" opacity={showGuides ? 0.45 : 0} />
+      <circle cx={CX} cy={CY} r={R_OUTER + 40} fill="none" stroke="#3a4c84" strokeWidth="0.5" opacity={showGuides ? 0.30 : 0} />
+      {ornamentDots.map((d, i) => (
+        <circle key={i} cx={d.x} cy={d.y} r={d.big ? 1.6 : 0.9} fill="#c8932a" opacity={d.big ? 0.7 : 0.35} />
+      ))}
+
+      {/* outer ring base (dim) */}
+      <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="#8a6418" strokeWidth="1.5" opacity="0.55" />
+      <circle cx={CX} cy={CY} r={R_OUTER} fill="none" stroke="#c8932a" strokeWidth="0.6" opacity="0.35" />
+
+      {/* outer ring activated arcs — bright gold between activated nodes */}
+      {EDGES.filter(([a,b]) => {
+        const A = nodeById[a], B = nodeById[b];
+        return A?.ring === "outer" && B?.ring === "outer" && isActive(A) && isActive(B);
+      }).map(([a,b], i) => {
+        const A = nodeById[a], B = nodeById[b];
+        const pa = posOf(A.angle, R_OUTER);
+        const pb = posOf(B.angle, R_OUTER);
+        // arc between two outer points along the outer ring
+        const largeArc = 0;
+        const sweep = ((B.angle - A.angle + 360) % 360) > 180 ? 0 : 1;
+        return (
+          <g key={"arc-"+i}>
+            <path d={`M${pa.x},${pa.y} A${R_OUTER},${R_OUTER} 0 ${largeArc},${sweep} ${pb.x},${pb.y}`}
+                  fill="none" stroke="#f5d68a" strokeWidth="3" opacity=".95" />
+            <path d={`M${pa.x},${pa.y} A${R_OUTER},${R_OUTER} 0 ${largeArc},${sweep} ${pb.x},${pb.y}`}
+                  fill="none" stroke="#ffe9a8" strokeWidth="1" opacity=".9" />
+            {/* glow halo via thicker faint stroke */}
+            <path d={`M${pa.x},${pa.y} A${R_OUTER},${R_OUTER} 0 ${largeArc},${sweep} ${pb.x},${pb.y}`}
+                  fill="none" stroke="#f5d68a" strokeWidth="8" opacity=".18" />
+          </g>
+        );
+      })}
+
+      {/* inner ring base */}
+      <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="#8a6418" strokeWidth="1.2" opacity="0.4" />
+      <circle cx={CX} cy={CY} r={R_INNER} fill="none" stroke="#c8932a" strokeWidth="0.5" opacity="0.25" />
+
+      {/* radial spokes — bright when both endpoints active */}
+      {EDGES.filter(([a,b]) => {
+        const A = nodeById[a], B = nodeById[b];
+        return A && B && !(A.ring === "outer" && B.ring === "outer");
+      }).map(([a,b], i) => {
+        const A = nodeById[a], B = nodeById[b];
+        const rA = A.ring === "outer" ? R_OUTER : R_INNER;
+        const rB = B.ring === "outer" ? R_OUTER : R_INNER;
+        const pa = posOf(A.angle, rA);
+        const pb = posOf(B.angle, rB);
+        const bright = isActive(A) && isActive(B);
+        return (
+          <g key={"sp-"+i}>
+            {bright && (
+              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y}
+                    stroke="#f5d68a" strokeWidth="7" opacity=".18" />
+            )}
+            <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y}
+                  stroke={bright ? "#f5d68a" : "#3a4c84"}
+                  strokeWidth={bright ? 2.4 : 1.2}
+                  opacity={bright ? .95 : .35} />
+            {bright && (
+              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y}
+                    stroke="#ffe9a8" strokeWidth=".8" opacity=".85" />
+            )}
+          </g>
+        );
+      })}
+
+      {/* inner ring ornament marks */}
+      {innerOrnaments.map((d, i) => (
+        <g key={i} opacity="0.55">
+          <path d={`M${d.x} ${d.y-3} L${d.x+1} ${d.y-1} L${d.x+3} ${d.y} L${d.x+1} ${d.y+1} L${d.x} ${d.y+3} L${d.x-1} ${d.y+1} L${d.x-3} ${d.y} L${d.x-1} ${d.y-1} Z`}
+                fill="#c8932a"/>
+        </g>
+      ))}
+
+      {/* faint inner concentric guide circles */}
+      {showGuides && (
+        <>
+          <circle cx={CX} cy={CY} r={200} fill="none" stroke="#3a4c84" strokeWidth=".5" opacity=".25" />
+          <circle cx={CX} cy={CY} r={75} fill="none" stroke="#3a4c84" strokeWidth=".5" opacity=".25" />
+        </>
+      )}
+
+      {/* north star marker at very top of outer ring */}
+      <g opacity="0.7">
+        <path d={`M${CX} ${CY - R_OUTER - 20} L${CX+3} ${CY - R_OUTER - 8} L${CX} ${CY - R_OUTER - 4} L${CX-3} ${CY - R_OUTER - 8} Z`} fill="#e6b751"/>
+      </g>
+    </svg>
+  );
+}
+
+/* ===========================================================
+   NODE BUTTON
+   =========================================================== */
+function NodeButton({ node, selected, onClick }) {
+  const r = node.ring === "outer" ? R_OUTER : R_INNER;
+  const p = posOf(node.angle, r);
+  const Icon = I[node.icon] || I.Star;
+  const isLock = !!node.locked;
+  const isActive = node.rank > 0;
+  const isAvail = !isLock && !isActive;
+
+  let state = "is-locked";
+  if (isLock) state = "is-locked";
+  else if (selected) state = "is-selected";
+  else if (isActive) state = "is-active";
+  else if (isAvail) state = "is-avail";
+
+  const sizeCls = node.ring === "inner" ? "size-sm" : "";
+
+  return (
+    <button
+      type="button"
+      name={`PbpNode_${node.id}`}
+      className={`node ${state} ${sizeCls}`}
+      style={{ left: p.x, top: p.y }}
+      onClick={() => onClick(node.id)}
+      aria-label={node.name}
+    >
+      {/* fake glow rings — solid borders, opacity-stacked */}
+      <span className="node-glow ring-3" aria-hidden="true"></span>
+      <span className="node-glow ring-2" aria-hidden="true"></span>
+      <span className="node-glow ring-1" aria-hidden="true"></span>
+      <Icon className="node-icon" />
+      {/* rank pips */}
+      {!isLock && (
+        <span className="node-rank" aria-hidden="true">
+          {Array.from({ length: node.max }).map((_, i) => (
+            <i key={i} className={i < node.rank ? "on" : ""}></i>
+          ))}
+        </span>
+      )}
+    </button>
+  );
+}
+
+/* ===========================================================
+   DETAIL CARD (right rail)
+   =========================================================== */
+function DetailCard({ node, nodeById, onActivate, points }) {
+  if (!node) return null;
+  const isLock = !!node.locked;
+  const isMaxed = node.rank >= node.max;
+  const reqs = (node.req || []).map(rid => {
+    const r = nodeById[rid];
+    return { id: rid, name: r ? r.name : rid, ok: r ? r.rank > 0 : false };
+  });
+  const allReqsOk = reqs.every(r => r.ok);
+  const canActivate = !isLock && !isMaxed && allReqsOk && points > 0;
+  const Icon = I[node.icon] || I.Star;
+
+  return (
+    <div className="detail-card">
+      <span className="cc tl"></span><span className="cc tr"></span>
+      <span className="cc bl"></span><span className="cc br"></span>
+
+      <div className={`dc-icon-wrap ${isLock ? "locked" : ""}`}>
+        <span className="glow-3" aria-hidden="true"></span>
+        <span className="glow-2" aria-hidden="true"></span>
+        <span className="glow-1" aria-hidden="true"></span>
+        <Icon className="dc-icon" />
+      </div>
+
+      <h2 className="dc-name">{node.name}</h2>
+      <div className="dc-rank-pill">
+        <span className="cc tl"></span><span className="cc br"></span>
+        <span className="cur">{node.rank}</span>
+        <span>/</span>
+        <span className="max">{node.max}</span>
+      </div>
+
+      <div className="dc-divider"></div>
+
+      <div className="dc-stats">
+        {node.stats.map((s, i) => (
+          <div className="dc-stat" key={i}>
+            <span className="k">{s.k}</span>
+            <span className={`v ${isLock ? "dim" : ""}`}>{s.v}</span>
+          </div>
+        ))}
+        <div className="dc-stat cost">
+          <span className="k">소요 패시브 포인트</span>
+          <span className="v">{node.cost}</span>
+        </div>
+      </div>
+
+      <div className="dc-divider"></div>
+
+      {reqs.length === 0 ? (
+        <div className="dc-req ok">
+          <I.Check className="icon" />
+          <span>선행 노드 없음</span>
+        </div>
+      ) : (
+        reqs.map(r => (
+          <div className={`dc-req ${r.ok ? "ok" : "miss"}`} key={r.id}>
+            {r.ok ? <I.Check className="icon" /> : <I.X className="icon" />}
+            <span>{r.name} 활성화 {r.ok ? "완료" : "필요"}</span>
+          </div>
+        ))
+      )}
+
+      <div className="dc-actions">
+        {isMaxed ? (
+          <button
+            type="button"
+            name="PbpActivate"
+            className="btn-activate is-maxed"
+            disabled
+          >
+            <span className="label">최대 강화 완료</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            name="PbpActivate"
+            className={`btn-activate ${canActivate ? "" : "is-disabled"}`}
+            onClick={canActivate ? () => onActivate(node.id) : undefined}
+            disabled={!canActivate}
+          >
+            {canActivate && <span className="hi" aria-hidden="true"></span>}
+            {canActivate && <span className="lo" aria-hidden="true"></span>}
+            <span className="cc tl"></span><span className="cc tr"></span>
+            <span className="cc bl"></span><span className="cc br"></span>
+            <span className="label">{isLock ? "잠김" : "활성화"}</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ===========================================================
+   TWEAKS PANEL — small floating control set
+   =========================================================== */
+function TweaksPanel({ tweaks, setTweak, onClose }) {
+  const heroOptions = [
+    ["reaper","리퍼"], ["striker","카에데"], ["vanguard","에리히"],
+  ];
+  const densityOptions = [
+    ["minimal","미니멀"], ["normal","보통"], ["rich","풍성"],
+  ];
+  return (
+    <div className="tweaks">
+      <span className="cc tl"></span><span className="cc br"></span>
+      <h3 className="tweaks-title">TWEAKS <span className="ko">조정</span></h3>
+
+      <div className="tweak">
+        <label className="lbl">HERO <span className="ko">영웅</span></label>
+        <div className="tw-radio">
+          {heroOptions.map(([v, lbl]) => (
+            <button key={v}
+              type="button"
+              className={tweaks.hero === v ? "on" : ""}
+              onClick={() => setTweak("hero", v)}>{lbl}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="tweak">
+        <label className="lbl">ORNAMENT <span className="ko">장식 밀도</span></label>
+        <div className="tw-radio">
+          {densityOptions.map(([v, lbl]) => (
+            <button key={v}
+              type="button"
+              className={tweaks.ringDensity === v ? "on" : ""}
+              onClick={() => setTweak("ringDensity", v)}>{lbl}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="tweak">
+        <label className="lbl">GUIDES <span className="ko">가이드 링</span></label>
+        <div className="tw-radio">
+          <button type="button" className={tweaks.showGuides ? "on" : ""} onClick={() => setTweak("showGuides", true)}>표시</button>
+          <button type="button" className={!tweaks.showGuides ? "on" : ""} onClick={() => setTweak("showGuides", false)}>숨김</button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={onClose}
+        style={{
+          marginTop:8, width:"100%", padding:"6px 0",
+          background:"transparent", border:"1px solid #8a6418",
+          color:"#d8c799", fontFamily:"var(--f-mono)", fontSize:10,
+          letterSpacing:".18em", cursor:"pointer", textTransform:"uppercase"
+        }}>닫기 / Close</button>
+    </div>
+  );
+}
+
+/* ===========================================================
+   APP
+   =========================================================== */
+function App() {
+  const [tweaks, setTweaks] = useState(TWEAKS);
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+  const [editAvailable, setEditAvailable] = useState(false);
+  const [nodes, setNodes] = useState(NODES);
+  const [selectedId, setSelectedId] = useState("n_crit");
+  const [points, setPoints] = useState(3);
+  const POINTS_MAX = 8;
+
+  // total spent
+  const spent = useMemo(() => nodes.reduce((s, n) => s + (n.rank * n.cost), 0), [nodes]);
+  useEffect(() => {
+    setPoints(POINTS_MAX - spent);
+  }, [spent]);
+
+  // host integration — tweaks visibility protocol
+  useEffect(() => {
+    const handler = (ev) => {
+      if (!ev?.data) return;
+      if (ev.data.type === "__activate_edit_mode") setTweaksOpen(true);
+      else if (ev.data.type === "__deactivate_edit_mode") setTweaksOpen(false);
+    };
+    window.addEventListener("message", handler);
+    window.parent?.postMessage({ type: "__edit_mode_available" }, "*");
+    setEditAvailable(true);
+    return () => window.removeEventListener("message", handler);
+  }, []);
+
+  const setTweak = (k, v) => {
+    setTweaks((t) => {
+      const next = { ...t, [k]: v };
+      window.parent?.postMessage({ type: "__edit_mode_set_keys", edits: { [k]: v } }, "*");
+      return next;
+    });
+  };
+
+  const nodeById = useMemo(() => Object.fromEntries(nodes.map(n => [n.id, n])), [nodes]);
+  const selected = nodeById[selectedId];
+
+  const handleActivate = (id) => {
+    setNodes((arr) => arr.map(n => {
+      if (n.id !== id) return n;
+      if (n.locked) return n;
+      if (n.rank >= n.max) return n;
+      const cost = n.cost;
+      if (points < cost) return n;
+      return { ...n, rank: n.rank + 1 };
+    }));
+  };
+
+  const handleReset = () => {
+    setNodes((arr) => arr.map(n => ({ ...n, rank: 0 })));
+  };
+
+  const hero = HEROES[tweaks.hero] || HEROES.reaper;
+  const Silhouette = hero.Silhouette;
+
+  return (
+    <>
+      <div className="pb-shell" data-screen-label="01 Passive Board">
+        <span className="corner-cap tl"></span>
+        <span className="corner-cap tr"></span>
+        <span className="corner-cap bl"></span>
+        <span className="corner-cap br"></span>
+        <span className="pb-shell-inner"></span>
+
+        <span className="pb-bgwash top-left"></span>
+        <span className="pb-bgwash center"></span>
+        <span className="pb-bgwash bot-right"></span>
+
+        {/* TOP BAR */}
+        <div className="pb-top">
+          <span className="pb-top-divider"></span>
+          <div className="pb-title-block">
+            <h1 className="pb-title">
+              패시브 보드<span className="sep">—</span><span className="who">{hero.name}</span>
+            </h1>
+          </div>
+
+          <div className="pb-points-wrap">
+            <div className="pb-points" name="PbpPointsDisplay">
+              <span className="pp-corner tl"></span>
+              <span className="pp-corner tr"></span>
+              <span className="pp-corner bl"></span>
+              <span className="pp-corner br"></span>
+              <I.PointDiamond className="icon" />
+              <span className="label">패시브 포인트</span>
+              <span className="nums">
+                <span className="cur">{points}</span>
+                <span style={{margin:"0 4px", color:"#8a6418"}}>/</span>
+                <span className="max">{POINTS_MAX}</span>
+              </span>
+            </div>
+          </div>
+
+          <button type="button" name="PbpClose" className="pb-close" aria-label="닫기">
+            <span className="cc tl"></span><span className="cc br"></span>
+            <I.X width="18" height="18" />
+          </button>
+        </div>
+
+        {/* BODY */}
+        <div className="pb-body">
+          {/* LEFT — hero card */}
+          <div className="pb-left">
+            <div className="hero-card">
+              <span className="cc tl"></span><span className="cc tr"></span>
+              <span className="cc bl"></span><span className="cc br"></span>
+              <span className="hero-card-inner"></span>
+
+              <div className="hero-portrait">
+                <div className="hp-bg">
+                  <span className="layer-1" style={{ backgroundColor: hero.moodB }}></span>
+                  <span className="layer-2" style={{ backgroundColor: hero.moodA }}></span>
+                  <span className="layer-3"></span>
+                  <span className="moon"></span>
+                  <span className="moon-aura"></span>
+                  {/* castle silhouette as svg */}
+                  <svg style={{position:"absolute", left:0, right:0, bottom:"42%", width:"100%", height:"60px"}} viewBox="0 0 340 60" preserveAspectRatio="none">
+                    <path d="M0 60 L0 38 L18 38 L18 28 L34 28 L34 14 L52 14 L52 28 L68 28 L68 22 L86 22 L86 36 L102 36 L102 18 L120 18 L120 30 L150 30 L150 22 L168 22 L168 14 L184 14 L184 30 L210 30 L210 20 L228 20 L228 32 L250 32 L250 12 L268 12 L268 28 L294 28 L294 36 L320 36 L320 30 L340 30 L340 60 Z"
+                          fill="#0a0510" opacity=".85"/>
+                  </svg>
+                </div>
+                <div className="hero-figure">
+                  <Silhouette />
+                </div>
+              </div>
+
+              <div className="hero-name-block">
+                <h2 className="hero-name">{hero.name}</h2>
+                <div className="hero-class-pill" name="PbpHeroClassPill">
+                  <span className="cc tl"></span><span className="cc br"></span>
+                  <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M5 5 L11 11 M5 11 L11 5"/>
+                    <path d="M13 11 L19 5 M13 5 L19 11"/>
+                    <path d="M9 14 L9 19 L14 19" />
+                    <path d="M15 14 L15 19 L10 19" opacity=".5"/>
+                  </svg>
+                  <span className="label">{hero.classKo}</span>
+                </div>
+                <div className="hero-rarity">
+                  {[0,1,2].map(i => <i key={i}></i>)}
+                </div>
+                <div className="hero-level">Lv <b>8</b></div>
+              </div>
+            </div>
+          </div>
+
+          {/* CENTER — board */}
+          <div className="pb-center">
+            <div className="board" name="PbpBoard">
+              <BoardSvg
+                nodes={nodes}
+                selectedId={selectedId}
+                showGuides={tweaks.showGuides}
+                ringDensity={tweaks.ringDensity}
+              />
+              {nodes.map(n => (
+                <NodeButton
+                  key={n.id}
+                  node={n}
+                  selected={selectedId === n.id}
+                  onClick={setSelectedId}
+                />
+              ))}
+              <div className="hub" name="PbpHubBadge">
+                <I.Swords className="swords" />
+                <span className="name">{hero.classEn}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT — detail */}
+          <div className="pb-right">
+            <DetailCard
+              node={selected}
+              nodeById={nodeById}
+              onActivate={handleActivate}
+              points={points}
+            />
+          </div>
+        </div>
+
+        {/* BOTTOM BAR */}
+        <div className="pb-bottom">
+          <span className="pb-bottom-divider"></span>
+          <button type="button" name="PbpHeroInfo" className="btn-foot">
+            <span className="cc tl"></span><span className="cc br"></span>
+            <I.ChevL className="icon" />
+            <span>영웅 정보</span>
+          </button>
+          <div className="pb-info">
+            <span className="icon">i</span>
+            <span>활성화는 즉시 적용됩니다</span>
+          </div>
+          <button type="button" name="PbpReset" className="btn-foot" onClick={handleReset}>
+            <span className="cc tl"></span><span className="cc br"></span>
+            <I.Refresh className="icon" />
+            <span>초기화</span>
+            <span className="gold-cost">(−100 골드)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Tweaks panel (host-toggled) */}
+      {tweaksOpen && (
+        <TweaksPanel
+          tweaks={tweaks}
+          setTweak={setTweak}
+          onClose={() => {
+            setTweaksOpen(false);
+            window.parent?.postMessage({ type: "__edit_mode_dismissed" }, "*");
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

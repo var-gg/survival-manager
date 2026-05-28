@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Reward · 전투 종료 — 보상 선택 — Survival Manager</title>
+<meta name="viewport" content="width=1680" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500&display=swap" />
+<style>
+/* =========================================================
+   SURVIVAL MANAGER · REWARD PANEL
+   Unity UITK / USS portable CSS subset.
+
+   ALLOWED  : flexbox, solid background-color, border, color,
+              opacity, padding/margin, font-*, letter-spacing,
+              :hover, :focus, :disabled, [attribute] selectors.
+   FORBIDDEN: transform, animation, @keyframes, box-shadow,
+              background-image / linear-gradient / radial-gradient,
+              display:grid, ::before / ::after (real DOM elements
+              are used in their place).
+   ========================================================= */
+:root{
+  --bg-0:#0c1126;
+  --bg-1:#141a35;
+  --bg-2:#1c2243;
+  --bg-3:#262d54;
+  --bg-4:#0a0e22;        /* inset darker (modal interior) */
+
+  --line-1:#2c3568;
+  --line-2:#3b467f;
+
+  --vellum:#f5ead0;
+  --vellum-2:#e2d4ad;
+
+  --gold-100:#ffe9a8;
+  --gold-200:#f5d68a;
+  --gold-300:#e6b751;
+  --gold-400:#c8932a;
+  --gold-500:#8a6418;
+
+  --ink-1:#f5ead0;
+  --ink-2:#d8c799;
+  --ink-3:#9d8a5e;
+  --ink-4:#6b5d3f;
+
+  --rare-rare:#5b8ed1;
+  --rare-rare-deep:#1f3b66;
+  --rare-rare-glow:#9bbeed;
+
+  --fam-striker:#b6334a;
+  --fam-striker-deep:#5a0e1c;
+  --fam-striker-glow:#f08a3c;
+
+  --state-warn:#e8a93b;
+  --state-safe:#6dbf78;
+
+  --f-ko:"Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --f-en-display:"Cinzel", "Trajan Pro", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+*{ box-sizing:border-box; }
+html, body{ margin:0; padding:0; }
+body{
+  background-color: var(--bg-0);
+  color: var(--ink-1);
+  font-family: var(--f-ko);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+/* =====================================================
+   PANEL — outer + inner gold frame via two stacked
+   bordered elements (no ::before/::after, no shadow).
+   ===================================================== */
+.reward-root{
+  width:100%;
+  max-width:1680px;
+  display:flex;
+  flex-direction:column;
+}
+
+.reward-frame-outer{
+  border:1px solid var(--gold-500);
+  background-color: var(--bg-1);
+  padding:6px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+.reward-frame-inner{
+  border:1px solid var(--gold-300);
+  background-color: var(--bg-1);
+  padding:22px 32px 22px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* corner caps — real DOM elements (portable to USS) */
+.reward-cap{
+  width:18px;
+  height:18px;
+  position:absolute;
+  border:1px solid var(--gold-200);
+}
+.reward-cap.cap-tl{ top:-1px;    left:-1px;   border-right:none; border-bottom:none; }
+.reward-cap.cap-tr{ top:-1px;    right:-1px;  border-left:none;  border-bottom:none; }
+.reward-cap.cap-bl{ bottom:-1px; left:-1px;   border-right:none; border-top:none; }
+.reward-cap.cap-br{ bottom:-1px; right:-1px;  border-left:none;  border-top:none; }
+
+/* =====================================================
+   HEADER — title + close
+   ===================================================== */
+.reward-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:4px 4px 18px;
+  border-bottom:1px solid var(--gold-500);
+  margin-bottom:20px;
+}
+.reward-header-rule{
+  height:1px;
+  background-color: var(--gold-400);
+  margin-top:-25px;
+  margin-bottom:24px;
+  opacity:.45;
+}
+.reward-title{
+  font-family: var(--f-ko);
+  font-weight:800;
+  font-size:38px;
+  letter-spacing:.02em;
+  color: var(--gold-200);
+  line-height:1;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  white-space:nowrap;
+}
+.reward-title > span{ flex-shrink:0; }
+.reward-title-em{
+  color: var(--gold-500);
+  font-weight:400;
+  font-size:30px;
+  padding:0 4px;
+}
+.reward-title-en{
+  font-family: var(--f-en-display);
+  font-weight:600;
+  font-size:12px;
+  letter-spacing:.28em;
+  color: var(--gold-400);
+  text-transform:uppercase;
+  margin-left:14px;
+  padding-left:14px;
+  border-left:1px solid var(--gold-500);
+  align-self:center;
+}
+.reward-close{
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background-color: transparent;
+  border:1px solid var(--gold-500);
+  color: var(--gold-200);
+  font-family: var(--f-mono);
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  padding:0;
+}
+.reward-close:hover{
+  border-color: var(--gold-200);
+  color: var(--gold-100);
+  background-color: rgba(245,214,138,0.06);
+}
+
+/* =====================================================
+   RESULT STRIP — "승리 — 늪지 척후소" + 3 chips
+   ===================================================== */
+.reward-result{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border:1px solid var(--gold-500);
+  background-color: var(--bg-4);
+  padding:14px 22px;
+  margin-bottom:22px;
+  position:relative;
+}
+
+.reward-result-name{
+  font-family: var(--f-ko);
+  font-weight:800;
+  font-size:30px;
+  letter-spacing:.01em;
+  color: var(--gold-100);
+  line-height:1;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  white-space:nowrap;
+}
+.reward-result-name > span{ flex-shrink:0; }
+.reward-result-name-en{
+  font-family: var(--f-en-display);
+  font-weight:600;
+  font-size:10.5px;
+  letter-spacing:.26em;
+  color: var(--gold-400);
+  text-transform:uppercase;
+}
+
+.reward-chips{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.reward-chip{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 22px 10px 18px;
+  border:1px solid var(--gold-500);
+  background-color: rgba(0,0,0,0.35);
+  min-width:172px;
+  position:relative;
+}
+.reward-chip-icon{
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.reward-chip-label{
+  font-family: var(--f-ko);
+  font-weight:700;
+  font-size:17px;
+  color: var(--vellum);
+  letter-spacing:.02em;
+  line-height:1;
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+}
+.reward-chip-label-key{
+  font-family: var(--f-mono);
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.14em;
+  color: var(--ink-3);
+  text-transform:uppercase;
+}
+.reward-chip-value{
+  font-family: var(--f-en-display);
+  font-weight:700;
+  font-size:20px;
+  color: var(--gold-200);
+  letter-spacing:.04em;
+  margin-left:2px;
+}
+.reward-chip-value-plus{
+  color: var(--state-safe);
+  font-weight:700;
+}
+
+/* =====================================================
+   CARDS GRID — 3 columns via flex
+   ===================================================== */
+.reward-cards{
+  display:flex;
+  flex-direction:row;
+  gap:24px;
+  margin-bottom:22px;
+}
+.reward-card{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  border:1px solid var(--gold-500);
+  background-color: var(--bg-1);
+  padding:18px 20px 18px;
+  cursor:pointer;
+  font:inherit;
+  color:inherit;
+  text-align:left;
+  position:relative;
+}
+.reward-card:hover{
+  background-color: var(--bg-2);
+  border-color: var(--gold-300);
+}
+.reward-card:focus{
+  outline:none;
+  border-color: var(--gold-200);
+}
+
+/* selected — heavy gold double-border (no shadow / glow) */
+.reward-card.is-selected{
+  border:2px solid var(--gold-200);
+  background-color: var(--bg-2);
+  padding:17px 19px 17px;       /* compensate +1px border */
+}
+.reward-card-inner-glow{
+  /* visible only on selected card; sits as inset frame */
+  display:none;
+  position:absolute;
+  top:6px; right:6px; bottom:6px; left:6px;
+  border:1px solid var(--gold-400);
+  pointer-events:none;
+}
+.reward-card.is-selected .reward-card-inner-glow{ display:block; }
+
+/* icon disc */
+.reward-card-icon-wrap{
+  width:210px;
+  height:210px;
+  align-self:center;
+  margin:8px 0 14px;
+  border-radius:50%;
+  border:1px solid var(--gold-500);
+  background-color: var(--bg-4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  flex-shrink:0;
+}
+.reward-card-icon-ring{
+  position:absolute;
+  top:6px; right:6px; bottom:6px; left:6px;
+  border-radius:50%;
+  border:1px solid rgba(245,214,138,0.18);
+  pointer-events:none;
+}
+.reward-card-icon{
+  width:160px;
+  height:160px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* title + divider */
+.reward-card-title{
+  font-family: var(--f-ko);
+  font-weight:800;
+  font-size:28px;
+  letter-spacing:.04em;
+  color: var(--gold-100);
+  text-align:center;
+  line-height:1.15;
+  margin:0 0 4px;
+  white-space:nowrap;
+}
+.reward-card-title-en{
+  font-family: var(--f-en-display);
+  font-weight:600;
+  font-size:11px;
+  letter-spacing:.26em;
+  color: var(--gold-400);
+  text-transform:uppercase;
+  text-align:center;
+  margin:0 0 12px;
+  line-height:1;
+}
+.reward-card-divider{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin:6px 0 14px;
+}
+.reward-card-divider-line{
+  flex:1;
+  height:1px;
+  background-color: var(--gold-500);
+  opacity:.6;
+}
+.reward-card-divider-dot{
+  width:6px;
+  height:6px;
+  background-color: var(--gold-300);
+  flex-shrink:0;
+}
+
+/* description */
+.reward-card-desc{
+  font-family: var(--f-ko);
+  font-size:16px;
+  font-weight:500;
+  color: var(--vellum-2);
+  text-align:center;
+  line-height:1.55;
+  margin:0 0 14px;
+  min-height:50px;
+  padding:0 4px;
+  word-break:keep-all;
+}
+.reward-card-desc-stat-plus{
+  color: var(--state-safe);
+  font-weight:700;
+  font-family: var(--f-mono);
+  font-size:16px;
+  letter-spacing:.02em;
+}
+.reward-card-desc-stat-minus{
+  color: var(--rare-rare-glow);
+  font-weight:700;
+  font-family: var(--f-mono);
+  font-size:16px;
+  letter-spacing:.02em;
+}
+
+/* type pill */
+.reward-card-type-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:14px;
+}
+.reward-card-type{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:5px 14px;
+  border:1px solid var(--type-c, var(--gold-500));
+  color: var(--type-c, var(--gold-300));
+  background-color: var(--type-bg, rgba(230,183,81,0.08));
+  font-family: var(--f-ko);
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:.06em;
+  line-height:1;
+  white-space:nowrap;
+}
+.reward-card-type-dot{
+  width:6px;
+  height:6px;
+  background-color: var(--type-c, var(--gold-300));
+  flex-shrink:0;
+}
+.reward-card-type-en{
+  font-family: var(--f-mono);
+  font-weight:500;
+  font-size:9.5px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  opacity:.75;
+}
+
+.type-currency{
+  --type-c: var(--gold-300);
+  --type-bg: rgba(230,183,81,0.10);
+}
+.type-equipment{
+  --type-c: var(--rare-rare-glow);
+  --type-bg: rgba(91,142,209,0.14);
+}
+.type-tactic{
+  --type-c: var(--fam-striker-glow);
+  --type-bg: rgba(182,51,74,0.16);
+}
+
+/* select button on the card — full width */
+.reward-card-action{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+  padding:11px 16px;
+  border:1px solid var(--gold-500);
+  background-color: var(--bg-4);
+  color: var(--ink-1);
+  font-family: var(--f-ko);
+  font-weight:700;
+  font-size:17px;
+  letter-spacing:.18em;
+  cursor:pointer;
+  position:relative;
+  white-space:nowrap;
+}
+.reward-card-action-label{ white-space:nowrap; flex-shrink:0; }
+.reward-card-action-en{
+  font-family: var(--f-mono);
+  font-weight:500;
+  font-size:10px;
+  letter-spacing:.22em;
+  color: var(--ink-3);
+  text-transform:uppercase;
+  border-left:1px solid var(--gold-500);
+  padding-left:10px;
+  margin-left:4px;
+}
+.reward-card-action:hover{
+  background-color: var(--bg-3);
+  color: var(--gold-100);
+  border-color: var(--gold-300);
+}
+.reward-card.is-selected .reward-card-action{
+  background-color: var(--gold-300);
+  border-color: var(--gold-200);
+  color: #2a1f06;
+}
+.reward-card.is-selected .reward-card-action-en{
+  color: rgba(42,31,6,0.65);
+  border-left-color: rgba(42,31,6,0.4);
+}
+.reward-card.is-selected .reward-card-action-check{
+  display:inline-flex;
+}
+.reward-card-action-check{
+  display:none;
+  width:18px;
+  height:18px;
+  align-items:center;
+  justify-content:center;
+}
+
+/* selected-card name highlight */
+.reward-card.is-selected .reward-card-title{ color: var(--gold-100); }
+.reward-card.is-selected .reward-card-icon-wrap{ border-color: var(--gold-300); background-color:#0d1228; }
+
+/* =====================================================
+   FOOTER — hint + confirm CTA
+   ===================================================== */
+.reward-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-top:14px;
+  border-top:1px solid var(--gold-500);
+}
+.reward-hint{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-family: var(--f-ko);
+  font-size:17px;
+  font-weight:600;
+  color: var(--state-warn);
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+.reward-hint.is-hidden{ visibility:hidden; }
+.reward-hint-mark{
+  width:26px;
+  height:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--state-warn);
+  color: var(--state-warn);
+  font-family: var(--f-en-display);
+  font-weight:700;
+  font-size:16px;
+  line-height:1;
+}
+.reward-hint-en{
+  font-family: var(--f-mono);
+  font-weight:500;
+  font-size:10.5px;
+  letter-spacing:.2em;
+  color: var(--state-warn);
+  opacity:.65;
+  text-transform:uppercase;
+  border-left:1px solid var(--state-warn);
+  padding-left:12px;
+  margin-left:4px;
+}
+
+.reward-confirm{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 44px;
+  border:1px solid var(--gold-300);
+  background-color: var(--gold-300);
+  color: #2a1f06;
+  font-family: var(--f-ko);
+  font-weight:800;
+  font-size:20px;
+  letter-spacing:.06em;
+  cursor:pointer;
+  min-width:360px;
+  justify-content:center;
+  white-space:nowrap;
+}
+.reward-confirm > span{ flex-shrink:0; white-space:nowrap; }
+.reward-confirm-en{
+  font-family: var(--f-en-display);
+  font-weight:700;
+  font-size:12px;
+  letter-spacing:.28em;
+  color: rgba(42,31,6,0.75);
+  text-transform:uppercase;
+  border-left:1px solid rgba(42,31,6,0.45);
+  padding-left:14px;
+  margin-left:6px;
+}
+.reward-confirm:hover{
+  background-color: var(--gold-200);
+  border-color: var(--gold-100);
+}
+.reward-confirm:disabled,
+.reward-confirm[disabled]{
+  background-color: var(--bg-3);
+  border-color: var(--line-2);
+  color: var(--ink-4);
+  cursor:not-allowed;
+  opacity:.7;
+}
+.reward-confirm:disabled .reward-confirm-en,
+.reward-confirm[disabled] .reward-confirm-en{
+  color: var(--ink-4);
+  border-left-color: var(--ink-4);
+  opacity:.7;
+}
+
+/* =====================================================
+   STAGE NAMETAG — devtag at very top-left of panel
+   ===================================================== */
+.reward-devtag{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+  font-family: var(--f-mono);
+  font-size:10.5px;
+  letter-spacing:.22em;
+  color: var(--gold-400);
+  text-transform:uppercase;
+}
+.reward-devtag-dot{
+  width:6px;
+  height:6px;
+  background-color: var(--gold-300);
+}
+.reward-devtag-key{ color: var(--ink-3); }
+.reward-devtag-val{ color: var(--gold-200); }
+.reward-devtag-spacer{
+  flex:1;
+  height:1px;
+  background-color: var(--gold-500);
+  opacity:.4;
+}
+
+/* =====================================================
+   TYPE PILL VARIANTS for the chips at top
+   ===================================================== */
+.chip-xp .reward-chip-icon{ color: var(--gold-200); }
+.chip-gold .reward-chip-icon{ color: var(--gold-300); }
+.chip-echo .reward-chip-icon{ color: var(--rare-rare-glow); }
+.chip-echo{ border-color: var(--rare-rare); }
+.chip-echo .reward-chip-value{ color: var(--rare-rare-glow); }
+
+</style>
+</head>
+<body>
+
+<div class="reward-root" data-screen-label="01 Reward · 보상 선택">
+
+  <!-- DEV TAG — visible context strip; pure decoration, removable for prod -->
+  <div class="reward-devtag" aria-hidden="true">
+    <span class="reward-devtag-dot"></span>
+    <span class="reward-devtag-key">SCREEN ·</span>
+    <span class="reward-devtag-val">Battle.End.RewardPick</span>
+    <span class="reward-devtag-key">/ STAGE</span>
+    <span class="reward-devtag-val">SP-12 늪지 척후소</span>
+    <span class="reward-devtag-spacer"></span>
+    <span class="reward-devtag-key">REV</span>
+    <span class="reward-devtag-val">0.6 · 2026.05</span>
+  </div>
+
+  <div class="reward-frame-outer">
+    <div class="reward-cap cap-tl"></div>
+    <div class="reward-cap cap-tr"></div>
+    <div class="reward-cap cap-bl"></div>
+    <div class="reward-cap cap-br"></div>
+
+    <div class="reward-frame-inner">
+
+      <!-- ============== HEADER ====================================== -->
+      <div class="reward-header">
+        <div class="reward-title">
+          <span>전투 종료</span>
+          <span class="reward-title-em">—</span>
+          <span>보상 선택</span>
+          <span class="reward-title-en">Battle End · Reward Pick</span>
+        </div>
+        <button class="reward-close" name="RewardClose" aria-label="닫기">
+          <!-- X glyph as solid svg path (flat fill, USS-portable) -->
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M3 3 L15 15 M15 3 L3 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- ============== RESULT STRIP ================================= -->
+      <div class="reward-result">
+        <div class="reward-cap cap-tl"></div>
+        <div class="reward-cap cap-tr"></div>
+        <div class="reward-cap cap-bl"></div>
+        <div class="reward-cap cap-br"></div>
+
+        <div class="reward-result-name">
+          <span>승리</span>
+          <span class="reward-title-em" style="font-size:24px;">—</span>
+          <span>늪지 척후소</span>
+          <span class="reward-result-name-en">Victory · Mire Outpost</span>
+        </div>
+        <div class="reward-chips">
+
+          <div class="reward-chip chip-xp">
+            <div class="reward-chip-icon">
+              <!-- 4-point star -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor" aria-hidden="true">
+                <path d="M11 1 L13 9 L21 11 L13 13 L11 21 L9 13 L1 11 L9 9 Z"/>
+              </svg>
+            </div>
+            <div class="reward-chip-label">
+              <span class="reward-chip-label-key">XP</span>
+              <span class="reward-chip-value"><span class="reward-chip-value-plus">+</span>84</span>
+            </div>
+          </div>
+
+          <div class="reward-chip chip-gold">
+            <div class="reward-chip-icon">
+              <!-- coin -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="9" fill="currentColor"/>
+                <circle cx="11" cy="11" r="6.5" fill="none" stroke="#2a1f06" stroke-width="1.2"/>
+                <path d="M11 6 L12 10 L16 11 L12 12 L11 16 L10 12 L6 11 L10 10 Z" fill="#2a1f06"/>
+              </svg>
+            </div>
+            <div class="reward-chip-label">
+              <span class="reward-chip-label-key">골드</span>
+              <span class="reward-chip-value"><span class="reward-chip-value-plus">+</span>25</span>
+            </div>
+          </div>
+
+          <div class="reward-chip chip-echo">
+            <div class="reward-chip-icon">
+              <!-- diamond crystal — axis-aligned via SVG (no CSS transform) -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+                <path d="M11 2 L19 11 L11 20 L3 11 Z" fill="currentColor"/>
+                <path d="M11 2 L11 20 M3 11 L19 11" stroke="#0c1126" stroke-width="0.9" opacity="0.5"/>
+              </svg>
+            </div>
+            <div class="reward-chip-label">
+              <span class="reward-chip-label-key">잔향</span>
+              <span class="reward-chip-value"><span class="reward-chip-value-plus">+</span>8</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============== CARDS GRID =================================== -->
+      <div class="reward-cards" id="rewardCardsRow">
+
+        <!-- CARD 1 — 잔향 부서 보강 -->
+        <button class="reward-card" data-idx="0" name="RewardCardEchoBuff" type="button">
+          <div class="reward-card-inner-glow"></div>
+          <div class="reward-cap cap-tl"></div>
+          <div class="reward-cap cap-tr"></div>
+          <div class="reward-cap cap-bl"></div>
+          <div class="reward-cap cap-br"></div>
+
+          <div class="reward-card-icon-wrap">
+            <div class="reward-card-icon-ring"></div>
+            <div class="reward-card-icon">
+              <!-- Stack of coins (currency) -->
+              <svg width="160" height="160" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+                <!-- back coin -->
+                <ellipse cx="55" cy="92" rx="34" ry="11" fill="#c8932a"/>
+                <rect x="21" y="60" width="68" height="32" fill="#e6b751"/>
+                <ellipse cx="55" cy="60" rx="34" ry="11" fill="#ffe9a8"/>
+                <ellipse cx="55" cy="60" rx="34" ry="11" fill="none" stroke="#8a6418" stroke-width="1.2"/>
+                <path d="M55 50 L57 58 L65 60 L57 62 L55 70 L53 62 L45 60 L53 58 Z" fill="#c8932a"/>
+                <!-- front coin -->
+                <ellipse cx="92" cy="118" rx="42" ry="13" fill="#8a6418"/>
+                <rect x="50" y="80" width="84" height="38" fill="#e6b751"/>
+                <ellipse cx="92" cy="80" rx="42" ry="13" fill="#f5d68a"/>
+                <ellipse cx="92" cy="80" rx="42" ry="13" fill="none" stroke="#8a6418" stroke-width="1.4"/>
+                <ellipse cx="92" cy="80" rx="32" ry="10" fill="none" stroke="#c8932a" stroke-width="0.9" opacity="0.7"/>
+                <path d="M92 68 L94.5 77 L104 80 L94.5 83 L92 92 L89.5 83 L80 80 L89.5 77 Z" fill="#c8932a"/>
+                <!-- side small coin -->
+                <ellipse cx="35" cy="120" rx="20" ry="6.5" fill="#8a6418"/>
+                <rect x="15" y="106" width="40" height="14" fill="#c8932a"/>
+                <ellipse cx="35" cy="106" rx="20" ry="6.5" fill="#e6b751"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="reward-card-title">잔향 부서 보강</div>
+          <div class="reward-card-title-en">Echo Shard · Reinforce</div>
+
+          <div class="reward-card-divider">
+            <span class="reward-card-divider-line"></span>
+            <span class="reward-card-divider-dot"></span>
+            <span class="reward-card-divider-line"></span>
+          </div>
+
+          <div class="reward-card-desc">
+            잔향 <span class="reward-card-desc-stat-plus">+35</span> 즉시 획득
+          </div>
+
+          <div class="reward-card-type-row">
+            <span class="reward-card-type type-currency">
+              <span class="reward-card-type-dot"></span>
+              <span>재화</span>
+              <span class="reward-card-type-en">CURRENCY</span>
+            </span>
+          </div>
+
+          <span class="reward-card-action" name="RewardSelectEchoBuff">
+            <span class="reward-card-action-check" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9 L7 13 L15 4" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+              </svg>
+            </span>
+            <span class="reward-card-action-label">선택</span>
+            <span class="reward-card-action-en">Select</span>
+          </span>
+        </button>
+
+        <!-- CARD 2 — 강철 장갑 (selected by default) -->
+        <button class="reward-card is-selected" data-idx="1" name="RewardCardSteelGauntlet" type="button">
+          <div class="reward-card-inner-glow"></div>
+          <div class="reward-cap cap-tl"></div>
+          <div class="reward-cap cap-tr"></div>
+          <div class="reward-cap cap-bl"></div>
+          <div class="reward-cap cap-br"></div>
+
+          <div class="reward-card-icon-wrap">
+            <div class="reward-card-icon-ring"></div>
+            <div class="reward-card-icon">
+              <!-- Steel gauntlet — chunky angular shapes -->
+              <svg width="170" height="170" viewBox="0 0 170 170" fill="none" aria-hidden="true">
+                <!-- forearm cuff -->
+                <path d="M30 90 L60 60 L88 65 L96 96 L78 124 L42 122 Z" fill="#6e7a8a"/>
+                <path d="M30 90 L60 60 L88 65 L96 96 L78 124 L42 122 Z" fill="none" stroke="#22293a" stroke-width="1.5"/>
+                <!-- cuff plate -->
+                <path d="M58 64 L92 70 L86 86 L52 82 Z" fill="#9aa5b4"/>
+                <!-- gold rivet stripe -->
+                <rect x="60" y="74" width="28" height="4" fill="#e6b751"/>
+                <circle cx="64" cy="76" r="1.8" fill="#ffe9a8"/>
+                <circle cx="76" cy="76" r="1.8" fill="#ffe9a8"/>
+                <circle cx="86" cy="76" r="1.8" fill="#ffe9a8"/>
+                <!-- gold star center -->
+                <path d="M75 92 L78 100 L86 102 L78 104 L75 112 L72 104 L64 102 L72 100 Z" fill="#e6b751" stroke="#8a6418" stroke-width="0.8"/>
+                <!-- hand back -->
+                <path d="M76 118 L130 110 L142 130 L120 152 L84 144 Z" fill="#8a96a6"/>
+                <path d="M76 118 L130 110 L142 130 L120 152 L84 144 Z" fill="none" stroke="#22293a" stroke-width="1.5"/>
+                <!-- knuckles segment -->
+                <rect x="100" y="118" width="36" height="10" fill="#aab5c4"/>
+                <rect x="100" y="118" width="36" height="10" fill="none" stroke="#22293a" stroke-width="1"/>
+                <!-- fingers (4 segments) -->
+                <path d="M132 124 L150 128 L148 138 L130 132 Z" fill="#6e7a8a" stroke="#22293a" stroke-width="1.2"/>
+                <path d="M124 132 L146 138 L143 148 L122 142 Z" fill="#7b8696" stroke="#22293a" stroke-width="1.2"/>
+                <path d="M114 140 L138 146 L135 154 L114 150 Z" fill="#6e7a8a" stroke="#22293a" stroke-width="1.2"/>
+                <path d="M104 146 L128 152 L125 158 L106 156 Z" fill="#5a6577" stroke="#22293a" stroke-width="1.2"/>
+                <!-- thumb -->
+                <path d="M70 120 L62 138 L74 150 L88 138 Z" fill="#7b8696" stroke="#22293a" stroke-width="1.2"/>
+                <!-- highlight -->
+                <path d="M62 70 L84 66" stroke="#cdd6e1" stroke-width="2" opacity="0.7"/>
+                <path d="M86 120 L132 116" stroke="#cdd6e1" stroke-width="2" opacity="0.6"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="reward-card-title">강철 장갑</div>
+          <div class="reward-card-title-en">Steel Gauntlet · Defender</div>
+
+          <div class="reward-card-divider">
+            <span class="reward-card-divider-line"></span>
+            <span class="reward-card-divider-dot"></span>
+            <span class="reward-card-divider-line"></span>
+          </div>
+
+          <div class="reward-card-desc">
+            방어구 슬롯 — 방어력 <span class="reward-card-desc-stat-plus">+6</span>,<br>
+            받는 피해 <span class="reward-card-desc-stat-minus">−4%</span>
+          </div>
+
+          <div class="reward-card-type-row">
+            <span class="reward-card-type type-equipment">
+              <span class="reward-card-type-dot"></span>
+              <span>장비</span>
+              <span class="reward-card-type-en">EQUIPMENT</span>
+            </span>
+          </div>
+
+          <span class="reward-card-action" name="RewardSelectSteelGauntlet">
+            <span class="reward-card-action-check" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9 L7 13 L15 4" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+              </svg>
+            </span>
+            <span class="reward-card-action-label">선택됨</span>
+            <span class="reward-card-action-en">Selected</span>
+          </span>
+        </button>
+
+        <!-- CARD 3 — 돌격 진형 -->
+        <button class="reward-card" data-idx="2" name="RewardCardChargeFormation" type="button">
+          <div class="reward-card-inner-glow"></div>
+          <div class="reward-cap cap-tl"></div>
+          <div class="reward-cap cap-tr"></div>
+          <div class="reward-cap cap-bl"></div>
+          <div class="reward-cap cap-br"></div>
+
+          <div class="reward-card-icon-wrap">
+            <div class="reward-card-icon-ring"></div>
+            <div class="reward-card-icon">
+              <!-- Red banner with two crossed spears -->
+              <svg width="170" height="170" viewBox="0 0 170 170" fill="none" aria-hidden="true">
+                <!-- spear shafts -->
+                <rect x="30" y="20" width="3.5" height="130" fill="#7b6238"/>
+                <rect x="135" y="20" width="3.5" height="130" fill="#7b6238"/>
+                <!-- spear tips -->
+                <path d="M30 6 L34 6 L36 22 L28 22 Z" fill="#cdd6e1" stroke="#22293a" stroke-width="0.8"/>
+                <path d="M30 14 L34 14" stroke="#22293a" stroke-width="0.8"/>
+                <path d="M135 6 L139 6 L141 22 L133 22 Z" fill="#cdd6e1" stroke="#22293a" stroke-width="0.8"/>
+                <path d="M135 14 L139 14" stroke="#22293a" stroke-width="0.8"/>
+                <!-- pole caps -->
+                <rect x="27" y="146" width="9" height="6" fill="#e6b751"/>
+                <rect x="132" y="146" width="9" height="6" fill="#e6b751"/>
+                <!-- banner body (red flag with notched edge) -->
+                <path d="M40 30 L130 30 L130 110 L116 100 L100 110 L84 100 L68 110 L52 100 L40 110 Z" fill="#b6334a"/>
+                <path d="M40 30 L130 30 L130 110 L116 100 L100 110 L84 100 L68 110 L52 100 L40 110 Z" fill="none" stroke="#5a0e1c" stroke-width="1.5"/>
+                <!-- banner top fold (lighter) -->
+                <path d="M40 30 L130 30 L128 40 L42 40 Z" fill="#c44a5c"/>
+                <!-- gold star emblem -->
+                <path d="M85 50 L90 64 L104 66 L93 75 L96 89 L85 82 L74 89 L77 75 L66 66 L80 64 Z" fill="#e6b751" stroke="#8a6418" stroke-width="1"/>
+                <!-- gold trim line -->
+                <rect x="40" y="34" width="90" height="1.5" fill="#e6b751"/>
+                <!-- shadow under banner -->
+                <path d="M40 30 L42 30 L42 110 L40 110 Z" fill="#5a0e1c"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="reward-card-title">돌격 진형</div>
+          <div class="reward-card-title-en">Charge Formation</div>
+
+          <div class="reward-card-divider">
+            <span class="reward-card-divider-line"></span>
+            <span class="reward-card-divider-dot"></span>
+            <span class="reward-card-divider-line"></span>
+          </div>
+
+          <div class="reward-card-desc">
+            다음 전투 —<br>
+            첫 라운드 공격력 <span class="reward-card-desc-stat-plus">+12%</span>
+          </div>
+
+          <div class="reward-card-type-row">
+            <span class="reward-card-type type-tactic">
+              <span class="reward-card-type-dot"></span>
+              <span>전술</span>
+              <span class="reward-card-type-en">TACTIC</span>
+            </span>
+          </div>
+
+          <span class="reward-card-action" name="RewardSelectChargeFormation">
+            <span class="reward-card-action-check" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9 L7 13 L15 4" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+              </svg>
+            </span>
+            <span class="reward-card-action-label">선택</span>
+            <span class="reward-card-action-en">Select</span>
+          </span>
+        </button>
+
+      </div>
+
+      <!-- ============== FOOTER ====================================== -->
+      <div class="reward-footer">
+
+        <div class="reward-hint is-hidden" id="rewardHint">
+          <span class="reward-hint-mark">!</span>
+          <span>한 보상을 선택해주세요</span>
+          <span class="reward-hint-en">Pick one reward</span>
+        </div>
+
+        <button class="reward-confirm" name="RewardConfirm" id="rewardConfirm" type="button">
+          <span>확정 · 마을 복귀</span>
+          <span class="reward-confirm-en">Confirm · Return to Town</span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   Vanilla JS — closer in shape to Unity UITK C# bindings
+   than React.  All elements expose a `name` attribute
+   (Reward* prefix) for query(name).
+   ========================================================= */
+(function(){
+  var cardsRow = document.getElementById('rewardCardsRow');
+  var cards = cardsRow.querySelectorAll('.reward-card');
+  var confirmBtn = document.getElementById('rewardConfirm');
+  var hint = document.getElementById('rewardHint');
+
+  // selection state
+  var selected = 1; // 강철 장갑 default per mockup
+
+  function render(){
+    for (var i = 0; i < cards.length; i++){
+      var c = cards[i];
+      var lblEl = c.querySelector('.reward-card-action-label');
+      var enEl = c.querySelector('.reward-card-action-en');
+      if (i === selected){
+        c.classList.add('is-selected');
+        c.setAttribute('aria-pressed', 'true');
+        if (lblEl) lblEl.textContent = '선택됨';
+        if (enEl)  enEl.textContent  = 'Selected';
+      } else {
+        c.classList.remove('is-selected');
+        c.setAttribute('aria-pressed', 'false');
+        if (lblEl) lblEl.textContent = '선택';
+        if (enEl)  enEl.textContent  = 'Select';
+      }
+    }
+
+    if (selected === -1){
+      hint.classList.remove('is-hidden');
+      confirmBtn.setAttribute('disabled', 'true');
+    } else {
+      hint.classList.add('is-hidden');
+      confirmBtn.removeAttribute('disabled');
+    }
+  }
+
+  for (var i = 0; i < cards.length; i++){
+    (function(idx, card){
+      card.addEventListener('click', function(){
+        selected = (selected === idx) ? -1 : idx; // toggle off if clicking selected
+        render();
+      });
+    })(i, cards[i]);
+  }
+
+  confirmBtn.addEventListener('click', function(){
+    if (selected === -1) return;
+    var picked = cards[selected].getAttribute('name');
+    var label = cards[selected].querySelector('.reward-card-title').textContent;
+    // visual confirmation
+    confirmBtn.querySelector('span').textContent = '확정 — ' + label;
+    setTimeout(function(){
+      confirmBtn.querySelector('span').textContent = '확정 · 마을 복귀';
+    }, 1400);
+    console.log('[Reward] confirmed:', picked, label);
+  });
+
+  document.querySelector('[name="RewardClose"]').addEventListener('click', function(){
+    console.log('[Reward] close clicked');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Battle HUD · Survival Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+
+<style>
+/* =========================================================
+   PREVIEW SHELL — outside Unity USS scope.
+   Uses transform only to scale the 1920×1080 board into the
+   browser viewport. Anything inside .hud must remain in the
+   USS-convertible subset.
+   ========================================================= */
+html, body { margin:0; padding:0; background:#05070f; min-height:100vh; font-family:"Pretendard", system-ui, sans-serif; color:#f5ead0; }
+.preview-stage {
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.preview-fit { transform-origin: center center; }
+
+/* =========================================================
+   ↓↓↓  USS-SAFE STYLES  ↓↓↓
+   subset rules:
+   - flexbox only (no grid)
+   - solid background-color only (no gradients)
+   - no transform / no animation / no box-shadow
+   - no ::before / ::after — corner caps are real <span> nodes
+   - border shorthand kept for HTML preview; equivalent to
+     USS border-*-width + border-*-color
+   ========================================================= */
+
+/* tokens — from Survival Manager design system */
+:root {
+  --bg-0:#0c1126;
+  --bg-1:#141a35;
+  --bg-2:#1c2243;
+  --bg-3:#262d54;
+  --bg-deep:#070a18;
+  --line-1:#2c3568;
+  --line-2:#3b467f;
+
+  --vellum:#f5ead0;
+  --vellum-2:#e2d4ad;
+  --vellum-3:#c9b88a;
+
+  --gold-100:#ffe9a8;
+  --gold-200:#f5d68a;
+  --gold-300:#e6b751;
+  --gold-400:#c8932a;
+  --gold-500:#8a6418;
+  --gold-600:#5a4310;
+
+  --ink-1:#f5ead0;
+  --ink-2:#d8c799;
+  --ink-3:#9d8a5e;
+  --ink-4:#6b5d3f;
+
+  --state-safe:#6dbf78;
+  --state-warn:#e8a93b;
+  --state-danger:#e25548;
+  --state-info:#7fa3e0;
+
+  --enemy-red:#c4344a;
+  --enemy-red-deep:#5a1018;
+  --enemy-bg:#1a0a12;
+  --enemy-bg-2:#240e16;
+  --enemy-glow:#e87a6b;
+
+  --ally-bg:#161c3a;
+  --ally-bg-2:#1c2348;
+
+  --f-ko:"Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --f-en:"Cinzel", "Trajan Pro", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --f-it:"Cormorant Garamond", "Playfair Display", serif;
+}
+
+.hud {
+  width:1920px;
+  height:1080px;
+  background-color:var(--bg-0);
+  color:var(--ink-1);
+  font-family:var(--f-ko);
+  display:flex;
+  flex-direction:column;
+  border:1px solid var(--gold-500);
+  position:relative;
+}
+
+/* universal corner caps — small L-shapes built from two borders.
+   used inside any panel that wants ornamental gold tabs. */
+.cap { position:absolute; width:10px; height:10px; pointer-events:none; }
+.cap-tl { top:-1px; left:-1px; border-top:1px solid var(--gold-300); border-left:1px solid var(--gold-300); }
+.cap-tr { top:-1px; right:-1px; border-top:1px solid var(--gold-300); border-right:1px solid var(--gold-300); }
+.cap-bl { bottom:-1px; left:-1px; border-bottom:1px solid var(--gold-300); border-left:1px solid var(--gold-300); }
+.cap-br { bottom:-1px; right:-1px; border-bottom:1px solid var(--gold-300); border-right:1px solid var(--gold-300); }
+.cap-sm { width:6px; height:6px; }
+.cap-lg { width:14px; height:14px; }
+
+/* inner accent frame — second border, achieved with a real child element */
+.inner-frame {
+  position:absolute; top:3px; left:3px; right:3px; bottom:3px;
+  border:1px solid var(--line-1);
+  pointer-events:none;
+}
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+.hud-top {
+  height:72px;
+  display:flex; flex-direction:row;
+  align-items:center;
+  padding:0 24px;
+  background-color:var(--bg-1);
+  border-bottom:1px solid var(--gold-500);
+  position:relative;
+  flex-shrink:0;
+}
+.hud-top-rule {
+  position:absolute; left:8px; right:8px; bottom:-2px; height:1px;
+  background-color:var(--gold-600);
+}
+
+.round-pill {
+  display:flex; flex-direction:row; align-items:center;
+  height:40px; padding:0 14px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  position:relative;
+  min-width:200px;
+}
+.round-pill .round-label {
+  font-family:var(--f-en);
+  font-size:18px; font-weight:600;
+  color:var(--gold-200);
+  letter-spacing:0.08em;
+  margin-right:10px;
+}
+.round-pill .round-num {
+  font-family:var(--f-en);
+  font-size:20px; font-weight:700;
+  color:var(--gold-100);
+  margin-right:14px;
+}
+.round-pill .round-dot {
+  width:4px; height:4px;
+  background-color:var(--gold-400);
+  margin-right:14px;
+}
+.round-pill .round-timer {
+  font-family:var(--f-mono);
+  font-size:18px; font-weight:500;
+  color:var(--vellum);
+  letter-spacing:0.06em;
+}
+
+.title-wrap {
+  flex-grow:1;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+.title-eyebrow {
+  font-family:var(--f-mono);
+  font-size:10px; letter-spacing:0.32em;
+  color:var(--gold-400);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.title-main {
+  display:flex; flex-direction:row; align-items:baseline;
+  font-family:var(--f-ko);
+  font-size:28px; font-weight:700;
+  color:var(--gold-200);
+  letter-spacing:0.04em;
+  white-space:nowrap;
+}
+.title-main span { white-space:nowrap; }
+.title-main .dash {
+  color:var(--gold-500);
+  margin:0 14px;
+  font-weight:500;
+}
+.title-main .place {
+  color:var(--vellum);
+}
+
+.pause-btn {
+  width:48px; height:48px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  color:var(--gold-200);
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  cursor:pointer;
+  padding:0;
+}
+.pause-btn:hover { border-color:var(--gold-200); color:var(--gold-100); background-color:var(--bg-2); }
+.pause-btn .ic { width:18px; height:18px; display:flex; flex-direction:row; }
+.pause-btn .ic span {
+  width:6px; height:18px;
+  background-color:currentColor;
+}
+.pause-btn .ic span:first-child { margin-right:4px; }
+.pause-btn.is-paused .ic { width:0; height:0; border-left:14px solid currentColor; border-top:9px solid transparent; border-bottom:9px solid transparent; margin-left:3px; }
+.pause-btn.is-paused .ic span { display:none; }
+
+/* =========================================================
+   MAIN BODY — three rails
+   ========================================================= */
+.hud-body {
+  flex-grow:1;
+  display:flex; flex-direction:row;
+  min-height:0;
+}
+
+.rail-left {
+  width:380px;
+  padding:14px 14px;
+  background-color:var(--bg-0);
+  border-right:1px solid var(--line-1);
+  display:flex; flex-direction:column;
+  flex-shrink:0;
+}
+.rail-right {
+  width:340px;
+  padding:14px 14px;
+  background-color:var(--bg-0);
+  border-left:1px solid var(--line-1);
+  display:flex; flex-direction:column;
+  flex-shrink:0;
+}
+.rail-cap {
+  display:flex; flex-direction:row;
+  align-items:center; justify-content:space-between;
+  font-family:var(--f-mono);
+  font-size:10px; letter-spacing:0.22em;
+  color:var(--gold-300);
+  text-transform:uppercase;
+  padding-bottom:8px;
+  margin-bottom:12px;
+  border-bottom:1px solid var(--line-1);
+}
+.rail-cap .ct { color:var(--ink-3); font-size:9.5px; }
+.rail-cap .ct b { color:var(--gold-200); font-weight:500; }
+
+/* ----------------- ALLY CARDS ----------------- */
+.ally-card {
+  display:flex; flex-direction:row;
+  background-color:var(--ally-bg);
+  border:1px solid var(--gold-500);
+  margin-bottom:12px;
+  padding:8px;
+  position:relative;
+  min-height:104px;
+  cursor:pointer;
+}
+.ally-card:hover { background-color:var(--ally-bg-2); border-color:var(--gold-300); }
+.ally-card.is-active { border-color:var(--gold-200); background-color:var(--ally-bg-2); }
+.ally-card.is-active .ac-name { color:var(--gold-100); }
+
+.ac-portrait {
+  width:88px; height:88px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  margin-right:12px;
+  position:relative;
+  flex-shrink:0;
+  display:flex; align-items:flex-end; justify-content:center;
+  overflow:hidden;
+}
+.ac-portrait .silh-wrap { width:80px; height:88px; display:flex; align-items:flex-end; justify-content:center; }
+.ac-portrait .silh-wrap svg { width:74px; height:84px; }
+
+.ac-info {
+  flex-grow:1;
+  display:flex; flex-direction:column;
+  justify-content:space-between;
+  min-width:0;
+  padding-top:4px;
+  padding-bottom:2px;
+}
+.ac-name {
+  font-family:var(--f-ko);
+  font-size:20px; font-weight:700;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.ac-class {
+  display:flex; flex-direction:row; align-items:center;
+  font-family:var(--f-ko);
+  font-size:13px; font-weight:500;
+  color:var(--ink-2);
+  margin-top:4px;
+  white-space:nowrap;
+}
+.ac-class .mark {
+  width:11px; height:11px;
+  border:1px solid var(--gold-400);
+  margin-right:6px;
+  display:inline-block;
+}
+.ac-class .mark.melee { background-color:var(--state-danger); }
+.ac-class .mark.ranged { background-color:var(--state-warn); }
+.ac-class .mark.tank { background-color:var(--state-info); }
+.ac-class .mark.support { background-color:var(--state-safe); }
+
+.hp-bar {
+  position:relative;
+  height:18px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  margin-top:8px;
+  display:flex; flex-direction:row;
+  align-items:center;
+}
+.hp-fill {
+  height:100%;
+  background-color:var(--state-safe);
+  flex-shrink:0;
+}
+.hp-fill.warn { background-color:var(--state-warn); }
+.hp-fill.danger { background-color:var(--state-danger); }
+.hp-num {
+  position:absolute; top:0; right:6px; bottom:0;
+  display:flex; align-items:center;
+  font-family:var(--f-mono);
+  font-size:12px; font-weight:600;
+  color:var(--vellum);
+  letter-spacing:0.04em;
+}
+
+/* ----------------- ENEMY CARDS ----------------- */
+.enemy-card {
+  display:flex; flex-direction:row;
+  background-color:var(--enemy-bg);
+  border:1px solid var(--gold-500);
+  border-left:2px solid var(--enemy-red);
+  margin-bottom:10px;
+  padding:8px;
+  position:relative;
+  min-height:84px;
+  cursor:pointer;
+}
+.enemy-card:hover { background-color:var(--enemy-bg-2); border-color:var(--gold-300); border-left-color:var(--enemy-red); }
+.enemy-card.is-target { border-color:var(--state-danger); background-color:var(--enemy-bg-2); }
+
+.ec-portrait {
+  width:64px; height:64px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--enemy-red-deep);
+  margin-right:10px;
+  position:relative;
+  flex-shrink:0;
+  display:flex; align-items:flex-end; justify-content:center;
+  overflow:hidden;
+}
+.ec-portrait .silh-wrap { width:60px; height:64px; display:flex; align-items:flex-end; justify-content:center; }
+.ec-portrait .silh-wrap svg { width:56px; height:62px; color:var(--enemy-red); }
+
+.ec-info {
+  flex-grow:1;
+  display:flex; flex-direction:column;
+  justify-content:space-between;
+  min-width:0;
+}
+.ec-name {
+  font-family:var(--f-ko);
+  font-size:17px; font-weight:700;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.ec-tag {
+  display:inline-flex; align-self:flex-start;
+  font-family:var(--f-ko);
+  font-size:11px; font-weight:600;
+  color:var(--enemy-glow);
+  background-color:var(--enemy-red-deep);
+  border:1px solid var(--enemy-red);
+  padding:1px 8px;
+  margin-top:4px;
+  letter-spacing:0.04em;
+  white-space:nowrap;
+}
+.ec-tag.boss { color:#ffd9b0; background-color:#3a1208; border-color:#a04a20; }
+
+.hp-bar-enemy {
+  position:relative;
+  height:12px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  margin-top:6px;
+  display:flex; flex-direction:row;
+}
+.hp-bar-enemy .hp-fill {
+  background-color:var(--enemy-red);
+}
+.hp-bar-enemy.danger .hp-fill { background-color:var(--state-danger); }
+.hp-num-enemy {
+  position:absolute; top:-3px; right:0;
+  display:flex;
+  font-family:var(--f-mono);
+  font-size:11px; font-weight:600;
+  color:var(--vellum);
+  letter-spacing:0.04em;
+  background-color:var(--bg-deep);
+  padding:0 4px;
+  border:1px solid var(--gold-600);
+}
+
+/* =========================================================
+   CENTER STAGE
+   ========================================================= */
+.stage {
+  flex-grow:1;
+  display:flex; flex-direction:column;
+  background-color:var(--bg-deep);
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+}
+.stage-frame {
+  position:absolute; inset:8px;
+  border:1px solid var(--gold-600);
+  pointer-events:none;
+}
+.stage-view {
+  flex-grow:1;
+  display:flex; align-items:stretch; justify-content:stretch;
+  position:relative;
+  min-height:0;
+}
+.stage-view svg.scene {
+  width:100%; height:100%;
+  display:block;
+}
+.stage-action-bar {
+  display:flex; flex-direction:row; align-items:center; justify-content:center;
+  padding:14px 0 18px 0;
+  font-family:var(--f-ko);
+  font-size:22px; font-weight:600;
+  color:var(--vellum);
+  background-color:var(--bg-deep);
+  letter-spacing:0.04em;
+  flex-shrink:0;
+  white-space:nowrap;
+}
+.stage-action-bar span { white-space:nowrap; }
+.stage-action-bar .actor {
+  color:var(--state-info);
+  font-weight:700;
+  margin-right:16px;
+}
+.stage-action-bar .skill {
+  color:var(--vellum);
+  margin-right:14px;
+}
+.stage-action-bar .arrow {
+  color:var(--gold-300);
+  font-family:var(--f-mono);
+  font-size:22px;
+  margin-right:14px;
+}
+.stage-action-bar .target {
+  color:var(--state-danger);
+  font-weight:700;
+}
+
+/* =========================================================
+   BOTTOM BAR
+   ========================================================= */
+.hud-bottom {
+  height:200px;
+  display:flex; flex-direction:row;
+  background-color:var(--bg-1);
+  border-top:1px solid var(--gold-500);
+  padding:14px 16px;
+  flex-shrink:0;
+  position:relative;
+}
+.hud-bottom-rule {
+  position:absolute; left:8px; right:8px; top:-2px; height:1px;
+  background-color:var(--gold-600);
+}
+
+/* log panel */
+.log-panel {
+  width:680px;
+  display:flex; flex-direction:column;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  padding:10px 14px;
+  position:relative;
+  margin-right:18px;
+}
+.log-panel .log-head {
+  display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+  font-family:var(--f-mono);
+  font-size:10px; letter-spacing:0.22em;
+  color:var(--gold-300);
+  text-transform:uppercase;
+  padding-bottom:6px;
+  margin-bottom:6px;
+  border-bottom:1px solid var(--line-1);
+}
+.log-panel .log-head .right { color:var(--ink-3); }
+.log-list {
+  flex-grow:1;
+  display:flex; flex-direction:column;
+  min-height:0;
+  overflow:hidden;
+}
+.log-line {
+  display:flex; flex-direction:row;
+  align-items:baseline;
+  font-family:var(--f-mono);
+  font-size:15px;
+  color:var(--ink-2);
+  line-height:1.7;
+  white-space:nowrap;
+  flex-wrap:nowrap;
+  flex-shrink:0;
+}
+.log-line > span { white-space:nowrap; margin-right:4px; }
+.log-line .t {
+  color:var(--gold-300);
+  margin-right:10px;
+  font-weight:500;
+  flex-shrink:0;
+}
+.log-line .actor-ally { color:var(--state-info); font-weight:600; }
+.log-line .actor-enemy { color:var(--state-danger); font-weight:600; }
+.log-line .arrow { color:var(--gold-400); margin:0 4px; }
+.log-line .target { color:var(--vellum); }
+.log-line .dmg { color:var(--vellum); font-weight:600; margin:0 4px; }
+.log-line .crit {
+  color:var(--state-danger);
+  font-weight:700;
+  margin-left:6px;
+  padding:0 6px;
+  border:1px solid var(--state-danger);
+  font-size:13px;
+}
+.log-line .skill-name { color:var(--vellum); font-weight:600; }
+
+/* scroll bar visual (decorative — not functional) */
+.log-scroll {
+  position:absolute; top:36px; right:8px; bottom:10px;
+  width:6px;
+  background-color:var(--bg-1);
+  border:1px solid var(--gold-600);
+  display:flex; flex-direction:column;
+}
+.log-scroll .thumb {
+  width:100%; height:60px;
+  background-color:var(--gold-400);
+  margin-top:30px;
+}
+
+/* speed cluster */
+.speed-cluster {
+  flex-grow:1;
+  display:flex; flex-direction:column;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  padding:12px 16px;
+  position:relative;
+  margin-right:18px;
+}
+.speed-cluster .sc-head {
+  display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+  font-family:var(--f-mono);
+  font-size:10px; letter-spacing:0.22em;
+  color:var(--gold-300);
+  text-transform:uppercase;
+  padding-bottom:8px;
+  margin-bottom:12px;
+  border-bottom:1px solid var(--line-1);
+}
+.speed-cluster .sc-head .right { color:var(--ink-3); }
+.speed-row {
+  display:flex; flex-direction:row;
+  align-items:center;
+  flex-grow:1;
+}
+.flow-btn {
+  width:52px; height:52px;
+  background-color:var(--bg-1);
+  border:1px solid var(--gold-500);
+  color:var(--gold-200);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  margin-right:14px;
+  position:relative;
+  padding:0;
+}
+.flow-btn:hover { border-color:var(--gold-200); background-color:var(--bg-2); }
+.flow-btn.is-active { background-color:var(--gold-300); color:var(--bg-0); border-color:var(--gold-100); }
+.flow-btn .play-ic { width:0; height:0; border-left:14px solid currentColor; border-top:9px solid transparent; border-bottom:9px solid transparent; margin-left:3px; }
+.flow-btn .pause-ic { display:flex; flex-direction:row; }
+.flow-btn .pause-ic span { width:5px; height:16px; background-color:currentColor; }
+.flow-btn .pause-ic span:first-child { margin-right:4px; }
+
+.speed-btn-row {
+  display:flex; flex-direction:row;
+  margin-right:18px;
+}
+.speed-btn {
+  width:56px; height:52px;
+  background-color:var(--bg-1);
+  border:1px solid var(--gold-500);
+  color:var(--ink-2);
+  font-family:var(--f-en);
+  font-size:18px; font-weight:700;
+  letter-spacing:0.04em;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  margin-right:6px;
+  position:relative;
+  padding:0;
+}
+.speed-btn:hover { border-color:var(--gold-200); color:var(--gold-100); background-color:var(--bg-2); }
+.speed-btn.is-active {
+  background-color:var(--gold-300);
+  color:var(--bg-0);
+  border-color:var(--gold-100);
+}
+
+/* timeline */
+.timeline {
+  flex-grow:1;
+  display:flex; flex-direction:row;
+  align-items:center;
+  height:52px;
+  position:relative;
+  padding:0 8px;
+}
+.timeline-rail {
+  position:absolute; left:8px; right:8px; top:50%; height:2px; margin-top:-1px;
+  background-color:var(--gold-500);
+}
+.timeline-tick {
+  width:8px; height:8px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-300);
+  margin-right:auto;
+  position:relative;
+}
+.timeline-tick.active { background-color:var(--gold-100); border-color:var(--gold-100); }
+.timeline .ticks {
+  position:absolute; left:8px; right:8px; top:50%;
+  display:flex; flex-direction:row; justify-content:space-between;
+  margin-top:-6px;
+}
+.timeline .ticks .tick {
+  width:10px; height:10px;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-400);
+}
+.timeline .ticks .tick.diamond {
+  width:8px; height:8px;
+  background-color:var(--gold-300);
+  border:none;
+}
+
+/* status indicator */
+.status-cluster {
+  width:280px;
+  display:flex; flex-direction:column;
+  background-color:var(--bg-deep);
+  border:1px solid var(--gold-500);
+  padding:12px 14px;
+  position:relative;
+}
+.status-cluster .sc-head {
+  display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+  font-family:var(--f-mono);
+  font-size:10px; letter-spacing:0.22em;
+  color:var(--gold-300);
+  text-transform:uppercase;
+  padding-bottom:8px;
+  margin-bottom:12px;
+  border-bottom:1px solid var(--line-1);
+}
+.status-cluster .sc-head .right { color:var(--ink-3); }
+
+.status-chip {
+  display:flex; flex-direction:row; align-items:center;
+  flex-grow:1;
+  background-color:var(--bg-1);
+  border:1px solid var(--state-info);
+  padding:8px 14px;
+  position:relative;
+}
+.status-chip .dot {
+  width:10px; height:10px;
+  background-color:var(--state-info);
+  border-radius:5px;
+  margin-right:10px;
+}
+.status-chip .label {
+  font-family:var(--f-ko);
+  font-size:18px; font-weight:700;
+  color:var(--vellum);
+  letter-spacing:0.02em;
+  white-space:nowrap;
+}
+
+/* utility text style for KO badge / threat */
+.threat-stars {
+  display:inline-flex; align-self:flex-end;
+  font-family:var(--f-mono);
+  font-size:12px;
+  color:var(--state-danger);
+  letter-spacing:0.04em;
+  margin-left:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="preview-stage">
+<div class="preview-fit">
+
+<!-- ==========================================================
+     BATTLE HUD ROOT — name="BattleHudRoot"
+     1920 × 1080
+     ========================================================== -->
+<div class="hud" name="BattleHudRoot">
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="hud-top" name="BattleHudTopBar">
+    <div class="hud-top-rule"></div>
+    <span class="cap cap-tl"></span>
+    <span class="cap cap-tr"></span>
+
+    <div class="round-pill" name="BattleHudRoundDisplay">
+      <span class="cap cap-tl cap-sm"></span>
+      <span class="cap cap-br cap-sm"></span>
+      <span class="round-label">ROUND</span>
+      <span class="round-num">3</span>
+      <span class="round-dot"></span>
+      <span class="round-timer">00:42</span>
+    </div>
+
+    <div class="title-wrap" name="BattleHudTitle">
+      <div class="title-eyebrow">EXPEDITION · ENGAGED</div>
+      <div class="title-main">
+        <span>원정 전투</span>
+        <span class="dash">—</span>
+        <span class="place">늑대솔숲</span>
+      </div>
+    </div>
+
+    <button class="pause-btn" name="BattleHudHeaderPauseButton" type="button">
+      <span class="cap cap-tl cap-sm"></span>
+      <span class="cap cap-br cap-sm"></span>
+      <span class="ic"><span></span><span></span></span>
+    </button>
+  </div>
+
+  <!-- ===== MAIN BODY ===== -->
+  <div class="hud-body" name="BattleHudBody">
+
+    <!-- LEFT RAIL : ALLIES -->
+    <div class="rail-left" name="BattleHudAllyRail">
+      <div class="rail-cap">
+        <span>아군 · ALLY PARTY</span>
+        <span class="ct">활성 <b>4</b> / 4</span>
+      </div>
+
+      <!-- ALLY 1 — 리퍼 (Reaper) — 근접 딜러 — 320/320 -->
+      <div class="ally-card is-active" name="BattleHudAllyCard_Reaper">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ac-portrait">
+          <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet">
+              <path fill="#3b467f" d="M30 6 L25 10 L22 16 L20 22 L24 26 L20 30 L18 40 L24 48 L22 60 L26 78 L34 78 L38 60 L36 48 L42 40 L40 30 L36 26 L40 22 L38 16 L35 10 Z"/>
+              <path fill="#7fa3e0" d="M28 12 L24 14 L26 18 L32 18 L34 14 Z"/>
+              <path fill="#a8c4e6" d="M27 16 L33 16 L33 19 L27 19 Z"/>
+              <path fill="#262d54" d="M42 16 L52 8 L54 12 L46 22 Z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ac-info">
+          <div class="ac-name">리퍼</div>
+          <div class="ac-class"><span class="mark melee"></span>근접 딜러</div>
+          <div class="hp-bar" name="BattleHudAllyHp_Reaper">
+            <span class="hp-fill" style="width:100%;"></span>
+            <span class="hp-num">320 / 320</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALLY 2 — 명사수 (Marksman) — 원거리 딜러 — 280/320 -->
+      <div class="ally-card" name="BattleHudAllyCard_Marksman">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ac-portrait">
+          <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet">
+              <ellipse cx="30" cy="14" rx="9" ry="10" fill="#b58a36"/>
+              <path fill="#4d3a14" d="M14 10 L46 6 L48 14 L44 18 L18 20 Z"/>
+              <path fill="#e6c878" d="M16 10 L20 4 L22 12 Z"/>
+              <path fill="#3b467f" d="M22 22 L38 22 L42 30 L40 56 L36 78 L24 78 L20 56 L18 30 Z"/>
+              <path fill="#b58a36" d="M48 18 L54 26 L52 32 L46 28 Z"/>
+              <rect x="50" y="2" width="2" height="78" fill="#8a6418"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ac-info">
+          <div class="ac-name">명사수</div>
+          <div class="ac-class"><span class="mark ranged"></span>원거리 딜러</div>
+          <div class="hp-bar" name="BattleHudAllyHp_Marksman">
+            <span class="hp-fill" style="width:87.5%;"></span>
+            <span class="hp-num">280 / 320</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALLY 3 — 방벽병 (Bulwark) — 탱커 — 180/280 -->
+      <div class="ally-card" name="BattleHudAllyCard_Bulwark">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ac-portrait">
+          <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet">
+              <path fill="#3b467f" d="M22 4 L38 4 L42 12 L40 22 L20 22 L18 12 Z"/>
+              <path fill="#7fa3e0" d="M26 10 L34 10 L34 18 L26 18 Z"/>
+              <rect x="29" y="12" width="2" height="6" fill="#1c2243"/>
+              <path fill="#4a72b8" d="M14 22 L46 22 L50 34 L46 58 L42 78 L18 78 L14 58 L10 34 Z"/>
+              <path fill="#7fa3e0" d="M10 34 L4 40 L8 60 L14 54 Z"/>
+              <path fill="#7fa3e0" d="M50 34 L56 40 L52 60 L46 54 Z"/>
+              <path fill="#262d54" d="M28 24 L32 24 L31 50 L29 50 Z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ac-info">
+          <div class="ac-name">방벽병</div>
+          <div class="ac-class"><span class="mark tank"></span>탱커</div>
+          <div class="hp-bar" name="BattleHudAllyHp_Bulwark">
+            <span class="hp-fill warn" style="width:64.2%;"></span>
+            <span class="hp-num">180 / 280</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALLY 4 — 무당 (Shaman) — 서포터 — 210/240 -->
+      <div class="ally-card" name="BattleHudAllyCard_Shaman">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ac-portrait">
+          <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet">
+              <ellipse cx="30" cy="14" rx="8" ry="10" fill="#8a5cb8"/>
+              <path fill="#3a1f5a" d="M22 8 L38 8 L40 14 L36 16 L24 16 L20 14 Z"/>
+              <path fill="#d4b4f0" d="M26 18 L34 18 L33 22 L27 22 Z"/>
+              <path fill="#4a72b8" d="M20 22 L40 22 L46 32 L44 56 L40 78 L20 78 L16 56 L14 32 Z"/>
+              <rect x="48" y="6" width="2.5" height="74" fill="#8a6418"/>
+              <circle cx="49.25" cy="6" r="4" fill="#d4b4f0" opacity=".75"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ac-info">
+          <div class="ac-name">무당</div>
+          <div class="ac-class"><span class="mark support"></span>서포터</div>
+          <div class="hp-bar" name="BattleHudAllyHp_Shaman">
+            <span class="hp-fill" style="width:87.5%;"></span>
+            <span class="hp-num">210 / 240</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER STAGE -->
+    <div class="stage" name="BattleHudStage">
+      <div class="stage-frame"></div>
+      <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+      <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+
+      <div class="stage-view" name="BattleHudStageView">
+        <!-- atmospheric scene — flat colors only, no gradients -->
+        <svg class="scene" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <!-- sky layers (flat color blocks) -->
+          <rect x="0" y="0" width="1200" height="700" fill="#070a18"/>
+          <rect x="0" y="0" width="1200" height="380" fill="#0e1530"/>
+          <rect x="0" y="0" width="1200" height="180" fill="#141a35"/>
+          <!-- stars -->
+          <circle cx="180" cy="60" r="1.4" fill="#e6b751"/>
+          <circle cx="420" cy="35" r="1" fill="#e6b751"/>
+          <circle cx="780" cy="90" r="1.2" fill="#f5d68a"/>
+          <circle cx="1050" cy="55" r="1.4" fill="#e6b751"/>
+          <circle cx="660" cy="160" r="1" fill="#c9b88a"/>
+          <!-- moon -->
+          <circle cx="940" cy="120" r="22" fill="#f5ead0" opacity="0.85"/>
+          <circle cx="934" cy="115" r="19" fill="#0e1530"/>
+          <!-- distant ridge -->
+          <polygon points="0,360 100,320 220,340 360,300 480,330 600,280 720,320 860,290 1000,330 1120,300 1200,330 1200,400 0,400" fill="#1a2050"/>
+          <!-- mid ridge -->
+          <polygon points="0,420 80,380 200,420 320,360 460,420 580,380 720,420 860,370 1000,410 1120,380 1200,410 1200,500 0,500" fill="#0f1430"/>
+          <!-- tree silhouettes left -->
+          <g fill="#080b1a">
+            <polygon points="40,440 56,360 72,440"/>
+            <polygon points="80,450 100,340 120,450"/>
+            <polygon points="135,460 160,330 185,460"/>
+            <polygon points="200,455 222,350 244,455"/>
+            <polygon points="260,460 282,340 304,460"/>
+            <polygon points="320,460 342,360 364,460"/>
+            <polygon points="380,470 405,330 430,470"/>
+            <polygon points="430,470 452,360 474,470"/>
+          </g>
+          <!-- tree silhouettes right -->
+          <g fill="#080b1a">
+            <polygon points="700,460 722,360 744,460"/>
+            <polygon points="760,470 785,330 810,470"/>
+            <polygon points="820,460 842,360 864,460"/>
+            <polygon points="880,470 905,330 930,470"/>
+            <polygon points="940,460 962,350 984,460"/>
+            <polygon points="1000,470 1025,335 1050,470"/>
+            <polygon points="1060,460 1082,360 1104,460"/>
+            <polygon points="1120,470 1145,340 1170,470"/>
+          </g>
+          <!-- ground -->
+          <rect x="0" y="460" width="1200" height="240" fill="#06080f"/>
+          <polygon points="0,460 1200,460 1200,520 0,520" fill="#0a0d20"/>
+          <polygon points="0,520 1200,520 1200,580 0,580" fill="#080a17"/>
+
+          <!-- ALLY UNITS (gold/cream tones) — left half -->
+          <!-- ally 1 — front (Reaper, slashing) -->
+          <g transform="translate(420,440)">
+            <ellipse cx="0" cy="60" rx="52" ry="8" fill="#070a18"/>
+            <path fill="#f5ead0" d="M-6 -100 c-4 -6 4 -14 6 -8 c2 -6 10 2 6 8 z"/>
+            <ellipse cx="0" cy="-95" rx="10" ry="11" fill="#f5ead0"/>
+            <path fill="#e2d4ad" d="M-12 -82 L12 -82 L18 -70 L16 -20 L12 30 L-12 30 L-16 -20 L-18 -70 Z"/>
+            <path fill="#c9b88a" d="M-18 -70 L-26 -50 L-22 -20 L-12 -30 Z"/>
+            <path fill="#c9b88a" d="M18 -70 L26 -50 L22 -20 L12 -30 Z"/>
+            <path fill="#0a0d20" d="M0 -85 q-3 6 0 8 q3 -2 0 -8z"/>
+            <path stroke="#f5d68a" stroke-width="2" fill="none" d="M14 -60 L52 -94"/>
+            <polygon points="50,-96 56,-104 58,-92" fill="#f5d68a"/>
+          </g>
+
+          <!-- ally 2 — back-left (Marksman, drawing) -->
+          <g transform="translate(280,420)">
+            <ellipse cx="0" cy="60" rx="50" ry="7" fill="#070a18"/>
+            <ellipse cx="0" cy="-90" rx="9" ry="10" fill="#b58a36"/>
+            <path fill="#4d3a14" d="M-12 -90 L14 -94 L16 -84 L-10 -82 Z"/>
+            <path fill="#e6c878" d="M-12 -94 L-8 -100 L-6 -90 Z"/>
+            <path fill="#b58a36" d="M-10 -78 L12 -78 L16 -66 L14 -16 L10 30 L-10 30 L-14 -16 L-16 -66 Z"/>
+            <path stroke="#e6c878" stroke-width="2" fill="none" d="M16 -60 L60 -50"/>
+            <path stroke="#e6c878" stroke-width="1.5" fill="none" d="M-6 -50 Q30 -55 60 -50 Q30 -45 -6 -50"/>
+          </g>
+
+          <!-- ally 3 — mid (Bulwark, shield) -->
+          <g transform="translate(520,440)">
+            <ellipse cx="0" cy="60" rx="56" ry="9" fill="#070a18"/>
+            <path fill="#4a72b8" d="M-10 -90 L10 -90 L14 -82 L12 -70 L-12 -70 L-14 -82 Z"/>
+            <path fill="#7fa3e0" d="M-6 -84 L6 -84 L6 -76 L-6 -76 Z"/>
+            <path fill="#3b467f" d="M-16 -70 L16 -70 L20 -56 L18 -20 L14 30 L-14 30 L-18 -20 L-20 -56 Z"/>
+            <polygon points="-28,-50 -50,-30 -50,20 -28,40" fill="#a8c4e6"/>
+            <polygon points="-26,-46 -46,-28 -46,18 -26,36" fill="#4a72b8"/>
+            <polygon points="-36,-12 -36,4 -28,16 -28,-24" fill="#7fa3e0"/>
+            <rect x="14" y="-60" width="3" height="80" fill="#c9b88a"/>
+            <polygon points="14,-60 24,-72 17,-58" fill="#e6c878"/>
+          </g>
+
+          <!-- ally 4 — front-left (Shaman, staff up) -->
+          <g transform="translate(370,460)">
+            <ellipse cx="0" cy="50" rx="42" ry="7" fill="#070a18"/>
+            <ellipse cx="0" cy="-80" rx="8" ry="9" fill="#e2d4ad"/>
+            <path fill="#5a4310" d="M-10 -80 L12 -82 L8 -72 L-8 -72 Z"/>
+            <path fill="#c9b88a" d="M-12 -70 L12 -70 L18 -56 L16 -10 L12 20 L-12 20 L-16 -10 L-18 -56 Z"/>
+            <path fill="#e2d4ad" d="M-18 -56 L-26 -36 L-22 -8 L-12 -16 Z" opacity=".7"/>
+            <rect x="14" y="-94" width="2.5" height="106" fill="#8a6418"/>
+            <circle cx="15.25" cy="-94" r="4" fill="#f5d68a"/>
+            <circle cx="15.25" cy="-94" r="2" fill="#ffe9a8"/>
+          </g>
+
+          <!-- IMPACT GLOW at target -->
+          <g transform="translate(760,400)">
+            <circle r="22" fill="#ffe9a8" opacity="0.45"/>
+            <circle r="14" fill="#ffffff" opacity="0.7"/>
+            <circle r="8" fill="#ffffff"/>
+            <polygon points="-3,-30 3,-30 1,0 -1,0" fill="#ffe9a8" opacity=".5"/>
+            <polygon points="-3,30 3,30 1,0 -1,0" fill="#ffe9a8" opacity=".5"/>
+            <polygon points="-30,-3 -30,3 0,1 0,-1" fill="#ffe9a8" opacity=".5"/>
+            <polygon points="30,-3 30,3 0,1 0,-1" fill="#ffe9a8" opacity=".5"/>
+          </g>
+
+          <!-- TRACER LINE from marksman -->
+          <line x1="296" y1="370" x2="755" y2="400" stroke="#f5d68a" stroke-width="2.5"/>
+          <line x1="296" y1="370" x2="755" y2="400" stroke="#fff8e0" stroke-width="1"/>
+
+          <!-- ENEMY UNITS (red tones) — right half -->
+          <!-- enemy 1 — 척후병 / Scout (already in trace path) -->
+          <g transform="translate(770,420)">
+            <ellipse cx="0" cy="60" rx="46" ry="7" fill="#1a0612"/>
+            <ellipse cx="0" cy="-86" rx="8" ry="10" fill="#5a1018"/>
+            <path fill="#3a0a14" d="M-12 -88 L12 -88 L14 -78 L10 -74 L-10 -74 Z"/>
+            <path fill="#7a1a28" d="M-10 -70 L10 -70 L14 -58 L12 -16 L8 26 L-8 26 L-12 -16 L-14 -58 Z"/>
+            <path fill="#c4344a" d="M-14 -58 L-22 -38 L-18 -12 L-10 -18 Z" opacity=".75"/>
+            <path fill="#c4344a" d="M14 -58 L22 -38 L18 -12 L10 -18 Z" opacity=".75"/>
+            <path fill="#0a0d20" d="M-3 -85 q3 5 6 1 M3 -85 q-3 5 -6 1" opacity=".7"/>
+          </g>
+
+          <!-- enemy 2 — 돌격병 / Charger -->
+          <g transform="translate(880,415)">
+            <ellipse cx="0" cy="62" rx="56" ry="9" fill="#1a0612"/>
+            <path fill="#3a0a14" d="M-10 -98 L10 -98 L14 -88 L12 -74 L-12 -74 L-14 -88 Z"/>
+            <path fill="#c4344a" d="M-16 -74 L16 -74 L20 -60 L18 -20 L14 32 L-14 32 L-18 -20 L-20 -60 Z"/>
+            <path fill="#e25548" d="M-20 -60 L-30 -36 L-24 -8 L-14 -20 Z" opacity=".7"/>
+            <path fill="#e25548" d="M20 -60 L30 -36 L24 -8 L14 -20 Z" opacity=".7"/>
+            <polygon points="14,-66 60,-72 60,-58 14,-52" fill="#5a1018"/>
+            <polygon points="60,-72 78,-66 60,-58" fill="#7a1a28"/>
+          </g>
+
+          <!-- enemy 3 — 주문병 / Spellcaster (back) -->
+          <g transform="translate(1000,440)">
+            <ellipse cx="0" cy="50" rx="42" ry="7" fill="#1a0612"/>
+            <path fill="#3a0a14" d="M-16 -88 L16 -88 L18 -68 L12 -64 L-12 -64 L-18 -68 Z"/>
+            <ellipse cx="0" cy="-72" rx="6" ry="8" fill="#3a0a14"/>
+            <path fill="#7a1a28" d="M-12 -62 L12 -62 L18 -48 L16 -14 L12 20 L-12 20 L-16 -14 L-18 -48 Z"/>
+            <rect x="14" y="-90" width="2.5" height="100" fill="#3a0a14"/>
+            <polygon points="10,-88 20,-90 14,-100" fill="#c4344a"/>
+            <circle cx="15" cy="-94" r="3" fill="#e25548"/>
+          </g>
+
+          <!-- enemy 4 — 저격병 / Sniper -->
+          <g transform="translate(1080,435)">
+            <ellipse cx="0" cy="55" rx="40" ry="6" fill="#1a0612"/>
+            <ellipse cx="0" cy="-80" rx="7" ry="9" fill="#5a1018"/>
+            <path fill="#3a0a14" d="M-10 -84 L12 -86 L14 -76 L-8 -74 Z"/>
+            <path fill="#7a1a28" d="M-10 -68 L10 -68 L14 -56 L12 -16 L8 22 L-8 22 L-12 -16 L-14 -56 Z"/>
+            <line x1="14" y1="-50" x2="46" y2="-44" stroke="#c4344a" stroke-width="3"/>
+            <rect x="44" y="-46" width="6" height="4" fill="#3a0a14"/>
+          </g>
+
+          <!-- enemy 5 — 두목 / Boss (large, raised) -->
+          <g transform="translate(960,400)">
+            <ellipse cx="0" cy="80" rx="70" ry="10" fill="#1a0612"/>
+            <polygon points="-14,-118 -8,-128 0,-115 8,-128 14,-118 12,-100 -12,-100" fill="#7a1a28"/>
+            <ellipse cx="0" cy="-100" rx="14" ry="14" fill="#3a0a14"/>
+            <path fill="#5a1018" d="M-18 -88 L18 -88 L24 -78 L20 -62 L-20 -62 L-24 -78 Z"/>
+            <path fill="#7a1a28" d="M-22 -62 L22 -62 L30 -42 L26 10 L22 50 L-22 50 L-26 10 L-30 -42 Z"/>
+            <path fill="#c4344a" d="M-30 -42 L-42 -16 L-36 18 L-22 -2 Z" opacity=".8"/>
+            <path fill="#c4344a" d="M30 -42 L42 -16 L36 18 L22 -2 Z" opacity=".8"/>
+            <polygon points="-12,-100 -10,-90 -8,-100" fill="#e25548"/>
+            <polygon points="12,-100 10,-90 8,-100" fill="#e25548"/>
+          </g>
+
+          <!-- foreground fog band -->
+          <rect x="0" y="540" width="1200" height="160" fill="#04060e" opacity="0.55"/>
+        </svg>
+      </div>
+
+      <div class="stage-action-bar" name="BattleHudActionLog">
+        <span class="actor">명사수</span>
+        <span class="skill">정밀 사격</span>
+        <span class="arrow">→</span>
+        <span class="target">적 척후병</span>
+      </div>
+    </div>
+
+    <!-- RIGHT RAIL : ENEMIES -->
+    <div class="rail-right" name="BattleHudEnemyRail">
+      <div class="rail-cap">
+        <span>적 · ENEMY</span>
+        <span class="ct">생존 <b>5</b> / 5</span>
+      </div>
+
+      <!-- ENEMY 1 — 척후병 / 경계 / 120/180 -->
+      <div class="enemy-card is-target" name="BattleHudEnemyCard_Scout">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ec-portrait">
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet" fill="currentColor">
+              <ellipse cx="30" cy="14" rx="8" ry="10"/>
+              <path d="M16 8 L44 8 L42 18 L36 22 L24 22 L18 18 Z" opacity=".6"/>
+              <path d="M20 22 L40 22 L44 32 L42 56 L38 78 L22 78 L18 56 L16 32 Z"/>
+              <path d="M44 24 L52 18 L54 24 L46 32 Z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ec-info">
+          <div class="ec-name">척후병</div>
+          <div class="ec-tag">경계</div>
+          <div class="hp-bar-enemy danger">
+            <span class="hp-fill" style="width:66.6%;"></span>
+            <span class="hp-num-enemy">120 / 180</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENEMY 2 — 돌격병 / 돌격 / 210/210 -->
+      <div class="enemy-card" name="BattleHudEnemyCard_Charger">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ec-portrait">
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet" fill="currentColor">
+              <path d="M22 4 L38 4 L42 12 L40 22 L20 22 L18 12 Z"/>
+              <path d="M14 22 L46 22 L50 34 L46 58 L42 78 L18 78 L14 58 L10 34 Z"/>
+              <rect x="50" y="6" width="2" height="44" opacity=".7"/>
+              <polygon points="48,6 56,6 52,2" opacity=".7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ec-info">
+          <div class="ec-name">돌격병</div>
+          <div class="ec-tag">돌격</div>
+          <div class="hp-bar-enemy">
+            <span class="hp-fill" style="width:100%;"></span>
+            <span class="hp-num-enemy">210 / 210</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENEMY 3 — 주문병 / 마법 / 160/160 -->
+      <div class="enemy-card" name="BattleHudEnemyCard_Spellcaster">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ec-portrait">
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet" fill="currentColor">
+              <path d="M14 8 L46 8 L48 22 L42 26 L18 26 L12 22 Z"/>
+              <path d="M20 26 L40 26 L46 38 L44 60 L40 78 L20 78 L16 60 L14 38 Z"/>
+              <rect x="48" y="2" width="2" height="74" opacity=".75"/>
+              <circle cx="49" cy="2" r="4"/>
+              <path d="M22 16 L26 18 L24 22 Z" fill="#000" opacity=".5"/>
+              <path d="M38 16 L34 18 L36 22 Z" fill="#000" opacity=".5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ec-info">
+          <div class="ec-name">주문병</div>
+          <div class="ec-tag">마법</div>
+          <div class="hp-bar-enemy">
+            <span class="hp-fill" style="width:100%;"></span>
+            <span class="hp-num-enemy">160 / 160</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENEMY 4 — 저격병 / 원거리 / 140/140 -->
+      <div class="enemy-card" name="BattleHudEnemyCard_Sniper">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ec-portrait">
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet" fill="currentColor">
+              <ellipse cx="28" cy="14" rx="7" ry="9"/>
+              <path d="M16 10 L40 6 L42 14 L36 18 L20 20 Z" opacity=".7"/>
+              <path d="M22 20 L36 20 L40 30 L38 56 L34 78 L24 78 L20 56 L18 30 Z"/>
+              <line x1="36" y1="36" x2="58" y2="46" stroke="currentColor" stroke-width="3"/>
+              <rect x="54" y="42" width="6" height="6"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ec-info">
+          <div class="ec-name">저격병</div>
+          <div class="ec-tag">원거리</div>
+          <div class="hp-bar-enemy">
+            <span class="hp-fill" style="width:100%;"></span>
+            <span class="hp-num-enemy">140 / 140</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENEMY 5 — 두목 / 보스 / 380/380 -->
+      <div class="enemy-card" name="BattleHudEnemyCard_Boss">
+        <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+        <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+        <div class="ec-portrait">
+          <div class="silh-wrap">
+            <svg viewBox="0 0 60 80" preserveAspectRatio="xMidYMax meet" fill="currentColor">
+              <polygon points="20,2 26,10 30,2 34,10 40,2 38,16 22,16" opacity=".9"/>
+              <ellipse cx="30" cy="20" rx="11" ry="11"/>
+              <path d="M16 30 L44 30 L48 42 L44 60 L40 78 L20 78 L16 60 L12 42 Z"/>
+              <path d="M12 42 L4 56 L8 72 L16 64 Z" opacity=".75"/>
+              <path d="M48 42 L56 56 L52 72 L44 64 Z" opacity=".75"/>
+              <circle cx="26" cy="18" r="1.5" fill="#fff"/>
+              <circle cx="34" cy="18" r="1.5" fill="#fff"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ec-info">
+          <div class="ec-name">두목</div>
+          <div class="ec-tag boss">보스</div>
+          <div class="hp-bar-enemy">
+            <span class="hp-fill" style="width:100%;"></span>
+            <span class="hp-num-enemy">380 / 380</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BOTTOM BAR ===== -->
+  <div class="hud-bottom" name="BattleHudBottomBar">
+    <div class="hud-bottom-rule"></div>
+
+    <!-- LOG -->
+    <div class="log-panel" name="BattleHudCombatLog">
+      <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+      <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+      <div class="log-head">
+        <span>전투 로그 · COMBAT LOG</span>
+        <span class="right">최근 8 행 · LIVE</span>
+      </div>
+      <div class="log-list" name="BattleHudCombatLogList">
+        <div class="log-line">
+          <span class="t">[12:42]</span>
+          <span class="actor-ally">명사수</span>
+          <span class="arrow">→</span>
+          <span class="target">척후병</span>
+          <span>:</span>
+          <span class="dmg">84 피해</span>
+          <span class="crit">치명!</span>
+        </div>
+        <div class="log-line">
+          <span class="t">[12:41]</span>
+          <span class="actor-ally">방벽병</span>
+          <span>:</span>
+          <span class="skill-name">도발</span>
+          <span>사용</span>
+        </div>
+        <div class="log-line">
+          <span class="t">[12:40]</span>
+          <span class="actor-enemy">적 돌격병</span>
+          <span class="arrow">→</span>
+          <span class="target">무당</span>
+          <span>:</span>
+          <span class="dmg">32 피해</span>
+        </div>
+      </div>
+      <div class="log-scroll" name="BattleHudCombatLogScroll"><div class="thumb"></div></div>
+    </div>
+
+    <!-- SPEED -->
+    <div class="speed-cluster" name="BattleHudSpeedControls">
+      <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+      <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+      <div class="sc-head">
+        <span>전투 흐름 · FLOW CONTROL</span>
+        <span class="right">자동 진행</span>
+      </div>
+      <div class="speed-row">
+        <button class="flow-btn" name="BattleHudFlowPauseButton" type="button">
+          <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+          <span class="pause-ic"><span></span><span></span></span>
+        </button>
+        <div class="speed-btn-row">
+          <button class="speed-btn" name="BattleHudSpeedButton_1x" type="button" data-speed="1">
+            <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+            1x
+          </button>
+          <button class="speed-btn is-active" name="BattleHudSpeedButton_2x" type="button" data-speed="2">
+            <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+            2x
+          </button>
+          <button class="speed-btn" name="BattleHudSpeedButton_4x" type="button" data-speed="4">
+            <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+            4x
+          </button>
+        </div>
+
+        <div class="timeline" name="BattleHudTimeline">
+          <div class="timeline-rail"></div>
+          <div class="ticks">
+            <span class="tick"></span>
+            <span class="tick diamond"></span>
+            <span class="tick"></span>
+            <span class="tick diamond"></span>
+            <span class="tick"></span>
+            <span class="tick diamond"></span>
+            <span class="tick"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATUS -->
+    <div class="status-cluster" name="BattleHudStatusCluster">
+      <span class="cap cap-tl"></span><span class="cap cap-tr"></span>
+      <span class="cap cap-bl"></span><span class="cap cap-br"></span>
+      <div class="sc-head">
+        <span>상태 · STATE</span>
+        <span class="right">R 3 · 00:42</span>
+      </div>
+      <div class="status-chip" name="BattleHudStatusIndicator">
+        <span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>
+        <span class="dot"></span>
+        <span class="label">▶  전투 진행 중</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+/* =========================================================
+   Lightweight interactivity — NOT part of the USS layout.
+   Speed-button toggle / pause toggle / ally selection /
+   enemy targeting. Pure DOM class swaps.
+   ========================================================= */
+(function(){
+  'use strict';
+
+  // Speed buttons — exclusive
+  var speedBtns = document.querySelectorAll('.speed-btn');
+  speedBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      speedBtns.forEach(function(b){ b.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+    });
+  });
+
+  // Flow pause button (bottom) — swap between pause/play icon
+  var flowPause = document.querySelector('[name="BattleHudFlowPauseButton"]');
+  if(flowPause){
+    var paused = false;
+    flowPause.addEventListener('click', function(){
+      paused = !paused;
+      flowPause.innerHTML = '<span class="cap cap-tl cap-sm"></span><span class="cap cap-br cap-sm"></span>' +
+        (paused
+          ? '<span class="play-ic"></span>'
+          : '<span class="pause-ic"><span></span><span></span></span>');
+      var chip = document.querySelector('[name="BattleHudStatusIndicator"]');
+      if(chip){
+        var dot = chip.querySelector('.dot');
+        var label = chip.querySelector('.label');
+        if(paused){
+          chip.style.borderColor = 'var(--state-warn)';
+          if(dot) dot.style.backgroundColor = 'var(--state-warn)';
+          if(label) label.textContent = '■  일시정지됨';
+        } else {
+          chip.style.borderColor = 'var(--state-info)';
+          if(dot) dot.style.backgroundColor = 'var(--state-info)';
+          if(label) label.textContent = '▶  전투 진행 중';
+        }
+      }
+    });
+  }
+
+  // Header pause button — same effect, different style icon
+  var headerPause = document.querySelector('[name="BattleHudHeaderPauseButton"]');
+  if(headerPause){
+    headerPause.addEventListener('click', function(){
+      headerPause.classList.toggle('is-paused');
+    });
+  }
+
+  // Ally cards — single-selection
+  var allies = document.querySelectorAll('.ally-card');
+  allies.forEach(function(c){
+    c.addEventListener('click', function(){
+      allies.forEach(function(a){ a.classList.remove('is-active'); });
+      c.classList.add('is-active');
+    });
+  });
+
+  // Enemy cards — single-targeting
+  var enemies = document.querySelectorAll('.enemy-card');
+  enemies.forEach(function(c){
+    c.addEventListener('click', function(){
+      enemies.forEach(function(e){ e.classList.remove('is-target'); });
+      c.classList.add('is-target');
+    });
+  });
+
+  /* preview-only scale-to-fit; transform is on the preview wrapper,
+     not on anything inside .hud, so the USS layout is unaffected. */
+  var fit = document.querySelector('.preview-fit');
+  function rescale(){
+    if(!fit) return;
+    var w = window.innerWidth || document.documentElement.clientWidth || 1920;
+    var h = window.innerHeight || document.documentElement.clientHeight || 1080;
+    var s = Math.min(w / 1920, h / 1080);
+    if(!isFinite(s) || s <= 0) s = 1;
+    fit.style.transform = 'scale(' + s + ')';
+    fit.style.width = '1920px';
+    fit.style.height = '1080px';
+  }
+  window.addEventListener('resize', rescale);
+  window.addEventListener('load', rescale);
+  rescale();
+  // re-run a few times to catch late layout
+  setTimeout(rescale, 50);
+  setTimeout(rescale, 250);
+})();
+</script>
+</body>
+</html>
