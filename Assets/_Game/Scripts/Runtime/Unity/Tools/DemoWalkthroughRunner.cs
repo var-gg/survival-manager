@@ -144,6 +144,56 @@ public sealed class DemoWalkthroughRunner : MonoBehaviour
             yield return WaitSeconds(3f);
         }
 
+        // Character Sheet cut — hero face card click → 4 CTA tour (PassiveBoard sub-cut + Refit sub-cut)
+        // → close. cut sheet 1:30-2:00 단계. DemoAlphaWalkTests.Demo_CharacterSheet_4CTA_Bindings_All_Click_Without_Exception
+        // 패턴 reuse — Profile.Heroes.First().HeroId 로 FaceCard_{heroId} 식별.
+        var heroes = sessionRoot.SessionState.Profile.Heroes;
+        if (heroes.Count == 0)
+        {
+            Debug.LogError("[DemoWalkthroughRunner] Profile.Heroes 비어있음 — CharSheet cut skip.");
+        }
+        else
+        {
+            var heroId = heroes[0].HeroId;
+            if (!ClickButtonByName(root, $"FaceCard_{heroId}"))
+            {
+                Debug.LogError($"[DemoWalkthroughRunner] FaceCard_{heroId} click 실패 — CharSheet cut skip.");
+            }
+            else
+            {
+                yield return WaitForVisible(root, "TownCharacterSheetRoot", 4f);
+                Debug.Log("[DemoWalkthroughRunner] CharSheet visible. 8s hold.");
+                yield return WaitSeconds(8f);
+
+                // PassiveBoard sub-cut — TcsPassiveBoardButton → PbpRoot 5s → close
+                if (ClickButtonByName(root, "TcsPassiveBoardButton"))
+                {
+                    yield return WaitForVisible(root, "PbpRoot", 4f);
+                    Debug.Log("[DemoWalkthroughRunner] CharSheet → PassiveBoard visible. 5s hold.");
+                    yield return WaitSeconds(5f);
+                    ClickFirstButtonWithClass(root, "pbp-footer__close");
+                    yield return WaitForHidden(root, "PbpRoot", 3f);
+                    yield return WaitSeconds(2f);
+                }
+
+                // Refit sub-cut — TcsRefitButton → ErpRoot 5s → close
+                if (ClickButtonByName(root, "TcsRefitButton"))
+                {
+                    yield return WaitForVisible(root, "ErpRoot", 4f);
+                    Debug.Log("[DemoWalkthroughRunner] CharSheet → Refit visible. 5s hold.");
+                    yield return WaitSeconds(5f);
+                    ClickFirstButtonWithClass(root, "erp-header__close");
+                    yield return WaitForHidden(root, "ErpRoot", 3f);
+                    yield return WaitSeconds(2f);
+                }
+
+                ClickButtonByName(root, "TownCharacterSheetCloseButton");
+                yield return WaitForHidden(root, "TownCharacterSheetRoot", 3f);
+                Debug.Log("[DemoWalkthroughRunner] CharSheet hidden. 3s hold.");
+                yield return WaitSeconds(3f);
+            }
+        }
+
         Debug.Log("[DemoWalkthroughRunner] Walkthrough complete.");
         OnComplete?.Invoke(true);
     }
