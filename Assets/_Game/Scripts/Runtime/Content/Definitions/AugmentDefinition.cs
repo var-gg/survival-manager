@@ -39,6 +39,7 @@ namespace SM.Content.Definitions
         public int RosterSlotDelta = 0;
         public List<EffectDescriptor> Effects = new();
         public List<SerializableStatModifier> Modifiers = new();
+        public List<TriggeredEffectSpec> TriggeredEffects = new();
 
         [FormerlySerializedAs("DisplayName")]
         [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;

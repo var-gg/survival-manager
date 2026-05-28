@@ -20,6 +20,7 @@ public sealed class LoadoutCompiler
     {
         public List<CombatModifierPackage> NumericPackages { get; } = new();
         public List<CombatRuleModifierPackage> RulePackages { get; } = new();
+        public List<CombatTriggeredEffect> TriggeredEffects { get; } = new();
         public HashSet<string> CompileTags { get; } = new(StringComparer.Ordinal);
         public List<CompileProvenanceEntry> Provenance { get; } = new();
     }
@@ -117,6 +118,11 @@ public sealed class LoadoutCompiler
                 }
 
                 AddRulePackage(augment.RulePackage, artifacts, hero.Id, "augment_temporary_rule");
+                if (augment.TriggeredEffects != null)
+                {
+                    artifacts.TriggeredEffects.AddRange(augment.TriggeredEffects);
+                }
+
                 foreach (var tag in augment.Tags)
                 {
                     artifacts.CompileTags.Add(tag);
@@ -132,6 +138,11 @@ public sealed class LoadoutCompiler
                 }
 
                 AddRulePackage(augment.RulePackage, artifacts, hero.Id, "augment_permanent_rule");
+                if (augment.TriggeredEffects != null)
+                {
+                    artifacts.TriggeredEffects.AddRange(augment.TriggeredEffects);
+                }
+
                 foreach (var tag in augment.Tags)
                 {
                     artifacts.CompileTags.Add(tag);
@@ -251,7 +262,8 @@ public sealed class LoadoutCompiler
                 archetype.Id,
                 hero.CharacterId,
                 roleSelection.Id,
-                dominantHand));
+                dominantHand,
+                artifacts.TriggeredEffects.ToList()));
 
             compileProvenance.AddRange(artifacts.Provenance);
         }
@@ -813,6 +825,23 @@ public sealed class LoadoutCompiler
             {
                 sb.Append("rule:").Append(package.Source).Append(':').Append(package.SourceId).Append(':')
                     .Append(string.Join(",", package.Modifiers.Select(modifier => $"{modifier.Kind}:{modifier.Value}:{modifier.Magnitude.ToString("0.###", CultureInfo.InvariantCulture)}")))
+                    .Append('|');
+            }
+
+            foreach (var trigger in unit.EffectiveTriggeredEffects
+                         .OrderBy(trigger => trigger.SourceId, StringComparer.Ordinal)
+                         .ThenBy(trigger => trigger.Trigger)
+                         .ThenBy(trigger => trigger.Op))
+            {
+                sb.Append("trig:").Append(trigger.SourceId).Append(':')
+                    .Append(trigger.Trigger).Append(':')
+                    .Append(trigger.Op).Append(':')
+                    .Append(trigger.Scope).Append(':')
+                    .Append(trigger.Magnitude.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(trigger.ThresholdRatio.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(trigger.StatusId).Append(':')
+                    .Append(trigger.DurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(trigger.MaxStacks)
                     .Append('|');
             }
         }

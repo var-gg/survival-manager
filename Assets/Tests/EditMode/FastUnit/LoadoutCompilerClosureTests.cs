@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;
 using SM.Meta.Services;
@@ -106,6 +107,43 @@ public sealed class LoadoutCompilerClosureTests
         Assert.That(artifactKinds, Contains.Item("skill_slot"));
         Assert.That(artifactKinds, Contains.Item("team_numeric"));
         Assert.That(snapshot.Provenance.Any(entry => entry.Source == ModifierSource.Synergy && entry.ArtifactKind == "team_numeric"), Is.True);
+    }
+
+    [Test]
+    public void LoadoutCompiler_CarriesAugmentTriggeredEffects_ToLoadout()
+    {
+        var compiler = new LoadoutCompiler();
+        var content = BuildContentSnapshot();
+        var snapshot = CompileSquad(compiler, content, BuildTriggeredAugmentSpec());
+        var warden = snapshot.Allies.Single(ally => ally.Id == "hero.warden");
+
+        Assert.That(
+            warden.EffectiveTriggeredEffects.Any(effect =>
+                effect.SourceId == "augment.trig"
+                && effect.Trigger == CombatTriggerKind.BattleStart
+                && effect.Op == TriggeredEffectOp.Barrier),
+            Is.True,
+            "Augment triggered effect should be carried into the compiled BattleUnitLoadout");
+    }
+
+    private static SquadSpec BuildTriggeredAugmentSpec()
+    {
+        return new SquadSpec(
+            "triggered-augment",
+            "team_tactic_standard_advance",
+            new[] { "augment.trig" },
+            Array.Empty<string>(),
+            new[]
+            {
+                new HeroSpec(
+                    "hero.warden",
+                    "warden",
+                    DeploymentAnchorId.FrontCenter,
+                    "anchor",
+                    new[] { "node.vanguard.small" },
+                    new[] { "item.shield" },
+                    new[] { "affix.attack_alias" }),
+            });
     }
 
     private static BattleLoadoutSnapshot CompileSquad(LoadoutCompiler compiler, CombatContentSnapshot content, SquadSpec spec)
@@ -401,6 +439,14 @@ public sealed class LoadoutCompilerClosureTests
                 {
                     new StatModifier(StatKey.MaxHealth, ModifierOp.Flat, 2f, ModifierSource.Augment, "augment.perm"),
                 })),
+                ["augment.trig"] = new AugmentCatalogEntry(
+                    "augment.trig", "combat", "trig_family", 2, false, false,
+                    Array.Empty<string>(), Array.Empty<string>(),
+                    new CombatModifierPackage("augment.trig", ModifierSource.Augment, Array.Empty<StatModifier>()),
+                    TriggeredEffects: new[]
+                    {
+                        new CombatTriggeredEffect("augment.trig", CombatTriggerKind.BattleStart, TriggeredEffectOp.Barrier, EffectScope.Self, Magnitude: 12f),
+                    }),
             },
             new Dictionary<string, SynergyTierTemplate>(StringComparer.Ordinal)
             {

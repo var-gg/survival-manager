@@ -93,7 +93,30 @@ internal static class CatalogEntryConverter
             Enumerate(definition.MutualExclusionTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             ModifierPackageConverter.BuildAugmentPackage(definition),
             BuildRulePackage(definition.Id, ModifierSource.Augment, definition.RuleModifierTags),
-            BuildGovernanceSummary(definition.BudgetCard));
+            BuildGovernanceSummary(definition.BudgetCard),
+            BuildTriggeredEffects(definition));
+    }
+
+    private static IReadOnlyList<CombatTriggeredEffect>? BuildTriggeredEffects(AugmentDefinition definition)
+    {
+        if (definition.TriggeredEffects == null || definition.TriggeredEffects.Count == 0)
+        {
+            return null;
+        }
+
+        return definition.TriggeredEffects
+            .Where(spec => spec != null)
+            .Select(spec => new CombatTriggeredEffect(
+                definition.Id,
+                spec.Trigger,
+                spec.Op,
+                spec.Scope,
+                spec.Magnitude,
+                spec.ThresholdRatio,
+                spec.StatusId ?? string.Empty,
+                spec.DurationSeconds,
+                spec.MaxStacks <= 0 ? 1 : spec.MaxStacks))
+            .ToList();
     }
 
     internal static IEnumerable<SynergyTierTemplate> BuildSynergyTemplates(SynergyDefinition definition)

@@ -110,7 +110,8 @@ public sealed record AugmentCatalogEntry(
     IReadOnlyList<string> MutualExclusionTags,
     CombatModifierPackage Package,
     CombatRuleModifierPackage? RulePackage = null,
-    ContentGovernanceSummary? Governance = null);
+    ContentGovernanceSummary? Governance = null,
+    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null);
 
 public sealed record SynergyTierTemplate(
     string Id,
