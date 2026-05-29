@@ -554,16 +554,13 @@ internal sealed class AugmentSchemaRule : DefinitionSchemaRule<AugmentDefinition
                     break;
                 case TriggeredEffectOp.Heal:
                 case TriggeredEffectOp.Barrier:
+                case TriggeredEffectOp.GainEnergy:
                     if (effect.Magnitude <= 0f)
                     {
                         ContentValidationIssueFactory.AddError(issues, "augment.trigger_magnitude",
                             $"{label} {effect.Op} requires Magnitude greater than 0 (otherwise it is a no-op).", assetPath);
                     }
 
-                    break;
-                case TriggeredEffectOp.GainEnergy:
-                    ContentValidationIssueFactory.AddError(issues, "augment.trigger_op_unimplemented",
-                        $"{label} GainEnergy is not wired in CombatTriggerEngine yet (no-op). Do not author it until the engine implements it.", assetPath);
                     break;
             }
 

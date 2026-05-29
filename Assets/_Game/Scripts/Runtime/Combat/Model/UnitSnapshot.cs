@@ -668,7 +668,8 @@ public sealed class UnitSnapshot
         return Math.Max(0.1f, 1f - slowMagnitude);
     }
 
-    private void GainEnergy(float amount)
+    // public: 기본공격/피격/처치 내부 경로 + 증강 트리거(GainEnergy op)의 범용 에너지 부여 공용 연산.
+    public void GainEnergy(float amount)
     {
         if (amount <= 0f || MaxEnergy <= 0f)
         {

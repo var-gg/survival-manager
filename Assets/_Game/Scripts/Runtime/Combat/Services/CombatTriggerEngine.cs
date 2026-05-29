@@ -103,7 +103,7 @@ public static class CombatTriggerEngine
                     target.AddBarrier(effect.Magnitude);
                     break;
                 case TriggeredEffectOp.GainEnergy:
-                    // Inc 2 예정: 범용 에너지 부여 public 연산 추가 후 연결.
+                    target.GainEnergy(effect.Magnitude);
                     break;
             }
         }

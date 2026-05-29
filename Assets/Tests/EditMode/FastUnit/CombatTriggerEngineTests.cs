@@ -144,4 +144,20 @@ public sealed class CombatTriggerEngineTests
         Assert.That(ally.Barrier, Is.EqualTo(20f),
             "BattleSimulator construction should fire BattleStart triggers through the engine hook");
     }
+
+    [Test]
+    public void BattleStart_GainEnergy_RaisesSelfEnergy()
+    {
+        var effect = new CombatTriggeredEffect(
+            "aug_test_charge", CombatTriggerKind.BattleStart, TriggeredEffectOp.GainEnergy,
+            EffectScope.Self, Magnitude: 25f);
+        var unit = CreateUnit("ally_charge", TeamSide.Ally, new[] { effect });
+        var enemy = CreateUnit("enemy_1", TeamSide.Enemy);
+        var state = CreateState(new[] { unit }, new[] { enemy });
+        var before = unit.CurrentEnergy;
+
+        CombatTriggerEngine.OnBattleStart(state);
+
+        Assert.That(unit.CurrentEnergy, Is.GreaterThan(before), "BattleStart GainEnergy should raise self energy");
+    }
 }

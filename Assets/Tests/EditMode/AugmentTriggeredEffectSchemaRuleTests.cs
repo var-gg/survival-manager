@@ -67,7 +67,7 @@ public sealed class AugmentTriggeredEffectSchemaRuleTests
     }
 
     [Test]
-    public void Flags_GainEnergy_AsUnimplemented()
+    public void Accepts_GainEnergy_WithPositiveMagnitude()
     {
         var codes = ValidateCodes(BuildAugment(new TriggeredEffectSpec
         {
@@ -77,7 +77,21 @@ public sealed class AugmentTriggeredEffectSchemaRuleTests
             Magnitude = 10f,
         }));
 
-        Assert.That(codes, Contains.Item("augment.trigger_op_unimplemented"));
+        Assert.That(codes.Where(code => code.StartsWith("augment.trigger")), Is.Empty, "GainEnergy is now wired — positive magnitude must be accepted");
+    }
+
+    [Test]
+    public void Flags_GainEnergy_WithNonPositiveMagnitude()
+    {
+        var codes = ValidateCodes(BuildAugment(new TriggeredEffectSpec
+        {
+            Trigger = CombatTriggerKind.OnKill,
+            Op = TriggeredEffectOp.GainEnergy,
+            Scope = EffectScope.Self,
+            Magnitude = 0f,
+        }));
+
+        Assert.That(codes, Contains.Item("augment.trigger_magnitude"));
     }
 
     [Test]
