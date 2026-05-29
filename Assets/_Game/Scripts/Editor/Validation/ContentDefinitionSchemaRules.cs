@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using UnityEngine;
 
 namespace SM.Editor.Validation;
@@ -496,7 +497,82 @@ internal sealed class AugmentSchemaRule : DefinitionSchemaRule<AugmentDefinition
             ContentValidationIssueFactory.AddError(issues, "augment.mutual_exclusion", "Augment has duplicate mutual exclusion tags.", assetPath);
         }
 
+        ValidateTriggeredEffects(augment, assetPath, issues);
         LoopAContractValidator.ValidateAugment(augment, assetPath, issues);
+    }
+
+    // wave-augment-depth ⑤ — ① 이 추가한 authored TriggeredEffects surface 를 CombatTriggerEngine 의 실제
+    // 지원 범위에 맞춰 lint 한다. 엔진이 조용히 무시/no-op 하는 authoring 실수(미지원 scope, 미구현 op,
+    // 빈 StatusId, no-op magnitude, 범위 밖 threshold)를 콘텐츠 단계에서 잡는다.
+    private static void ValidateTriggeredEffects(
+        AugmentDefinition augment,
+        string assetPath,
+        ICollection<ContentValidationIssue> issues)
+    {
+        if (augment.TriggeredEffects == null)
+        {
+            return;
+        }
+
+        for (var index = 0; index < augment.TriggeredEffects.Count; index++)
+        {
+            var effect = augment.TriggeredEffects[index];
+            if (effect == null)
+            {
+                ContentValidationIssueFactory.AddError(issues, "augment.trigger_null", $"Augment TriggeredEffects[{index}] is null.", assetPath);
+                continue;
+            }
+
+            var label = $"Augment TriggeredEffects[{index}]";
+            ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(effect.Trigger, $"{label} trigger", assetPath, issues);
+            ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(effect.Op, $"{label} op", assetPath, issues);
+            ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(effect.Scope, $"{label} scope", assetPath, issues);
+
+            // CombatTriggerEngine.ResolveTargets 가 실제 처리하는 scope 만 허용. 그 외(GroundArea/GlobalCombat 등)는
+            // ResolveTargets default → Self 로 조용히 처리되어 author 의도와 어긋난다.
+            if (effect.Scope is not (EffectScope.Self or EffectScope.CurrentTarget or EffectScope.AlliedCombatants or EffectScope.EnemyCombatants))
+            {
+                ContentValidationIssueFactory.AddError(issues, "augment.trigger_scope_unsupported",
+                    $"{label} scope '{effect.Scope}' is not handled by CombatTriggerEngine (silently treated as Self). Use Self, CurrentTarget, AlliedCombatants, or EnemyCombatants.", assetPath);
+            }
+
+            switch (effect.Op)
+            {
+                case TriggeredEffectOp.ApplyStatus:
+                    if (string.IsNullOrWhiteSpace(effect.StatusId))
+                    {
+                        ContentValidationIssueFactory.AddError(issues, "augment.trigger_status_id",
+                            $"{label} ApplyStatus requires a non-empty StatusId (an empty StatusId is silently skipped by the engine).", assetPath);
+                    }
+
+                    if (effect.DurationSeconds <= 0f)
+                    {
+                        ContentValidationIssueFactory.AddError(issues, "augment.trigger_status_duration",
+                            $"{label} ApplyStatus requires DurationSeconds greater than 0.", assetPath);
+                    }
+
+                    break;
+                case TriggeredEffectOp.Heal:
+                case TriggeredEffectOp.Barrier:
+                    if (effect.Magnitude <= 0f)
+                    {
+                        ContentValidationIssueFactory.AddError(issues, "augment.trigger_magnitude",
+                            $"{label} {effect.Op} requires Magnitude greater than 0 (otherwise it is a no-op).", assetPath);
+                    }
+
+                    break;
+                case TriggeredEffectOp.GainEnergy:
+                    ContentValidationIssueFactory.AddError(issues, "augment.trigger_op_unimplemented",
+                        $"{label} GainEnergy is not wired in CombatTriggerEngine yet (no-op). Do not author it until the engine implements it.", assetPath);
+                    break;
+            }
+
+            if (effect.Trigger == CombatTriggerKind.OnHpBelow && (effect.ThresholdRatio <= 0f || effect.ThresholdRatio > 1f))
+            {
+                ContentValidationIssueFactory.AddError(issues, "augment.trigger_threshold",
+                    $"{label} OnHpBelow requires ThresholdRatio in the range (0, 1].", assetPath);
+            }
+        }
     }
 }
 
