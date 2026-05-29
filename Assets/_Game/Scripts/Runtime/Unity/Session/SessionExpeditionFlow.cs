@@ -533,7 +533,7 @@ public sealed partial class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.fallback_stash.title", "ui.reward.choice.fallback_stash.desc", 3, 0, 0, "reward.gold.fallback.3"),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, "reward.echo.fallback.1"),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(0, "augment_gold_pack"))
+                BuildTemporaryAugmentChoice(0, "augment_gold_pack")
             };
         }
 
@@ -543,7 +543,7 @@ public sealed partial class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 5, 0, 0, "reward.gold.quick.5"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_barrage"))
+                BuildTemporaryAugmentChoice(1, "augment_gold_barrage")
             };
         }
 
@@ -563,12 +563,12 @@ public sealed partial class GameSessionState
             "relay-route" => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.field_kit.title", "ui.reward.choice.field_kit.desc", 0, 0, 0, ResolveRewardItemId(2)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.anchor_beat.title", "ui.reward.choice.anchor_beat.desc", 0, 0, 0, ResolveRewardAugmentId(2, "augment_gold_pact")),
+                BuildTemporaryAugmentChoice(2, "augment_gold_pact"),
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.relay_pouch.title", "ui.reward.choice.relay_pouch.desc", 6, 0, 0, "reward.gold.relay.6")
             },
             "shrine-route" => new[]
             {
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(3, "augment_platinum_catacomb")),
+                BuildTemporaryAugmentChoice(3, "augment_platinum_catacomb"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.sigil_core.title", "ui.reward.choice.sigil_core.desc", 0, 0, 0, ResolveRewardItemId(3)),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, "reward.echo.shrine.2")
             },
@@ -576,9 +576,24 @@ public sealed partial class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 5, 0, 0, "reward.gold.default.5"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_barrage"))
+                BuildTemporaryAugmentChoice(1, "augment_gold_barrage")
             }
         };
+    }
+
+    // reward 카드가 실제 granted augment 의 이름/설명을 보이도록 — 동적 선택(ResolveRewardAugmentId) + augment 이름 키.
+    // 이전엔 generic flavor title("Aggro Spark")이라 카드와 실제 augment 가 어긋났다(payload 동적화로 그 어긋남이 커짐).
+    private RewardChoiceViewModel BuildTemporaryAugmentChoice(int index, params string[] preferredFallbackIds)
+    {
+        var augmentId = ResolveRewardAugmentId(index, preferredFallbackIds);
+        return new RewardChoiceViewModel(
+            RewardChoiceKind.TemporaryAugment,
+            ContentLocalizationTables.BuildAugmentNameKey(augmentId),
+            ContentLocalizationTables.BuildAugmentDescriptionKey(augmentId),
+            0,
+            0,
+            0,
+            augmentId);
     }
 
     private SessionTextToken ApplyExpeditionNodeEffect(ExpeditionNodeViewModel node)
@@ -1039,17 +1054,17 @@ public sealed partial class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 5, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(0, "augment_gold_barrage"))
+                BuildTemporaryAugmentChoice(0, "augment_gold_barrage")
             },
             RewardSourceKindValue.Elite => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.field_kit.title", "ui.reward.choice.field_kit.desc", 0, 0, 0, ResolveRewardItemId(1)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.anchor_beat.title", "ui.reward.choice.anchor_beat.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_pact")),
+                BuildTemporaryAugmentChoice(1, "augment_gold_pact"),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, $"reward.{sourceId}.echo")
             },
             RewardSourceKindValue.Boss => new[]
             {
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.guard_spark.title", "ui.reward.choice.guard_spark.desc", 0, 0, 0, ResolveRewardAugmentId(2, "augment_platinum_catacomb")),
+                BuildTemporaryAugmentChoice(2, "augment_platinum_catacomb"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.sigil_core.title", "ui.reward.choice.sigil_core.desc", 0, 0, 0, ResolveRewardItemId(2)),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, $"reward.{sourceId}.echo")
             },
@@ -1063,7 +1078,7 @@ public sealed partial class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 4, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                new RewardChoiceViewModel(RewardChoiceKind.TemporaryAugment, "ui.reward.choice.aggro_spark.title", "ui.reward.choice.aggro_spark.desc", 0, 0, 0, ResolveRewardAugmentId(1, "augment_gold_barrage"))
+                BuildTemporaryAugmentChoice(1, "augment_gold_barrage")
             }
         };
         return true;
