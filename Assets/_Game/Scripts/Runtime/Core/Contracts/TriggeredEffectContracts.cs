@@ -15,6 +15,9 @@ public enum CombatTriggerKind
 
     /// <summary>소유 유닛 체력이 임계 비율(ThresholdRatio) 이하로 처음 떨어졌을 때 — 전투당 1회 latch.</summary>
     OnHpBelow = 2,
+
+    /// <summary>같은 팀의 다른 유닛이 쓰러졌을 때 — 생존 아군이 발동(사망마다).</summary>
+    OnAllyDeath = 3,
 }
 
 /// <summary>

@@ -180,6 +180,12 @@ public sealed class BattleSimulator
             {
                 CombatTriggerEngine.OnKill(State, killer);
             }
+
+            if (resolvedEvent.KillPayload?.ActualVictim is { } victimId
+                && State.FindUnit(victimId) is { } victim)
+            {
+                CombatTriggerEngine.OnAllyDeath(State, victim);
+            }
         }
 
         CombatTriggerEngine.OnPostStep(State);

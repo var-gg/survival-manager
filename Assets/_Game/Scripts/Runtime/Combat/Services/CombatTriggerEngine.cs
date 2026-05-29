@@ -37,6 +37,20 @@ public static class CombatTriggerEngine
         FireTriggers(state, killer, CombatTriggerKind.OnKill);
     }
 
+    /// <summary>사망 hook — 쓰러진 victim 의 생존 아군이 OnAllyDeath 트리거를 발동(같은 팀 한정, 사망마다).</summary>
+    public static void OnAllyDeath(BattleState state, UnitSnapshot victim)
+    {
+        foreach (var unit in state.AllUnits)
+        {
+            if (!unit.IsAlive || unit.Side != victim.Side)
+            {
+                continue;
+            }
+
+            FireTriggers(state, unit, CombatTriggerKind.OnAllyDeath);
+        }
+    }
+
     /// <summary>스텝 종료 hook — 체력이 임계 이하로 떨어진 유닛의 OnHpBelow 트리거(전투당 1회) 발동.</summary>
     public static void OnPostStep(BattleState state)
     {

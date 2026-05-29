@@ -160,4 +160,24 @@ public sealed class CombatTriggerEngineTests
 
         Assert.That(unit.CurrentEnergy, Is.GreaterThan(before), "BattleStart GainEnergy should raise self energy");
     }
+
+    [Test]
+    public void OnAllyDeath_FiresForSurvivingAlly_NotEnemies()
+    {
+        var effect = new CombatTriggeredEffect(
+            "aug_test_vengeance", CombatTriggerKind.OnAllyDeath, TriggeredEffectOp.Barrier,
+            EffectScope.Self, Magnitude: 30f);
+        var survivor = CreateUnit("ally_survivor", TeamSide.Ally, new[] { effect });
+        var fallen = CreateUnit("ally_fallen", TeamSide.Ally);
+        var enemy = CreateUnit("enemy_vengeance", TeamSide.Enemy, new[] { effect });
+        var state = CreateState(new[] { survivor, fallen }, new[] { enemy });
+
+        fallen.TakeDamage(fallen.CurrentHealth + 10f);
+        Assert.That(fallen.IsAlive, Is.False, "Precondition: ally has fallen");
+
+        CombatTriggerEngine.OnAllyDeath(state, fallen);
+
+        Assert.That(survivor.Barrier, Is.EqualTo(30f), "Surviving ally with OnAllyDeath should react to the fallen ally");
+        Assert.That(enemy.Barrier, Is.EqualTo(0f), "Enemy must NOT react to the opposing team's death");
+    }
 }
