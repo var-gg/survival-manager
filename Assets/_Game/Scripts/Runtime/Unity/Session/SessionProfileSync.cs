@@ -315,8 +315,17 @@ public sealed partial class GameSessionState
         return archetype.Id;
     }
 
+    private const int DynamicOfferPoolSize = 6;
+
     private string ResolveRewardAugmentId(int index, params string[] preferredAugmentIds)
     {
+        // 동적 build-aware offer(AugmentOfferService) 우선. 실패하면 preferred/canonical fallback 으로 데모 안전성 유지.
+        var dynamicId = ResolveDynamicOfferAugmentId(index);
+        if (!string.IsNullOrWhiteSpace(dynamicId))
+        {
+            return dynamicId;
+        }
+
         foreach (var preferredAugmentId in preferredAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)))
         {
             if (_combatContentLookup.TryGetAugmentDefinition(preferredAugmentId, out var augment) && !augment.IsPermanent)
@@ -326,6 +335,61 @@ public sealed partial class GameSessionState
         }
 
         return _combatContentLookup.NormalizeTemporaryAugmentId(string.Empty, index);
+    }
+
+    // AugmentOfferService 로 현재 build 와 어울리는 temporary augment 를 점수 기반 선택한다. canonical temporary 집합
+    // 안에서만 고르므로 reward payload 계약(GetCanonicalTemporaryAugmentIds 멤버십)이 유지된다. index 로 슬롯별 다른 후보.
+    private string ResolveDynamicOfferAugmentId(int index)
+    {
+        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            || snapshot.AugmentCatalog is not { Count: > 0 } catalog)
+        {
+            return string.Empty;
+        }
+
+        var canonicalTemporary = new HashSet<string>(_combatContentLookup.GetCanonicalTemporaryAugmentIds(), StringComparer.Ordinal);
+        var temporaryCatalog = catalog
+            .Where(pair => canonicalTemporary.Contains(pair.Key) && pair.Value is { IsPermanent: false })
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        if (temporaryCatalog.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var permanentEquipped = (IReadOnlyCollection<string>?)Profile.UnlockedPermanentAugmentIds ?? Array.Empty<string>();
+        var offer = AugmentOfferService.BuildOffer(temporaryCatalog, ResolveActiveBuildTags(), permanentEquipped, DynamicOfferPoolSize);
+        if (offer.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var slot = ((index % offer.Count) + offer.Count) % offer.Count;
+        return offer[slot].Id;
+    }
+
+    // 현재 run 에 장착된 temporary augment 의 태그를 build 신호로 노출 → offer 가 빌드와 어울리는 augment 를 더 높게 점수화.
+    private IReadOnlyCollection<string> ResolveActiveBuildTags()
+    {
+        if (ActiveRun?.Overlay.TemporaryAugmentIds is not { Count: > 0 } activeAugmentIds
+            || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            || snapshot.AugmentCatalog is not { Count: > 0 } catalog)
+        {
+            return Array.Empty<string>();
+        }
+
+        var tags = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var augmentId in activeAugmentIds)
+        {
+            if (catalog.TryGetValue(augmentId, out var entry))
+            {
+                foreach (var tag in entry.Tags)
+                {
+                    tags.Add(tag);
+                }
+            }
+        }
+
+        return tags;
     }
 
     private string ResolvePendingPermanentUnlockId(string temporaryAugmentId)
