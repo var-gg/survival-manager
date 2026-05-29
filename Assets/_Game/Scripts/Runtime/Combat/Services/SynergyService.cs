@@ -14,6 +14,8 @@ public static class SynergyService
             .Where(unit => unit.EntityKind == SM.Core.Contracts.CombatEntityKind.RosterUnit)
             .ToList();
 
+        // V1 권위 breakpoint: 세력(race) 2/4 · 직업(class) 2/3 (wiki-combat-v1-index / project_v1_system_authority).
+        // 이 폴백은 authored 시너지 tier rule 이 없을 때만 쓰이는 안전망이지만 V1 티어와 일치해야 한다.
         foreach (var raceGroup in materialized.GroupBy(x => x.RaceId))
         {
             var count = raceGroup.Count();
@@ -22,7 +24,7 @@ public static class SynergyService
                 list.Add(new CombatModifierPackage(
                     $"race:{raceGroup.Key}:{count}",
                     ModifierSource.Synergy,
-                    new[] { new StatModifier(StatKey.PhysPower, ModifierOp.Flat, count >= 3 ? 4f : 2f, ModifierSource.Synergy, $"race:{raceGroup.Key}:{count}") }));
+                    new[] { new StatModifier(StatKey.PhysPower, ModifierOp.Flat, count >= 4 ? 4f : 2f, ModifierSource.Synergy, $"race:{raceGroup.Key}:{count}") }));
             }
         }
 
@@ -34,7 +36,7 @@ public static class SynergyService
                 list.Add(new CombatModifierPackage(
                     $"class:{classGroup.Key}:{count}",
                     ModifierSource.Synergy,
-                    new[] { new StatModifier(StatKey.Armor, ModifierOp.Flat, count >= 4 ? 4f : 2f, ModifierSource.Synergy, $"class:{classGroup.Key}:{count}") }));
+                    new[] { new StatModifier(StatKey.Armor, ModifierOp.Flat, count >= 3 ? 4f : 2f, ModifierSource.Synergy, $"class:{classGroup.Key}:{count}") }));
             }
         }
 
