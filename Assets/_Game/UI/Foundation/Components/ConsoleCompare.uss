@@ -113,9 +113,10 @@
     border-top-left-radius: var(--sm-r-sm);
     border-bottom-left-radius: var(--sm-r-sm);
 }
-.cc-fill--hp { background-color: var(--sm-fam-striker); }
-.cc-fill--energy { background-color: var(--sm-fam-vanguard); }
-.cc-fill--xp { background-color: var(--sm-gold-300); }
+/* console 측은 .sm-fx-gloss(디스크 PNG, white 템플릿)에 바 색을 tint 로 입혀 광택. flat 측은 bg-color 만. */
+.cc-fill--hp { background-color: var(--sm-fam-striker); -unity-background-image-tint-color: var(--sm-fam-striker); }
+.cc-fill--energy { background-color: var(--sm-fam-vanguard); -unity-background-image-tint-color: var(--sm-fam-vanguard); }
+.cc-fill--xp { background-color: var(--sm-gold-300); -unity-background-image-tint-color: var(--sm-gold-300); }
 
 .cc-slot-row {
     flex-direction: row;
@@ -130,13 +131,14 @@
     justify-content: center;
     margin-right: 18px;
 }
-/* console 슬롯 glow halo (절차적 radial PNG) */
+/* console 슬롯 glow halo — .sm-fx-glow(디스크 PNG)에 gold tint */
 .cc-glow {
     position: absolute;
     left: -20px;
     right: -20px;
     top: -20px;
     bottom: -20px;
+    -unity-background-image-tint-color: var(--sm-gold-200);
 }
 .cc-slot {
     width: 76px;

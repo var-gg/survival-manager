@@ -26,15 +26,16 @@
             <ui:VisualElement class="cc-col">
                 <ui:Label class="cc-col__label cc-col__label--console" text="CONSOLE · USS + baked PNG (gloss / glow / depth)" />
                 <ui:VisualElement class="cc-panel">
-                    <ui:VisualElement class="cc-depth" name="cpanel_depth" picking-mode="Ignore" />
+                    <ui:VisualElement class="cc-depth sm-fx-depth" picking-mode="Ignore" />
+                    <ui:VisualElement class="sm-fx-overlay sm-fx-bevel" picking-mode="Ignore" />
                     <ui:Label class="cc-sec" text="STAT BAR" />
-                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="HP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--hp" name="cbar_hp" style="width: 80%;" /></ui:VisualElement></ui:VisualElement>
-                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="EN" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--energy" name="cbar_energy" style="width: 55%;" /></ui:VisualElement></ui:VisualElement>
-                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="XP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--xp" name="cbar_xp" style="width: 35%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="HP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--hp sm-fx-gloss" style="width: 80%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="EN" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--energy sm-fx-gloss" style="width: 55%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="XP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--xp sm-fx-gloss" style="width: 35%;" /></ui:VisualElement></ui:VisualElement>
                     <ui:Label class="cc-sec" text="ITEM SLOT + CTA" />
                     <ui:VisualElement class="cc-slot-row">
                         <ui:VisualElement class="cc-slot-host">
-                            <ui:VisualElement class="cc-glow" name="cslot_glow" picking-mode="Ignore" />
+                            <ui:VisualElement class="cc-glow sm-fx-glow" picking-mode="Ignore" />
                             <ui:VisualElement class="cc-slot"><ui:VisualElement class="cc-slot__icon" /></ui:VisualElement>
                         </ui:VisualElement>
                         <ui:Button class="sm-cta sm-cta--primary sm-cta--lg" text="장착" />

@@ -1321,3 +1321,50 @@
 .sm-select-snap:active {
     scale: 0.95 0.95;
 }
+
+/* =============================================================
+   FX CHROME — 절차적 생성 PNG 스킨 (gloss / glow / depth / bevel / grain).
+   USS 가 네이티브로 못 하는 콘솔 질감을 background-image(9-slice/stretch)로 우회한다.
+   원본: ProceduralChromeLibrary → Sprites/ArtBible/Chrome/*. white 템플릿이라
+   -unity-background-image-tint-color 로 색을 입힌다. 보통 absolute-fill overlay 자식
+   (picking-mode Ignore)으로 패널/슬롯 위에 얹고, gloss 는 bar fill 자체에 적용한다.
+
+   사용 예:
+     <ve class="my-panel">
+       <ve class="sm-fx-overlay sm-fx-depth" picking-mode="Ignore" />   // 상단광/하단셰이드
+       <ve class="sm-fx-overlay sm-fx-bevel" picking-mode="Ignore" />   // raised 베벨 엣지
+       ...content...
+     </ve>
+     <ve class="my-bar-fill sm-fx-gloss" style="..."/>                  // 광택 (tint=바 색)
+   ============================================================= */
+.sm-fx-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+.sm-fx-depth {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Chrome/chrome_panel_depth.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.sm-fx-bevel {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Chrome/chrome_panel_bevel.png");
+    -unity-slice-left: 20;
+    -unity-slice-right: 20;
+    -unity-slice-top: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-scale: 0.5;
+}
+.sm-fx-parchment {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Chrome/chrome_parchment.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.sm-fx-glow {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Chrome/chrome_glow_radial.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.sm-fx-gloss {
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Chrome/chrome_bar_gloss.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
