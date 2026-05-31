@@ -89,3 +89,7 @@ tools/raw-wiki/
 # dev 캡처 산출물
 /Screenshots/mockups/uss_atom_gallery.png
 /Screenshots/mockups/console_compare.png
+
+# === 캐릭터/생성 아트 (무거움) — 로컬 PC 관리. GitHub 은 소스코드 공유용 ===
+/Assets/Resources/_Game/Art/
+/Assets/Resources/_Game/Art.meta
