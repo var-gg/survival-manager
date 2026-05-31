@@ -70,3 +70,22 @@ art-pipeline/**/__pycache__/
 
 # Narrative wiki dump — SoT는 pindoc, raw-wiki는 재생성 가능한 중간 산출물
 tools/raw-wiki/
+
+# === 대용량 서드파티 Asset Store 팩 — git 추적 제외 (로컬 disk 유지, Asset Store 재import) ===
+/Assets/Allsky/
+/Assets/Allsky.meta
+/Assets/Epic Toon FX/
+/Assets/Epic Toon FX.meta
+/Assets/Kevin Iglesias/
+/Assets/Kevin Iglesias.meta
+/Assets/TriForge Assets/
+/Assets/TriForge Assets.meta
+/Assets/P09_Modular_Humanoid/
+/Assets/P09_Modular_Humanoid.meta
+/Assets/Quibli/
+/Assets/Quibli.meta
+/Assets/MagicaCloth2/
+/Assets/MagicaCloth2.meta
+# dev 캡처 산출물
+/Screenshots/mockups/uss_atom_gallery.png
+/Screenshots/mockups/console_compare.png
