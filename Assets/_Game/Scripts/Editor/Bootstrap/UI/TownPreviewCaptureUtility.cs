@@ -39,6 +39,10 @@ public static class TownPreviewCaptureUtility
     private static readonly (Action<VisualElement> Build, string FileName) ConsoleCompareTarget =
         (r => Make<ConsoleComparePreviewBootstrap>(b => b.BuildInto(r)), "console_compare");
 
+    // 디자인시스템 이식 검증용 단독 캡처 (production EquipmentRefit 패널).
+    private static readonly (Action<VisualElement> Build, string FileName) EquipmentRefitSingleTarget =
+        (r => Make<EquipmentRefitPreviewBootstrap>(b => b.BuildInto(r)), "equipment_refit");
+
     private static readonly (Action<VisualElement> Build, string FileName)[] AllTargets =
     {
         (r => Make<TownRosterGridPreviewBootstrap>(b => b.BuildInto(r)),   "roster_grid"),
@@ -160,6 +164,12 @@ public static class TownPreviewCaptureUtility
     public static void CaptureConsoleCompare()
     {
         StartCapture(new[] { ConsoleCompareTarget });
+    }
+
+    [MenuItem("SM/Town/Capture Equipment Refit", false, 9)]
+    public static void CaptureEquipmentRefit()
+    {
+        StartCapture(new[] { EquipmentRefitSingleTarget });
     }
 
     [MenuItem("SM/Town/▶ Preview 도감 PlayMode 캡쳐", false, 6)]

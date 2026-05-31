@@ -16,7 +16,8 @@ namespace SM.Editor.Bootstrap.UI;
 /// </summary>
 public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
 {
-    private const string VisualTreePath = "Assets/_Game/UI/Screens/Town/Preview/EquipmentRefitPreview.uxml";
+    // 디자인시스템 이식: preview 중복 UXML 대신 production 패널 UXML 을 직접 렌더 → 캡처 = 실제 게임 패널 (divergence 해소).
+    private const string VisualTreePath = "Assets/_Game/UI/Panels/EquipmentRefit/EquipmentRefit.uxml";
     private const string ThemeTokensPath = "Assets/_Game/UI/Foundation/Styles/ThemeTokens.uss";
     private const string RuntimePanelThemePath = "Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss";
 

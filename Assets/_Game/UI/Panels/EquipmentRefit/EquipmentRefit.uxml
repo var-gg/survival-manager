@@ -13,7 +13,12 @@
         <ui:VisualElement class="erp-backdrop-dim" picking-mode="Ignore" />
 
         <ui:VisualElement class="erp-frame sm-modal-anim">
-            <!-- wave-39 chrome cleanup: ceremony frame + texture + corner caps 제거 (책임 매트릭스 §6 chrome budget) -->
+            <!-- 디자인시스템 이식: 콘솔 chrome 복원 — 절차적 depth(.sm-fx-depth) + 금색 코너 ornament -->
+            <ui:VisualElement class="sm-fx-overlay sm-fx-depth" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="erp-header">
                 <ui:Label class="erp-header__title" text="장비 — REFIT" />

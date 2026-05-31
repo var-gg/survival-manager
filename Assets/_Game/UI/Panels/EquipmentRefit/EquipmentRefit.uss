@@ -16,8 +16,8 @@
 .erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12, 17, 38, 0.78); }
 /* wave-41: dim 0.32 -> 0.78. Town hub UI가 backdrop edge로 새던 z-order 이슈 해소. */
 
-/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
-.erp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
+/* Modal frame — position absolute (코너 cap 앵커 + inset 정합). chrome = outer frame PNG + 코너 ornament + sm-fx-depth. */
+.erp-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
 .erp-header {
     flex-direction: row; align-items: center; justify-content: space-between;
