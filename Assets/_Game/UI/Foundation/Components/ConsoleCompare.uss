@@ -1,0 +1,182 @@
+/* =============================================================
+   FLAT(web) vs CONSOLE 비교 — 동일 USS 레이아웃에 baked PNG chrome 유무만 차이.
+   콘솔 질감(gloss/glow/depth) PNG 는 ConsoleComparePreviewBootstrap 가 C# 에서
+   절차적으로 구워 background-image 로 입힌다 (image-gen 의존 X). dev 전용.
+   ============================================================= */
+
+.cc-root {
+    flex-grow: 1;
+    background-color: var(--sm-bg-0);
+    -unity-font-definition: url("project://database/Assets/ThirdParty/Fonts/NotoSansCJK/NotoSansCJKkr-Regular.otf");
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.cc-title {
+    font-size: 23px;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+.cc-sub {
+    font-size: 12px;
+    color: var(--sm-ink-3);
+    margin-bottom: 22px;
+}
+.cc-cols {
+    flex-direction: row;
+}
+.cc-col {
+    width: 540px;
+    margin-left: 14px;
+    margin-right: 14px;
+    align-items: stretch;
+}
+.cc-col__label {
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    -unity-text-align: middle-center;
+}
+.cc-col__label--flat { color: var(--sm-ink-2); }
+.cc-col__label--console { color: var(--sm-gold-200); }
+
+.cc-panel {
+    position: relative;
+    overflow: hidden;
+    padding: 22px 24px;
+    background-color: var(--sm-frame-ceremony-bg);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+/* console 패널 depth overlay (절차적 PNG, 상단 라이트 + 하단 셰이드) */
+.cc-depth {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.cc-sec {
+    font-size: 10px;
+    color: var(--sm-gold-300);
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    margin-top: 6px;
+    margin-bottom: 9px;
+}
+
+.cc-bar-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.cc-bar-cap {
+    width: 36px;
+    font-size: 11px;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+}
+.cc-bar {
+    flex-grow: 1;
+    height: 17px;
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    overflow: hidden;
+}
+.cc-fill {
+    height: 100%;
+    border-top-left-radius: var(--sm-r-sm);
+    border-bottom-left-radius: var(--sm-r-sm);
+}
+.cc-fill--hp { background-color: var(--sm-fam-striker); }
+.cc-fill--energy { background-color: var(--sm-fam-vanguard); }
+.cc-fill--xp { background-color: var(--sm-gold-300); }
+
+.cc-slot-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+}
+.cc-slot-host {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 18px;
+}
+/* console 슬롯 glow halo (절차적 radial PNG) */
+.cc-glow {
+    position: absolute;
+    left: -20px;
+    right: -20px;
+    top: -20px;
+    bottom: -20px;
+}
+.cc-slot {
+    width: 76px;
+    height: 76px;
+    background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-300-a42);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    align-items: center;
+    justify-content: center;
+}
+.cc-slot__icon {
+    width: 56px;
+    height: 56px;
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-vellum-a12);
+    border-right-color: var(--sm-vellum-a12);
+    border-top-color: var(--sm-vellum-a15);
+    border-bottom-color: var(--sm-vellum-a09);
+    border-top-left-radius: var(--sm-r-sm);
+    border-top-right-radius: var(--sm-r-sm);
+    border-bottom-left-radius: var(--sm-r-sm);
+    border-bottom-right-radius: var(--sm-r-sm);
+}
+.cc-note {
+    font-size: 12px;
+    color: var(--sm-ink-2);
+    margin-top: 20px;
+    -unity-text-align: middle-center;
+}

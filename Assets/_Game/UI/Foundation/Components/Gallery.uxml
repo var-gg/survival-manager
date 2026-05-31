@@ -1,0 +1,148 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement class="gallery-root">
+        <!-- 패널 = ceremony 프레임 데모 (gold trim + 4 corner ornament PNG) -->
+        <ui:VisualElement class="sm-modal-frame sm-modal-frame--ceremony gallery-panel">
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="gallery-head">
+                <ui:Label class="gallery-eyebrow" text="SURVIVAL MANAGER · DESIGN SYSTEM" />
+                <ui:Label class="gallery-title" text="USS ATOM GALLERY — CEREMONY" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="gallery-body">
+                <!-- ============ LEFT COLUMN ============ -->
+                <ui:VisualElement class="gallery-col">
+                    <ui:VisualElement class="gallery-section">
+                        <ui:Label class="gallery-section__label" text="CTA · 3 TONE × HEIGHT TIER" />
+                        <ui:VisualElement class="gallery-row">
+                            <ui:Button class="sm-cta sm-cta--primary sm-cta--hero" text="출정 준비" />
+                            <ui:Button class="sm-cta sm-cta--secondary sm-cta--lg" text="장비 정련" />
+                            <ui:Button class="sm-cta sm-cta--utility sm-cta--md" text="빠른 전투" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="gallery-row">
+                            <ui:Button class="sm-cta sm-cta--primary sm-cta--md" text="확정" />
+                            <ui:Button class="sm-cta sm-cta--secondary sm-cta--inline" text="닫기" />
+                            <ui:Button class="sm-cta sm-cta--utility sm-cta--inline" text="정렬" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="gallery-section">
+                        <ui:Label class="gallery-section__label" text="CHIP · 4 VARIANT (state / tag / category / hint)" />
+                        <ui:VisualElement class="gallery-row">
+                            <ui:Label class="gchip gchip--state" text="계획 적합" />
+                            <ui:Label class="gchip gchip--state" text="보호" />
+                            <ui:Label class="gchip gchip--tag" text="전열" />
+                            <ui:Label class="gchip gchip--tag" text="폭발" />
+                            <ui:Label class="gchip gchip--category" text="무기" />
+                            <ui:Label class="gchip gchip--hint" text="보유 골드 1240" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="gallery-section">
+                        <ui:Label class="gallery-section__label" text="AFFIX ROW · implicit / prefix / suffix" />
+                        <ui:VisualElement class="sm-affix-row sm-affix-row--implicit g-affix">
+                            <ui:Label class="g-affix__txt" text="기본 · 공격력 +12" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="sm-affix-row sm-affix-row--prefix g-affix">
+                            <ui:Label class="g-affix__txt" text="접두 · 치명타 확률 +6%" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="sm-affix-row sm-affix-row--suffix g-affix">
+                            <ui:Label class="g-affix__txt" text="접미 · 공격 속도 +0.1" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="gallery-section">
+                        <ui:Label class="gallery-section__label" text="STAT BAR · vitals (track + fill)" />
+                        <ui:VisualElement class="g-stat">
+                            <ui:Label class="g-stat__cap" text="HP" />
+                            <ui:VisualElement class="g-bar"><ui:VisualElement class="g-bar__fill g-bar__fill--hp" style="width: 80%;" /></ui:VisualElement>
+                            <ui:Label class="g-stat__val" text="320 / 400" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="g-stat">
+                            <ui:Label class="g-stat__cap" text="에너지" />
+                            <ui:VisualElement class="g-bar"><ui:VisualElement class="g-bar__fill g-bar__fill--energy" style="width: 55%;" /></ui:VisualElement>
+                            <ui:Label class="g-stat__val" text="55 / 100" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="g-stat">
+                            <ui:Label class="g-stat__cap" text="EXP" />
+                            <ui:VisualElement class="g-bar"><ui:VisualElement class="g-bar__fill g-bar__fill--xp" style="width: 35%;" /></ui:VisualElement>
+                            <ui:Label class="g-stat__val" text="Lv 8" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- ============ RIGHT COLUMN ============ -->
+                <ui:VisualElement class="gallery-col">
+                    <ui:VisualElement class="gallery-section">
+                        <ui:Label class="gallery-section__label" text="RARITY · jewel duotone slot (common / rare / epic)" />
+                        <ui:VisualElement class="gallery-row">
+                            <ui:VisualElement class="g-slot-wrap">
+                                <ui:VisualElement class="sm-item-rarity sm-item-rarity--common g-rarity-frame">
+                                    <ui:VisualElement class="sm-item-icon g-rarity-icon" />
+                                </ui:VisualElement>
+                                <ui:Label class="gallery-cap" text="COMMON" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="g-slot-wrap">
+                                <ui:VisualElement class="sm-item-rarity sm-item-rarity--rare g-rarity-frame">
+                                    <ui:VisualElement class="sm-item-icon g-rarity-icon" />
+                                </ui:VisualElement>
+                                <ui:Label class="gallery-cap" text="RARE" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="g-slot-wrap">
+                                <ui:VisualElement class="sm-item-rarity sm-item-rarity--epic g-rarity-frame">
+                                    <ui:VisualElement class="sm-item-icon g-rarity-icon" />
+                                </ui:VisualElement>
+                                <ui:Label class="gallery-cap" text="EPIC" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="gallery-section">
+                        <ui:Label class="gallery-section__label" text="ARCHETYPE FAMILY · tint rib" />
+                        <ui:VisualElement class="gallery-row">
+                            <ui:VisualElement class="g-fam-card">
+                                <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--vanguard" />
+                                <ui:VisualElement class="g-fam-card__body">
+                                    <ui:Label class="g-fam-name" text="뱅가드" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="g-fam-card">
+                                <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--striker" />
+                                <ui:VisualElement class="g-fam-card__body">
+                                    <ui:Label class="g-fam-name" text="스트라이커" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="g-fam-card">
+                                <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--ranger" />
+                                <ui:VisualElement class="g-fam-card__body">
+                                    <ui:Label class="g-fam-name" text="레인저" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement class="g-fam-card">
+                                <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--mystic" />
+                                <ui:VisualElement class="g-fam-card__body">
+                                    <ui:Label class="g-fam-name" text="미스틱" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="gallery-section">
+                        <ui:Label class="gallery-section__label" text="NESTED ORNATE FRAME + corner cap (depth layer)" />
+                        <ui:VisualElement class="sm-ornate-frame" style="height: 132px; padding: 14px; position: relative;">
+                            <ui:VisualElement class="sm-corner-cap sm-corner-cap--tl" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-corner-cap sm-corner-cap--tr" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-corner-cap sm-corner-cap--bl" picking-mode="Ignore" />
+                            <ui:VisualElement class="sm-corner-cap sm-corner-cap--br" picking-mode="Ignore" />
+                            <ui:Label class="g-affix__txt" text="리퍼 · Lv 8 · 회상 결사" />
+                            <ui:Label class="gallery-cap" style="-unity-text-align: upper-left; margin-top: 6px;" text="flat layer + gold L-bracket + diamond inlay = USS-native depth (no box-shadow)" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

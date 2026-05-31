@@ -1,0 +1,48 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement class="cc-root">
+        <ui:Label class="cc-title" text="FLAT (web) vs CONSOLE — same USS layout, baked PNG chrome" />
+        <ui:Label class="cc-sub" text="좌: 순수 USS 토큰 (flat) · 우: 동일 레이아웃 + 절차적 생성 PNG (gloss / glow / depth)" />
+        <ui:VisualElement class="cc-cols">
+
+            <!-- ============ FLAT (pure USS) ============ -->
+            <ui:VisualElement class="cc-col">
+                <ui:Label class="cc-col__label cc-col__label--flat" text="FLAT · 순수 USS 토큰 (web 느낌)" />
+                <ui:VisualElement class="cc-panel">
+                    <ui:Label class="cc-sec" text="STAT BAR" />
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="HP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--hp" style="width: 80%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="EN" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--energy" style="width: 55%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="XP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--xp" style="width: 35%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:Label class="cc-sec" text="ITEM SLOT + CTA" />
+                    <ui:VisualElement class="cc-slot-row">
+                        <ui:VisualElement class="cc-slot-host">
+                            <ui:VisualElement class="cc-slot"><ui:VisualElement class="cc-slot__icon" /></ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Button class="sm-cta sm-cta--utility sm-cta--lg" text="장착" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- ============ CONSOLE (USS + baked PNG) ============ -->
+            <ui:VisualElement class="cc-col">
+                <ui:Label class="cc-col__label cc-col__label--console" text="CONSOLE · USS + baked PNG (gloss / glow / depth)" />
+                <ui:VisualElement class="cc-panel">
+                    <ui:VisualElement class="cc-depth" name="cpanel_depth" picking-mode="Ignore" />
+                    <ui:Label class="cc-sec" text="STAT BAR" />
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="HP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--hp" name="cbar_hp" style="width: 80%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="EN" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--energy" name="cbar_energy" style="width: 55%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:VisualElement class="cc-bar-row"><ui:Label class="cc-bar-cap" text="XP" /><ui:VisualElement class="cc-bar"><ui:VisualElement class="cc-fill cc-fill--xp" name="cbar_xp" style="width: 35%;" /></ui:VisualElement></ui:VisualElement>
+                    <ui:Label class="cc-sec" text="ITEM SLOT + CTA" />
+                    <ui:VisualElement class="cc-slot-row">
+                        <ui:VisualElement class="cc-slot-host">
+                            <ui:VisualElement class="cc-glow" name="cslot_glow" picking-mode="Ignore" />
+                            <ui:VisualElement class="cc-slot"><ui:VisualElement class="cc-slot__icon" /></ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Button class="sm-cta sm-cta--primary sm-cta--lg" text="장착" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+        <ui:Label class="cc-note" text="둘 다 USS layout 동일. 차이는 PNG 스킨(gloss/glow/depth)뿐 — 그게 '콘솔 느낌'의 정체다." />
+    </ui:VisualElement>
+</ui:UXML>

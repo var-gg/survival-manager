@@ -31,6 +31,14 @@ public static class TownPreviewCaptureUtility
     private static readonly (Action<VisualElement> Build, string FileName) CompendiumTarget =
         (r => Make<CompendiumPreviewBootstrap>(b => b.BuildInto(r)),       "compendium");
 
+    // USS atom 갤러리 (claude-design → USS 번역 충실도 증명). 단독 캡처 — AllTargets 미포함.
+    private static readonly (Action<VisualElement> Build, string FileName) GalleryTarget =
+        (r => Make<ComponentGalleryPreviewBootstrap>(b => b.BuildInto(r)), "uss_atom_gallery");
+
+    // FLAT(web) vs CONSOLE 비교 (절차적 PNG chrome). 단독 캡처.
+    private static readonly (Action<VisualElement> Build, string FileName) ConsoleCompareTarget =
+        (r => Make<ConsoleComparePreviewBootstrap>(b => b.BuildInto(r)), "console_compare");
+
     private static readonly (Action<VisualElement> Build, string FileName)[] AllTargets =
     {
         (r => Make<TownRosterGridPreviewBootstrap>(b => b.BuildInto(r)),   "roster_grid"),
@@ -140,6 +148,18 @@ public static class TownPreviewCaptureUtility
     public static void CaptureCompendium()
     {
         StartCapture(new[] { CompendiumTarget });
+    }
+
+    [MenuItem("SM/Town/Capture USS Atom Gallery", false, 7)]
+    public static void CaptureGallery()
+    {
+        StartCapture(new[] { GalleryTarget });
+    }
+
+    [MenuItem("SM/Town/Capture Console Compare", false, 8)]
+    public static void CaptureConsoleCompare()
+    {
+        StartCapture(new[] { ConsoleCompareTarget });
     }
 
     [MenuItem("SM/Town/▶ Preview 도감 PlayMode 캡쳐", false, 6)]

@@ -205,12 +205,14 @@
        border alpha 0.55 → 0.78 + width 인지 강화. */
     /* state chip: 계획 적합/보호/정찰/보정/need (gold tint, vivid) */
     --sm-chip-state-text: var(--sm-gold-100);
-    --sm-chip-state-bg: rgba(245, 214, 138, 0.32);
-    --sm-chip-state-border: rgba(245, 214, 138, 0.78);
-    /* tag chip: archetype tag 전열/결투/폭발/방패술 (info-cyan tint, vivid) */
-    --sm-chip-tag-text: var(--sm-state-info);
-    --sm-chip-tag-bg: rgba(118, 212, 255, 0.30);
-    --sm-chip-tag-border: rgba(118, 212, 255, 0.78);
+    --sm-chip-state-bg: rgba(245, 214, 138, 0.40);
+    --sm-chip-state-border: rgba(245, 214, 138, 0.82);
+    /* tag chip: archetype tag 전열/결투/폭발/방패술 (info-cyan tint, vivid)
+       v1.3: Unity 렌더에서 text(=info hue)와 bg(=info hue)가 동일 색이라 muddy →
+       text 를 밝은 cyan 으로 분리해 대비 확보. */
+    --sm-chip-tag-text: rgb(196, 236, 255);
+    --sm-chip-tag-bg: rgba(118, 212, 255, 0.34);
+    --sm-chip-tag-border: rgba(118, 212, 255, 0.82);
     /* category chip: 무기/방어구/액세서리 (ink, subtle but readable) */
     --sm-chip-category-text: var(--sm-ink-0);
     --sm-chip-category-bg: rgba(245, 234, 208, 0.14);

@@ -1,0 +1,248 @@
+/* =============================================================
+   USS Atom Gallery — claude-design → USS 번역 충실도 시각 증명용 scaffolding.
+   실제 atom(.sm-modal-frame / .sm-cta / .sm-item-* / .sm-family-tint-rib /
+   .sm-frame-corner-cap)은 RuntimePanelTheme + ThemeTokens 를 그대로 재사용한다.
+   본 USS 는 갤러리 레이아웃 + (공유 atom 이 아직 없는) chip 데모만 정의 —
+   chip 이 패널마다 따로 정의되는 "따로 논다" 표본을, 여기선 token 으로 통일해 보여줌.
+   dev 전용. production 패널이 import 하지 않는다.
+   ============================================================= */
+
+.gallery-root {
+    flex-grow: 1;
+    background-color: var(--sm-bg-0);
+    -unity-font-definition: url("project://database/Assets/ThirdParty/Fonts/NotoSansCJK/NotoSansCJKkr-Regular.otf");
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* 패널 자체가 ceremony 프레임 데모. .sm-modal-frame 의 position:absolute 를
+   relative 로 override 해 flex 흐름에 안착시키고, 코너 cap 은 이 패널 기준 절대배치. */
+.gallery-panel {
+    position: relative;
+    width: 1480px;
+    height: 668px;
+    padding: 26px 34px;
+    flex-direction: column;
+}
+
+.gallery-head {
+    margin-bottom: 14px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-frame-divider-ceremony);
+    padding-bottom: 10px;
+}
+.gallery-eyebrow {
+    font-size: 11px;
+    color: var(--sm-gold-300);
+    letter-spacing: 3px;
+    -unity-font-style: bold;
+    margin-bottom: 3px;
+}
+.gallery-title {
+    font-size: 28px;
+    color: var(--sm-gold-200);
+    letter-spacing: 3px;
+    -unity-font-style: bold;
+}
+
+.gallery-body {
+    flex-direction: row;
+    flex-grow: 1;
+}
+.gallery-col {
+    width: 50%;
+    padding: 0 10px;
+}
+
+.gallery-section {
+    margin-bottom: 18px;
+}
+.gallery-section__label {
+    font-size: 11px;
+    color: var(--sm-gold-300);
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-vellum-a10);
+    padding-bottom: 4px;
+}
+.gallery-row {
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+.gallery-row > * {
+    margin-right: 10px;
+    margin-bottom: 8px;
+}
+
+.gallery-cap {
+    font-size: 9px;
+    color: var(--sm-ink-3);
+    letter-spacing: 1px;
+    margin-top: 4px;
+    -unity-text-align: middle-center;
+}
+
+/* --- chip: 공유 atom 부재(= 따로 논다 표본). 여기선 token 으로 "되어야 할" 모습. --- */
+.gchip {
+    height: 24px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: center;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+.gchip--state {
+    color: var(--sm-chip-state-text);
+    background-color: var(--sm-chip-state-bg);
+    border-left-color: var(--sm-chip-state-border);
+    border-right-color: var(--sm-chip-state-border);
+    border-top-color: var(--sm-chip-state-border);
+    border-bottom-color: var(--sm-chip-state-border);
+}
+.gchip--tag {
+    color: var(--sm-chip-tag-text);
+    background-color: var(--sm-chip-tag-bg);
+    border-left-color: var(--sm-chip-tag-border);
+    border-right-color: var(--sm-chip-tag-border);
+    border-top-color: var(--sm-chip-tag-border);
+    border-bottom-color: var(--sm-chip-tag-border);
+}
+.gchip--category {
+    color: var(--sm-chip-category-text);
+    background-color: var(--sm-chip-category-bg);
+    border-left-color: var(--sm-chip-category-border);
+    border-right-color: var(--sm-chip-category-border);
+    border-top-color: var(--sm-chip-category-border);
+    border-bottom-color: var(--sm-chip-category-border);
+}
+.gchip--hint {
+    color: var(--sm-chip-hint-text);
+    background-color: var(--sm-chip-hint-bg);
+    border-left-color: var(--sm-chip-hint-border);
+    border-right-color: var(--sm-chip-hint-border);
+    border-top-color: var(--sm-chip-hint-border);
+    border-bottom-color: var(--sm-chip-hint-border);
+}
+
+/* --- rarity slot demo: rarity 색을 flat fill 이 아니라 frame 으로 (실제 사용 형태) --- */
+.g-slot-wrap {
+    align-items: center;
+}
+.g-rarity-frame {
+    width: 88px;
+    height: 88px;
+    padding: 6px;
+    margin-bottom: 5px;
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+.g-rarity-icon {
+    flex-grow: 1;
+}
+
+/* --- stat bar demo (vitals) — USS-native track + fill (gradient/box-shadow 없이 깊이) --- */
+.g-stat {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 9px;
+}
+.g-stat__cap {
+    width: 52px;
+    font-size: 11px;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+.g-bar {
+    flex-grow: 1;
+    height: 14px;
+    background-color: var(--sm-bg-0-a84);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    overflow: hidden;
+}
+.g-bar__fill {
+    height: 100%;
+    border-top-left-radius: var(--sm-r-sm);
+    border-bottom-left-radius: var(--sm-r-sm);
+}
+.g-bar__fill--hp { background-color: var(--sm-fam-striker); }
+.g-bar__fill--energy { background-color: var(--sm-fam-vanguard); }
+.g-bar__fill--xp { background-color: var(--sm-gold-300); }
+.g-stat__val {
+    width: 80px;
+    margin-left: 8px;
+    font-size: 11px;
+    color: var(--sm-ink-2);
+    -unity-text-align: middle-right;
+}
+
+/* --- archetype family card (.sm-family-tint-rib 재사용) --- */
+.g-fam-card {
+    width: 122px;
+    height: 72px;
+    background-color: var(--sm-bg-2);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-line-1);
+    border-right-color: var(--sm-line-1);
+    border-top-color: var(--sm-line-1);
+    border-bottom-color: var(--sm-line-1);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    overflow: hidden;
+    flex-direction: column;
+}
+.g-fam-card__body {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+.g-fam-name {
+    font-size: 12px;
+    color: var(--sm-ink-1);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+/* --- affix row demo (.sm-affix-row 재사용) --- */
+.g-affix {
+    width: 96%;
+    height: 38px;
+    padding: 0 12px;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.g-affix__txt {
+    font-size: 13px;
+    color: var(--sm-ink-1);
+}
