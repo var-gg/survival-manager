@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-16
+- 최종수정일: 2026-06-02
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -37,6 +37,7 @@
 - `adr-0022-narrative-architecture.md`: 내러티브 아키텍처 (definitions in Content, runtime in Meta, presentation in Unity) 채택
 - `adr-0023-meta-content-adapter-boundary.md`: `SM.Meta` content adapter boundary와 pure Meta asmdef 경계 채택
 - `adr-0024-narrative-human-centric-reskin.md`: 내러티브 인간 중심 reskin (superseded: Pindoc 전환)
+- `adr-0025-narrative-authoring-runtime-sync.md`: 내러티브 authoring↔runtime 동기화 거버넌스 — 3계층 하이브리드 SoT(pindoc 창작 / Git canonical manifest 계약 / Unity 파생), stable line_uid·다층 drift 게이트·AI edit protocol (draft, GPT Pro 자문 반영)
 
 ## 운영 메모
 
