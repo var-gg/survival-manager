@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_ruined_crypts.condition.01
+  _id: story_event_boss_defeat_ruined_crypts__cond__01
   _kind: 1
   _operandA: site_ruined_crypts
   _operandB: 
@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_02
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_ruined_crypts.condition.02
+  _id: story_event_boss_defeat_ruined_crypts__cond__02
   _kind: 2
   _operandA: 4
   _operandB: 
@@ -68,7 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_ruined_crypts.effect.01
+  _id: story_event_boss_defeat_ruined_crypts__effect__01
   _kind: 3
   _payload: DialogueOverlay
 --- !u!114 &2307501242220677543
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_ruined_crypts.effect.00
+  _id: story_event_boss_defeat_ruined_crypts__effect__00
   _kind: 1
   _payload: story_flag_silent_archivist_defeated
 --- !u!114 &3851760995970148755
@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_ruined_crypts.condition.00
+  _id: story_event_boss_defeat_ruined_crypts__cond__00
   _kind: 0
   _operandA: chapter_ruined_crypts
   _operandB: 

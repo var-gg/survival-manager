@@ -90,10 +90,13 @@ public static class NarrativeSeedImporter
             return;
         }
 
-        // CleanRemovedAssets: false — wiki seed와 legacy seed가 전환기 동안 공존한다.
-        // 양쪽을 가로지르는 orphan pruning은 서로의 asset을 삭제하므로 끈다.
+        // CleanRemovedAssets: true — wiki seed가 단일 소스다(ADR-0025 Track A).
+        // canonical event manifest(storyEvents)와 raw-wiki dialogue가 모두 채워졌으므로
+        // manifest에 없는 구버전 자산 — 구 dialogue(`dialogue_scene_*`), 이중 prefix
+        // orphan(`dialogue_seq_dialogue_scene_*`), 폐기 plot/죽은 moment StoryEvent —
+        // 을 정리한다. 모든 대상 asset은 git-tracked이므로 검증 실패 시 복구 가능.
         var result = Import(manifest, new NarrativeSeedImportOptions(
-            CleanRemovedAssets: false,
+            CleanRemovedAssets: true,
             InsertMissingEnglishEntries: true,
             DryRun: false));
 

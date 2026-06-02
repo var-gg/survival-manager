@@ -1,0 +1,244 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7634301701140776707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__007
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.007
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6706669578649971381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__009
+  _speakerId: npc_lyra_sternfeld
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.009
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBB34\uB98E \uAFC7\uC740 \uCC44"
+  _autoAdvanceHint: 0
+--- !u!114 &-4265706009765699217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__011
+  _speakerId: hero_mirror_cantor
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.011
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAE30\uB85D"
+  _autoAdvanceHint: 0
+--- !u!114 &-2778060652993260096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__000
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.000
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2192026987040609303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__004
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.004
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC778\uC6A9\uD558\uB2E4 \uBA48\uCDA4"
+  _autoAdvanceHint: 0
+--- !u!114 &-1713435385049051070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__002
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.002
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC870\uC6A9\uD788"
+  _autoAdvanceHint: 0
+--- !u!114 &-1692736102428096844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__008
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.008
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAC70\uC758 \uC778\uC815"
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_boss_defeat_baekgyu
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu
+  _lines:
+  - {fileID: -2778060652993260096}
+  - {fileID: 5081360571355507889}
+  - {fileID: -1713435385049051070}
+  - {fileID: 8764188475611373663}
+  - {fileID: -2192026987040609303}
+  - {fileID: 1115506470457282319}
+  - {fileID: 4717159228805542646}
+  - {fileID: -7634301701140776707}
+  - {fileID: -1692736102428096844}
+  - {fileID: -6706669578649971381}
+  - {fileID: 4188420894706128240}
+  - {fileID: -4265706009765699217}
+--- !u!114 &1115506470457282319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__005
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.005
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBC29\uC5B4"
+  _autoAdvanceHint: 0
+--- !u!114 &4188420894706128240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__010
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.010
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC544\uC8FC \uC791\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &4717159228805542646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__006
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.006
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &5081360571355507889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__001
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.001
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC228 \uB2A6\uC74C"
+  _autoAdvanceHint: 0
+--- !u!114 &8764188475611373663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_boss_defeat_baekgyu__line__003
+  _speakerId: npc_baekgyu_sternheim
+  _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.003
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBA48\uCDA4"
+  _autoAdvanceHint: 0

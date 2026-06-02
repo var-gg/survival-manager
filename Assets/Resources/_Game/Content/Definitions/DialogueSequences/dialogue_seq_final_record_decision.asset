@@ -1,0 +1,378 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9194186492349223053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__004
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.004
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC0DD\uAC01 \uC815\uB9AC"
+  _autoAdvanceHint: 0
+--- !u!114 &-6530791063825293188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__003
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.003
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC190\uC744 \uBD04"
+  _autoAdvanceHint: 0
+--- !u!114 &-5781397201797220620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__006
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.006
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC870\uC6A9"
+  _autoAdvanceHint: 0
+--- !u!114 &-3952320319837074573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_16
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__016
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.016
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBA85\uC74C\uC5D0\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &-3615682485614829909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_14
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__014
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.014
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uBC1B\uC74C"
+  _autoAdvanceHint: 0
+--- !u!114 &-3468952977189570422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__010
+  _speakerId: hero_mirror_cantor
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.010
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uD655\uC778"
+  _autoAdvanceHint: 0
+--- !u!114 &-1832609298788976908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__012
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.012
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC9E7\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &-1135374850728241013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__002
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.002
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_final_record_decision
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_final_record_decision
+  _lines:
+  - {fileID: 2921348473734620414}
+  - {fileID: 7316853401018193721}
+  - {fileID: -1135374850728241013}
+  - {fileID: -6530791063825293188}
+  - {fileID: -9194186492349223053}
+  - {fileID: 6705808216404221055}
+  - {fileID: -5781397201797220620}
+  - {fileID: 777384358589370806}
+  - {fileID: 2136706724561280768}
+  - {fileID: 606363273391906818}
+  - {fileID: -3468952977189570422}
+  - {fileID: 8262395652805226804}
+  - {fileID: -1832609298788976908}
+  - {fileID: 6717434584745340108}
+  - {fileID: -3615682485614829909}
+  - {fileID: 6207198834908943680}
+  - {fileID: -3952320319837074573}
+  - {fileID: 4010895077877996205}
+  - {fileID: 5983966086938248132}
+--- !u!114 &606363273391906818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__009
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.009
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &777384358589370806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__007
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.007
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB2E8\uB2E8\uD788"
+  _autoAdvanceHint: 0
+--- !u!114 &2136706724561280768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__008
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.008
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uACB0\uB860"
+  _autoAdvanceHint: 0
+--- !u!114 &2921348473734620414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__000
+  _speakerId: hero_mirror_cantor
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.000
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC758\uB840"
+  _autoAdvanceHint: 0
+--- !u!114 &4010895077877996205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_17
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__017
+  _speakerId: hero_mirror_cantor
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.017
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uCC28\uBD84"
+  _autoAdvanceHint: 0
+--- !u!114 &5983966086938248132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_18
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__018
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.018
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC791\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &6207198834908943680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_15
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__015
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.015
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC501\uC4F8\uD558\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &6705808216404221055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__005
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.005
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _autoAdvanceHint: 0
+--- !u!114 &6717434584745340108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__013
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.013
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB2E8\uB9B0\uC5D0\uAC8C \uC791\uC740 \uC870\uAC01\uC744
+    \uAC74\uB134"
+  _autoAdvanceHint: 0
+--- !u!114 &7316853401018193721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__001
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.001
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uC989\uB2F5 \uC544\uB2D8"
+  _autoAdvanceHint: 0
+--- !u!114 &8262395652805226804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_final_record_decision__line__011
+  _speakerId: hero_mirror_cantor
+  _textKey: loc.story.dialogue.dialogue_seq_final_record_decision.011
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uAE30\uB85D"
+  _autoAdvanceHint: 0

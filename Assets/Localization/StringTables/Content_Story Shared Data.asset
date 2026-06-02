@@ -8887,6 +8887,5218 @@ MonoBehaviour:
     m_Key: loc.story.presentation.story_card_extract_worldscar_depths.body
     m_Metadata:
       m_Items: []
+  - m_Id: 19023179929686016
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_main_cathedral_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240448
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_main_cathedral_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240449
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_main_cathedral_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240450
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_main_cathedral_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240451
+    m_Key: loc.story.dialogue.dialogue_seq_main_cathedral_central_archive.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240452
+    m_Key: loc.story.dialogue.dialogue_seq_main_cathedral_central_archive.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240453
+    m_Key: loc.story.dialogue.dialogue_seq_main_cathedral_central_archive.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240454
+    m_Key: loc.story.dialogue.dialogue_seq_main_cathedral_central_archive.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240455
+    m_Key: loc.story.dialogue.dialogue_seq_main_cathedral_central_archive.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240456
+    m_Key: loc.story.dialogue.dialogue_seq_main_cathedral_central_archive.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240457
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240458
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240459
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240460
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240461
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240462
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240463
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240464
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240465
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_question.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240466
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_letter.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240467
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_letter.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240468
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_letter.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240469
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_letter.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240470
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_letter.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240471
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_letter.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240472
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_letter.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240473
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240474
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240475
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240476
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240477
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240478
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240479
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240480
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240481
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240482
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240483
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240484
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240485
+    m_Key: loc.story.dialogue.dialogue_seq_consul_meeting.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240486
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240487
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240488
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240489
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240490
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240491
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240492
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240493
+    m_Key: loc.story.dialogue.dialogue_seq_quiet_corridor.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240494
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_clear.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240495
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_clear.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240496
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_clear.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240497
+    m_Key: loc.story.dialogue.cutscene_event_dawn_priest_clear.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240498
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240499
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240500
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240501
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240502
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240503
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240504
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240505
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240506
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240507
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240508
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240509
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240510
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240511
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240512
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240513
+    m_Key: loc.story.dialogue.dialogue_seq_yeonju_choice_half.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240514
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240515
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240516
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240517
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240518
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240519
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240520
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240521
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240522
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240523
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240524
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240525
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240526
+    m_Key: loc.story.dialogue.dialogue_seq_meet_at_the_stone.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240527
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240528
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240529
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240530
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240531
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240532
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240533
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240534
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240535
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240536
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240537
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240538
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240539
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240540
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240541
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240542
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240543
+    m_Key: loc.story.dialogue.dialogue_seq_brother_word_again.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240544
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240545
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240546
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240547
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240548
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240549
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240550
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240551
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240552
+    m_Key: loc.story.dialogue.dialogue_seq_north_west_signal.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240553
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_clear.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240554
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_clear.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240555
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_clear.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240556
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_clear.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240557
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_clear.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240558
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_clear.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240559
+    m_Key: loc.story.dialogue.cutscene_event_empty_chair_clear.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240560
+    m_Key: loc.story.dialogue.cutscene_event_other_door_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240561
+    m_Key: loc.story.dialogue.cutscene_event_other_door_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240562
+    m_Key: loc.story.dialogue.cutscene_event_other_door_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240563
+    m_Key: loc.story.dialogue.cutscene_event_other_door_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240564
+    m_Key: loc.story.dialogue.cutscene_event_other_door_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240565
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240566
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240567
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240568
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240569
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240570
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240571
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240572
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240573
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240574
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240575
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240576
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240577
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240578
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_cost_again.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240579
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240580
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240581
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240582
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240583
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240584
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240585
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240586
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240587
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240588
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_record.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240589
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_okay_with_cost.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240590
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_okay_with_cost.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240591
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_okay_with_cost.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240592
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_okay_with_cost.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240593
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_okay_with_cost.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240594
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_okay_with_cost.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240595
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_okay_with_cost.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240596
+    m_Key: loc.story.dialogue.cutscene_event_other_door_clear.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240597
+    m_Key: loc.story.dialogue.cutscene_event_other_door_clear.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240598
+    m_Key: loc.story.dialogue.cutscene_event_other_door_clear.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240599
+    m_Key: loc.story.dialogue.cutscene_event_other_door_clear.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240600
+    m_Key: loc.story.dialogue.cutscene_event_other_door_clear.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240601
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240602
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240603
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240604
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240605
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240606
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179963240607
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434752
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434753
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434754
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434755
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434756
+    m_Key: loc.story.dialogue.dialogue_seq_ashen_gate_intro.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434757
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434758
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434759
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434760
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434761
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434762
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434763
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434764
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434765
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434766
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434767
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434768
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434769
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434770
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434771
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434772
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434773
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434774
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434775
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434776
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.019
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434777
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.020
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434778
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.021
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434779
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.022
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434780
+    m_Key: loc.story.dialogue.dialogue_seq_gate_warden.023
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434781
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434782
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434783
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434784
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434785
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434786
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434787
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434788
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434789
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434790
+    m_Key: loc.story.dialogue.dialogue_seq_priest_first_crack.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434791
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434792
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434793
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434794
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434795
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434796
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434797
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434798
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434799
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434800
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434801
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434802
+    m_Key: loc.story.dialogue.dialogue_seq_wolfpine_trail.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434803
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434804
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434805
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434806
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434807
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434808
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434809
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434810
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434811
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434812
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434813
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434814
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_engage.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434815
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434816
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434817
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434818
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434819
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434820
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434821
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434822
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434823
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434824
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434825
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434826
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434827
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434828
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434829
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434830
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434831
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434832
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434833
+    m_Key: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434834
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434835
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434836
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434837
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434838
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434839
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434840
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434841
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434842
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434843
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434844
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434845
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434846
+    m_Key: loc.story.dialogue.dialogue_seq_after_wolfpine.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434847
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434848
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434849
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434850
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434851
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434852
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434853
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434854
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434855
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434856
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434857
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434858
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434859
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434860
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434861
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434862
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch1.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434863
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434864
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434865
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434866
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434867
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434868
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434869
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434870
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434871
+    m_Key: loc.story.dialogue.dialogue_seq_atlas_route_sunken_bastion.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434872
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434873
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434874
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434875
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434876
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434877
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434878
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434879
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434880
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434881
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434882
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434883
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434884
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434885
+    m_Key: loc.story.dialogue.dialogue_seq_sunken_bastion_intro.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434886
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434887
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434888
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434889
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434890
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434891
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434892
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434893
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434894
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434895
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434896
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434897
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434898
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434899
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434900
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434901
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434902
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434903
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434904
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434905
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.019
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434906
+    m_Key: loc.story.dialogue.dialogue_seq_aldric_journal.020
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434907
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434908
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434909
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434910
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434911
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434912
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434913
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434914
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434915
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434916
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434917
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434918
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434919
+    m_Key: loc.story.dialogue.dialogue_seq_tithe_road_intro.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434920
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434921
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434922
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434923
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434924
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434925
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434926
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434927
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434928
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434929
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434930
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434931
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434932
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434933
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434934
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434935
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434936
+    m_Key: loc.story.dialogue.dialogue_seq_purification_judicator.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434937
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434938
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434939
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434940
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434941
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434942
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434943
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434944
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434945
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434946
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434947
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434948
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434949
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434950
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434951
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434952
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434953
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434954
+    m_Key: loc.story.dialogue.dialogue_seq_pack_names.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434955
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434956
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434957
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434958
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434959
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434960
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434961
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434962
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434963
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434964
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434965
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434966
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434967
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434968
+    m_Key: loc.story.dialogue.dialogue_seq_town_arrival_ch2.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434969
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434970
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434971
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434972
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434973
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434974
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434975
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434976
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434977
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434978
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434979
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434980
+    m_Key: loc.story.dialogue.dialogue_seq_town_return_ch2.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434981
+    m_Key: loc.story.dialogue.dialogue_seq_town_pair_priest_raider_ch2.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434982
+    m_Key: loc.story.dialogue.dialogue_seq_town_pair_priest_raider_ch2.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434983
+    m_Key: loc.story.dialogue.dialogue_seq_town_pair_priest_raider_ch2.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434984
+    m_Key: loc.story.dialogue.dialogue_seq_town_pair_priest_raider_ch2.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434985
+    m_Key: loc.story.dialogue.dialogue_seq_town_pair_priest_raider_ch2.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434986
+    m_Key: loc.story.dialogue.dialogue_seq_town_pair_priest_raider_ch2.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434987
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434988
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434989
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434990
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434991
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434992
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434993
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434994
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch3_black_page.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434995
+    m_Key: loc.story.dialogue.dialogue_atlas_route_ruined_crypts.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434996
+    m_Key: loc.story.dialogue.dialogue_atlas_route_ruined_crypts.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434997
+    m_Key: loc.story.dialogue.dialogue_atlas_route_ruined_crypts.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434998
+    m_Key: loc.story.dialogue.dialogue_atlas_route_ruined_crypts.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967434999
+    m_Key: loc.story.dialogue.dialogue_atlas_route_ruined_crypts.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435000
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435001
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435002
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435003
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435004
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435005
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435006
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435007
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435008
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435009
+    m_Key: loc.story.dialogue.dialogue_seq_ruined_crypts_intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435010
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435011
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435012
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435013
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435014
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435015
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435016
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435017
+    m_Key: loc.story.dialogue.dialogue_seq_hexer_memory_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435018
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_ruined_crypts.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435019
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_ruined_crypts.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435020
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_ruined_crypts.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435021
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_ruined_crypts.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435022
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_ruined_crypts.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435023
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_ruined_crypts.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435024
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_ruined_crypts.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435025
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_ruined_crypts.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435026
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435027
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435028
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435029
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435030
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435031
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435032
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435033
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435034
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435035
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435036
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435037
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_ledger.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435038
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435039
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435040
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435041
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435042
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435043
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435044
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435045
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435046
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435047
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435048
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435049
+    m_Key: loc.story.dialogue.dialogue_seq_first_city_record.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435050
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435051
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435052
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435053
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435054
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435055
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435056
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435057
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435058
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435059
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435060
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435061
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435062
+    m_Key: loc.story.dialogue.dialogue_seq_crypts_massacre_record.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435063
+    m_Key: loc.story.dialogue.dialogue_seq_bone_orchard_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435064
+    m_Key: loc.story.dialogue.dialogue_seq_bone_orchard_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435065
+    m_Key: loc.story.dialogue.dialogue_seq_bone_orchard_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435066
+    m_Key: loc.story.dialogue.dialogue_seq_bone_orchard_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435067
+    m_Key: loc.story.dialogue.dialogue_seq_bone_orchard_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435068
+    m_Key: loc.story.dialogue.dialogue_seq_bone_orchard_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435069
+    m_Key: loc.story.dialogue.dialogue_seq_bone_orchard_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435070
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435071
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435072
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435073
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435074
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435075
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435076
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435077
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435078
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435079
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435080
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435081
+    m_Key: loc.story.dialogue.dialogue_seq_koohan_awakening.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435082
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435083
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435084
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435085
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435086
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435087
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435088
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435089
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435090
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435091
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435092
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435093
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435094
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435095
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435096
+    m_Key: loc.story.dialogue.dialogue_seq_silent_oath_explained.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435097
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_bone_orchard.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435098
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_bone_orchard.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435099
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_bone_orchard.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435100
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_bone_orchard.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435101
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_bone_orchard.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435102
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_bone_orchard.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435103
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_bone_orchard.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435104
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_bone_orchard.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435105
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_bone_orchard.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435106
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435107
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435108
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435109
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435110
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435111
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435112
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435113
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435114
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435115
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435116
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_midpoint.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435117
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435118
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435119
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435120
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435121
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435122
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435123
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435124
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435125
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435126
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435127
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435128
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435129
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435130
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435131
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435132
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435133
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435134
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435135
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435136
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_intro.019
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435137
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435138
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435139
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435140
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435141
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435142
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435143
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435144
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435145
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435146
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435147
+    m_Key: loc.story.dialogue.dialogue_seq_echo_grave_bonding.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435148
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435149
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435150
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435151
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435152
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435153
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435154
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435155
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435156
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435157
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435158
+    m_Key: loc.story.dialogue.dialogue_town_return_ch3_table.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435159
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435160
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435161
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435162
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435163
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435164
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435165
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435166
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435167
+    m_Key: loc.story.dialogue.cutscene_ch4_intro_glass_voice.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435168
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch4_orders.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435169
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch4_orders.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435170
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch4_orders.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435171
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch4_orders.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435172
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch4_orders.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435173
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch4_orders.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435174
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch4_orders.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435175
+    m_Key: loc.story.dialogue.dialogue_atlas_route_glass_forest.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435176
+    m_Key: loc.story.dialogue.dialogue_atlas_route_glass_forest.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435177
+    m_Key: loc.story.dialogue.dialogue_atlas_route_glass_forest.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435178
+    m_Key: loc.story.dialogue.dialogue_atlas_route_glass_forest.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435179
+    m_Key: loc.story.dialogue.dialogue_atlas_route_glass_forest.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435180
+    m_Key: loc.story.dialogue.dialogue_atlas_route_glass_forest.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435181
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435182
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435183
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435184
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435185
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435186
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435187
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435188
+    m_Key: loc.story.dialogue.dialogue_seq_glass_forest_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435189
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435190
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435191
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435192
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435193
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435194
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435195
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435196
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435197
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435198
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435199
+    m_Key: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435200
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_glass_conduit.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435201
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_glass_conduit.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435202
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_glass_conduit.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435203
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_glass_conduit.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435204
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_glass_conduit.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435205
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_glass_conduit.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435206
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_glass_conduit.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435207
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_glass_conduit.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435208
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_glass_conduit.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435209
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_glass_conduit.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435210
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_voice.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435211
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_voice.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435212
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_voice.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435213
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_voice.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435214
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_voice.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435215
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_voice.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435216
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_voice.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435217
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435218
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435219
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435220
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435221
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435222
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435223
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435224
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435225
+    m_Key: loc.story.dialogue.dialogue_seq_starved_menagerie_intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435226
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435227
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435228
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435229
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435230
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435231
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435232
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435233
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435234
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435235
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435236
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435237
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435238
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435239
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435240
+    m_Key: loc.story.dialogue.dialogue_seq_ember_runner_arrival.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435241
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435242
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435243
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435244
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435245
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435246
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435247
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435248
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435249
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435250
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435251
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435252
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435253
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435254
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_parting.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435255
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435256
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435257
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435258
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435259
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435260
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435261
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435262
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435263
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435264
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435265
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435266
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435267
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435268
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435269
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435270
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435271
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435272
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435273
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_first_encounter.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435274
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_menagerie.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435275
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_menagerie.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435276
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_menagerie.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435277
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_menagerie.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435278
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_menagerie.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435279
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_menagerie.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435280
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_menagerie.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435281
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_menagerie.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435282
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_menagerie.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435283
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_menagerie.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435284
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_menagerie.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435285
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_menagerie.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435286
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_menagerie.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435287
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435288
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435289
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435290
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435291
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435292
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435293
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435294
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435295
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435296
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435297
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435298
+    m_Key: loc.story.dialogue.dialogue_seq_menagerie_freed.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435299
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435300
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435301
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435302
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435303
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435304
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435305
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435306
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435307
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435308
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435309
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435310
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435311
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435312
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_judgment.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435313
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435314
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435315
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435316
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435317
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435318
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435319
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435320
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435321
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435322
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435323
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435324
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435325
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435326
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435327
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435328
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435329
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435330
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435331
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435332
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_costs.019
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435333
+    m_Key: loc.story.dialogue.dialogue_reward_ember_runner_join.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435334
+    m_Key: loc.story.dialogue.dialogue_reward_ember_runner_join.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435335
+    m_Key: loc.story.dialogue.dialogue_reward_ember_runner_join.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435336
+    m_Key: loc.story.dialogue.dialogue_reward_ember_runner_join.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435337
+    m_Key: loc.story.dialogue.dialogue_reward_ember_runner_join.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435338
+    m_Key: loc.story.dialogue.dialogue_reward_ember_runner_join.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435339
+    m_Key: loc.story.dialogue.dialogue_reward_ember_runner_join.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435340
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435341
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435342
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435343
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435344
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435345
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435346
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435347
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435348
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435349
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435350
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435351
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435352
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435353
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435354
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435355
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435356
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435357
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435358
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435359
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.019
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435360
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.020
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435361
+    m_Key: loc.story.dialogue.dialogue_town_return_ch4_table.021
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435362
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435363
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435364
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435365
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435366
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435367
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435368
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435369
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435370
+    m_Key: loc.story.dialogue.cutscene_ch4_clear_two_priests.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435371
+    m_Key: loc.story.dialogue.cutscene_ch5_intro_canyon_first_city.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435372
+    m_Key: loc.story.dialogue.cutscene_ch5_intro_canyon_first_city.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435373
+    m_Key: loc.story.dialogue.cutscene_ch5_intro_canyon_first_city.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435374
+    m_Key: loc.story.dialogue.cutscene_ch5_intro_canyon_first_city.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435375
+    m_Key: loc.story.dialogue.cutscene_ch5_intro_canyon_first_city.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435376
+    m_Key: loc.story.dialogue.cutscene_ch5_intro_canyon_first_city.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435377
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435378
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435379
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435380
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435381
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435382
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435383
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435384
+    m_Key: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435385
+    m_Key: loc.story.dialogue.dialogue_atlas_route_heartforge_gate.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435386
+    m_Key: loc.story.dialogue.dialogue_atlas_route_heartforge_gate.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435387
+    m_Key: loc.story.dialogue.dialogue_atlas_route_heartforge_gate.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435388
+    m_Key: loc.story.dialogue.dialogue_atlas_route_heartforge_gate.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435389
+    m_Key: loc.story.dialogue.dialogue_atlas_route_heartforge_gate.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435390
+    m_Key: loc.story.dialogue.dialogue_atlas_route_heartforge_gate.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435391
+    m_Key: loc.story.dialogue.dialogue_seq_heartforge_gate_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435392
+    m_Key: loc.story.dialogue.dialogue_seq_heartforge_gate_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435393
+    m_Key: loc.story.dialogue.dialogue_seq_heartforge_gate_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435394
+    m_Key: loc.story.dialogue.dialogue_seq_heartforge_gate_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435395
+    m_Key: loc.story.dialogue.dialogue_seq_heartforge_gate_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435396
+    m_Key: loc.story.dialogue.dialogue_seq_heartforge_gate_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435397
+    m_Key: loc.story.dialogue.dialogue_seq_heartforge_gate_intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435398
+    m_Key: loc.story.dialogue.dialogue_seq_four_costs_before_gate.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435399
+    m_Key: loc.story.dialogue.dialogue_seq_four_costs_before_gate.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435400
+    m_Key: loc.story.dialogue.dialogue_seq_four_costs_before_gate.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435401
+    m_Key: loc.story.dialogue.dialogue_seq_four_costs_before_gate.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435402
+    m_Key: loc.story.dialogue.dialogue_seq_four_costs_before_gate.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435403
+    m_Key: loc.story.dialogue.dialogue_seq_four_costs_before_gate.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435404
+    m_Key: loc.story.dialogue.dialogue_seq_four_costs_before_gate.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435405
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_signal.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435406
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_signal.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435407
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_signal.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435408
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_signal.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435409
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_signal.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435410
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_signal.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435411
+    m_Key: loc.story.dialogue.dialogue_seq_grey_fang_signal.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435412
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435413
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435414
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435415
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435416
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435417
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435418
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435419
+    m_Key: loc.story.dialogue.dialogue_seq_black_vellum_names.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435420
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435421
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435422
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435423
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435424
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435425
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435426
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435427
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435428
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435429
+    m_Key: loc.story.dialogue.dialogue_seq_silent_moon_gate.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435430
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_gate_warden.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435431
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_gate_warden.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435432
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_gate_warden.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435433
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_gate_warden.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435434
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_gate_warden.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435435
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_gate_warden.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435436
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_gate_warden.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435437
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_gate_warden.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435438
+    m_Key: loc.story.dialogue.dialogue_reward_mirror_cantor_join.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435439
+    m_Key: loc.story.dialogue.dialogue_reward_mirror_cantor_join.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435440
+    m_Key: loc.story.dialogue.dialogue_reward_mirror_cantor_join.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435441
+    m_Key: loc.story.dialogue.dialogue_reward_mirror_cantor_join.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435442
+    m_Key: loc.story.dialogue.dialogue_reward_mirror_cantor_join.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435443
+    m_Key: loc.story.dialogue.dialogue_reward_mirror_cantor_join.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435444
+    m_Key: loc.story.dialogue.dialogue_reward_mirror_cantor_join.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435445
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435446
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435447
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435448
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435449
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435450
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435451
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435452
+    m_Key: loc.story.dialogue.dialogue_seq_lyra_threshold_ritual.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435453
+    m_Key: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435454
+    m_Key: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435455
+    m_Key: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435456
+    m_Key: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435457
+    m_Key: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435458
+    m_Key: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435459
+    m_Key: loc.story.dialogue.dialogue_seq_massacre_record.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435460
+    m_Key: loc.story.dialogue.dialogue_seq_massacre_record.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435461
+    m_Key: loc.story.dialogue.dialogue_seq_massacre_record.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435462
+    m_Key: loc.story.dialogue.dialogue_seq_massacre_record.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435463
+    m_Key: loc.story.dialogue.dialogue_seq_massacre_record.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435464
+    m_Key: loc.story.dialogue.dialogue_seq_massacre_record.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435465
+    m_Key: loc.story.dialogue.dialogue_seq_massacre_record.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435466
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435467
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435468
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435469
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435470
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435471
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435472
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435473
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435474
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435475
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435476
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435477
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435478
+    m_Key: loc.story.dialogue.dialogue_seq_baekgyu_first_encounter.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435479
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435480
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435481
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435482
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435483
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435484
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435485
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435486
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435487
+    m_Key: loc.story.dialogue.dialogue_seq_boss_bark_baekgyu.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435488
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435489
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435490
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435491
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435492
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435493
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435494
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435495
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435496
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435497
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435498
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435499
+    m_Key: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435500
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435501
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435502
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179967435503
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629056
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629057
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629058
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629059
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629060
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629061
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629062
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629063
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629064
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629065
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629066
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629067
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629068
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629069
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629070
+    m_Key: loc.story.dialogue.dialogue_seq_final_record_decision.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629071
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629072
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629073
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629074
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629075
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629076
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629077
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629078
+    m_Key: loc.story.dialogue.dialogue_seq_four_leads_closure.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629079
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629080
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629081
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629082
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629083
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629084
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629085
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629086
+    m_Key: loc.story.dialogue.dialogue_town_return_after_ch5.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629087
+    m_Key: loc.story.dialogue.cutscene_ch5_clear_new_table.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629088
+    m_Key: loc.story.dialogue.cutscene_ch5_clear_new_table.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629089
+    m_Key: loc.story.dialogue.cutscene_ch5_clear_new_table.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629090
+    m_Key: loc.story.dialogue.cutscene_ch5_clear_new_table.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629091
+    m_Key: loc.story.dialogue.cutscene_ch5_clear_new_table.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629092
+    m_Key: loc.story.dialogue.cutscene_ch5_clear_new_table.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629093
+    m_Key: loc.story.dialogue.cutscene_ch5_clear_new_table.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629094
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629095
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629096
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629097
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629098
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629099
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629100
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629101
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629102
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ashen_frontier.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629103
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629104
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629105
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629106
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629107
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629108
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629109
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629110
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629111
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629112
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629113
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629114
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629115
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629116
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629117
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629118
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629119
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629120
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629121
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629122
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier_town_return.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629123
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629124
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629125
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629126
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629127
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629128
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629129
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629130
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_sunken_bastion.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629131
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_sunken_bastion.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629132
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_sunken_bastion.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629133
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_sunken_bastion.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629134
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_sunken_bastion.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629135
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_sunken_bastion.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629136
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_sunken_bastion.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629137
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_sunken_bastion.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629138
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629139
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629140
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629141
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629142
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629143
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629144
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629145
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629146
+    m_Key: loc.story.dialogue.cutscene_chapter_intro_ruined_crypts.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629147
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629148
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629149
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629150
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629151
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629152
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629153
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629154
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629155
+    m_Key: loc.story.dialogue.cutscene_chapter_clear_ruined_crypts.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629156
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629157
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629158
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629159
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629160
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629161
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629162
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629163
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629164
+    m_Key: loc.story.dialogue.cutscene_dawn_priest_memorial_dawn_prayer.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629165
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629166
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629167
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629168
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629169
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629170
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629171
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629172
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629173
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629174
+    m_Key: loc.story.dialogue.cutscene_echo_savant_memorial_external_witness_beyond_door.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629175
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629176
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629177
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629178
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629179
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629180
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629181
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629182
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629183
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629184
+    m_Key: loc.story.dialogue.cutscene_grave_hexer_memorial_new_bell_in_empty_seat.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629185
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629186
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629187
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629188
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629189
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629190
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629191
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629192
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629193
+    m_Key: loc.story.dialogue.cutscene_pack_raider_memorial_black_paint_at_camp.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629194
+    m_Key: loc.story.dialogue.cutscene_prologue_first_city_silhouette.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629195
+    m_Key: loc.story.dialogue.cutscene_prologue_first_city_silhouette.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629196
+    m_Key: loc.story.dialogue.cutscene_prologue_first_city_silhouette.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629197
+    m_Key: loc.story.dialogue.cutscene_prologue_first_city_silhouette.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629198
+    m_Key: loc.story.dialogue.cutscene_prologue_first_city_silhouette.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629199
+    m_Key: loc.story.dialogue.cutscene_prologue_first_city_silhouette.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629200
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629201
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629202
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629203
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629204
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629205
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629206
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629207
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629208
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629209
+    m_Key: loc.story.dialogue.cutscene_prologue_letter_from_council.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629210
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629211
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629212
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629213
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629214
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629215
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629216
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629217
+    m_Key: loc.story.dialogue.cutscene_prologue_dawn_priest_arrives.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629218
+    m_Key: loc.story.dialogue.cutscene_prologue_through_town.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629219
+    m_Key: loc.story.dialogue.cutscene_prologue_through_town.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629220
+    m_Key: loc.story.dialogue.cutscene_prologue_through_town.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629221
+    m_Key: loc.story.dialogue.cutscene_prologue_through_town.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629222
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629223
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629224
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629225
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629226
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629227
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629228
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629229
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629230
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629231
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629232
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629233
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629234
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.012
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629235
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.013
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629236
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.014
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629237
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.015
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629238
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.016
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629239
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.017
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629240
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.018
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629241
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.019
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629242
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.020
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629243
+    m_Key: loc.story.dialogue.cutscene_prologue_pack_raider_meets.021
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629244
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629245
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629246
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629247
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629248
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629249
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629250
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629251
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629252
+    m_Key: loc.story.dialogue.cutscene_prologue_arrival_at_gate.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629253
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629254
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629255
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629256
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629257
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629258
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629259
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629260
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629261
+    m_Key: loc.story.dialogue.dialogue_seq_aegis_sentinel_tc1_one_lattice_line_of_promise.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629262
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629263
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629264
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629265
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629266
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629267
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629268
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629269
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629270
+    m_Key: loc.story.dialogue.dialogue_seq_crypt_guardian_tc1_one_who_sleeps_was_priest.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629271
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629272
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629273
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629274
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629275
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629276
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629277
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629278
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629279
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc1_prayer_as_command.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629280
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629281
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629282
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629283
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629284
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629285
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629286
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629287
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc2_what_the_seal_promised.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629288
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629289
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629290
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629291
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629292
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629293
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629294
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629295
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629296
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629297
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629298
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629299
+    m_Key: loc.story.dialogue.dialogue_seq_dawn_priest_tc3_questions_remained.011
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629300
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629301
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629302
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629303
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629304
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629305
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629306
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629307
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629308
+    m_Key: loc.story.dialogue.dialogue_seq_dread_marksman_tc1_within_normal_range.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629309
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629310
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629311
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629312
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629313
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629314
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629315
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629316
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629317
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc1_external_words_again.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629318
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629319
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629320
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629321
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629322
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629323
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629324
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629325
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629326
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629327
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629328
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc2_promise_letter_and_intent.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629329
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629330
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629331
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629332
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629333
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629334
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629335
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629336
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629337
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629338
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629339
+    m_Key: loc.story.dialogue.dialogue_seq_echo_savant_tc3_work_beyond_the_door.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629340
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629341
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629342
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629343
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629344
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629345
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629346
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629347
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629348
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc1_humor_bell.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629349
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629350
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629351
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629352
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629353
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629354
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629355
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629356
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629357
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629358
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629359
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc2_seat_in_the_list.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629360
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629361
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629362
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629363
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629364
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629365
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629366
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629367
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629368
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629369
+    m_Key: loc.story.dialogue.dialogue_seq_grave_hexer_tc3_one_piece_passed.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629370
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629371
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629372
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629373
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629374
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629375
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629376
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629377
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629378
+    m_Key: loc.story.dialogue.dialogue_seq_longshot_hunter_tc1_no_arrow_to_waste.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629379
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629380
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629381
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629382
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629383
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629384
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629385
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629386
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629387
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629388
+    m_Key: loc.story.dialogue.dialogue_seq_mirror_cantor_tc1_record_belongs_to_living.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629389
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629390
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629391
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629392
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629393
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629394
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629395
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629396
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629397
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629398
+    m_Key: loc.story.dialogue.dialogue_seq_oath_slayer_tc1_was_this_blade_justice.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629399
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc1_totem_secret.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629400
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc1_totem_secret.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629401
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc1_totem_secret.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629402
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc1_totem_secret.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629403
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc1_totem_secret.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629404
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc1_totem_secret.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629405
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc1_totem_secret.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629406
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629407
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629408
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629409
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629410
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629411
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629412
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629413
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629414
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629415
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc2_last_word_for_brother.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629416
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629417
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629418
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629419
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629420
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629421
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629422
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629423
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629424
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629425
+    m_Key: loc.story.dialogue.dialogue_seq_pack_raider_tc3_black_paint_not_forever.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629426
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629427
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629428
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629429
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629430
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629431
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629432
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629433
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629434
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629435
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629436
+    m_Key: loc.story.dialogue.dialogue_seq_storm_shaman_tc1_song_of_the_lost.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629437
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.000
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629438
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629439
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629440
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629441
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629442
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629443
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629444
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19023179971629445
+    m_Key: loc.story.dialogue.dialogue_seq_trail_scout_tc1_both_sides_guilty.008
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
