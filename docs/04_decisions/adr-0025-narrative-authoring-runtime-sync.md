@@ -21,6 +21,12 @@ ADR-0022가 narrative asmdef 배치(Content/Meta/Persistence/Unity)를 정했고
 - 런타임 본문 dialogue/StoryEvent asset이 2026-04-19에 동결. SoT 전환·5/21 톤 재정렬·ADR-0024 reskin이 게임에 미반영. 빌드하면 폐기 plot(`foreshadow_lattice`, `relicborn_awakening`, `aldric_face_revealed`, `savant_seal_decision`)이 재생된다.
 - 메커니즘: 이중 소스(레거시 `narrative-seed.json` + 신규 `narrative-seed-wiki.json`) 공존 → `NarrativeSeedImporter`가 orphan pruning OFF → 폐기 scene 영구 잔존. `wiki_narrative_extract.py`가 `storyEvents:[]`만 출력 → StoryEvent 레거시 고정. `narrative_validate.py`가 stale `master-script.md` 검증. raw-wiki는 `.gitignore` 임시물, `sourceHash` 계산만 하고 미사용.
 
+정밀 audit(2026-06-02 후속, 파이프라인 정독):
+
+- **`_id` 이중 prefix 버그(수정 완료).** `wiki_narrative_extract.py`가 `sequenceId = f"dialogue_seq_{scene_id}"`로 만들었는데 raw-wiki `scene_id`는 이미 `dialogue_scene_` prefix를 포함한다. 그 결과 `dialogue_seq_dialogue_scene_ashen_gate_intro` 같은 이중 prefix가 생겼고, 런타임 `NarrativePresentationKeyNormalizer.ToDialogueSequenceId`가 기대하는 `dialogue_seq_ashen_gate_intro`와 영원히 어긋나 새 시퀀스 138개가 한 번도 resolve되지 않는 dead asset이었다. `DialogueAssemblyService.BuildDialogueRequest`는 `presentationKey` 1차 직접 조회 → 실패 시 `ToDialogueSequenceId` 2차 조회 순서라, 구버전(`dialogue_scene_*` _id)이 1차를 가로채 게임은 4/19 구버전을 재생했다. → `to_sequence_id()` 헬퍼로 런타임 규약과 일치시켜 수정.
+- **event 계층 ↔ dialogue 계층 전면 drift.** event trigger는 `docs/02_design/narrative/dialogue-event-schema.md`(2026-04-10, 폐기 세계관)에서, dialogue 본문은 raw-wiki(2026-05-23, 신 세계관)에서 온다. 두 계층의 `scene_id` 명명이 거의 일치하지 않는다(`dialogue_scene_wolfpine_trail_intro` ↔ raw-wiki `dialogue_scene_wolfpine_trail`, boss bark 이름 전부 상이). schema.md에는 폐기 plot event(`relicborn_awakening`/`aldric_face_revealed`/`aldric_whisper`/`sacrifice_sequence`)가 살아 있고, raw-wiki의 신규 60+ scene(`cutscene_prologue_*`, `cutscene_chapter_intro/clear_*`, `cutscene_*_memorial_*`, town rank `*_tc1/2/3`, 단현 일지·흑지 명단·선영·백규)은 trigger event가 없어 게임에 영영 등장하지 않는다.
+- 결론: 구버전 asset 제거만으로는 부족하다. event 계층을 raw-wiki 신 세계관 기준으로 재작성(폐기 제거 + scene_id 정합 + 신규 trigger 추가)해야 게임이 최신 스토리를 재생한다.
+
 GPT Pro 자문(2026-06-02)으로 교차검증: 위 진단과 "단방향 파이프라인" 방향은 맞으나, **scene 단위 동기화에 머물면 line / localization-key / cue / event / AI-diff 단위 drift가 남는다.** 핵심 보강은 (a) pindoc과 Unity 사이에 **Git-tracked canonical manifest(계약 SoT)** 를 두고, (b) 텍스트와 독립된 **stable `line_uid`** 를 도입하는 것이다.
 
 제약:
@@ -88,7 +94,8 @@ GPT Pro 자문(2026-06-02)으로 교차검증: 위 진단과 "단방향 파이�
 
 GPT Pro 자문의 Step 0~8을 baseline으로 한다.
 
-- 선행: **동기화 audit** — 런타임 asset/event/loc ↔ pindoc scene_id/line 전수 diff로 현재 drift 규모 정량화.
+- 선행(완료, 2026-06-02): **동기화 audit** + extract `_id` 이중 prefix 버그 수정. 위 "정밀 audit" 절 참조.
+- **최우선(audit으로 확정): event 계층 재작성** — `dialogue-event-schema.md`(4/10 폐기 세계관)를 raw-wiki(5/23) `scene_id` 기준으로 개정한다. 폐기 plot event 삭제 + presentationKey를 raw-wiki scene_id로 정합 + 신규 cutscene/town/일지 scene trigger 추가. 이게 없으면 구버전 제거 시 scene_id 불일치 event가 런타임에서 throw한다. trigger는 코드 직결 계약이므로 산출은 git canonical(event manifest). vertical slice는 prologue+ch1부터.
 0. **레거시 경로 차단** — 하드코딩 seed import entrypoint 제거, importer 단일 소스화, import 후 `event_count == 0`이면 fail.
 1. canonical manifest 디렉터리 + JSON Schema 도입.
 2. `line_uid`/`loc_key` 마이그레이션 (alias table).

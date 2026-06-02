@@ -463,6 +463,26 @@ class WikiParser:
 # Output
 # ---------------------------------------------------------------------------
 
+def to_sequence_id(scene_id: str) -> str:
+    """presentation scene_id를 런타임 DialogueSequence stable id로 변환한다.
+
+    런타임 `NarrativePresentationKeyNormalizer.ToDialogueSequenceId`와 정확히
+    같은 규약을 따른다: `dialogue_scene_`/`dialogue_overlay_` prefix를 떼고
+    `dialogue_seq_`로 교체한다. 그 외 prefix(`story_card_`/`cutscene_`/`toast_`,
+    그리고 `dialogue_town_`/`dialogue_atlas_`/`dialogue_reward_` 같은 변종)는
+    그대로 둔다 — 런타임이 presentationKey로 1차 직접 조회하기 때문이다.
+
+    버그 이력: 이전 구현은 `f"dialogue_seq_{scene_id}"`로 무조건 prefix를
+    덧붙여 `dialogue_seq_dialogue_scene_ashen_gate_intro` 같은 이중 prefix를
+    만들었다. 런타임 fallback이 기대하는 `dialogue_seq_ashen_gate_intro`와
+    영원히 어긋나, StoryEvent가 신규 시퀀스를 한 번도 resolve하지 못했다.
+    """
+    for src in ("dialogue_scene_", "dialogue_overlay_"):
+        if scene_id.startswith(src):
+            return "dialogue_seq_" + scene_id[len(src):]
+    return scene_id
+
+
 def build_seed(scenes: dict[str, WikiScene]) -> dict:
     """Emit narrative-seed-wiki.json.
 
@@ -507,7 +527,7 @@ def build_seed(scenes: dict[str, WikiScene]) -> dict:
                 "refs": ln.refs,
             })
         seq = {
-            "sequenceId": f"dialogue_seq_{scene.scene_id}",
+            "sequenceId": to_sequence_id(scene.scene_id),
             "presentationKey": scene.scene_id,
             "presentationKind": scene.presentation_kind,
             "artifactSlug": scene.artifact_slug,
