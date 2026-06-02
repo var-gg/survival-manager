@@ -166,11 +166,13 @@ public static class NarrativeSeedImporter
         var koTable = GetOrCreateStringTable(collection, "ko");
         var enTable = GetOrCreateStringTable(collection, "en");
 
+        var validLocKeys = new HashSet<string>(StringComparer.Ordinal);
         foreach (var seq in manifest.DialogueSequences)
         {
             foreach (var line in seq.Lines)
             {
                 var key = NarrativeLocalizationKeys.DialogueLine(seq.SequenceId, line.LineIndex);
+                validLocKeys.Add(key);
                 if (UpsertEntry(koTable, key, line.Text)) locCreated++; else locUpdated++;
                 if (options.InsertMissingEnglishEntries) UpsertEntry(enTable, key, "", preserveExisting: true);
             }
@@ -180,6 +182,8 @@ public static class NarrativeSeedImporter
         {
             var titleKey = NarrativeLocalizationKeys.PresentationTitle(pres.PresentationKey);
             var bodyKey = NarrativeLocalizationKeys.PresentationBody(pres.PresentationKey);
+            validLocKeys.Add(titleKey);
+            validLocKeys.Add(bodyKey);
             if (UpsertEntry(koTable, titleKey, pres.Title ?? "")) locCreated++; else locUpdated++;
             if (UpsertEntry(koTable, bodyKey, pres.Body ?? "")) locCreated++; else locUpdated++;
             if (options.InsertMissingEnglishEntries)
@@ -201,6 +205,9 @@ public static class NarrativeSeedImporter
         {
             deleted += PruneOrphans<StoryEventDefinition>(StoryEventsDir, manifestEventIds);
             deleted += PruneOrphans<DialogueSequenceDefinition>(DialogueSequencesDir, manifestSeqIds);
+            var locPruned = PruneOrphanStoryLocalization(collection, koTable, enTable, validLocKeys);
+            if (locPruned > 0)
+                Debug.Log($"[NarrativeSeedImporter] Pruned {locPruned} orphan story localization entries.");
         }
 
         AssetDatabase.SaveAssets();
@@ -410,6 +417,45 @@ public static class NarrativeSeedImporter
             }
         }
         return deleted;
+    }
+
+    // story dialogue/presentation localization orphan을 제거한다(ADR-0025 규칙 5/7).
+    // emotion(loc.story.emotion.*)·archive(loc.story.archive.*)는 importer가 생성하지
+    // 않으므로 보존하고, 그 외 loc.story.* key 중 이번 import가 만들지 않은 것(구버전
+    // dialogue/presentation, 레거시 loc.story.scene_* 형식, 폐기 plot)을 삭제한다.
+    private static int PruneOrphanStoryLocalization(
+        StringTableCollection collection,
+        StringTable koTable,
+        StringTable enTable,
+        HashSet<string> validKeys)
+    {
+        var shared = collection.SharedData;
+        if (shared == null) return 0;
+
+        int removed = 0;
+        foreach (var entry in shared.Entries.ToList())
+        {
+            var key = entry.Key;
+            if (string.IsNullOrEmpty(key)) continue;
+            if (!key.StartsWith("loc.story.", StringComparison.Ordinal)) continue;
+            if (validKeys.Contains(key)) continue;
+            if (key.StartsWith("loc.story.emotion.", StringComparison.Ordinal)) continue;
+            if (key.StartsWith("loc.story.archive.", StringComparison.Ordinal)) continue;
+
+            koTable.RemoveEntry(key);
+            enTable.RemoveEntry(key);
+            shared.RemoveKey(key);
+            removed++;
+        }
+
+        if (removed > 0)
+        {
+            EditorUtility.SetDirty(collection);
+            EditorUtility.SetDirty(shared);
+            EditorUtility.SetDirty(koTable);
+            EditorUtility.SetDirty(enTable);
+        }
+        return removed;
     }
 
     // --- Localization helpers ---
