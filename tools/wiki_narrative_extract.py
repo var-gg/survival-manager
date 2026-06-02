@@ -37,6 +37,7 @@ from typing import Optional
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RAW_WIKI_DIR = REPO_ROOT / "tools" / "raw-wiki"
 AUTHORING_MAP = REPO_ROOT / "tools" / "narrative-authoring-map.json"
+EVENT_MAP = REPO_ROOT / "tools" / "narrative-event-map.json"
 OUTPUT_DIR = REPO_ROOT / "Temp" / "Narrative"
 OUTPUT_FILE = OUTPUT_DIR / "narrative-seed-wiki.json"
 
@@ -483,6 +484,48 @@ def to_sequence_id(scene_id: str) -> str:
     return scene_id
 
 
+def load_event_map() -> list[dict]:
+    """Git-tracked canonical event manifest를 읽는다(ADR-0025 규칙 2).
+
+    파일이 없으면 빈 목록을 반환해 dialogue-only 추출도 계속 동작하게 둔다."""
+    if not EVENT_MAP.exists():
+        return []
+    with open(EVENT_MAP, encoding="utf-8") as f:
+        return json.load(f).get("events", [])
+
+
+def build_story_events(
+    event_defs: list[dict],
+    sequence_ids: set[str],
+    diagnostics: list[ExtractDiagnostic],
+) -> list[dict]:
+    """event manifest를 런타임 storyEvents로 변환한다.
+
+    presentationKey가 dialogue 종류(DialogueScene/DialogueOverlay)면 대응
+    sequence가 실제로 추출됐는지 검증하고, 없으면 drop + diagnostic을 남긴다.
+    raw-wiki에 scene이 없는 event가 런타임에서 throw하지 않도록 막는 게이트다.
+    presentationKey 자체는 raw-wiki scene_id 규약을 그대로 따른다 — 런타임
+    DialogueAssemblyService가 1차 직접 조회 후 ToDialogueSequenceId로 fallback한다."""
+    out: list[dict] = []
+    for index, ev in enumerate(event_defs):
+        pkey = ev.get("presentationKey", "")
+        kind = ev.get("presentationKind", "")
+        if kind in ("DialogueScene", "DialogueOverlay"):
+            seq_id = to_sequence_id(pkey)
+            if seq_id not in sequence_ids:
+                diagnostics.append(ExtractDiagnostic(
+                    code="WIKI-E030",
+                    severity="Error",
+                    message=(f"Event '{ev.get('eventId')}' presentationKey "
+                             f"'{pkey}' → sequence '{seq_id}' not found in "
+                             f"extracted dialogue; event dropped."),
+                    source="narrative-event-map.json",
+                ))
+                continue
+        out.append({**ev, "sourceOrder": index})
+    return out
+
+
 def build_seed(scenes: dict[str, WikiScene]) -> dict:
     """Emit narrative-seed-wiki.json.
 
@@ -594,6 +637,9 @@ def main() -> int:
         parser.parse_file(md)
 
     seed = build_seed(parser.scenes)
+    sequence_ids = {seq["sequenceId"] for seq in seed["dialogueSequences"]}
+    seed["storyEvents"] = build_story_events(
+        load_event_map(), sequence_ids, parser.diagnostics)
     seed["sourceHash"] = compute_source_hash(md_files)
     seed["diagnostics"] = [asdict(d) for d in parser.diagnostics]
 
@@ -624,6 +670,7 @@ def main() -> int:
     print(f"[wiki-extract] {OUTPUT_FILE}")
     print(f"  source files:   {len(md_files)}")
     print(f"  scenes:         {len(parser.scenes)}")
+    print(f"  story events:   {len(seed['storyEvents'])}")
     print(f"  total lines:    {line_total}")
     print(f"  voiced lines:   {voiced_total}")
     print(f"  cross-refs:     {ref_total}")

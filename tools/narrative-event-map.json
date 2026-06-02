@@ -1,0 +1,319 @@
+{
+  "version": 1,
+  "note": "Canonical narrative event manifest (Git-tracked, ADR-0025 규칙 2). pindoc/raw-wiki는 창작 SoT(대본 본문)로 두고, 이 manifest의 presentationKey를 raw-wiki scene_id에 맞춰 정렬한다. wiki_narrative_extract.py가 이 파일을 읽어 seed.storyEvents를 채우고, presentationKey가 가리키는 dialogue sequence가 추출물에 실재하는지 검증한다(없으면 drop+diagnostic).\n\nTrack A 범위(2026-06-02): 런타임이 실제 fire하는 moment(SiteEntered/BattleResolved) + flag 무의존 + raw-wiki에 대응 scene이 실재하는 event만 포함한다.\n- 제외(죽은 moment): boss_bark(BattleStarted)·extract/unlock(ExtractCommitted)는 런타임이 해당 moment를 fire하지 않아 구버전부터 죽은 trigger.\n- 제외(flag 연쇄 사망): town_return은 hero unlock flag 의존인데 unlock event가 죽은 moment라 연쇄로 죽음. condition 재설계 후 별도 추가.\n- 제외(폐기 세계관): relicborn_awakening·aldric_face/whisper·sacrifice_sequence는 신세계관에 scene 없음.\n- 제외(raw-wiki 대응 없음): boss_defeat_ashen_gate(ch1 boss는 gate_warden), boss_defeat_sunken_bastion·tithe_road(ch2 boss scene 미작성).\nTrack B(게임 연출 시스템 확장: prologue/chapter cutscene/중간대사/town)는 별도.",
+  "events": [
+    {
+      "eventId": "story_event_site_intro_ashen_gate",
+      "chapterId": "chapter_ashen_gate",
+      "siteId": "site_ashen_gate",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_ashen_gate_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_ashen_gate"},
+        {"kindToken": "SiteIs", "operandA": "site_ashen_gate"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_ashen_gate"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_wolfpine_trail",
+      "chapterId": "chapter_ashen_gate",
+      "siteId": "site_wolfpine_trail",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_wolfpine_trail",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_ashen_gate"},
+        {"kindToken": "SiteIs", "operandA": "site_wolfpine_trail"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_wolfpine_trail"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_sunken_bastion",
+      "chapterId": "chapter_sunken_bastion",
+      "siteId": "site_sunken_bastion",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_sunken_bastion_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_sunken_bastion"},
+        {"kindToken": "SiteIs", "operandA": "site_sunken_bastion"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_sunken_bastion"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_tithe_road",
+      "chapterId": "chapter_sunken_bastion",
+      "siteId": "site_tithe_road",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_tithe_road_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_sunken_bastion"},
+        {"kindToken": "SiteIs", "operandA": "site_tithe_road"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_tithe_road"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_ruined_crypts",
+      "chapterId": "chapter_ruined_crypts",
+      "siteId": "site_ruined_crypts",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_ruined_crypts_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_ruined_crypts"},
+        {"kindToken": "SiteIs", "operandA": "site_ruined_crypts"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_ruined_crypts"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_bone_orchard",
+      "chapterId": "chapter_ruined_crypts",
+      "siteId": "site_bone_orchard",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_bone_orchard_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_ruined_crypts"},
+        {"kindToken": "SiteIs", "operandA": "site_bone_orchard"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_bone_orchard"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_glass_forest",
+      "chapterId": "chapter_glass_forest",
+      "siteId": "site_glass_forest",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_glass_forest_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_glass_forest"},
+        {"kindToken": "SiteIs", "operandA": "site_glass_forest"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_glass_forest"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_starved_menagerie",
+      "chapterId": "chapter_glass_forest",
+      "siteId": "site_starved_menagerie",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_starved_menagerie_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_glass_forest"},
+        {"kindToken": "SiteIs", "operandA": "site_starved_menagerie"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_starved_menagerie"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_heartforge_gate",
+      "chapterId": "chapter_heartforge_descent",
+      "siteId": "site_heartforge_gate",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_heartforge_gate_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_heartforge_descent"},
+        {"kindToken": "SiteIs", "operandA": "site_heartforge_gate"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_heartforge_gate"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_site_intro_worldscar_depths",
+      "chapterId": "chapter_heartforge_descent",
+      "siteId": "site_worldscar_depths",
+      "moment": "SiteEntered",
+      "priority": 100,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_worldscar_depths_intro",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_heartforge_descent"},
+        {"kindToken": "SiteIs", "operandA": "site_worldscar_depths"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_intro_worldscar_depths"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_boss_defeat_wolfpine_trail",
+      "chapterId": "chapter_ashen_gate",
+      "siteId": "site_wolfpine_trail",
+      "moment": "BattleResolved",
+      "priority": 250,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_scene_boss_wolfpine_defeat",
+      "presentationKind": "DialogueScene",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_ashen_gate"},
+        {"kindToken": "SiteIs", "operandA": "site_wolfpine_trail"},
+        {"kindToken": "NodeIs", "operandA": "4"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_grey_fang_defeated"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
+      ]
+    },
+    {
+      "eventId": "story_event_boss_defeat_ruined_crypts",
+      "chapterId": "chapter_ruined_crypts",
+      "siteId": "site_ruined_crypts",
+      "moment": "BattleResolved",
+      "priority": 250,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_overlay_boss_defeat_ruined_crypts",
+      "presentationKind": "DialogueOverlay",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_ruined_crypts"},
+        {"kindToken": "SiteIs", "operandA": "site_ruined_crypts"},
+        {"kindToken": "NodeIs", "operandA": "4"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_silent_archivist_defeated"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueOverlay"}
+      ]
+    },
+    {
+      "eventId": "story_event_boss_defeat_bone_orchard",
+      "chapterId": "chapter_ruined_crypts",
+      "siteId": "site_bone_orchard",
+      "moment": "BattleResolved",
+      "priority": 250,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_overlay_boss_defeat_bone_orchard",
+      "presentationKind": "DialogueOverlay",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_ruined_crypts"},
+        {"kindToken": "SiteIs", "operandA": "site_bone_orchard"},
+        {"kindToken": "NodeIs", "operandA": "4"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_root_watcher_defeated"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueOverlay"}
+      ]
+    },
+    {
+      "eventId": "story_event_boss_defeat_glass_forest",
+      "chapterId": "chapter_glass_forest",
+      "siteId": "site_glass_forest",
+      "moment": "BattleResolved",
+      "priority": 250,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_overlay_boss_defeat_glass_conduit",
+      "presentationKind": "DialogueOverlay",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_glass_forest"},
+        {"kindToken": "SiteIs", "operandA": "site_glass_forest"},
+        {"kindToken": "NodeIs", "operandA": "4"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_prism_guardian_defeated"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueOverlay"}
+      ]
+    },
+    {
+      "eventId": "story_event_boss_defeat_starved_menagerie",
+      "chapterId": "chapter_glass_forest",
+      "siteId": "site_starved_menagerie",
+      "moment": "BattleResolved",
+      "priority": 250,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_overlay_boss_defeat_menagerie",
+      "presentationKind": "DialogueOverlay",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_glass_forest"},
+        {"kindToken": "SiteIs", "operandA": "site_starved_menagerie"},
+        {"kindToken": "NodeIs", "operandA": "4"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_hunger_warden_defeated"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueOverlay"}
+      ]
+    },
+    {
+      "eventId": "story_event_boss_defeat_heartforge_gate",
+      "chapterId": "chapter_heartforge_descent",
+      "siteId": "site_heartforge_gate",
+      "moment": "BattleResolved",
+      "priority": 250,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_overlay_boss_defeat_gate_warden",
+      "presentationKind": "DialogueOverlay",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_heartforge_descent"},
+        {"kindToken": "SiteIs", "operandA": "site_heartforge_gate"},
+        {"kindToken": "NodeIs", "operandA": "4"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_eternal_bulwark_defeated"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueOverlay"}
+      ]
+    },
+    {
+      "eventId": "story_event_final_boss",
+      "chapterId": "chapter_heartforge_descent",
+      "siteId": "site_worldscar_depths",
+      "moment": "BattleResolved",
+      "priority": 700,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_overlay_boss_defeat_baekgyu",
+      "presentationKind": "DialogueOverlay",
+      "conditions": [
+        {"kindToken": "ChapterIs", "operandA": "chapter_heartforge_descent"},
+        {"kindToken": "SiteIs", "operandA": "site_worldscar_depths"},
+        {"kindToken": "NodeIs", "operandA": "4"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_final_boss_defeated"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueOverlay"}
+      ]
+    }
+  ]
+}
