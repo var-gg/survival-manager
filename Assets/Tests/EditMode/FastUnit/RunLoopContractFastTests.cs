@@ -601,6 +601,42 @@ public sealed class RunLoopContractFastTests
             "미서약은 어떤 warrant flag도 stamp하지 않는다.");
     }
 
+    [Test]
+    public void PledgedWarrant_Council_Satisfied_ShiftsFactionTrust()
+    {
+        // ADR-0028 정치 warrant 통합: issuer/opposed faction이 붙은 warrant를 이행하면
+        // SaveProfile.FactionStanding(profile truth) trust가 바뀐다 — 전투→정치 절반의 rail.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+
+        // issuer=faction_north_council, opposed=faction_free_militia, 조건=Intact(손실 0).
+        session.PledgeWarrant(WarrantCatalog.CouncilMandateId);
+
+        var finalUnits = new List<BattleUnitReadModel>
+        {
+            CreateAllyUnit("hero-1", alive: true),
+            CreateAllyUnit("hero-2", alive: true),
+            CreateAllyUnit("hero-3", alive: true),
+            CreateAllyUnit("hero-4", alive: true),
+        };
+        session.MarkBattleResolved(victory: true, stepCount: 8, eventCount: 4, finalUnits);
+
+        var council = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == "faction_north_council");
+        var militia = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == "faction_free_militia");
+        Assert.That(council, Is.Not.Null, "satisfied 시 issuer 세력 standing이 생긴다.");
+        Assert.That(council!.Trust, Is.EqualTo(FactionTrustService.SatisfiedIssuerGain));
+        Assert.That(militia, Is.Not.Null, "satisfied 시 opposed 세력도 영향받는다.");
+        Assert.That(militia!.Trust, Is.EqualTo(-FactionTrustService.SatisfiedOpposedLoss));
+
+        // WarrantResult(issuer/opposed)가 Dossier에 영속.
+        var dossier = session.Profile.Dossier.LastOrDefault();
+        Assert.That(dossier!.IssuerFactionId, Is.EqualTo("faction_north_council"));
+        Assert.That(dossier.OpposedFactionId, Is.EqualTo("faction_free_militia"));
+    }
+
     private static BattleUnitReadModel CreateAllyUnit(string id, bool alive)
     {
         return new BattleUnitReadModel(

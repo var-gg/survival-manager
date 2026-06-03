@@ -51,5 +51,11 @@ public sealed class DossierEntryRecord
     /// <summary>그때 적용된 resolved turn 임계(encounter-relative, patch 후 과거 기록 보존용).</summary>
     public int WarrantResolvedTurnLimit;
 
+    /// <summary>warrant를 발행한 정치 세력(없으면 ""). "누구에게 한 약속인가". ADR-0028.</summary>
+    public string IssuerFactionId = string.Empty;
+
+    /// <summary>이 warrant로 거스른 세력(없으면 ""). "누구의 기준을 거절했나".</summary>
+    public string OpposedFactionId = string.Empty;
+
     public string CompletedAtUtc = string.Empty;
 }

@@ -22,7 +22,14 @@ public enum WarrantKind
 /// 하나의 서약 정의. stable id(코드 식별자) + 판정 종류 + (Swift용) turn 임계.
 /// 표시명은 여기 넣지 않는다 — ID/label 분리(localization label은 별도).
 /// </summary>
-public sealed record WarrantSpec(string Id, WarrantKind Kind, int SwiftStepThreshold = 0);
+/// <param name="IssuerFactionId">warrant를 발행한 정치 세력(없으면 "") — ADR-0028 정치 warrant.</param>
+/// <param name="OpposedFactionId">이 warrant를 수락하면 거스르는 세력(없으면 "").</param>
+public sealed record WarrantSpec(
+    string Id,
+    WarrantKind Kind,
+    int SwiftStepThreshold = 0,
+    string IssuerFactionId = "",
+    string OpposedFactionId = "");
 
 /// <summary>
 /// 서약 id(overlay에 실려 settlement까지 운반되는 string) → <see cref="WarrantSpec"/> 해석.
@@ -34,6 +41,12 @@ public static class WarrantCatalog
     public const string SwiftId = "warrant_swift";
     public const string IntactId = "warrant_intact";
 
+    /// <summary>
+    /// ADR-0028 정치 warrant 예시(slice 1). 조건은 fact predicate(Intact=손실 0)를 "세력 기준"으로 재사용하고,
+    /// 핵심은 issuer/opposed 정치 결과다. faction id는 slice-1 placeholder — 실제 4-faction 매핑은 content authoring.
+    /// </summary>
+    public const string CouncilMandateId = "warrant_council_mandate";
+
     // SwiftStepThreshold는 placeholder다. 서약이 live로 가는 P2b에서 실제 관측 stepCount에 맞춰
     // 튜닝한다(슬라이스 1은 ships dark — live에서 PledgedWarrantId="" 이라 미사용, test는 자체 임계 주입).
     private const int SwiftStepThresholdDefault = 600;
@@ -43,6 +56,11 @@ public static class WarrantCatalog
         {
             [SwiftId] = new WarrantSpec(SwiftId, WarrantKind.Swift, SwiftStepThresholdDefault),
             [IntactId] = new WarrantSpec(IntactId, WarrantKind.Intact),
+            [CouncilMandateId] = new WarrantSpec(
+                CouncilMandateId,
+                WarrantKind.Intact,
+                IssuerFactionId: "faction_north_council",
+                OpposedFactionId: "faction_free_militia"),
         };
 
     /// <summary>

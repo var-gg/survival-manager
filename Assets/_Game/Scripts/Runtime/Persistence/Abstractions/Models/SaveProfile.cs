@@ -29,6 +29,7 @@ public sealed class SaveProfile
     public List<SuspicionFlagRecord> SuspicionFlags = new();
     public List<RunSummaryRecord> RunSummaries = new();
     public List<DossierEntryRecord> Dossier = new();
+    public List<FactionStandingRecord> FactionStanding = new();
     public List<ArenaDefenseSnapshotRecord> ArenaDefenseSnapshots = new();
     public List<ArenaBlueprintSlotRecord> ArenaBlueprintSlots = new();
     public List<ArenaMatchRecordRecord> ArenaMatchRecords = new();

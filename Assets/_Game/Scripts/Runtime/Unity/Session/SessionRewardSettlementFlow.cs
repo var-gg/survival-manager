@@ -324,8 +324,18 @@ public sealed partial class GameSessionState
                 WarrantSeverity = WarrantJudgment.SeverityToken(warrantJudgment.Severity),
                 WarrantObservedTurnCount = warrantJudgment.ObservedTurnCount,
                 WarrantResolvedTurnLimit = warrantJudgment.ResolvedTurnLimit,
+                IssuerFactionId = warrantSpec?.IssuerFactionId ?? string.Empty,
+                OpposedFactionId = warrantSpec?.OpposedFactionId ?? string.Empty,
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
+
+            // ADR-0028: warrant 정치 결과를 세력 trust(profile truth)에 반영. delta 계산은 SM.Meta 순수(FactionTrustService),
+            // 적용만 여기서. issuer 없는 warrant(build축/미서약)는 빈 delta라 무영향. (slice 2: trust → 다음 전투 조건.)
+            if (warrantSpec != null)
+            {
+                ApplyFactionTrustDeltas(FactionTrustService.ComputeDeltas(
+                    warrantJudgment.Outcome, warrantSpec.IssuerFactionId, warrantSpec.OpposedFactionId));
+            }
 
             // P1b: squad 손실(costly victory)을 chapter-scoped story flag로 stamp(through-director, 우회 아님).
             // Town-return 이벤트가 FlagSet로 이 flag를 읽어 손실 acknowledgement를 분기한다(P1b-content).
@@ -345,6 +355,29 @@ public sealed partial class GameSessionState
                 var warrantToken = warrantJudgment.Outcome == WarrantOutcome.Kept ? "kept" : "broken";
                 _session.StoryDirector.SetFlag($"story_flag_{chapterId}_warrant_{warrantToken}");
                 _session.SyncNarrativeProgress();
+            }
+        }
+
+        // ADR-0028: SM.Meta가 계산한 trust delta를 SaveProfile.FactionStanding(profile truth)에 적용.
+        // 해당 faction record가 없으면 생성. 정치 평판은 run 간 지속이므로 profile-level(run overlay 아님).
+        private void ApplyFactionTrustDeltas(IReadOnlyList<FactionTrustDelta> deltas)
+        {
+            foreach (var delta in deltas)
+            {
+                if (string.IsNullOrWhiteSpace(delta.FactionId))
+                {
+                    continue;
+                }
+
+                var record = _session.Profile.FactionStanding
+                    .FirstOrDefault(f => string.Equals(f.FactionId, delta.FactionId, StringComparison.Ordinal));
+                if (record == null)
+                {
+                    record = new FactionStandingRecord { FactionId = delta.FactionId };
+                    _session.Profile.FactionStanding.Add(record);
+                }
+
+                record.Trust += delta.Delta;
             }
         }
 
