@@ -88,6 +88,12 @@ GPT Pro 확장 검수(`.gptprosubmit/payload/response-20260604-015138.md`) 판�
 5. **OfferSet 기록** — `PledgedWarrantId`(택한 것)뿐 아니라 거절한 세력 기준(offerSet)을 Dossier에 남겨 "누구 편을 들었나"에 세력이 반응하게.
 6. **encounter 분류 노출 제한** — Swift/Intact가 실제로 갈라지는 encounter에만 warrant 노출(dominated/trivial 전투엔 미노출).
 
+### separability 실측 결과 (2026-06-04) — roadmap 재정렬
+
+위 #1(separability sim)을 실제로 돌렸다(`WarrantSeparabilitySimTests`, BatchOnly, 속전 glass-cannon vs 온전 tanky-DPS × 적 3 tier × 40 seed). **결과: 어느 tier에서도 "온전이 더 느리지만 더 안전"이 안 나온다.** burst가 속도·안전 두 축을 모두 지배한다 — 죽은 적은 피해를 안 주므로 빠른 처치가 곧 최선의 방어(속도-안전이 trade-off가 아니라 정상관). 저DPS 탱크는 timeout(easy)/전멸(hard)로 strictly dominated. GPT Pro §1 row-6 reversal의 실증.
+
+**함의: warrant tension은 build축(Swift/Intact)에서 못 온다 — objective/encounter에서 와야 한다**(빠른 처치가 자동으로 최선이 아닌 조건: 보호대상·비살상·증거). GPT Pro가 P3로 둔 objective가 실은 첫 진짜 tension의 위치다. 따라서 **P2b를 "Swift/Intact 선택 UI"로 만들지 않는다**(미분리 축 위에 쌓는 셈) — 다음 warrant 작업은 objective-based(최소 protect 슬라이스: 보호대상 entity가 burst-racing을 실제로 위험하게). P2a-r1의 fact-bag judge는 objective WarrantKind에 이미 준비됨. caveat: sustain(healer) build·posture 다종은 미측정(핵심 결론은 불변, 범위만 한정). 상세: pindoc `analysis-p2-warrant-system-design`.
+
 ## 작성 지침
 
 - warrant 판정은 `SM.Meta` 순수, 전달은 overlay rail(`RewardSourceId` 동렬), 집계/stamp는 `SM.Unity` settlement — 한 문장/한 파일에 섞지 않는다.
