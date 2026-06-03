@@ -126,6 +126,13 @@ public sealed partial class GameSessionState
                 ApplyHeroBattleAftermath(finalUnits, victory);
             }
 
+            // ludonarrative 루프 P1a: 전투 결과 → 캠페인 영구 dossier 기록.
+            // sandbox/quick-battle smoke lane은 캠페인 기록이 아니므로 제외.
+            if (finalUnits != null && !_session.IsDirectCombatSandboxLane && !_session.IsQuickBattleSmokeActive)
+            {
+                WriteDossierEntry(finalUnits, victory, resolvedNode?.Id ?? string.Empty);
+            }
+
             if (resolvedNode != null && !_session.IsQuickBattleSmokeActive)
             {
                 _session.CurrentExpeditionNodeIndex = resolvedNode.Index;
@@ -259,6 +266,48 @@ public sealed partial class GameSessionState
                     progression.Level += 1;
                 }
             }
+        }
+
+        // ludonarrative 루프 P1a: finalUnits(이미 전달됨)에서 ally squad 생존을 집계해
+        // DossierOutcome으로 분류하고 SaveProfile.Dossier에 영구 기록한다.
+        // 판정 로직은 SM.Meta.DossierOutcomeClassifier(순수)가 소유 — 여기서는 집계 + 영속화만.
+        private void WriteDossierEntry(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory, string nodeId)
+        {
+            var totalAllyCount = 0;
+            var survivorAllyCount = 0;
+            var fallenAllyIds = new List<string>();
+            foreach (var unit in finalUnits)
+            {
+                if (unit.Side != TeamSide.Ally) continue;
+                if (unit.EntityKind != CombatEntityKind.RosterUnit) continue;
+
+                totalAllyCount += 1;
+                if (unit.CurrentHealth > 0)
+                {
+                    survivorAllyCount += 1;
+                }
+                else
+                {
+                    fallenAllyIds.Add(unit.Id);
+                }
+            }
+
+            var outcome = DossierOutcomeClassifier.Classify(victory, survivorAllyCount, totalAllyCount);
+
+            _session.Profile.Dossier.Add(new DossierEntryRecord
+            {
+                EntryId = Guid.NewGuid().ToString("N"),
+                RunId = _session.ActiveRun?.RunId ?? string.Empty,
+                ChapterId = _session.ActiveRun?.Overlay.ChapterId ?? _session.Profile.CampaignProgress.SelectedChapterId,
+                SiteId = _session.ActiveRun?.Overlay.SiteId ?? _session.Profile.CampaignProgress.SelectedSiteId,
+                NodeId = nodeId,
+                Result = victory ? "victory" : "defeat",
+                Outcome = DossierOutcomeClassifier.ToToken(outcome),
+                SurvivorAllyCount = survivorAllyCount,
+                TotalAllyCount = totalAllyCount,
+                FallenAllyIds = fallenAllyIds,
+                CompletedAtUtc = DateTime.UtcNow.ToString("O"),
+            });
         }
 
         internal bool ApplyRewardChoice(int index)

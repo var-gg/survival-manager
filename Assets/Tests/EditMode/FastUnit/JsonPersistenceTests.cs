@@ -71,6 +71,20 @@ public class JsonPersistenceTests
                 NodesCleared = 5,
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
+            profile.Dossier.Add(new DossierEntryRecord
+            {
+                EntryId = "dossier_001",
+                RunId = "run_active_001",
+                ChapterId = "chapter_mvp_demo",
+                SiteId = "site_mvp_demo",
+                NodeId = "node-1",
+                Result = "victory",
+                Outcome = "clean_victory",
+                SurvivorAllyCount = 4,
+                TotalAllyCount = 4,
+                FallenAllyIds = new System.Collections.Generic.List<string>(),
+                CompletedAtUtc = DateTime.UtcNow.ToString("O"),
+            });
 
             repo.Save(profile);
             var loaded = repo.LoadOrCreate("default");
@@ -83,6 +97,9 @@ public class JsonPersistenceTests
             Assert.That(loaded.MatchBlobs[0].CompileHash, Is.EqualTo("abc123"));
             Assert.That(loaded.RewardLedger, Has.Count.EqualTo(1));
             Assert.That(loaded.RunSummaries, Has.Count.EqualTo(1));
+            Assert.That(loaded.Dossier, Has.Count.EqualTo(1));
+            Assert.That(loaded.Dossier[0].Outcome, Is.EqualTo("clean_victory"));
+            Assert.That(loaded.Dossier[0].SurvivorAllyCount, Is.EqualTo(4));
         }
         finally
         {
