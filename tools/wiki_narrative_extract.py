@@ -21,8 +21,8 @@ Wiki body conventions (best-effort, graceful on variants):
 Stable line ID: stable_hash(scene_id, branch_tag, speaker_id, content_norm).
 content_norm strips quotes, voice markers, whitespace runs, ellipsis variants.
 
-Output: Temp/Narrative/narrative-seed-wiki.json (parallel to legacy seed
-during transition). Once trusted, swap NarrativeSeedImporter to read this.
+Output: Logs/Narrative/narrative-seed-wiki.json. Logs/ 는 Unity batchmode cold
+launch 시 Temp/ 처럼 비워지지 않아 headless narrative-build가 seed를 잃지 않는다.
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 RAW_WIKI_DIR = REPO_ROOT / "tools" / "raw-wiki"
 AUTHORING_MAP = REPO_ROOT / "tools" / "narrative-authoring-map.json"
 EVENT_MAP = REPO_ROOT / "tools" / "narrative-event-map.json"
-OUTPUT_DIR = REPO_ROOT / "Temp" / "Narrative"
+OUTPUT_DIR = REPO_ROOT / "Logs" / "Narrative"
 OUTPUT_FILE = OUTPUT_DIR / "narrative-seed-wiki.json"
 
 # ---------------------------------------------------------------------------

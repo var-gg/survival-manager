@@ -32,7 +32,9 @@ public sealed record NarrativeSeedImportResult(
 public static class NarrativeSeedImporter
 {
     private const string ManifestPath = "Temp/Narrative/narrative-seed.json";
-    private const string WikiManifestPath = "Temp/Narrative/narrative-seed-wiki.json";
+    // Logs/ 는 Unity가 batchmode cold launch 시 Temp/ 처럼 비우지 않는다 — headless
+    // narrative-build(extract→batchmode import)가 seed를 잃지 않도록 Temp/ 밖에 둔다.
+    private const string WikiManifestPath = "Logs/Narrative/narrative-seed-wiki.json";
     private const string StoryEventsDir = "Assets/Resources/_Game/Content/Definitions/StoryEvents";
     private const string DialogueSequencesDir = "Assets/Resources/_Game/Content/Definitions/DialogueSequences";
     private const string ArchiveCatalogDir = "Assets/Resources/_Game/Content/Definitions/StoryArchive";
