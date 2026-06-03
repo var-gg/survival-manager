@@ -392,6 +392,26 @@
       ]
     },
     {
+      "eventId": "story_event_town_return_ch4_squad_loss",
+      "chapterId": "chapter_glass_forest",
+      "siteId": "",
+      "moment": "TownEntered",
+      "priority": 160,
+      "oncePolicy": "OncePerProfile",
+      "presentationKey": "dialogue_overlay_ch4_squad_loss",
+      "presentationKind": "DialogueOverlay",
+      "conditions": [
+        {"kindToken": "FlagSet", "operandA": "story_flag_intro_glass_forest"},
+        {"kindToken": "FlagSet", "operandA": "story_flag_intro_starved_menagerie"},
+        {"kindToken": "FlagSet", "operandA": "story_flag_chapter_glass_forest_squad_costly"},
+        {"kindToken": "FlagNotSet", "operandA": "story_flag_town_return_ch4_squad_loss"}
+      ],
+      "effects": [
+        {"kindToken": "SetFlag", "payload": "story_flag_town_return_ch4_squad_loss"},
+        {"kindToken": "EnqueuePresentation", "payload": "DialogueOverlay"}
+      ]
+    },
+    {
       "eventId": "story_event_town_return_ch5",
       "chapterId": "chapter_heartforge_descent",
       "siteId": "",
