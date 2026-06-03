@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5439127386568156048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_town_return_ch4_squad_loss__cond__00
+  _kind: 3
+  _operandA: story_flag_intro_glass_forest
+  _operandB: 
+--- !u!114 &-5266969921131543875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_town_return_ch4_squad_loss__cond__01
+  _kind: 3
+  _operandA: story_flag_intro_starved_menagerie
+  _operandB: 
+--- !u!114 &-4377549557357994772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_town_return_ch4_squad_loss__effect__01
+  _kind: 3
+  _payload: DialogueOverlay
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
+  m_Name: story_event_town_return_ch4_squad_loss
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEventDefinition
+  _id: story_event_town_return_ch4_squad_loss
+  _moment: 1
+  _priority: 160
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: -5439127386568156048}
+  - {fileID: -5266969921131543875}
+  - {fileID: 8080240582937014744}
+  - {fileID: 4871804830132667758}
+  _effects:
+  - {fileID: 7525577409216879069}
+  - {fileID: -4377549557357994772}
+  _presentationKey: dialogue_overlay_ch4_squad_loss
+--- !u!114 &4871804830132667758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_town_return_ch4_squad_loss__cond__03
+  _kind: 4
+  _operandA: story_flag_town_return_ch4_squad_loss
+  _operandB: 
+--- !u!114 &7525577409216879069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_town_return_ch4_squad_loss__effect__00
+  _kind: 1
+  _payload: story_flag_town_return_ch4_squad_loss
+--- !u!114 &8080240582937014744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_town_return_ch4_squad_loss__cond__02
+  _kind: 3
+  _operandA: story_flag_chapter_glass_forest_squad_costly
+  _operandB: 

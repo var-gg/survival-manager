@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_boss_defeat_bone_orchard__line__004
-  _speakerId: hero_pack_raider
+  _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_bone_orchard.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-1476869156889635492
 MonoBehaviour:

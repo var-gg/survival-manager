@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6852378910666306998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_ch4_squad_loss__line__001
+  _speakerId: npc_han_sae
+  _textKey: loc.story.dialogue.dialogue_seq_ch4_squad_loss.001
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_seq_ch4_squad_loss
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_seq_ch4_squad_loss
+  _lines:
+  - {fileID: 4840322725212027939}
+  - {fileID: -6852378910666306998}
+  - {fileID: 5346379694819762470}
+  - {fileID: 246998622183132380}
+  - {fileID: 2986699042420046571}
+--- !u!114 &246998622183132380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_ch4_squad_loss__line__003
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_ch4_squad_loss.003
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.solemn
+  _autoAdvanceHint: 0
+--- !u!114 &2986699042420046571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_ch4_squad_loss__line__004
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.dialogue.dialogue_seq_ch4_squad_loss.004
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.no_joke
+  _autoAdvanceHint: 0
+--- !u!114 &4840322725212027939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_ch4_squad_loss__line__000
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_ch4_squad_loss.000
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5346379694819762470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_ch4_squad_loss__line__002
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_ch4_squad_loss.002
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0

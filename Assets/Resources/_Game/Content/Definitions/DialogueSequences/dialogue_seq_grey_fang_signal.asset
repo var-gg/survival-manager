@@ -1,5 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6095767397457665878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_grey_fang_signal__line__008
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.008
+  _emote: Default
+  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _autoAdvanceHint: 0
 --- !u!114 &-5522112855088750397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54,6 +72,24 @@ MonoBehaviour:
   _emote: Default
   _emotionTextKey: "loc.story.emotion.\uC870\uC2EC"
   _autoAdvanceHint: 0
+--- !u!114 &-744772963799207427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_grey_fang_signal__line__009
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.009
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,6 +111,9 @@ MonoBehaviour:
   - {fileID: 9037202508116943597}
   - {fileID: 6038434468001881521}
   - {fileID: -2824749596031877080}
+  - {fileID: 2740938409939909394}
+  - {fileID: -6095767397457665878}
+  - {fileID: -744772963799207427}
 --- !u!114 &64437989069916254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,6 +129,24 @@ MonoBehaviour:
   _id: dialogue_seq_grey_fang_signal__line__003
   _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.003
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2740938409939909394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_grey_fang_signal__line__007
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.007
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: line_05
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__005
-  _speakerId: hero_grave_hexer
+  _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.005
-  _emote: smile
-  _emotionTextKey: loc.story.emotion.amused
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.grim
   _autoAdvanceHint: 0
 --- !u!114 &-5642330058729343445
 MonoBehaviour:
@@ -31,10 +31,10 @@ MonoBehaviour:
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__008
-  _speakerId: hero_grave_hexer
+  _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.008
   _emote: default
-  _emotionTextKey: loc.story.emotion.light
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-5219057356159330570
 MonoBehaviour:
@@ -67,10 +67,10 @@ MonoBehaviour:
   m_Name: line_10
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__010
-  _speakerId: Narrator
+  _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.010
   _emote: default
-  _emotionTextKey: 
+  _emotionTextKey: loc.story.emotion.light
   _autoAdvanceHint: 0
 --- !u!114 &-4597043428470396869
 MonoBehaviour:
@@ -103,10 +103,28 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__006
-  _speakerId: Narrator
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.006
-  _emote: default
-  _emotionTextKey: 
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-123058665163865466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_town_return_ch3_table__line__011
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.011
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -133,6 +151,8 @@ MonoBehaviour:
   - {fileID: -5642330058729343445}
   - {fileID: 2734075975106915671}
   - {fileID: -4902551307108126008}
+  - {fileID: -123058665163865466}
+  - {fileID: 2743901712389046545}
 --- !u!114 &418257711329435196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,10 +166,10 @@ MonoBehaviour:
   m_Name: line_04
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__004
-  _speakerId: hero_pack_raider
+  _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &1380144680929832730
 MonoBehaviour:
@@ -164,10 +184,10 @@ MonoBehaviour:
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__007
-  _speakerId: npc_dalmok_inn_keeper
+  _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.007
-  _emote: Default
-  _emotionTextKey: loc.story.emotion.warm
+  _emote: smile
+  _emotionTextKey: loc.story.emotion.amused
   _autoAdvanceHint: 0
 --- !u!114 &2173986357234660981
 MonoBehaviour:
@@ -182,10 +202,10 @@ MonoBehaviour:
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__002
-  _speakerId: hero_grave_hexer
+  _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.002
   _emote: serious
-  _emotionTextKey: loc.story.emotion.dry
+  _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &2734075975106915671
 MonoBehaviour:
@@ -200,10 +220,28 @@ MonoBehaviour:
   m_Name: line_09
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__009
-  _speakerId: hero_echo_savant
+  _speakerId: npc_dalmok_inn_keeper
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.009
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: Default
+  _emotionTextKey: loc.story.emotion.warm
+  _autoAdvanceHint: 0
+--- !u!114 &2743901712389046545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_town_return_ch3_table__line__012
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.012
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &9108363888101167191
 MonoBehaviour:
@@ -218,8 +256,8 @@ MonoBehaviour:
   m_Name: line_03
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_town_return_ch3_table__line__003
-  _speakerId: hero_dawn_priest
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.003
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.grim
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0

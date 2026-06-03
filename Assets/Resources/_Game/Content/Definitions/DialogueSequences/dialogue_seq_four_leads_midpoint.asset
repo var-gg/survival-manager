@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: dialogue_seq_four_leads_midpoint__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.004
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &-5513606593507827893
 MonoBehaviour:
@@ -31,10 +31,10 @@ MonoBehaviour:
   m_Name: line_01
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_four_leads_midpoint__line__001
-  _speakerId: hero_dawn_priest
+  _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.001
-  _emote: shock
-  _emotionTextKey: loc.story.emotion.shaken
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.solemn
   _autoAdvanceHint: 0
 --- !u!114 &-4197527670801903334
 MonoBehaviour:
@@ -49,26 +49,8 @@ MonoBehaviour:
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_four_leads_midpoint__line__008
-  _speakerId: hero_pack_raider
-  _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.008
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
-  _autoAdvanceHint: 0
---- !u!114 &-3421268081856016637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_10
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_four_leads_midpoint__line__010
   _speakerId: Narrator
-  _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.010
+  _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.008
   _emote: default
   _emotionTextKey: 
   _autoAdvanceHint: 0
@@ -103,10 +85,10 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_four_leads_midpoint__line__006
-  _speakerId: hero_grave_hexer
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.006
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.dry
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -131,8 +113,6 @@ MonoBehaviour:
   - {fileID: -1735281566663129821}
   - {fileID: 3078079898486987133}
   - {fileID: -4197527670801903334}
-  - {fileID: 4131116896225728752}
-  - {fileID: -3421268081856016637}
 --- !u!114 &2405799646506445577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,10 +126,10 @@ MonoBehaviour:
   m_Name: line_02
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_four_leads_midpoint__line__002
-  _speakerId: hero_pack_raider
+  _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.002
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.grim
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &3078079898486987133
 MonoBehaviour:
@@ -164,26 +144,8 @@ MonoBehaviour:
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_four_leads_midpoint__line__007
-  _speakerId: hero_dawn_priest
-  _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.007
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
-  _autoAdvanceHint: 0
---- !u!114 &4131116896225728752
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
-  m_Name: line_09
-  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
-  _id: dialogue_seq_four_leads_midpoint__line__009
   _speakerId: hero_grave_hexer
-  _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.009
+  _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.007
   _emote: smile
   _emotionTextKey: loc.story.emotion.half_smile
   _autoAdvanceHint: 0
@@ -200,10 +162,10 @@ MonoBehaviour:
   m_Name: line_05
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_four_leads_midpoint__line__005
-  _speakerId: hero_echo_savant
+  _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.005
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &7233710178819145126
 MonoBehaviour:
@@ -221,5 +183,5 @@ MonoBehaviour:
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_midpoint.003
   _emote: serious
-  _emotionTextKey: loc.story.emotion.solemn
+  _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0

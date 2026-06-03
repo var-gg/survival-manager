@@ -36,6 +36,24 @@ MonoBehaviour:
   _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
+--- !u!114 &-5047931708414777020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_16
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_town_return_ch1__line__016
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.016
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
 --- !u!114 &-4640508991564696355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53,6 +71,24 @@ MonoBehaviour:
   _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.015
   _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-4429975846693370689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_18
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_town_return_ch1__line__018
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.018
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-3858496605634956372
 MonoBehaviour:
@@ -108,6 +144,24 @@ MonoBehaviour:
   _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
+--- !u!114 &-2460398118701883929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_19
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_town_return_ch1__line__019
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.019
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
 --- !u!114 &-1929371623593173973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,6 +195,24 @@ MonoBehaviour:
   _id: dialogue_seq_town_return_ch1__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.006
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &-1537933144073820521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_17
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_town_return_ch1__line__017
+  _speakerId: npc_han_sae
+  _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.017
   _emote: quiet
   _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
@@ -192,6 +264,11 @@ MonoBehaviour:
   - {fileID: -7675399773406742392}
   - {fileID: -3858496605634956372}
   - {fileID: -4640508991564696355}
+  - {fileID: -5047931708414777020}
+  - {fileID: -1537933144073820521}
+  - {fileID: -4429975846693370689}
+  - {fileID: -2460398118701883929}
+  - {fileID: 4783326559302914976}
 --- !u!114 &779753047410370924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,6 +340,24 @@ MonoBehaviour:
   _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.011
   _emote: default
   _emotionTextKey: loc.story.emotion.gentle
+  _autoAdvanceHint: 0
+--- !u!114 &4783326559302914976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_20
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_town_return_ch1__line__020
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_town_return_ch1.020
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &5432982414929433067
 MonoBehaviour:
