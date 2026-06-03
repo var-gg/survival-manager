@@ -54,7 +54,7 @@ ludonarrative 루프 — 전투/고용이 "정치극 사이 콘텐츠"가 아니
 
 ## 후속 작업
 
-1. **P1b**: outcome → story flag → Town-return settlement 분기. `StoryDirectorService`가 flag 단일 writer이므로 직접 쓰기 대신 `StoryConditionKind` 확장(예: `SurvivorCountAtLeast`/`BattleVictory`)으로 BattleResolved 이벤트가 outcome을 읽어 SetFlag하게 한다. `StoryMomentContext`에 outcome 필드 + extract.py/event-map/importer 조건 파싱 추가.
+1. **P1b code half (구현됨, 2026-06-04)**: outcome → story flag → Town-return 분기. 코드 grounding 후 `StoryConditionKind` 확장(Option A) 대신 **`StoryDirectorService.SetFlag`(through-director — `Progress`를 통해서만 변이, 우회/desync 아님)**를 추가하고 settlement이 costly outcome을 `story_flag_{chapterId}_squad_costly`로 stamp한다. Town-return 분기는 기존 `FlagSet` condition으로 author한다(data-driven 보존). 즉 **기계적 outcome→flag는 code(classifier 옆), narrative flag→dialogue는 manifest** — Option A보다 분리가 깨끗하다. `StoryConditionKind`/`StoryMomentContext`/pipeline 조건 파싱 변경 0. condition 확장은 outcome 조건이 늘 때 data-driven 마이그레이션으로 재검토. content half(pindoc costly overlay + event-map + 파이프라인)는 P1b-content.
 2. **P2**: combat objective 모델링(비살상 제압 최종 상태, 보호/파괴 증거 오브젝트, 민간인 유닛) + Warrant 선택 UI + faction pressure.
 3. Dossier UI surface(한새 거점에서 "내가 보낸 사람들이 무엇을 했는가") — 표시 계층.
 

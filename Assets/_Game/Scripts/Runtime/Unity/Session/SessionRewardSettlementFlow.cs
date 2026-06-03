@@ -293,12 +293,13 @@ public sealed partial class GameSessionState
             }
 
             var outcome = DossierOutcomeClassifier.Classify(victory, survivorAllyCount, totalAllyCount);
+            var chapterId = _session.ActiveRun?.Overlay.ChapterId ?? _session.Profile.CampaignProgress.SelectedChapterId;
 
             _session.Profile.Dossier.Add(new DossierEntryRecord
             {
                 EntryId = Guid.NewGuid().ToString("N"),
                 RunId = _session.ActiveRun?.RunId ?? string.Empty,
-                ChapterId = _session.ActiveRun?.Overlay.ChapterId ?? _session.Profile.CampaignProgress.SelectedChapterId,
+                ChapterId = chapterId,
                 SiteId = _session.ActiveRun?.Overlay.SiteId ?? _session.Profile.CampaignProgress.SelectedSiteId,
                 NodeId = nodeId,
                 Result = victory ? "victory" : "defeat",
@@ -308,6 +309,14 @@ public sealed partial class GameSessionState
                 FallenAllyIds = fallenAllyIds,
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
+
+            // P1b: squad 손실(costly victory)을 chapter-scoped story flag로 stamp(through-director, 우회 아님).
+            // Town-return 이벤트가 FlagSet로 이 flag를 읽어 손실 acknowledgement를 분기한다(P1b-content).
+            if (outcome == DossierOutcome.CostlyVictory && !string.IsNullOrWhiteSpace(chapterId))
+            {
+                _session.StoryDirector.SetFlag($"story_flag_{chapterId}_squad_costly");
+                _session.SyncNarrativeProgress();
+            }
         }
 
         internal bool ApplyRewardChoice(int index)

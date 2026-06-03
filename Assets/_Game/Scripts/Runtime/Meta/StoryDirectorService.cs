@@ -219,6 +219,27 @@ public sealed class StoryDirectorService
         }
     }
 
+    /// <summary>
+    /// 외부(예: 전투 정산 흐름)가 outcome 같은 게임 사실을 story flag로 stamp할 때 쓴다.
+    /// director가 flag 단일 owner라는 불변을 유지하기 위해 Progress를 통해서만 변이한다(우회 금지).
+    /// 이후 Advance에서 condition(FlagSet)으로 읽힌다. 멱등 — 같은 flag 재호출은 무변경.
+    /// </summary>
+    public void SetFlag(string flag)
+    {
+        if (string.IsNullOrWhiteSpace(flag))
+        {
+            return;
+        }
+
+        var flags = new HashSet<string>(Progress.StoryFlags, StringComparer.Ordinal);
+        if (!flags.Add(flag))
+        {
+            return;
+        }
+
+        Progress = Progress with { StoryFlags = ToSortedArray(flags) };
+    }
+
     private static bool IsBlockedByOncePolicy(
         string eventId,
         StoryOncePolicy oncePolicy,

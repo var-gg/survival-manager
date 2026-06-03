@@ -174,6 +174,63 @@ public sealed class StoryDirectorServiceTests
         Assert.That(director.Progress.SeenEventIds, Is.EqualTo(new[] { "evt.profile.only", "evt.run.only" }));
     }
 
+    [Test]
+    public void SetFlag_AddsFlagToProgress_ForBattleOutcomeStamp()
+    {
+        var director = CreateStoryDirector(Array.Empty<StoryEventSpec>(), Array.Empty<DialogueSequenceSpec>());
+
+        director.SetFlag("story_flag_chapter_glass_forest_squad_costly");
+
+        Assert.That(director.Progress.StoryFlags, Does.Contain("story_flag_chapter_glass_forest_squad_costly"));
+    }
+
+    [Test]
+    public void SetFlag_IsIdempotent_AndIgnoresBlank()
+    {
+        var director = CreateStoryDirector(Array.Empty<StoryEventSpec>(), Array.Empty<DialogueSequenceSpec>());
+
+        director.SetFlag("story_flag_squad_costly");
+        director.SetFlag("story_flag_squad_costly");
+        director.SetFlag("");
+        director.SetFlag("   ");
+
+        Assert.That(director.Progress.StoryFlags, Is.EqualTo(new[] { "story_flag_squad_costly" }));
+    }
+
+    [Test]
+    public void SetFlag_FlagIsReadableByFlagSetCondition_OnSubsequentAdvance()
+    {
+        // P1b 계약: settlement이 stamp한 outcome flag를 이후 Advance의 FlagSet condition이 읽는다.
+        var gatedEvent = CreateStoryEvent(
+            "evt.town.squad_loss",
+            NarrativeMoment.TownEntered,
+            160,
+            StoryOncePolicy.OncePerProfile,
+            new[]
+            {
+                CreateStoryCondition("cond.squad.costly", StoryConditionKind.FlagSet, "story_flag_chapter_glass_forest_squad_costly"),
+            },
+            new[]
+            {
+                CreateStoryEffect("fx.present.loss", StoryEffectKind.EnqueuePresentation, nameof(StoryPresentationKind.DialogueOverlay)),
+            },
+            "dialogue_overlay_ch4_squad_loss");
+        var sequence = CreateDialogueSequence(
+            "dialogue_overlay_ch4_squad_loss",
+            CreateDialogueLine("line_1", "danlin", "loc.danlin.loss"));
+        var director = CreateStoryDirector(new[] { gatedEvent }, new[] { sequence });
+
+        // flag 미설정 — 게이트 닫힘.
+        director.Advance(NarrativeMoment.TownEntered, StoryMomentContext.Empty);
+        Assert.That(director.Progress.PendingPresentations, Is.Empty);
+
+        // settlement stamp 시뮬레이션 후 — 게이트 열림.
+        director.SetFlag("story_flag_chapter_glass_forest_squad_costly");
+        director.Advance(NarrativeMoment.TownEntered, StoryMomentContext.Empty);
+        Assert.That(director.Progress.PendingPresentations, Has.Length.EqualTo(1));
+        Assert.That(director.Progress.PendingPresentations[0].PresentationKey, Is.EqualTo("dialogue_overlay_ch4_squad_loss"));
+    }
+
     private static StoryDirectorService CreateStoryDirector(
         StoryEventSpec[] storyEvents,
         DialogueSequenceSpec[] dialogueSequences)
