@@ -92,7 +92,19 @@ GPT Pro 확장 검수(`.gptprosubmit/payload/response-20260604-015138.md`) 판�
 
 위 #1(separability sim)을 실제로 돌렸다(`WarrantSeparabilitySimTests`, BatchOnly, 속전 glass-cannon vs 온전 tanky-DPS × 적 3 tier × 40 seed). **결과: 어느 tier에서도 "온전이 더 느리지만 더 안전"이 안 나온다.** burst가 속도·안전 두 축을 모두 지배한다 — 죽은 적은 피해를 안 주므로 빠른 처치가 곧 최선의 방어(속도-안전이 trade-off가 아니라 정상관). 저DPS 탱크는 timeout(easy)/전멸(hard)로 strictly dominated. GPT Pro §1 row-6 reversal의 실증.
 
-**함의: warrant tension은 build축(Swift/Intact)에서 못 온다 — objective/encounter에서 와야 한다**(빠른 처치가 자동으로 최선이 아닌 조건: 보호대상·비살상·증거). GPT Pro가 P3로 둔 objective가 실은 첫 진짜 tension의 위치다. 따라서 **P2b를 "Swift/Intact 선택 UI"로 만들지 않는다**(미분리 축 위에 쌓는 셈) — 다음 warrant 작업은 objective-based(최소 protect 슬라이스: 보호대상 entity가 burst-racing을 실제로 위험하게). P2a-r1의 fact-bag judge는 objective WarrantKind에 이미 준비됨. caveat: sustain(healer) build·posture 다종은 미측정(핵심 결론은 불변, 범위만 한정). 상세: pindoc `analysis-p2-warrant-system-design`.
+**함의: warrant tension은 build축(Swift/Intact)에서 못 온다.** 추가로 naive protect(fragile 보호대상)도 측정했으나 보호대상 생존 0%(전 posture·전 적유형) — 단순 entity로도 tension이 안 생긴다.
+
+### GPT Pro 전략 검수 → 정치적 전환 (2026-06-04)
+
+위 두 실측을 들고 GPT Pro 확장 검수에 전략적 fork(전술 R&D vs 정치적 reframe)를 물었다(`response-20260604-025248.md`). **판정: 정치적 reframe.**
+
+- **warrant = faction-issued political mandate**로 전환한다. 선택은 "전투를 어떻게 이길까"(전술)가 아니라 "어느 세력의 기준으로 성공/실패를 판정하고 누구에게 책임지나"(정치). 전투는 단순 fact만 산출, warrant+FactionState가 정치 해석.
+- **build축 tactical warrant(Swift/Intact를 build로 판정) 중단** — 현 combat 모델에선 거짓 선택. fact-bag judge·Dossier rail은 **유지**(정확히 이 방향에 맞음 — 전투가 fact, 상위가 정치 해석). 폐기되는 건 의미 framing뿐.
+- **공허하지 않을 최소 필수(둘 다)**: `FactionState` 변화 + **다음 전투 조건 변화**(루프가 닫혀야 함: 전투→정치→다음 전투). 대사·가격 단독은 flavor.
+- **정치 warrant 아키텍처**(신규, 별도 ADR로 구현 시 박제): `FactionState`(trust/fear/scandal/debt, save truth) + `WarrantResult`(issuer/opposed faction·satisfied/failed/betrayed) + `NextCombatMutation`(reinforcement/alertness/hire_cost/roster_restriction/timer/support).
+- A(전술 R&D)는 비효율 — 굳이 하면 Guardable Objective Slot(DPS-vs-보호 allocation) 하나만 mission-specific A-lite(3순위).
+
+상세·근거: pindoc `analysis-p2-warrant-system-design`(rev 4). 본 ADR-0027의 "Swift/Intact tactical" framing은 이 전환으로 supersede되나 judgment rail(fact-bag judge/Dossier/overlay)은 정치 warrant의 토대로 살아남는다.
 
 ## 작성 지침
 
