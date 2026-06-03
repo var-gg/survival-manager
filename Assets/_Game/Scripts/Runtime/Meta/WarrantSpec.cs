@@ -19,21 +19,6 @@ public enum WarrantKind
 }
 
 /// <summary>
-/// 한 sortie의 서약 이행 판정 결과.
-/// </summary>
-public enum WarrantOutcome
-{
-    /// <summary>서약 없음(미선택) — 판정 대상 아님.</summary>
-    NotApplicable,
-
-    /// <summary>약속을 지킴.</summary>
-    Kept,
-
-    /// <summary>약속을 깸(조건 미달 또는 패배).</summary>
-    Broken,
-}
-
-/// <summary>
 /// 하나의 서약 정의. stable id(코드 식별자) + 판정 종류 + (Swift용) turn 임계.
 /// 표시명은 여기 넣지 않는다 — ID/label 분리(localization label은 별도).
 /// </summary>

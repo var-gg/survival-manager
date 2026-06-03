@@ -86,6 +86,10 @@ public class JsonPersistenceTests
                 FallenAllyIds = new System.Collections.Generic.List<string>(),
                 WarrantId = "warrant_intact",
                 WarrantOutcome = "kept",
+                WarrantFailureReason = "none",
+                WarrantSeverity = "none",
+                WarrantObservedTurnCount = 7,
+                WarrantResolvedTurnLimit = 8,
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
 
@@ -105,6 +109,10 @@ public class JsonPersistenceTests
             Assert.That(loaded.Dossier[0].SurvivorAllyCount, Is.EqualTo(4));
             Assert.That(loaded.Dossier[0].WarrantId, Is.EqualTo("warrant_intact"));
             Assert.That(loaded.Dossier[0].WarrantOutcome, Is.EqualTo("kept"));
+            Assert.That(loaded.Dossier[0].WarrantFailureReason, Is.EqualTo("none"));
+            Assert.That(loaded.Dossier[0].WarrantSeverity, Is.EqualTo("none"));
+            Assert.That(loaded.Dossier[0].WarrantObservedTurnCount, Is.EqualTo(7));
+            Assert.That(loaded.Dossier[0].WarrantResolvedTurnLimit, Is.EqualTo(8));
             Assert.That(loaded.ActiveRun.PledgedWarrantId, Is.EqualTo("warrant_intact"));
         }
         finally

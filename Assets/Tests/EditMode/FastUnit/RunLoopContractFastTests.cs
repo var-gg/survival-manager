@@ -565,6 +565,9 @@ public sealed class RunLoopContractFastTests
         Assert.That(dossier, Is.Not.Null);
         Assert.That(dossier!.WarrantId, Is.EqualTo(WarrantCatalog.IntactId));
         Assert.That(dossier.WarrantOutcome, Is.EqualTo("broken"));
+        // GPT Pro §5.2/§5.3: "왜 깼나"가 Dossier에 남는다 — 온전 위반은 ally_killed/major.
+        Assert.That(dossier.WarrantFailureReason, Is.EqualTo("ally_killed"));
+        Assert.That(dossier.WarrantSeverity, Is.EqualTo("major"));
 
         Assert.That(session.NarrativeProgress.StoryFlags,
             Does.Contain($"story_flag_{dossier.ChapterId}_warrant_broken"));

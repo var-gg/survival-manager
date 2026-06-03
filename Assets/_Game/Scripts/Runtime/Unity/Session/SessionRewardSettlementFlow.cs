@@ -298,9 +298,13 @@ public sealed partial class GameSessionState
             var chapterId = _session.ActiveRun?.Overlay.ChapterId ?? _session.Profile.CampaignProgress.SelectedChapterId;
 
             // P2a: 출격 전 서약(overlay에 실려 운반)을 전투 사실로 판정. 미서약이면 spec=null → NotApplicable.
+            // GPT Pro 검수(§5.1): scalar 나열 대신 BattleFactSet으로 조립해 judge에 넘긴다 — P3(민간인/증거/비살상)에서
+            // 새 전투 사실이 붙어도 judge signature가 보존된다. combat은 BattleFactSet을 모른다(여기서 BattleResult 파생).
             var pledgedWarrantId = _session.ActiveRun?.Overlay.PledgedWarrantId ?? string.Empty;
             var warrantSpec = WarrantCatalog.TryResolve(pledgedWarrantId, out var resolvedWarrant) ? resolvedWarrant : null;
-            var warrantOutcome = WarrantJudge.Judge(warrantSpec, victory, survivorAllyCount, totalAllyCount, stepCount);
+            var battleFacts = new BattleFactSet(victory, stepCount, survivorAllyCount, totalAllyCount);
+            // encounter-relative turn 임계(encounterParTurn - pressureDelta)는 P2b/content가 채운다. 슬라이스 1은 spec placeholder(0 → fallback).
+            var warrantJudgment = WarrantJudge.Judge(warrantSpec, battleFacts, new EncounterContext(ResolvedSwiftTurnLimit: 0));
 
             _session.Profile.Dossier.Add(new DossierEntryRecord
             {
@@ -315,7 +319,11 @@ public sealed partial class GameSessionState
                 TotalAllyCount = totalAllyCount,
                 FallenAllyIds = fallenAllyIds,
                 WarrantId = warrantSpec?.Id ?? string.Empty,
-                WarrantOutcome = WarrantJudge.ToToken(warrantOutcome),
+                WarrantOutcome = WarrantJudgment.OutcomeToken(warrantJudgment.Outcome),
+                WarrantFailureReason = WarrantJudgment.FailureReasonToken(warrantJudgment.FailureReason),
+                WarrantSeverity = WarrantJudgment.SeverityToken(warrantJudgment.Severity),
+                WarrantObservedTurnCount = warrantJudgment.ObservedTurnCount,
+                WarrantResolvedTurnLimit = warrantJudgment.ResolvedTurnLimit,
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
 
@@ -327,12 +335,14 @@ public sealed partial class GameSessionState
                 _session.SyncNarrativeProgress();
             }
 
-            // P2a: 서약 이행/위반을 chapter-scoped story flag로 stamp(through-director, P1b와 동일 패턴).
-            // P2b의 세력 반응 dialogue가 FlagSet로 이 flag를 읽어 분기한다. 미서약(NotApplicable)은 stamp 안 함.
-            if (warrantSpec != null && warrantOutcome != WarrantOutcome.NotApplicable
+            // P2a: 서약 결과를 chapter-scoped story flag로 stamp(through-director, P1b와 동일 패턴).
+            // GPT Pro 검수(§5.4): Dossier가 source of truth(전체 snapshot 보유), 이 flag는 authored dialogue projection일 뿐이다.
+            // 세력 평판·해금·가격 같은 systemic 효과는 P2b에서 Dossier/FactionState로 물린다 — flag로 게이트하지 않는다.
+            // 미서약(NotApplicable)은 stamp 안 함. Kept→kept, Broken/FailedMission→broken(coarse projection).
+            if (warrantSpec != null && warrantJudgment.Outcome != WarrantOutcome.NotApplicable
                 && !string.IsNullOrWhiteSpace(chapterId))
             {
-                var warrantToken = warrantOutcome == WarrantOutcome.Kept ? "kept" : "broken";
+                var warrantToken = warrantJudgment.Outcome == WarrantOutcome.Kept ? "kept" : "broken";
                 _session.StoryDirector.SetFlag($"story_flag_{chapterId}_warrant_{warrantToken}");
                 _session.SyncNarrativeProgress();
             }

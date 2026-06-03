@@ -36,8 +36,20 @@ public sealed class DossierEntryRecord
     /// </summary>
     public string WarrantId = string.Empty;
 
-    /// <summary>WarrantJudge 토큰: "kept" | "broken" | "not_applicable"(서약 없음).</summary>
+    /// <summary>WarrantJudge 토큰: "kept" | "broken" | "failed_mission" | "not_applicable".</summary>
     public string WarrantOutcome = string.Empty;
+
+    /// <summary>위반 원인 토큰: "none" | "defeated" | "turn_limit_exceeded" | "ally_killed" (+P3 원인).</summary>
+    public string WarrantFailureReason = string.Empty;
+
+    /// <summary>위반 무게 토큰: "none" | "minor" | "major" | "irreparable". 세력 반응 강도 산정용.</summary>
+    public string WarrantSeverity = string.Empty;
+
+    /// <summary>판정 시점 관측 사실 — "왜 깼나"를 결과창·Dossier UI에서 재구성하게 한다(GPT Pro §5.3).</summary>
+    public int WarrantObservedTurnCount;
+
+    /// <summary>그때 적용된 resolved turn 임계(encounter-relative, patch 후 과거 기록 보존용).</summary>
+    public int WarrantResolvedTurnLimit;
 
     public string CompletedAtUtc = string.Empty;
 }

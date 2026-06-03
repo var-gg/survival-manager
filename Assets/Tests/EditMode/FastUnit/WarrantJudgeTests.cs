@@ -8,84 +8,109 @@ public sealed class WarrantJudgeTests
 {
     private static readonly WarrantSpec Swift = new("warrant_swift", WarrantKind.Swift, SwiftStepThreshold: 100);
     private static readonly WarrantSpec Intact = new("warrant_intact", WarrantKind.Intact);
+    private static readonly EncounterContext SpecFallback = new(ResolvedSwiftTurnLimit: 0);
+
+    private static BattleFactSet Facts(bool victory, int turns, int survivors, int total)
+        => new(victory, turns, survivors, total);
 
     [Test]
     public void Judge_NotApplicable_WhenNoWarrantPledged()
     {
-        Assert.That(
-            WarrantJudge.Judge(spec: null, victory: true, survivorAllyCount: 4, totalAllyCount: 4, stepCount: 10),
-            Is.EqualTo(WarrantOutcome.NotApplicable));
+        var j = WarrantJudge.Judge(spec: null, Facts(true, 10, 4, 4), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.NotApplicable));
+        Assert.That(j.FailureReason, Is.EqualTo(WarrantFailureReason.None));
     }
 
     [Test]
-    public void Judge_Broken_WhenDefeat_RegardlessOfCondition()
+    public void Judge_FailedMission_WhenDefeat_NotJustBroken()
     {
-        // 패배는 어떤 서약이든 깬 것 — Swift 조건(빠른 turn)을 만족해도 패배면 Broken.
-        Assert.That(
-            WarrantJudge.Judge(Swift, victory: false, survivorAllyCount: 4, totalAllyCount: 4, stepCount: 1),
-            Is.EqualTo(WarrantOutcome.Broken));
-        Assert.That(
-            WarrantJudge.Judge(Intact, victory: false, survivorAllyCount: 4, totalAllyCount: 4, stepCount: 1),
-            Is.EqualTo(WarrantOutcome.Broken));
+        // 패배는 약속 이전의 실패 — FailedMission/Defeated/Major로 구분(단순 Broken 아님).
+        var j = WarrantJudge.Judge(Swift, Facts(false, 5, 4, 4), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.FailedMission));
+        Assert.That(j.FailureReason, Is.EqualTo(WarrantFailureReason.Defeated));
+        Assert.That(j.Severity, Is.EqualTo(WarrantSeverity.Major));
     }
 
     [Test]
-    public void Judge_Swift_Kept_WhenWithinStepThreshold()
+    public void Judge_Swift_Kept_WithinThreshold()
     {
-        Assert.That(
-            WarrantJudge.Judge(Swift, victory: true, survivorAllyCount: 2, totalAllyCount: 4, stepCount: 80),
-            Is.EqualTo(WarrantOutcome.Kept));
+        var j = WarrantJudge.Judge(Swift, Facts(true, 80, 2, 4), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.Kept));
+        Assert.That(j.FailureReason, Is.EqualTo(WarrantFailureReason.None));
+        Assert.That(j.Severity, Is.EqualTo(WarrantSeverity.None));
     }
 
     [Test]
     public void Judge_Swift_Kept_AtExactThreshold()
     {
-        // 경계: stepCount == threshold 는 이행(<=).
-        Assert.That(
-            WarrantJudge.Judge(Swift, victory: true, survivorAllyCount: 4, totalAllyCount: 4, stepCount: 100),
-            Is.EqualTo(WarrantOutcome.Kept));
+        var j = WarrantJudge.Judge(Swift, Facts(true, 100, 4, 4), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.Kept));
     }
 
     [Test]
-    public void Judge_Swift_Broken_WhenOverStepThreshold()
+    public void Judge_Swift_Broken_OverThreshold_WithObservedFacts()
     {
-        Assert.That(
-            WarrantJudge.Judge(Swift, victory: true, survivorAllyCount: 4, totalAllyCount: 4, stepCount: 101),
-            Is.EqualTo(WarrantOutcome.Broken));
+        var j = WarrantJudge.Judge(Swift, Facts(true, 130, 4, 4), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.Broken));
+        Assert.That(j.FailureReason, Is.EqualTo(WarrantFailureReason.TurnLimitExceeded));
+        Assert.That(j.Severity, Is.EqualTo(WarrantSeverity.Minor));
+        // 관측 사실 — "8턴 약속이었는데 130" 식 재구성 가능해야 한다.
+        Assert.That(j.ObservedTurnCount, Is.EqualTo(130));
+        Assert.That(j.ResolvedTurnLimit, Is.EqualTo(100));
     }
 
     [Test]
     public void Judge_Intact_Kept_WhenAllAlliesSurvive()
     {
-        // 온전은 turn 수와 무관 — 손실 0이면 stepCount가 커도 Kept.
-        Assert.That(
-            WarrantJudge.Judge(Intact, victory: true, survivorAllyCount: 4, totalAllyCount: 4, stepCount: 9999),
-            Is.EqualTo(WarrantOutcome.Kept));
+        var j = WarrantJudge.Judge(Intact, Facts(true, 9999, 4, 4), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.Kept));
     }
 
     [Test]
-    public void Judge_Intact_Broken_WhenSomeAlliesFall()
+    public void Judge_Intact_Broken_WhenSomeAlliesFall_IsMajor()
     {
-        Assert.That(
-            WarrantJudge.Judge(Intact, victory: true, survivorAllyCount: 3, totalAllyCount: 4, stepCount: 10),
-            Is.EqualTo(WarrantOutcome.Broken));
+        // 자기 사람을 잃는 것은 무겁게 본다(Major).
+        var j = WarrantJudge.Judge(Intact, Facts(true, 10, 3, 4), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.Broken));
+        Assert.That(j.FailureReason, Is.EqualTo(WarrantFailureReason.AllyKilled));
+        Assert.That(j.Severity, Is.EqualTo(WarrantSeverity.Major));
     }
 
     [Test]
     public void Judge_Intact_Kept_WhenRosterCountUnknown()
     {
-        // totalAllyCount == 0 (로스터 미상) + 승리 → vacuously kept.
-        Assert.That(
-            WarrantJudge.Judge(Intact, victory: true, survivorAllyCount: 0, totalAllyCount: 0, stepCount: 10),
-            Is.EqualTo(WarrantOutcome.Kept));
+        var j = WarrantJudge.Judge(Intact, Facts(true, 10, 0, 0), SpecFallback);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.Kept));
     }
 
     [Test]
-    public void ToToken_MapsEachOutcome()
+    public void Judge_Swift_UsesEncounterContextLimit_OverSpecPlaceholder()
     {
-        Assert.That(WarrantJudge.ToToken(WarrantOutcome.NotApplicable), Is.EqualTo("not_applicable"));
-        Assert.That(WarrantJudge.ToToken(WarrantOutcome.Kept), Is.EqualTo("kept"));
-        Assert.That(WarrantJudge.ToToken(WarrantOutcome.Broken), Is.EqualTo("broken"));
+        // GPT Pro §1.C/§5.1: encounter-relative 임계가 spec placeholder를 덮어쓴다.
+        // spec 임계 100이지만 context가 6이면 130턴은 깨지고, resolved limit은 6으로 기록.
+        var context = new EncounterContext(ResolvedSwiftTurnLimit: 6);
+        var j = WarrantJudge.Judge(Swift, Facts(true, 7, 4, 4), context);
+        Assert.That(j.Outcome, Is.EqualTo(WarrantOutcome.Broken));
+        Assert.That(j.ResolvedTurnLimit, Is.EqualTo(6));
+
+        var keptUnderContext = WarrantJudge.Judge(Swift, Facts(true, 6, 4, 4), context);
+        Assert.That(keptUnderContext.Outcome, Is.EqualTo(WarrantOutcome.Kept));
+    }
+
+    [Test]
+    public void Tokens_MapEachValue()
+    {
+        Assert.That(WarrantJudgment.OutcomeToken(WarrantOutcome.NotApplicable), Is.EqualTo("not_applicable"));
+        Assert.That(WarrantJudgment.OutcomeToken(WarrantOutcome.Kept), Is.EqualTo("kept"));
+        Assert.That(WarrantJudgment.OutcomeToken(WarrantOutcome.Broken), Is.EqualTo("broken"));
+        Assert.That(WarrantJudgment.OutcomeToken(WarrantOutcome.FailedMission), Is.EqualTo("failed_mission"));
+
+        Assert.That(WarrantJudgment.FailureReasonToken(WarrantFailureReason.Defeated), Is.EqualTo("defeated"));
+        Assert.That(WarrantJudgment.FailureReasonToken(WarrantFailureReason.TurnLimitExceeded), Is.EqualTo("turn_limit_exceeded"));
+        Assert.That(WarrantJudgment.FailureReasonToken(WarrantFailureReason.AllyKilled), Is.EqualTo("ally_killed"));
+
+        Assert.That(WarrantJudgment.SeverityToken(WarrantSeverity.Major), Is.EqualTo("major"));
+        Assert.That(WarrantJudgment.SeverityToken(WarrantSeverity.Minor), Is.EqualTo("minor"));
     }
 
     [Test]

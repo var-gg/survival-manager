@@ -1,56 +1,72 @@
 namespace SM.Meta;
 
 /// <summary>
-/// 서약(<see cref="WarrantSpec"/>)을 전투 사실로 판정하는 순수 함수. ludonarrative 루프 P2a의
-/// 판정 코어 — SM.Combat / SM.Unity 의존 없이 EditMode로 단위 검증 가능하게 분리한다.
-/// combat은 사실(<c>BattleResult</c>: 승패·생존·turn 수)만 산출하고, "약속을 지켰나"의 판정은
-/// 여기(Meta)서 한다 — combat 순수성 보존(ADR-0006/0027).
+/// 서약(<see cref="WarrantSpec"/>)을 전투 사실(<see cref="BattleFactSet"/>)로 판정하는 순수 함수.
+/// ludonarrative 루프 P2a의 판정 코어 — SM.Combat / SM.Unity 의존 없이 EditMode로 단위 검증.
+/// combat은 사실(BattleResult)만 산출하고 "약속을 지켰나"의 판정은 여기(Meta)서 한다 — combat 순수성(ADR-0006/0027).
+///
+/// GPT Pro 검수(§5.1/§5.2) 반영: fact bag + reason-bearing judgment. Swift/Intact는 fact-query
+/// adapter이고, P3(Protect/Evidence/NonLethal)는 WarrantKind 케이스 추가만으로 확장된다 —
+/// signature(spec, facts, context)와 BattleFactSet/WarrantJudgment는 그대로다.
 /// </summary>
 public static class WarrantJudge
 {
     /// <param name="spec">서약 정의. null이면 미서약(NotApplicable).</param>
-    /// <param name="victory">전투 승리 여부.</param>
-    /// <param name="survivorAllyCount">생존 ally roster unit 수.</param>
-    /// <param name="totalAllyCount">출격 ally roster unit 총원.</param>
-    /// <param name="stepCount">전투 종료 시 sim step 수(<c>BattleResult.StepCount</c>).</param>
-    public static WarrantOutcome Judge(
-        WarrantSpec? spec,
-        bool victory,
-        int survivorAllyCount,
-        int totalAllyCount,
-        int stepCount)
+    /// <param name="facts">전투가 산출한 objective-agnostic 사실(SM.Unity가 BattleResult에서 조립).</param>
+    /// <param name="context">encounter-relative 판정 문맥(Swift turn limit 등).</param>
+    public static WarrantJudgment Judge(WarrantSpec? spec, BattleFactSet facts, EncounterContext context)
     {
         if (spec is null)
         {
-            return WarrantOutcome.NotApplicable;
+            return WarrantJudgment.NotApplicable(facts);
         }
 
-        // 패배는 어떤 서약이든 임무를 못 가져온 것 — 깬 것으로 본다.
-        if (!victory)
+        var resolvedTurnLimit = ResolveTurnLimit(spec, context);
+
+        // 패배는 약속 이전의 실패 — 임무 자체를 못 가져왔다(FailedMission). 단순 Broken과 구분.
+        if (!facts.Victory)
         {
-            return WarrantOutcome.Broken;
+            return Build(WarrantOutcome.FailedMission, WarrantFailureReason.Defeated, WarrantSeverity.Major, facts, resolvedTurnLimit);
         }
 
-        var kept = spec.Kind switch
+        return spec.Kind switch
         {
-            // 속전: turn 임계 이하로 끝냄.
-            WarrantKind.Swift => stepCount <= spec.SwiftStepThreshold,
-            // 온전: squad 전원 귀환(손실 0). totalAllyCount==0(로스터 미상)은 vacuously kept.
-            WarrantKind.Intact => survivorAllyCount >= totalAllyCount,
-            _ => false,
+            // 속전: encounter-resolved turn 임계 이하로 끝냄.
+            WarrantKind.Swift => facts.TurnCount <= resolvedTurnLimit
+                ? Build(WarrantOutcome.Kept, WarrantFailureReason.None, WarrantSeverity.None, facts, resolvedTurnLimit)
+                : Build(WarrantOutcome.Broken, WarrantFailureReason.TurnLimitExceeded, WarrantSeverity.Minor, facts, resolvedTurnLimit),
+
+            // 온전: squad 손실 0. 자기 사람을 잃는 것은 무겁게(Major) 본다.
+            WarrantKind.Intact => facts.AllyDeaths == 0
+                ? Build(WarrantOutcome.Kept, WarrantFailureReason.None, WarrantSeverity.None, facts, resolvedTurnLimit)
+                : Build(WarrantOutcome.Broken, WarrantFailureReason.AllyKilled, WarrantSeverity.Major, facts, resolvedTurnLimit),
+
+            _ => Build(WarrantOutcome.Broken, WarrantFailureReason.None, WarrantSeverity.Minor, facts, resolvedTurnLimit),
         };
-
-        return kept ? WarrantOutcome.Kept : WarrantOutcome.Broken;
     }
 
-    public static string ToToken(WarrantOutcome outcome)
+    /// <summary>
+    /// 적용할 Swift turn 임계. context가 양수면 encounter-relative 값(P2b/content)을, 아니면 spec placeholder.
+    /// </summary>
+    private static int ResolveTurnLimit(WarrantSpec spec, EncounterContext context)
     {
-        return outcome switch
-        {
-            WarrantOutcome.NotApplicable => "not_applicable",
-            WarrantOutcome.Kept => "kept",
-            WarrantOutcome.Broken => "broken",
-            _ => "unknown",
-        };
+        return context.ResolvedSwiftTurnLimit > 0 ? context.ResolvedSwiftTurnLimit : spec.SwiftStepThreshold;
+    }
+
+    private static WarrantJudgment Build(
+        WarrantOutcome outcome,
+        WarrantFailureReason reason,
+        WarrantSeverity severity,
+        BattleFactSet facts,
+        int resolvedTurnLimit)
+    {
+        return new WarrantJudgment(
+            outcome,
+            reason,
+            severity,
+            facts.TurnCount,
+            resolvedTurnLimit,
+            facts.SurvivorAllyCount,
+            facts.TotalAllyCount);
     }
 }

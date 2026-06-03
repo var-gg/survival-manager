@@ -25,14 +25,14 @@ ludonarrative 루프의 "전투 → 기록"(P1: `DossierEntryRecord`)에 이어 
 
 구체적으로:
 
-- **`WarrantKind` / `WarrantSpec` / `WarrantOutcome` / `WarrantJudge`는 `SM.Meta`가 소유**한다 (`DossierOutcomeClassifier` 옆, 순수 static, engine 무참조 — EditMode 단위 검증 가능). `WarrantJudge.Judge(spec, victory, survivorAllyCount, totalAllyCount, stepCount) → WarrantOutcome`.
+- **`WarrantKind` / `WarrantSpec` / `WarrantJudge` / `WarrantJudgment` / `BattleFactSet`는 `SM.Meta`가 소유**한다 (`DossierOutcomeClassifier` 옆, 순수 static/record, engine 무참조 — EditMode 단위 검증 가능). **판정 signature는 fact-bag 기반**: `WarrantJudge.Judge(WarrantSpec? spec, BattleFactSet facts, EncounterContext context) → WarrantJudgment`. `BattleFactSet`(전투 objective-agnostic 사실)은 SM.Unity settlement이 `BattleResult`에서 조립해 넘긴다(combat은 `BattleFactSet`을 모른다). `WarrantJudgment`은 outcome만이 아니라 `FailureReason`·`Severity`·`ObservedTurnCount`·`ResolvedTurnLimit`을 운반(reason-bearing). 이 fact-bag/judgment 구조는 GPT Pro 검수(§5.1/§5.2) 반영이며, P3(Protect/Evidence/NonLethal)에서 WarrantKind 케이스 + BattleFactSet 필드만 늘면 signature가 보존된다.
 - **슬라이스 1 `WarrantKind`** (기존 사실만으로 판정):
   - `Swift` (속전): 승리 && `stepCount <= Threshold` → `Kept`.
   - `Intact` (온전): 승리 && `survivorAllyCount == totalAllyCount` → `Kept`.
   - `None`: 미서약 → `NotApplicable`.
   - 서약이 있는데 패배 → `Broken`(약속한 임무를 못 가져왔다). 승리했지만 조건 미달 → `Broken`.
 - **서약 id는 per-sortie truth로 run overlay에 실린다**: `RunOverlayState.PledgedWarrantId`(runtime) ↔ `ActiveRunRecord.PledgedWarrantId`(persistence). `RewardSourceId`/`BattleContextHash`와 **동렬·동일 rail**(같은 sync 지점 `SessionProfileSync` record↔state 2곳, 같은 `Overlay with` 변이 패턴). 기본값 `""` — backward-compatible.
-- **`DossierEntryRecord`에 `WarrantId` + `WarrantOutcome`(string token) 추가**. P1의 `Result`/`Outcome` string-token 패턴과 동일. 기본값 `""` — 구 세이브 호환.
+- **`DossierEntryRecord`에 reason-bearing 서약 snapshot 추가** (`WarrantId`, `WarrantOutcome`, `WarrantFailureReason`, `WarrantSeverity`, `WarrantObservedTurnCount`, `WarrantResolvedTurnLimit`). P1의 string-token 패턴 + 관측 사실. "깼다"가 아니라 "왜·얼마나 깼나"를 영구 보존해 결과창·Dossier UI 재구성과 세력 반응 차등을 가능케 한다(GPT Pro §5.3). 기본값 `""`/`0` — 구 세이브 호환. **Dossier가 source of truth**이고, `story_flag_{chapterId}_warrant_{kept|broken}`은 authored dialogue용 coarse projection일 뿐이다(§5.4 — systemic 효과는 P2b에서 Dossier/FactionState로 물린다).
 - **집계/판정 호출은 `SM.Unity` settlement(`WriteDossierEntry`)**가 수행한다: overlay의 `PledgedWarrantId`로 `WarrantSpec`을 조회해 `WarrantJudge`를 호출하고, 결과를 Dossier entry에 기록한 뒤, 서약 결과를 chapter-scoped story flag(`story_flag_{chapterId}_warrant_{kept|broken}`)로 stamp한다 (P1b와 동일한 through-director 패턴 — `StoryDirectorService.SetFlag`, 우회/desync 아님).
 - **`SM.Combat` 불변** — `BattleResult`(승패·`FinalUnits`·`StepCount`) 사실만 산출. objective/warrant 무지 유지.
 
@@ -66,6 +66,27 @@ ludonarrative 루프의 "전투 → 기록"(P1: `DossierEntryRecord`)에 이어 
 1. **P2b**: Warrant 선택 surface(출격 전 — squad가 어느 세력 기준에 서약하나) + 선택→`Overlay.PledgedWarrantId` stamp + 세력 반응 dialogue 분기(content, pindoc + event-map). `Swift`↔`Intact` 긴장(속전은 손실 risk, 온전은 지연 risk)이 "어느 세력을 만족시키나"의 정치 선택이 된다.
 2. **P3**: combat objective 엔티티 — 민간인 유닛·증거 오브젝트·비살상 최종 상태. 전투 모델 변경 동반(`CombatEntityKind` 확장 또는 중립 side). 이때 `WarrantKind` 확장(`Protect`/`Evidence`/`NonLethal`)이 `WarrantJudge`에 붙고 `BattleResult`가 새 사실을 산출한다. ADR-0026이 "P2에서 분류 확장"이라 적은 부분이 정확히 이 P3.
 3. Dossier/Warrant UI surface(서약 이력 표시 — "내가 약속하고 무엇을 지켰나").
+
+## GPT Pro 검수 반영 (P2a 모델 일반화, 2026-06-04)
+
+GPT Pro 확장 검수(`.gptprosubmit/payload/response-20260604-015138.md`) 판정: **rail(저장·판정 spine)은 합격, 그러나 P2 시스템 설계는 아직 미합격.** 단일 핵심 위험 — **자동전투(플레이어가 배치·택틱만 정하고 관전)에서 `turn 수`/`squad 손실`이 출격 전 선택으로 충분히 분리되지 않으면 Swift/Intact는 선택이 아니라 결과에 붙는 사후 라벨**이 된다. P2의 단 하나의 핵심 문제: **"출격 전 서약이 플레이어의 준비 선택을 실제로 바꾸는가"** (Warrant = result label이 아니라 출격 전 opportunity cost).
+
+본 turn에 반영한 **되돌리기 비싼 구조 수정**(§5, 코드):
+
+- **§5.1 fact-bag judge**: `Judge(spec, victory, survivor, total, step)` → `Judge(spec, BattleFactSet, EncounterContext)`. P3에서 새 전투 사실이 붙어도 signature 보존.
+- **§5.2 reason-bearing judgment**: `WarrantOutcome` 단일 enum → `WarrantJudgment`(Outcome+FailureReason+Severity+관측사실). 패배는 `FailedMission`으로 단순 Broken과 구분.
+- **§5.3 Dossier fact snapshot**: 위반 원인·관측 turn·resolved 임계 영속.
+- **§5.4 flag = projection**: Dossier가 SoT, flag는 dialogue 게이트용. settlement 주석으로 박제.
+- **§5.7 "0 combat change" 재구성**: 영구 원칙이 아니라 P2a 슬라이스 제약. 올바른 원칙은 "combat은 narrative를 모르지만 필요한 fact는 산출한다".
+
+**P2b로 미룬 것**(GPT Pro 권장 순서 — 모두 P2a rail 위에 add):
+
+1. **분리 가능성 검증(separability sim)** — Swift-build vs Intact-build가 실제로 다른 turn/casualty 분포를 내는지 측정. 이게 통과 안 되면 Swift/Intact 문법 자체 재검토(가장 먼저).
+2. **Warrant ↔ tactic/posture 결합** — Swift=Aggressive 계열만, Intact=Guarded 계열만 선택 가능하게 묶어 출격 전 행동 계약화. 전투 코드 변경 없이 가능.
+3. **risk-contract UI** — 선택 버튼이 아니라 예상 turn/casualty risk + 추천 roster/tactic + 정치 보상·비용을 사전 제시.
+4. **FactionEffectProfile + 비대사 상태** — 대사 분기와 함께 최소 하나의 systemic 효과(faction standing/price/recruit/route/pressure)를 Dossier로 물린다.
+5. **OfferSet 기록** — `PledgedWarrantId`(택한 것)뿐 아니라 거절한 세력 기준(offerSet)을 Dossier에 남겨 "누구 편을 들었나"에 세력이 반응하게.
+6. **encounter 분류 노출 제한** — Swift/Intact가 실제로 갈라지는 encounter에만 warrant 노출(dominated/trivial 전투엔 미노출).
 
 ## 작성 지침
 
