@@ -45,7 +45,8 @@ public sealed class LoadoutCompiler
         PermanentAugmentLoadoutState permanentAugmentLoadout,
         SquadBlueprintState blueprint,
         RunOverlayState overlay,
-        CombatContentSnapshot content)
+        CombatContentSnapshot content,
+        IReadOnlyList<CombatModifierPackage>? squadSupportPackages = null)
     {
         var heroesById = heroes.ToDictionary(hero => hero.Id, StringComparer.Ordinal);
         var compiled = new List<BattleUnitLoadout>();
@@ -288,6 +289,12 @@ public sealed class LoadoutCompiler
         var finalized = compiled
             .Select(unit => unit with
             {
+                // 정치 지원(ADR-0028 slice 2)은 외부에서 도출된 일반 numeric package다. compile 안에서
+                // 접어 넣어야 CompileHash(아래 finalized 기준)가 이를 포함 → replay/audit 무결성 유지.
+                // 없으면(평시 경로) Packages 무변 → 기존 hash/테스트 불변.
+                Packages = squadSupportPackages is { Count: > 0 }
+                    ? unit.NumericPackages.Concat(squadSupportPackages).ToList()
+                    : unit.Packages,
                 TeamPackages = teamPackages,
                 TeamRulePackages = Array.Empty<CombatRuleModifierPackage>()
             })

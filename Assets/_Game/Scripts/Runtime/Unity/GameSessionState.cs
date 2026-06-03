@@ -1302,6 +1302,12 @@ public sealed partial class GameSessionState
             TemporaryAugmentIds = Expedition.TemporaryAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList(),
             PendingRewardIds = _pendingRewardChoices.Select(choice => choice.PayloadId).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList(),
         };
+        // ADR-0028 slice 2 — 정치 루프 닫기: 서약 발행 세력과의 신뢰가 임계 이상이면 다음 출격에 지원이 붙는다.
+        // trust 읽기(persistence)는 여기(SM.Unity)서, 임계/package 도출은 SM.Meta 순수 서비스가 소유.
+        var squadSupportPackages = NextCombatSupportService.ResolveSupportPackages(
+            overlay.PledgedWarrantId,
+            factionId => Profile.FactionStanding
+                .FirstOrDefault(standing => string.Equals(standing.FactionId, factionId, StringComparison.Ordinal))?.Trust ?? 0);
         var compiled = _loadoutCompiler.Compile(
             ToHeroRecords(Profile).ToList(),
             ToHeroLoadoutStates(Profile),
@@ -1312,7 +1318,8 @@ public sealed partial class GameSessionState
             ToPermanentAugmentLoadout(Profile, blueprint.BlueprintId),
             blueprint,
             overlay,
-            snapshot);
+            snapshot,
+            squadSupportPackages);
 
         LastCompiledBattleSnapshot = compiled;
         ActiveRun = activeRun with { Overlay = overlay };

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Core.Contracts;
 using SM.Core.Stats;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 
@@ -126,6 +127,38 @@ public sealed class LoadoutCompilerClosureTests
             "Augment triggered effect should be carried into the compiled BattleUnitLoadout");
     }
 
+    [Test]
+    public void LoadoutCompiler_SquadSupportPackages_FoldIntoEveryAllyAndShiftHash()
+    {
+        // ADR-0028 slice 2 — 정치 루프 뒷단의 실제 사슬: high-trust 정치 서약 → NextCombatSupportService가
+        // 지원 package를 내고 → Compile이 squad 전원에 접고 → compile hash가 바뀐다(replay/audit가 지원을 포함).
+        var compiler = new LoadoutCompiler();
+        var content = BuildContentSnapshot();
+        var baseline = CompileSquad(compiler, content, BuildBaselineSpec());
+
+        // 서비스(SM.Meta)에서 직접 도출 — 손으로 만든 package가 아니라 실제 산출물로 통합을 검증.
+        const string supportSourceId = "faction_support:faction_north_council";
+        var support = NextCombatSupportService.ResolveSupportPackages(
+            WarrantCatalog.CouncilMandateId,
+            _ => NextCombatSupportService.SupportTrustThreshold);
+        Assert.That(support, Is.Not.Empty, "high-trust council 서약은 지원 package를 내야 한다");
+
+        var withSupport = CompileSquad(compiler, content, BuildBaselineSpec(), support);
+
+        Assert.That(
+            withSupport.Allies.All(ally => ally.NumericPackages.Any(package => package.SourceId == supportSourceId)),
+            Is.True,
+            "지원 package는 squad 전원에 접혀야 한다");
+        Assert.That(
+            baseline.Allies.Any(ally => ally.NumericPackages.Any(package => package.SourceId == supportSourceId)),
+            Is.False,
+            "평시(지원 없음) 경로는 무변이어야 한다");
+        Assert.That(
+            withSupport.CompileHash,
+            Is.Not.EqualTo(baseline.CompileHash),
+            "지원이 붙으면 compile hash가 달라져야 replay/audit가 이를 반영한다");
+    }
+
     private static SquadSpec BuildTriggeredAugmentSpec()
     {
         return new SquadSpec(
@@ -146,7 +179,11 @@ public sealed class LoadoutCompilerClosureTests
             });
     }
 
-    private static BattleLoadoutSnapshot CompileSquad(LoadoutCompiler compiler, CombatContentSnapshot content, SquadSpec spec)
+    private static BattleLoadoutSnapshot CompileSquad(
+        LoadoutCompiler compiler,
+        CombatContentSnapshot content,
+        SquadSpec spec,
+        IReadOnlyList<CombatModifierPackage>? squadSupportPackages = null)
     {
         var heroes = new List<HeroRecord>(spec.Heroes.Count);
         var heroLoadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal);
@@ -222,7 +259,8 @@ public sealed class LoadoutCompilerClosureTests
                 heroes.Select(hero => hero.Id).ToList(),
                 heroRoleIds),
             new RunOverlayState(0, spec.TemporaryAugmentIds, Array.Empty<string>(), LoadoutCompiler.CurrentCompileVersion, string.Empty),
-            content);
+            content,
+            squadSupportPackages);
     }
 
     private static SquadSpec BuildBaselineSpec(string teamTacticId = "team_tactic_standard_advance", IReadOnlyDictionary<string, string>? roleOverrides = null)
