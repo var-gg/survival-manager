@@ -34,6 +34,7 @@ public class JsonPersistenceTests
                 BlueprintId = "blueprint.default",
                 CompileVersion = "build-compile-audit.v1",
                 CompileHash = "abc123",
+                PledgedWarrantId = "warrant_intact",
                 TemporaryAugmentIds = new System.Collections.Generic.List<string> { "augment_silver_guard" }
             };
             profile.MatchHeaders.Add(new MatchRecordHeader
@@ -83,6 +84,8 @@ public class JsonPersistenceTests
                 SurvivorAllyCount = 4,
                 TotalAllyCount = 4,
                 FallenAllyIds = new System.Collections.Generic.List<string>(),
+                WarrantId = "warrant_intact",
+                WarrantOutcome = "kept",
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
 
@@ -100,6 +103,9 @@ public class JsonPersistenceTests
             Assert.That(loaded.Dossier, Has.Count.EqualTo(1));
             Assert.That(loaded.Dossier[0].Outcome, Is.EqualTo("clean_victory"));
             Assert.That(loaded.Dossier[0].SurvivorAllyCount, Is.EqualTo(4));
+            Assert.That(loaded.Dossier[0].WarrantId, Is.EqualTo("warrant_intact"));
+            Assert.That(loaded.Dossier[0].WarrantOutcome, Is.EqualTo("kept"));
+            Assert.That(loaded.ActiveRun.PledgedWarrantId, Is.EqualTo("warrant_intact"));
         }
         finally
         {

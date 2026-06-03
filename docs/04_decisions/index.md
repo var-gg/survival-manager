@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-03
+- 최종수정일: 2026-06-04
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -39,6 +39,7 @@
 - `adr-0024-narrative-human-centric-reskin.md`: 내러티브 인간 중심 reskin (superseded: Pindoc 전환)
 - `adr-0025-narrative-authoring-runtime-sync.md`: 내러티브 authoring↔runtime 동기화 거버넌스 — 3계층 하이브리드 SoT(pindoc 창작 / Git canonical manifest 계약 / Unity 파생), stable line_uid·다층 drift 게이트·AI edit protocol (draft, GPT Pro 자문 반영)
 - `adr-0026-dossier-persistence-schema.md`: ludonarrative 루프 P1a — `DossierEntryRecord`(전투 결과 영속 ledger)를 `SM.Persistence.Abstractions.Models`에 추가, 분류 판정은 `SM.Meta.DossierOutcomeClassifier` 순수 코어, 집계는 `SM.Unity` settlement flow. combat 순수성 보존
+- `adr-0027-warrant-judgment-architecture.md`: ludonarrative 루프 P2a — 출격 전 서약(Warrant)을 전투 사실(승패·생존·turn 수)로 판정. `WarrantJudge`(`SM.Meta` 순수), 서약 id는 overlay rail(`RewardSourceId` 동렬), outcome은 `DossierEntryRecord`에 영속. combat 0 변경. 민간인·증거 등 전투 엔티티 objective는 P3로 분리
 
 ## 운영 메모
 

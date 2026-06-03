@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Meta;
 using SM.Persistence.Abstractions.Models;
 using SM.Persistence.Json;
 using SM.Tests.EditMode.Fakes;
@@ -502,6 +503,124 @@ public sealed class RunLoopContractFastTests
         Assert.That(reloaded.Profile.RewardLedger.Count(entry =>
             string.Equals(entry.SourceId, rewardSourceId, StringComparison.Ordinal)
             && entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal)), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void PledgedWarrant_Intact_Kept_RecordsDossierAndStampsFlag()
+    {
+        // ludonarrative 루프 P2a 통합 evidence: 출격 전 서약(PledgeWarrant) → 전투 사실로 판정
+        // (WarrantJudge) → DossierEntryRecord에 outcome 기록 + chapter-scoped story flag stamp.
+        // overlay(write) → settlement → judge → record/flag(read) 전 rail을 한 번에 통과시킨다.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+
+        session.PledgeWarrant(WarrantCatalog.IntactId);
+
+        // 전원 생존(손실 0) + 승리 → Intact Kept.
+        var finalUnits = new List<BattleUnitReadModel>
+        {
+            CreateAllyUnit("hero-1", alive: true),
+            CreateAllyUnit("hero-2", alive: true),
+            CreateAllyUnit("hero-3", alive: true),
+            CreateAllyUnit("hero-4", alive: true),
+        };
+        session.MarkBattleResolved(victory: true, stepCount: 8, eventCount: 4, finalUnits);
+
+        var dossier = session.Profile.Dossier.LastOrDefault();
+        Assert.That(dossier, Is.Not.Null, "MarkBattleResolved가 Dossier entry를 기록해야 한다.");
+        Assert.That(dossier!.WarrantId, Is.EqualTo(WarrantCatalog.IntactId));
+        Assert.That(dossier.WarrantOutcome, Is.EqualTo("kept"));
+        Assert.That(dossier.ChapterId, Is.Not.Empty);
+
+        Assert.That(session.NarrativeProgress.StoryFlags,
+            Does.Contain($"story_flag_{dossier.ChapterId}_warrant_kept"),
+            "서약 이행이 chapter-scoped story flag로 stamping돼야 한다(P2b 분기 입력).");
+    }
+
+    [Test]
+    public void PledgedWarrant_Intact_Broken_WhenAllyFalls_StampsBrokenFlag()
+    {
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+
+        session.PledgeWarrant(WarrantCatalog.IntactId);
+
+        // 승리했지만 1명 전사(손실 1) → Intact Broken.
+        var finalUnits = new List<BattleUnitReadModel>
+        {
+            CreateAllyUnit("hero-1", alive: true),
+            CreateAllyUnit("hero-2", alive: true),
+            CreateAllyUnit("hero-3", alive: true),
+            CreateAllyUnit("hero-4", alive: false),
+        };
+        session.MarkBattleResolved(victory: true, stepCount: 8, eventCount: 4, finalUnits);
+
+        var dossier = session.Profile.Dossier.LastOrDefault();
+        Assert.That(dossier, Is.Not.Null);
+        Assert.That(dossier!.WarrantId, Is.EqualTo(WarrantCatalog.IntactId));
+        Assert.That(dossier.WarrantOutcome, Is.EqualTo("broken"));
+
+        Assert.That(session.NarrativeProgress.StoryFlags,
+            Does.Contain($"story_flag_{dossier.ChapterId}_warrant_broken"));
+    }
+
+    [Test]
+    public void PledgedWarrant_NotPledged_RecordsNotApplicable_AndStampsNoWarrantFlag()
+    {
+        // 미서약(default) sortie는 NotApplicable로 기록되고 warrant flag를 stamp하지 않는다 — ships dark 안전성.
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
+        var session = CreateBoundSession(lookup);
+        session.BeginNewExpedition();
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.BuildBattleLoadoutSnapshot();
+
+        var finalUnits = new List<BattleUnitReadModel>
+        {
+            CreateAllyUnit("hero-1", alive: true),
+            CreateAllyUnit("hero-2", alive: true),
+            CreateAllyUnit("hero-3", alive: true),
+            CreateAllyUnit("hero-4", alive: true),
+        };
+        session.MarkBattleResolved(victory: true, stepCount: 8, eventCount: 4, finalUnits);
+
+        var dossier = session.Profile.Dossier.LastOrDefault();
+        Assert.That(dossier, Is.Not.Null);
+        Assert.That(dossier!.WarrantId, Is.Empty);
+        Assert.That(dossier.WarrantOutcome, Is.EqualTo("not_applicable"));
+        Assert.That(session.NarrativeProgress.StoryFlags,
+            Has.None.Contains("_warrant_"),
+            "미서약은 어떤 warrant flag도 stamp하지 않는다.");
+    }
+
+    private static BattleUnitReadModel CreateAllyUnit(string id, bool alive)
+    {
+        return new BattleUnitReadModel(
+            Id: id,
+            Name: id,
+            Side: TeamSide.Ally,
+            Anchor: DeploymentAnchorId.FrontCenter,
+            RaceId: "human",
+            ClassId: "vanguard",
+            Position: new CombatVector2(0f, 0f),
+            CurrentHealth: alive ? 20f : 0f,
+            MaxHealth: 20f,
+            IsAlive: alive,
+            ActionState: CombatActionState.AcquireTarget,
+            PendingActionType: BattleActionType.BasicAttack,
+            TargetId: "enemy",
+            TargetName: "Enemy",
+            WindupProgress: 0f,
+            CooldownRemaining: 0f,
+            CurrentEnergy: 0f,
+            MaxEnergy: 100f,
+            IsDefending: false,
+            HeadAnchorHeight: 1.5f);
     }
 
     private static GameSessionState CreateBoundSession(ICombatContentLookup lookup)

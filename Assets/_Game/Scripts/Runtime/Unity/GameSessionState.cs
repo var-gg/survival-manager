@@ -1430,6 +1430,27 @@ public sealed partial class GameSessionState
     public void SetLastBattleResult(bool victory, string summary) =>
         _rewardSettlementFlow.SetLastBattleResult(victory, summary);
 
+    /// <summary>
+    /// 출격 전 squad가 한 세력의 기준(Warrant)에 서약한다 — 서약 id를 run overlay에 stamp해
+    /// settlement까지 운반한다(RewardSourceId와 동렬 rail). ludonarrative 루프 P2a의 write-end:
+    /// settlement(WriteDossierEntry)이 이 값을 읽어 WarrantJudge로 이행/위반을 가린다.
+    /// "어떤 세력 기준에 서약하나"의 선택 UI는 P2b(SM.Unity)가 이 메서드를 호출한다. ADR-0027.
+    /// public facade가 아니라 internal flow API — P2b UI(같은 SM.Unity)와 test(InternalsVisibleTo)만 호출.
+    /// </summary>
+    internal void PledgeWarrant(string warrantId)
+    {
+        if (ActiveRun == null)
+        {
+            return;
+        }
+
+        ActiveRun = ActiveRun with
+        {
+            Overlay = ActiveRun.Overlay with { PledgedWarrantId = warrantId ?? string.Empty }
+        };
+        SyncActiveRunIfPresent();
+    }
+
     public void MarkBattleResolved(
         bool victory,
         int stepCount,

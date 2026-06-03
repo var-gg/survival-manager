@@ -29,6 +29,12 @@ public sealed class ActiveRunRecord
     public string BattleContextHash = string.Empty;
     public string RewardSourceId = string.Empty;
     public string RewardCommitId = string.Empty;
+
+    /// <summary>
+    /// 이 sortie에서 서약한 Warrant id(없으면 ""). per-sortie truth — RewardSourceId와 동렬 rail.
+    /// settlement이 이 값으로 WarrantSpec을 조회해 서약 이행을 판정한다. ADR-0027(P2a).
+    /// </summary>
+    public string PledgedWarrantId = string.Empty;
     public string FirstSelectedTemporaryAugmentId = string.Empty;
     public string PendingPermanentUnlockId = string.Empty;
     public bool StoryCleared;

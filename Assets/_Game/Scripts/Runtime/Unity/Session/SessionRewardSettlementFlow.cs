@@ -130,7 +130,7 @@ public sealed partial class GameSessionState
             // sandbox/quick-battle smoke lane은 캠페인 기록이 아니므로 제외.
             if (finalUnits != null && !_session.IsDirectCombatSandboxLane && !_session.IsQuickBattleSmokeActive)
             {
-                WriteDossierEntry(finalUnits, victory, resolvedNode?.Id ?? string.Empty);
+                WriteDossierEntry(finalUnits, victory, stepCount, resolvedNode?.Id ?? string.Empty);
             }
 
             if (resolvedNode != null && !_session.IsQuickBattleSmokeActive)
@@ -271,7 +271,9 @@ public sealed partial class GameSessionState
         // ludonarrative 루프 P1a: finalUnits(이미 전달됨)에서 ally squad 생존을 집계해
         // DossierOutcome으로 분류하고 SaveProfile.Dossier에 영구 기록한다.
         // 판정 로직은 SM.Meta.DossierOutcomeClassifier(순수)가 소유 — 여기서는 집계 + 영속화만.
-        private void WriteDossierEntry(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory, string nodeId)
+        // P2a: 같은 hook에서 출격 전 서약(Warrant)도 판정한다 — overlay의 PledgedWarrantId를
+        // WarrantSpec으로 해석해 WarrantJudge(순수)로 kept/broken을 가린다. combat은 불변. ADR-0027.
+        private void WriteDossierEntry(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory, int stepCount, string nodeId)
         {
             var totalAllyCount = 0;
             var survivorAllyCount = 0;
@@ -295,6 +297,11 @@ public sealed partial class GameSessionState
             var outcome = DossierOutcomeClassifier.Classify(victory, survivorAllyCount, totalAllyCount);
             var chapterId = _session.ActiveRun?.Overlay.ChapterId ?? _session.Profile.CampaignProgress.SelectedChapterId;
 
+            // P2a: 출격 전 서약(overlay에 실려 운반)을 전투 사실로 판정. 미서약이면 spec=null → NotApplicable.
+            var pledgedWarrantId = _session.ActiveRun?.Overlay.PledgedWarrantId ?? string.Empty;
+            var warrantSpec = WarrantCatalog.TryResolve(pledgedWarrantId, out var resolvedWarrant) ? resolvedWarrant : null;
+            var warrantOutcome = WarrantJudge.Judge(warrantSpec, victory, survivorAllyCount, totalAllyCount, stepCount);
+
             _session.Profile.Dossier.Add(new DossierEntryRecord
             {
                 EntryId = Guid.NewGuid().ToString("N"),
@@ -307,6 +314,8 @@ public sealed partial class GameSessionState
                 SurvivorAllyCount = survivorAllyCount,
                 TotalAllyCount = totalAllyCount,
                 FallenAllyIds = fallenAllyIds,
+                WarrantId = warrantSpec?.Id ?? string.Empty,
+                WarrantOutcome = WarrantJudge.ToToken(warrantOutcome),
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
 
@@ -315,6 +324,16 @@ public sealed partial class GameSessionState
             if (outcome == DossierOutcome.CostlyVictory && !string.IsNullOrWhiteSpace(chapterId))
             {
                 _session.StoryDirector.SetFlag($"story_flag_{chapterId}_squad_costly");
+                _session.SyncNarrativeProgress();
+            }
+
+            // P2a: 서약 이행/위반을 chapter-scoped story flag로 stamp(through-director, P1b와 동일 패턴).
+            // P2b의 세력 반응 dialogue가 FlagSet로 이 flag를 읽어 분기한다. 미서약(NotApplicable)은 stamp 안 함.
+            if (warrantSpec != null && warrantOutcome != WarrantOutcome.NotApplicable
+                && !string.IsNullOrWhiteSpace(chapterId))
+            {
+                var warrantToken = warrantOutcome == WarrantOutcome.Kept ? "kept" : "broken";
+                _session.StoryDirector.SetFlag($"story_flag_{chapterId}_warrant_{warrantToken}");
                 _session.SyncNarrativeProgress();
             }
         }

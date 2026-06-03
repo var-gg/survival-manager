@@ -30,5 +30,14 @@ public sealed class DossierEntryRecord
     /// <summary>전투에서 쓰러진 ally roster unit id — "빈 줄로 만든 사람".</summary>
     public List<string> FallenAllyIds = new();
 
+    /// <summary>
+    /// 이 sortie에서 서약한 Warrant id(없으면 ""). ludonarrative 루프 P2a — 출격 전 서약.
+    /// stable id(`warrant_swift` 등), 표시명은 label에서 별도(ID/label 분리). ADR-0027.
+    /// </summary>
+    public string WarrantId = string.Empty;
+
+    /// <summary>WarrantJudge 토큰: "kept" | "broken" | "not_applicable"(서약 없음).</summary>
+    public string WarrantOutcome = string.Empty;
+
     public string CompletedAtUtc = string.Empty;
 }

@@ -67,7 +67,8 @@ public sealed record RunOverlayState(
     string RewardSourceId = "",
     string FirstSelectedTemporaryAugmentId = "",
     string PendingPermanentUnlockId = "",
-    string RewardCommitId = "");
+    string RewardCommitId = "",
+    string PledgedWarrantId = "");
 
 public sealed record ActiveRunState(
     string RunId,
