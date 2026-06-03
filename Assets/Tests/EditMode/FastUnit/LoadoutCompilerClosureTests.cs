@@ -130,17 +130,18 @@ public sealed class LoadoutCompilerClosureTests
     [Test]
     public void LoadoutCompiler_SquadSupportPackages_FoldIntoEveryAllyAndShiftHash()
     {
-        // ADR-0028 slice 2 — 정치 루프 뒷단의 실제 사슬: high-trust 정치 서약 → NextCombatSupportService가
-        // 지원 package를 내고 → Compile이 squad 전원에 접고 → compile hash가 바뀐다(replay/audit가 지원을 포함).
+        // ADR-0028 slice 2·3 — 정치 루프 뒷단의 실제 사슬: high-trust 정치 서약 → PoliticalCombatConditionService가
+        // 아군 지원 package를 내고 → Compile이 squad 전원에 접고 → compile hash가 바뀐다(replay/audit가 지원을 포함).
         var compiler = new LoadoutCompiler();
         var content = BuildContentSnapshot();
         var baseline = CompileSquad(compiler, content, BuildBaselineSpec());
 
         // 서비스(SM.Meta)에서 직접 도출 — 손으로 만든 package가 아니라 실제 산출물로 통합을 검증.
         const string supportSourceId = "faction_support:faction_north_council";
-        var support = NextCombatSupportService.ResolveSupportPackages(
+        var conditions = PoliticalCombatConditionService.Resolve(
             WarrantCatalog.CouncilMandateId,
-            _ => NextCombatSupportService.SupportTrustThreshold);
+            _ => PoliticalCombatConditionService.SupportTrustThreshold);
+        var support = PoliticalCombatConditionService.AllyPackages(conditions);
         Assert.That(support, Is.Not.Empty, "high-trust council 서약은 지원 package를 내야 한다");
 
         var withSupport = CompileSquad(compiler, content, BuildBaselineSpec(), support);

@@ -1302,12 +1302,11 @@ public sealed partial class GameSessionState
             TemporaryAugmentIds = Expedition.TemporaryAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList(),
             PendingRewardIds = _pendingRewardChoices.Select(choice => choice.PayloadId).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList(),
         };
-        // ADR-0028 slice 2 — 정치 루프 닫기: 서약 발행 세력과의 신뢰가 임계 이상이면 다음 출격에 지원이 붙는다.
-        // trust 읽기(persistence)는 여기(SM.Unity)서, 임계/package 도출은 SM.Meta 순수 서비스가 소유.
-        var squadSupportPackages = NextCombatSupportService.ResolveSupportPackages(
-            overlay.PledgedWarrantId,
-            factionId => Profile.FactionStanding
-                .FirstOrDefault(standing => string.Equals(standing.FactionId, factionId, StringComparison.Ordinal))?.Trust ?? 0);
+        // ADR-0028 slice 2·3 — 정치 루프: 서약 발행/거스른 세력 standing이 다음 전투 조건을 건다.
+        // standing 읽기(persistence)는 여기(SM.Unity)서, 임계/package 도출은 SM.Meta 순수 서비스가 소유.
+        // 이 seam은 AllySupport 통로만 적용(적 EnemyAlertness는 encounter resolve seam에서).
+        var politicalConditions = PoliticalCombatConditionService.Resolve(overlay.PledgedWarrantId, ResolveFactionStanding);
+        var squadSupportPackages = PoliticalCombatConditionService.AllyPackages(politicalConditions);
         var compiled = _loadoutCompiler.Compile(
             ToHeroRecords(Profile).ToList(),
             ToHeroLoadoutStates(Profile),
@@ -1336,6 +1335,21 @@ public sealed partial class GameSessionState
         SyncActiveRunRecord();
         SyncExpeditionState();
         return compiled;
+    }
+
+    // 정치 standing 읽기(persistence). ADR-0028 — 두 정치 seam(ally compile / enemy resolve)이 공유.
+    private int ResolveFactionStanding(string factionId) =>
+        Profile.FactionStanding
+            .FirstOrDefault(standing => string.Equals(standing.FactionId, factionId, StringComparison.Ordinal))?.Trust ?? 0;
+
+    // EnemyAlertness 통로를 resolved encounter에 적용 — 적대 누적 세력이 적을 경계시킨다(ADR-0028 slice 3).
+    private ResolvedEncounterContext ApplyEnemyPoliticalConditions(ResolvedEncounterContext context, ActiveRunState run)
+    {
+        var conditions = PoliticalCombatConditionService.Resolve(run.Overlay.PledgedWarrantId, ResolveFactionStanding);
+        var enemyPackages = PoliticalCombatConditionService.EnemyPackages(conditions);
+        return enemyPackages.Count == 0
+            ? context
+            : context with { Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(context.Enemies, enemyPackages) };
     }
 
     public bool TryResolveCurrentEncounter(out ResolvedEncounterContext context, out string error) =>
@@ -1382,6 +1396,9 @@ public sealed partial class GameSessionState
             var resolver = new EncounterResolutionService(snapshot);
             if (resolver.TryResolveEncounter(battleContext, out context, out error))
             {
+                // ADR-0028 slice 3 — 거스른 세력 적대가 누적되면 적이 경계 상태로 출현(EnemyAlertness 통로).
+                // 정치 충돌이 다음 전장에 닿는 지점. 적 package는 EnemySnapshotHash가 포착(live 결정적).
+                context = ApplyEnemyPoliticalConditions(context, run);
                 ActiveRun = RunStateService.SetBattleContext(run, battleContext);
                 SyncActiveRunRecord();
                 return true;

@@ -25,9 +25,11 @@ GPT Pro의 "공허하지 않을 최소 필수"는 둘 다다: **FactionState 변
 - **trust delta는 `FactionTrustService`(SM.Meta, 순수)**가 소유한다. satisfied → issuer +Δ, opposed −Δ; failed → issuer −Δ. EditMode 단위 검증. (betrayed/public·deniable nuance는 후속.)
 - **`DossierEntryRecord` += `IssuerFactionId`, `OpposedFactionId`** — WarrantResult 영속화(누구에게 한 약속을 지켰나/깼나). 정치 outcome은 기존 `WarrantOutcome`(kept/broken/failed_mission)로 충분.
 - **집계/적용은 `SM.Unity` settlement(`WriteDossierEntry`)**: warrant 판정 후 `FactionTrustService`로 delta를 계산해 `SaveProfile.FactionStanding`에 적용 + Dossier에 issuer/opposed 기록.
-- **(slice 2) trust → 다음 전투 mutation은 `NextCombatSupportService`(SM.Meta, 순수)**가 소유한다: 서약 발행 세력과의 trust ≥ `SupportTrustThreshold`(=4, 서약 2회 이행)이면 다음 출격에 squad-wide 지원 package(max_health/phys_power Flat 소폭)를 낸다. issuer 없음/저신뢰면 빈 결과. 도출은 primitive(issuer id + trust int)만 받아 `FactionTrustService`와 동일하게 SM.Meta 경계 유지.
-- **(slice 2) 적용 seam은 `LoadoutCompiler.Compile`**: 옵션 파라미터 `squadSupportPackages`를 finalize 단계에서 각 ally `NumericPackages`에 접는다 → **compile hash가 지원을 포함**(replay/audit 무결성). compiler는 정치를 모른다(일반 package만 접음). `GameSessionState.BuildBattleLoadoutSnapshotCore`가 `overlay.PledgedWarrantId` + `Profile.FactionStanding`(trust 읽기는 SM.Unity)에서 도출해 주입.
-- **`SM.Combat` 불변.** asmdef: record=`SM.Persistence.Abstractions`, delta/mutation 도출=`SM.Meta` 순수, 적용·trust 읽기=`SM.Unity`. ADR-0027 judgment rail 위에 정치 층만 추가.
+- **(slice 2·3) trust/standing → 다음 전투 조건은 `PoliticalCombatConditionService`(SM.Meta, 순수)**가 소유한다(slice 2 `NextCombatSupportService`를 slice 3에서 양방향으로 일반화·개명). `Resolve(pledgedWarrantId, standingLookup) → IReadOnlyList<PoliticalCombatCondition>` — 발행 세력 trust ≥ `SupportTrustThreshold`(=4)면 **AllySupport**(아군 버프), 거스른 세력 standing ≤ `AlertStandingThreshold`(=−2)면 **EnemyAlertness**(적 버프). 도출은 primitive(faction id + standing int)만 받아 `FactionTrustService`와 동일하게 SM.Meta 경계 유지.
+- **(slice 3, GPT Pro #4 타입 경계) `PoliticalCombatCondition` = 다채널 + provenance**: `(SourceFactionId, Channel, ReasonCode, Package)`. `CombatModifierPackage`는 leaf(전투가 보는 일반 modifier), 출처·통로·사유는 상위에 남는다 — 정치 결과를 stat-package-only로 굳히지 않는다(roster/route 등 후속 채널이 같은 컨테이너에 붙음). `ReasonCode`는 stable token(표시 문구 아님 — ID/label 분리).
+- **적용 seam(채널별)**: AllySupport는 `LoadoutCompiler.Compile(squadSupportPackages)` finalize에서 ally `NumericPackages`에 접혀 **compile hash**에 포착. EnemyAlertness는 `GameSessionState.TryResolveCurrentEncounterCore`가 resolved `context.Enemies`에 `ApplyEnemyPackages`로 접어 **EnemySnapshotHash**에 포착. 둘 다 `GameSessionState`가 `overlay.PledgedWarrantId` + `Profile.FactionStanding`(standing 읽기는 SM.Unity, 공유 helper `ResolveFactionStanding`)에서 도출해 주입. compiler/resolver는 정치를 모른다.
+- **replay 주의(정직)**: 정치 조건은 출격 시점 standing에서 도출되고 각 hash에 포착돼 **live 결정적**이다. 단 match record는 loadout을 verbatim 보존하지 않고 hash+event만 남긴다 — replay 재검증이 *변동된* Profile에서 재도출하면 drift 가능. 현재 그 재검증 경로는 없다(determinism 테스트는 동일 snapshot 재실행). 생기면 resolved 조건을 per-sortie로 `BattleContextState`에 snapshot해야 한다(후속).
+- **`SM.Combat` 불변.** asmdef: record=`SM.Persistence.Abstractions`, 조건 도출=`SM.Meta` 순수, 적용·standing 읽기=`SM.Unity`. ADR-0027 judgment rail 위에 정치 층만 추가.
 
 ## 검토한 대안
 
@@ -64,7 +66,7 @@ slice 2(닫힌 루프)를 GPT Pro 확장 검수에 올렸다(`response-20260604-
 ## 후속 작업
 
 - **(구현됨) slice 2 — NextCombatMutation**: `NextCombatSupportService`(SM.Meta) + `LoadoutCompiler.squadSupportPackages` seam. issuer trust ≥ T → 다음 출격 squad-wide 지원. headless 검증(서비스 단위 8 + compiler-fold 통합).
-1. **slice 3 — 양방향 정치 조건(다음)**: (A) 다채널 정치 effect 타입 + provenance, slice 2 support를 그 leaf로 refactor. (B) opposed 축 → enemy alertness — opposed standing ≤ 임계면 다음 전투 적에 alert package. **선행 grounding 필수**: 적 loadout(`BattleSetupBuilder`/`EncounterResolutionService`)은 ally `CompileHash` 같은 replay 해시가 없다 — enemy 정치 buff의 replay/determinism 포착 경로(battle context/record에 싣기, `PledgedWarrantId` 패턴)부터 잡고 구현. A+B는 한 묶음(B가 A 컨테이너에 꽂힘).
+- **(구현됨) slice 3 — 양방향 정치 조건**: (A) `PoliticalCombatCondition` 다채널 타입 + provenance, slice 2 support를 AllySupport leaf로 refactor(`PoliticalCombatConditionService`로 개명). (B) opposed standing ≤ −2 → EnemyAlertness(적 buff), `context.Enemies`에 fold(EnemySnapshotHash 포착). GPT Pro #4(타입 함정)·#3·#5(양방향) 대응. headless 검증(서비스 9 + ApplyEnemyPackages fold + compiler-fold). 적 fold의 GameSessionState glue는 fixture archetype 부재로 e2e 미적용(양변 테스트된 조합). replay drift는 위 '정직' 주의 — 후속.
 2. **content** — 4 정치 세력 stable id 확정(narrative reskin 기준) + warrant authoring(issuer/opposed/조건/deltas). content `FactionId`(per-site) ↔ 정치 세력 매핑.
 3. **mutation 심화·balance** — 신뢰-비례 scaling, 세력별 차등, magnitude 튜닝(현 placeholder: threshold 4, +4/+2). breakpoint 가독성(P2b UI와 함께).
 4. betrayed/public·deniable, scandal_exposure, debt_to_faction 등 FactionState 다축 확장.
