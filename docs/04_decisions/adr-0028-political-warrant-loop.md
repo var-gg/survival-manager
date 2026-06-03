@@ -45,13 +45,30 @@ GPT Pro의 "공허하지 않을 최소 필수"는 둘 다다: **FactionState 변
 
 감수할 비용: slice 2 지원 mutation은 **단일 tier·고정 magnitude placeholder**다(threshold 4, max_health+4/phys_power+2). 신뢰-비례 scaling, 부정 방향(저신뢰 → enemy_alertness 등), 세력별 차등은 후속·balance 단계. 또한 `RunLoopContract` 픽스처는 archetype이 비어(contract 전용) GameSessionState 레벨 e2e로 deployed squad를 못 띄운다 — seam 검증은 compiler-fold 테스트(실 archetype 2-ally, 서비스 산출물→fold+hash) + 서비스 단위 테스트로 커버하고, GameSessionState glue(5줄)는 양변이 테스트된 조합이다.
 
+## GPT Pro 최종 검수 (2026-06-04) — "체크박스 충족"
+
+slice 2(닫힌 루프)를 GPT Pro 확장 검수에 올렸다(`response-20260604-041346.md`, chat `…/c/6a207cf2`). **전체 판정: 체크박스 충족** — state는 전투 compile에 들어왔으나 현 효과가 generic ally stat buff라 *정치적 원인*으로 식별되기 약하다(진짜 피드백 아님, 함정도 아님).
+
+행동 채택(검수 동의):
+- **(#4 진짜 함정) 타입 경계**: 위험은 "support=stat package"가 아니라 *모든 정치 결과를 stat-package-only로 흘리는 것* + `trust` 단일 scalar를 모든 정치 상태의 alias로 굳히는 것. → 다채널 effect 컨테이너(`CombatModifierPackage`는 leaf, 상위는 ally/enemy/roster/route/economy 채널 보유) + provenance(SourceFactionId/Channel/UiLabel/CauseText). 되돌리기 비싼 결정이라 **지금** 고친다.
+- **(#3·#5 양방향) `opposed −1`이 ledger에서 죽는다** — 정치 충돌의 절반이 다음 전투에 안 닿는다. 4세력 공동 죄 정치극에서 이게 핵심. opposed 축 → enemy alertness가 최고 체감 채널(자동전투 관전에서 시작 조건 변화는 즉시 보임).
+- **(#1 가독성) 정치 의미가 compile hash 안에 숨음** — provenance를 Dossier/감사에 남겨 "어느 세력 mandate에서 왔나"가 보이게.
+
+반박(opus 판단, 무비판 수용 아님):
+- GPT Pro "상시 aura/버프 farming" 우려(#4-셋째)는 **현 설계에 미해당** — `ResolveSupportPackages`가 이미 *per-sortie pledged warrant의 issuer*로 게이트(자격=trust≥4 AND 활성=이번 출격 서약). 모든 세력 ≥4 상시 버프 아님.
+
+보류(YAGNI/차단):
+- breakpoint estimator + 출격 화면 "3타→2타" 미리보기 — P2b 선택 UI(미존재)에 차단.
+- `Heat/Debt/Scandal` 다축 state, threshold→policy data — 실제 세력 확정 전 조숙(int 필드/상수→데이터는 후방호환 추가라 나중도 싸다).
+
 ## 후속 작업
 
-- **(구현됨) slice 2 — NextCombatMutation**: `NextCombatSupportService`(SM.Meta) + `LoadoutCompiler.squadSupportPackages` seam. issuer trust ≥ T → 다음 출격 squad-wide 지원. "전투→정치→전투" cycle 닫힘. headless 검증(서비스 단위 8 + compiler-fold 통합).
-1. **mutation 심화** — 신뢰-비례 scaling, 부정 방향(저신뢰 → `enemy_alertness`/지원 박탈), 세력별 차등 효과. balance 단계에서 magnitude 튜닝(현 placeholder: threshold 4, +4/+2).
+- **(구현됨) slice 2 — NextCombatMutation**: `NextCombatSupportService`(SM.Meta) + `LoadoutCompiler.squadSupportPackages` seam. issuer trust ≥ T → 다음 출격 squad-wide 지원. headless 검증(서비스 단위 8 + compiler-fold 통합).
+1. **slice 3 — 양방향 정치 조건(다음)**: (A) 다채널 정치 effect 타입 + provenance, slice 2 support를 그 leaf로 refactor. (B) opposed 축 → enemy alertness — opposed standing ≤ 임계면 다음 전투 적에 alert package. **선행 grounding 필수**: 적 loadout(`BattleSetupBuilder`/`EncounterResolutionService`)은 ally `CompileHash` 같은 replay 해시가 없다 — enemy 정치 buff의 replay/determinism 포착 경로(battle context/record에 싣기, `PledgedWarrantId` 패턴)부터 잡고 구현. A+B는 한 묶음(B가 A 컨테이너에 꽂힘).
 2. **content** — 4 정치 세력 stable id 확정(narrative reskin 기준) + warrant authoring(issuer/opposed/조건/deltas). content `FactionId`(per-site) ↔ 정치 세력 매핑.
-3. betrayed/public·deniable, scandal_exposure, debt_to_faction 등 FactionState 확장.
-4. A-lite(Guardable Objective Slot)는 특정 mission type에만(3순위, 비핵심).
+3. **mutation 심화·balance** — 신뢰-비례 scaling, 세력별 차등, magnitude 튜닝(현 placeholder: threshold 4, +4/+2). breakpoint 가독성(P2b UI와 함께).
+4. betrayed/public·deniable, scandal_exposure, debt_to_faction 등 FactionState 다축 확장.
+5. A-lite(Guardable Objective Slot)는 특정 mission type에만(비핵심).
 
 ## 작성 지침
 
