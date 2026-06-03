@@ -56,6 +56,39 @@ public sealed class WarrantSeparabilitySimTests
         Assert.That(cells.Sum(c => c.Wins), Is.GreaterThan(0), "전 cell 0승이면 sim 설정이 깨진 것.");
     }
 
+    [Test]
+    public void Protect_PostureSeparatesProtecteeSurvival_IsMeasured()
+    {
+        // build축이 미분리였으니(위 test), tension은 objective에서 와야 한다. 가장 단순한 후보 = protect.
+        // 같은 squad+보호대상을 posture만 바꿔 돌려 보호대상 생존율이 갈리는지 측정.
+        // guard(ProtectCarry) 생존% > aggressive(AllInBackline)면 protect는 posture로 통제되는 진짜 선택(GPT Pro §5.B).
+        var postures = new (string Name, TeamPostureType P)[]
+        {
+            ("guard", TeamPostureType.ProtectCarry),
+            ("neutral", TeamPostureType.StandardAdvance),
+            ("aggressive", TeamPostureType.AllInBackline),
+        };
+        var enemyKinds = new (string Name, System.Func<IReadOnlyList<BattleUnitLoadout>> F)[]
+        {
+            ("mixed", () => BuildEnemies(1f, 1f, 1f)),
+            ("melee", BuildMeleeEnemies),
+        };
+        var rows = new List<ProtectCell>();
+        foreach (var ek in enemyKinds)
+        {
+            foreach (var p in postures)
+            {
+                rows.Add(RunProtect($"{ek.Name}/{p.Name}", p.P, ek.F));
+            }
+        }
+
+        var report = BuildProtectReport(rows);
+        WriteReport(report, "warrant-protect-separability.txt");
+        TestContext.WriteLine(report);
+
+        Assert.That(rows.Sum(r => r.Wins), Is.GreaterThan(0), "전 posture 0승이면 sim 설정 문제.");
+    }
+
     // ---- builds ---------------------------------------------------------
 
     private static IReadOnlyList<BattleUnitLoadout> BuildEnemies(float hpMul, float offMul, float spdMul)
@@ -179,14 +212,95 @@ public sealed class WarrantSeparabilitySimTests
 
     private static double Mean(IReadOnlyList<int> values) => values.Count == 0 ? 0 : values.Average();
 
-    private static void WriteReport(string report)
+    // ---- protect objective ---------------------------------------------
+
+    private sealed class ProtectCell
+    {
+        public string Posture = string.Empty;
+        public int Wins;
+        public int ProtecteeSurvived;       // 전 전투
+        public int ProtecteeSurvivedOnWin;  // 승리한 전투 중
+        public readonly List<int> WinSteps = new();
+        public readonly List<int> SquadDeaths = new();  // 보호대상 제외
+    }
+
+    private static ProtectCell RunProtect(string label, TeamPostureType posture, System.Func<IReadOnlyList<BattleUnitLoadout>> enemyFactory)
+    {
+        var cell = new ProtectCell { Posture = label };
+        for (var seed = 1; seed <= SeedCount; seed++)
+        {
+            var state = CombatTestFactory.CreateBattleState(BuildProtectSquad(), enemyFactory(), allyPosture: posture, seed: seed);
+            var battle = BattleResolver.Run(state, MaxTicks);
+
+            var protectee = battle.FinalUnits.FirstOrDefault(u => u.Id == "protectee");
+            var protecteeAlive = protectee != null && protectee.IsAlive;
+            if (protecteeAlive) cell.ProtecteeSurvived++;
+
+            cell.SquadDeaths.Add(battle.FinalUnits.Count(u => u.Side == TeamSide.Ally && u.Id != "protectee" && !u.IsAlive));
+
+            if (battle.Winner == TeamSide.Ally)
+            {
+                cell.Wins++;
+                cell.WinSteps.Add(battle.StepCount);
+                if (protecteeAlive) cell.ProtecteeSurvivedOnWin++;
+            }
+        }
+
+        return cell;
+    }
+
+    // 전투 유닛 4 + 보호대상 1(fragile, 후방, 약공격) — "지켜야 할 사람".
+    private static IReadOnlyList<BattleUnitLoadout> BuildProtectSquad()
+    {
+        return new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("guard_front_a", classId: "vanguard", hp: 110f, physPower: 7f, armor: 4f, attackSpeed: 3f, moveSpeed: 1.7f, anchor: DeploymentAnchorId.FrontTop),
+            CombatTestFactory.CreateLoopAUnit("guard_front_b", classId: "vanguard", hp: 105f, physPower: 7f, armor: 4f, attackSpeed: 3f, moveSpeed: 1.7f, anchor: DeploymentAnchorId.FrontBottom),
+            CombatTestFactory.CreateLoopAUnit("guard_dps", classId: "duelist", hp: 80f, physPower: 9f, armor: 2f, attackSpeed: 4.5f, moveSpeed: 1.9f, anchor: DeploymentAnchorId.FrontCenter),
+            CombatTestFactory.CreateLoopAUnit("guard_ranged", classId: "ranger", hp: 70f, physPower: 7f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.8f, attackRange: 5.6f, anchor: DeploymentAnchorId.BackTop),
+            CombatTestFactory.CreateLoopAUnit("protectee", classId: "mystic", hp: 35f, physPower: 2f, armor: 0f, attackSpeed: 2f, moveSpeed: 1.6f, attackRange: 2.0f, anchor: DeploymentAnchorId.BackCenter),
+        };
+    }
+
+    // 근접 전용 적 — 후방 protectee에 닿으려면 전열을 통과해야 한다(positioning/posture가 의미를 가질 조건).
+    private static IReadOnlyList<BattleUnitLoadout> BuildMeleeEnemies()
+    {
+        return new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("enemy_m_a", race: "undead", classId: "duelist", hp: 60f, physPower: 6f, armor: 1f, attackSpeed: 3.5f, moveSpeed: 2.0f, attackRange: 1.2f, anchor: DeploymentAnchorId.FrontTop),
+            CombatTestFactory.CreateLoopAUnit("enemy_m_b", race: "undead", classId: "duelist", hp: 58f, physPower: 6f, armor: 1f, attackSpeed: 3.5f, moveSpeed: 2.0f, attackRange: 1.2f, anchor: DeploymentAnchorId.FrontBottom),
+            CombatTestFactory.CreateLoopAUnit("enemy_m_c", race: "undead", classId: "duelist", hp: 56f, physPower: 6f, armor: 1f, attackSpeed: 3.5f, moveSpeed: 2.05f, attackRange: 1.2f, anchor: DeploymentAnchorId.FrontCenter),
+            CombatTestFactory.CreateLoopAUnit("enemy_m_d", race: "undead", classId: "raider", hp: 54f, physPower: 7f, armor: 0f, attackSpeed: 4f, moveSpeed: 2.1f, attackRange: 1.2f, anchor: DeploymentAnchorId.BackCenter),
+        };
+    }
+
+    private static string BuildProtectReport(IReadOnlyList<ProtectCell> rows)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== Protect objective separability — posture x protectee survival ===");
+        sb.AppendLine($"seeds={SeedCount}, maxTicks={MaxTicks}. squad 4 + protectee(fragile, back-center). enemy=moderate fixed.");
+        sb.AppendLine();
+        sb.AppendLine($"{"posture",-22}{"win%",-7}{"protectee surv%",-17}{"surv|win%",-12}{"winStep(med)",-14}{"squadDeaths(mean)"}");
+        foreach (var r in rows)
+        {
+            var survPct = 100.0 * r.ProtecteeSurvived / SeedCount;
+            var survOnWin = r.Wins > 0 ? 100.0 * r.ProtecteeSurvivedOnWin / r.Wins : 0;
+            sb.AppendLine($"{r.Posture,-22}{100.0 * r.Wins / SeedCount,-7:0}{survPct,-17:0}{survOnWin,-12:0}{Median(r.WinSteps),-14:0.0}{Mean(r.SquadDeaths):0.00}");
+        }
+        sb.AppendLine();
+        sb.AppendLine("분리: guard(ProtectCarry) protectee 생존% > aggressive(AllInBackline) → protect는 posture로 통제되는 진짜 선택.");
+        sb.AppendLine("미분리: 생존%가 posture 무관(항상 살/죽) → 단순 fragile ally론 부족, 적 targeting priority 등 combat 메커니즘 필요(설계 입력).");
+        return sb.ToString();
+    }
+
+    private static void WriteReport(string report, string fileName = "warrant-separability.txt")
     {
         try
         {
             var root = Directory.GetParent(Application.dataPath)!.FullName;
             var dir = Path.Combine(root, "Logs");
             Directory.CreateDirectory(dir);
-            File.WriteAllText(Path.Combine(dir, "warrant-separability.txt"), report);
+            File.WriteAllText(Path.Combine(dir, fileName), report);
         }
         catch
         {
