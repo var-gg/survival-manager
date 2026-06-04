@@ -1,0 +1,187 @@
+.warrant-screen {
+    color: var(--sm-ink-1);
+    background-color: rgb(7, 10, 19);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+.warrant-screen .warrant-screen__topbar {
+    height: 64px;
+    min-height: 64px;
+    margin-bottom: 14px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: rgba(13, 17, 29, 0.94);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.warrant-screen .screen__title {
+    color: var(--sm-gold-100);
+    font-size: 18px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.warrant-screen .warrant-screen__body {
+    position: relative;
+    flex-grow: 1;
+    min-height: 0;
+    flex-direction: row;
+}
+
+.warrant-screen .panel {
+    background-color: rgba(8, 13, 31, 0.92);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a36);
+    border-right-color: var(--sm-gold-300-a36);
+    border-top-color: var(--sm-gold-300-a36);
+    border-bottom-color: var(--sm-gold-300-a36);
+}
+
+.warrant-screen .panel__title {
+    color: var(--sm-gold-100);
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.warrant-screen .panel__text {
+    color: var(--sm-ink-1);
+    font-size: 11px;
+    line-height: 15px;
+    white-space: normal;
+}
+
+.warrant-screen .panel__text--muted {
+    color: var(--sm-gold-200);
+}
+
+.warrant-screen .warrant-choice-panel {
+    flex-grow: 1;
+    min-height: 0;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    padding-left: 18px;
+    padding-right: 18px;
+    border-left-width: 2px;
+    border-left-color: var(--sm-gold-300-a42);
+}
+
+.warrant-screen .warrant-card-row {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: stretch;
+    margin-top: 14px;
+}
+
+.warrant-screen .warrant-card {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    min-height: 320px;
+    margin-right: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background-color: rgba(17, 18, 28, 0.94);
+    border-left-width: 2px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.warrant-screen .warrant-card.is-selected {
+    background-color: rgba(36, 30, 14, 0.96);
+    border-left-color: var(--sm-gold-300);
+    border-right-color: var(--sm-gold-300);
+    border-top-color: var(--sm-gold-300);
+    border-bottom-color: var(--sm-gold-300);
+}
+
+.warrant-screen .warrant-card .card__title {
+    color: var(--sm-gold-100);
+    font-size: 18px;
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.warrant-screen .warrant-card .panel__text--muted {
+    margin-top: 8px;
+    font-size: 10px;
+    line-height: 13px;
+    white-space: normal;
+}
+
+.warrant-screen .warrant-card .card__body {
+    flex-grow: 1;
+    min-height: 58px;
+    margin-top: 12px;
+    color: var(--sm-ink-1);
+    font-size: 11px;
+    line-height: 16px;
+    white-space: normal;
+}
+
+.warrant-screen .warrant-card__preview {
+    color: var(--sm-vellum);
+}
+
+.warrant-screen .warrant-card .ui-button {
+    margin-top: 14px;
+    min-height: 42px;
+}
+
+.warrant-screen .ui-button {
+    min-height: 34px;
+    color: var(--sm-vellum);
+    background-color: rgba(21, 25, 39, 0.88);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.warrant-screen .ui-button--accent {
+    color: rgb(38, 25, 8);
+    background-color: var(--sm-gold-300);
+}
+
+.warrant-screen .warrant-screen__status-band {
+    height: 72px;
+    min-height: 72px;
+    margin-top: 12px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.warrant-screen .warrant-screen__status-band .action-group {
+    width: 250px;
+}
+
+.warrant-screen .warrant-screen__status-band .ui-button {
+    min-width: 220px;
+}

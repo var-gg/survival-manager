@@ -67,6 +67,17 @@ public sealed class ContentTextResolver
         return Localize(ContentLocalizationTables.Status, ContentLocalizationTables.BuildStatusDescriptionKey(statusId), string.Empty, statusId);
     }
 
+    // ADR-0028 P2b — 정치 세력/서약 표시명. StringTable(Content_Factions/Warrants) 우선, 비면 WarrantDisplayDefaults(label layer).
+    public string GetFactionName(string factionId)
+    {
+        return Localize(ContentLocalizationTables.Factions, ContentLocalizationTables.BuildFactionNameKey(factionId), WarrantDisplayDefaults.FactionName(factionId), factionId);
+    }
+
+    public string GetWarrantName(string warrantId)
+    {
+        return Localize(ContentLocalizationTables.Warrants, ContentLocalizationTables.BuildWarrantNameKey(warrantId), WarrantDisplayDefaults.WarrantName(warrantId), warrantId);
+    }
+
     public string GetArchetypeName(string archetypeId)
     {
         return _lookup.TryGetArchetype(archetypeId, out var archetype)

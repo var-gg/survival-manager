@@ -27,6 +27,8 @@ namespace SM.Content.Definitions
         public const string Encounters = "Content_Encounters";
         public const string Status = "Content_Status";
         public const string Story = "Content_Story";
+        public const string Factions = "Content_Factions";
+        public const string Warrants = "Content_Warrants";
         public const string SystemMessages = "System_Messages";
 
         public static string BuildItemNameKey(string id) => $"content.item.{NormalizeId(id)}.name";
@@ -75,6 +77,8 @@ namespace SM.Content.Definitions
         public static string BuildBossOverlayDescriptionKey(string id) => $"content.boss_overlay.{NormalizeId(id)}.desc";
         public static string BuildStatusNameKey(string id) => $"content.status.{NormalizeId(id)}.name";
         public static string BuildStatusDescriptionKey(string id) => $"content.status.{NormalizeId(id)}.desc";
+        public static string BuildFactionNameKey(string id) => $"content.faction.{NormalizeId(id)}.name";
+        public static string BuildWarrantNameKey(string id) => $"content.warrant.{NormalizeId(id)}.name";
         public static string BuildCleanseProfileNameKey(string id) => $"content.cleanse_profile.{NormalizeId(id)}.name";
         public static string BuildCleanseProfileDescriptionKey(string id) => $"content.cleanse_profile.{NormalizeId(id)}.desc";
         public static string BuildControlDiminishingNameKey(string id) => $"content.control_diminishing.{NormalizeId(id)}.name";
