@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 
@@ -263,14 +264,93 @@ public sealed class RewardScreenPresenter
 
     private IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRows(GameSessionState session, ProfileView profile)
     {
-        return BuildProgressionRowsCore(
+        var rows = BuildProgressionRowsCore(
             session,
             profile,
             token => token.HasValue ? SanitizePlayerFacingSummary(ResolveTokenForProgression(token)) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
             BuildContinuationText,
             SanitizePlayerFacingSummary)
             .Select(LocalizeProgressionRow)
-            .ToArray();
+            .ToList();
+
+        // ADR-0028 #1 가독성: 정치 정산 행을 progression ledger에 이어붙인다 — 전투→정치 인과를 같은 화면에서 읽게.
+        // 이미 한국어 표시형이라 LocalizeProgressionRow를 통과시키지 않는다(영문 remap 대상 아님).
+        rows.AddRange(BuildPoliticalRows(session));
+        return rows;
+    }
+
+    private IReadOnlyList<RewardProgressionRowViewState> BuildPoliticalRows(GameSessionState session)
+    {
+        return BuildPoliticalRowsCore(
+            session.LastPoliticalSettlement,
+            ResolvePoliticalFactionName,
+            WarrantDisplayDefaults.SettlementReasonText,
+            factionId => ResolveCurrentStanding(session, factionId));
+    }
+
+    // 순수 변환 — report + 표시명/standing 해석기를 받아 정치 정산 row로. 테스트는 이 코어를 직접 친다(세션 불요).
+    internal static IReadOnlyList<RewardProgressionRowViewState> BuildPoliticalRowsCore(
+        PoliticalSettlementReport report,
+        Func<string, string> factionName,
+        Func<PoliticalSettlementReason, string> reasonText,
+        Func<string, int> standingLookup)
+    {
+        if (report == null || !report.HasPolitics)
+        {
+            return Array.Empty<RewardProgressionRowViewState>();
+        }
+
+        var rows = new List<RewardProgressionRowViewState>(report.Lines.Count);
+        foreach (var line in report.Lines)
+        {
+            var sign = line.Delta.ToString("+0;-0;0", System.Globalization.CultureInfo.InvariantCulture);
+            var resulting = standingLookup(line.FactionId);
+            var value = $"{reasonText(line.Reason)} · 신뢰 {sign} (현재 {resulting})";
+            rows.Add(new RewardProgressionRowViewState(
+                factionName(line.FactionId),
+                value,
+                line.Delta >= 0 ? "politics-gain" : "politics-loss"));
+        }
+
+        return rows;
+    }
+
+    private static int ResolveCurrentStanding(GameSessionState session, string factionId)
+    {
+        return session.Profile.FactionStanding
+            .FirstOrDefault(standing => string.Equals(standing.FactionId, factionId, StringComparison.Ordinal))?.Trust ?? 0;
+    }
+
+    private string ResolvePoliticalFactionName(string factionId)
+    {
+        if (string.IsNullOrWhiteSpace(factionId))
+        {
+            return string.Empty;
+        }
+
+        var name = _contentText.GetFactionName(factionId);
+        return string.IsNullOrWhiteSpace(name) || name.StartsWith("content.", StringComparison.Ordinal)
+            ? HumanizeIdentifier(factionId)
+            : name;
+    }
+
+    // Summary 패널 1줄 headline — 가장 많이 읽히는 위치에 "어느 세력에 한 약속을 지켰나/어겼나"를 박는다.
+    private string BuildPoliticalHeadline(GameSessionState session)
+    {
+        var report = session.LastPoliticalSettlement;
+        if (report == null || !report.HasPolitics || report.IssuerLine is not { } issuer)
+        {
+            return string.Empty;
+        }
+
+        var sign = issuer.Delta.ToString("+0;-0;0", System.Globalization.CultureInfo.InvariantCulture);
+        return Localize(
+            GameLocalizationTables.UIReward,
+            "ui.reward.summary.political",
+            "정치: {0} {1} (신뢰 {2})",
+            ResolvePoliticalFactionName(issuer.FactionId),
+            WarrantDisplayDefaults.SettlementReasonText(issuer.Reason),
+            sign);
     }
 
     private static IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRowsCore(
@@ -629,6 +709,13 @@ public sealed class RewardScreenPresenter
             Localize(GameLocalizationTables.UIReward, "ui.reward.summary.auto_loot", "Auto Loot: {0}", lootSummary),
             Localize(GameLocalizationTables.UIReward, "ui.reward.summary.continuation", "Continuation: {0}", continuation),
         }.Select(line => ClampPanelLine(line, 92)).ToList();
+
+        // ADR-0028 #1 가독성: 정치 정산 headline — 가장 많이 읽히는 Summary 패널에 1줄로 노출(상세는 progression 행).
+        var politicalHeadline = BuildPoliticalHeadline(session);
+        if (!string.IsNullOrWhiteSpace(politicalHeadline))
+        {
+            lines.Add(ClampPanelLine(politicalHeadline, 92));
+        }
 
         if (session.LastRewardApplicationSummary.HasValue)
         {

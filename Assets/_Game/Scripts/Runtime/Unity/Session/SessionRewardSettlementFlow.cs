@@ -306,11 +306,16 @@ public sealed partial class GameSessionState
             // encounter-relative turn 임계(encounterParTurn - pressureDelta)는 P2b/content가 채운다. 슬라이스 1은 spec placeholder(0 → fallback).
             var warrantJudgment = WarrantJudge.Judge(warrantSpec, battleFacts, new EncounterContext(ResolvedSwiftTurnLimit: 0));
 
-            // ADR-0028 #5 OfferSet: 정치 서약은 같이 제안된 다른 세력 mandate를 거절한 것 — 거절 면을 도출(결과 무관, 선택 시점).
-            // offer 소스는 placeholder(카탈로그 정치 warrant 전체), 실제 per-site offer는 P2b content.
-            var rejectionDeltas = warrantSpec != null
-                ? WarrantOfferService.ComputeRejectionDeltas(WarrantCatalog.PoliticalWarrantIds, pledgedWarrantId)
-                : (IReadOnlyList<FactionTrustDelta>)Array.Empty<FactionTrustDelta>();
+            // ADR-0028 #1 가독성 + #5 OfferSet: 정치 정산을 player-readable report로 한 번에 조립(이행/거스름 + 거절 사유 태깅).
+            // 적용·Dossier 기록·화면 노출이 모두 이 한 묶음을 쓴다. offer 소스는 placeholder(카탈로그 정치 warrant 전체), 실제 per-site는 P2b content.
+            var settlementReport = warrantSpec != null
+                ? PoliticalSettlementReporter.Build(
+                    warrantJudgment.Outcome,
+                    warrantSpec.IssuerFactionId,
+                    warrantSpec.OpposedFactionId,
+                    WarrantCatalog.PoliticalWarrantIds,
+                    pledgedWarrantId)
+                : PoliticalSettlementReport.Empty;
 
             _session.Profile.Dossier.Add(new DossierEntryRecord
             {
@@ -332,19 +337,22 @@ public sealed partial class GameSessionState
                 WarrantResolvedTurnLimit = warrantJudgment.ResolvedTurnLimit,
                 IssuerFactionId = warrantSpec?.IssuerFactionId ?? string.Empty,
                 OpposedFactionId = warrantSpec?.OpposedFactionId ?? string.Empty,
-                RejectedFactionIds = rejectionDeltas.Select(delta => delta.FactionId).ToList(),
+                RejectedFactionIds = settlementReport.Lines
+                    .Where(line => line.Reason == PoliticalSettlementReason.RejectedOffer)
+                    .Select(line => line.FactionId).ToList(),
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
 
-            // ADR-0028: warrant 정치 결과를 세력 trust(profile truth)에 반영. delta 계산은 SM.Meta 순수(FactionTrustService),
-            // 적용만 여기서. issuer 없는 warrant(build축/미서약)는 빈 delta라 무영향. (slice 2: trust → 다음 전투 조건.)
+            // ADR-0028: warrant 정치 결과를 세력 trust(profile truth)에 반영. delta 계산은 SM.Meta 순수(reporter가
+            // FactionTrustService/WarrantOfferService에 위임), 적용·캡처만 여기서. issuer 없으면 Empty라 무영향.
             if (warrantSpec != null)
             {
-                ApplyFactionTrustDeltas(FactionTrustService.ComputeDeltas(
-                    warrantJudgment.Outcome, warrantSpec.IssuerFactionId, warrantSpec.OpposedFactionId));
-                // 거절 면(#5)은 전투 결과와 무관 — 사이드를 정한 순간 다른 세력 mandate를 거절한 것.
-                ApplyFactionTrustDeltas(rejectionDeltas);
+                ApplyFactionTrustDeltas(settlementReport.Lines
+                    .Select(line => new FactionTrustDelta(line.FactionId, line.Delta)).ToList());
             }
+
+            // #1 가독성: 정치 정산을 화면 노출용으로 보관(미서약이면 Empty → reward 화면에서 정치 섹션 숨김).
+            _session.LastPoliticalSettlement = settlementReport;
 
             // P1b: squad 손실(costly victory)을 chapter-scoped story flag로 stamp(through-director, 우회 아님).
             // Town-return 이벤트가 FlagSet로 이 flag를 읽어 손실 acknowledgement를 분기한다(P1b-content).

@@ -31,6 +31,15 @@ public sealed class WarrantDisplayDefaultsTests
     }
 
     [Test]
+    public void SettlementReasonText_AllReasonsMapped()
+    {
+        Assert.That(WarrantDisplayDefaults.SettlementReasonText(PoliticalSettlementReason.KeptIssuer), Is.EqualTo("약속 이행"));
+        Assert.That(WarrantDisplayDefaults.SettlementReasonText(PoliticalSettlementReason.BrokenIssuer), Is.EqualTo("약속 위반"));
+        Assert.That(WarrantDisplayDefaults.SettlementReasonText(PoliticalSettlementReason.DefiedOpposed), Is.EqualTo("거스름"));
+        Assert.That(WarrantDisplayDefaults.SettlementReasonText(PoliticalSettlementReason.RejectedOffer), Is.EqualTo("거절"));
+    }
+
+    [Test]
     public void EveryPoliticalWarrant_HasNameAndIssuerName()
     {
         // 4 정치 warrant 모두 표시명 + issuer 세력 표시명이 있어야 선택 UI가 빈칸을 안 띄운다(coverage guard).

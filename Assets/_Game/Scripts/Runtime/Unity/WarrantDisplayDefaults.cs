@@ -43,4 +43,14 @@ public static class WarrantDisplayDefaults
         WarrantKind.Intact => "온전",
         _ => string.Empty,
     };
+
+    /// <summary>정치 정산 사유 표시명 — 이행/위반/거스름/거절(ID/label 분리, reason 분류 → 한국어).</summary>
+    public static string SettlementReasonText(PoliticalSettlementReason reason) => reason switch
+    {
+        PoliticalSettlementReason.KeptIssuer => "약속 이행",
+        PoliticalSettlementReason.BrokenIssuer => "약속 위반",
+        PoliticalSettlementReason.DefiedOpposed => "거스름",
+        PoliticalSettlementReason.RejectedOffer => "거절",
+        _ => string.Empty,
+    };
 }

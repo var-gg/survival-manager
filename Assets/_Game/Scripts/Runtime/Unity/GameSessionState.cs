@@ -86,6 +86,8 @@ public sealed partial class GameSessionState
     public SessionTextToken LastRewardApplicationSummary { get; private set; } = SessionTextToken.Empty;
     public SessionTextToken LastPermanentUnlockSummary { get; private set; } = SessionTextToken.Empty;
     public RewardSummaryRecord? LastCommittedRewardSummary { get; private set; }
+    // ADR-0028 #1 가독성: 직전 출격 정치 정산(이행/거스름/거절 사유 + 신뢰 delta). reward 화면이 player-readable로 노출.
+    public PoliticalSettlementReport LastPoliticalSettlement { get; private set; } = PoliticalSettlementReport.Empty;
     public TeamPostureType SelectedTeamPosture { get; private set; } = TeamPostureType.StandardAdvance;
     public string SelectedTeamTacticId { get; private set; } = string.Empty;
     public IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
@@ -208,6 +210,7 @@ public sealed partial class GameSessionState
             LastRewardApplicationSummary = SessionTextToken.Empty;
             LastPermanentUnlockSummary = SessionTextToken.Empty;
             LastCommittedRewardSummary = null;
+            LastPoliticalSettlement = PoliticalSettlementReport.Empty;
             _lastAutomaticLootBundle = null;
             _hasPendingRewardSettlement = false;
             _lastDuplicateConversion = null;

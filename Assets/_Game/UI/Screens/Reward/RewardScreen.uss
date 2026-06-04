@@ -335,6 +335,17 @@
     border-left-color: var(--sm-fam-mystic);
 }
 
+/* ADR-0028 #1: 정치 정산 행 — 신뢰 상승(금)/하락(주홍)으로 일반 ledger 행과 구분. */
+.reward-screen .reward-progression-row--politics-gain {
+    border-left-color: var(--sm-gold-100);
+    background-color: rgba(36, 30, 14, 0.80);
+}
+
+.reward-screen .reward-progression-row--politics-loss {
+    border-left-color: var(--sm-fam-striker);
+    background-color: rgba(34, 18, 16, 0.80);
+}
+
 .reward-screen .reward-progression-row__key {
     /* wave-28-continue GPT Pro patch: key width 98→120, font 11→12. */
     width: 120px;
