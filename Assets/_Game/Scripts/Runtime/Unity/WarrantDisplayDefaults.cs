@@ -67,4 +67,12 @@ public static class WarrantDisplayDefaults
     /// <summary>site 정치 압력 산문(cause code → 한국어). 미등록이면 "" — 호출자가 기본 헤더로 폴백.</summary>
     public static string SitePressureCause(string causeCode) =>
         !string.IsNullOrEmpty(causeCode) && SitePressureCauses.TryGetValue(causeCode, out var text) ? text : string.Empty;
+
+    /// <summary>정치 조건 채널 표시명 — 전투 HUD readout용(아군 후원 / 적 경계).</summary>
+    public static string ChannelText(PoliticalChannel channel) => channel switch
+    {
+        PoliticalChannel.AllySupport => "아군 후원",
+        PoliticalChannel.EnemyAlertness => "적 경계",
+        _ => string.Empty,
+    };
 }

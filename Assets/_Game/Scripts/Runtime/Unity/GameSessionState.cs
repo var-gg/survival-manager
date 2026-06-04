@@ -88,6 +88,9 @@ public sealed partial class GameSessionState
     public RewardSummaryRecord? LastCommittedRewardSummary { get; private set; }
     // ADR-0028 #1 가독성: 직전 출격 정치 정산(이행/거스름/거절 사유 + 신뢰 delta). reward 화면이 player-readable로 노출.
     public PoliticalSettlementReport LastPoliticalSettlement { get; private set; } = PoliticalSettlementReport.Empty;
+    // ADR-0028 #provenance: 이번 전투에 적용된 정치 조건(후원/경계 + 출처 세력·채널·사유). 전투 HUD가 관전 중 노출 —
+    // compile/snapshot hash가 *효과*는 포착하나 "어느 세력 mandate에서 왔나"는 숨던 것을 player-visible로(GPT Pro 잔여 20%).
+    public IReadOnlyList<PoliticalCombatCondition> ActiveBattlePoliticalConditions { get; private set; } = Array.Empty<PoliticalCombatCondition>();
     public TeamPostureType SelectedTeamPosture { get; private set; } = TeamPostureType.StandardAdvance;
     public string SelectedTeamTacticId { get; private set; } = string.Empty;
     public IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
@@ -211,6 +214,7 @@ public sealed partial class GameSessionState
             LastPermanentUnlockSummary = SessionTextToken.Empty;
             LastCommittedRewardSummary = null;
             LastPoliticalSettlement = PoliticalSettlementReport.Empty;
+            ActiveBattlePoliticalConditions = Array.Empty<PoliticalCombatCondition>();
             _lastAutomaticLootBundle = null;
             _hasPendingRewardSettlement = false;
             _lastDuplicateConversion = null;
@@ -1309,6 +1313,8 @@ public sealed partial class GameSessionState
         // standing 읽기(persistence)는 여기(SM.Unity)서, 임계/package 도출은 SM.Meta 순수 서비스가 소유.
         // 이 seam은 AllySupport 통로만 적용(적 EnemyAlertness는 encounter resolve seam에서).
         var politicalConditions = PoliticalCombatConditionService.Resolve(overlay.PledgedWarrantId, ResolveFactionStanding);
+        // #provenance: 도출된 조건(양 채널)을 전투 HUD 노출용으로 보관 — 효과는 hash에 접히지만 출처/사유는 여기서만 산다.
+        ActiveBattlePoliticalConditions = politicalConditions;
         var squadSupportPackages = PoliticalCombatConditionService.AllyPackages(politicalConditions);
         var compiled = _loadoutCompiler.Compile(
             ToHeroRecords(Profile).ToList(),

@@ -53,6 +53,13 @@ public sealed class WarrantDisplayDefaultsTests
     }
 
     [Test]
+    public void ChannelText_SupportAndAlert()
+    {
+        Assert.That(WarrantDisplayDefaults.ChannelText(PoliticalChannel.AllySupport), Is.EqualTo("아군 후원"));
+        Assert.That(WarrantDisplayDefaults.ChannelText(PoliticalChannel.EnemyAlertness), Is.EqualTo("적 경계"));
+    }
+
+    [Test]
     public void EveryPoliticalWarrant_HasNameAndIssuerName()
     {
         // 4 정치 warrant 모두 표시명 + issuer 세력 표시명이 있어야 선택 UI가 빈칸을 안 띄운다(coverage guard).

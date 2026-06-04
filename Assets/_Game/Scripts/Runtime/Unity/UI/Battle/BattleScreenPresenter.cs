@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Meta;
 using SM.Unity.UI;
 
 namespace SM.Unity.UI.Battle;
@@ -283,7 +284,7 @@ public sealed class BattleScreenPresenter
         var allySustain = ComputeSustain(allies);
         var enemySustain = ComputeSustain(enemies);
 
-        return new[]
+        var rows = new List<BattleTacticalReadoutRowViewState>
         {
             new BattleTacticalReadoutRowViewState(
                 Localize(GameLocalizationTables.UIBattle, "ui.battle.readout.progress", "진행"),
@@ -306,6 +307,60 @@ public sealed class BattleScreenPresenter
                 enemySustain,
                 enemySustain < 0.35f ? "warning" : "enemy"),
         };
+
+        // ADR-0028 #provenance: 이번 전투에 적용된 정치 조건(후원/경계 + 출처 세력)을 readout에 노출 —
+        // 관전 중 "정치가 전투를 바꿨다"가 읽히게(GPT Pro 잔여 20%). 미서약/조건 없으면 행 없음.
+        rows.AddRange(BuildPoliticalReadoutRows());
+        return rows;
+    }
+
+    private IReadOnlyList<BattleTacticalReadoutRowViewState> BuildPoliticalReadoutRows()
+    {
+        return BuildPoliticalReadoutRowsCore(
+            _sessionState.ActiveBattlePoliticalConditions,
+            ResolvePoliticalFactionName,
+            WarrantDisplayDefaults.ChannelText);
+    }
+
+    // 순수 변환 — 정치 조건 → 전투 readout 행(세력명 + 후원/경계 + ally/enemy tone). 테스트는 이 코어를 직접 친다.
+    internal static IReadOnlyList<BattleTacticalReadoutRowViewState> BuildPoliticalReadoutRowsCore(
+        IReadOnlyList<PoliticalCombatCondition> conditions,
+        Func<string, string> factionName,
+        Func<PoliticalChannel, string> channelText)
+    {
+        if (conditions == null || conditions.Count == 0)
+        {
+            return Array.Empty<BattleTacticalReadoutRowViewState>();
+        }
+
+        var rows = new List<BattleTacticalReadoutRowViewState>(conditions.Count);
+        foreach (var condition in conditions)
+        {
+            var isSupport = condition.Channel == PoliticalChannel.AllySupport;
+            rows.Add(new BattleTacticalReadoutRowViewState(
+                factionName(condition.SourceFactionId),
+                channelText(condition.Channel),
+                1f,
+                isSupport ? "ally" : "enemy"));
+        }
+
+        return rows;
+    }
+
+    private string ResolvePoliticalFactionName(string factionId)
+    {
+        if (string.IsNullOrWhiteSpace(factionId))
+        {
+            return string.Empty;
+        }
+
+        var name = _contentText?.GetFactionName(factionId);
+        if (string.IsNullOrWhiteSpace(name) || name.StartsWith("content.", StringComparison.Ordinal))
+        {
+            name = WarrantDisplayDefaults.FactionName(factionId);
+        }
+
+        return string.IsNullOrWhiteSpace(name) ? factionId : name;
     }
 
     private static bool IsActiveCombatant(BattleUnitReadModel unit)
