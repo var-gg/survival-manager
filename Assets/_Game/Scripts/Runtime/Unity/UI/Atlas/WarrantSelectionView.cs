@@ -26,9 +26,12 @@ public sealed class WarrantSelectionView
         _statusLabel = Require<Label>(root, "StatusLabel");
     }
 
-    public void Bind(WarrantSelectionPresenter presenter)
+    /// <summary>출격 진행(서약 없이) — 흐름 통합이 PledgeWarrant("")+GoToBattle로 받는다.</summary>
+    public event Action? Confirmed;
+
+    public void Bind()
     {
-        _proceedButton.clicked += presenter.SelectNone;
+        _proceedButton.clicked += () => Confirmed?.Invoke();
     }
 
     public void Render(WarrantSelectionViewState state)

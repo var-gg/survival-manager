@@ -8,6 +8,7 @@ using SM.Meta;
 using SM.Unity.Narrative;
 using SM.Unity.UI.Expedition;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace SM.Unity.UI.Atlas;
 
@@ -15,6 +16,9 @@ public sealed class AtlasScreenController : MonoBehaviour
 {
     [SerializeField] private RuntimePanelHost panelHost = null!;
     [SerializeField] private StorySceneFlowBridge? _storyBridge;
+    // ADR-0028 P2b: 출격 서약 선택 overlay. scene에서 WarrantSelection.uxml/uss 할당 시 활성, 미할당이면 직행(안전).
+    [SerializeField] private VisualTreeAsset? warrantSelectionUxml;
+    [SerializeField] private StyleSheet? warrantSelectionUss;
 
     private AtlasScreenPresenter _presenter = null!;
     private AtlasScreenView _view = null!;
@@ -413,6 +417,13 @@ public sealed class AtlasScreenController : MonoBehaviour
                 return;
             }
 
+            // ADR-0028 P2b: 출격 전 warrant 선택 surface(UXML 할당 시). 카드=이 서약으로 출격, 스킵=서약 없이.
+            // asset 미할당이면 false → 기존대로 직행(흐름 안전, fallback).
+            if (TryShowWarrantSelection())
+            {
+                return;
+            }
+
             _root.SceneFlow.GoToBattle();
             return;
         }
@@ -431,6 +442,52 @@ public sealed class AtlasScreenController : MonoBehaviour
         }
 
         _root.SetBlockingError("노드 진행 실패.");
+    }
+
+    // ADR-0028 P2b: 출격 서약 선택 overlay를 Atlas panel(RuntimePanelHost.Root) 위에 띄운다.
+    // 카드 = 그 서약으로 PledgeWarrant + 출격, 스킵 = 서약 없이 출격. UXML 미할당이면 false → 직행(fallback).
+    private bool TryShowWarrantSelection()
+    {
+        var uxml = warrantSelectionUxml;
+        var root = _root;
+        var host = panelHost;
+        if (uxml == null || root == null || host == null)
+        {
+            return false;
+        }
+
+        var overlay = uxml.Instantiate();
+        overlay.style.position = Position.Absolute;
+        overlay.style.left = 0f;
+        overlay.style.top = 0f;
+        overlay.style.right = 0f;
+        overlay.style.bottom = 0f;
+        if (warrantSelectionUss != null && !overlay.styleSheets.Contains(warrantSelectionUss))
+        {
+            overlay.styleSheets.Add(warrantSelectionUss);
+        }
+
+        host.Root.Add(overlay);
+
+        var view = new WarrantSelectionView(overlay);
+        var presenter = new WarrantSelectionPresenter(
+            factionId => root.SessionState.Profile.FactionStanding
+                .FirstOrDefault(standing => standing.FactionId == factionId)?.Trust ?? 0,
+            WarrantDisplayDefaults.FactionName,
+            WarrantDisplayDefaults.WarrantName);
+
+        void Proceed(string warrantId)
+        {
+            host.Root.Remove(overlay);
+            root.SessionState.PledgeWarrant(warrantId);
+            root.SceneFlow.GoToBattle();
+        }
+
+        view.Selected += Proceed;                       // 카드 = 이 서약으로 출격
+        view.Confirmed += () => Proceed(string.Empty);  // 스킵 = 서약 없이 출격
+        view.Bind();
+        view.Render(presenter.BuildState());
+        return true;
     }
 
     private bool EnsureStoryBridgeReady()
