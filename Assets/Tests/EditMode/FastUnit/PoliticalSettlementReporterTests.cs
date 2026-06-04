@@ -128,4 +128,13 @@ public sealed class PoliticalSettlementReporterTests
         Assert.That(report.Lines, Is.Empty);
         Assert.That(report.HasPolitics, Is.False);
     }
+
+    [Test]
+    public void ReasonTokens_AllMapped_StablePersistenceForm()
+    {
+        Assert.That(PoliticalSettlementReasonTokens.ToToken(PoliticalSettlementReason.KeptIssuer), Is.EqualTo("kept_issuer"));
+        Assert.That(PoliticalSettlementReasonTokens.ToToken(PoliticalSettlementReason.BrokenIssuer), Is.EqualTo("broken_issuer"));
+        Assert.That(PoliticalSettlementReasonTokens.ToToken(PoliticalSettlementReason.DefiedOpposed), Is.EqualTo("defied_opposed"));
+        Assert.That(PoliticalSettlementReasonTokens.ToToken(PoliticalSettlementReason.RejectedOffer), Is.EqualTo("rejected_offer"));
+    }
 }

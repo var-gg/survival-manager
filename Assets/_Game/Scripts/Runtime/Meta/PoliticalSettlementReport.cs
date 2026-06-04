@@ -22,6 +22,19 @@ public enum PoliticalSettlementReason
     RejectedOffer,
 }
 
+/// <summary>정치 정산 사유의 영속·감사용 stable 토큰(표시 문구 아님 — 표시는 SM.Unity label layer가 별도로 한다).</summary>
+public static class PoliticalSettlementReasonTokens
+{
+    public static string ToToken(PoliticalSettlementReason reason) => reason switch
+    {
+        PoliticalSettlementReason.KeptIssuer => "kept_issuer",
+        PoliticalSettlementReason.BrokenIssuer => "broken_issuer",
+        PoliticalSettlementReason.DefiedOpposed => "defied_opposed",
+        PoliticalSettlementReason.RejectedOffer => "rejected_offer",
+        _ => "none",
+    };
+}
+
 /// <summary>정치 정산 한 줄 — 어느 세력(FactionId) 신뢰가 얼마나(Delta), 왜(Reason) 바뀌었나.</summary>
 public readonly record struct PoliticalSettlementLine(string FactionId, int Delta, PoliticalSettlementReason Reason);
 

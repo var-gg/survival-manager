@@ -344,6 +344,14 @@ public sealed partial class GameSessionState
                 RejectedFactionIds = settlementReport.Lines
                     .Where(line => line.Reason == PoliticalSettlementReason.RejectedOffer)
                     .Select(line => line.FactionId).ToList(),
+                // ADR-0028 incident-centric: 세력별 구조적 효과(세력·신뢰 delta·사유)를 incident에 박는다 — id projection의 source.
+                PoliticalEffects = settlementReport.Lines
+                    .Select(line => new DossierPoliticalEffectRecord
+                    {
+                        FactionId = line.FactionId,
+                        Delta = line.Delta,
+                        Reason = PoliticalSettlementReasonTokens.ToToken(line.Reason),
+                    }).ToList(),
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
 

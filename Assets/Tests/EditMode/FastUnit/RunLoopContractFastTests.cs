@@ -642,6 +642,12 @@ public sealed class RunLoopContractFastTests
         Assert.That(dossier.RejectedFactionIds, Does.Not.Contain(WarrantCatalog.PaleConclaveId));
         var wolfpine = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == WarrantCatalog.WolfpineId);
         Assert.That(wolfpine!.Trust, Is.EqualTo(-WarrantOfferService.RejectedOfferLoss));
+
+        // incident-centric Dossier: 구조적 세력 효과(세력·delta·사유)가 incident에 박힌다 — id projection의 source.
+        var solarumEffect = dossier.PoliticalEffects.Single(effect => effect.FactionId == WarrantCatalog.SolarumId);
+        Assert.That(solarumEffect.Delta, Is.EqualTo(FactionTrustService.SatisfiedIssuerGain));
+        Assert.That(solarumEffect.Reason, Is.EqualTo("kept_issuer"));
+        Assert.That(dossier.PoliticalEffects.Any(effect => effect.Reason == "rejected_offer"), Is.True, "거절 효과도 구조적으로 기록된다.");
     }
 
     private static BattleUnitReadModel CreateAllyUnit(string id, bool alive)

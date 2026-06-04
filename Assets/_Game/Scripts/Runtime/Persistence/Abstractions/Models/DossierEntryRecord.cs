@@ -4,6 +4,21 @@ using System.Collections.Generic;
 namespace SM.Persistence.Abstractions.Models;
 
 /// <summary>
+/// 한 incident(전투)가 한 세력 신뢰를 얼마나(Delta), 왜(Reason) 바꿨나 — Dossier incident에 박히는 구조적
+/// 효과 sub-record(ADR-0028 incident-centric Dossier). stable token만(표시 문구 아님 — ID/label 분리).
+/// faction별 view는 이 sub-record들의 projection이 된다("네 세력 공동 죄"의 사건-세력 교차기록).
+/// </summary>
+[Serializable]
+public sealed class DossierPoliticalEffectRecord
+{
+    public string FactionId = string.Empty;
+    public int Delta;
+
+    /// <summary>사유 토큰: "kept_issuer" | "broken_issuer" | "defied_opposed" | "rejected_offer".</summary>
+    public string Reason = string.Empty;
+}
+
+/// <summary>
 /// 한 번의 전투(sortie node) 결과를 캠페인 영구 기록으로 남기는 ledger entry.
 /// ludonarrative 루프의 "전투 → 기록" 절반: 전투 결과가 휘발성 컷신 소품이 아니라
 /// save truth의 실제 상태값이 되게 한다. (설계: analysis-ludonarrative-loop-implementation)
@@ -62,6 +77,13 @@ public sealed class DossierEntryRecord
     /// "누구 편을 들고 누구를 거절했나"의 영구 기록. 세력 반응(신뢰 하락)의 근거.
     /// </summary>
     public List<string> RejectedFactionIds = new();
+
+    /// <summary>
+    /// 이 incident가 만든 세력별 정치 효과(세력·신뢰 delta·사유)의 구조적 기록(ADR-0028 incident-centric).
+    /// 위 Issuer/Opposed/Rejected id는 coarse projection이고, 이 목록이 "누가 얼마나 왜"의 source.
+    /// 기본값 new()로 backward-compatible.
+    /// </summary>
+    public List<DossierPoliticalEffectRecord> PoliticalEffects = new();
 
     public string CompletedAtUtc = string.Empty;
 }

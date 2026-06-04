@@ -94,6 +94,10 @@ public class JsonPersistenceTests
                 IssuerFactionId = "faction_solarum",
                 OpposedFactionId = "faction_pale_conclave",
                 RejectedFactionIds = new System.Collections.Generic.List<string> { "faction_wolfpine_tribes", "faction_lattice_order" },
+                PoliticalEffects = new System.Collections.Generic.List<DossierPoliticalEffectRecord>
+                {
+                    new DossierPoliticalEffectRecord { FactionId = "faction_solarum", Delta = 2, Reason = "kept_issuer" },
+                },
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
             profile.FactionStanding.Add(new FactionStandingRecord { FactionId = "faction_solarum", Trust = 5 });
@@ -111,6 +115,10 @@ public class JsonPersistenceTests
             Assert.That(loaded.RewardLedger, Has.Count.EqualTo(1));
             Assert.That(loaded.RunSummaries, Has.Count.EqualTo(1));
             Assert.That(loaded.Dossier, Has.Count.EqualTo(1));
+            Assert.That(loaded.Dossier[0].PoliticalEffects, Has.Count.EqualTo(1), "incident-centric 정치 효과가 round-trip된다.");
+            Assert.That(loaded.Dossier[0].PoliticalEffects[0].FactionId, Is.EqualTo("faction_solarum"));
+            Assert.That(loaded.Dossier[0].PoliticalEffects[0].Delta, Is.EqualTo(2));
+            Assert.That(loaded.Dossier[0].PoliticalEffects[0].Reason, Is.EqualTo("kept_issuer"));
             Assert.That(loaded.Dossier[0].Outcome, Is.EqualTo("clean_victory"));
             Assert.That(loaded.Dossier[0].SurvivorAllyCount, Is.EqualTo(4));
             Assert.That(loaded.Dossier[0].WarrantId, Is.EqualTo("warrant_intact"));
