@@ -90,11 +90,11 @@ public class JsonPersistenceTests
                 WarrantSeverity = "none",
                 WarrantObservedTurnCount = 7,
                 WarrantResolvedTurnLimit = 8,
-                IssuerFactionId = "faction_north_council",
-                OpposedFactionId = "faction_free_militia",
+                IssuerFactionId = "faction_solarum",
+                OpposedFactionId = "faction_pale_conclave",
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
-            profile.FactionStanding.Add(new FactionStandingRecord { FactionId = "faction_north_council", Trust = 5 });
+            profile.FactionStanding.Add(new FactionStandingRecord { FactionId = "faction_solarum", Trust = 5 });
 
             repo.Save(profile);
             var loaded = repo.LoadOrCreate("default");
@@ -116,10 +116,10 @@ public class JsonPersistenceTests
             Assert.That(loaded.Dossier[0].WarrantSeverity, Is.EqualTo("none"));
             Assert.That(loaded.Dossier[0].WarrantObservedTurnCount, Is.EqualTo(7));
             Assert.That(loaded.Dossier[0].WarrantResolvedTurnLimit, Is.EqualTo(8));
-            Assert.That(loaded.Dossier[0].IssuerFactionId, Is.EqualTo("faction_north_council"));
-            Assert.That(loaded.Dossier[0].OpposedFactionId, Is.EqualTo("faction_free_militia"));
+            Assert.That(loaded.Dossier[0].IssuerFactionId, Is.EqualTo("faction_solarum"));
+            Assert.That(loaded.Dossier[0].OpposedFactionId, Is.EqualTo("faction_pale_conclave"));
             Assert.That(loaded.FactionStanding, Has.Count.EqualTo(1));
-            Assert.That(loaded.FactionStanding[0].FactionId, Is.EqualTo("faction_north_council"));
+            Assert.That(loaded.FactionStanding[0].FactionId, Is.EqualTo("faction_solarum"));
             Assert.That(loaded.FactionStanding[0].Trust, Is.EqualTo(5));
             Assert.That(loaded.ActiveRun.PledgedWarrantId, Is.EqualTo("warrant_intact"));
         }

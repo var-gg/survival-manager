@@ -42,10 +42,24 @@ public static class WarrantCatalog
     public const string IntactId = "warrant_intact";
 
     /// <summary>
-    /// ADR-0028 정치 warrant 예시(slice 1). 조건은 fact predicate(Intact=손실 0)를 "세력 기준"으로 재사용하고,
-    /// 핵심은 issuer/opposed 정치 결과다. faction id는 slice-1 placeholder — 실제 4-faction 매핑은 content authoring.
+    /// 정치 세력 stable id (settled — pindoc analysis-narrative-reskin-4-faction-root-draft).
+    /// 표시명(솔라룸/이리솔 부족/회상 결사/그물 결사)은 label layer 소유 — 코드 id에 lore 미박입(ID/label 분리).
+    /// political 세력은 per-site enemy FactionId와 별개 layer(ADR-0028) — 매핑은 후속.
     /// </summary>
-    public const string CouncilMandateId = "warrant_council_mandate";
+    public const string SolarumId = "faction_solarum";
+    public const string WolfpineId = "faction_wolfpine_tribes";
+    public const string PaleConclaveId = "faction_pale_conclave";
+    public const string LatticeId = "faction_lattice_order";
+
+    /// <summary>
+    /// 세력 위임 서약 — issuer=수락하는 세력 기준, opposed=거스르는 세력. 조건은 세력 가치의 fact-predicate
+    /// (질서/생명 보존 → Intact 손실0, 사냥/효율 → Swift 속전). Solarum(광휘 왕좌의 잔당)은 정화로 회상 결사를
+    /// 박해한 패권이라 나머지 세력 위임이 대체로 Solarum을 거스른다(다극 회색 충돌).
+    /// </summary>
+    public const string SolarumOrderId = "warrant_solarum_order";
+    public const string WolfpineHuntId = "warrant_wolfpine_hunt";
+    public const string PaleConclaveVigilId = "warrant_pale_conclave_vigil";
+    public const string LatticePrecisionId = "warrant_lattice_precision";
 
     // SwiftStepThreshold는 placeholder다. 서약이 live로 가는 P2b에서 실제 관측 stepCount에 맞춰
     // 튜닝한다(슬라이스 1은 ships dark — live에서 PledgedWarrantId="" 이라 미사용, test는 자체 임계 주입).
@@ -56,11 +70,14 @@ public static class WarrantCatalog
         {
             [SwiftId] = new WarrantSpec(SwiftId, WarrantKind.Swift, SwiftStepThresholdDefault),
             [IntactId] = new WarrantSpec(IntactId, WarrantKind.Intact),
-            [CouncilMandateId] = new WarrantSpec(
-                CouncilMandateId,
-                WarrantKind.Intact,
-                IssuerFactionId: "faction_north_council",
-                OpposedFactionId: "faction_free_militia"),
+            // 질서/규율 → 손실 0. 정화의 가해자라 박해한 회상 결사를 거스른다.
+            [SolarumOrderId] = new WarrantSpec(SolarumOrderId, WarrantKind.Intact, IssuerFactionId: SolarumId, OpposedFactionId: PaleConclaveId),
+            // 사냥/결단 → 속전. 변경을 통제하는 왕국 잔당을 거스른다.
+            [WolfpineHuntId] = new WarrantSpec(WolfpineHuntId, WarrantKind.Swift, SwiftStepThresholdDefault, IssuerFactionId: WolfpineId, OpposedFactionId: SolarumId),
+            // 기억=영혼 → 한 명도 잃지 마라(손실 0). 박해자 Solarum을 거스른다.
+            [PaleConclaveVigilId] = new WarrantSpec(PaleConclaveVigilId, WarrantKind.Intact, IssuerFactionId: PaleConclaveId, OpposedFactionId: SolarumId),
+            // 정밀/효율 → 속전. 격자 무기화(Solarum)는 최악의 모독이라 거스른다.
+            [LatticePrecisionId] = new WarrantSpec(LatticePrecisionId, WarrantKind.Swift, SwiftStepThresholdDefault, IssuerFactionId: LatticeId, OpposedFactionId: SolarumId),
         };
 
     /// <summary>

@@ -602,7 +602,7 @@ public sealed class RunLoopContractFastTests
     }
 
     [Test]
-    public void PledgedWarrant_Council_Satisfied_ShiftsFactionTrust()
+    public void PledgedWarrant_SolarumOrder_Satisfied_ShiftsFactionTrust()
     {
         // ADR-0028 정치 warrant 통합: issuer/opposed faction이 붙은 warrant를 이행하면
         // SaveProfile.FactionStanding(profile truth) trust가 바뀐다 — 전투→정치 절반의 rail.
@@ -612,8 +612,8 @@ public sealed class RunLoopContractFastTests
         Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
         session.BuildBattleLoadoutSnapshot();
 
-        // issuer=faction_north_council, opposed=faction_free_militia, 조건=Intact(손실 0).
-        session.PledgeWarrant(WarrantCatalog.CouncilMandateId);
+        // 솔라룸 질서 위임 — issuer=faction_solarum, opposed=faction_pale_conclave, 조건=Intact(손실 0).
+        session.PledgeWarrant(WarrantCatalog.SolarumOrderId);
 
         var finalUnits = new List<BattleUnitReadModel>
         {
@@ -624,17 +624,17 @@ public sealed class RunLoopContractFastTests
         };
         session.MarkBattleResolved(victory: true, stepCount: 8, eventCount: 4, finalUnits);
 
-        var council = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == "faction_north_council");
-        var militia = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == "faction_free_militia");
-        Assert.That(council, Is.Not.Null, "satisfied 시 issuer 세력 standing이 생긴다.");
-        Assert.That(council!.Trust, Is.EqualTo(FactionTrustService.SatisfiedIssuerGain));
-        Assert.That(militia, Is.Not.Null, "satisfied 시 opposed 세력도 영향받는다.");
-        Assert.That(militia!.Trust, Is.EqualTo(-FactionTrustService.SatisfiedOpposedLoss));
+        var solarum = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == WarrantCatalog.SolarumId);
+        var paleConclave = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == WarrantCatalog.PaleConclaveId);
+        Assert.That(solarum, Is.Not.Null, "satisfied 시 issuer 세력 standing이 생긴다.");
+        Assert.That(solarum!.Trust, Is.EqualTo(FactionTrustService.SatisfiedIssuerGain));
+        Assert.That(paleConclave, Is.Not.Null, "satisfied 시 opposed 세력도 영향받는다.");
+        Assert.That(paleConclave!.Trust, Is.EqualTo(-FactionTrustService.SatisfiedOpposedLoss));
 
         // WarrantResult(issuer/opposed)가 Dossier에 영속.
         var dossier = session.Profile.Dossier.LastOrDefault();
-        Assert.That(dossier!.IssuerFactionId, Is.EqualTo("faction_north_council"));
-        Assert.That(dossier.OpposedFactionId, Is.EqualTo("faction_free_militia"));
+        Assert.That(dossier!.IssuerFactionId, Is.EqualTo(WarrantCatalog.SolarumId));
+        Assert.That(dossier.OpposedFactionId, Is.EqualTo(WarrantCatalog.PaleConclaveId));
     }
 
     private static BattleUnitReadModel CreateAllyUnit(string id, bool alive)

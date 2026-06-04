@@ -137,9 +137,9 @@ public sealed class LoadoutCompilerClosureTests
         var baseline = CompileSquad(compiler, content, BuildBaselineSpec());
 
         // 서비스(SM.Meta)에서 직접 도출 — 손으로 만든 package가 아니라 실제 산출물로 통합을 검증.
-        const string supportSourceId = "faction_support:faction_north_council";
+        const string supportSourceId = "faction_support:faction_solarum";
         var conditions = PoliticalCombatConditionService.Resolve(
-            WarrantCatalog.CouncilMandateId,
+            WarrantCatalog.SolarumOrderId,
             _ => PoliticalCombatConditionService.SupportTrustThreshold);
         var support = PoliticalCombatConditionService.AllyPackages(conditions);
         Assert.That(support, Is.Not.Empty, "high-trust council 서약은 지원 package를 내야 한다");
