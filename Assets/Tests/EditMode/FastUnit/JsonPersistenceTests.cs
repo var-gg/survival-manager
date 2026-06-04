@@ -51,7 +51,8 @@ public class JsonPersistenceTests
                 MatchId = "match_001",
                 CompileVersion = "build-compile-audit.v1",
                 CompileHash = "abc123",
-                EventStream = new System.Collections.Generic.List<string> { "0|actor|BasicAttack|target|4|basic_attack" }
+                EventStream = new System.Collections.Generic.List<string> { "0|actor|BasicAttack|target|4|basic_attack" },
+                PoliticalConditions = new System.Collections.Generic.List<string> { "faction_solarum|AllySupport|support.trust_threshold" }
             });
             profile.RewardLedger.Add(new RewardLedgerEntryRecord
             {
@@ -106,6 +107,7 @@ public class JsonPersistenceTests
             Assert.That(loaded.HeroLoadouts, Has.Count.EqualTo(1));
             Assert.That(loaded.MatchHeaders, Has.Count.EqualTo(1));
             Assert.That(loaded.MatchBlobs[0].CompileHash, Is.EqualTo("abc123"));
+            Assert.That(loaded.MatchBlobs[0].PoliticalConditions, Is.EquivalentTo(new[] { "faction_solarum|AllySupport|support.trust_threshold" }), "정치 condition provenance가 audit round-trip된다.");
             Assert.That(loaded.RewardLedger, Has.Count.EqualTo(1));
             Assert.That(loaded.RunSummaries, Has.Count.EqualTo(1));
             Assert.That(loaded.Dossier, Has.Count.EqualTo(1));

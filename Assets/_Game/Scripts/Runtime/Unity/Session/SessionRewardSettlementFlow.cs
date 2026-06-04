@@ -69,6 +69,8 @@ public sealed partial class GameSessionState
                     replay.BattleSummary != null ? "Logs/loop-d-balance" : string.Empty,
                     replay.Readability != null ? "Logs/loop-d-balance/readability_watchlist.json" : string.Empty,
                 }.Where(path => !string.IsNullOrWhiteSpace(path)).ToList(),
+                // ADR-0028 #provenance: 이 전투의 정치 조건 출처(세력·채널·사유)를 audit에 영속 — hash 밖, replay 재검증 입력.
+                PoliticalConditions = PoliticalConditionAudit.EncodeAll(_session.ActiveBattlePoliticalConditions).ToList(),
             });
 
             if (_session.ActiveRun != null)
