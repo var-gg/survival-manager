@@ -472,11 +472,17 @@ public sealed class AtlasScreenController : MonoBehaviour
         host.Root.Add(overlay);
 
         var view = new WarrantSelectionView(overlay);
+        // ADR-0028 #b: 이 site의 정치 맥락에서 offer를 도출 — warrant가 "계약 카드"가 아니라 "이 장소의 정치 사건"으로.
+        // 미등록 site는 resolver가 전역 정치 카탈로그로 fallback(흐름 안전).
+        var siteId = root.SessionState.ActiveRun?.Overlay.SiteId ?? root.SessionState.SelectedCampaignSiteId;
+        var siteOffer = SiteWarrantOfferResolver.Resolve(siteId);
         var presenter = new WarrantSelectionPresenter(
             factionId => root.SessionState.Profile.FactionStanding
                 .FirstOrDefault(standing => standing.FactionId == factionId)?.Trust ?? 0,
             WarrantDisplayDefaults.FactionName,
-            WarrantDisplayDefaults.WarrantName);
+            WarrantDisplayDefaults.WarrantName,
+            siteOffer.OfferedWarrantIds,
+            WarrantDisplayDefaults.SitePressureCause(siteOffer.CauseCode));
 
         void Proceed(string warrantId)
         {

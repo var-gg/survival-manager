@@ -53,4 +53,18 @@ public static class WarrantDisplayDefaults
         PoliticalSettlementReason.RejectedOffer => "거절",
         _ => string.Empty,
     };
+
+    // ADR-0028 #b: site의 정치 압력 산문(왜 이 장소에서 이 위임이 나왔나). 출처: reskin settled 정치 지리.
+    private static readonly IReadOnlyDictionary<string, string> SitePressureCauses = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        [SiteWarrantOfferResolver.WolfpineTrailSiteId] = "이리솔 부족의 사냥터 — 솔라룸의 질서가 변경까지 손을 뻗는다.",
+        [SiteWarrantOfferResolver.RuinedCryptsSiteId] = "회상 결사의 묘역 — 솔라룸의 정화가 기억을 쫓는다.",
+        [SiteWarrantOfferResolver.AshenGateSiteId] = "솔라룸 옛 왕도의 관문 — 변경 세력이 그 권위에 도전한다.",
+        [SiteWarrantOfferResolver.WorldscarDepthsSiteId] = "그물 결사의 격자 노드 — 솔라룸이 격자를 무기로 탐한다.",
+        [SiteWarrantOfferResolver.ContestedCauseCode] = "여러 세력의 위임이 이 장소를 두고 얽혀 있다.",
+    };
+
+    /// <summary>site 정치 압력 산문(cause code → 한국어). 미등록이면 "" — 호출자가 기본 헤더로 폴백.</summary>
+    public static string SitePressureCause(string causeCode) =>
+        !string.IsNullOrEmpty(causeCode) && SitePressureCauses.TryGetValue(causeCode, out var text) ? text : string.Empty;
 }

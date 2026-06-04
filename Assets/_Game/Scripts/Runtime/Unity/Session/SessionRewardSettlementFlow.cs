@@ -306,14 +306,16 @@ public sealed partial class GameSessionState
             // encounter-relative turn 임계(encounterParTurn - pressureDelta)는 P2b/content가 채운다. 슬라이스 1은 spec placeholder(0 → fallback).
             var warrantJudgment = WarrantJudge.Judge(warrantSpec, battleFacts, new EncounterContext(ResolvedSwiftTurnLimit: 0));
 
-            // ADR-0028 #1 가독성 + #5 OfferSet: 정치 정산을 player-readable report로 한 번에 조립(이행/거스름 + 거절 사유 태깅).
-            // 적용·Dossier 기록·화면 노출이 모두 이 한 묶음을 쓴다. offer 소스는 placeholder(카탈로그 정치 warrant 전체), 실제 per-site는 P2b content.
+            // ADR-0028 #1 가독성 + #5 OfferSet + #b site offer: 정치 정산을 player-readable report로 한 번에 조립.
+            // 적용·Dossier 기록·화면 노출이 모두 이 한 묶음을 쓴다. offer 소스 = 이 site의 정치 맥락(SiteWarrantOfferResolver,
+            // 미등록 site는 전역 정치 카탈로그 fallback) — 거절 면이 "이 장소에서 누구를 거절했나"가 된다.
+            var settlementSiteId = _session.ActiveRun?.Overlay.SiteId ?? _session.Profile.CampaignProgress.SelectedSiteId;
             var settlementReport = warrantSpec != null
                 ? PoliticalSettlementReporter.Build(
                     warrantJudgment.Outcome,
                     warrantSpec.IssuerFactionId,
                     warrantSpec.OpposedFactionId,
-                    WarrantCatalog.PoliticalWarrantIds,
+                    SiteWarrantOfferResolver.Resolve(settlementSiteId).OfferedWarrantIds,
                     pledgedWarrantId)
                 : PoliticalSettlementReport.Empty;
 
@@ -322,7 +324,7 @@ public sealed partial class GameSessionState
                 EntryId = Guid.NewGuid().ToString("N"),
                 RunId = _session.ActiveRun?.RunId ?? string.Empty,
                 ChapterId = chapterId,
-                SiteId = _session.ActiveRun?.Overlay.SiteId ?? _session.Profile.CampaignProgress.SelectedSiteId,
+                SiteId = settlementSiteId,
                 NodeId = nodeId,
                 Result = victory ? "victory" : "defeat",
                 Outcome = DossierOutcomeClassifier.ToToken(outcome),

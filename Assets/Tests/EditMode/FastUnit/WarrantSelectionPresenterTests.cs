@@ -140,4 +140,22 @@ public sealed class WarrantSelectionPresenterTests
 
         Assert.That(string.IsNullOrWhiteSpace(card.PreviewText), Is.False);
     }
+
+    [Test]
+    public void BuildState_RespectsSiteOfferSet_AndShowsCauseHeader()
+    {
+        // ADR-0028 #b: site offer를 주입하면 카드가 그 집합으로 제한되고, 압력 산문이 헤더에 노출된다.
+        var offer = SiteWarrantOfferResolver.Resolve(SiteWarrantOfferResolver.WolfpineTrailSiteId);
+        var presenter = new WarrantSelectionPresenter(
+            _ => 0,
+            factionName: id => $"faction:{id}",
+            warrantName: id => $"warrant:{id}",
+            offer.OfferedWarrantIds,
+            siteCauseText: "이리솔 부족의 사냥터 — 솔라룸의 질서가 변경까지 손을 뻗는다.");
+
+        var state = presenter.BuildState();
+
+        Assert.That(state.Cards.Select(card => card.WarrantId), Is.EquivalentTo(offer.OfferedWarrantIds));
+        Assert.That(state.HeaderText, Does.Contain("이리솔 부족의 사냥터"));
+    }
 }

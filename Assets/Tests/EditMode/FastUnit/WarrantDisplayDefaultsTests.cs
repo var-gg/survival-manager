@@ -40,6 +40,19 @@ public sealed class WarrantDisplayDefaultsTests
     }
 
     [Test]
+    public void SitePressureCause_MappedSitesAndContested_NonEmpty_UnknownEmpty()
+    {
+        // 모든 seed site + contested는 압력 산문이 있어야 선택 화면 헤더가 빈칸을 안 띄운다(coverage guard).
+        foreach (var siteId in SiteWarrantOfferResolver.MappedSiteIds)
+        {
+            Assert.That(WarrantDisplayDefaults.SitePressureCause(siteId), Is.Not.Empty, siteId);
+        }
+
+        Assert.That(WarrantDisplayDefaults.SitePressureCause(SiteWarrantOfferResolver.ContestedCauseCode), Is.Not.Empty);
+        Assert.That(WarrantDisplayDefaults.SitePressureCause("unknown_code"), Is.Empty);
+    }
+
+    [Test]
     public void EveryPoliticalWarrant_HasNameAndIssuerName()
     {
         // 4 정치 warrant 모두 표시명 + issuer 세력 표시명이 있어야 선택 UI가 빈칸을 안 띄운다(coverage guard).

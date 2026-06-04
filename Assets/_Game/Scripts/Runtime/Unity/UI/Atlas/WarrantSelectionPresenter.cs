@@ -21,6 +21,7 @@ public sealed class WarrantSelectionPresenter
     private readonly Func<string, string> _factionName;
     private readonly Func<string, string> _warrantName;
     private readonly IReadOnlyList<string> _offeredWarrantIds;
+    private readonly string _siteCauseText;
 
     private string _selectedWarrantId = string.Empty;
 
@@ -28,12 +29,16 @@ public sealed class WarrantSelectionPresenter
         Func<string, int> standingLookup,
         Func<string, string> factionName,
         Func<string, string> warrantName,
-        IReadOnlyList<string>? offeredWarrantIds = null)
+        IReadOnlyList<string>? offeredWarrantIds = null,
+        string? siteCauseText = null)
     {
         _standingLookup = standingLookup ?? throw new ArgumentNullException(nameof(standingLookup));
         _factionName = factionName ?? throw new ArgumentNullException(nameof(factionName));
         _warrantName = warrantName ?? throw new ArgumentNullException(nameof(warrantName));
         _offeredWarrantIds = offeredWarrantIds ?? WarrantCatalog.PoliticalWarrantIds;
+        // ADR-0028 #b: site 정치 압력 산문(왜 이 장소에서 이 위임이 나왔나)을 헤더에 노출 — warrant가 "계약 카드"가
+        // 아니라 "장소에서 발생한 정치 사건"으로 읽히게. 빈 값이면 기본 안내(미등록 site fallback).
+        _siteCauseText = siteCauseText ?? string.Empty;
     }
 
     /// <summary>선택된 서약 id. 빈 문자열이면 "서약 없이 출격".</summary>
@@ -71,7 +76,9 @@ public sealed class WarrantSelectionPresenter
         var cards = options.Select(BuildCard).ToArray();
         return new WarrantSelectionViewState(
             Title: "출격 서약 선택",
-            HeaderText: "출격 전 서약을 하나 고르거나 서약 없이 출격합니다.",
+            HeaderText: _siteCauseText.Length > 0
+                ? $"{_siteCauseText}\n출격 전 서약을 하나 고르거나 서약 없이 출격합니다."
+                : "출격 전 서약을 하나 고르거나 서약 없이 출격합니다.",
             Cards: cards,
             ProceedLabel: "출격(서약 없이)",
             ProceedIsSelected: _selectedWarrantId.Length == 0,
