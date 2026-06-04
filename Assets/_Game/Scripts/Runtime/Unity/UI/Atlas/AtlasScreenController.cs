@@ -448,7 +448,9 @@ public sealed class AtlasScreenController : MonoBehaviour
     // 카드 = 그 서약으로 PledgeWarrant + 출격, 스킵 = 서약 없이 출격. UXML 미할당이면 false → 직행(fallback).
     private bool TryShowWarrantSelection()
     {
-        var uxml = warrantSelectionUxml;
+        // serialized 할당 우선, 없으면 Resources(Atlas/Resources/WarrantSelection)에서 로드 — scene 와이어 없이 활성.
+        var uxml = warrantSelectionUxml != null ? warrantSelectionUxml : Resources.Load<VisualTreeAsset>("WarrantSelection");
+        var uss = warrantSelectionUss != null ? warrantSelectionUss : Resources.Load<StyleSheet>("WarrantSelection");
         var root = _root;
         var host = panelHost;
         if (uxml == null || root == null || host == null)
@@ -462,9 +464,9 @@ public sealed class AtlasScreenController : MonoBehaviour
         overlay.style.top = 0f;
         overlay.style.right = 0f;
         overlay.style.bottom = 0f;
-        if (warrantSelectionUss != null && !overlay.styleSheets.Contains(warrantSelectionUss))
+        if (uss != null && !overlay.styleSheets.Contains(uss))
         {
-            overlay.styleSheets.Add(warrantSelectionUss);
+            overlay.styleSheets.Add(uss);
         }
 
         host.Root.Add(overlay);
