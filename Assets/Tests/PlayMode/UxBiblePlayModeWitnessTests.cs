@@ -201,6 +201,19 @@ public sealed class UxBiblePlayModeWitnessTests
         yield return Capture("atlas_enemy_intel");
 
         atlas.ContinueToExpedition();
+        // ADR-0028 P2b/#b: 출격 전 warrant 선택 overlay가 ContinueToExpedition을 가로채 Atlas panel 위에 뜬다.
+        // 정치 선택 surface(카드)가 PlayMode에서 실제로 뜨는지 witness하고, ProceedButton(스킵)으로 통과해 Battle로 간다.
+        yield return WaitForCondition(() =>
+        {
+            var row = atlasHost.Root.Q<VisualElement>("WarrantCardRow");
+            return row != null && row.childCount > 0;
+        }, 5f);
+        var warrantCardRow = atlasHost.Root.Q<VisualElement>("WarrantCardRow");
+        Assert.That(warrantCardRow, Is.Not.Null, "warrant 선택 overlay(WarrantCardRow)가 Atlas panel에 떠야 한다(P2b).");
+        Assert.That(warrantCardRow!.childCount, Is.GreaterThan(0), "site offer warrant 카드가 렌더돼야 한다(P2b+#b).");
+        yield return Capture("warrant_selection");
+        ClickButton(atlasHost.Root, "ProceedButton"); // 스킵(서약 없이) → GoToBattle
+
         yield return WaitForScene(SceneNames.Battle);
         yield return WaitForComponent<BattleScreenController>();
         yield return WaitForComponent<BattlePresentationController>();
