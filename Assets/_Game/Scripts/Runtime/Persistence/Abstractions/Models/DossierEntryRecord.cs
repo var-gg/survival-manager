@@ -57,5 +57,11 @@ public sealed class DossierEntryRecord
     /// <summary>이 warrant로 거스른 세력(없으면 ""). "누구의 기준을 거절했나".</summary>
     public string OpposedFactionId = string.Empty;
 
+    /// <summary>
+    /// 이 출격에서 제안됐으나 서약하지 않아 거절한 세력 id(ADR-0028 #5 OfferSet). opposed와 별개 —
+    /// "누구 편을 들고 누구를 거절했나"의 영구 기록. 세력 반응(신뢰 하락)의 근거.
+    /// </summary>
+    public List<string> RejectedFactionIds = new();
+
     public string CompletedAtUtc = string.Empty;
 }

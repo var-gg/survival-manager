@@ -306,6 +306,12 @@ public sealed partial class GameSessionState
             // encounter-relative turn 임계(encounterParTurn - pressureDelta)는 P2b/content가 채운다. 슬라이스 1은 spec placeholder(0 → fallback).
             var warrantJudgment = WarrantJudge.Judge(warrantSpec, battleFacts, new EncounterContext(ResolvedSwiftTurnLimit: 0));
 
+            // ADR-0028 #5 OfferSet: 정치 서약은 같이 제안된 다른 세력 mandate를 거절한 것 — 거절 면을 도출(결과 무관, 선택 시점).
+            // offer 소스는 placeholder(카탈로그 정치 warrant 전체), 실제 per-site offer는 P2b content.
+            var rejectionDeltas = warrantSpec != null
+                ? WarrantOfferService.ComputeRejectionDeltas(WarrantCatalog.PoliticalWarrantIds, pledgedWarrantId)
+                : (IReadOnlyList<FactionTrustDelta>)Array.Empty<FactionTrustDelta>();
+
             _session.Profile.Dossier.Add(new DossierEntryRecord
             {
                 EntryId = Guid.NewGuid().ToString("N"),
@@ -326,6 +332,7 @@ public sealed partial class GameSessionState
                 WarrantResolvedTurnLimit = warrantJudgment.ResolvedTurnLimit,
                 IssuerFactionId = warrantSpec?.IssuerFactionId ?? string.Empty,
                 OpposedFactionId = warrantSpec?.OpposedFactionId ?? string.Empty,
+                RejectedFactionIds = rejectionDeltas.Select(delta => delta.FactionId).ToList(),
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
 
@@ -335,6 +342,8 @@ public sealed partial class GameSessionState
             {
                 ApplyFactionTrustDeltas(FactionTrustService.ComputeDeltas(
                     warrantJudgment.Outcome, warrantSpec.IssuerFactionId, warrantSpec.OpposedFactionId));
+                // 거절 면(#5)은 전투 결과와 무관 — 사이드를 정한 순간 다른 세력 mandate를 거절한 것.
+                ApplyFactionTrustDeltas(rejectionDeltas);
             }
 
             // P1b: squad 손실(costly victory)을 chapter-scoped story flag로 stamp(through-director, 우회 아님).

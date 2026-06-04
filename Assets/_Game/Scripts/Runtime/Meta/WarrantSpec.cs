@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SM.Meta;
 
@@ -79,6 +80,16 @@ public static class WarrantCatalog
             // 정밀/효율 → 속전. 격자 무기화(Solarum)는 최악의 모독이라 거스른다.
             [LatticePrecisionId] = new WarrantSpec(LatticePrecisionId, WarrantKind.Swift, SwiftStepThresholdDefault, IssuerFactionId: LatticeId, OpposedFactionId: SolarumId),
         };
+
+    /// <summary>
+    /// 정치 warrant id(issuer 있음) 목록 — #5 OfferSet의 placeholder offer 소스(ADR-0028).
+    /// 실제 per-site offer(어느 site가 무엇을 제안하나)는 P2b content가 소유 — 그때 이 derive를 교체.
+    /// </summary>
+    public static IReadOnlyList<string> PoliticalWarrantIds { get; } = Specs
+        .Where(pair => !string.IsNullOrWhiteSpace(pair.Value.IssuerFactionId))
+        .Select(pair => pair.Key)
+        .OrderBy(key => key, StringComparer.Ordinal)
+        .ToList();
 
     /// <summary>
     /// 빈 문자열/미등록 id는 false(서약 없음 → 판정 NotApplicable).

@@ -635,6 +635,13 @@ public sealed class RunLoopContractFastTests
         var dossier = session.Profile.Dossier.LastOrDefault();
         Assert.That(dossier!.IssuerFactionId, Is.EqualTo(WarrantCatalog.SolarumId));
         Assert.That(dossier.OpposedFactionId, Is.EqualTo(WarrantCatalog.PaleConclaveId));
+
+        // #5 OfferSet: solarum 사이드는 wolfpine/lattice 제안을 거절 → Dossier 기록 + 그 세력 신뢰 하락(대립 pale은 제외).
+        Assert.That(dossier.RejectedFactionIds, Does.Contain(WarrantCatalog.WolfpineId));
+        Assert.That(dossier.RejectedFactionIds, Does.Contain(WarrantCatalog.LatticeId));
+        Assert.That(dossier.RejectedFactionIds, Does.Not.Contain(WarrantCatalog.PaleConclaveId));
+        var wolfpine = session.Profile.FactionStanding.FirstOrDefault(f => f.FactionId == WarrantCatalog.WolfpineId);
+        Assert.That(wolfpine!.Trust, Is.EqualTo(-WarrantOfferService.RejectedOfferLoss));
     }
 
     private static BattleUnitReadModel CreateAllyUnit(string id, bool alive)

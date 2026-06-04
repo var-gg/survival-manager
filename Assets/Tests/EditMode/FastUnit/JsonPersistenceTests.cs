@@ -92,6 +92,7 @@ public class JsonPersistenceTests
                 WarrantResolvedTurnLimit = 8,
                 IssuerFactionId = "faction_solarum",
                 OpposedFactionId = "faction_pale_conclave",
+                RejectedFactionIds = new System.Collections.Generic.List<string> { "faction_wolfpine_tribes", "faction_lattice_order" },
                 CompletedAtUtc = DateTime.UtcNow.ToString("O"),
             });
             profile.FactionStanding.Add(new FactionStandingRecord { FactionId = "faction_solarum", Trust = 5 });
@@ -118,6 +119,7 @@ public class JsonPersistenceTests
             Assert.That(loaded.Dossier[0].WarrantResolvedTurnLimit, Is.EqualTo(8));
             Assert.That(loaded.Dossier[0].IssuerFactionId, Is.EqualTo("faction_solarum"));
             Assert.That(loaded.Dossier[0].OpposedFactionId, Is.EqualTo("faction_pale_conclave"));
+            Assert.That(loaded.Dossier[0].RejectedFactionIds, Is.EquivalentTo(new[] { "faction_wolfpine_tribes", "faction_lattice_order" }));
             Assert.That(loaded.FactionStanding, Has.Count.EqualTo(1));
             Assert.That(loaded.FactionStanding[0].FactionId, Is.EqualTo("faction_solarum"));
             Assert.That(loaded.FactionStanding[0].Trust, Is.EqualTo(5));
