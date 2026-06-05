@@ -8,10 +8,11 @@ using SM.Unity;
 namespace SM.Tests.EditMode;
 
 /// <summary>
-/// Stage 2 (action choreography seam): the cue builder consumes the typed combat-event-intent channel
-/// (Started -&gt; windup, Contacted -&gt; commit + per-target impact, Canceled -&gt; no ghost) instead of
-/// inferring action cues from BattleEvents and parsing Note strings (GPT Pro J8). Movement / guard /
-/// death / target-change cues remain unit-state / motion-intent driven and are unchanged.
+/// Action choreography seam, D2 firing (GPT Pro): the cue builder consumes the typed combat-event-intent
+/// channel — <b>Started → actor commit (strike) at WindupStartTick, contact-pinned via CommitSchedule;
+/// Contacted → per-target reactions ONLY (no actor commit); Canceled → an ActionCanceled tombstone cue</b>
+/// (no gameplay/reaction) — instead of inferring action cues from BattleEvents or parsing Note strings
+/// (J8). Movement / guard / death / target-change cues remain unit-state / motion-intent driven.
 /// </summary>
 [Category("FastUnit")]
 public sealed class BattlePresentationCueBuilderTests
@@ -22,6 +23,10 @@ public sealed class BattlePresentationCueBuilderTests
         var previous = CreateStep();
         var current = CreateStep(combatEvents: new[]
         {
+            // The commit fires at Started (windup) and the target reaction at Contacted. In the sim these
+            // land on different steps; the builder emits per-intent, so exercising both here is equivalent.
+            Started("ally", CombatEventKind.BasicAttack),
+            Started("healer", CombatEventKind.Skill),
             Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
             Contacted("healer", CombatEventKind.Skill, Contact("ally", CombatOutcome.Hit, 8f, isHeal: true)),
         });
@@ -30,7 +35,9 @@ public sealed class BattlePresentationCueBuilderTests
 
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally"), Is.True);
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactDamage && cue.SubjectActorId == "enemy"), Is.True);
-        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitHeal && cue.SubjectActorId == "healer"), Is.True);
+        // The actor commit is outcome-free at Started, so a heal skill's cast is ActionCommitSkill; the
+        // heal-specific visual is the target's ImpactHeal reaction at Contacted.
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitSkill && cue.SubjectActorId == "healer"), Is.True);
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactHeal && cue.SubjectActorId == "ally"), Is.True);
     }
 
@@ -147,7 +154,7 @@ public sealed class BattlePresentationCueBuilderTests
         var previous = CreateStep();
         var current = CreateStep(combatEvents: new[]
         {
-            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+            Started("ally", CombatEventKind.BasicAttack),
         });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
@@ -168,7 +175,7 @@ public sealed class BattlePresentationCueBuilderTests
         var previous = CreateStep(units: units);
         var current = CreateStep(units: units, combatEvents: new[]
         {
-            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+            Started("ally", CombatEventKind.BasicAttack),
         });
 
         var commit = new BattlePresentationCueBuilder().Build(previous, current)
@@ -179,28 +186,28 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_MapsRangerBasicAttackWindup_ToBowDrawAnimationSemantic()
+    public void Build_FiresActorCommitAtWindupStart_WithContactSchedule()
     {
-        var previous = CreateStep(units: new[]
+        // GPT Pro D2 CommitCueFiresAtWindupStart: the actor commit fires at the Started/windup step and
+        // carries the tick schedule (ActionInstanceId + WindupStartTick + ContactTick) so the driver can
+        // pin the contact frame onto the damage tick. A ranger's commit is the BowShot — its draw is the
+        // first part of the same clip — so no separate windup cue is emitted any more.
+        var units = new[]
         {
-            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "ranger", archetypeId: "marksman"),
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "ranger", preferredRangeMin: 5.0f, preferredRangeMax: 5.8f, archetypeId: "marksman"),
             CreateUnit("enemy", TeamSide.Enemy),
-        });
-        var current = CreateStep(
-            units: new[]
-            {
-                CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.ExecuteAction, classId: "ranger", preferredRangeMin: 5.0f, preferredRangeMax: 5.8f, archetypeId: "marksman"),
-                CreateUnit("enemy", TeamSide.Enemy),
-            },
-            combatEvents: new[] { Started("ally") });
+        };
+        var previous = CreateStep(units: units);
+        var cues = new BattlePresentationCueBuilder().Build(previous, CreateStep(units: units, combatEvents: new[] { Started("ally") }));
 
-        var cue = new BattlePresentationCueBuilder().Build(previous, current)
-            .Single(candidate => candidate.CueType == BattlePresentationCueType.WindupEnter && candidate.SubjectActorId == "ally");
-
-        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowDraw));
-        Assert.That(cue.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
-        Assert.That(cue.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
-        Assert.That(cue.Note, Is.EqualTo("windup_bow"));
+        var cue = cues.Single(candidate => candidate.CueType == BattlePresentationCueType.ActionCommitBasic && candidate.SubjectActorId == "ally");
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowShot));
+        Assert.That(cue.CommitSchedule, Is.Not.Null);
+        Assert.That(cue.CommitSchedule!.WindupStartTick, Is.EqualTo(1));
+        Assert.That(cue.CommitSchedule!.ContactTick, Is.EqualTo(2));
+        Assert.That(cue.CommitSchedule!.ActionInstanceId, Is.EqualTo(new ActionInstanceId(1)));
+        Assert.That(cue.CommitSchedule!.ContactGroupIndex, Is.EqualTo(0));
+        Assert.That(cues.Any(c => c.CueType == BattlePresentationCueType.WindupEnter), Is.False, "the commit clip spans the windup; no separate windup cue.");
     }
 
     [Test]
@@ -214,7 +221,7 @@ public sealed class BattlePresentationCueBuilderTests
         var previous = CreateStep(units: units);
         var current = CreateStep(units: units, combatEvents: new[]
         {
-            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+            Started("ally", CombatEventKind.BasicAttack),
         });
 
         var commit = new BattlePresentationCueBuilder().Build(previous, current)
@@ -225,28 +232,24 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_MapsMysticBasicAttackWindup_ToProjectileWindupAnimationSemantic()
+    public void Build_EmitsNoActorCommit_AtContactedStep()
     {
-        var previous = CreateStep(units: new[]
+        // GPT Pro D2 NoLegacyActorCommitOnContacted: Contacted emits target reactions ONLY. The actor
+        // commit fired at Started; re-emitting it here would double the swing. No commit may leak through
+        // event inference, note parsing, or a contact-intent fallback.
+        var previous = CreateStep();
+        var current = CreateStep(combatEvents: new[]
         {
-            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "mystic", archetypeId: "hexer"),
-            CreateUnit("enemy", TeamSide.Enemy),
+            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
         });
-        var current = CreateStep(
-            units: new[]
-            {
-                CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.ExecuteAction, classId: "mystic", preferredRangeMin: 2.1f, preferredRangeMax: 2.9f, archetypeId: "hexer"),
-                CreateUnit("enemy", TeamSide.Enemy),
-            },
-            combatEvents: new[] { Started("ally") });
 
-        var cue = new BattlePresentationCueBuilder().Build(previous, current)
-            .Single(candidate => candidate.CueType == BattlePresentationCueType.WindupEnter && candidate.SubjectActorId == "ally");
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
 
-        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.ProjectileWindup));
-        Assert.That(cue.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
-        Assert.That(cue.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
-        Assert.That(cue.Note, Is.EqualTo("windup_projectile"));
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic), Is.False);
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitSkill), Is.False);
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitHeal), Is.False);
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactDamage && cue.SubjectActorId == "enemy"), Is.True,
+            "the target reaction is still emitted at Contacted.");
     }
 
     [Test]
@@ -260,7 +263,7 @@ public sealed class BattlePresentationCueBuilderTests
         var previous = CreateStep(units: units);
         var current = CreateStep(units: units, combatEvents: new[]
         {
-            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+            Started("ally", CombatEventKind.BasicAttack),
         });
 
         var commit = new BattlePresentationCueBuilder().Build(previous, current)
@@ -445,8 +448,9 @@ public sealed class BattlePresentationCueBuilderTests
     [Test]
     public void Build_EmitsSingleActorCommit_ButOneReactionPerTarget_ForAoeContactGroup()
     {
-        // GPT Pro J22: one AOE swing (a single ContactGroupIndex spanning N targets) emits exactly one
-        // actor commit cue but one impact reaction per target.
+        // GPT Pro J22-D2: one scheduled commit group (a single Started) emits exactly one actor commit at
+        // the windup; the AOE Contacted (a ContactGroupIndex spanning N targets) emits one impact reaction
+        // per target and NO actor commit.
         var previous = CreateStep(units: new[]
         {
             CreateUnit("ally", TeamSide.Ally),
@@ -458,6 +462,7 @@ public sealed class BattlePresentationCueBuilderTests
             units: previous.Units,
             combatEvents: new[]
             {
+                Started("ally", CombatEventKind.Skill),
                 Contacted("ally", CombatEventKind.Skill,
                     Contact("enemy_a", CombatOutcome.Hit, 10f, index: 0, group: 0),
                     Contact("enemy_b", CombatOutcome.Hit, 10f, index: 1, group: 0),
@@ -472,9 +477,11 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_EmitsNoCommitOrImpact_ForCanceledIntent()
+    public void Build_EmitsCanceledTombstone_ButNoCommitOrImpact_ForCanceledIntent()
     {
-        // GPT Pro J14: a windup canceled before contact produces no commit / impact / reaction (no ghost).
+        // GPT Pro D2-C1: a windup canceled before contact produces NO commit / impact / reaction (no
+        // ghost), but DOES emit an ActionCanceled tombstone (keyed by ActionInstanceId) so the driver can
+        // interrupt the scheduled commit one-shot.
         var previous = CreateStep();
         var current = CreateStep(combatEvents: new[] { Canceled("ally") });
 
@@ -482,6 +489,11 @@ public sealed class BattlePresentationCueBuilderTests
 
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic), Is.False);
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactDamage), Is.False);
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactHeal), Is.False);
+
+        var canceled = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCanceled && cue.SubjectActorId == "ally");
+        Assert.That(canceled.CommitSchedule, Is.Not.Null);
+        Assert.That(canceled.CommitSchedule!.ActionInstanceId, Is.EqualTo(new ActionInstanceId(1)));
     }
 
     [Test]
@@ -500,6 +512,7 @@ public sealed class BattlePresentationCueBuilderTests
             },
             combatEvents: new[]
             {
+                Started("ally", CombatEventKind.BasicAttack),
                 Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Crit, 24f)),
             });
 
@@ -621,7 +634,8 @@ public sealed class BattlePresentationCueBuilderTests
 
     private static string DescribeCue(BattlePresentationCue cue)
     {
-        return $"{cue.CueType}:{cue.StepIndex}:{cue.SubjectActorId}:{cue.RelatedActorId}:{cue.ActionType}:{cue.Magnitude:0.###}:{cue.Note}:{cue.AnimationSemantic}:{cue.AnimationDirection}:{cue.AnimationIntensity}";
+        var schedule = cue.CommitSchedule is { } s ? $"{s.ActionInstanceId.Value}/{s.ContactGroupIndex}/{s.WindupStartTick}/{s.ContactTick}" : "-";
+        return $"{cue.CueType}:{cue.StepIndex}:{cue.SubjectActorId}:{cue.RelatedActorId}:{cue.ActionType}:{cue.Magnitude:0.###}:{cue.Note}:{cue.AnimationSemantic}:{cue.AnimationDirection}:{cue.AnimationIntensity}:{schedule}";
     }
 
     private static BattleCombatEventIntent Started(string actorId, CombatEventKind kind = CombatEventKind.BasicAttack)

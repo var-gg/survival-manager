@@ -112,10 +112,12 @@ public sealed class BattlePresentationCueBuilder
             TryAddPreImpactDisplacementTraceCue(cues, motionsByActor, previous, current, currentStep.StepIndex);
         }
 
-        // Action choreography is driven by the combat-event-intent channel (Stage 2 C1): windup from
-        // Started, actor commit + per-target impact from Contacted, nothing from Canceled (no ghost
-        // contact, J14). The sim self-describes outcome/value in the typed channel, so presentation
-        // never parses event Notes or infers attack profiles from strings (GPT Pro J8).
+        // Action choreography is driven by the combat-event-intent channel (GPT Pro D2 firing): the actor
+        // COMMIT (strike) fires at Started/WindupStartTick contact-pinned so its authored contact frame
+        // lands on ContactTick; Contacted emits TARGET REACTIONS ONLY (no actor commit — that would double
+        // the swing); Canceled fires a presentation-only tombstone so the scheduled commit one-shot is
+        // interrupted without any gameplay/reaction cue (no ghost contact, J14 / D2-C1). The sim
+        // self-describes outcome/value in the typed channel, so presentation never parses event Notes (J8).
         if (currentStep.CombatEventIntents != null)
         {
             foreach (var intent in currentStep.CombatEventIntents)
@@ -123,10 +125,13 @@ public sealed class BattlePresentationCueBuilder
                 switch (intent.Status)
                 {
                     case CombatEventIntentStatus.Started:
-                        AddWindupCue(cues, currentById, intent);
+                        AddCommitCue(cues, currentById, intent);
                         break;
                     case CombatEventIntentStatus.Contacted:
-                        AddContactCues(cues, currentById, motionsByActor, intent);
+                        AddTargetReactionCues(cues, currentById, motionsByActor, intent);
+                        break;
+                    case CombatEventIntentStatus.Canceled:
+                        AddCanceledCue(cues, intent);
                         break;
                 }
             }
@@ -326,29 +331,40 @@ public sealed class BattlePresentationCueBuilder
             BattleAnimationIntensity.Medium));
     }
 
-    private static void AddWindupCue(
+    private static void AddCommitCue(
         ICollection<BattlePresentationCue> cues,
         IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
         BattleCombatEventIntent intent)
     {
+        // GPT Pro D2: the actor commit (strike) fires at WindupStartTick carrying the tick schedule, so the
+        // driver can pin its authored contact frame onto ContactTick. The commit animation is a function of
+        // actor properties only (delivery/class/archetype) — never the contact outcome (Q3-b OutcomeSeparation),
+        // which belongs to the per-target reactions emitted at Contacted.
         currentById.TryGetValue(intent.ActorId.Value, out var actor);
-        var windup = actor != null ? ResolveBasicAttackWindupAnimation(actor) : BattleAnimationCueDescriptor.None;
+        var commit = ResolveCommitAnimation(intent, actor);
+        var schedule = new BattleCommitSchedule(
+            intent.ActionInstanceId,
+            ContactGroupIndex: 0, // one scheduled group per action today; future multi-hit keys per hit frame (J22-D2)
+            intent.WindupStartTick,
+            intent.ContactTick);
+
         cues.Add(new BattlePresentationCue(
-            BattlePresentationCueType.WindupEnter,
+            ResolveCommitCueType(intent.Kind, isHeal: false),
             intent.StepIndex,
             intent.ActorId.Value,
             intent.InitialTargetId?.Value,
             ResolveActionTypeForKind(intent.Kind),
-            actor?.WindupProgress ?? 0f,
+            0f,
             BattlePresentationAnchorId.Cast,
             BattlePresentationAnchorId.Center,
-            windup.Note,
-            windup.Semantic,
-            windup.Direction,
-            windup.Intensity));
+            string.Empty,
+            commit.Semantic,
+            commit.Direction,
+            commit.Intensity,
+            schedule));
     }
 
-    private static void AddContactCues(
+    private static void AddTargetReactionCues(
         ICollection<BattlePresentationCue> cues,
         IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
         Dictionary<string, List<BattleMotionIntent>> motionsByActor,
@@ -360,32 +376,12 @@ public sealed class BattlePresentationCueBuilder
             return;
         }
 
-        currentById.TryGetValue(intent.ActorId.Value, out var actor);
         var actionType = ResolveActionTypeForKind(intent.Kind);
-        var emittedCommitGroups = new HashSet<int>();
 
         foreach (var contact in contacts)
         {
-            // One actor commit cue per ContactGroupIndex: an AOE swing emits a single commit but N
-            // target reactions (GPT Pro J22). Stage 1 emits one group per action.
-            if (emittedCommitGroups.Add(contact.ContactGroupIndex))
-            {
-                var commitAnimation = ResolveCommitAnimation(intent, actor);
-                cues.Add(new BattlePresentationCue(
-                    ResolveCommitCueType(intent.Kind, contact.IsHeal),
-                    intent.StepIndex,
-                    intent.ActorId.Value,
-                    intent.InitialTargetId?.Value ?? contact.TargetId?.Value,
-                    actionType,
-                    contact.Value,
-                    BattlePresentationAnchorId.Cast,
-                    contact.IsHeal ? BattlePresentationAnchorId.Head : BattlePresentationAnchorId.Center,
-                    string.Empty,
-                    commitAnimation.Semantic,
-                    commitAnimation.Direction,
-                    commitAnimation.Intensity));
-            }
-
+            // GPT Pro D2 / J22-D2: Contacted emits TARGET REACTIONS ONLY. The actor commit already fired at
+            // WindupStartTick (AddCommitCue); re-emitting it here would produce a duplicate swing.
             if (contact.TargetId == null || !currentById.ContainsKey(contact.TargetId.Value.Value))
             {
                 continue;
@@ -422,6 +418,25 @@ public sealed class BattlePresentationCueBuilder
 
             TryAddKnockbackTraceForContact(cues, motionsByActor, intent.ActorId.Value, actionType, contact);
         }
+    }
+
+    private static void AddCanceledCue(ICollection<BattlePresentationCue> cues, BattleCombatEventIntent intent)
+    {
+        // GPT Pro D2-Q2 / D2-C1..C6: a pre-contact cancel emits NO gameplay or reaction cue, but the
+        // presentation is told (keyed by ActionInstanceId) so the driver interrupts/tombstones the scheduled
+        // commit one-shot. Without this the already-playing swing coasts to a ghost contact pose. This cue
+        // never applies a recovery gate and is never serialized as gameplay truth.
+        cues.Add(new BattlePresentationCue(
+            BattlePresentationCueType.ActionCanceled,
+            intent.StepIndex,
+            intent.ActorId.Value,
+            intent.InitialTargetId?.Value,
+            ResolveActionTypeForKind(intent.Kind),
+            CommitSchedule: new BattleCommitSchedule(
+                intent.ActionInstanceId,
+                ContactGroupIndex: 0,
+                intent.WindupStartTick,
+                intent.ContactTick)));
     }
 
     private static void TryAddKnockbackTraceForContact(
@@ -535,34 +550,6 @@ public sealed class BattlePresentationCueBuilder
             {
                 return new BattleAnimationCueDescriptor(BattleAnimationSemantic.ProjectileCast, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, string.Empty);
             }
-        }
-
-        return BattleAnimationCueDescriptor.None;
-    }
-
-    private static BattleAnimationCueDescriptor ResolveBasicAttackWindupAnimation(BattleUnitReadModel actor)
-    {
-        if (actor.PendingActionType != BattleActionType.BasicAttack)
-        {
-            return BattleAnimationCueDescriptor.None;
-        }
-
-        if (IsBowBasicAttacker(actor))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.BowDraw,
-                BattleAnimationDirection.Forward,
-                BattleAnimationIntensity.Medium,
-                "windup_bow");
-        }
-
-        if (IsProjectileBasicAttacker(actor))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.ProjectileWindup,
-                BattleAnimationDirection.Forward,
-                BattleAnimationIntensity.Medium,
-                "windup_projectile");
         }
 
         return BattleAnimationCueDescriptor.None;

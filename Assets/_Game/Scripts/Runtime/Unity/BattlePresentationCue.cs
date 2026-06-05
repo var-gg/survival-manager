@@ -28,6 +28,7 @@ public enum BattlePresentationCueType
     BattleResolved = 12,
     PlaybackReset = 13,
     SeekSnapshotApplied = 14,
+    ActionCanceled = 15,
 }
 
 public enum BattleAnimationSemantic
@@ -76,6 +77,19 @@ public enum BattleActorPresentationPhase
     ResolvedIdle = 2,
 }
 
+/// <summary>
+/// Sim-derived schedule for an actor commit (strike) cue, carried so the driver can pin the clip's contact
+/// frame onto the canonical <see cref="ContactTick"/> (GPT Pro D2 firing). The group key
+/// (<see cref="ActionInstanceId"/>, <see cref="ContactGroupIndex"/>) lets a cancel tombstone match the exact
+/// scheduled one-shot and future-proofs J22-D2 multi-hit (one commit per scheduled group). These are
+/// presentation inputs derived from sim ticks — never sim or save truth.
+/// </summary>
+public sealed record BattleCommitSchedule(
+    ActionInstanceId ActionInstanceId,
+    int ContactGroupIndex,
+    int WindupStartTick,
+    int ContactTick);
+
 public sealed record BattlePresentationCue(
     BattlePresentationCueType CueType,
     int StepIndex,
@@ -88,4 +102,5 @@ public sealed record BattlePresentationCue(
     string Note = "",
     BattleAnimationSemantic AnimationSemantic = BattleAnimationSemantic.None,
     BattleAnimationDirection AnimationDirection = BattleAnimationDirection.Any,
-    BattleAnimationIntensity AnimationIntensity = BattleAnimationIntensity.Any);
+    BattleAnimationIntensity AnimationIntensity = BattleAnimationIntensity.Any,
+    BattleCommitSchedule? CommitSchedule = null);

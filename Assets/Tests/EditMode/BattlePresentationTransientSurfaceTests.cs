@@ -40,6 +40,9 @@ public sealed class BattlePresentationTransientSurfaceTests
             {
                 CombatEventIntents = new[]
                 {
+                    // D2: commit fires at Started (ally), reaction at Contacted (enemy). Both land in one
+                    // AdvanceStep here so the actor + target surfaces/bridges both fire (as before D2).
+                    new BattleCombatEventIntent(1, new ActionInstanceId(1), new CoreEntityId("ally"), CombatEventKind.BasicAttack, SkillDelivery.Melee, 0, 1, CombatEventIntentStatus.Started, new CoreEntityId("enemy"), null, null, null),
                     new BattleCombatEventIntent(1, new ActionInstanceId(1), new CoreEntityId("ally"), CombatEventKind.BasicAttack, SkillDelivery.Melee, 0, 1, CombatEventIntentStatus.Contacted, new CoreEntityId("enemy"), null, null, new[] { new BattleContactIntent(0, 0, 1, new CoreEntityId("enemy"), CombatOutcome.Hit, 8f) }),
                 },
             };
@@ -115,6 +118,7 @@ public sealed class BattlePresentationTransientSurfaceTests
             {
                 CombatEventIntents = new[]
                 {
+                    new BattleCombatEventIntent(1, new ActionInstanceId(1), new CoreEntityId("ally"), CombatEventKind.BasicAttack, SkillDelivery.Melee, 0, 1, CombatEventIntentStatus.Started, new CoreEntityId("enemy"), null, null, null),
                     new BattleCombatEventIntent(1, new ActionInstanceId(1), new CoreEntityId("ally"), CombatEventKind.BasicAttack, SkillDelivery.Melee, 0, 1, CombatEventIntentStatus.Contacted, new CoreEntityId("enemy"), null, null, new[] { new BattleContactIntent(0, 0, 1, new CoreEntityId("enemy"), CombatOutcome.Hit, 8f) }),
                 },
             };
