@@ -26,7 +26,16 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private float _oneShotRemaining;
     private float _oneShotElapsed;
     private BattleBlendEnvelope _blendEnvelope = BattleBlendEnvelope.InstantFull;
+    private bool _isPinnedCommit;
+    private BattleContactPinPlan _pinPlan = BattleContactPinPlan.None;
+    private int _pinWindupStartTick;
+    private float _pinTotalSeconds;
+    private ActionInstanceId _pinActionInstanceId = ActionInstanceId.None;
     private float _playbackSpeed = 1f;
+
+    // Mirrors BattleSimulator.DefaultFixedStepSeconds (the sim's fixed tick). The contact-pin lives in the
+    // scaled clock where one tick advances this many seconds in BOTH step dispatch and clip playback.
+    private const float FixedStepSeconds = 0.1f;
     private bool _lastIsLocomoting;
     private bool _isHoldingTerminalPose;
     private BattleActorPresentationPhase _lastPresentationPhase = BattleActorPresentationPhase.CombatReady;
@@ -111,6 +120,18 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
     public void ConsumeCue(BattlePresentationCue cue, BattleUnitReadModel state, float playbackSpeed)
     {
+        // GPT Pro D2-C: a cancel interrupts the matching scheduled commit one-shot (keyed by
+        // ActionInstanceId, not actor id) — no gameplay/reaction, no ghost contact pose.
+        if (cue.CueType == BattlePresentationCueType.ActionCanceled)
+        {
+            if (_isPinnedCommit && cue.CommitSchedule is { } canceled && _pinActionInstanceId.Equals(canceled.ActionInstanceId))
+            {
+                EndPinnedCommit();
+            }
+
+            return;
+        }
+
         _lastState = state;
         _playbackSpeed = ResolvePlaybackSpeed(playbackSpeed);
 
@@ -122,8 +143,43 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
         if (activeSet.TryResolveCueClip(cue, state, out var clip))
         {
-            PlayOneShot(clip, BattleClipTimingCatalog.Resolve(cue.AnimationSemantic));
+            var timing = BattleClipTimingCatalog.Resolve(cue.AnimationSemantic);
+            if (cue.CommitSchedule is { } schedule)
+            {
+                PlayPinnedCommit(clip, timing, schedule);
+            }
+            else
+            {
+                PlayOneShot(clip, timing);
+            }
         }
+    }
+
+    /// <summary>
+    /// Drive a contact-pinned commit one-shot from the fixed-step clock (GPT Pro D2 guard B). Called per
+    /// render frame with the current step index and intra-step alpha, it samples the clip at
+    /// <c>clipLocal(elapsed)</c> where <c>elapsed = ((step − windupStart) + alpha) · dt</c> — an absolute
+    /// anchor, never an accumulated delta — so the contact frame lands on the damage tick at any framerate,
+    /// catch-up batching, or pause/resume.
+    /// </summary>
+    public void EvaluateContactPin(int currentStepIndex, float alpha)
+    {
+        if (!_isPinnedCommit || !_oneShotPlayable.IsValid() || !_mixer.IsValid())
+        {
+            return;
+        }
+
+        var elapsed = BattleContactPinPlanner.ElapsedAtStep(_pinWindupStartTick, currentStepIndex, alpha, FixedStepSeconds);
+        if (elapsed >= _pinTotalSeconds)
+        {
+            EndPinnedCommit();
+            return;
+        }
+
+        _oneShotPlayable.SetTime(_pinPlan.ClipLocalTimeAt(elapsed));
+        var weight = _blendEnvelope.WeightAt((float)elapsed);
+        _mixer.SetInputWeight(1, weight);
+        _mixer.SetInputWeight(0, _loopPlayable.IsValid() ? 1f - weight : 0f);
     }
 
     public void Tick(float deltaTime, float playbackSpeed, bool paused)
@@ -137,6 +193,13 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
         ApplyPlayableSpeed(paused);
         if (paused)
+        {
+            return;
+        }
+
+        // A contact-pinned commit is driven by EvaluateContactPin from the fixed-step anchor, never by this
+        // accumulating clock (GPT Pro guard B). Tick only keeps its playable speed pinned at 0.
+        if (_isPinnedCommit)
         {
             return;
         }
@@ -326,6 +389,58 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _mixer.SetInputWeight(0, _loopPlayable.IsValid() ? 1f - weight : 0f);
     }
 
+    private void PlayPinnedCommit(AnimationClip clip, BattleClipTiming timing, BattleCommitSchedule schedule)
+    {
+        if (clip == null)
+        {
+            return;
+        }
+
+        DisconnectPlayable(ref _oneShotPlayable, inputIndex: 1);
+        _oneShotPlayable = CreateClipPlayable(clip);
+        // GPT Pro D2-R4 / guard B: the clip time is driven manually from the step anchor each frame, never
+        // auto-advanced and never speed-warped for the pin.
+        _oneShotPlayable.SetSpeed(0d);
+        _graph.Connect(_oneShotPlayable, 0, _mixer, 1);
+        _oneShotClip = clip;
+        _isHoldingTerminalPose = false;
+
+        _isPinnedCommit = true;
+        _pinWindupStartTick = schedule.WindupStartTick;
+        _pinActionInstanceId = schedule.ActionInstanceId;
+        _pinPlan = BattleContactPinPlanner.Resolve(timing.ContactNorm, clip.length, schedule.WindupStartTick, schedule.ContactTick, FixedStepSeconds);
+
+        // The pin and blend share the scaled clock (1 tick = FixedStepSeconds in both step dispatch and clip
+        // playback), so every span is in scaled seconds: the clip advances at slope 1 from its hold/offset
+        // and ends after Hold + clipLength − Offset, while the strike blends to full weight by the contact
+        // budget (D2-R5: blend contact = budget, not the clip-local contact time).
+        _pinTotalSeconds = (float)(_pinPlan.HoldSeconds + clip.length - _pinPlan.OffsetSeconds);
+        var instantOn = timing.CanContactPin && timing.ContactNorm <= 0.0001f;
+        _blendEnvelope = BattleOneShotBlendResolver.Resolve(
+            (float)_pinPlan.BudgetSeconds,
+            _pinTotalSeconds,
+            timing.RequiredFullWeightLeadSeconds,
+            timing.RequiredFullWeightHoldSeconds,
+            instantOn);
+
+        _oneShotElapsed = 0f;
+        _oneShotRemaining = 0f; // pinned lifetime is driven by EvaluateContactPin, not the Tick accumulator.
+        _oneShotPlayable.SetTime(_pinPlan.ClipLocalTimeAt(0d));
+        ApplyBlendWeights(0f);
+        CuePlaybackCount++;
+    }
+
+    private void EndPinnedCommit()
+    {
+        _isPinnedCommit = false;
+        _pinActionInstanceId = ActionInstanceId.None;
+        StopOneShot();
+        if (_lastState != null)
+        {
+            ApplyState(_lastState, _playbackSpeed, paused: false, _lastIsLocomoting, _lastPresentationPhase);
+        }
+    }
+
     private AnimationClipPlayable CreateClipPlayable(AnimationClip clip)
     {
         var playable = AnimationClipPlayable.Create(_graph, clip);
@@ -342,6 +457,8 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _oneShotClip = null;
         _isHoldingTerminalPose = false;
         _oneShotElapsed = 0f;
+        _isPinnedCommit = false;
+        _pinActionInstanceId = ActionInstanceId.None;
         _blendEnvelope = BattleBlendEnvelope.InstantFull;
 
         if (!_mixer.IsValid())
@@ -421,7 +538,8 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
         if (_oneShotPlayable.IsValid())
         {
-            _oneShotPlayable.SetSpeed(_isHoldingTerminalPose ? 0f : speed);
+            // A pinned commit (and a held terminal pose) is sampled manually — never auto-advanced.
+            _oneShotPlayable.SetSpeed(_isHoldingTerminalPose || _isPinnedCommit ? 0f : speed);
         }
     }
 
@@ -449,6 +567,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             _loopClip = null;
             _oneShotClip = null;
             _isHoldingTerminalPose = false;
+            _isPinnedCommit = false;
             return;
         }
 
@@ -460,6 +579,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _oneShotClip = null;
         _oneShotRemaining = 0f;
         _isHoldingTerminalPose = false;
+        _isPinnedCommit = false;
     }
 
     private static float ResolvePlaybackSpeed(float playbackSpeed)

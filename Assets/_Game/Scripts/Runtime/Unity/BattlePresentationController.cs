@@ -207,7 +207,7 @@ public sealed class BattlePresentationController : MonoBehaviour
                 ? resolvedFrom
                 : toState;
             view.ApplyPresentationPhase(ResolvePresentationPhase(toStep));
-            view.ApplyBlend(fromState, toState, alpha);
+            view.ApplyBlend(fromState, toState, alpha, toStep.StepIndex);
         }
     }
 

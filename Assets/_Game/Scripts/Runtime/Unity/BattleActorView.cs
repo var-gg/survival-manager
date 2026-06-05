@@ -122,7 +122,8 @@ public sealed class BattleActorView : MonoBehaviour
         ConfigurePresentationWrapper(actor);
         CreateTelegraphRoot();
         CreateOverlay(actor);
-        ApplyBlend(actor, actor, 1f);
+        // Initial snapshot — no action is in flight yet, so the step index is unused by the contact pin.
+        ApplyBlend(actor, actor, 1f, currentStepIndex: 0);
     }
 
     public void SetMetadataFormatter(BattleUnitMetadataFormatter formatter)
@@ -146,7 +147,7 @@ public sealed class BattleActorView : MonoBehaviour
         _presentationPhase = phase;
     }
 
-    public void ApplyBlend(BattleUnitReadModel from, BattleUnitReadModel to, float alpha)
+    public void ApplyBlend(BattleUnitReadModel from, BattleUnitReadModel to, float alpha, int currentStepIndex)
     {
         _currentState = to;
         var fromWorld = ToWorldPosition(from.Position);
@@ -160,12 +161,21 @@ public sealed class BattleActorView : MonoBehaviour
 
         var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, clampedAlpha);
         ApplyDisplay(to, displayedHealth);
+        // C2 cadence (GPT Pro review): drive the locomotion clip speed from the unit's actual world
+        // speed — tick displacement over the 0.1s sim step — so feet track the body instead of the old
+        // fixed 1x that produced the treadmill/foot-slide.
+        const float simFixedStepSeconds = 0.1f;
+        var worldSpeed = BattleLocomotionCadence.WorldSpeed(distance, simFixedStepSeconds);
+        var authoredLocomotionSpeed = _animationDriver?.ActiveAnimationSet?.AuthoredLocomotionSpeed ?? 1.6f;
         _animationDriver?.ApplyState(
             to,
-            1f,
+            BattleLocomotionCadence.ResolvePlaybackSpeed(worldSpeed, authoredLocomotionSpeed),
             paused: false,
-            isLocomoting: distance > 0.015f && clampedAlpha < 0.995f,
+            isLocomoting: BattleLocomotionCadence.IsLocomoting(worldSpeed) && clampedAlpha < 0.995f,
             _presentationPhase);
+        // GPT Pro D2 guard B: drive any contact-pinned commit from the absolute step anchor (step + alpha),
+        // so the strike's contact frame lands on the damage tick independent of render framerate.
+        _animationDriver?.EvaluateContactPin(currentStepIndex, clampedAlpha);
         RefreshVisualState();
         RefreshOverlayPosition();
     }
@@ -1460,30 +1470,15 @@ public sealed class BattleActorView : MonoBehaviour
         return Vector3.LerpUnclamped(fromWorld, toWorld, alpha);
     }
 
+    // Strict tick-sync travel-trace timing now lives in the pure, EditMode-tested BattleTravelTrace.
     internal static float ResolveTravelTraceDuration(float distance, BattleAnimationSemantic semantic)
     {
-        var baseDuration = semantic switch
-        {
-            BattleAnimationSemantic.DashEngage => 0.22f,
-            BattleAnimationSemantic.BackstepDisengage => 0.20f,
-            BattleAnimationSemantic.LateralStrafe => 0.18f,
-            _ => TravelTraceMinDuration,
-        };
-        var distanceBonus = Mathf.Clamp(distance - TravelTraceDistanceThreshold, 0f, 1.4f) * 0.06f;
-        return Mathf.Clamp(baseDuration + distanceBonus, TravelTraceMinDuration, TravelTraceMaxDuration);
+        return BattleTravelTrace.ResolveDuration(distance, semantic);
     }
 
     internal static float ResolveTravelTraceAlpha(float timelineAlpha, float traceTimer, float traceDuration)
     {
-        var clampedTimelineAlpha = Mathf.Clamp01(timelineAlpha);
-        if (traceTimer <= 0f || traceDuration <= 0f)
-        {
-            return clampedTimelineAlpha;
-        }
-
-        var traceProgress = 1f - Mathf.Clamp01(traceTimer / traceDuration);
-        var traceAlpha = Mathf.SmoothStep(0f, 1f, traceProgress);
-        return Mathf.Min(clampedTimelineAlpha, traceAlpha);
+        return BattleTravelTrace.ResolveAlpha(timelineAlpha, traceTimer, traceDuration);
     }
 
     private void PrepareTravelTrace(BattlePresentationCue cue, BattleAnimationSemantic semantic)

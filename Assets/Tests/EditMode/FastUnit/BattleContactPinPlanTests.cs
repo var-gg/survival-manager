@@ -83,6 +83,32 @@ public sealed class BattleContactPinPlanTests
     }
 
     [Test]
+    public void StepAnchoredPin_LandsOnContactFrame_RegardlessOfRenderCadence()
+    {
+        // GPT Pro FrameRatePermutationContactPin: clip-local time is a pure function of (step, alpha), so
+        // whether the driver evaluates every tick boundary or a single catch-up frame jumps straight from
+        // the windup step to the contact step, the contact frame is sampled exactly on the damage tick.
+        // (A literal accumulating `_oneShotElapsed += dt` would diverge here; the step anchor does not.)
+        const int windupStart = 10;
+        const int contactTick = 18; // long budget (8 ticks)
+        var plan = BattleContactPinPlanner.Resolve(0.40f, 1.2f, windupStart, contactTick, Dt);
+        var tc = plan.ContactClipSeconds;
+
+        double fineAtContact = 0;
+        for (var step = windupStart; step <= contactTick; step++)
+        {
+            var e = BattleContactPinPlanner.ElapsedAtStep(windupStart, step, 0f, Dt);
+            fineAtContact = plan.ClipLocalTimeAt(e);
+        }
+
+        var coarseAtContact = plan.ClipLocalTimeAt(BattleContactPinPlanner.ElapsedAtStep(windupStart, contactTick, 0f, Dt));
+
+        Assert.That(fineAtContact, Is.EqualTo(tc).Within(Eps));
+        Assert.That(coarseAtContact, Is.EqualTo(tc).Within(Eps));
+        Assert.That(fineAtContact, Is.EqualTo(coarseAtContact).Within(Eps), "render cadence must not change the pinned contact frame.");
+    }
+
+    [Test]
     public void ContactTickBeforeWindup_ClampsBudgetToZero()
     {
         // D2-R1: ContactTick >= WindupStartTick. A degenerate inversion yields a zero budget, not a negative one.
