@@ -31,6 +31,8 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private int _pinWindupStartTick;
     private float _pinTotalSeconds;
     private ActionInstanceId _pinActionInstanceId = ActionInstanceId.None;
+    private BattleHitstopWindow _hitstopWindow = BattleHitstopWindow.None;
+    private double _lastSampleElapsed;
     private float _playbackSpeed = 1f;
 
     // Mirrors BattleSimulator.DefaultFixedStepSeconds (the sim's fixed tick). The contact-pin lives in the
@@ -170,16 +172,39 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         }
 
         var elapsed = BattleContactPinPlanner.ElapsedAtStep(_pinWindupStartTick, currentStepIndex, alpha, FixedStepSeconds);
+        _lastSampleElapsed = elapsed;
+        // Lifetime is driven by the LIVE choreography time: the commit ends at the same schedule time
+        // whether or not a hitstop held its pose in between (the hold is absorbed by the catch-up).
         if (elapsed >= _pinTotalSeconds)
         {
             EndPinnedCommit();
             return;
         }
 
-        _oneShotPlayable.SetTime(_pinPlan.ClipLocalTimeAt(elapsed));
-        var weight = _blendEnvelope.WeightAt((float)elapsed);
+        // Hitstop (Stage 5) holds only the OUTPUT pose — sample the clip at the remapped time, never freeze
+        // the clock (J25). Outside a window ResolveOutputTime returns `elapsed` unchanged.
+        var sampled = BattleHitstop.ResolveOutputTime(elapsed, _hitstopWindow);
+        _oneShotPlayable.SetTime(_pinPlan.ClipLocalTimeAt(sampled));
+        var weight = _blendEnvelope.WeightAt((float)sampled);
         _mixer.SetInputWeight(1, weight);
         _mixer.SetInputWeight(0, _loopPlayable.IsValid() ? 1f - weight : 0f);
+    }
+
+    /// <summary>
+    /// Begin a contact hitstop (Stage 5): hold the current one-shot's output pose for a few frames of
+    /// "punch", then catch-up blend back to live. Output-only — never touches the sim, the schedule, or
+    /// the global timescale (J6/J15/J25). The attacker's strike pins its hold at the contact frame; the
+    /// target's hit-react holds from its impact frame.
+    /// </summary>
+    public void StartHitstop(BattleAnimationIntensity intensity)
+    {
+        if (!_oneShotPlayable.IsValid())
+        {
+            return;
+        }
+
+        var contactTime = _isPinnedCommit ? _pinPlan.BudgetSeconds : _oneShotElapsed;
+        _hitstopWindow = BattleHitstop.Merge(_hitstopWindow, BattleHitstopCatalog.ResolveWindow(contactTime, intensity));
     }
 
     public void Tick(float deltaTime, float playbackSpeed, bool paused)
@@ -217,7 +242,22 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         {
             if (!_isHoldingTerminalPose)
             {
-                ApplyBlendWeights(_oneShotElapsed);
+                if (_hitstopWindow.IsActiveAt(_oneShotElapsed))
+                {
+                    // Hold the recoil pose for the punch. ApplyPlayableSpeed pins the speed to 0 during the
+                    // window, so sampling the remapped time is authoritative (Stage 5, J25).
+                    var sampled = BattleHitstop.ResolveOutputTime(_oneShotElapsed, _hitstopWindow);
+                    if (_oneShotPlayable.IsValid())
+                    {
+                        _oneShotPlayable.SetTime(sampled);
+                    }
+
+                    ApplyBlendWeights((float)sampled);
+                }
+                else
+                {
+                    ApplyBlendWeights(_oneShotElapsed);
+                }
             }
 
             return;
@@ -362,6 +402,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _isHoldingTerminalPose = false;
         _oneShotRemaining = Mathf.Max(minimumOneShotSeconds, clip.length / _playbackSpeed);
         _oneShotElapsed = 0f;
+        _hitstopWindow = BattleHitstopWindow.None;
         // Stage 4 blend driver (GPT Pro J5): ramp the one-shot layer in/out across the contact window
         // instead of the old instant 1<->0 weight swap that popped the layer (D1). Weight is full from
         // (contact - lead) through (contact + hold), then fades back to the loop at the tail.
@@ -425,6 +466,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
         _oneShotElapsed = 0f;
         _oneShotRemaining = 0f; // pinned lifetime is driven by EvaluateContactPin, not the Tick accumulator.
+        _hitstopWindow = BattleHitstopWindow.None;
         _oneShotPlayable.SetTime(_pinPlan.ClipLocalTimeAt(0d));
         ApplyBlendWeights(0f);
         CuePlaybackCount++;
@@ -459,6 +501,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _oneShotElapsed = 0f;
         _isPinnedCommit = false;
         _pinActionInstanceId = ActionInstanceId.None;
+        _hitstopWindow = BattleHitstopWindow.None;
         _blendEnvelope = BattleBlendEnvelope.InstantFull;
 
         if (!_mixer.IsValid())
@@ -538,8 +581,10 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
         if (_oneShotPlayable.IsValid())
         {
-            // A pinned commit (and a held terminal pose) is sampled manually — never auto-advanced.
-            _oneShotPlayable.SetSpeed(_isHoldingTerminalPose || _isPinnedCommit ? 0f : speed);
+            // A pinned commit, a held terminal pose, and an active hitstop are all sampled manually — never
+            // auto-advanced.
+            var manual = _isHoldingTerminalPose || _isPinnedCommit || _hitstopWindow.IsActiveAt(_oneShotElapsed);
+            _oneShotPlayable.SetSpeed(manual ? 0f : speed);
         }
     }
 

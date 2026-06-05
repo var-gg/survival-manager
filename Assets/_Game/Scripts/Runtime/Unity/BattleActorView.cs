@@ -233,6 +233,9 @@ public sealed class BattleActorView : MonoBehaviour
                 _activeAnimationSemantic = animationSemantic;
                 _activeAnimationDirection = cue.AnimationDirection;
                 _activeAnimationIntensity = cue.AnimationIntensity;
+                // Stage 5: the struck target holds its recoil pose for a few frames of "punch"
+                // (ReactionPriority 1 body). The attacker's strike is frozen separately by the controller.
+                _animationDriver?.StartHitstop(cue.AnimationIntensity);
                 StartImpactCue(
                     ResolveImpactDuration(cue, animationSemantic),
                     ResolveImpactColor(cue, animationSemantic),
@@ -288,6 +291,13 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         RefreshVisualState();
+    }
+
+    /// <summary>Stage 5: freeze this actor's in-flight strike at its contact frame for the same "punch"
+    /// when its attack connects (driven by the controller from the impact cue's related actor).</summary>
+    public void ApplyContactHitstop(BattleAnimationIntensity intensity)
+    {
+        _animationDriver?.StartHitstop(intensity);
     }
 
     public void ClearTransients(BattlePresentationCueType reason)

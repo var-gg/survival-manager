@@ -80,19 +80,20 @@ public static class BattleHitstop
 /// </summary>
 public static class BattleHitstopCatalog
 {
-    public const int CatalogVersion = 1;
+    public const int CatalogVersion = 2;
 
-    public const float DefaultCatchUpSeconds = 0.05f;
+    public const float DefaultCatchUpSeconds = 0.06f;
 
     /// <summary>Hold duration (seconds) for the given impact intensity; <see cref="BattleAnimationIntensity.Any"/>
-    /// means no contact emphasis and yields no hitstop.</summary>
+    /// means no contact emphasis and yields no hitstop. Tuned for a clearly <em>felt</em> punch — a heavy /
+    /// crit hit freezes ~4 frames at 30fps — while staying short enough not to drag a fast auto-battle.</summary>
     public static float HoldSecondsFor(BattleAnimationIntensity intensity)
     {
         return intensity switch
         {
-            BattleAnimationIntensity.Light => 0.03f,
-            BattleAnimationIntensity.Medium => 0.05f,
-            BattleAnimationIntensity.Heavy => 0.07f,
+            BattleAnimationIntensity.Light => 0.05f,
+            BattleAnimationIntensity.Medium => 0.09f,
+            BattleAnimationIntensity.Heavy => 0.14f,
             _ => 0f,
         };
     }

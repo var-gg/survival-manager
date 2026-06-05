@@ -176,6 +176,15 @@ public sealed class BattlePresentationController : MonoBehaviour
             {
                 view.ConsumeCue(cue, ResolveAnchorWorld(cue.RelatedActorId, cue.RelatedAnchor));
             }
+
+            // Stage 5: on a damaging contact, also freeze the attacker's strike (the impact cue's related
+            // actor) so both sides "punch" — a per-actor pose-hold, never a global timescale (J6).
+            if (cue.CueType == BattlePresentationCueType.ImpactDamage
+                && cue.RelatedActorId != null
+                && _actorViews.TryGetValue(cue.RelatedActorId, out var attackerView))
+            {
+                attackerView.ApplyContactHitstop(cue.AnimationIntensity);
+            }
         }
 
         if (currentStep.StepIndex > 0 || currentStep.IsFinished)

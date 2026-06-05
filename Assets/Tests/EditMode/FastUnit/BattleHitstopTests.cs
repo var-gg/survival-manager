@@ -128,6 +128,6 @@ public sealed class BattleHitstopTests
     [Test]
     public void Catalog_Version_IsStableAndPositive()
     {
-        Assert.That(BattleHitstopCatalog.CatalogVersion, Is.EqualTo(1));
+        Assert.That(BattleHitstopCatalog.CatalogVersion, Is.EqualTo(2), "bump deliberately when the hold table changes (J26).");
     }
 }
