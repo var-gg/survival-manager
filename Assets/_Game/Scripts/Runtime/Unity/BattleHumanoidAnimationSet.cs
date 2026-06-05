@@ -148,8 +148,12 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     [SerializeField] private AnimationClip[] healSkills = Array.Empty<AnimationClip>();
     [SerializeField] private AnimationClip[] hits = Array.Empty<AnimationClip>();
     [SerializeField] private BattleHumanoidAnimationVariant[] variants = Array.Empty<BattleHumanoidAnimationVariant>();
+    [SerializeField, Min(0.1f)] private float authoredLocomotionSpeed = 1.6f;
 
     public BattleHumanoidAnimationStance Stance => stance;
+
+    /// <summary>World units/sec of locomotion the <c>move</c> clip is authored for; drives C2 cadence scaling.</summary>
+    public float AuthoredLocomotionSpeed => authoredLocomotionSpeed <= 0.1f ? 1.6f : authoredLocomotionSpeed;
 
     public bool TryResolveLoopClip(BattleUnitReadModel state, out AnimationClip clip)
     {

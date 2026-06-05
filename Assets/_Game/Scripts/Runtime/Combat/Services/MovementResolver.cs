@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
+using SM.Core.Ids;
 
 namespace SM.Combat.Services;
 
@@ -180,7 +181,7 @@ public static class MovementResolver
             return BasicAttackPreImpactStepResult.None(profile.Profile);
         }
 
-        actor.SetPosition(next);
+        MovePosition(state, actor, next, BattleMotionKind.Approach, isDiscrete: true);
         return new BasicAttackPreImpactStepResult(profile.Profile, movedDistance, BasicAttackActionProfileResolver.ToNoteToken(profile));
     }
 
@@ -202,7 +203,7 @@ public static class MovementResolver
                 var moved = actor.Position.DistanceTo(next);
                 if (moved > 0.01f)
                 {
-                    actor.SetPosition(next);
+                    MovePosition(state, actor, next, BattleMotionKind.Reposition, isDiscrete: false);
                     return new PostAttackRepositionResult(true, moved, "post_attack_maintain_range");
                 }
             }
@@ -245,7 +246,7 @@ public static class MovementResolver
             return PostAttackRepositionResult.None;
         }
 
-        actor.SetPosition(nextPosition);
+        MovePosition(state, actor, nextPosition, BattleMotionKind.Reposition, isDiscrete: false);
         state.ActivityTelemetry.RecordHandednessLateralReset(lateralChoice.Label);
         return new PostAttackRepositionResult(true, movedDistance, $"post_attack_reposition+{lateralChoice.Label}");
     }
@@ -329,7 +330,7 @@ public static class MovementResolver
         if (evaluated.Mobility != null)
         {
             var mobileDestination = ClampToArena(ClampToLeash(state, actor, evaluated.Mobility.Destination));
-            actor.SetPosition(mobileDestination);
+            MovePosition(state, actor, mobileDestination, BattleMotionKind.MobilityDash, isDiscrete: true);
             actor.StartMobilityCooldown();
             actor.SetActionState(evaluated.DesiredPhase);
             return;
@@ -381,8 +382,8 @@ public static class MovementResolver
 
     public static void ResolveFormationSpacing(BattleState state)
     {
-        ResolveTeamSpacing(state.Allies);
-        ResolveTeamSpacing(state.Enemies);
+        ResolveTeamSpacing(state, state.Allies);
+        ResolveTeamSpacing(state, state.Enemies);
     }
 
     public static void ApplyKnockback(BattleState state, UnitSnapshot actor, UnitSnapshot target, bool isCritical)
@@ -414,7 +415,7 @@ public static class MovementResolver
         var distance = 0.28f * stabilityFactor * (0.6f + (distRoll * 0.6f)) * critFactor;
 
         var next = ClampToArena(ClampToLeash(state, target, target.Position + (rotated * distance)));
-        target.SetPosition(next);
+        MovePosition(state, target, next, BattleMotionKind.Knockback, isDiscrete: true, sourceActorId: actor.Id);
     }
 
     private static float KnockbackRoll(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
@@ -650,7 +651,7 @@ public static class MovementResolver
             : Math.Min(Math.Max(0f, authoredBuffer), safeHysteresis);
     }
 
-    private static void ResolveTeamSpacing(IReadOnlyList<UnitSnapshot> team)
+    private static void ResolveTeamSpacing(BattleState state, IReadOnlyList<UnitSnapshot> team)
     {
         for (var i = 0; i < team.Count; i++)
         {
@@ -678,8 +679,8 @@ public static class MovementResolver
 
                 var push = (minSeparation - distance) * 0.5f;
                 var direction = delta.Normalized;
-                left.SetPosition(ClampToArena(left.Position - (direction * push)));
-                right.SetPosition(ClampToArena(right.Position + (direction * push)));
+                MovePosition(state, left, ClampToArena(left.Position - (direction * push)), BattleMotionKind.Reposition, isDiscrete: false);
+                MovePosition(state, right, ClampToArena(right.Position + (direction * push)), BattleMotionKind.Reposition, isDiscrete: false);
             }
         }
     }
@@ -697,8 +698,39 @@ public static class MovementResolver
         next = ClampToLeash(state, actor, next);
         next = ClampToArena(next);
         next = ResolveCollisionAwareStep(state, actor, targetPosition, next, stepDistance);
-        actor.SetPosition(next);
+        MovePosition(state, actor, next, ResolveLocomotionKind(actionState), isDiscrete: false);
         actor.SetActionState(actionState);
+    }
+
+    private const float MotionRecordThreshold = 1e-5f;
+
+    // Additive: captures the truth from/to of a position change and records it as a typed motion
+    // intent. SetPosition behaviour is unchanged, no RNG is touched, and the recorded list is a pure
+    // side-output, so gameplay results stay byte-identical (verified by the determinism + spatial suites).
+    private static void MovePosition(
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 destination,
+        BattleMotionKind kind,
+        bool isDiscrete,
+        EntityId? sourceActorId = null)
+    {
+        var from = actor.Position;
+        actor.SetPosition(destination);
+        if (from.DistanceTo(destination) > MotionRecordThreshold)
+        {
+            state.RecordMotion(actor.Id, kind, from, destination, sourceActorId, isDiscrete);
+        }
+    }
+
+    private static BattleMotionKind ResolveLocomotionKind(CombatActionState actionState)
+    {
+        return actionState switch
+        {
+            CombatActionState.BreakContact => BattleMotionKind.Disengage,
+            CombatActionState.Reposition => BattleMotionKind.Reposition,
+            _ => BattleMotionKind.Approach,
+        };
     }
 
     private static CombatVector2 ResolveCollisionAwareStep(
