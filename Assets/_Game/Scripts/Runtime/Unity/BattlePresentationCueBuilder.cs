@@ -326,18 +326,6 @@ public sealed class BattlePresentationCueBuilder
             BattleAnimationIntensity.Medium));
     }
 
-    private static float NormalizedDot(float ax, float ay, float bx, float by)
-    {
-        var aLength = System.Math.Sqrt((ax * ax) + (ay * ay));
-        var bLength = System.Math.Sqrt((bx * bx) + (by * by));
-        if (aLength <= 0.0001d || bLength <= 0.0001d)
-        {
-            return 0f;
-        }
-
-        return (float)(((ax * bx) + (ay * by)) / (aLength * bLength));
-    }
-
     private static void AddWindupCue(
         ICollection<BattlePresentationCue> cues,
         IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
@@ -531,28 +519,6 @@ public sealed class BattlePresentationCueBuilder
         };
     }
 
-    private static BattleAnimationDirection ResolveHandednessAnimationDirection(string note)
-    {
-        if (string.IsNullOrWhiteSpace(note))
-        {
-            return BattleAnimationDirection.Any;
-        }
-
-        if (note.Contains("WeaponTrailSide:left", System.StringComparison.OrdinalIgnoreCase)
-            || note.Contains("StepInArcSign:left", System.StringComparison.OrdinalIgnoreCase))
-        {
-            return BattleAnimationDirection.Left;
-        }
-
-        if (note.Contains("WeaponTrailSide:right", System.StringComparison.OrdinalIgnoreCase)
-            || note.Contains("StepInArcSign:right", System.StringComparison.OrdinalIgnoreCase))
-        {
-            return BattleAnimationDirection.Right;
-        }
-
-        return BattleAnimationDirection.Any;
-    }
-
     private static BattleAnimationCueDescriptor ResolveCommitAnimation(BattleCombatEventIntent intent, BattleUnitReadModel? actor)
     {
         // Bow / projectile basic attacks are detected from authoritative actor properties (class /
@@ -617,39 +583,9 @@ public sealed class BattlePresentationCueBuilder
                || actor.PreferredRangeMax >= 2.4f;
     }
 
-    private static bool HasNote(BattleEvent eventData, string token)
-    {
-        return !string.IsNullOrEmpty(eventData.Note)
-               && eventData.Note.Contains(token, System.StringComparison.OrdinalIgnoreCase);
-    }
-
     private static bool IsTag(string value, string expected)
     {
         return string.Equals(value, expected, System.StringComparison.Ordinal);
-    }
-
-    private static bool IsPreImpactProfileEvent(BattleEvent eventData)
-    {
-        return eventData.ActionType == BattleActionType.BasicAttack
-               && eventData.LogCode == BattleLogCode.BasicAttackDamage
-               && (HasNote(eventData, "profile_stepin")
-                   || HasNote(eventData, "profile_lunge")
-                   || HasNote(eventData, "profile_dash"));
-    }
-
-    private static string ComposeCueNote(string left, string right)
-    {
-        if (string.IsNullOrWhiteSpace(left))
-        {
-            return right;
-        }
-
-        if (string.IsNullOrWhiteSpace(right))
-        {
-            return left;
-        }
-
-        return $"{left} {right}";
     }
 
     private static Dictionary<string, List<BattleMotionIntent>> BuildMotionsByActor(BattleSimulationStep step)
@@ -722,27 +658,6 @@ public sealed class BattlePresentationCueBuilder
         }
 
         return null;
-    }
-
-    private static bool HasDiscreteAdvanceMotion(
-        Dictionary<string, List<BattleMotionIntent>> byActor,
-        string actorId)
-    {
-        if (!byActor.TryGetValue(actorId, out var list))
-        {
-            return false;
-        }
-
-        foreach (var motion in list)
-        {
-            if (motion.IsDiscrete
-                && (motion.Kind == BattleMotionKind.Approach || motion.Kind == BattleMotionKind.MobilityDash))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static BattleAnimationSemantic ResolveMotionSemantic(BattleMotionKind kind)
