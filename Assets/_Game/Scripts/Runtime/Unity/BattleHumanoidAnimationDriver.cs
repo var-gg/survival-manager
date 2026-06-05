@@ -24,6 +24,8 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private BattleUnitReadModel? _lastState;
     private BattleHumanoidAnimationSet? _resolvedAnimationSet;
     private float _oneShotRemaining;
+    private float _oneShotElapsed;
+    private BattleBlendEnvelope _blendEnvelope = BattleBlendEnvelope.InstantFull;
     private float _playbackSpeed = 1f;
     private bool _lastIsLocomoting;
     private bool _isHoldingTerminalPose;
@@ -120,7 +122,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
         if (activeSet.TryResolveCueClip(cue, state, out var clip))
         {
-            PlayOneShot(clip);
+            PlayOneShot(clip, BattleClipTimingCatalog.Resolve(cue.AnimationSemantic));
         }
     }
 
@@ -145,9 +147,16 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             return;
         }
 
-        _oneShotRemaining = Mathf.Max(0f, _oneShotRemaining - Mathf.Max(0f, deltaTime) * _playbackSpeed);
+        var advance = Mathf.Max(0f, deltaTime) * _playbackSpeed;
+        _oneShotElapsed += advance;
+        _oneShotRemaining = Mathf.Max(0f, _oneShotRemaining - advance);
         if (_oneShotRemaining > 0f)
         {
+            if (!_isHoldingTerminalPose)
+            {
+                ApplyBlendWeights(_oneShotElapsed);
+            }
+
             return;
         }
 
@@ -276,7 +285,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _mixer.SetInputWeight(0, _oneShotPlayable.IsValid() ? 0f : 1f);
     }
 
-    private void PlayOneShot(AnimationClip clip)
+    private void PlayOneShot(AnimationClip clip, BattleClipTiming timing)
     {
         if (clip == null)
         {
@@ -289,9 +298,32 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _oneShotClip = clip;
         _isHoldingTerminalPose = false;
         _oneShotRemaining = Mathf.Max(minimumOneShotSeconds, clip.length / _playbackSpeed);
-        _mixer.SetInputWeight(0, _loopPlayable.IsValid() ? 0f : 0f);
-        _mixer.SetInputWeight(1, 1f);
+        _oneShotElapsed = 0f;
+        // Stage 4 blend driver (GPT Pro J5): ramp the one-shot layer in/out across the contact window
+        // instead of the old instant 1<->0 weight swap that popped the layer (D1). Weight is full from
+        // (contact - lead) through (contact + hold), then fades back to the loop at the tail.
+        _blendEnvelope = BattleOneShotBlendResolver.Resolve(clip.length, _playbackSpeed, timing);
+        ApplyBlendWeights(0f);
         CuePlaybackCount++;
+    }
+
+    private void ApplyBlendWeights(float elapsed)
+    {
+        if (!_mixer.IsValid() || !_oneShotPlayable.IsValid())
+        {
+            return;
+        }
+
+        var weight = _blendEnvelope.WeightAt(elapsed);
+
+        // A terminal (death) one-shot holds its pose into the freeze rather than fading back to the loop.
+        if (_lastState != null && IsTerminalState(_lastState) && elapsed >= _blendEnvelope.BlendInEndSeconds)
+        {
+            weight = 1f;
+        }
+
+        _mixer.SetInputWeight(1, weight);
+        _mixer.SetInputWeight(0, _loopPlayable.IsValid() ? 1f - weight : 0f);
     }
 
     private AnimationClipPlayable CreateClipPlayable(AnimationClip clip)
@@ -309,6 +341,8 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         DisconnectPlayable(ref _oneShotPlayable, inputIndex: 1);
         _oneShotClip = null;
         _isHoldingTerminalPose = false;
+        _oneShotElapsed = 0f;
+        _blendEnvelope = BattleBlendEnvelope.InstantFull;
 
         if (!_mixer.IsValid())
         {
