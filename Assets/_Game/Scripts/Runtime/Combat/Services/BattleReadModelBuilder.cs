@@ -10,7 +10,9 @@ public static class BattleReadModelBuilder
         BattleState state,
         IReadOnlyList<BattleEvent> events,
         bool isFinished,
-        TeamSide? winner)
+        TeamSide? winner,
+        IReadOnlyList<BattleMotionIntent>? motions = null,
+        IReadOnlyList<BattleCombatEventIntent>? combatEvents = null)
     {
         var units = state.AllUnits
             .OrderBy(unit => unit.Side)
@@ -94,13 +96,26 @@ public static class BattleReadModelBuilder
             })
             .ToList();
 
+        var resolvedMotions = motions == null || motions.Count == 0
+            ? (IReadOnlyList<BattleMotionIntent>)System.Array.Empty<BattleMotionIntent>()
+            : motions.Select(motion => motion with { StepIndex = state.StepIndex }).ToList();
+
+        // CombatEventIntents already carry absolute ticks (WindupStartTick/ContactTick) computed at
+        // emission as state.StepIndex + 1, which equals this step's StepIndex after AdvanceStep — so
+        // unlike motions they are NOT re-stamped, only copied to a stable snapshot list.
+        var resolvedCombatEvents = combatEvents == null || combatEvents.Count == 0
+            ? (IReadOnlyList<BattleCombatEventIntent>)System.Array.Empty<BattleCombatEventIntent>()
+            : combatEvents.ToList();
+
         return new BattleSimulationStep(
             state.StepIndex,
             state.ElapsedSeconds,
             units,
             events,
             isFinished,
-            winner);
+            winner,
+            resolvedMotions,
+            resolvedCombatEvents);
     }
 
     private static string FormatTacticRule(TacticRule rule)

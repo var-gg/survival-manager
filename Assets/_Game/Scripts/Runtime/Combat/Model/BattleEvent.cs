@@ -27,4 +27,7 @@ public sealed record BattleEvent(
     string PayloadId = "",
     float SecondaryValue = 0f,
     string Note = "",
-    KillEventPayload? KillPayload = null);
+    KillEventPayload? KillPayload = null,
+    ActionInstanceId? ActionInstanceId = null,
+    int? ContactIndex = null,
+    int? ContactGroupIndex = null);

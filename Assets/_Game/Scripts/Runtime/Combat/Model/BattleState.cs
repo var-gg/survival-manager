@@ -58,6 +58,21 @@ public sealed class BattleState
     private readonly List<TelemetryEventRecord> _telemetryEvents = new();
     public IReadOnlyList<TelemetryEventRecord> TelemetryEvents => _telemetryEvents;
 
+    private readonly List<BattleMotionIntent> _stepMotions = new();
+    private int _motionSequence;
+
+    private readonly List<BattleCombatEventIntent> _stepCombatEvents = new();
+    private long _nextActionInstanceId = 1;
+
+    /// <summary>Position transitions recorded during the current tick. Drained per step into the read model (C1 motion-intent channel).</summary>
+    public IReadOnlyList<BattleMotionIntent> StepMotions => _stepMotions;
+
+    /// <summary>Action phase/contact intents recorded during the current tick. Sibling of <see cref="StepMotions"/>; drained per step into the read model (combat-event-intent channel, action choreography seam C1).</summary>
+    public IReadOnlyList<BattleCombatEventIntent> StepCombatEvents => _stepCombatEvents;
+
+    /// <summary>Monotonic id of the next action instance to allocate. Part of save/replay identity so <see cref="ActionInstanceId"/> is stable and never reused (GPT Pro J23).</summary>
+    public long NextActionInstanceIdValue => _nextActionInstanceId;
+
     public IEnumerable<UnitSnapshot> AllUnits => Allies.Concat(Enemies);
     public IEnumerable<UnitSnapshot> LivingAllies => Allies.Where(x => x.IsAlive);
     public IEnumerable<UnitSnapshot> LivingEnemies => Enemies.Where(x => x.IsAlive);
@@ -222,6 +237,51 @@ public sealed class BattleState
         {
             unit.Despawn();
         }
+    }
+
+    public void ResetStepMotions()
+    {
+        _stepMotions.Clear();
+        _motionSequence = 0;
+    }
+
+    public void ResetStepCombatEvents()
+    {
+        _stepCombatEvents.Clear();
+    }
+
+    /// <summary>Allocates the next monotonic <see cref="ActionInstanceId"/>. Called exactly once per
+    /// accepted BeginWindup transition (never on cancel/death/retarget), so ids are contiguous and
+    /// reproduce identically across replay from the same seed (GPT Pro J9/J23).</summary>
+    public ActionInstanceId AllocateActionInstanceId()
+    {
+        return new ActionInstanceId(_nextActionInstanceId++);
+    }
+
+    public void RecordCombatEvent(BattleCombatEventIntent intent)
+    {
+        _stepCombatEvents.Add(intent);
+    }
+
+    public void RecordMotion(
+        EntityId actorId,
+        BattleMotionKind kind,
+        CombatVector2 from,
+        CombatVector2 to,
+        EntityId? sourceActorId = null,
+        bool isDiscrete = false)
+    {
+        // StepIndex here is the in-progress (pre-AdvanceStep) value; BattleReadModelBuilder.BuildStep
+        // re-stamps each motion to the containing step's StepIndex so motion.StepIndex == step.StepIndex.
+        _stepMotions.Add(new BattleMotionIntent(
+            StepIndex,
+            _motionSequence++,
+            actorId,
+            kind,
+            from,
+            to,
+            sourceActorId,
+            isDiscrete));
     }
 
     public void AdvanceStep()

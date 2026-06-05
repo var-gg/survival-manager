@@ -69,6 +69,14 @@ public sealed class UnitSnapshot
     public string? PendingSkillId { get; private set; }
     public float ActionTimerRemaining { get; private set; }
     public float ActionTimerTotal { get; private set; }
+
+    /// <summary>Identity of the in-flight action instance (set at accepted BeginWindup, read when the
+    /// matching contact resolves or the action is canceled). <see cref="ActionInstanceId.None"/> when no
+    /// action is pending. Part of the action choreography seam (C1) — gameplay-inert.</summary>
+    public ActionInstanceId PendingActionInstanceId { get; private set; } = ActionInstanceId.None;
+    public int PendingWindupStartTick { get; private set; }
+    public int PendingContactTick { get; private set; }
+    public SkillDelivery PendingActionDelivery { get; private set; } = SkillDelivery.Melee;
     public float CooldownRemaining { get; private set; }
     public float TargetSwitchLockRemaining { get; private set; }
     public float ReevaluationRemaining { get; private set; }
@@ -309,6 +317,25 @@ public sealed class UnitSnapshot
         ActionTimerRemaining = 0f;
         ActionTimerTotal = 0f;
         PendingDecisionReason = DecisionReasonCode.DefaultCadence;
+    }
+
+    /// <summary>Records the action-choreography identity for the windup just begun. Called once per
+    /// accepted BeginWindup; the id is read back when the contact resolves (Contacted intent) or the
+    /// action is canceled (Canceled intent). Gameplay-inert.</summary>
+    public void SetPendingActionInstance(ActionInstanceId id, int windupStartTick, int contactTick, SkillDelivery delivery)
+    {
+        PendingActionInstanceId = id;
+        PendingWindupStartTick = windupStartTick;
+        PendingContactTick = contactTick;
+        PendingActionDelivery = delivery;
+    }
+
+    public void ClearPendingActionInstance()
+    {
+        PendingActionInstanceId = ActionInstanceId.None;
+        PendingWindupStartTick = 0;
+        PendingContactTick = 0;
+        PendingActionDelivery = SkillDelivery.Melee;
     }
 
     public void StartRecovery(float? cooldownSeconds = null)

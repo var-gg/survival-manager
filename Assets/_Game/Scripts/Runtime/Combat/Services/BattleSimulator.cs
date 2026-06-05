@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Ids;
 
 namespace SM.Combat.Services;
 
@@ -44,6 +45,8 @@ public sealed class BattleSimulator
             return CurrentStep;
         }
 
+        State.ResetStepMotions();
+        State.ResetStepCombatEvents();
         var stepEvents = new List<BattleEvent>();
         foreach (var unit in State.AllUnits)
         {
@@ -57,7 +60,7 @@ public sealed class BattleSimulator
         if (CheckForWinner())
         {
             State.AdvanceStep();
-            CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner);
+            CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner, State.StepMotions, State.StepCombatEvents);
             return CurrentStep;
         }
 
@@ -77,6 +80,7 @@ public sealed class BattleSimulator
 
             if (actor.IsStunned)
             {
+                EmitCanceledIfPending(actor);
                 actor.ClearTarget(applySwitchDelay: false);
                 actor.SetActionState(CombatActionState.AcquireTarget);
                 continue;
@@ -150,6 +154,7 @@ public sealed class BattleSimulator
                 {
                     BattleTelemetryRecorder.RecordActionStarted(State, actor, evaluated);
                     actor.BeginWindup(evaluated.ActionType, evaluated.Target.Id, evaluated.Skill?.Id);
+                    EmitWindupStarted(actor, evaluated);
                 }
                 else
                 {
@@ -205,7 +210,7 @@ public sealed class BattleSimulator
             FinishBattle();
         }
 
-        CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner);
+        CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner, State.StepMotions, State.StepCombatEvents);
         return CurrentStep;
     }
 
@@ -236,15 +241,27 @@ public sealed class BattleSimulator
         var home = MovementResolver.ResolveHomePosition(State, actor);
         if (actor.Position.DistanceTo(home) <= SpawnArrivalThreshold)
         {
+            var spawnArrivalFrom = actor.Position;
             actor.SetPosition(home);
+            if (spawnArrivalFrom.DistanceTo(home) > 1e-5f)
+            {
+                State.RecordMotion(actor.Id, BattleMotionKind.Approach, spawnArrivalFrom, home, isDiscrete: false);
+            }
+
             actor.SetActionState(CombatActionState.AcquireTarget);
             return true;
         }
 
         actor.StopDefending();
         actor.SetActionState(CombatActionState.AdvanceToAnchor);
+        var spawnAdvanceFrom = actor.Position;
         var next = CombatVector2.MoveTowards(actor.Position, home, Math.Max(0.01f, actor.MoveSpeed * State.FixedStepSeconds));
         actor.SetPosition(next);
+        if (spawnAdvanceFrom.DistanceTo(next) > 1e-5f)
+        {
+            State.RecordMotion(actor.Id, BattleMotionKind.Approach, spawnAdvanceFrom, next, isDiscrete: false);
+        }
+
         return true;
     }
 
@@ -253,6 +270,7 @@ public sealed class BattleSimulator
         var target = State.FindUnit(actor.PendingTargetId);
         if (target == null || !target.IsAlive)
         {
+            EmitCanceledIfPending(actor);
             actor.ClearTarget(applySwitchDelay: true);
             actor.SetActionState(CombatActionState.AcquireTarget);
             return false;
@@ -261,6 +279,7 @@ public sealed class BattleSimulator
         var desiredRange = actor.ResolveActionRange(actor.PendingSkillId);
         if (!MovementResolver.IsInActionRange(actor, target, desiredRange + ActionRangeTolerance))
         {
+            EmitCanceledIfPending(actor);
             actor.ClearTarget(applySwitchDelay: true);
             actor.SetActionState(CombatActionState.AcquireTarget);
             return false;
@@ -268,6 +287,7 @@ public sealed class BattleSimulator
 
         if (ShouldCancelPendingBasicAttackForPreferredMinimum(actor, target, desiredRange))
         {
+            EmitCanceledIfPending(actor);
             actor.ClearTarget(applySwitchDelay: false);
             actor.SetCurrentTarget(target.Id);
             actor.SetActionState(CombatActionState.AcquireTarget);
@@ -279,8 +299,161 @@ public sealed class BattleSimulator
             return false;
         }
 
-        stepEvents.AddRange(CombatActionResolver.Resolve(State, actor));
+        // Capture the in-flight action-choreography identity BEFORE Resolve runs (Resolve -> StartRecovery
+        // mutates the actor's pending fields). The Contacted intent is then emitted at the authoritative
+        // resolve tick, paired to the Started intent by ActionInstanceId.
+        var pendingActionInstanceId = actor.PendingActionInstanceId;
+        var pendingWindupStartTick = actor.PendingWindupStartTick;
+        var pendingContactTick = actor.PendingContactTick;
+        var pendingDelivery = actor.PendingActionDelivery;
+        var pendingKind = actor.PendingActionType == BattleActionType.ActiveSkill ? CombatEventKind.Skill : CombatEventKind.BasicAttack;
+        var pendingSkillId = actor.PendingSkillId;
+        var pendingTargetId = actor.PendingTargetId;
+
+        var resolveEvents = CombatActionResolver.Resolve(State, actor);
+        stepEvents.AddRange(resolveEvents);
+        EmitContacted(
+            actor,
+            pendingActionInstanceId,
+            pendingWindupStartTick,
+            pendingContactTick,
+            pendingDelivery,
+            pendingKind,
+            pendingSkillId,
+            pendingTargetId,
+            resolveEvents);
         return true;
+    }
+
+    // === Action choreography seam (C1): emit the combat-event-intent channel. Pure observation —
+    // these helpers never change sim numbers (position/RNG/damage/timing), so gameplay stays
+    // byte-identical. ContactTick is the canonical integer fixed at windup (GPT Pro J20). ===
+
+    private void EmitWindupStarted(UnitSnapshot actor, EvaluatedAction evaluated)
+    {
+        // This step is labelled state.StepIndex + 1 (AdvanceStep increments after the action loop), so
+        // the windup begins at that tick and the contact lands StepsUntilResolve ticks later — a value
+        // that mirrors the float decrement exactly and therefore equals the real resolve step.
+        var windupStartTick = State.StepIndex + 1;
+        var contactTick = windupStartTick + BattleWindupTickMath.StepsUntilResolve(actor.ActionTimerTotal, State.FixedStepSeconds);
+        var actionInstanceId = State.AllocateActionInstanceId();
+        var delivery = evaluated.Skill?.Delivery ?? SkillDelivery.Melee;
+        actor.SetPendingActionInstance(actionInstanceId, windupStartTick, contactTick, delivery);
+
+        var kind = evaluated.ActionType == BattleActionType.ActiveSkill ? CombatEventKind.Skill : CombatEventKind.BasicAttack;
+        State.RecordCombatEvent(new BattleCombatEventIntent(
+            windupStartTick,
+            actionInstanceId,
+            actor.Id,
+            kind,
+            delivery,
+            windupStartTick,
+            contactTick,
+            CombatEventIntentStatus.Started,
+            evaluated.Target?.Id,
+            null,
+            evaluated.Skill?.Id,
+            null));
+    }
+
+    private void EmitContacted(
+        UnitSnapshot actor,
+        ActionInstanceId actionInstanceId,
+        int windupStartTick,
+        int contactTick,
+        SkillDelivery delivery,
+        CombatEventKind kind,
+        string? skillId,
+        EntityId? initialTargetId,
+        IReadOnlyList<BattleEvent> resolveEvents)
+    {
+        if (!actionInstanceId.IsValid)
+        {
+            return;
+        }
+
+        var contactStepTick = State.StepIndex + 1;
+        var contacts = new List<BattleContactIntent>();
+        var contactIndex = 0;
+        foreach (var resolveEvent in resolveEvents)
+        {
+            if (!IsContactEvent(resolveEvent))
+            {
+                continue;
+            }
+
+            // Stage 1: one ContactGroupIndex (0) per action — a single hit frame. Multi-hit assigns a
+            // fresh group per frame in a later stage; AOE keeps one group across its N targets (J22).
+            contacts.Add(new BattleContactIntent(
+                contactIndex++,
+                0,
+                contactStepTick,
+                resolveEvent.TargetId,
+                ResolveOutcome(resolveEvent)));
+        }
+
+        State.RecordCombatEvent(new BattleCombatEventIntent(
+            contactStepTick,
+            actionInstanceId,
+            actor.Id,
+            kind,
+            delivery,
+            windupStartTick,
+            contactTick,
+            CombatEventIntentStatus.Contacted,
+            initialTargetId,
+            null,
+            skillId,
+            contacts));
+
+        actor.ClearPendingActionInstance();
+    }
+
+    private void EmitCanceledIfPending(UnitSnapshot actor)
+    {
+        if (!actor.PendingActionInstanceId.IsValid)
+        {
+            return;
+        }
+
+        var cancelTick = State.StepIndex + 1;
+        var kind = actor.PendingActionType == BattleActionType.ActiveSkill ? CombatEventKind.Skill : CombatEventKind.BasicAttack;
+        State.RecordCombatEvent(new BattleCombatEventIntent(
+            cancelTick,
+            actor.PendingActionInstanceId,
+            actor.Id,
+            kind,
+            actor.PendingActionDelivery,
+            actor.PendingWindupStartTick,
+            actor.PendingContactTick,
+            CombatEventIntentStatus.Canceled,
+            actor.PendingTargetId,
+            cancelTick,
+            actor.PendingSkillId,
+            null));
+
+        actor.ClearPendingActionInstance();
+    }
+
+    private static bool IsContactEvent(BattleEvent resolveEvent)
+    {
+        return resolveEvent.LogCode is BattleLogCode.BasicAttackDamage
+            or BattleLogCode.ActiveSkillDamage
+            or BattleLogCode.ActiveSkillHeal;
+    }
+
+    private static CombatOutcome ResolveOutcome(BattleEvent resolveEvent)
+    {
+        // Stage 1 transitional: the sim self-labels its own resolution result from the event it just
+        // produced. Stage 2 replaces this with a typed outcome returned directly by CombatActionResolver
+        // so no Note string is read (GPT Pro J8 no-inference).
+        var note = resolveEvent.Note ?? string.Empty;
+        if (note.Contains("miss", StringComparison.OrdinalIgnoreCase)) return CombatOutcome.Miss;
+        if (note.Contains("dodge", StringComparison.OrdinalIgnoreCase)) return CombatOutcome.Dodge;
+        if (note.Contains("knockdown", StringComparison.OrdinalIgnoreCase)) return CombatOutcome.Knockdown;
+        if (note.Contains("block", StringComparison.OrdinalIgnoreCase)) return CombatOutcome.Block;
+        if (note.Contains("crit", StringComparison.OrdinalIgnoreCase)) return CombatOutcome.Crit;
+        return CombatOutcome.Hit;
     }
 
     private static float ResolveEvaluatedActionRange(UnitSnapshot actor, EvaluatedAction evaluated)
