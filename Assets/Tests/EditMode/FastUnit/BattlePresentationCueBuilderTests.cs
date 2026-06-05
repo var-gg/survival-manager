@@ -7,17 +7,23 @@ using SM.Unity;
 
 namespace SM.Tests.EditMode;
 
+/// <summary>
+/// Stage 2 (action choreography seam): the cue builder consumes the typed combat-event-intent channel
+/// (Started -&gt; windup, Contacted -&gt; commit + per-target impact, Canceled -&gt; no ghost) instead of
+/// inferring action cues from BattleEvents and parsing Note strings (GPT Pro J8). Movement / guard /
+/// death / target-change cues remain unit-state / motion-intent driven and are unchanged.
+/// </summary>
 [Category("FastUnit")]
 public sealed class BattlePresentationCueBuilderTests
 {
     [Test]
-    public void Build_MapsDamageAndHealEvents_ToSemanticSourceAndTargetCues()
+    public void Build_MapsDamageAndHealIntents_ToSemanticSourceAndTargetCues()
     {
         var previous = CreateStep();
-        var current = CreateStep(events: new[]
+        var current = CreateStep(combatEvents: new[]
         {
-            new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f),
-            new BattleEvent(1, 0.1f, new EntityId("healer"), "Healer", BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, new EntityId("ally"), "Ally", 8f),
+            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+            Contacted("healer", CombatEventKind.Skill, Contact("ally", CombatOutcome.Hit, 8f, isHeal: true)),
         });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
@@ -101,7 +107,7 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_MapsImpactNotes_ToAnimationSemantics()
+    public void Build_MapsContactOutcomes_ToAnimationSemantics()
     {
         var previous = CreateStep(units: new[]
         {
@@ -113,12 +119,13 @@ public sealed class BattlePresentationCueBuilderTests
         });
         var current = CreateStep(
             units: previous.Units,
-            events: new[]
+            combatEvents: new[]
             {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_miss"), "Enemy Miss", 0f, Note: "miss_range"),
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_dodge"), "Enemy Dodge", 0f, Note: "dodge"),
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_block"), "Enemy Block", 4f, Note: "block"),
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_crit"), "Enemy Crit", 22f, Note: "crit"),
+                Contacted("ally", CombatEventKind.BasicAttack,
+                    Contact("enemy_miss", CombatOutcome.Miss, 0f, index: 0),
+                    Contact("enemy_dodge", CombatOutcome.Dodge, 0f, index: 1),
+                    Contact("enemy_block", CombatOutcome.Block, 4f, index: 2),
+                    Contact("enemy_crit", CombatOutcome.Crit, 22f, index: 3)),
             });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
@@ -132,21 +139,22 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_MapsBasicAttackProfileNote_ToCommitAnimationSemantic()
+    public void Build_DoesNotInferCommitSemanticFromProfile_ForPlainMeleeAttack()
     {
+        // The old builder read a "profile_lunge" Note and produced a DashEngage commit. That inference
+        // is removed (GPT Pro J8): a plain melee basic attack commit carries no semantic, and no cue
+        // carries a profile_* note. The pre-impact lunge, when any, comes from the motion-intent trace.
         var previous = CreateStep();
-        var current = CreateStep(events: new[]
+        var current = CreateStep(combatEvents: new[]
         {
-            new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f, Note: "profile_lunge"),
+            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
         });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
 
         var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
-        Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.DashEngage));
-        Assert.That(commit.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
-        Assert.That(commit.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
-        Assert.That(commit.Note, Is.EqualTo("profile_lunge"));
+        Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.None));
+        Assert.That(cues.Any(cue => cue.Note.Contains("profile_")), Is.False, "no cue may carry a profile_* note (no string inference).");
     }
 
     [Test]
@@ -154,27 +162,17 @@ public sealed class BattlePresentationCueBuilderTests
     {
         var units = new[]
         {
-            CreateUnit(
-                "ally",
-                TeamSide.Ally,
-                targetId: "enemy",
-                classId: "ranger",
-                preferredRangeMin: 5.0f,
-                preferredRangeMax: 5.8f,
-                archetypeId: "marksman"),
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "ranger", preferredRangeMin: 5.0f, preferredRangeMax: 5.8f, archetypeId: "marksman"),
             CreateUnit("enemy", TeamSide.Enemy),
         };
         var previous = CreateStep(units: units);
-        var current = CreateStep(
-            units: units,
-            events: new[]
-            {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f),
-            });
+        var current = CreateStep(units: units, combatEvents: new[]
+        {
+            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+        });
 
-        var cues = new BattlePresentationCueBuilder().Build(previous, current);
-
-        var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        var commit = new BattlePresentationCueBuilder().Build(previous, current)
+            .Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
         Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowShot));
         Assert.That(commit.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
         Assert.That(commit.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
@@ -188,22 +186,15 @@ public sealed class BattlePresentationCueBuilderTests
             CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "ranger", archetypeId: "marksman"),
             CreateUnit("enemy", TeamSide.Enemy),
         });
-        var current = CreateStep(units: new[]
-        {
-            CreateUnit(
-                "ally",
-                TeamSide.Ally,
-                targetId: "enemy",
-                actionState: CombatActionState.ExecuteAction,
-                classId: "ranger",
-                preferredRangeMin: 5.0f,
-                preferredRangeMax: 5.8f,
-                archetypeId: "marksman"),
-            CreateUnit("enemy", TeamSide.Enemy),
-        });
+        var current = CreateStep(
+            units: new[]
+            {
+                CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.ExecuteAction, classId: "ranger", preferredRangeMin: 5.0f, preferredRangeMax: 5.8f, archetypeId: "marksman"),
+                CreateUnit("enemy", TeamSide.Enemy),
+            },
+            combatEvents: new[] { Started("ally") });
 
-        var cue = new BattlePresentationCueBuilder()
-            .Build(previous, current)
+        var cue = new BattlePresentationCueBuilder().Build(previous, current)
             .Single(candidate => candidate.CueType == BattlePresentationCueType.WindupEnter && candidate.SubjectActorId == "ally");
 
         Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BowDraw));
@@ -217,27 +208,17 @@ public sealed class BattlePresentationCueBuilderTests
     {
         var units = new[]
         {
-            CreateUnit(
-                "ally",
-                TeamSide.Ally,
-                targetId: "enemy",
-                classId: "mystic",
-                preferredRangeMin: 2.1f,
-                preferredRangeMax: 2.9f,
-                archetypeId: "hexer"),
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "mystic", preferredRangeMin: 2.1f, preferredRangeMax: 2.9f, archetypeId: "hexer"),
             CreateUnit("enemy", TeamSide.Enemy),
         };
         var previous = CreateStep(units: units);
-        var current = CreateStep(
-            units: units,
-            events: new[]
-            {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f),
-            });
+        var current = CreateStep(units: units, combatEvents: new[]
+        {
+            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+        });
 
-        var cues = new BattlePresentationCueBuilder().Build(previous, current);
-
-        var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        var commit = new BattlePresentationCueBuilder().Build(previous, current)
+            .Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
         Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.ProjectileCast));
         Assert.That(commit.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
         Assert.That(commit.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
@@ -251,22 +232,15 @@ public sealed class BattlePresentationCueBuilderTests
             CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "mystic", archetypeId: "hexer"),
             CreateUnit("enemy", TeamSide.Enemy),
         });
-        var current = CreateStep(units: new[]
-        {
-            CreateUnit(
-                "ally",
-                TeamSide.Ally,
-                targetId: "enemy",
-                actionState: CombatActionState.ExecuteAction,
-                classId: "mystic",
-                preferredRangeMin: 2.1f,
-                preferredRangeMax: 2.9f,
-                archetypeId: "hexer"),
-            CreateUnit("enemy", TeamSide.Enemy),
-        });
+        var current = CreateStep(
+            units: new[]
+            {
+                CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.ExecuteAction, classId: "mystic", preferredRangeMin: 2.1f, preferredRangeMax: 2.9f, archetypeId: "hexer"),
+                CreateUnit("enemy", TeamSide.Enemy),
+            },
+            combatEvents: new[] { Started("ally") });
 
-        var cue = new BattlePresentationCueBuilder()
-            .Build(previous, current)
+        var cue = new BattlePresentationCueBuilder().Build(previous, current)
             .Single(candidate => candidate.CueType == BattlePresentationCueType.WindupEnter && candidate.SubjectActorId == "ally");
 
         Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.ProjectileWindup));
@@ -280,27 +254,17 @@ public sealed class BattlePresentationCueBuilderTests
     {
         var units = new[]
         {
-            CreateUnit(
-                "ally",
-                TeamSide.Ally,
-                targetId: "enemy",
-                classId: "mystic",
-                preferredRangeMin: 0.6f,
-                preferredRangeMax: 1.3f,
-                archetypeId: "priest"),
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy", classId: "mystic", preferredRangeMin: 0.6f, preferredRangeMax: 1.3f, archetypeId: "priest"),
             CreateUnit("enemy", TeamSide.Enemy),
         };
         var previous = CreateStep(units: units);
-        var current = CreateStep(
-            units: units,
-            events: new[]
-            {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f),
-            });
+        var current = CreateStep(units: units, combatEvents: new[]
+        {
+            Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 12f)),
+        });
 
-        var cues = new BattlePresentationCueBuilder().Build(previous, current);
-
-        var commit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        var commit = new BattlePresentationCueBuilder().Build(previous, current)
+            .Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
         Assert.That(commit.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.None));
     }
 
@@ -318,9 +282,9 @@ public sealed class BattlePresentationCueBuilderTests
                 CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.Recover, position: new CombatVector2(0.66f, 0f)),
                 CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1.2f, 0f)),
             },
-            events: new[]
+            motions: new[]
             {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f, Note: "profile_lunge"),
+                new BattleMotionIntent(1, 0, new EntityId("ally"), BattleMotionKind.Approach, new CombatVector2(0f, 0f), new CombatVector2(0.66f, 0f), null, true),
             });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
@@ -328,7 +292,6 @@ public sealed class BattlePresentationCueBuilderTests
         var trace = cues.Single(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "ally");
         Assert.That(trace.Magnitude, Is.EqualTo(0.66f).Within(0.001f));
         Assert.That(trace.Note, Does.Contain("trace_preimpact"));
-        Assert.That(trace.Note, Does.Contain("profile_lunge"));
         Assert.That(trace.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.DashEngage));
         Assert.That(trace.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
         Assert.That(trace.AnimationIntensity, Is.EqualTo(BattleAnimationIntensity.Medium));
@@ -348,8 +311,7 @@ public sealed class BattlePresentationCueBuilderTests
             CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1f, 0f)),
         });
 
-        var cue = new BattlePresentationCueBuilder()
-            .Build(previous, current)
+        var cue = new BattlePresentationCueBuilder().Build(previous, current)
             .Single(candidate => candidate.CueType == BattlePresentationCueType.RepositionStart && candidate.SubjectActorId == "ally");
 
         Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.BackstepDisengage));
@@ -367,13 +329,19 @@ public sealed class BattlePresentationCueBuilderTests
             CreateUnit("ally_lateral", TeamSide.Ally, targetId: "enemy_lateral", actionState: CombatActionState.AcquireTarget, position: new CombatVector2(0f, 0f)),
             CreateUnit("enemy_lateral", TeamSide.Enemy, targetId: "ally_lateral", position: new CombatVector2(2f, 0f)),
         });
-        var current = CreateStep(units: new[]
-        {
-            CreateUnit("ally_engage", TeamSide.Ally, targetId: "enemy_engage", actionState: CombatActionState.Reposition, position: new CombatVector2(0.75f, 0f)),
-            CreateUnit("enemy_engage", TeamSide.Enemy, targetId: "ally_engage", position: new CombatVector2(2f, 0f)),
-            CreateUnit("ally_lateral", TeamSide.Ally, targetId: "enemy_lateral", actionState: CombatActionState.Reposition, position: new CombatVector2(0f, 0.75f)),
-            CreateUnit("enemy_lateral", TeamSide.Enemy, targetId: "ally_lateral", position: new CombatVector2(2f, 0f)),
-        });
+        var current = CreateStep(
+            units: new[]
+            {
+                CreateUnit("ally_engage", TeamSide.Ally, targetId: "enemy_engage", actionState: CombatActionState.Reposition, position: new CombatVector2(0.75f, 0f)),
+                CreateUnit("enemy_engage", TeamSide.Enemy, targetId: "ally_engage", position: new CombatVector2(2f, 0f)),
+                CreateUnit("ally_lateral", TeamSide.Ally, targetId: "enemy_lateral", actionState: CombatActionState.Reposition, position: new CombatVector2(0f, 0.75f)),
+                CreateUnit("enemy_lateral", TeamSide.Enemy, targetId: "ally_lateral", position: new CombatVector2(2f, 0f)),
+            },
+            motions: new[]
+            {
+                new BattleMotionIntent(1, 0, new EntityId("ally_engage"), BattleMotionKind.Approach, new CombatVector2(0f, 0f), new CombatVector2(0.75f, 0f)),
+                new BattleMotionIntent(1, 1, new EntityId("ally_lateral"), BattleMotionKind.Reposition, new CombatVector2(0f, 0f), new CombatVector2(0f, 0.75f)),
+            });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
         var engage = cues.Single(cue => cue.CueType == BattlePresentationCueType.RepositionStart && cue.SubjectActorId == "ally_engage");
@@ -396,10 +364,11 @@ public sealed class BattlePresentationCueBuilderTests
         });
         var current = CreateStep(
             units: previous.Units,
-            events: new[]
+            combatEvents: new[]
             {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_heavy"), "Enemy Heavy", 18f),
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_knockdown"), "Enemy Knockdown", 6f, Note: "knockdown"),
+                Contacted("ally", CombatEventKind.BasicAttack,
+                    Contact("enemy_heavy", CombatOutcome.Hit, 18f, index: 0),
+                    Contact("enemy_knockdown", CombatOutcome.Knockdown, 6f, index: 1)),
             });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
@@ -411,7 +380,7 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_EmitsKnockbackTrace_WhenDamageTargetDisplaces()
+    public void Build_EmitsKnockbackTrace_WhenContactTargetDisplaces()
     {
         var previous = CreateStep(units: new[]
         {
@@ -424,9 +393,13 @@ public sealed class BattlePresentationCueBuilderTests
                 CreateUnit("ally", TeamSide.Ally, targetId: "enemy", position: new CombatVector2(0f, 0f)),
                 CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1.45f, 0f)),
             },
-            events: new[]
+            combatEvents: new[]
             {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 12f, Note: "crit"),
+                Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Crit, 12f)),
+            },
+            motions: new[]
+            {
+                new BattleMotionIntent(1, 0, new EntityId("enemy"), BattleMotionKind.Knockback, new CombatVector2(1f, 0f), new CombatVector2(1.45f, 0f), new EntityId("ally"), true),
             });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
@@ -456,10 +429,11 @@ public sealed class BattlePresentationCueBuilderTests
                 CreateUnit("enemy_miss", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(1.5f, 0f)),
                 CreateUnit("enemy_tiny", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(2.1f, 0f)),
             },
-            events: new[]
+            combatEvents: new[]
             {
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_miss"), "Enemy Miss", 0f, Note: "miss_range"),
-                new BattleEvent(1, 0.1f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy_tiny"), "Enemy Tiny", 8f),
+                Contacted("ally", CombatEventKind.BasicAttack,
+                    Contact("enemy_miss", CombatOutcome.Miss, 0f, index: 0),
+                    Contact("enemy_tiny", CombatOutcome.Hit, 8f, index: 1)),
             });
 
         var cues = new BattlePresentationCueBuilder().Build(previous, current);
@@ -469,7 +443,49 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
-    public void Build_ReturnsDeterministicCuePayloads_ForSameStepAndEvents()
+    public void Build_EmitsSingleActorCommit_ButOneReactionPerTarget_ForAoeContactGroup()
+    {
+        // GPT Pro J22: one AOE swing (a single ContactGroupIndex spanning N targets) emits exactly one
+        // actor commit cue but one impact reaction per target.
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("ally", TeamSide.Ally),
+            CreateUnit("enemy_a", TeamSide.Enemy),
+            CreateUnit("enemy_b", TeamSide.Enemy),
+            CreateUnit("enemy_c", TeamSide.Enemy),
+        });
+        var current = CreateStep(
+            units: previous.Units,
+            combatEvents: new[]
+            {
+                Contacted("ally", CombatEventKind.Skill,
+                    Contact("enemy_a", CombatOutcome.Hit, 10f, index: 0, group: 0),
+                    Contact("enemy_b", CombatOutcome.Hit, 10f, index: 1, group: 0),
+                    Contact("enemy_c", CombatOutcome.Crit, 20f, index: 2, group: 0)),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        Assert.That(cues.Count(cue => cue.CueType == BattlePresentationCueType.ActionCommitSkill && cue.SubjectActorId == "ally"), Is.EqualTo(1));
+        Assert.That(cues.Count(cue => cue.CueType == BattlePresentationCueType.ImpactDamage), Is.EqualTo(3));
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactDamage && cue.SubjectActorId == "enemy_c" && cue.AnimationSemantic == BattleAnimationSemantic.CriticalImpact), Is.True);
+    }
+
+    [Test]
+    public void Build_EmitsNoCommitOrImpact_ForCanceledIntent()
+    {
+        // GPT Pro J14: a windup canceled before contact produces no commit / impact / reaction (no ghost).
+        var previous = CreateStep();
+        var current = CreateStep(combatEvents: new[] { Canceled("ally") });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current);
+
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic), Is.False);
+        Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactDamage), Is.False);
+    }
+
+    [Test]
+    public void Build_ReturnsDeterministicCuePayloads_ForSameStepAndIntents()
     {
         var previous = CreateStep(units: new[]
         {
@@ -482,17 +498,15 @@ public sealed class BattlePresentationCueBuilderTests
                 CreateUnit("ally", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.Reposition, position: new CombatVector2(0.75f, 0f)),
                 CreateUnit("enemy", TeamSide.Enemy, targetId: "ally", position: new CombatVector2(2f, 0f)),
             },
-            events: new[]
+            combatEvents: new[]
             {
-                new BattleEvent(2, 0.2f, new EntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new EntityId("enemy"), "Enemy", 24f, Note: "crit profile_lunge"),
+                Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Crit, 24f)),
             });
 
         var first = new BattlePresentationCueBuilder().Build(previous, current);
         var second = new BattlePresentationCueBuilder().Build(previous, current);
 
-        Assert.That(
-            first.Select(DescribeCue),
-            Is.EqualTo(second.Select(DescribeCue)));
+        Assert.That(first.Select(DescribeCue), Is.EqualTo(second.Select(DescribeCue)));
     }
 
     [Test]
@@ -542,13 +556,62 @@ public sealed class BattlePresentationCueBuilderTests
             IsFinished: true,
             Winner: TeamSide.Ally);
 
-        var cue = new BattlePresentationCueBuilder()
-            .Build(previous, current)
+        var cue = new BattlePresentationCueBuilder().Build(previous, current)
             .Single(candidate => candidate.CueType == BattlePresentationCueType.BattleResolved && candidate.SubjectActorId == "ally");
 
         Assert.That(cue.Magnitude, Is.EqualTo(0f));
         Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.None));
         Assert.That(cue.Note, Is.EqualTo("battle_resolved"));
+    }
+
+    [Test]
+    public void Build_UsesMotionIntentForMobility_DashEngageSemantic()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("dasher", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.AcquireTarget, position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "dasher", position: new CombatVector2(3f, 0f)),
+        });
+        var current = CreateStep(
+            units: new[]
+            {
+                CreateUnit("dasher", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.Reposition, position: new CombatVector2(1.5f, 0f)),
+                CreateUnit("enemy", TeamSide.Enemy, targetId: "dasher", position: new CombatVector2(3f, 0f)),
+            },
+            motions: new[]
+            {
+                new BattleMotionIntent(1, 0, new EntityId("dasher"), BattleMotionKind.MobilityDash, new CombatVector2(0f, 0f), new CombatVector2(1.5f, 0f), null, true),
+            });
+
+        var cue = new BattlePresentationCueBuilder().Build(previous, current)
+            .Single(candidate => candidate.CueType == BattlePresentationCueType.RepositionStart && candidate.SubjectActorId == "dasher");
+
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.DashEngage));
+        Assert.That(cue.AnimationDirection, Is.EqualTo(BattleAnimationDirection.Forward));
+        Assert.That(cue.Magnitude, Is.EqualTo(1.5f).Within(0.001f));
+        Assert.That(cue.Note, Does.Contain("MobilityDash"));
+    }
+
+    [Test]
+    public void Build_DoesNotInferNonWalkSemanticFromPositionDelta_WhenNoMotionRecorded()
+    {
+        var previous = CreateStep(units: new[]
+        {
+            CreateUnit("mover", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.AcquireTarget, position: new CombatVector2(0f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "mover", position: new CombatVector2(2f, 0f)),
+        });
+        var current = CreateStep(units: new[]
+        {
+            CreateUnit("mover", TeamSide.Ally, targetId: "enemy", actionState: CombatActionState.Reposition, position: new CombatVector2(0.8f, 0f)),
+            CreateUnit("enemy", TeamSide.Enemy, targetId: "mover", position: new CombatVector2(2f, 0f)),
+        });
+
+        var cue = new BattlePresentationCueBuilder().Build(previous, current)
+            .Single(candidate => candidate.CueType == BattlePresentationCueType.RepositionStart && candidate.SubjectActorId == "mover");
+
+        Assert.That(cue.AnimationSemantic, Is.EqualTo(BattleAnimationSemantic.LateralStrafe),
+            "forward delta toward target must NOT be inferred as DashEngage without a motion intent.");
+        Assert.That(cue.Note, Does.StartWith("state_"));
     }
 
     private static BattlePresentationCue FindImpact(IEnumerable<BattlePresentationCue> cues, string subjectActorId)
@@ -561,7 +624,38 @@ public sealed class BattlePresentationCueBuilderTests
         return $"{cue.CueType}:{cue.StepIndex}:{cue.SubjectActorId}:{cue.RelatedActorId}:{cue.ActionType}:{cue.Magnitude:0.###}:{cue.Note}:{cue.AnimationSemantic}:{cue.AnimationDirection}:{cue.AnimationIntensity}";
     }
 
-    private static BattleSimulationStep CreateStep(IReadOnlyList<BattleUnitReadModel>? units = null, IReadOnlyList<BattleEvent>? events = null)
+    private static BattleCombatEventIntent Started(string actorId, CombatEventKind kind = CombatEventKind.BasicAttack)
+    {
+        return new BattleCombatEventIntent(
+            1, new ActionInstanceId(1), new EntityId(actorId), kind, SkillDelivery.Melee,
+            1, 2, CombatEventIntentStatus.Started, null, null, null, null);
+    }
+
+    private static BattleCombatEventIntent Contacted(string actorId, CombatEventKind kind, params BattleContactIntent[] contacts)
+    {
+        return new BattleCombatEventIntent(
+            1, new ActionInstanceId(1), new EntityId(actorId), kind, SkillDelivery.Melee,
+            0, 1, CombatEventIntentStatus.Contacted,
+            contacts.Length > 0 ? contacts[0].TargetId : null, null, null, contacts);
+    }
+
+    private static BattleCombatEventIntent Canceled(string actorId, CombatEventKind kind = CombatEventKind.BasicAttack)
+    {
+        return new BattleCombatEventIntent(
+            1, new ActionInstanceId(1), new EntityId(actorId), kind, SkillDelivery.Melee,
+            1, 3, CombatEventIntentStatus.Canceled, null, 1, null, null);
+    }
+
+    private static BattleContactIntent Contact(string targetId, CombatOutcome outcome, float value, bool isHeal = false, int index = 0, int group = 0)
+    {
+        return new BattleContactIntent(index, group, 1, new EntityId(targetId), outcome, value, isHeal);
+    }
+
+    private static BattleSimulationStep CreateStep(
+        IReadOnlyList<BattleUnitReadModel>? units = null,
+        IReadOnlyList<BattleEvent>? events = null,
+        IReadOnlyList<BattleMotionIntent>? motions = null,
+        IReadOnlyList<BattleCombatEventIntent>? combatEvents = null)
     {
         return new BattleSimulationStep(
             StepIndex: 1,
@@ -574,7 +668,9 @@ public sealed class BattlePresentationCueBuilderTests
             },
             Events: events ?? new List<BattleEvent>(),
             IsFinished: false,
-            Winner: null);
+            Winner: null,
+            Motions: motions,
+            CombatEventIntents: combatEvents);
     }
 
     private static BattleUnitReadModel CreateUnit(

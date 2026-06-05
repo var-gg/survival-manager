@@ -382,14 +382,16 @@ public sealed class BattleSimulator
                 continue;
             }
 
-            // Stage 1: one ContactGroupIndex (0) per action — a single hit frame. Multi-hit assigns a
-            // fresh group per frame in a later stage; AOE keeps one group across its N targets (J22).
+            // One ContactGroupIndex (0) per action — a single hit frame. Multi-hit assigns a fresh group
+            // per frame in a later stage; AOE keeps one group across its N targets (J22).
             contacts.Add(new BattleContactIntent(
                 contactIndex++,
                 0,
                 contactStepTick,
                 resolveEvent.TargetId,
-                ResolveOutcome(resolveEvent)));
+                ResolveOutcome(resolveEvent),
+                resolveEvent.Value,
+                resolveEvent.LogCode == BattleLogCode.ActiveSkillHeal));
         }
 
         State.RecordCombatEvent(new BattleCombatEventIntent(

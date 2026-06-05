@@ -16,34 +16,13 @@ public sealed class BattlePresentationCueBuilder
         var deathCueSubjects = new HashSet<string>(System.StringComparer.Ordinal);
         var previousById = previousStep.Units.ToDictionary(unit => unit.Id);
         var currentById = currentStep.Units.ToDictionary(unit => unit.Id);
-        var preImpactEventsByActorId = currentStep.Events
-            .Where(IsPreImpactProfileEvent)
-            .GroupBy(eventData => eventData.ActorId.Value, System.StringComparer.Ordinal)
-            .ToDictionary(group => group.Key, group => group.First(), System.StringComparer.Ordinal);
+        var motionsByActor = BuildMotionsByActor(currentStep);
 
         foreach (var current in currentStep.Units)
         {
             if (!previousById.TryGetValue(current.Id, out var previous))
             {
                 continue;
-            }
-
-            if (previous.ActionState != CombatActionState.ExecuteAction && current.ActionState == CombatActionState.ExecuteAction)
-            {
-                var windupAnimation = ResolveBasicAttackWindupAnimation(current);
-                cues.Add(new BattlePresentationCue(
-                    BattlePresentationCueType.WindupEnter,
-                    currentStep.StepIndex,
-                    current.Id,
-                    current.TargetId,
-                    current.PendingActionType,
-                    current.WindupProgress,
-                    BattlePresentationAnchorId.Cast,
-                    BattlePresentationAnchorId.Center,
-                    windupAnimation.Note,
-                    windupAnimation.Semantic,
-                    windupAnimation.Direction,
-                    windupAnimation.Intensity));
             }
 
             if (!string.Equals(previous.TargetId, current.TargetId, System.StringComparison.Ordinal)
@@ -91,7 +70,7 @@ public sealed class BattlePresentationCueBuilder
             var isPresentationMovement = IsPresentationMovementState(current);
             if (!wasPresentationMovement && isPresentationMovement)
             {
-                var movement = ResolveMovementAnimation(previous, current, currentById);
+                var movement = ResolveMovementAnimation(previous, current, currentById, PrimaryLocomotionMotion(motionsByActor, current.Id));
                 if (movement.Distance >= MovementCueDistanceThreshold)
                 {
                     cues.Add(new BattlePresentationCue(
@@ -130,70 +109,39 @@ public sealed class BattlePresentationCueBuilder
                     AnimationIntensity: BattleAnimationIntensity.Heavy));
             }
 
-            TryAddPreImpactDisplacementTraceCue(cues, preImpactEventsByActorId, previous, current, currentStep.StepIndex);
+            TryAddPreImpactDisplacementTraceCue(cues, motionsByActor, previous, current, currentStep.StepIndex);
+        }
+
+        // Action choreography is driven by the combat-event-intent channel (Stage 2 C1): windup from
+        // Started, actor commit + per-target impact from Contacted, nothing from Canceled (no ghost
+        // contact, J14). The sim self-describes outcome/value in the typed channel, so presentation
+        // never parses event Notes or infers attack profiles from strings (GPT Pro J8).
+        if (currentStep.CombatEventIntents != null)
+        {
+            foreach (var intent in currentStep.CombatEventIntents)
+            {
+                switch (intent.Status)
+                {
+                    case CombatEventIntentStatus.Started:
+                        AddWindupCue(cues, currentById, intent);
+                        break;
+                    case CombatEventIntentStatus.Contacted:
+                        AddContactCues(cues, currentById, motionsByActor, intent);
+                        break;
+                }
+            }
         }
 
         foreach (var eventData in currentStep.Events)
         {
-            switch (eventData.LogCode)
+            if (eventData.LogCode == BattleLogCode.WaitDefend)
             {
-                case BattleLogCode.BasicAttackDamage:
-                {
-                    currentById.TryGetValue(eventData.ActorId.Value, out var actor);
-                    var attackAnimation = ResolveBasicAttackCommitAnimation(eventData, actor);
-                    cues.Add(new BattlePresentationCue(
-                        BattlePresentationCueType.ActionCommitBasic,
-                        currentStep.StepIndex,
-                        eventData.ActorId.Value,
-                        eventData.TargetId?.Value,
-                        eventData.ActionType,
-                        eventData.Value,
-                        BattlePresentationAnchorId.Cast,
-                        BattlePresentationAnchorId.Center,
-                        eventData.Note,
-                        attackAnimation.Semantic,
-                        attackAnimation.Direction,
-                        attackAnimation.Intensity));
-                    TryAddImpactDisplacementTraceCue(cues, previousById, currentById, currentStep.StepIndex, eventData);
-                    TryAddTargetCue(cues, currentById, BattlePresentationCueType.ImpactDamage, currentStep.StepIndex, eventData);
-                    break;
-                }
-
-                case BattleLogCode.ActiveSkillDamage:
-                    cues.Add(new BattlePresentationCue(
-                        BattlePresentationCueType.ActionCommitSkill,
-                        currentStep.StepIndex,
-                        eventData.ActorId.Value,
-                        eventData.TargetId?.Value,
-                        eventData.ActionType,
-                        eventData.Value,
-                        BattlePresentationAnchorId.Cast,
-                        BattlePresentationAnchorId.Center));
-                    TryAddImpactDisplacementTraceCue(cues, previousById, currentById, currentStep.StepIndex, eventData);
-                    TryAddTargetCue(cues, currentById, BattlePresentationCueType.ImpactDamage, currentStep.StepIndex, eventData);
-                    break;
-
-                case BattleLogCode.ActiveSkillHeal:
-                    cues.Add(new BattlePresentationCue(
-                        BattlePresentationCueType.ActionCommitHeal,
-                        currentStep.StepIndex,
-                        eventData.ActorId.Value,
-                        eventData.TargetId?.Value,
-                        eventData.ActionType,
-                        eventData.Value,
-                        BattlePresentationAnchorId.Cast,
-                        BattlePresentationAnchorId.Head));
-                    TryAddTargetCue(cues, currentById, BattlePresentationCueType.ImpactHeal, currentStep.StepIndex, eventData, BattlePresentationAnchorId.Head);
-                    break;
-
-                case BattleLogCode.WaitDefend:
-                    cues.Add(new BattlePresentationCue(
-                        BattlePresentationCueType.GuardEnter,
-                        currentStep.StepIndex,
-                        eventData.ActorId.Value,
-                        eventData.TargetId?.Value,
-                        eventData.ActionType));
-                    break;
+                cues.Add(new BattlePresentationCue(
+                    BattlePresentationCueType.GuardEnter,
+                    currentStep.StepIndex,
+                    eventData.ActorId.Value,
+                    eventData.TargetId?.Value,
+                    eventData.ActionType));
             }
 
             if (eventData.EventKind == BattleEventKind.Kill && eventData.TargetId != null)
@@ -251,82 +199,81 @@ public sealed class BattlePresentationCueBuilder
     private static BattleAnimationCueDescriptor ResolveMovementAnimation(
         BattleUnitReadModel previous,
         BattleUnitReadModel current,
-        IReadOnlyDictionary<string, BattleUnitReadModel> currentById)
+        IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
+        BattleMotionIntent? motion)
     {
-        var deltaX = current.Position.X - previous.Position.X;
-        var deltaY = current.Position.Y - previous.Position.Y;
-        var distanceSquared = (deltaX * deltaX) + (deltaY * deltaY);
-        if (distanceSquared < 0.0025f)
+        // Distance and left/right direction are geometric, but the movement SEMANTIC
+        // (dash / backstep / strafe) comes from the authoritative motion kind — or the action-state
+        // fallback when a step carries no motion record — never from a dot/cross classification of
+        // the position delta (GPT Pro review I5: no semantic inference from deltas).
+        float deltaX;
+        float deltaY;
+        float distance;
+        BattleAnimationSemantic semantic;
+        string note;
+
+        if (motion != null)
         {
-            return BattleAnimationCueDescriptor.None;
+            deltaX = motion.To.X - motion.From.X;
+            deltaY = motion.To.Y - motion.From.Y;
+            distance = motion.From.DistanceTo(motion.To);
+            semantic = ResolveMotionSemantic(motion.Kind);
+            note = $"motion_{motion.Kind}";
+        }
+        else
+        {
+            deltaX = current.Position.X - previous.Position.X;
+            deltaY = current.Position.Y - previous.Position.Y;
+            distance = (float)System.Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+            if (distance < 0.05f)
+            {
+                return BattleAnimationCueDescriptor.None;
+            }
+
+            semantic = ResolveActionStateLocomotionSemantic(current.ActionState);
+            note = $"state_{current.ActionState}";
         }
 
-        var distance = (float)System.Math.Sqrt(distanceSquared);
-        var intensity = distanceSquared >= 1.44f
+        var intensity = distance >= 1.2f
             ? BattleAnimationIntensity.Heavy
             : BattleAnimationIntensity.Medium;
+        var direction = ResolveMovementDirection(semantic, deltaX, deltaY, previous, current, currentById);
+        return new BattleAnimationCueDescriptor(semantic, direction, intensity, note, distance);
+    }
 
-        if (current.ActionState == CombatActionState.BreakContact)
+    private static BattleAnimationDirection ResolveMovementDirection(
+        BattleAnimationSemantic semantic,
+        float deltaX,
+        float deltaY,
+        BattleUnitReadModel previous,
+        BattleUnitReadModel current,
+        IReadOnlyDictionary<string, BattleUnitReadModel> currentById)
+    {
+        switch (semantic)
         {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.BackstepDisengage,
-                BattleAnimationDirection.Backward,
-                intensity,
-                "break_contact",
-                distance);
+            case BattleAnimationSemantic.DashEngage:
+                return BattleAnimationDirection.Forward;
+            case BattleAnimationSemantic.BackstepDisengage:
+                return BattleAnimationDirection.Backward;
+            case BattleAnimationSemantic.LateralStrafe:
+                if (!string.IsNullOrWhiteSpace(current.TargetId)
+                    && currentById.TryGetValue(current.TargetId, out var target))
+                {
+                    var toTargetX = target.Position.X - previous.Position.X;
+                    var toTargetY = target.Position.Y - previous.Position.Y;
+                    var cross = (deltaX * toTargetY) - (deltaY * toTargetX);
+                    return cross >= 0f ? BattleAnimationDirection.Right : BattleAnimationDirection.Left;
+                }
+
+                return BattleAnimationDirection.Lateral;
+            default:
+                return BattleAnimationDirection.Any;
         }
-
-        if (!string.IsNullOrWhiteSpace(current.TargetId)
-            && currentById.TryGetValue(current.TargetId, out var target))
-        {
-            var toTargetX = target.Position.X - previous.Position.X;
-            var toTargetY = target.Position.Y - previous.Position.Y;
-            var targetDistanceSquared = (toTargetX * toTargetX) + (toTargetY * toTargetY);
-            if (targetDistanceSquared > 0.0025f)
-            {
-                var dot = NormalizedDot(deltaX, deltaY, toTargetX, toTargetY);
-                var cross = (deltaX * toTargetY) - (deltaY * toTargetX);
-
-                if (dot < -0.25f)
-                {
-                    return new BattleAnimationCueDescriptor(
-                        BattleAnimationSemantic.BackstepDisengage,
-                        BattleAnimationDirection.Backward,
-                        intensity,
-                        "move_away",
-                        distance);
-                }
-
-                if (System.Math.Abs(dot) < 0.55f)
-                {
-                    return new BattleAnimationCueDescriptor(
-                        BattleAnimationSemantic.LateralStrafe,
-                        cross >= 0f ? BattleAnimationDirection.Right : BattleAnimationDirection.Left,
-                        intensity,
-                        "lateral",
-                        distance);
-                }
-
-                if (dot > 0.25f)
-                {
-                    return new BattleAnimationCueDescriptor(
-                        BattleAnimationSemantic.DashEngage,
-                        BattleAnimationDirection.Forward,
-                        intensity,
-                        "engage",
-                        distance);
-                }
-            }
-        }
-
-        return current.ActionState == CombatActionState.AdvanceToAnchor
-            ? new BattleAnimationCueDescriptor(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, intensity, "advance", distance)
-            : new BattleAnimationCueDescriptor(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Lateral, intensity, "reposition", distance);
     }
 
     private static void TryAddPreImpactDisplacementTraceCue(
         ICollection<BattlePresentationCue> cues,
-        IReadOnlyDictionary<string, BattleEvent> preImpactEventsByActorId,
+        Dictionary<string, List<BattleMotionIntent>> motionsByActor,
         BattleUnitReadModel previous,
         BattleUnitReadModel current,
         int stepIndex)
@@ -336,21 +283,30 @@ public sealed class BattlePresentationCueBuilder
             return;
         }
 
-        if (!preImpactEventsByActorId.TryGetValue(current.Id, out var eventData))
+        // A pre-impact lunge / step-in is recorded as a discrete Approach (or MobilityDash) motion while
+        // the actor is mid-action, not in a sustained movement state. Source the trace from that motion
+        // intent rather than a profile_* note (GPT Pro review: DoesNotReadProfileNoteForMotion).
+        BattleMotionIntent? motion = null;
+        if (motionsByActor.TryGetValue(current.Id, out var actorMotions))
+        {
+            foreach (var candidate in actorMotions)
+            {
+                if (candidate.IsDiscrete
+                    && (candidate.Kind == BattleMotionKind.Approach || candidate.Kind == BattleMotionKind.MobilityDash))
+                {
+                    motion = candidate;
+                    break;
+                }
+            }
+        }
+
+        if (motion == null)
         {
             return;
         }
 
-        var deltaX = current.Position.X - previous.Position.X;
-        var deltaY = current.Position.Y - previous.Position.Y;
-        var distance = (float)System.Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+        var distance = motion.From.DistanceTo(motion.To);
         if (distance < DisplacementTraceDistanceThreshold)
-        {
-            return;
-        }
-
-        var animation = ResolveBasicAttackCommitAnimation(eventData);
-        if (animation.Semantic == BattleAnimationSemantic.None)
         {
             return;
         }
@@ -359,15 +315,15 @@ public sealed class BattlePresentationCueBuilder
             BattlePresentationCueType.RepositionStart,
             stepIndex,
             current.Id,
-            eventData.TargetId?.Value,
-            eventData.ActionType,
+            current.TargetId,
+            BattleActionType.BasicAttack,
             distance,
             BattlePresentationAnchorId.Feet,
             BattlePresentationAnchorId.Center,
-            ComposeCueNote("trace_preimpact", eventData.Note),
-            animation.Semantic,
-            animation.Direction,
-            animation.Intensity));
+            "trace_preimpact",
+            BattleAnimationSemantic.DashEngage,
+            BattleAnimationDirection.Forward,
+            BattleAnimationIntensity.Medium));
     }
 
     private static float NormalizedDot(float ax, float ay, float bx, float by)
@@ -382,147 +338,187 @@ public sealed class BattlePresentationCueBuilder
         return (float)(((ax * bx) + (ay * by)) / (aLength * bLength));
     }
 
-    private static void TryAddTargetCue(
+    private static void AddWindupCue(
         ICollection<BattlePresentationCue> cues,
         IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
-        BattlePresentationCueType cueType,
-        int stepIndex,
-        BattleEvent eventData,
-        BattlePresentationAnchorId subjectAnchor = BattlePresentationAnchorId.Center)
+        BattleCombatEventIntent intent)
     {
-        if (eventData.TargetId == null || !currentById.ContainsKey(eventData.TargetId.Value.Value))
-        {
-            return;
-        }
-
-        var animation = cueType == BattlePresentationCueType.ImpactDamage
-            ? ResolveImpactAnimation(eventData)
-            : BattleAnimationCueDescriptor.None;
-
+        currentById.TryGetValue(intent.ActorId.Value, out var actor);
+        var windup = actor != null ? ResolveBasicAttackWindupAnimation(actor) : BattleAnimationCueDescriptor.None;
         cues.Add(new BattlePresentationCue(
-            cueType,
-            stepIndex,
-            eventData.TargetId.Value.Value,
-            eventData.ActorId.Value,
-            eventData.ActionType,
-            eventData.Value,
-            subjectAnchor,
+            BattlePresentationCueType.WindupEnter,
+            intent.StepIndex,
+            intent.ActorId.Value,
+            intent.InitialTargetId?.Value,
+            ResolveActionTypeForKind(intent.Kind),
+            actor?.WindupProgress ?? 0f,
             BattlePresentationAnchorId.Cast,
-            eventData.Note,
-            animation.Semantic,
-            animation.Direction,
-            animation.Intensity));
+            BattlePresentationAnchorId.Center,
+            windup.Note,
+            windup.Semantic,
+            windup.Direction,
+            windup.Intensity));
     }
 
-    private static void TryAddImpactDisplacementTraceCue(
+    private static void AddContactCues(
         ICollection<BattlePresentationCue> cues,
-        IReadOnlyDictionary<string, BattleUnitReadModel> previousById,
         IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
-        int stepIndex,
-        BattleEvent eventData)
+        Dictionary<string, List<BattleMotionIntent>> motionsByActor,
+        BattleCombatEventIntent intent)
     {
-        if (eventData.Value <= 0f || eventData.TargetId == null)
+        var contacts = intent.Contacts;
+        if (contacts == null || contacts.Count == 0)
         {
             return;
         }
 
-        var targetId = eventData.TargetId.Value.Value;
-        if (!previousById.TryGetValue(targetId, out var previous)
-            || !currentById.TryGetValue(targetId, out var current))
+        currentById.TryGetValue(intent.ActorId.Value, out var actor);
+        var actionType = ResolveActionTypeForKind(intent.Kind);
+        var emittedCommitGroups = new HashSet<int>();
+
+        foreach (var contact in contacts)
+        {
+            // One actor commit cue per ContactGroupIndex: an AOE swing emits a single commit but N
+            // target reactions (GPT Pro J22). Stage 1 emits one group per action.
+            if (emittedCommitGroups.Add(contact.ContactGroupIndex))
+            {
+                var commitAnimation = ResolveCommitAnimation(intent, actor);
+                cues.Add(new BattlePresentationCue(
+                    ResolveCommitCueType(intent.Kind, contact.IsHeal),
+                    intent.StepIndex,
+                    intent.ActorId.Value,
+                    intent.InitialTargetId?.Value ?? contact.TargetId?.Value,
+                    actionType,
+                    contact.Value,
+                    BattlePresentationAnchorId.Cast,
+                    contact.IsHeal ? BattlePresentationAnchorId.Head : BattlePresentationAnchorId.Center,
+                    string.Empty,
+                    commitAnimation.Semantic,
+                    commitAnimation.Direction,
+                    commitAnimation.Intensity));
+            }
+
+            if (contact.TargetId == null || !currentById.ContainsKey(contact.TargetId.Value.Value))
+            {
+                continue;
+            }
+
+            if (contact.IsHeal)
+            {
+                cues.Add(new BattlePresentationCue(
+                    BattlePresentationCueType.ImpactHeal,
+                    intent.StepIndex,
+                    contact.TargetId.Value.Value,
+                    intent.ActorId.Value,
+                    actionType,
+                    contact.Value,
+                    BattlePresentationAnchorId.Head,
+                    BattlePresentationAnchorId.Cast));
+                continue;
+            }
+
+            var impactAnimation = ResolveImpactAnimation(contact.Outcome, contact.Value);
+            cues.Add(new BattlePresentationCue(
+                BattlePresentationCueType.ImpactDamage,
+                intent.StepIndex,
+                contact.TargetId.Value.Value,
+                intent.ActorId.Value,
+                actionType,
+                contact.Value,
+                BattlePresentationAnchorId.Center,
+                BattlePresentationAnchorId.Cast,
+                string.Empty,
+                impactAnimation.Semantic,
+                impactAnimation.Direction,
+                impactAnimation.Intensity));
+
+            TryAddKnockbackTraceForContact(cues, motionsByActor, intent.ActorId.Value, actionType, contact);
+        }
+    }
+
+    private static void TryAddKnockbackTraceForContact(
+        ICollection<BattlePresentationCue> cues,
+        Dictionary<string, List<BattleMotionIntent>> motionsByActor,
+        string actorId,
+        BattleActionType actionType,
+        BattleContactIntent contact)
+    {
+        if (contact.TargetId == null || contact.Value <= 0f)
         {
             return;
         }
 
-        var deltaX = current.Position.X - previous.Position.X;
-        var deltaY = current.Position.Y - previous.Position.Y;
-        var distance = (float)System.Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+        // Knockback displacement is sourced from the authoritative Knockback motion intent, never
+        // reverse-engineered from a position delta (GPT Pro: UsesMotionIntentForKnockback).
+        var targetId = contact.TargetId.Value.Value;
+        var motion = FindMotion(motionsByActor, targetId, BattleMotionKind.Knockback);
+        if (motion == null)
+        {
+            return;
+        }
+
+        var distance = motion.From.DistanceTo(motion.To);
         if (distance < DisplacementTraceDistanceThreshold)
         {
             return;
         }
 
-        var impact = ResolveImpactAnimation(eventData);
+        var impact = ResolveImpactAnimation(contact.Outcome, contact.Value);
         var intensity = impact.Intensity == BattleAnimationIntensity.Heavy
             ? BattleAnimationIntensity.Heavy
             : BattleAnimationIntensity.Medium;
         cues.Add(new BattlePresentationCue(
             BattlePresentationCueType.RepositionStart,
-            stepIndex,
+            contact.ContactTick,
             targetId,
-            eventData.ActorId.Value,
-            eventData.ActionType,
+            actorId,
+            actionType,
             distance,
             BattlePresentationAnchorId.Feet,
             BattlePresentationAnchorId.Cast,
-            ComposeCueNote("trace_knockback", eventData.Note),
+            "trace_knockback",
             BattleAnimationSemantic.BackstepDisengage,
             BattleAnimationDirection.Backward,
             intensity));
     }
 
-    private static BattleAnimationCueDescriptor ResolveImpactAnimation(BattleEvent eventData)
+    private static BattlePresentationCueType ResolveCommitCueType(CombatEventKind kind, bool isHeal)
     {
-        var handednessDirection = ResolveHandednessAnimationDirection(eventData.Note);
-        if (HasNote(eventData, "miss"))
+        if (kind == CombatEventKind.Skill)
         {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.Miss,
-                handednessDirection,
-                BattleAnimationIntensity.Light,
-                eventData.Note);
+            return isHeal ? BattlePresentationCueType.ActionCommitHeal : BattlePresentationCueType.ActionCommitSkill;
         }
 
-        if (HasNote(eventData, "dodge"))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.Dodge,
-                BattleAnimationDirection.Any,
-                BattleAnimationIntensity.Light,
-                eventData.Note);
-        }
+        return BattlePresentationCueType.ActionCommitBasic;
+    }
 
-        if (HasNote(eventData, "knockdown"))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.Knockdown,
-                BattleAnimationDirection.Backward,
-                BattleAnimationIntensity.Heavy,
-                eventData.Note);
-        }
+    private static BattleActionType ResolveActionTypeForKind(CombatEventKind kind)
+    {
+        return kind == CombatEventKind.Skill ? BattleActionType.ActiveSkill : BattleActionType.BasicAttack;
+    }
 
-        var isCrit = HasNote(eventData, "crit");
-        if (HasNote(eventData, "block"))
+    private static BattleAnimationCueDescriptor ResolveImpactAnimation(CombatOutcome outcome, float value)
+    {
+        // Outcome and magnitude come from the typed combat-event-intent channel — never from parsing
+        // event Note strings (GPT Pro J8). Direction matches the prior note-less default: recoil
+        // Backward for hits/crits/knockdown, Any for soft outcomes.
+        switch (outcome)
         {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.BlockImpact,
-                handednessDirection,
-                isCrit ? BattleAnimationIntensity.Heavy : BattleAnimationIntensity.Medium,
-                eventData.Note);
+            case CombatOutcome.Miss:
+                return new BattleAnimationCueDescriptor(BattleAnimationSemantic.Miss, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, string.Empty);
+            case CombatOutcome.Dodge:
+                return new BattleAnimationCueDescriptor(BattleAnimationSemantic.Dodge, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, string.Empty);
+            case CombatOutcome.Knockdown:
+                return new BattleAnimationCueDescriptor(BattleAnimationSemantic.Knockdown, BattleAnimationDirection.Backward, BattleAnimationIntensity.Heavy, string.Empty);
+            case CombatOutcome.Block:
+                return new BattleAnimationCueDescriptor(BattleAnimationSemantic.BlockImpact, BattleAnimationDirection.Any, BattleAnimationIntensity.Medium, string.Empty);
+            case CombatOutcome.Crit:
+                return new BattleAnimationCueDescriptor(BattleAnimationSemantic.CriticalImpact, BattleAnimationDirection.Backward, BattleAnimationIntensity.Heavy, string.Empty);
+            default:
+                return value >= HeavyImpactDamageThreshold
+                    ? new BattleAnimationCueDescriptor(BattleAnimationSemantic.HitHeavy, BattleAnimationDirection.Backward, BattleAnimationIntensity.Heavy, string.Empty)
+                    : new BattleAnimationCueDescriptor(BattleAnimationSemantic.HitLight, BattleAnimationDirection.Backward, BattleAnimationIntensity.Medium, string.Empty);
         }
-
-        if (isCrit)
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.CriticalImpact,
-                handednessDirection == BattleAnimationDirection.Any ? BattleAnimationDirection.Backward : handednessDirection,
-                BattleAnimationIntensity.Heavy,
-                eventData.Note);
-        }
-
-        if (eventData.Value >= HeavyImpactDamageThreshold)
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.HitHeavy,
-                handednessDirection == BattleAnimationDirection.Any ? BattleAnimationDirection.Backward : handednessDirection,
-                BattleAnimationIntensity.Heavy,
-                eventData.Note);
-        }
-
-        return new BattleAnimationCueDescriptor(
-            BattleAnimationSemantic.HitLight,
-            handednessDirection == BattleAnimationDirection.Any ? BattleAnimationDirection.Backward : handednessDirection,
-            BattleAnimationIntensity.Medium,
-            eventData.Note);
     }
 
     private static BattleAnimationDirection ResolveHandednessAnimationDirection(BattleUnitReadModel unit)
@@ -557,51 +553,22 @@ public sealed class BattlePresentationCueBuilder
         return BattleAnimationDirection.Any;
     }
 
-    private static BattleAnimationCueDescriptor ResolveBasicAttackCommitAnimation(BattleEvent eventData, BattleUnitReadModel? actor = null)
+    private static BattleAnimationCueDescriptor ResolveCommitAnimation(BattleCombatEventIntent intent, BattleUnitReadModel? actor)
     {
-        if (HasNote(eventData, "profile_dash"))
+        // Bow / projectile basic attacks are detected from authoritative actor properties (class /
+        // archetype / preferred range), NOT from event Note profiles. GPT Pro J8 removed the profile_*
+        // string inference; the pre-impact lunge is now drawn from the motion-intent trace instead.
+        if (intent.Kind == CombatEventKind.BasicAttack && actor != null)
         {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.DashEngage,
-                BattleAnimationDirection.Forward,
-                BattleAnimationIntensity.Heavy,
-                eventData.Note);
-        }
+            if (IsBowBasicAttacker(actor))
+            {
+                return new BattleAnimationCueDescriptor(BattleAnimationSemantic.BowShot, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, string.Empty);
+            }
 
-        if (HasNote(eventData, "profile_lunge"))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.DashEngage,
-                BattleAnimationDirection.Forward,
-                BattleAnimationIntensity.Medium,
-                eventData.Note);
-        }
-
-        if (HasNote(eventData, "profile_stepin"))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.DashEngage,
-                BattleAnimationDirection.Forward,
-                BattleAnimationIntensity.Light,
-                eventData.Note);
-        }
-
-        if (actor != null && IsBowBasicAttacker(actor))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.BowShot,
-                BattleAnimationDirection.Forward,
-                BattleAnimationIntensity.Medium,
-                eventData.Note);
-        }
-
-        if (actor != null && IsProjectileBasicAttacker(actor))
-        {
-            return new BattleAnimationCueDescriptor(
-                BattleAnimationSemantic.ProjectileCast,
-                BattleAnimationDirection.Forward,
-                BattleAnimationIntensity.Medium,
-                eventData.Note);
+            if (IsProjectileBasicAttacker(actor))
+            {
+                return new BattleAnimationCueDescriptor(BattleAnimationSemantic.ProjectileCast, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, string.Empty);
+            }
         }
 
         return BattleAnimationCueDescriptor.None;
@@ -683,6 +650,124 @@ public sealed class BattlePresentationCueBuilder
         }
 
         return $"{left} {right}";
+    }
+
+    private static Dictionary<string, List<BattleMotionIntent>> BuildMotionsByActor(BattleSimulationStep step)
+    {
+        var byActor = new Dictionary<string, List<BattleMotionIntent>>(System.StringComparer.Ordinal);
+        if (step.Motions == null)
+        {
+            return byActor;
+        }
+
+        foreach (var motion in step.Motions)
+        {
+            if (!byActor.TryGetValue(motion.ActorId.Value, out var list))
+            {
+                list = new List<BattleMotionIntent>();
+                byActor[motion.ActorId.Value] = list;
+            }
+
+            list.Add(motion);
+        }
+
+        return byActor;
+    }
+
+    private static BattleMotionIntent? PrimaryLocomotionMotion(
+        Dictionary<string, List<BattleMotionIntent>> byActor,
+        string actorId)
+    {
+        if (!byActor.TryGetValue(actorId, out var list))
+        {
+            return null;
+        }
+
+        BattleMotionIntent? best = null;
+        var bestDistance = -1f;
+        foreach (var motion in list)
+        {
+            if (motion.Kind == BattleMotionKind.Knockback)
+            {
+                continue;
+            }
+
+            var distance = motion.From.DistanceTo(motion.To);
+            if (distance > bestDistance)
+            {
+                bestDistance = distance;
+                best = motion;
+            }
+        }
+
+        return best;
+    }
+
+    private static BattleMotionIntent? FindMotion(
+        Dictionary<string, List<BattleMotionIntent>> byActor,
+        string actorId,
+        BattleMotionKind kind)
+    {
+        if (!byActor.TryGetValue(actorId, out var list))
+        {
+            return null;
+        }
+
+        foreach (var motion in list)
+        {
+            if (motion.Kind == kind)
+            {
+                return motion;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool HasDiscreteAdvanceMotion(
+        Dictionary<string, List<BattleMotionIntent>> byActor,
+        string actorId)
+    {
+        if (!byActor.TryGetValue(actorId, out var list))
+        {
+            return false;
+        }
+
+        foreach (var motion in list)
+        {
+            if (motion.IsDiscrete
+                && (motion.Kind == BattleMotionKind.Approach || motion.Kind == BattleMotionKind.MobilityDash))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static BattleAnimationSemantic ResolveMotionSemantic(BattleMotionKind kind)
+    {
+        return kind switch
+        {
+            BattleMotionKind.MobilityDash => BattleAnimationSemantic.DashEngage,
+            BattleMotionKind.Approach => BattleAnimationSemantic.DashEngage,
+            BattleMotionKind.Disengage => BattleAnimationSemantic.BackstepDisengage,
+            BattleMotionKind.Reposition => BattleAnimationSemantic.LateralStrafe,
+            BattleMotionKind.Knockback => BattleAnimationSemantic.BackstepDisengage,
+            BattleMotionKind.ForcedDisplacement => BattleAnimationSemantic.LateralStrafe,
+            _ => BattleAnimationSemantic.LateralStrafe,
+        };
+    }
+
+    private static BattleAnimationSemantic ResolveActionStateLocomotionSemantic(CombatActionState actionState)
+    {
+        return actionState switch
+        {
+            CombatActionState.BreakContact => BattleAnimationSemantic.BackstepDisengage,
+            CombatActionState.Reposition => BattleAnimationSemantic.LateralStrafe,
+            CombatActionState.SecurePosition => BattleAnimationSemantic.LateralStrafe,
+            _ => BattleAnimationSemantic.DashEngage,
+        };
     }
 
     private readonly struct BattleAnimationCueDescriptor

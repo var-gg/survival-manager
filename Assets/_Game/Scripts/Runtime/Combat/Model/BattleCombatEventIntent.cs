@@ -69,7 +69,9 @@ public sealed record BattleContactIntent(
     int ContactGroupIndex,
     int ContactTick,
     EntityId? TargetId,
-    CombatOutcome Outcome);
+    CombatOutcome Outcome,
+    float Value = 0f,
+    bool IsHeal = false);
 
 /// <summary>
 /// Phase/contact contract for one action instance, emitted by the deterministic sim as a sibling of

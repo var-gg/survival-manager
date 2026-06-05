@@ -31,7 +31,13 @@ public sealed class BattlePresentationSnapshotTests
             var current = CreateStep(1, events: new[]
             {
                 new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 10f)
-            });
+            }) with
+            {
+                CombatEventIntents = new[]
+                {
+                    new BattleCombatEventIntent(1, new ActionInstanceId(1), new CoreEntityId("ally"), CombatEventKind.BasicAttack, SkillDelivery.Melee, 0, 1, CombatEventIntentStatus.Contacted, new CoreEntityId("enemy"), null, null, new[] { new BattleContactIntent(0, 0, 1, new CoreEntityId("enemy"), CombatOutcome.Hit, 10f) }),
+                },
+            };
 
             ExpectAuthoringMissingError();
             controller.Initialize(initial);
