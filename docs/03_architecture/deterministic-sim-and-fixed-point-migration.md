@@ -168,7 +168,7 @@ backend matrix 실행(CI/디바이스):
 
 ### Numeric
 
-- **`Fixed32` = Q16.16 / Int32**, `long` 중간값. 좌표 Q8.24 분리는 **하지 않음**(기본 단일 Q16.16) — Phase 1 drift 테스트(1000틱 이동·range threshold·tiny-vector normalize)가 실패하면 그때 좌표만 Q8.24로 국소 승급. 근거: 좌표 ±8·거리² ≤ ~290·배수 O(0.25–4) 전부 ±32768에 큰 여유.
+- **`Fixed32` = Q16.16 / Int32**, `long` 중간값. **좌표 단일 Q16.16 확정**(Q8.24 분리 불요) — Phase 1 drift 테스트(`FixedFormatDriftTests`: 1000틱 누적·range threshold lenSq·tiny-vector normalize) **전부 통과**(2026-06-07): ① 고정소수 덧셈 누적 drift 0(1000틱 == step×1000 비트 동일), ② 1000틱 precision drift < 0.02, ③ lenSq 사거리 판정이 arena 스케일에서 0.01단위 거리차까지 분해, ④ normalize는 L ≥ 0.02에서 길이오차 < 4%, 단 성분 < ~0.004(raw 256)에서 성분² underflow로 lenSq=0. → Phase 3 `NormalizeOrFallback`은 `lenSq==0`(또는 < ε²) floor에서 기본 방향 반환 필수. 근거: 좌표 ±8·거리² ≤ ~290·배수 O(0.25–4) 전부 ±32768에 큰 여유.
 - **반올림 = truncate-toward-zero**, 전 연산(`Mul`/`Div`/`Sqrt`/normalize) 공유. C# 산술 우시프트(floor)와 정수 나눗셈(trunc) 불일치는 `ShiftRightTrunc(v,bits)=v>=0?v>>bits:-((-v)>>bits)`로 통일. `-a*b == -(a*b)` 대칭을 테스트로 고정.
 - **overflow policy**: dev/test = `checked`(assert), release = **saturate**(클램프) + 범위 예산 위반 로그. wrap 금지(deterministic이어도 게임 파괴).
 - **div-by-zero**: 0 반환(현 `CombatVector2.operator/`가 이미 0 반환 — 동작 보존). normalize는 `NormalizeOrFallback`로 별도 처리.
