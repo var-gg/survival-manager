@@ -105,6 +105,11 @@ public sealed class UnitSnapshot
     /// RoleBrain and read by the movement/target executor so the fight reads as role-driven drama. Deterministic
     /// and re-derived on replay — never serialized.</summary>
     public CombatIntent CurrentCombatIntent { get; private set; } = CombatIntent.None;
+
+    /// <summary>Phase 1 anti-jitter: the step at/after which RoleBrain may re-decide this unit's intent (per-role
+    /// cadence). Role-critical interrupts and hard interrupts bypass it. Absolute step index (never a modulo), so
+    /// it reproduces exactly on re-sim; transient, never serialized.</summary>
+    public int NextCombatIntentDecisionStep { get; private set; }
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
     public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationRemaining <= 0f;
@@ -658,6 +663,12 @@ public sealed class UnitSnapshot
                       || CurrentCombatIntent.TargetId != intent.TargetId;
         CurrentCombatIntent = intent;
         return changed;
+    }
+
+    /// <summary>Phase 1 anti-jitter: schedule the next step at which RoleBrain may re-decide this unit's intent.</summary>
+    public void SetNextCombatIntentDecisionStep(int step)
+    {
+        NextCombatIntentDecisionStep = step;
     }
 
     private void MarkPositioningReplan(ReevaluationReason reason)

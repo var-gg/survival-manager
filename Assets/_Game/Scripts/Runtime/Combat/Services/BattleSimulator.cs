@@ -129,6 +129,15 @@ public sealed class BattleSimulator
             // attack rule below is unchanged — intent biases positioning, not hit validity.
             RoleBrain.ResolveIntent(State, actor);
 
+            // Phase 1 narrow retarget seam: a Dive/Peel intent overrides the target that the begin-gate and
+            // movement both read, so the duelist visibly dives the backline (and the vanguard peels the diver)
+            // instead of the melee-nearest baseline. Default (non-Dive/Peel) targeting is untouched.
+            if (TacticEvaluator.TryApplyIntentTargetOverride(State, actor, evaluated, out var retargetedEvaluation))
+            {
+                evaluated = retargetedEvaluation;
+                actor.SetCurrentTarget(evaluated.Target.Id);
+            }
+
             // Phase 0 single attack rule: an action begins when the target is within action range
             // (edge ≤ R + 0.05) and the cooldown is ready. No range-band / slot-ready / start-tolerance
             // gating — those produced the out-of-range hover and the slot thrash. When not in range the

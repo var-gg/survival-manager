@@ -19,6 +19,9 @@ public static class MovementResolver
     private const float BaseLaneGap = 1.8f;
     private const float BaseRowGap = 2.1f;
     internal const float ActionStartRangeTolerance = 0.12f;
+    // Phase 1 HoldLine: a vanguard holds the frontline by clamping its pursuit to within this radius of its
+    // formation anchor (master design "do not pursue beyond anchor + 2.0m"), so it engages the line without diving.
+    private const float VanguardHoldRadius = 2.0f;
 
     public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
     {
@@ -372,6 +375,40 @@ public static class MovementResolver
             && HasCloserLivingAllyToTarget(state, actor, target))
         {
             MoveTowards(state, actor, ResolveHomePosition(state, actor), CombatActionState.Reposition);
+            return;
+        }
+
+        // Phase 1 HoldLine (vanguard role drama): the tank holds the frontline anchor band — it advances to
+        // engage what comes to the line but clamps its pursuit to within VanguardHoldRadius of the anchor, so it
+        // does not over-chase a target deep past the line (diving is the duelist's job). Posture-gated by RoleBrain.
+        if (actor.CurrentCombatIntent.Type == CombatIntentType.HoldLine)
+        {
+            var anchor = ResolveHomePosition(state, actor);
+            var holdDesired = ResolveDesiredPosition(state, actor, target, evaluated.DesiredRangeBand);
+            var fromAnchor = holdDesired - anchor;
+            if (fromAnchor.Length > VanguardHoldRadius)
+            {
+                holdDesired = anchor + (fromAnchor.Normalized * VanguardHoldRadius);
+            }
+
+            MoveTowards(state, actor, holdDesired, CombatActionState.Approach, allowProgressGate: true);
+            return;
+        }
+
+        // Phase 1 Peel (vanguard role drama): move to the intercept point between the diver and the protected
+        // ally (the threat is already the overridden target). If that intercept reaches the threat's attack range
+        // the vanguard goes there; otherwise it just pursues the threat normally — never stall on a bad intercept.
+        if (actor.CurrentCombatIntent.Type == CombatIntentType.Peel)
+        {
+            var intercept = actor.CurrentCombatIntent.AnchorPoint;
+            if (intercept.DistanceTo(target.Position) <= actor.AttackRange + 0.05f)
+            {
+                MoveTowards(state, actor, intercept, CombatActionState.Approach, allowProgressGate: true);
+                return;
+            }
+
+            MoveTowards(state, actor, ResolveDesiredPosition(state, actor, target, evaluated.DesiredRangeBand),
+                CombatActionState.Approach, allowProgressGate: true);
             return;
         }
 

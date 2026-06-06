@@ -41,6 +41,43 @@ public static class TacticEvaluator
         return EvaluateLegacy(state, actor, reevaluationReason);
     }
 
+    /// <summary>
+    /// Phase 1 narrow retarget seam. A Dive or Peel intent (set by RoleBrain) forces the unit's target to the
+    /// intent's chosen enemy, overriding the normal melee-nearest selection — but ONLY for those two intents and
+    /// ONLY toward a living enemy. The baseline target selection and the melee-nearest override are otherwise
+    /// untouched, so default (non-Dive/Peel) behavior is unchanged. Returns false (and leaves the evaluation
+    /// as-is) when no override applies.
+    /// </summary>
+    public static bool TryApplyIntentTargetOverride(
+        BattleState state, UnitSnapshot actor, EvaluatedAction evaluated, out EvaluatedAction retargeted)
+    {
+        retargeted = evaluated;
+        var intent = actor.CurrentCombatIntent;
+        if (intent.Type != CombatIntentType.Dive && intent.Type != CombatIntentType.Peel)
+        {
+            return false;
+        }
+
+        if (intent.TargetId == null)
+        {
+            return false;
+        }
+
+        var forced = state.FindUnit(intent.TargetId);
+        if (forced == null || !forced.IsAlive || forced.Side == actor.Side)
+        {
+            return false;
+        }
+
+        if (evaluated.Target != null && evaluated.Target.Id == forced.Id)
+        {
+            return false; // already on the forced target — nothing to change
+        }
+
+        retargeted = evaluated with { Target = forced };
+        return true;
+    }
+
     private static EvaluatedAction EvaluateLoopA(BattleState state, UnitSnapshot actor, ReevaluationReason reevaluationReason)
     {
         var fallbackRule = new TacticRule(999, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self, null);
