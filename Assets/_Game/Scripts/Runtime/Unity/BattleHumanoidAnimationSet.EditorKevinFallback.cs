@@ -65,9 +65,12 @@ public sealed partial class BattleHumanoidAnimationSet
             MakeVariant(BattleAnimationSemantic.Dodge, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/HumanM@Dodge01.fbx"),
             MakeVariant(BattleAnimationSemantic.Dodge, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/HumanM@Roll01.fbx"),
             MakeVariant(BattleAnimationSemantic.Dodge, BattleAnimationDirection.Any, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Spellcasting/HumanM@CastingDodge01.fbx"),
+            // Routine approach (Approach motion → DashEngage, Medium intensity) resolves to a clean forward RUN.
+            // A genuine burst (single-step distance ≥ 1.2m → Heavy) sprints. The old RunSlide01 variant (a
+            // baseball-slide clip) tied with Run01 at Medium and won ~half the time, which read as the
+            // "슬라이딩태클로 접근" the user reported — removed so a walk-up never slides.
             MakeVariant(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, BattleAnimationIntensity.Heavy, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Forward.fbx"),
             MakeVariant(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Forward.fbx"),
-            MakeVariant(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/HumanM@RunSlide01.fbx"),
             MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Backward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Backward.fbx"),
             MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Backward, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Backward.fbx"),
             MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Left, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/HumanM@StrafeRun01_BackwardLeft.fbx"),

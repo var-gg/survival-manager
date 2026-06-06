@@ -39,29 +39,6 @@ public static class MovementResolver
         return rangeBand.Contains(ComputeEdgeDistance(actor, target), hysteresis);
     }
 
-    /// <summary>True when at least one living teammate is closer to <paramref name="target"/> than
-    /// <paramref name="actor"/> — i.e. someone is in front. Used so a backline holder (AnchorFire/SupportAnchor)
-    /// only holds while there is a frontline to hold behind; the frontmost / last survivor advances instead, so
-    /// a back-line-vs-back-line matchup can never lock into a no-engagement standoff.</summary>
-    internal static bool HasCloserLivingAllyToTarget(BattleState state, UnitSnapshot actor, UnitSnapshot target)
-    {
-        var myDistance = actor.Position.DistanceTo(target.Position);
-        foreach (var ally in state.GetTeam(actor.Side))
-        {
-            if (ally.Id == actor.Id || !ally.IsAlive)
-            {
-                continue;
-            }
-
-            if (ally.Position.DistanceTo(target.Position) < myDistance)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public static CombatVector2 ResolveHomePosition(BattleState state, UnitSnapshot actor)
     {
         var context = state.GetTacticContext(actor.Side);
@@ -362,21 +339,13 @@ public static class MovementResolver
             return;
         }
 
-        // Phase 1 backline hold (AnchorFire = ranger, SupportAnchor = mystic): out of range against an ENEMY, a
-        // backline unit holds its anchor instead of advancing into melee to chase — it fires/casts only when an
-        // enemy enters range (the begin-gate handles that). Reads as "the back line stands and shoots / supports"
-        // instead of walking the carry forward. Two gates keep this from stalling the fight:
-        //   • enemy-target only — ally support (heals/barriers) still pursues normally to land in range;
-        //   • only while a teammate is CLOSER to the target (a frontline to hold behind). If this unit is the
-        //     frontmost/last survivor, it advances and engages so a back-line-vs-back-line standoff can't lock up.
-        if ((actor.CurrentCombatIntent.Type == CombatIntentType.AnchorFire
-             || actor.CurrentCombatIntent.Type == CombatIntentType.SupportAnchor)
-            && target.Side != actor.Side
-            && HasCloserLivingAllyToTarget(state, actor, target))
-        {
-            MoveTowards(state, actor, ResolveHomePosition(state, actor), CombatActionState.Reposition);
-            return;
-        }
+        // Phase 1 backline roles (AnchorFire = ranger, SupportAnchor = mystic) intentionally have NO "hold at the
+        // spawn anchor" movement here. Holding home while out of range made a back-liner stand and watch whenever
+        // its anchor sat outside firing range — the user-reported idle bystander. The hard invariant is: a unit
+        // that is OUT OF RANGE of its target closes to range first; nobody idles out of range. A ranged unit's
+        // long range band (ResolveDesiredPosition below) already settles it at stand-off distance behind the
+        // frontline, so it gets in range, then holds and fires (Phase 0 stand-and-shoot) without diving into melee.
+        // The AnchorFire / SupportAnchor intent stays a role signal (retarget seam, telegraph); it no longer idles.
 
         // Phase 1 HoldLine (vanguard role drama): the tank holds the frontline anchor band — it advances to
         // engage what comes to the line but clamps its pursuit to within VanguardHoldRadius of the anchor, so it

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
@@ -44,8 +45,8 @@ public sealed class RoleBrainTests
     }
 
     // Backline unit + a frontline vanguard ally (closer to the enemy) + a stationary far enemy. The backliner
-    // is genuinely "behind a frontline", so it holds; a lone backliner instead advances (covered implicitly by
-    // the fire-in-range test and the no-standoff guarantee). state.Allies[0] = backliner.
+    // advances to its firing range (it never idles out of range) while staying behind the frontline tank.
+    // state.Allies[0] = backliner, state.Allies[1] = frontline.
     private static (BattleState State, UnitSnapshot Backliner, UnitSnapshot Enemy) BuildBacklineBehindFrontline(
         string classId, float attackRange, float edgeStart)
     {
@@ -84,9 +85,10 @@ public sealed class RoleBrainTests
     }
 
     [Test]
-    public void Ranger_AnchorFire_HoldsBacklineAnchor_BehindFrontline()
+    public void Ranger_AnchorFire_AdvancesToFiringRange_StaysBehindFrontline()
     {
         var (state, ranger, dummy) = BuildBacklineBehindFrontline("ranger", attackRange: 5f, edgeStart: 8f);
+        var frontline = state.Allies[1];
         var sim = new BattleSimulator(state, 40);
 
         var minEdge = float.MaxValue;
@@ -99,12 +101,15 @@ public sealed class RoleBrainTests
             }
         }
 
-        // With a frontline vanguard closer to the enemy, the ranger holds its backline anchor and never closes
-        // into its 5m attack range against a passive enemy — the frontline engages, the ranger waits for targets.
+        // The invariant the user called out: a unit out of range closes to range — it never idles out of range.
+        // The ranger starts at edge 8 (outside its 5m range) and advances until the enemy is in firing range, then
+        // stands and shoots. It does NOT dive into melee: it stops at long range, behind the frontline tank.
         Assert.That(ranger.CurrentCombatIntent.Type, Is.EqualTo(CombatIntentType.AnchorFire),
             "a backline ranger's tactical intent should be AnchorFire");
-        Assert.That(minEdge, Is.GreaterThan(5.5f),
-            "AnchorFire ranger advanced into range of a passive enemy — it should hold behind the frontline");
+        Assert.That(minEdge, Is.LessThanOrEqualTo(ranger.AttackRange + 0.1f),
+            "AnchorFire ranger must close to its firing range — it must not idle out of range");
+        Assert.That(ranger.Position.X, Is.LessThan(frontline.Position.X),
+            "the ranger holds its stand-off behind the frontline tank — it does not overtake into melee");
     }
 
     [Test]
@@ -132,14 +137,13 @@ public sealed class RoleBrainTests
     }
 
     [Test]
-    public void Mystic_SupportAnchor_HoldsBacklineAnchor_BehindFrontline()
+    public void Mystic_SupportAnchor_AdvancesToRange_StaysBehindFrontline()
     {
         // A backline mystic behind a frontline vanguard basic-attacks the nearest enemy. With SupportAnchor it
-        // holds the backline anchor instead of walking forward to poke a distant enemy — the support line stays
-        // back while the frontline engages. (Its heal-pursuit of an ally is unaffected: the hold is gated to
-        // enemy targets only — see Healer_Supports_Lowest_Health_Ally — and a lone/frontmost support advances so
-        // a back-line standoff never locks up.)
+        // closes to its (short) firing range and then strikes/supports from there — it never idles out of range —
+        // while staying behind the frontline tank. (Its heal-pursuit of an ally is unaffected.)
         var (state, mystic, dummy) = BuildBacklineBehindFrontline("mystic", attackRange: 2.4f, edgeStart: 6f);
+        var frontline = state.Allies[1];
 
         var sim = new BattleSimulator(state, 40);
         var minEdge = float.MaxValue;
@@ -154,8 +158,10 @@ public sealed class RoleBrainTests
 
         Assert.That(mystic.CurrentCombatIntent.Type, Is.EqualTo(CombatIntentType.SupportAnchor),
             "a backline mystic's tactical intent should be SupportAnchor");
-        Assert.That(minEdge, Is.GreaterThan(2.9f),
-            "SupportAnchor mystic advanced into range of a passive enemy — it should hold behind the frontline");
+        Assert.That(minEdge, Is.LessThanOrEqualTo(mystic.AttackRange + 0.1f),
+            "SupportAnchor mystic must close to its firing range — it must not idle out of range");
+        Assert.That(mystic.Position.X, Is.LessThan(frontline.Position.X),
+            "the mystic stays behind the frontline tank");
     }
 
     [Test]
@@ -426,6 +432,82 @@ public sealed class RoleBrainTests
             "the vanguard cannot peel a threat it is too far to intercept");
         Assert.That(vanguard.CurrentCombatIntent.Type, Is.EqualTo(CombatIntentType.HoldLine),
             "with no peel and a HoldLine posture, the vanguard holds the line");
+    }
+
+    [Test]
+    public void NoLivingUnit_IdlesOutOfRange_InARepresentativeFight()
+    {
+        // The user-reported defect: "어느시점에 아무것도 안하고 관망하는 캐릭터가 생김" — a unit stands out of range doing
+        // nothing. Logic invariant (log-verifiable): no living unit sits stationary AND out of every enemy's attack
+        // range for a sustained stretch. A unit out of range must close to range. Brief holds behind an engaged
+        // frontline are allowed (the progress-gate escape pulse releases them within ~8 steps); a true idle
+        // bystander never moves again, so its streak runs the whole fight. A full 4v4 of every role exercises the
+        // backline AnchorFire/SupportAnchor paths that used to walk home and idle.
+        var allies = new[]
+        {
+            CombatTestFactory.CreateUnit("ally_vanguard", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter, hp: 220f, moveSpeed: 1.7f, attackRange: 1.2f, attackCooldown: 0.9f),
+            CombatTestFactory.CreateUnit("ally_duelist", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 90f, moveSpeed: 2.1f, attackRange: 1.2f, attackCooldown: 0.7f),
+            CombatTestFactory.CreateUnit("ally_ranger", classId: "ranger", anchor: DeploymentAnchorId.BackCenter, hp: 40f, moveSpeed: 1.8f, attackRange: 5f, attackCooldown: 0.5f),
+            CombatTestFactory.CreateUnit("ally_mystic", classId: "mystic", anchor: DeploymentAnchorId.BackTop, hp: 50f, moveSpeed: 1.8f, attackRange: 2.4f, attackCooldown: 0.8f),
+        };
+        var enemies = new[]
+        {
+            CombatTestFactory.CreateUnit("enemy_vanguard", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter, hp: 220f, moveSpeed: 1.7f, attackRange: 1.2f, attackCooldown: 0.9f),
+            CombatTestFactory.CreateUnit("enemy_duelist", race: "undead", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 90f, moveSpeed: 2.1f, attackRange: 1.2f, attackCooldown: 0.7f),
+            CombatTestFactory.CreateUnit("enemy_ranger", race: "undead", classId: "ranger", anchor: DeploymentAnchorId.BackCenter, hp: 40f, moveSpeed: 1.8f, attackRange: 5f, attackCooldown: 0.5f),
+            CombatTestFactory.CreateUnit("enemy_mystic", race: "undead", classId: "mystic", anchor: DeploymentAnchorId.BackTop, hp: 50f, moveSpeed: 1.8f, attackRange: 2.4f, attackCooldown: 0.8f),
+        };
+
+        var state = CombatTestFactory.CreateBattleState(allies, enemies, seed: 11);
+        var sim = new BattleSimulator(state, 150);
+
+        const int idleStreakLimit = 20; // 2.0s out-of-range AND stationary = idle bystander (healthy units reset ≤ ~8)
+        const float movedThreshold = 0.02f;
+        var streak = new Dictionary<string, int>();
+        var prevPos = state.AllUnits.ToDictionary(u => u.Id.Value, u => u.Position);
+        var worstStreak = 0;
+        var worstId = string.Empty;
+
+        for (var step = 0; step < 150 && !sim.IsFinished; step++)
+        {
+            sim.Step();
+            foreach (var u in state.AllUnits)
+            {
+                var moved = u.Position.DistanceTo(prevPos[u.Id.Value]) > movedThreshold;
+                prevPos[u.Id.Value] = u.Position;
+                if (!u.IsAlive)
+                {
+                    streak[u.Id.Value] = 0;
+                    continue;
+                }
+
+                // Skip the spawn/advance settle; only judge once the fight is actually joined.
+                if (step < 10)
+                {
+                    continue;
+                }
+
+                var inRange = state.GetOpponents(u.Side)
+                    .Any(e => e.IsAlive && MovementResolver.IsInActionRange(u, e, u.AttackRange));
+                if (inRange || moved)
+                {
+                    streak[u.Id.Value] = 0;
+                    continue;
+                }
+
+                streak.TryGetValue(u.Id.Value, out var s);
+                s++;
+                streak[u.Id.Value] = s;
+                if (s > worstStreak)
+                {
+                    worstStreak = s;
+                    worstId = u.Id.Value;
+                }
+            }
+        }
+
+        Assert.That(worstStreak, Is.LessThanOrEqualTo(idleStreakLimit),
+            $"unit '{worstId}' idled out of range for {worstStreak} steps — a unit out of range must close to range, not stand and watch");
     }
 
     private readonly struct UnitSnapshotPair
