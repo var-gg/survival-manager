@@ -232,8 +232,11 @@ public sealed class MovementResolverTests
 
     // ── FormationSpacing ──
 
+    // Stage B (GPT Pro): separation is now a damped relaxation into an allowed overlap band, not a
+    // one-step snap to full separation. A deep overlap is corrected gradually and settles around softMin
+    // (85% of minSeparation); pairs already inside the band are left alone (no per-step micro-shoving).
     [Test]
-    public void FormationSpacing_PushesOverlappingAlliesApart()
+    public void FormationSpacing_RelaxesDeepOverlap_TowardDeadzoneBand_Damped()
     {
         var a = MakeUnit("a", TeamSide.Ally);
         var b = MakeUnit("b", TeamSide.Ally);
@@ -241,14 +244,42 @@ public sealed class MovementResolverTests
         b.SetPosition(new CombatVector2(0.02f, 0f));
         a.SetActionState(CombatActionState.AcquireTarget);
         b.SetActionState(CombatActionState.AcquireTarget);
-
         var state = MakeState(new[] { a, b }, Array.Empty<UnitSnapshot>());
+        var minSep = a.SeparationRadius + b.SeparationRadius;
+
+        MovementResolver.ResolveFormationSpacing(state);
+        var distOneStep = a.Position.DistanceTo(b.Position);
+        Assert.That(distOneStep, Is.GreaterThan(0.02f), "deep overlap is pushed apart");
+        Assert.That(distOneStep, Is.LessThan(minSep), "but damped — not a one-step snap to full separation");
+
+        for (var i = 0; i < 40; i++)
+        {
+            MovementResolver.ResolveFormationSpacing(state);
+        }
+
+        var distConverged = a.Position.DistanceTo(b.Position);
+        Assert.That(distConverged, Is.InRange(minSep * 0.85f - 0.05f, minSep + 0.05f),
+            "settles within the allowed overlap band, no overshoot");
+    }
+
+    [Test]
+    public void FormationSpacing_WithinDeadzoneBand_DoesNotShove()
+    {
+        var a = MakeUnit("a", TeamSide.Ally);
+        var b = MakeUnit("b", TeamSide.Ally);
+        var minSep = a.SeparationRadius + b.SeparationRadius;
+        a.SetPosition(new CombatVector2(0f, 0f));
+        b.SetPosition(new CombatVector2(minSep * 0.90f, 0f)); // inside the band (push only below 85%)
+        a.SetActionState(CombatActionState.AcquireTarget);
+        b.SetActionState(CombatActionState.AcquireTarget);
+        var state = MakeState(new[] { a, b }, Array.Empty<UnitSnapshot>());
+
+        var aBefore = a.Position;
+        var bBefore = b.Position;
         MovementResolver.ResolveFormationSpacing(state);
 
-        var distAfter = a.Position.DistanceTo(b.Position);
-        var minSep = a.SeparationRadius + b.SeparationRadius;
-        Assert.That(distAfter, Is.GreaterThanOrEqualTo(minSep - 0.01f),
-            "Overlapping allies should be pushed apart to at least separation distance");
+        Assert.That(a.Position.DistanceTo(aBefore), Is.LessThan(1e-4f), "no shove inside the deadzone band");
+        Assert.That(b.Position.DistanceTo(bBefore), Is.LessThan(1e-4f), "no shove inside the deadzone band");
     }
 
     [Test]
@@ -296,5 +327,69 @@ public sealed class MovementResolverTests
         MovementResolver.MoveForIntent(state, actor, evalAction);
 
         Assert.That(actor.Position.X, Is.EqualTo(posBefore.X).Within(0.001f), "Rooted unit should not move");
+    }
+
+    // ── Stage C: guarded progress-gate settle (GPT Pro) ──
+
+    private static EvaluatedAction ApproachFarTarget(UnitSnapshot target)
+    {
+        return new EvaluatedAction(
+            BattleActionType.BasicAttack,
+            target,
+            null,
+            new TacticRule(0, TacticConditionType.LowestHpEnemy, 0f, BattleActionType.BasicAttack, TargetSelectorType.LowestHpEnemy),
+            new FloatRange(0.5f, 1.1f),
+            CombatActionState.Approach,
+            ReevaluationReason.None,
+            false,
+            null,
+            null);
+    }
+
+    [Test]
+    public void ProgressGate_SettlesWhenBlockedByEngagedAlly_EmittingNoMotion()
+    {
+        var actor = MakeUnit("actor", TeamSide.Ally, attackRange: 1.2f);
+        var frontAlly = MakeUnit("front_ally", TeamSide.Ally, attackRange: 1.2f);
+        var frontEnemy = MakeUnit("front_enemy", TeamSide.Enemy, attackRange: 1.2f);
+        var farTarget = MakeUnit("far_target", TeamSide.Enemy, attackRange: 1.2f);
+
+        actor.SetPosition(new CombatVector2(0f, 0f));
+        actor.SetActionState(CombatActionState.AcquireTarget);
+        frontAlly.SetPosition(new CombatVector2(0.6f, 0f));   // directly blocks the actor's lane
+        frontEnemy.SetPosition(new CombatVector2(1.5f, 0f));  // ...and the ally is in contact with this enemy
+        farTarget.SetPosition(new CombatVector2(5f, 0f));     // actor's focus target, unreachable through the ally
+
+        var state = MakeState(new[] { actor, frontAlly }, new[] { frontEnemy, farTarget });
+        var before = actor.Position;
+
+        MovementResolver.MoveForIntent(state, actor, ApproachFarTarget(farTarget));
+
+        // The gate holds the unit (no motion); on its deterministic escape-pulse tick it may take one ungated
+        // step, but never a forward shuffle through the engaged ally. Either way it does not advance — which is
+        // pulse-independent and is the property that kills the in-place walk.
+        Assert.That(actor.Position.X, Is.LessThanOrEqualTo(before.X + 1e-4f),
+            "blocked behind an engaged ally → never shuffles forward (holds / backs off, no treadmill)");
+    }
+
+    [Test]
+    public void ProgressGate_DoesNotSettle_WhenBlockedByEnemy()
+    {
+        var actor = MakeUnit("actor", TeamSide.Ally, attackRange: 1.2f);
+        var blockingEnemy = MakeUnit("block_enemy", TeamSide.Enemy, attackRange: 1.2f);
+        var farTarget = MakeUnit("far_target", TeamSide.Enemy, attackRange: 1.2f);
+
+        actor.SetPosition(new CombatVector2(0f, 0f));
+        actor.SetActionState(CombatActionState.AcquireTarget);
+        blockingEnemy.SetPosition(new CombatVector2(0.6f, 0f)); // an ENEMY blocks the lane
+        farTarget.SetPosition(new CombatVector2(5f, 0f));
+
+        var state = MakeState(new[] { actor }, new[] { blockingEnemy, farTarget });
+        var before = actor.Position;
+
+        MovementResolver.MoveForIntent(state, actor, ApproachFarTarget(farTarget));
+
+        Assert.That(actor.Position.DistanceTo(before), Is.GreaterThan(1e-3f),
+            "an enemy in the lane means engage / keep closing — never settle behind it");
     }
 }

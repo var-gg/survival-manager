@@ -77,6 +77,7 @@ public sealed class UnitSnapshot
     public int PendingWindupStartTick { get; private set; }
     public int PendingContactTick { get; private set; }
     public SkillDelivery PendingActionDelivery { get; private set; } = SkillDelivery.Melee;
+
     public float CooldownRemaining { get; private set; }
     public float TargetSwitchLockRemaining { get; private set; }
     public float ReevaluationRemaining { get; private set; }
@@ -99,6 +100,11 @@ public sealed class UnitSnapshot
     public PositioningIntentKind PositioningIntent { get; private set; } = PositioningIntentKind.None;
     public ReevaluationReason PositioningReplanReason { get; private set; } = ReevaluationReason.None;
     public int PositioningIntentRevision { get; private set; }
+
+    /// <summary>Phase 1 tactical-brain intent (what this unit is trying to do). Chosen at a low cadence by
+    /// RoleBrain and read by the movement/target executor so the fight reads as role-driven drama. Deterministic
+    /// and re-derived on replay — never serialized.</summary>
+    public CombatIntent CurrentCombatIntent { get; private set; } = CombatIntent.None;
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
     public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationRemaining <= 0f;
@@ -642,6 +648,16 @@ public sealed class UnitSnapshot
         PositioningReplanReason = normalizedReason;
         PositioningIntentRevision++;
         return true;
+    }
+
+    /// <summary>Phase 1: set the unit's current tactical-brain intent (chosen by RoleBrain). Returns true when
+    /// the intent type changed, so callers can emit an IntentChanged beat for presentation.</summary>
+    public bool SetCombatIntent(CombatIntent intent)
+    {
+        var changed = CurrentCombatIntent.Type != intent.Type
+                      || CurrentCombatIntent.TargetId != intent.TargetId;
+        CurrentCombatIntent = intent;
+        return changed;
     }
 
     private void MarkPositioningReplan(ReevaluationReason reason)

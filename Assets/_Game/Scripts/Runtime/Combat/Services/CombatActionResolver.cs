@@ -35,21 +35,9 @@ public static class CombatActionResolver
                     return events;
                 }
 
-                if (IsOutOfImpactRange(actor, target, null))
-                {
-                    actor.StartRecovery();
-                    BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.BasicAttack, null, 0f);
-                    events.Add(BuildEvent(
-                        state,
-                        actor,
-                        BattleActionType.BasicAttack,
-                        BattleLogCode.BasicAttackDamage,
-                        target,
-                        0f,
-                        note: RangeMissNote));
-                    return events;
-                }
-
+                // A basic attack is a COMMITTED swing: once the windup begins (only inside attack range) it
+                // runs to completion and always connects on the live target. There is no zero-damage range-miss
+                // for basics (that produced the "winds up but whiffs" dead-zone). Skills keep their range-miss.
                 var preImpactStep = MovementResolver.TryApplyBasicAttackPreImpactStep(state, actor, target);
                 var attackResult = HitResolutionService.ResolveBasicAttack(state, actor, target);
                 var attackNote = ComposeNote(attackResult.Note, preImpactStep.NoteToken);

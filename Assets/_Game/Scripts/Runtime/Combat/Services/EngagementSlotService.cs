@@ -13,6 +13,8 @@ public static class EngagementSlotService
     private const float MinOverflowRadiusScale = 0.45f;
     private const float ArenaHalfWidth = 8f;
     private const float ArenaHalfHeight = 3.2f;
+    private const int SlotLeaseTicks = 8;          // K-tick renewable lease (GPT Pro slot-hysteresis)
+    private const float SlotReachEpsilon = 0.20f;  // "arrived at slot" band; lease renews while held
 
     public static bool RequiresSlotting(UnitSnapshot actor, FloatRange rangeBand)
     {
@@ -60,9 +62,9 @@ public static class EngagementSlotService
 
         if (actor.EngagementSlot is { } existing
             && existing.TargetId == target.Id
-            && IsSlotStillClear(state, actor, existing))
+            && TryRenewCommitment(state, actor, target, existing, out var renewed))
         {
-            return existing;
+            return renewed;
         }
 
         var context = state.GetTacticContext(actor.Side);
@@ -108,7 +110,17 @@ public static class EngagementSlotService
             slotCount,
             radius);
         state.ActivityTelemetry.RecordHandednessSlotPreference(selected.PreferenceHit, selected.HasPreference);
-        return new EngagementSlotAssignment(target.Id, selected.SlotIndex, selected.Position, isOverflow);
+        var localOffset = selected.Position - target.Position;
+        return new EngagementSlotAssignment(
+            target.Id,
+            selected.SlotIndex,
+            selected.Position,
+            isOverflow,
+            SlotRing: ringOffset,
+            LocalOffset: localOffset,
+            CommitTick: state.StepIndex,
+            LeaseUntilTick: state.StepIndex + SlotLeaseTicks,
+            HasReachedOnce: false);
     }
 
     private static (int SlotIndex, CombatVector2 Position, bool PreferenceHit, bool HasPreference) ResolveSlotCandidate(
@@ -206,34 +218,52 @@ public static class EngagementSlotService
             .Sum(unit => 1f / MathF.Max(0.05f, position.DistanceTo(unit.Position)));
     }
 
-    private static bool IsSlotStillClear(BattleState state, UnitSnapshot actor, EngagementSlotAssignment slot)
+    /// <summary>
+    /// Sticky-slot renewal (GPT Pro slot-hysteresis). The committed angular slot is KEPT — only its absolute
+    /// position is re-materialized from the target's live position so the slot tracks a moving target instead
+    /// of going stale. The lease renews while the unit holds/reaches its slot; it is allowed to expire (→ full
+    /// re-slot, which may then pick a clearer slot) only while the unit is still en route and unable to reach.
+    /// Hard releases: target dead (here), or a different target (the caller's <c>TargetId</c> guard). This was
+    /// the dominant treadmill source — the previous gate dropped the slot whenever ANY live neighbour brushed
+    /// its clearance, so in a crowd the slot goal jittered every step and the unit chased a moving point.
+    /// Deterministic: depends only on tick index and truth positions, so re-sim reproduces it (no serialization).
+    /// </summary>
+    private static bool TryRenewCommitment(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        EngagementSlotAssignment existing,
+        out EngagementSlotAssignment renewed)
     {
-        if (MathF.Abs(slot.Position.X) > ArenaHalfWidth || MathF.Abs(slot.Position.Y) > ArenaHalfHeight)
+        renewed = existing;
+        if (!target.IsAlive)
         {
             return false;
         }
 
-        var target = state.FindUnit(slot.TargetId);
-        if (target == null || !target.IsAlive)
+        var position = MaterializeSlotPosition(target, existing.LocalOffset);
+        var reached = existing.HasReachedOnce || actor.Position.DistanceTo(position) <= SlotReachEpsilon;
+        if (!reached && state.StepIndex >= existing.LeaseUntilTick)
         {
-            return false;
+            return false; // en route but lease expired — re-slot (a clearer slot may now be available)
         }
 
-        foreach (var obstacle in state.AllUnits)
+        var leaseUntil = reached ? state.StepIndex + SlotLeaseTicks : existing.LeaseUntilTick;
+        renewed = existing with
         {
-            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
-            {
-                continue;
-            }
-
-            var clearance = actor.NavigationRadius + obstacle.NavigationRadius + 0.03f;
-            if (slot.Position.DistanceTo(obstacle.Position) < clearance)
-            {
-                return false;
-            }
-        }
-
+            Position = position,
+            HasReachedOnce = reached,
+            LeaseUntilTick = leaseUntil,
+        };
         return true;
+    }
+
+    private static CombatVector2 MaterializeSlotPosition(UnitSnapshot target, CombatVector2 localOffset)
+    {
+        var raw = target.Position + localOffset;
+        return new CombatVector2(
+            Math.Clamp(raw.X, -ArenaHalfWidth, ArenaHalfWidth),
+            Math.Clamp(raw.Y, -ArenaHalfHeight, ArenaHalfHeight));
     }
 
     private static float ResolveSpreadDegrees(PositioningIntentKind intent, int slotCount, TacticContext context)

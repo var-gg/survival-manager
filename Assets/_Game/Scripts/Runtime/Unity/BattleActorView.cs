@@ -97,6 +97,8 @@ public sealed class BattleActorView : MonoBehaviour
     private BattleAnimationDirection _activeAnimationDirection = BattleAnimationDirection.Any;
     private BattleAnimationIntensity _activeAnimationIntensity = BattleAnimationIntensity.Any;
     private Quaternion _lastAliveRotation = Quaternion.identity;
+    private Vector3 _lastMoveDirection = Vector3.zero;
+    private bool _isLocomoting;
     private bool _hasPendingTravelTrace;
     private BattleAnimationSemantic _pendingTravelTraceSemantic = BattleAnimationSemantic.None;
     private float _pendingTravelTraceDistance;
@@ -167,11 +169,26 @@ public sealed class BattleActorView : MonoBehaviour
         const float simFixedStepSeconds = 0.1f;
         var worldSpeed = BattleLocomotionCadence.WorldSpeed(distance, simFixedStepSeconds);
         var authoredLocomotionSpeed = _animationDriver?.ActiveAnimationSet?.AuthoredLocomotionSpeed ?? 1.6f;
+        var locomoting = BattleLocomotionCadence.IsLocomoting(worldSpeed) && clampedAlpha < 0.995f;
+        _isLocomoting = locomoting;
+        // Phase 0-E (moonwalk fix): remember the actual travel direction so facing can track movement while
+        // traveling (the single forward locomotion clip then never plays "backward"). A backward/lateral step
+        // now turns the body the way it moves instead of sliding while facing the target = moonwalk.
+        if (distance > 0.0001f)
+        {
+            var moveDirection = toWorld - fromWorld;
+            moveDirection.y = 0f;
+            if (moveDirection.sqrMagnitude > 1e-6f)
+            {
+                _lastMoveDirection = moveDirection.normalized;
+            }
+        }
+
         _animationDriver?.ApplyState(
             to,
             BattleLocomotionCadence.ResolvePlaybackSpeed(worldSpeed, authoredLocomotionSpeed),
             paused: false,
-            isLocomoting: BattleLocomotionCadence.IsLocomoting(worldSpeed) && clampedAlpha < 0.995f,
+            isLocomoting: locomoting,
             _presentationPhase);
         // GPT Pro D2 guard B: drive any contact-pinned commit from the absolute step anchor (step + alpha),
         // so the strike's contact frame lands on the damage tick independent of render framerate.
@@ -732,6 +749,19 @@ public sealed class BattleActorView : MonoBehaviour
         }
 
         var fallbackDirection = _currentState.Side == TeamSide.Ally ? Vector3.right : Vector3.left;
+
+        // Phase 0-E (moonwalk fix): while traveling, face the movement direction so the forward locomotion
+        // clip reads correctly; while fighting / winding up / idle (not locomoting), face the target. A unit
+        // mid-windup is not locomoting, so a committed strike still faces its target.
+        if (_isLocomoting
+            && _currentState.ActionState != CombatActionState.ExecuteAction
+            && _lastMoveDirection.sqrMagnitude > 0.001f)
+        {
+            var travelRotation = Quaternion.LookRotation(_lastMoveDirection, Vector3.up);
+            _lastAliveRotation = travelRotation;
+            return travelRotation;
+        }
+
         var targetWorld = _focusTargetWorld ?? (Vector3?)null;
         var direction = targetWorld.HasValue
             ? targetWorld.Value - transform.position

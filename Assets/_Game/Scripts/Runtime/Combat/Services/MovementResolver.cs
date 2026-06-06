@@ -36,6 +36,29 @@ public static class MovementResolver
         return rangeBand.Contains(ComputeEdgeDistance(actor, target), hysteresis);
     }
 
+    /// <summary>True when at least one living teammate is closer to <paramref name="target"/> than
+    /// <paramref name="actor"/> — i.e. someone is in front. Used so a backline holder (AnchorFire/SupportAnchor)
+    /// only holds while there is a frontline to hold behind; the frontmost / last survivor advances instead, so
+    /// a back-line-vs-back-line matchup can never lock into a no-engagement standoff.</summary>
+    internal static bool HasCloserLivingAllyToTarget(BattleState state, UnitSnapshot actor, UnitSnapshot target)
+    {
+        var myDistance = actor.Position.DistanceTo(target.Position);
+        foreach (var ally in state.GetTeam(actor.Side))
+        {
+            if (ally.Id == actor.Id || !ally.IsAlive)
+            {
+                continue;
+            }
+
+            if (ally.Position.DistanceTo(target.Position) < myDistance)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static CombatVector2 ResolveHomePosition(BattleState state, UnitSnapshot actor)
     {
         var context = state.GetTacticContext(actor.Side);
@@ -195,19 +218,9 @@ public static class MovementResolver
         var profile = BasicAttackActionProfileResolver.Resolve(actor);
         if (profile.Profile == BasicAttackActionProfile.StationaryStrike)
         {
-            if (ShouldUseSideAnchoredRangedPosition(actor, actor.PreferredRangeBand))
-            {
-                var maintainRangeDesired = ResolveDesiredPosition(state, actor, target, actor.PreferredRangeBand);
-                var next = CombatVector2.MoveTowards(actor.Position, maintainRangeDesired, Math.Max(0.01f, actor.MoveSpeed * state.FixedStepSeconds));
-                next = ResolveCollisionAwareStep(state, actor, maintainRangeDesired, ClampToArena(ClampToLeash(state, actor, next)), Math.Max(0.01f, actor.MoveSpeed * state.FixedStepSeconds));
-                var moved = actor.Position.DistanceTo(next);
-                if (moved > 0.01f)
-                {
-                    MovePosition(state, actor, next, BattleMotionKind.Reposition, isDiscrete: false);
-                    return new PostAttackRepositionResult(true, moved, "post_attack_maintain_range");
-                }
-            }
-
+            // Phase 0 stand-and-shoot: a ranged/stationary striker holds its ground after firing instead of
+            // repositioning to maintain range. The old maintain-range step was the baseline kite that broke
+            // melee approach and read as moonwalk. Deliberate skirmish returns as a scout/rift archetype step.
             return PostAttackRepositionResult.None;
         }
 
@@ -324,9 +337,9 @@ public static class MovementResolver
         }
 
         actor.StopDefending();
-        actor.SetEngagementSlot(evaluated.SlotAssignment);
-
         var target = evaluated.Target;
+
+        // Mobility dash stays a content-driven gap-closer / reaction (an authored ability), not baseline AI.
         if (evaluated.Mobility != null)
         {
             var mobileDestination = ClampToArena(ClampToLeash(state, actor, evaluated.Mobility.Destination));
@@ -336,48 +349,34 @@ public static class MovementResolver
             return;
         }
 
-        var currentDistance = ComputeEdgeDistance(actor, target);
-        var rangeBand = evaluated.DesiredRangeBand;
-        var approachBuffer = ResolveMovementBuffer(actor.Behavior.ApproachBuffer, actor.Behavior.RangeHysteresis);
-        var retreatBuffer = ResolveMovementBuffer(actor.Behavior.RetreatBuffer, actor.Behavior.RangeHysteresis);
-
-        if (currentDistance < rangeBand.ClampedMin - retreatBuffer)
+        // Phase 0 clean pursuit: walk to attack range, then stop and let the sim begin the (committed) swing.
+        // No retreat/kite (baseline ranged stands and shoots) and no slot-gated approach (slots no longer gate
+        // the attack) — just close the gap. Spread / formation / skirmish return as tactical intent later.
+        var actionRange = evaluated.Skill?.Range ?? actor.AttackRange;
+        if (IsInActionRange(actor, target, actionRange))
         {
-            var away = actor.Position - target.Position;
-            var awayDirection = away.SqrLength <= 0.0001f
-                ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
-                : away.Normalized;
-            var retreatOffset = Math.Max(0.35f, (rangeBand.ClampedMin - currentDistance) + 0.2f);
-            MoveTowards(state, actor, actor.Position + (awayDirection * retreatOffset), CombatActionState.BreakContact);
+            actor.SetActionState(CombatActionState.AcquireTarget);
             return;
         }
 
-        if (evaluated.SlotAssignment is { } slotAssignment)
+        // Phase 1 backline hold (AnchorFire = ranger, SupportAnchor = mystic): out of range against an ENEMY, a
+        // backline unit holds its anchor instead of advancing into melee to chase — it fires/casts only when an
+        // enemy enters range (the begin-gate handles that). Reads as "the back line stands and shoots / supports"
+        // instead of walking the carry forward. Two gates keep this from stalling the fight:
+        //   • enemy-target only — ally support (heals/barriers) still pursues normally to land in range;
+        //   • only while a teammate is CLOSER to the target (a frontline to hold behind). If this unit is the
+        //     frontmost/last survivor, it advances and engages so a back-line-vs-back-line standoff can't lock up.
+        if ((actor.CurrentCombatIntent.Type == CombatIntentType.AnchorFire
+             || actor.CurrentCombatIntent.Type == CombatIntentType.SupportAnchor)
+            && target.Side != actor.Side
+            && HasCloserLivingAllyToTarget(state, actor, target))
         {
-            var slotDistance = actor.Position.DistanceTo(slotAssignment.Position);
-            if (slotDistance > Math.Max(0.15f, actor.SeparationRadius * 0.35f))
-            {
-                MoveTowards(
-                    state,
-                    actor,
-                    slotAssignment.Position,
-                    slotAssignment.IsOverflow ? CombatActionState.SecurePosition : CombatActionState.Approach);
-                return;
-            }
-        }
-
-        if (currentDistance > rangeBand.ClampedMax + approachBuffer
-            || (evaluated.DesiredPhase == CombatActionState.Approach
-                && currentDistance > rangeBand.ClampedMax + ActionStartRangeTolerance))
-        {
-            var desiredPosition = ResolveDesiredPosition(state, actor, target, rangeBand);
-            MoveTowards(state, actor, desiredPosition, evaluated.SlotAssignment != null ? CombatActionState.SecurePosition : CombatActionState.Approach);
+            MoveTowards(state, actor, ResolveHomePosition(state, actor), CombatActionState.Reposition);
             return;
         }
 
-        actor.SetActionState(evaluated.DesiredPhase == CombatActionState.ExecuteAction
-            ? CombatActionState.AcquireTarget
-            : evaluated.DesiredPhase);
+        var desiredPosition = ResolveDesiredPosition(state, actor, target, evaluated.DesiredRangeBand);
+        MoveTowards(state, actor, desiredPosition, CombatActionState.Approach, allowProgressGate: true);
     }
 
     public static void ResolveFormationSpacing(BattleState state)
@@ -643,16 +642,30 @@ public static class MovementResolver
                || actor.AttackRange >= 2.2f;
     }
 
-    private static float ResolveMovementBuffer(float authoredBuffer, float rangeHysteresis)
-    {
-        var safeHysteresis = Math.Max(0f, rangeHysteresis);
-        return safeHysteresis <= 0f
-            ? 0f
-            : Math.Min(Math.Max(0f, authoredBuffer), safeHysteresis);
-    }
+    // GPT Pro Stage B (separation deadzone + damping). The old solver pushed any pair with
+    // distance < minSeparation fully apart every step, with no deadzone — in a crowd that is constant
+    // micro-shoving (the dominant "Reposition" churn that the treadmill measurement surfaces once slot
+    // thrash is fixed). Instead we tolerate a small overlap band (push only below softMin = 85% of
+    // minSeparation) and damp the correction so the pair relaxes toward the band edge over a few ticks
+    // instead of snapping to full separation. At equilibrium (distance ≈ softMin) the push is ~0, so no
+    // motion is emitted and the unit idles instead of walking-in-place. Pure function of truth positions
+    // (no RNG, no accumulated state) → deterministic and reproduced exactly on re-sim.
+    private const float SeparationDeadzoneScale = 0.85f;
+    private const float SeparationDamping = 0.35f;
 
     private static void ResolveTeamSpacing(BattleState state, IReadOnlyList<UnitSnapshot> team)
     {
+        // GPT Pro Phase 3 (HOLD). A unit that is engaged — standing within attack range of its target — is
+        // NOT shoved by separation. It holds and fights, which removes the per-tick "engaged units shuffle"
+        // that is the bulk of the visible treadmill (with sticky slots they already stand at distinct points,
+        // so the residual push was pure jitter). Only a non-holding (traveling) unit yields; if both hold,
+        // the small overlap is accepted (a deliberate space-resolve handles severe cases in a later phase).
+        var holding = new bool[team.Count];
+        for (var k = 0; k < team.Count; k++)
+        {
+            holding[k] = team[k].IsAlive && IsHoldingPosition(state, team[k]);
+        }
+
         for (var i = 0; i < team.Count; i++)
         {
             var left = team[i];
@@ -669,23 +682,85 @@ public static class MovementResolver
                     continue;
                 }
 
-                var minSeparation = left.SeparationRadius + right.SeparationRadius;
-                var delta = right.Position - left.Position;
-                var distance = delta.Length;
-                if (distance <= 0.0001f || distance >= minSeparation)
+                if (holding[i] && holding[j])
                 {
-                    continue;
+                    continue; // both standing and fighting — do not jitter them apart
                 }
 
-                var push = (minSeparation - distance) * 0.5f;
-                var direction = delta.Normalized;
-                MovePosition(state, left, ClampToArena(left.Position - (direction * push)), BattleMotionKind.Reposition, isDiscrete: false);
-                MovePosition(state, right, ClampToArena(right.Position + (direction * push)), BattleMotionKind.Reposition, isDiscrete: false);
+                var minSeparation = left.SeparationRadius + right.SeparationRadius;
+                var softMin = minSeparation * SeparationDeadzoneScale;
+                var delta = right.Position - left.Position;
+                var distance = delta.Length;
+                if (distance >= softMin)
+                {
+                    continue; // inside the allowed overlap band → no shove (kills the per-step jitter)
+                }
+
+                // Exact (or near-exact) overlap has no usable delta direction; fall back to a deterministic
+                // per-pair axis (stable hash, never RNG) so coincident units still separate reproducibly.
+                var direction = distance <= 1e-4f
+                    ? ResolveDeterministicSeparationAxis(left, right)
+                    : delta.Normalized;
+                var push = (softMin - distance) * SeparationDamping;
+                if (!holding[i])
+                {
+                    MovePosition(state, left, ClampToArena(left.Position - (direction * push)), BattleMotionKind.Reposition, isDiscrete: false);
+                }
+
+                if (!holding[j])
+                {
+                    MovePosition(state, right, ClampToArena(right.Position + (direction * push)), BattleMotionKind.Reposition, isDiscrete: false);
+                }
             }
         }
     }
 
-    private static void MoveTowards(BattleState state, UnitSnapshot actor, CombatVector2 targetPosition, CombatActionState actionState)
+    /// <summary>
+    /// HOLD predicate (GPT Pro Phase 3): a unit is holding when it is engaged — alive, not still marching out
+    /// from spawn, and standing within attack range of a live enemy target. Holding units stand and fight
+    /// (no separation shove, no micro-adjust), which is what stops the engaged-unit shuffle. Deterministic
+    /// (positions + range only), reproduced on re-sim.
+    /// </summary>
+    internal static bool IsHoldingPosition(BattleState state, UnitSnapshot unit)
+    {
+        if (!unit.IsAlive
+            || unit.ActionState is CombatActionState.Spawn or CombatActionState.AdvanceToAnchor)
+        {
+            return false;
+        }
+
+        var target = state.FindUnit(unit.CurrentTargetId);
+        return target != null
+               && target.IsAlive
+               && target.Side != unit.Side
+               && IsInActionRange(unit, target, unit.AttackRange + ActionStartRangeTolerance);
+    }
+
+    private static CombatVector2 ResolveDeterministicSeparationAxis(UnitSnapshot left, UnitSnapshot right)
+    {
+        var hash = StableHash(left.Id.Value) ^ StableHash(right.Id.Value);
+        var angle = (Math.Abs(hash) % 360) * (MathF.PI / 180f);
+        return new CombatVector2(MathF.Cos(angle), MathF.Sin(angle));
+    }
+
+    // GPT Pro Stage C (guarded progress-gate settle). After slot-hysteresis (A) and separation deadzone (B),
+    // the residual treadmill is Approach-driven: a unit blocked by its own teammates keeps emitting a
+    // full-step lateral sidestep toward an unreachable goal. This is the ACTUATOR fix — when a unit cannot
+    // make meaningful forward progress AND it is blocked only by allies who are themselves already engaged
+    // (the frontline is fighting), it HOLDS instead of shuffling: no MovePosition, no motion intent. Because
+    // presentation drives the walk clip purely from per-step net displacement, emitting no motion makes the
+    // unit idle, which directly removes the in-place walk. Liveness is preserved (no new deadlock): an enemy
+    // blocker or a non-engaged frontline never gates (the unit keeps closing), and a deterministic per-actor
+    // escape pulse forces an ungated move on a fixed cadence so nothing can hold forever.
+    private const float ProgressGateFraction = 0.25f;     // "meaningful forward progress" = ≥ 1/4 of a step
+    private const int ProgressGateEscapePeriod = 8;        // deterministic ungated move every K ticks per actor
+
+    private static void MoveTowards(
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 targetPosition,
+        CombatActionState actionState,
+        bool allowProgressGate = false)
     {
         if (actor.IsRooted)
         {
@@ -694,12 +769,98 @@ public static class MovementResolver
         }
 
         var stepDistance = Math.Max(0.01f, actor.MoveSpeed * state.FixedStepSeconds);
-        var next = CombatVector2.MoveTowards(actor.Position, targetPosition, stepDistance);
-        next = ClampToLeash(state, actor, next);
-        next = ClampToArena(next);
-        next = ResolveCollisionAwareStep(state, actor, targetPosition, next, stepDistance);
+        var directNext = CombatVector2.MoveTowards(actor.Position, targetPosition, stepDistance);
+        directNext = ClampToLeash(state, actor, directNext);
+        directNext = ClampToArena(directNext);
+        var next = ResolveCollisionAwareStep(state, actor, targetPosition, directNext, stepDistance);
+        if (allowProgressGate && ShouldProgressGateSettle(state, actor, targetPosition, directNext, next, stepDistance))
+        {
+            // Hold position: emit NO motion (net-0 → presentation idles instead of walking-in-place). The
+            // engage action state is kept so the unit re-evaluates and resumes the moment the lane clears.
+            actor.SetActionState(actionState);
+            return;
+        }
+
         MovePosition(state, actor, next, ResolveLocomotionKind(actionState), isDiscrete: false);
         actor.SetActionState(actionState);
+    }
+
+    private static bool ShouldProgressGateSettle(
+        BattleState state,
+        UnitSnapshot actor,
+        CombatVector2 targetPosition,
+        CombatVector2 directNext,
+        CombatVector2 next,
+        float stepDistance)
+    {
+        // 1. Is the resolved step actually making forward progress? If so, never gate — let it move.
+        var forward = (targetPosition - actor.Position).Normalized;
+        if (forward.SqrLength <= 0.0001f)
+        {
+            return false;
+        }
+
+        var progress = CombatVector2.Dot(next - actor.Position, forward);
+        if (progress >= stepDistance * ProgressGateFraction)
+        {
+            return false;
+        }
+
+        // 2. Blocked only by allies, at least one of whom is itself in contact with an enemy (frontline
+        //    engaged). An enemy blocker means contact pressure → never gate (keep closing / hold contact).
+        var sawAllyBlocker = false;
+        var sawEngagedAllyBlocker = false;
+        foreach (var obstacle in state.AllUnits)
+        {
+            if (obstacle.Id == actor.Id || !obstacle.IsAlive)
+            {
+                continue;
+            }
+
+            var clearance = actor.NavigationRadius + obstacle.NavigationRadius + ObstacleClearancePadding;
+            if (directNext.DistanceTo(obstacle.Position) >= clearance)
+            {
+                continue;
+            }
+
+            if (obstacle.Side != actor.Side)
+            {
+                return false; // an enemy is in the way — engage / hold contact, do not settle
+            }
+
+            sawAllyBlocker = true;
+            if (IsBlockerEngagedWithEnemy(state, obstacle))
+            {
+                sawEngagedAllyBlocker = true;
+            }
+        }
+
+        if (!sawAllyBlocker || !sawEngagedAllyBlocker)
+        {
+            return false; // not stuck behind a fighting frontline — keep advancing so the team can make contact
+        }
+
+        // 3. Deterministic escape pulse: a fixed per-actor cadence always allows an ungated move, so no unit
+        //    can be held indefinitely (replay-safe — phase is a stable hash of the id, never RNG/time).
+        if (((state.StepIndex + StableHash(actor.Id.Value)) % ProgressGateEscapePeriod) == 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool IsBlockerEngagedWithEnemy(BattleState state, UnitSnapshot blocker)
+    {
+        foreach (var enemy in state.GetOpponents(blocker.Side))
+        {
+            if (enemy.IsAlive && IsInActionRange(blocker, enemy, blocker.AttackRange))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private const float MotionRecordThreshold = 1e-5f;
@@ -972,25 +1133,16 @@ public static class MovementResolver
         return (hash & 1) == 0 ? 1f : -1f;
     }
 
+    // Phase 0: the combat leash is removed. The arena bounds (ClampToArena, applied alongside every call) are
+    // the only spatial limit, so a unit may pursue its target anywhere on the field — no spawn-anchored radius
+    // that pinned a melee short of a backline target (the endgame "treadmill"). Overextension discipline returns
+    // as tactical intent scoring in a later phase, not as a hard movement clamp. Kept as an identity pass-through
+    // so the existing call sites stay readable; the state/actor parameters are retained for that call shape.
     private static CombatVector2 ClampToLeash(BattleState state, UnitSnapshot actor, CombatVector2 position)
     {
-        var postureMultiplier = state.GetPosture(actor.Side) switch
-        {
-            TeamPostureType.HoldLine => 0.8f,
-            TeamPostureType.ProtectCarry => actor.Anchor.IsBackRow() ? 0.7f : 0.95f,
-            TeamPostureType.AllInBackline => 1.35f,
-            _ => 1f,
-        };
-
-        var leash = actor.LeashDistance * postureMultiplier;
-        var origin = actor.AnchorPosition;
-        var offset = position - origin;
-        if (offset.Length <= leash)
-        {
-            return position;
-        }
-
-        return origin + (offset.Normalized * leash);
+        _ = state;
+        _ = actor;
+        return position;
     }
 
     private static CombatVector2 ClampToArena(CombatVector2 position)

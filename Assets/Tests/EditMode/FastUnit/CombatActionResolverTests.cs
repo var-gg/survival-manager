@@ -102,7 +102,7 @@ public sealed class CombatActionResolverTests
     }
 
     [Test]
-    public void BasicAttack_TargetLeavesRangeDuringWindup_ProducesMissWithoutDamage()
+    public void BasicAttack_TargetStepsBackDuringWindup_CommittedSwingStillConnects()
     {
         var actor = CreatePositionedUnit("ally_attacker", TeamSide.Ally, physPower: 8f);
         var target = CreatePositionedUnit("enemy_target", TeamSide.Enemy, hp: 40f, armor: 0f);
@@ -111,15 +111,18 @@ public sealed class CombatActionResolverTests
         var hpBefore = target.CurrentHealth;
         var energyBefore = actor.CurrentEnergy;
         actor.BeginWindup(BattleActionType.BasicAttack, target.Id, null);
+        // Target back-pedals during the swing. Phase 0 clean foundation: a basic-attack windup is COMMITTED
+        // once begun — it no longer cancels for range, so the swing connects on resolve instead of producing
+        // the old zero-damage "miss_range" whiff that fed the approach treadmill. (Skills keep their range-miss.)
         target.SetPosition(new CombatVector2(5f, 0f));
 
         var events = CombatActionResolver.Resolve(state, actor);
 
         var attackEvent = events.Single(e => e.LogCode == BattleLogCode.BasicAttackDamage);
-        Assert.That(attackEvent.Value, Is.EqualTo(0f));
-        Assert.That(attackEvent.Note, Is.EqualTo("miss_range"));
-        Assert.That(target.CurrentHealth, Is.EqualTo(hpBefore));
-        Assert.That(actor.CurrentEnergy, Is.EqualTo(energyBefore));
+        Assert.That(attackEvent.Value, Is.GreaterThan(0f), "committed basic swing should connect on the live target");
+        Assert.That(attackEvent.Note, Does.Not.Contain("miss_range"), "basics no longer produce a zero-damage range-miss");
+        Assert.That(target.CurrentHealth, Is.LessThan(hpBefore), "target should lose health");
+        Assert.That(actor.CurrentEnergy, Is.GreaterThan(energyBefore), "basic attack grants energy on resolve");
         Assert.That(actor.ActionState, Is.EqualTo(CombatActionState.Recover));
     }
 

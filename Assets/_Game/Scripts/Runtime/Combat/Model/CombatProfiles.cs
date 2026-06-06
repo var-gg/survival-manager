@@ -119,11 +119,26 @@ public sealed record MobilityDecision(
     MobilityActionProfile Profile,
     CombatVector2 Destination);
 
+/// <summary>
+/// A melee unit's committed standing slot around a target. <see cref="Position"/> is the materialized
+/// absolute goal consumers move toward; it is recomputed each step from the target's live position plus
+/// <see cref="LocalOffset"/> so the committed slot tracks a moving target instead of going stale. The
+/// commitment is sticky under a K-tick renewable lease (GPT Pro slot-hysteresis): the angular identity
+/// (<see cref="SlotRing"/>/<see cref="SlotIndex"/>/<see cref="LocalOffset"/>) is NOT recomputed every step,
+/// which is what previously made the slot goal jitter in a crowd (the "treadmill"). Only the key, lease
+/// ticks, and reach flag travel with the commitment — never presentation state — and they are reconstructed
+/// deterministically on replay (re-sim from seed), so nothing here needs serialization.
+/// </summary>
 public sealed record EngagementSlotAssignment(
     EntityId TargetId,
     int SlotIndex,
     CombatVector2 Position,
-    bool IsOverflow);
+    bool IsOverflow,
+    int SlotRing = 0,
+    CombatVector2 LocalOffset = default,
+    int CommitTick = 0,
+    int LeaseUntilTick = 0,
+    bool HasReachedOnce = false);
 
 public static class CombatProfileDefaults
 {

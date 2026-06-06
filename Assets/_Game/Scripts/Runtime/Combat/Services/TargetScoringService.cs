@@ -98,9 +98,80 @@ public static class TargetScoringService
             _ => ResolveFallback(state, actor, rule, candidates, context),
         };
 
-        return IsValidCandidate(state, actor, selected, rule)
+        var result = IsValidCandidate(state, actor, selected, rule)
             ? selected
             : ResolveFallback(state, actor, rule, candidates, context);
+        return ApplyMeleeNearestEngagementOverride(state, actor, result, rule);
+    }
+
+    // Q5 (GPT Pro): "근접은 nearest-reachable 교전, focus-fire는 soft preference." Melee engagers pick the
+    // NEAREST reachable enemy rather than converging on one far focus target — the focus-fire pile-up is the
+    // dominant residual treadmill once the movement layer is clean. Focus-fire is preserved only LOCALLY: the
+    // authored pick is kept when it is within a small band of the nearest (so among near-equidistant enemies a
+    // low-HP target is still finished off), but a focus target that is meaningfully farther than the nearest is
+    // abandoned. Ranged units and forced/marked/locked targeting keep strict focus-fire. Pure function of truth
+    // positions (deterministic, reproduced on re-sim, no serialization); the focus band + the upstream retarget
+    // lock provide hysteresis against per-tick thrash.
+    private const float MeleeFocusBand = 0.5f; // keep the authored focus if it is within this much of the nearest
+
+    private static UnitSnapshot? ApplyMeleeNearestEngagementOverride(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot? selected,
+        TargetRule rule)
+    {
+        if (selected == null
+            || rule.Domain != TargetDomain.EnemyUnit
+            || selected.Side == actor.Side
+            || !IsMeleeEngager(actor)
+            || IsForcedTargetRule(rule))
+        {
+            return selected;
+        }
+
+        UnitSnapshot? nearest = null;
+        var nearestEdge = float.MaxValue;
+        foreach (var enemy in state.GetOpponents(actor.Side))
+        {
+            if (!enemy.IsAlive || !IsValidCandidate(state, actor, enemy, rule, skipRangeFilter: true))
+            {
+                continue;
+            }
+
+            var edge = MovementResolver.ComputeEdgeDistance(actor, enemy);
+            if (edge < nearestEdge
+                || (Math.Abs(edge - nearestEdge) <= 1e-4f && nearest != null && string.CompareOrdinal(enemy.Id.Value, nearest.Id.Value) < 0))
+            {
+                nearest = enemy;
+                nearestEdge = edge;
+            }
+        }
+
+        if (nearest == null || nearest.Id == selected.Id)
+        {
+            return selected;
+        }
+
+        // Keep the authored focus only when it is roughly as close as the nearest (local focus-fire); otherwise
+        // engage the nearest reachable enemy instead of walking past it.
+        var selectedEdge = MovementResolver.ComputeEdgeDistance(actor, selected);
+        return selectedEdge <= nearestEdge + MeleeFocusBand ? selected : nearest;
+    }
+
+    private static bool IsMeleeEngager(UnitSnapshot actor)
+    {
+        // Short-range engagers only. Rangers/casters keep strict focus-fire (their long range never forces them
+        // to walk past a nearer enemy, so the pile-up this fixes doesn't apply to them).
+        return actor.AttackRange <= 1.8f;
+    }
+
+    private static bool IsForcedTargetRule(TargetRule rule)
+    {
+        // Only genuine "this exact target" intents are exempt (taunt / marked / explicit current-target).
+        // NOT LockTargetAtCastStart — that merely forbids switching mid-cast and is handled upstream by the
+        // stable-target lock; it defaults true on every rule, so gating on it would disable the override entirely.
+        return rule.PrimarySelector is TargetSelector.MarkedEnemy or TargetSelector.CurrentTarget
+               || rule.Filters.HasFlag(TargetFilterFlags.RequireMarked);
     }
 
     internal static float ComputeExposureScore(BattleState state, UnitSnapshot target)

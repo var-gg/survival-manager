@@ -12,8 +12,6 @@ public sealed class BattleSimulator
     public const int DefaultMaxSteps = 300;
 
     private const float SpawnArrivalThreshold = 0.05f;
-    private const float SlotArrivalThreshold = 0.15f;
-    private const float SlotArrivalRadiusScale = 0.4f;
     private const float HomeArrivalThreshold = 0.12f;
     private const float ActionRangeTolerance = 0.35f;
 
@@ -126,23 +124,17 @@ public sealed class BattleSimulator
 
             actor.SetEngagementSlot(evaluated.SlotAssignment);
 
-            var inRangeBand = MovementResolver.IsWithinRangeBand(actor, evaluated.Target, evaluated.DesiredRangeBand, actor.Behavior.RangeHysteresis);
-            var slotReady = !evaluated.RequiresEngagementSlot
-                            || evaluated.SlotAssignment == null
-                            || actor.Position.DistanceTo(evaluated.SlotAssignment.Position) <= Math.Max(SlotArrivalThreshold, actor.SeparationRadius * SlotArrivalRadiusScale)
-                            || (inRangeBand && MovementResolver.IsInActionRange(actor, evaluated.Target, actor.AttackRange + ActionRangeTolerance));
-            var canBeginAction = evaluated.Target.Side == actor.Side
-                                 || evaluated.DesiredPhase == CombatActionState.ExecuteAction;
-            var actionRangeReady = evaluated.Target.Side == actor.Side
-                                   || MovementResolver.IsInActionRange(
-                                       actor,
-                                       evaluated.Target,
-                                       ResolveEvaluatedActionRange(actor, evaluated) + MovementResolver.ActionStartRangeTolerance);
-            if (canBeginAction
-                && actionRangeReady
-                && inRangeBand
-                && slotReady
-                && evaluated.Mobility == null)
+            // Phase 1 tactical brain: choose what the unit is trying to do (its CombatIntent) now that its
+            // target is set. The movement executor reads it (e.g. AnchorFire holds the backline anchor); the
+            // attack rule below is unchanged — intent biases positioning, not hit validity.
+            RoleBrain.ResolveIntent(State, actor);
+
+            // Phase 0 single attack rule: an action begins when the target is within action range
+            // (edge ≤ R + 0.05) and the cooldown is ready. No range-band / slot-ready / start-tolerance
+            // gating — those produced the out-of-range hover and the slot thrash. When not in range the
+            // unit pursues (MoveForIntent). This rule is identical for ally support and enemy attacks.
+            var canBeginAction = MovementResolver.IsInActionRange(actor, evaluated.Target, ResolveEvaluatedActionRange(actor, evaluated));
+            if (canBeginAction && evaluated.Mobility == null)
             {
                 if (evaluated.ActionType == BattleActionType.BasicAttack && !StatusResolutionService.CanUseBasicAttack(actor))
                 {
@@ -277,19 +269,15 @@ public sealed class BattleSimulator
         }
 
         var desiredRange = actor.ResolveActionRange(actor.PendingSkillId);
-        if (!MovementResolver.IsInActionRange(actor, target, desiredRange + ActionRangeTolerance))
+        if (actor.PendingActionType != BattleActionType.BasicAttack
+            && !MovementResolver.IsInActionRange(actor, target, desiredRange + ActionRangeTolerance))
         {
+            // A basic-attack windup is COMMITTED once begun: it never cancels for range, so a target that
+            // back-pedals during the swing no longer triggers the per-tick cancel→re-approach "treadmill" —
+            // the swing simply connects on resolve. Skills/casts still abort if the target leaves the cast
+            // envelope mid-windup (a deliberate whiff path), keeping their original behavior.
             EmitCanceledIfPending(actor);
             actor.ClearTarget(applySwitchDelay: true);
-            actor.SetActionState(CombatActionState.AcquireTarget);
-            return false;
-        }
-
-        if (ShouldCancelPendingBasicAttackForPreferredMinimum(actor, target, desiredRange))
-        {
-            EmitCanceledIfPending(actor);
-            actor.ClearTarget(applySwitchDelay: false);
-            actor.SetCurrentTarget(target.Id);
             actor.SetActionState(CombatActionState.AcquireTarget);
             return false;
         }
@@ -461,41 +449,6 @@ public sealed class BattleSimulator
     private static float ResolveEvaluatedActionRange(UnitSnapshot actor, EvaluatedAction evaluated)
     {
         return evaluated.Skill?.Range ?? actor.AttackRange;
-    }
-
-    private static bool ShouldCancelPendingBasicAttackForPreferredMinimum(UnitSnapshot actor, UnitSnapshot target, float desiredRange)
-    {
-        if (actor.PendingActionType != BattleActionType.BasicAttack || actor.IsRooted)
-        {
-            return false;
-        }
-
-        var profile = BasicAttackActionProfileResolver.Resolve(actor);
-        var preferredMinimum = ResolvePendingBasicAttackPreferredMinimum(actor, desiredRange);
-        if (profile.Profile != BasicAttackActionProfile.StationaryStrike || preferredMinimum < 1.8f)
-        {
-            return false;
-        }
-
-        var edgeDistance = MovementResolver.ComputeEdgeDistance(actor, target);
-        return edgeDistance < preferredMinimum - ResolvePendingActionRetreatBuffer(actor);
-    }
-
-    private static float ResolvePendingBasicAttackPreferredMinimum(UnitSnapshot actor, float desiredRange)
-    {
-        var preferredMinimum = actor.Behavior.PreferredRangeMin > 0f
-            ? actor.Behavior.PreferredRangeMin
-            : actor.PreferredRangeBand.ClampedMin;
-
-        return Math.Min(Math.Max(0f, preferredMinimum), Math.Max(0.4f, desiredRange));
-    }
-
-    private static float ResolvePendingActionRetreatBuffer(UnitSnapshot actor)
-    {
-        var safeHysteresis = Math.Max(0f, actor.Behavior.RangeHysteresis);
-        return safeHysteresis <= 0f
-            ? 0f
-            : Math.Min(Math.Max(0f, actor.Behavior.RetreatBuffer), safeHysteresis);
     }
 
     private void HandleDefendOrReposition(UnitSnapshot actor, List<BattleEvent> stepEvents)

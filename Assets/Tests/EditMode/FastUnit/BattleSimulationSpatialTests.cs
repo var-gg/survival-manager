@@ -80,7 +80,10 @@ public sealed class BattleSimulationSpatialTests
             var target = step.Units.First(unit => unit.Id == basic.TargetId.GetValueOrDefault().Value);
             var edgeDistance = actor.Position.DistanceTo(target.Position) - actor.NavigationRadius - target.NavigationRadius;
 
-            Assert.That(edgeDistance, Is.InRange(0.35f, 0.75f),
+            // Upper bound raised 0.75 -> 0.85 for the movement treadmill rewrite: melee now commits to a
+            // STABLE engagement slot at its ring radius instead of drifting closer through per-step slot
+            // thrash, so the (still readable) contact gap settles a touch wider but no longer jitters.
+            Assert.That(edgeDistance, Is.InRange(0.35f, 0.85f),
                 $"seed={seed} actor={actor.Id} target={target.Id} note={basic.Note}");
             return;
         }
@@ -177,7 +180,10 @@ public sealed class BattleSimulationSpatialTests
             var targetView = step.Units.First(unit => unit.Id == rangerAttack.TargetId!.Value.Value);
             var edgeDistance = rangerView.Position.DistanceTo(targetView.Position) - rangerView.NavigationRadius - targetView.NavigationRadius;
 
-            Assert.That(edgeDistance, Is.GreaterThanOrEqualTo(4.8f));
+            // Phase 0 stand-and-shoot: the ranger fires as soon as the target is within range — it no longer
+            // holds a preferred pocket via the old kite / maintain-range step. It still engages from a clearly
+            // ranged distance (well beyond melee) and from behind the frontline.
+            Assert.That(edgeDistance, Is.GreaterThanOrEqualTo(4.0f));
             Assert.That(rangerView.Position.X, Is.LessThan(frontlineView.Position.X - 0.35f));
             return;
         }
@@ -226,7 +232,7 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
-    public void RangedBasicAttack_CancelsCommit_WhenTargetIsInsidePreferredMinimum()
+    public void RangedBasicAttack_TooCloseTarget_StandsAndShoots_DoesNotKite()
     {
         var ranger = CombatTestFactory.CreateUnit(
             "ally_ranger",
@@ -261,15 +267,16 @@ public sealed class BattleSimulationSpatialTests
         var enemyView = step.Units.First(unit => unit.Id.Contains("enemy_pursuer"));
         var edgeDistance = allyView.Position.DistanceTo(enemyView.Position) - allyView.NavigationRadius - enemyView.NavigationRadius;
 
-        Assert.That(edgeDistance, Is.LessThan(rangerState.Behavior.PreferredRangeMin));
-        Assert.That(rangerAttack, Is.Null);
-        Assert.That(allyView.ActionState, Is.EqualTo(CombatActionState.AcquireTarget));
-        Assert.That(allyView.PendingActionType, Is.Null);
+        // Phase 0 stand-and-shoot: a baseline ranged unit whose target is inside its preferred minimum does NOT
+        // cancel-and-kite — the committed windup completes and it fires in place. Deliberate skirmish/kite is a
+        // scout/rift archetype step in a later phase, not baseline behavior.
+        Assert.That(edgeDistance, Is.LessThan(rangerState.Behavior.PreferredRangeMin), "precondition: target is inside preferred minimum");
+        Assert.That(rangerAttack, Is.Not.Null, "ranged should fire in place instead of canceling the windup");
+        Assert.That(rangerAttack!.Value, Is.GreaterThan(0f), "the in-place shot should connect (no zero-damage whiff)");
 
         var nextStep = simulator.Step();
         var nextAllyView = nextStep.Units.First(unit => unit.Id.Contains("ally_ranger"));
-        Assert.That(nextAllyView.ActionState, Is.EqualTo(CombatActionState.BreakContact));
-        Assert.That(nextAllyView.PendingActionType, Is.Null);
+        Assert.That(nextAllyView.ActionState, Is.Not.EqualTo(CombatActionState.BreakContact), "baseline ranged holds its ground; it does not retreat/kite when crowded");
     }
 
     [Test]
@@ -552,7 +559,7 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
-    public void Overflow_Slotting_Uses_SecurePosition_When_Target_Slots_Are_Full()
+    public void MultipleAttackers_AllReachAndStrike_SameTarget_WithoutSlotGating()
     {
         var targetFootprint = new FootprintProfile(
             0.6f,
@@ -584,18 +591,27 @@ public sealed class BattleSimulationSpatialTests
         var state = CombatTestFactory.CreateBattleState(attackers, new[] { target });
         var simulator = new BattleSimulator(state, 140);
 
-        var sawSecurePosition = false;
+        // Phase 0: engagement slots no longer gate attacks (no leases / overflow / slot-ready). Multiple melee
+        // attackers converging on one target all reach contact and strike — they stand at distinct points via
+        // deterministic separation, not a slot system. Readable surround/flank spread returns as deterministic
+        // approach offsets in Phase 2; here we only require that nobody is locked out of attacking.
+        var attackersThatStruck = new HashSet<string>();
         while (!simulator.IsFinished)
         {
             var step = simulator.Step();
-            if (step.Units.Any(unit => unit.Side == TeamSide.Ally && unit.ActionState == CombatActionState.SecurePosition))
+            foreach (var evt in step.Events)
             {
-                sawSecurePosition = true;
-                break;
+                if (evt.LogCode == BattleLogCode.BasicAttackDamage
+                    && evt.Value > 0f
+                    && evt.ActorName.StartsWith("ally_overflow"))
+                {
+                    attackersThatStruck.Add(evt.ActorName);
+                }
             }
         }
 
-        Assert.That(sawSecurePosition, Is.True);
+        Assert.That(attackersThatStruck.Count, Is.GreaterThanOrEqualTo(2),
+            "at least two of the three converging attackers should reach and strike the target without slot gating");
     }
 
     [Test]

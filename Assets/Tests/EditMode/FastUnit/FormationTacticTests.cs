@@ -266,7 +266,7 @@ public sealed class FormationTacticTests
     }
 
     [Test]
-    public void ActivityTelemetry_PresetsProduceDifferentSpacingAndStationaryMetrics()
+    public void ActivityTelemetry_PresetsProduceDifferentSpacingAndTargetingMetrics()
     {
         var compact = new TeamTacticProfile(
             "compact_focus",
@@ -294,7 +294,9 @@ public sealed class FormationTacticTests
 
         Assert.That(wideTelemetry.MeanPairwiseDistanceByTeam[TeamSide.Ally], Is.GreaterThan(compactTelemetry.MeanPairwiseDistanceByTeam[TeamSide.Ally]));
         Assert.That(wideTelemetry.TargetEntropy, Is.Not.EqualTo(compactTelemetry.TargetEntropy).Within(0.001f));
-        Assert.That(wideTelemetry.StationaryBetweenAttacksRatio, Is.Not.EqualTo(compactTelemetry.StationaryBetweenAttacksRatio).Within(0.001f));
+        // StationaryBetweenAttacksRatio no longer differentiates presets under the HOLD model (GPT Pro Phase 3):
+        // engaged units stand and hold between attacks regardless of formation preset, so between-attack
+        // stationarity is now preset-independent by design. Preset spacing + targeting (above) still differ.
     }
 
     private static IReadOnlyList<BattleUnitLoadout> CreateFourUnitTeam(TeamTacticProfile tactic)

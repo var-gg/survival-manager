@@ -236,4 +236,84 @@ public sealed class EngagementSlotServiceTests
         Assert.That(evaluated.SlotAssignment, Is.Not.Null);
         Assert.That(evaluated.PositioningIntent, Is.Not.EqualTo(PositioningIntentKind.None));
     }
+
+    // ── Stage A: slot hysteresis (GPT Pro) ──
+
+    [Test]
+    public void StickyCommitment_TracksMovingTarget_WithoutRethrashingKey()
+    {
+        var attacker = MakeUnit("attacker", TeamSide.Ally, attackRange: 1.2f);
+        var target = MakeUnit("target", TeamSide.Enemy, attackRange: 1.2f);
+        attacker.SetPosition(new CombatVector2(-1f, 0f));
+        target.SetPosition(new CombatVector2(1f, 0f));
+        attacker.SetCurrentTarget(target.Id);
+        var state = MakeState(new[] { attacker }, new[] { target });
+        var band = new FloatRange(0.5f, 1.4f);
+
+        var slot1 = EngagementSlotService.Resolve(state, attacker, target, band);
+        Assert.That(slot1, Is.Not.Null);
+        attacker.SetEngagementSlot(slot1);
+
+        // Target drifts: the committed slot must FOLLOW it, not re-thrash its angular identity.
+        target.SetPosition(new CombatVector2(1.4f, 0.3f));
+        var slot2 = EngagementSlotService.Resolve(state, attacker, target, band);
+
+        Assert.That(slot2, Is.Not.Null);
+        Assert.That(slot2!.SlotIndex, Is.EqualTo(slot1!.SlotIndex), "angular slot identity is frozen under the lease");
+        Assert.That(slot2.SlotRing, Is.EqualTo(slot1.SlotRing));
+        Assert.That(slot2.LocalOffset.DistanceTo(slot1.LocalOffset), Is.LessThan(1e-4f), "the key (target-relative offset) does not change");
+        Assert.That(slot2.Position.DistanceTo(target.Position + slot1.LocalOffset), Is.LessThan(1e-4f), "absolute position tracks the moved target");
+    }
+
+    [Test]
+    public void StickyCommitment_TransientNeighborDoesNotRethrash()
+    {
+        var attacker = MakeUnit("attacker", TeamSide.Ally, attackRange: 1.2f);
+        var bystander = MakeUnit("bystander", TeamSide.Ally, attackRange: 1.2f); // a body, not an attacker
+        var target = MakeUnit("target", TeamSide.Enemy, attackRange: 1.2f);
+        attacker.SetPosition(new CombatVector2(-1f, 0f));
+        bystander.SetPosition(new CombatVector2(-3f, 2f));
+        target.SetPosition(new CombatVector2(1f, 0f));
+        attacker.SetCurrentTarget(target.Id);
+        var state = MakeState(new[] { attacker, bystander }, new[] { target });
+        var band = new FloatRange(0.5f, 1.4f);
+
+        var slot1 = EngagementSlotService.Resolve(state, attacker, target, band);
+        Assert.That(slot1, Is.Not.Null);
+        attacker.SetEngagementSlot(slot1);
+
+        // Park a neighbour right on the committed slot — the OLD gate (IsSlotStillClear) would invalidate the
+        // slot here and re-thrash it every step. The lease must hold the commitment regardless.
+        bystander.SetPosition(slot1!.Position);
+        var slot2 = EngagementSlotService.Resolve(state, attacker, target, band);
+
+        Assert.That(slot2, Is.Not.Null);
+        Assert.That(slot2!.SlotIndex, Is.EqualTo(slot1.SlotIndex), "a transient neighbour brushing the slot must NOT re-thrash the commitment");
+        Assert.That(slot2.LocalOffset.DistanceTo(slot1.LocalOffset), Is.LessThan(1e-4f));
+    }
+
+    [Test]
+    public void Commitment_ReleasesOnHardRetarget()
+    {
+        var attacker = MakeUnit("attacker", TeamSide.Ally, attackRange: 1.2f);
+        var targetA = MakeUnit("target_a", TeamSide.Enemy, attackRange: 1.2f);
+        var targetB = MakeUnit("target_b", TeamSide.Enemy, attackRange: 1.2f);
+        attacker.SetPosition(new CombatVector2(-1f, 0f));
+        targetA.SetPosition(new CombatVector2(1f, 0.5f));
+        targetB.SetPosition(new CombatVector2(1f, -0.5f));
+        attacker.SetCurrentTarget(targetA.Id);
+        var state = MakeState(new[] { attacker }, new[] { targetA, targetB });
+        var band = new FloatRange(0.5f, 1.4f);
+
+        var slotA = EngagementSlotService.Resolve(state, attacker, targetA, band);
+        Assert.That(slotA, Is.Not.Null);
+        attacker.SetEngagementSlot(slotA);
+        Assert.That(slotA!.TargetId, Is.EqualTo(targetA.Id));
+
+        // Retarget to B → the A-commitment is dropped and a fresh slot is computed for B.
+        var slotB = EngagementSlotService.Resolve(state, attacker, targetB, band);
+        Assert.That(slotB, Is.Not.Null);
+        Assert.That(slotB!.TargetId, Is.EqualTo(targetB.Id), "a different target releases the old slot commitment");
+        Assert.That(slotB.CommitTick, Is.EqualTo(state.StepIndex), "fresh commitment stamped on retarget");
+    }
 }
