@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Core.Ids;
+using SM.Core.Numerics;
 using SM.Core.Stats;
 
 namespace SM.Combat.Model;
@@ -34,8 +35,8 @@ public sealed class UnitSnapshot
         Side = side;
         Definition = definition;
         Anchor = definition.PreferredAnchor;
-        AnchorPosition = anchorPosition;
-        Position = spawnPosition;
+        FixedAnchorPosition = SpatialProjection.QuantizeToFixed(anchorPosition);
+        FixedPosition = SpatialProjection.QuantizeToFixed(spawnPosition);
         ActionState = CombatActionState.Spawn;
 
         var modifiers = definition.Packages?.SelectMany(x => x.Modifiers).ToList() ?? new List<StatModifier>();
@@ -57,8 +58,12 @@ public sealed class UnitSnapshot
     public TeamSide Side { get; }
     public BattleUnitLoadout Definition { get; }
     public DeploymentAnchorId Anchor { get; }
-    public CombatVector2 AnchorPosition { get; }
-    public CombatVector2 Position { get; private set; }
+    // Phase 3.2: 공간 권위는 FixedVector2. AnchorPosition/Position은 read-model/presentation/hash용 egress projection
+    // (sim·테스트 호출부는 무수정으로 CombatVector2를 계속 읽는다 — 이제 고정소수 권위의 투영값).
+    public FixedVector2 FixedAnchorPosition { get; }
+    public CombatVector2 AnchorPosition => SpatialProjection.ToReadModelVector2(FixedAnchorPosition);
+    public FixedVector2 FixedPosition { get; private set; }
+    public CombatVector2 Position => SpatialProjection.ToReadModelVector2(FixedPosition);
     public StatBlock Stats { get; }
     public FootprintProfile Footprint { get; }
     public BehaviorProfile Behavior { get; }
@@ -247,7 +252,12 @@ public sealed class UnitSnapshot
 
     public void SetPosition(CombatVector2 position)
     {
-        Position = position;
+        FixedPosition = SpatialProjection.QuantizeToFixed(position);
+    }
+
+    public void SetPosition(FixedVector2 position)
+    {
+        FixedPosition = position;
     }
 
     public void SetActionState(CombatActionState actionState)
