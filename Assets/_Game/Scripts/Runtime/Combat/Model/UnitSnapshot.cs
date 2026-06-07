@@ -49,7 +49,7 @@ public sealed class UnitSnapshot
             Math.Max(1f, Stats.Get(StatKey.MaxHealth)));
         Behavior = CombatProfileDefaults.ResolveBehavior(definition.Behavior, definition.ClassId);
         Mobility = CombatProfileDefaults.ResolveMobility(definition.Mobility, definition.ClassId);
-        CurrentHealth = MaxHealth;
+        _health = Hp64.FromFloatQuantized(MaxHealth);
         CurrentEnergy = Math.Clamp(definition.EffectiveEnergy.Starting, 0f, Math.Max(0f, definition.EffectiveEnergy.Max));
         RequestReevaluation(ReevaluationReason.Cadence);
     }
@@ -101,9 +101,14 @@ public sealed class UnitSnapshot
     public float MobilityCooldownRemaining => MobilityCooldownTicksRemaining * BattleTickMath.TickSeconds;
     public float BlockCooldownRemaining => BlockCooldownTicksRemaining * BattleTickMath.TickSeconds;
     public float DirectHitEnergyIcdRemaining => DirectHitEnergyIcdTicksRemaining * BattleTickMath.TickSeconds;
-    public float CurrentHealth { get; private set; }
+    private Hp64 _health;
+    private Hp64 _barrier;
+
+    /// <summary>read-model HP projection. 권위는 Hp64 backing(_health) — Phase 4.2.</summary>
+    public float CurrentHealth => _health.ToFloat();
     public float CurrentEnergy { get; private set; }
-    public float Barrier { get; private set; }
+    /// <summary>read-model barrier projection. 권위는 Hp64 backing(_barrier) — Phase 4.2.</summary>
+    public float Barrier => _barrier.ToFloat();
     public IReadOnlyList<AppliedStatusState> Statuses => _statuses;
     public ControlResistWindowState? ControlResistWindow { get; private set; }
     public EngagementSlotAssignment? EngagementSlot { get; private set; }
@@ -126,7 +131,7 @@ public sealed class UnitSnapshot
     /// cadence). Role-critical interrupts and hard interrupts bypass it. Absolute step index (never a modulo), so
     /// it reproduces exactly on re-sim; transient, never serialized.</summary>
     public int NextCombatIntentDecisionStep { get; private set; }
-    public bool IsAlive => CurrentHealth > 0f;
+    public bool IsAlive => _health.Raw > 0;
     public bool IsDefending { get; private set; }
     public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationTicksRemaining <= 0;
     public CombatEntityKind EntityKind => Definition.EntityKind;
@@ -405,15 +410,16 @@ public sealed class UnitSnapshot
 
     public void TakeDamage(float amount)
     {
-        if (Barrier > 0f)
+        var dmg = Hp64.FromFloatQuantized(amount);
+        if (_barrier.Raw > 0)
         {
-            var absorbed = Math.Min(Barrier, amount);
-            Barrier -= absorbed;
-            amount -= absorbed;
+            var absorbed = Hp64.Min(_barrier, dmg);
+            _barrier -= absorbed;
+            dmg -= absorbed;
         }
 
-        CurrentHealth = Math.Max(0f, CurrentHealth - amount);
-        if (CurrentHealth <= 0f)
+        _health = Hp64.Max(Hp64.Zero, _health - dmg);
+        if (_health.Raw <= 0)
         {
             MarkDead();
             return;
@@ -424,13 +430,13 @@ public sealed class UnitSnapshot
 
     public void Heal(float amount)
     {
-        var adjusted = amount * GetHealingTakenMultiplier();
-        CurrentHealth = Math.Min(MaxHealth, CurrentHealth + adjusted);
+        var adjusted = Hp64.FromFloatQuantized(amount) * Fixed32.FromFloatQuantized(GetHealingTakenMultiplier());
+        _health = Hp64.Min(Hp64.FromFloatQuantized(MaxHealth), _health + adjusted);
     }
 
     public void AddBarrier(float amount)
     {
-        Barrier = Math.Max(0f, Barrier + amount);
+        _barrier = Hp64.Max(Hp64.Zero, _barrier + Hp64.FromFloatQuantized(amount));
     }
 
     public bool HasStatus(string statusId)
@@ -713,8 +719,8 @@ public sealed class UnitSnapshot
 
     private void MarkDead()
     {
-        CurrentHealth = 0f;
-        Barrier = 0f;
+        _health = Hp64.Zero;
+        _barrier = Hp64.Zero;
         CurrentEnergy = Math.Clamp(CurrentEnergy, 0f, MaxEnergy);
         IsDefending = false;
         ClearTarget(applySwitchDelay: false);
