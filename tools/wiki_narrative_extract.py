@@ -50,6 +50,14 @@ SCENE_HEADING_RE = re.compile(
     r"^##\s+`([^`]+)`\s*(?:[—\-–])\s*(.+?)\s*$"
 )
 
+# pindoc 그룹형/스펙형 heading: `## ch1 intro — 재의 문 너머로 (`cutscene_chapter_intro_ashen_frontier`)`
+# scene_id 가 제목 끝 괄호 안 백틱에 들어 있는 형식. SCENE_HEADING_RE 가 우선, 이건 fallback.
+SCENE_HEADING_PAREN_RE = re.compile(
+    r"^##\s+(.+?)\s*\(`([^`]+)`\)\s*$"
+)
+# 제목 앞 `ch1 intro — ` 류 authoring prefix 제거용
+SCENE_TITLE_PREFIX_RE = re.compile(r"^ch[1-5]\s+\S+\s*[—\-–]\s*")
+
 # `### Branch A — \`tag\`` or `### Branch — \`tag\`` or `### Branch 단일 — \`tag\``
 BRANCH_HEADING_RE = re.compile(
     r"^###\s+Branch[^—\-–]*[—\-–]\s*`([^`]+)`\s*$"
@@ -296,9 +304,17 @@ class WikiParser:
             # ---- H2: scene heading or admin heading ----
             if raw.startswith("## "):
                 m = SCENE_HEADING_RE.match(raw)
+                scene_id = None
+                title = None
                 if m:
                     scene_id = m.group(1).strip()
                     title = m.group(2).strip()
+                else:
+                    m2 = SCENE_HEADING_PAREN_RE.match(raw)
+                    if m2 and "_" in m2.group(2):
+                        scene_id = m2.group(2).strip()
+                        title = SCENE_TITLE_PREFIX_RE.sub("", m2.group(1).strip()).strip()
+                if scene_id:
                     current_scene = WikiScene(
                         scene_id=scene_id,
                         title=title,
