@@ -20,6 +20,10 @@ namespace SM.Core.Numerics
         public static Hp64 FromInt(int value) => new((long)value << Fixed32.FractionBits);
         public static Hp64 FromFixed(Fixed32 value) => new(value.Raw);
 
+        /// <summary>Ingress 전용(stat/저작 float → HP 규모 양자화, truncate-toward-zero). Fixed32(±32768)를 넘는
+        /// 규모값을 받으므로 long 경유다. authoritative HP 분기 입력 금지 — Phase 4 stat 경계에서만 호출한다.</summary>
+        public static Hp64 FromFloatQuantized(float value) => new((long)(value * Fixed32.OneRaw));
+
         public static readonly Hp64 Zero = new(0);
 
         public static Hp64 operator +(Hp64 a, Hp64 b) => new(a.Raw + b.Raw);

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Numerics;
 using SM.Core.Stats;
 
 namespace SM.Combat.Services;
@@ -77,30 +78,40 @@ public static class HitResolutionService
         }
 
         var critical = canCrit && ChanceHits(state, actor, target, $"{actionType}:crit", actor.Stats.Get(StatKey.CritChance));
+
+        // Phase 4: damage 곱셈 체인을 Hp64×Fixed32 결정 산술로. stat/behavior 값은 아직 float이라(StatBlock fixed화는
+        // 후속) 각 입력을 사용 직전 한 번 양자화하고 곱·clamp는 fixed로 한다 — float 곱셈 체인의 cross-platform
+        // 분기(FMA contraction/재배열)를 제거. multiplier 순서(crit→block→mitigation→incoming→focus)와 min-damage
+        // 1.0 HP floor는 종전과 동일. 결과 damage는 read-model용 float로 project한다.
+        var powerHp = Hp64.FromFloatQuantized(basePower);
         var critMultiplier = critical
-            ? 1f + Math.Max(0f, actor.Stats.Get(StatKey.CritMultiplier))
-            : 1f;
-        var powerAfterCrit = basePower * critMultiplier;
+            ? Fixed32.One + Fixed32.Max(Fixed32.Zero, Fixed32.FromFloatQuantized(actor.Stats.Get(StatKey.CritMultiplier)))
+            : Fixed32.One;
+        powerHp *= critMultiplier;
 
         var blocked = target.CanAttemptBlock && ChanceHits(state, actor, target, $"{actionType}:block", target.Behavior.BlockChance);
         if (blocked)
         {
             target.TriggerBlockCooldown();
-            powerAfterCrit *= 1f - Math.Clamp(target.Behavior.BlockMitigation, 0f, MaxBlockMitigationFraction);
+            var blockKept = Fixed32.One - Fixed32.FromFloatQuantized(Math.Clamp(target.Behavior.BlockMitigation, 0f, MaxBlockMitigationFraction));
+            powerHp *= blockKept;
         }
 
         var mitigation = ResolveEffectiveMitigation(actor, target, damageType);
+        var mitigationFixed = Fixed32.FromFloatQuantized(mitigation);
         var reductionFactor = mitigation <= 0f
-            ? 1f
-            : 1f - (mitigation / (mitigation + ArmorScalingK));
-        var baseResolved = Math.Max(1f, powerAfterCrit * reductionFactor * target.GetIncomingDamageMultiplier());
-        var focusMultiplier = ResolveFocusDamageMultiplier(state, actor, target, skill);
-        var resolved = Math.Max(1f, baseResolved * focusMultiplier);
-        state.ActivityTelemetry.RecordFocusDamageContribution(resolved - baseResolved);
+            ? Fixed32.One
+            : Fixed32.One - (mitigationFixed / (mitigationFixed + Fixed32.FromInt((int)ArmorScalingK)));
+        var incomingMultiplier = Fixed32.FromFloatQuantized(target.GetIncomingDamageMultiplier());
+        var oneHp = Hp64.FromInt(1);
+        var baseResolved = Hp64.Max(oneHp, (powerHp * reductionFactor) * incomingMultiplier);
+        var focusMultiplier = Fixed32.FromFloatQuantized(ResolveFocusDamageMultiplier(state, actor, target, skill));
+        var resolved = Hp64.Max(oneHp, baseResolved * focusMultiplier);
+        state.ActivityTelemetry.RecordFocusDamageContribution((resolved - baseResolved).ToFloat());
         var note = blocked
             ? critical ? "crit+block" : "block"
             : critical ? "crit" : string.Empty;
-        return new HitResolutionResult(resolved, false, critical, blocked, mitigation, note);
+        return new HitResolutionResult(resolved.ToFloat(), false, critical, blocked, mitigation, note);
     }
 
     private static float ResolveSkillDamagePower(UnitSnapshot actor, BattleSkillSpec skill)
