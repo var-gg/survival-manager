@@ -76,13 +76,13 @@ public static class HitResolutionService
             return new HitResolutionResult(0f, true, false, false, 0f, "dodge");
         }
 
-        var critical = canCrit && Roll(state, actor, target, $"{actionType}:crit") < Math.Clamp(actor.Stats.Get(StatKey.CritChance), 0f, 1f);
+        var critical = canCrit && ChanceHits(state, actor, target, $"{actionType}:crit", actor.Stats.Get(StatKey.CritChance));
         var critMultiplier = critical
             ? 1f + Math.Max(0f, actor.Stats.Get(StatKey.CritMultiplier))
             : 1f;
         var powerAfterCrit = basePower * critMultiplier;
 
-        var blocked = target.CanAttemptBlock && Roll(state, actor, target, $"{actionType}:block") < Math.Clamp(target.Behavior.BlockChance, 0f, 1f);
+        var blocked = target.CanAttemptBlock && ChanceHits(state, actor, target, $"{actionType}:block", target.Behavior.BlockChance);
         if (blocked)
         {
             target.TriggerBlockCooldown();
@@ -189,10 +189,23 @@ public static class HitResolutionService
             return false;
         }
 
-        return Roll(state, actor, target, $"{actionType}:dodge") < Math.Clamp(target.Behavior.DodgeChance, 0f, 1f);
+        return ChanceHits(state, actor, target, $"{actionType}:dodge", target.Behavior.DodgeChance);
     }
 
-    private static float Roll(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
+    // 정수 확률 판정(결정적, ADR-0029 §우선순위 ③). 정수 hash remainder ∈ [0,10000)을 확률×10000 정수
+    // threshold와 비교한다 — float roll(/10000f)·float 비교를 제거. probability는 아직 stat/behavior float이며
+    // (Phase 4에서 fixed 전환) 여기서 ×10000 절단으로 basis-point threshold(0..10000)에 단 한 번 양자화한다.
+    private static bool ChanceHits(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context, float probability)
+    {
+        return RollBasisPoints(state, actor, target, context) < ProbabilityToBasisPoints(probability);
+    }
+
+    private static int ProbabilityToBasisPoints(float probability)
+    {
+        return (int)(Math.Clamp(probability, 0f, 1f) * 10000f);
+    }
+
+    private static int RollBasisPoints(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
     {
         unchecked
         {
@@ -201,8 +214,7 @@ public static class HitResolutionService
             hash = (hash * 397) ^ StableHash(actor.Id.Value);
             hash = (hash * 397) ^ StableHash(target.Id.Value);
             hash = (hash * 397) ^ StableHash(context);
-            var remainder = Math.Abs(hash % 10000);
-            return remainder / 10000f;
+            return Math.Abs(hash % 10000);
         }
     }
 
