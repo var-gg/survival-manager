@@ -427,10 +427,13 @@ public static class MovementResolver
                 : new CombatVector2(-1f, 0f);
         }
 
-        var angleRoll = KnockbackRoll(state, actor, target, "kb:angle");
-        var angle = (angleRoll - 0.5f) * (MathF.PI * 0.5f);
-        var cos = MathF.Cos(angle);
-        var sin = MathF.Sin(angle);
+        // Phase 3.3: 넉백 회전각을 정수 roll basis → AngleTurn32(BAM)로 만들고 sin/cos는 turn-LUT로 구한다.
+        // (angleRoll−0.5)·π/2 라디안 = (remainder−5000)/40000 turn. MathF 삼각함수(transcendental,
+        // cross-platform 분기 위험)를 제거한다. 회전 자체는 아직 float(방향 normalize는 후속 슬라이스).
+        var angleBasis = KnockbackRollBasis(state, actor, target, "kb:angle"); // [0, 9999]
+        var angle = AngleTurn32.FromRaw(unchecked((uint)((long)(angleBasis - 5000) * 4294967296L / 40000L)));
+        var cos = FixedMath.CosTurns(angle).ToFloat();
+        var sin = FixedMath.SinTurns(angle).ToFloat();
         var rotated = new CombatVector2(
             (direction.X * cos) - (direction.Y * sin),
             (direction.X * sin) + (direction.Y * cos));
@@ -444,7 +447,8 @@ public static class MovementResolver
         MovePosition(state, target, next, BattleMotionKind.Knockback, isDiscrete: true, sourceActorId: actor.Id);
     }
 
-    private static float KnockbackRoll(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
+    // 넉백 결정적 roll의 정수 basis [0, 9999]. 각도(turn-LUT)·거리(float) 모두 이 basis에서 파생한다.
+    private static int KnockbackRollBasis(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
     {
         unchecked
         {
@@ -453,10 +457,12 @@ public static class MovementResolver
             hash = (hash * 397) ^ StableHash(actor.Id.Value);
             hash = (hash * 397) ^ StableHash(target.Id.Value);
             hash = (hash * 397) ^ StableHash(context);
-            var remainder = Math.Abs(hash % 10000);
-            return remainder / 10000f;
+            return Math.Abs(hash % 10000);
         }
     }
+
+    private static float KnockbackRoll(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
+        => KnockbackRollBasis(state, actor, target, context) / 10000f;
 
     private static CombatVector2 ResolveDesiredPosition(BattleState state, UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
     {
@@ -765,9 +771,12 @@ public static class MovementResolver
 
     private static CombatVector2 ResolveDeterministicSeparationAxis(UnitSnapshot left, UnitSnapshot right)
     {
+        // Phase 3.3: 정수 hash → 정수 degree[0,359] → AngleTurn32(BAM)로 변환하고 sin/cos는 turn-LUT로 구한다.
+        // MathF 삼각함수(transcendental)를 제거한다. 결과 축은 아직 float separation 수식에 쓰여 float로 project.
         var hash = StableHash(left.Id.Value) ^ StableHash(right.Id.Value);
-        var angle = (Math.Abs(hash) % 360) * (MathF.PI / 180f);
-        return new CombatVector2(MathF.Cos(angle), MathF.Sin(angle));
+        var deg = Math.Abs(hash) % 360; // [0, 359]
+        var angle = AngleTurn32.FromRaw((uint)((long)deg * 4294967296L / 360L));
+        return new CombatVector2(FixedMath.CosTurns(angle).ToFloat(), FixedMath.SinTurns(angle).ToFloat());
     }
 
     // GPT Pro Stage C (guarded progress-gate settle). After slot-hysteresis (A) and separation deadzone (B),
