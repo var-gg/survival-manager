@@ -60,6 +60,20 @@ public static class MovementResolver
         return edge >= lo && edge <= hi;
     }
 
+    /// <summary>near-coincident 방향 판정 임계(기존 float 경계 SqrLength ≤ 0.0001 보존). FixedVector2 기본
+    /// eps보다 작게 잡아 1차 방향의 fallback 경계를 종전과 일치시킨다.</summary>
+    private static readonly Fixed32 DirectionEpsSq = Fixed32.FromFloatQuantized(0.0001f);
+
+    /// <summary>
+    /// Phase 3.2d: 두 유닛 사이 방향 단위벡터를 <see cref="UnitSnapshot.FixedPosition"/> 권위에서 결정적으로
+    /// 구한다(float sqrt/normalize 제거). near-coincident면 호출부가 정한 안정 fallback 방향을 반환한다. 이동
+    /// 수식이 아직 float이라 결과는 read-model CombatVector2로 project한다.
+    /// </summary>
+    private static CombatVector2 FixedDirection(UnitSnapshot from, UnitSnapshot to, CombatVector2 fallback)
+        => SpatialProjection.ToReadModelVector2(
+            (to.FixedPosition - from.FixedPosition).NormalizeOrFallback(
+                SpatialProjection.QuantizeToFixed(fallback), DirectionEpsSq));
+
     public static CombatVector2 ResolveHomePosition(BattleState state, UnitSnapshot actor)
     {
         var context = state.GetTacticContext(actor.Side);
@@ -106,13 +120,9 @@ public static class MovementResolver
         }
 
         var distance = ComputeEdgeDistance(actor, target);
-        var toTarget = (target.Position - actor.Position).Normalized;
-        if (toTarget.SqrLength <= 0.0001f)
-        {
-            toTarget = actor.Side == TeamSide.Ally
-                ? new CombatVector2(1f, 0f)
-                : new CombatVector2(-1f, 0f);
-        }
+        var toTarget = FixedDirection(actor, target, actor.Side == TeamSide.Ally
+            ? new CombatVector2(1f, 0f)
+            : new CombatVector2(-1f, 0f));
 
         switch (mobility.Purpose)
         {
@@ -132,10 +142,9 @@ public static class MovementResolver
                     return null;
                 }
 
-                var away = actor.Position - target.Position;
-                var awayDirection = away.SqrLength <= 0.0001f
-                    ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
-                    : away.Normalized;
+                var awayDirection = FixedDirection(target, actor, actor.Side == TeamSide.Ally
+                    ? new CombatVector2(-1f, 0f)
+                    : new CombatVector2(1f, 0f));
                 var lateral = new CombatVector2(-awayDirection.Y, awayDirection.X) * mobility.LateralBias;
                 var escapeDirection = (awayDirection + lateral).Normalized;
                 var requiredTravel = Math.Max(
@@ -182,13 +191,9 @@ public static class MovementResolver
             return BasicAttackPreImpactStepResult.None(profile.Profile);
         }
 
-        var direction = (target.Position - actor.Position).Normalized;
-        if (direction.SqrLength <= 0.0001f)
-        {
-            direction = actor.Side == TeamSide.Ally
-                ? new CombatVector2(1f, 0f)
-                : new CombatVector2(-1f, 0f);
-        }
+        var direction = FixedDirection(actor, target, actor.Side == TeamSide.Ally
+            ? new CombatVector2(1f, 0f)
+            : new CombatVector2(-1f, 0f));
 
         var travel = Math.Min(profile.PreImpactStepDistance, Math.Max(0f, distance - profile.ContactRange));
         if (travel <= 0.01f)
@@ -233,10 +238,9 @@ public static class MovementResolver
             return PostAttackRepositionResult.None;
         }
 
-        var away = actor.Position - target.Position;
-        var awayDirection = away.SqrLength <= 0.0001f
-            ? (actor.Side == TeamSide.Ally ? new CombatVector2(-1f, 0f) : new CombatVector2(1f, 0f))
-            : away.Normalized;
+        var awayDirection = FixedDirection(target, actor, actor.Side == TeamSide.Ally
+            ? new CombatVector2(-1f, 0f)
+            : new CombatVector2(1f, 0f));
         var lateral = new CombatVector2(-awayDirection.Y, awayDirection.X);
         var lateralDistance = Lerp(0.15f, 0.35f, TacticContext.Clamp01(context.Width));
         lateralDistance *= actor.Definition.ClassId switch
@@ -419,13 +423,9 @@ public static class MovementResolver
             return;
         }
 
-        var direction = (target.Position - actor.Position).Normalized;
-        if (direction.SqrLength <= 0.0001f)
-        {
-            direction = actor.Side == TeamSide.Ally
-                ? new CombatVector2(1f, 0f)
-                : new CombatVector2(-1f, 0f);
-        }
+        var direction = FixedDirection(actor, target, actor.Side == TeamSide.Ally
+            ? new CombatVector2(1f, 0f)
+            : new CombatVector2(-1f, 0f));
 
         // Phase 3.3: 넉백 회전각을 정수 roll basis → AngleTurn32(BAM)로 만들고 sin/cos는 turn-LUT로 구한다.
         // (angleRoll−0.5)·π/2 라디안 = (remainder−5000)/40000 turn. MathF 삼각함수(transcendental,
@@ -491,11 +491,9 @@ public static class MovementResolver
             return new CombatVector2(target.Position.X + (sideDirection * centerDistance), target.Position.Y + laneOffset);
         }
 
-        var directionToTarget = (target.Position - actor.Position).Normalized;
-        if (directionToTarget.SqrLength <= 0.0001f)
-        {
-            directionToTarget = actor.Side == TeamSide.Ally ? new CombatVector2(1f, 0f) : new CombatVector2(-1f, 0f);
-        }
+        var directionToTarget = FixedDirection(actor, target, actor.Side == TeamSide.Ally
+            ? new CombatVector2(1f, 0f)
+            : new CombatVector2(-1f, 0f));
 
         return target.Position - (directionToTarget * centerDistance);
     }
