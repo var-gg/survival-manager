@@ -4,6 +4,7 @@ using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Core.Ids;
+using SM.Core.Numerics;
 
 namespace SM.Tests.EditMode;
 
@@ -75,6 +76,32 @@ public sealed class MovementResolverTests
         b.SetPosition(new CombatVector2(0f, 0f));
 
         Assert.That(MovementResolver.ComputeEdgeDistance(a, b), Is.GreaterThanOrEqualTo(0f));
+    }
+
+    // Phase 3.2c: 거리 권위는 FixedPosition 기반 Fixed32(ComputeEdgeDistanceFixed)이고, float
+    // ComputeEdgeDistance는 그 .ToFloat() projection이다 — 둘이 갈라지지 않도록(권위 단일) 못박는다.
+    [Test]
+    public void EdgeDistanceFixed_IsAuthority_FloatIsItsExactProjection()
+    {
+        var a = MakeUnit("a", TeamSide.Ally);
+        var b = MakeUnit("b", TeamSide.Enemy);
+        a.SetPosition(new CombatVector2(0f, 0f));
+        b.SetPosition(new CombatVector2(3f, 0f));
+
+        var fixedEdge = MovementResolver.ComputeEdgeDistanceFixed(a, b);
+        Assert.That(MovementResolver.ComputeEdgeDistance(a, b), Is.EqualTo(fixedEdge.ToFloat()),
+            "float ComputeEdgeDistance는 fixed 권위의 정확한 projection이어야 한다");
+    }
+
+    [Test]
+    public void EdgeDistanceFixed_FloorsAtZero_WhenOverlapping()
+    {
+        var a = MakeUnit("a", TeamSide.Ally);
+        var b = MakeUnit("b", TeamSide.Enemy);
+        a.SetPosition(new CombatVector2(0f, 0f));
+        b.SetPosition(new CombatVector2(0f, 0f));
+
+        Assert.That(MovementResolver.ComputeEdgeDistanceFixed(a, b).Raw, Is.GreaterThanOrEqualTo(0));
     }
 
     // ── IsInActionRange ──

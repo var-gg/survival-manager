@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
 using SM.Core.Ids;
+using SM.Core.Numerics;
 
 namespace SM.Combat.Services;
 
@@ -23,20 +24,40 @@ public static class MovementResolver
     // formation anchor (master design "do not pursue beyond anchor + 2.0m"), so it engages the line without diving.
     private const float VanguardHoldRadius = 2.0f;
 
-    public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
+    /// <summary>
+    /// 결정적 edge distance (중심거리 − nav 반지름 합, 0 floor). Phase 3.2c부터 sim의 거리 권위는
+    /// <see cref="UnitSnapshot.FixedPosition"/> 기반 <see cref="Fixed32"/>다 — float <c>sqrt</c>를 거리 표면에서
+    /// 제거해 크로스플랫폼 분기(ADR-0029)를 막는다. nav 반지름은 아직 stat-float라 비교 직전 한 번 양자화한다
+    /// (Phase 4에서 fixed화). 행동 게이트(<see cref="IsInActionRange"/>/<see cref="IsWithinRangeBand"/>)는 이 권위로 비교한다.
+    /// </summary>
+    public static Fixed32 ComputeEdgeDistanceFixed(UnitSnapshot actor, UnitSnapshot target)
     {
-        var centerDistance = actor.Position.DistanceTo(target.Position);
-        return Math.Max(0f, centerDistance - actor.NavigationRadius - target.NavigationRadius);
+        var centerDistance = actor.FixedPosition.DistanceTo(target.FixedPosition);
+        var navSum = Fixed32.FromFloatQuantized(actor.NavigationRadius + target.NavigationRadius);
+        return Fixed32.Max(Fixed32.Zero, centerDistance - navSum);
     }
+
+    /// <summary>
+    /// Egress projection — ordering 키·mobility 크기 등 아직 float인 거리 소비자용. 권위는
+    /// <see cref="ComputeEdgeDistanceFixed"/>이고 이 float는 거기서 파생된다. 소비자가 fixed로 옮겨가면 함께 사라진다.
+    /// </summary>
+    public static float ComputeEdgeDistance(UnitSnapshot actor, UnitSnapshot target)
+        => ComputeEdgeDistanceFixed(actor, target).ToFloat();
 
     public static bool IsInActionRange(UnitSnapshot actor, UnitSnapshot target, float desiredRange)
     {
-        return ComputeEdgeDistance(actor, target) <= desiredRange + 0.05f;
+        // 게이트는 fixed 권위에서 비교한다. desiredRange(+0.05 허용)는 stat-float라 RHS를 한 번 양자화한다.
+        return ComputeEdgeDistanceFixed(actor, target) <= Fixed32.FromFloatQuantized(desiredRange + 0.05f);
     }
 
     public static bool IsWithinRangeBand(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand, float hysteresis)
     {
-        return rangeBand.Contains(ComputeEdgeDistance(actor, target), hysteresis);
+        // FloatRange.Contains를 fixed로 인라인: edge ∈ [ClampedMin − margin, ClampedMax + margin].
+        var edge = ComputeEdgeDistanceFixed(actor, target);
+        var margin = MathF.Max(0f, hysteresis);
+        var lo = Fixed32.FromFloatQuantized(rangeBand.ClampedMin - margin);
+        var hi = Fixed32.FromFloatQuantized(rangeBand.ClampedMax + margin);
+        return edge >= lo && edge <= hi;
     }
 
     public static CombatVector2 ResolveHomePosition(BattleState state, UnitSnapshot actor)
