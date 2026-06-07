@@ -17,6 +17,10 @@ public static class BattleTickMath
     /// <summary>정수 틱레이트 SoT(10Hz). 1틱 = 0.1초.</summary>
     public const int DefaultTickRate = 10;
 
+    /// <summary>1틱의 초 길이(display/egress projection 전용) = 1/TickRate = 0.1초. sim 권위는 정수 틱이며 이 상수는
+    /// read-model/UI에 초 단위를 되돌려주는 projection에만 쓴다.</summary>
+    public const float TickSeconds = 1f / DefaultTickRate;
+
     // sec*rate가 정수에 정확히 떨어질 때(예: 0.3*10=3.0) float 오차로 ceil이 한 틱 부풀지 않게 하는 여유.
     private const double CeilEpsilon = 1e-4;
 

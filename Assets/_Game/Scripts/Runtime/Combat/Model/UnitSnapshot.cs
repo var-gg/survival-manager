@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Core.Ids;
 using SM.Core.Stats;
@@ -67,8 +68,11 @@ public sealed class UnitSnapshot
     public EntityId? PendingTargetId { get; private set; }
     public BattleActionType? PendingActionType { get; private set; }
     public string? PendingSkillId { get; private set; }
-    public float ActionTimerRemaining { get; private set; }
-    public float ActionTimerTotal { get; private set; }
+    public int ActionTicksRemaining { get; private set; }
+    public int ActionTicksTotal { get; private set; }
+    // Egress projection(초) — 권위는 위 정수 틱(Phase 2.2c).
+    public float ActionTimerRemaining => ActionTicksRemaining * BattleTickMath.TickSeconds;
+    public float ActionTimerTotal => ActionTicksTotal * BattleTickMath.TickSeconds;
 
     /// <summary>Identity of the in-flight action instance (set at accepted BeginWindup, read when the
     /// matching contact resolves or the action is canceled). <see cref="ActionInstanceId.None"/> when no
@@ -78,13 +82,20 @@ public sealed class UnitSnapshot
     public int PendingContactTick { get; private set; }
     public SkillDelivery PendingActionDelivery { get; private set; } = SkillDelivery.Melee;
 
-    public float CooldownRemaining { get; private set; }
-    public float TargetSwitchLockRemaining { get; private set; }
-    public float ReevaluationRemaining { get; private set; }
+    public int CooldownTicksRemaining { get; private set; }
+    public int TargetSwitchLockTicksRemaining { get; private set; }
+    public int ReevaluationTicksRemaining { get; private set; }
     public ReevaluationReason PendingReevaluationReason { get; private set; }
-    public float MobilityCooldownRemaining { get; private set; }
-    public float BlockCooldownRemaining { get; private set; }
-    public float DirectHitEnergyIcdRemaining { get; private set; }
+    public int MobilityCooldownTicksRemaining { get; private set; }
+    public int BlockCooldownTicksRemaining { get; private set; }
+    public int DirectHitEnergyIcdTicksRemaining { get; private set; }
+    // Egress projections(초) — 권위는 위 정수 틱 backing(Phase 2.2c). sim 분기는 틱 필드를 본다.
+    public float CooldownRemaining => CooldownTicksRemaining * BattleTickMath.TickSeconds;
+    public float TargetSwitchLockRemaining => TargetSwitchLockTicksRemaining * BattleTickMath.TickSeconds;
+    public float ReevaluationRemaining => ReevaluationTicksRemaining * BattleTickMath.TickSeconds;
+    public float MobilityCooldownRemaining => MobilityCooldownTicksRemaining * BattleTickMath.TickSeconds;
+    public float BlockCooldownRemaining => BlockCooldownTicksRemaining * BattleTickMath.TickSeconds;
+    public float DirectHitEnergyIcdRemaining => DirectHitEnergyIcdTicksRemaining * BattleTickMath.TickSeconds;
     public float CurrentHealth { get; private set; }
     public float CurrentEnergy { get; private set; }
     public float Barrier { get; private set; }
@@ -112,7 +123,7 @@ public sealed class UnitSnapshot
     public int NextCombatIntentDecisionStep { get; private set; }
     public bool IsAlive => CurrentHealth > 0f;
     public bool IsDefending { get; private set; }
-    public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationRemaining <= 0f;
+    public bool NeedsReevaluation => PendingReevaluationReason != ReevaluationReason.None || ReevaluationTicksRemaining <= 0;
     public CombatEntityKind EntityKind => Definition.EntityKind;
     public OwnershipLink? Ownership => Definition.Ownership;
     public SummonProfile? SummonProfile => Definition.SummonProfile;
@@ -173,65 +184,63 @@ public sealed class UnitSnapshot
     public bool IsSlowed => HasStatus("slow");
     public bool IsUnstoppable => HasStatus("unstoppable");
     public bool IsGuarded => HasStatus("guarded") || IsDefending;
-    public float WindupProgress => ActionState == CombatActionState.ExecuteAction && ActionTimerTotal > 0f
-        ? 1f - (ActionTimerRemaining / ActionTimerTotal)
+    public float WindupProgress => ActionState == CombatActionState.ExecuteAction && ActionTicksTotal > 0
+        ? 1f - ((float)ActionTicksRemaining / ActionTicksTotal)
         : 0f;
     public float RetargetLockRemaining => TargetSwitchLockRemaining;
     public bool IsHardCommitted => PendingLockRule == ActionLockRule.HardCommit
         || (PendingLockRule == ActionLockRule.SoftCommit && WindupProgress >= 0.4f);
 
-    public void AdvanceTime(float deltaSeconds)
+    public void AdvanceTick()
     {
-        if (ActionTimerRemaining > 0f)
+        if (ActionTicksRemaining > 0)
         {
-            ActionTimerRemaining = Math.Max(0f, ActionTimerRemaining - deltaSeconds);
+            ActionTicksRemaining--;
         }
 
-        var previousCooldown = CooldownRemaining;
-        if (CooldownRemaining > 0f)
+        if (CooldownTicksRemaining > 0)
         {
-            CooldownRemaining = Math.Max(0f, CooldownRemaining - deltaSeconds);
-            if (previousCooldown > 0f && CooldownRemaining <= 0f)
+            CooldownTicksRemaining--;
+            if (CooldownTicksRemaining == 0)
             {
                 RequestReevaluation(ReevaluationReason.SkillReady);
             }
         }
 
-        var previousMobilityCooldown = MobilityCooldownRemaining;
-        if (MobilityCooldownRemaining > 0f)
+        if (MobilityCooldownTicksRemaining > 0)
         {
-            MobilityCooldownRemaining = Math.Max(0f, MobilityCooldownRemaining - deltaSeconds);
-            if (previousMobilityCooldown > 0f && MobilityCooldownRemaining <= 0f && Mobility is { IsEnabled: true })
+            MobilityCooldownTicksRemaining--;
+            if (MobilityCooldownTicksRemaining == 0 && Mobility is { IsEnabled: true })
             {
                 RequestReevaluation(ReevaluationReason.MobilityReady);
             }
         }
 
-        if (BlockCooldownRemaining > 0f)
+        if (BlockCooldownTicksRemaining > 0)
         {
-            BlockCooldownRemaining = Math.Max(0f, BlockCooldownRemaining - deltaSeconds);
+            BlockCooldownTicksRemaining--;
         }
 
-        if (DirectHitEnergyIcdRemaining > 0f)
+        if (DirectHitEnergyIcdTicksRemaining > 0)
         {
-            DirectHitEnergyIcdRemaining = Math.Max(0f, DirectHitEnergyIcdRemaining - deltaSeconds);
+            DirectHitEnergyIcdTicksRemaining--;
         }
 
-        if (TargetSwitchLockRemaining > 0f)
+        if (TargetSwitchLockTicksRemaining > 0)
         {
-            TargetSwitchLockRemaining = Math.Max(0f, TargetSwitchLockRemaining - deltaSeconds);
+            TargetSwitchLockTicksRemaining--;
         }
 
-        if (ReevaluationRemaining > 0f)
+        if (ReevaluationTicksRemaining > 0)
         {
-            ReevaluationRemaining = Math.Max(0f, ReevaluationRemaining - deltaSeconds);
+            ReevaluationTicksRemaining--;
         }
 
         if (ControlResistWindow is { } controlResist)
         {
-            var remaining = Math.Max(0f, controlResist.RemainingSeconds - deltaSeconds);
-            ControlResistWindow = remaining > 0f
-                ? controlResist with { RemainingSeconds = remaining }
+            var remaining = controlResist.RemainingTicks - 1;
+            ControlResistWindow = remaining > 0
+                ? controlResist with { RemainingTicks = remaining }
                 : null;
         }
     }
@@ -264,7 +273,7 @@ public sealed class UnitSnapshot
 
     public void StartRetargetLock(float durationSeconds)
     {
-        TargetSwitchLockRemaining = Math.Max(TargetSwitchLockRemaining, Math.Max(0f, durationSeconds));
+        TargetSwitchLockTicksRemaining = Math.Max(TargetSwitchLockTicksRemaining, BattleTickMath.DurationToTicks(durationSeconds));
     }
 
     public void ClearTarget(bool applySwitchDelay)
@@ -279,13 +288,13 @@ public sealed class UnitSnapshot
         PendingLockRule = ActionLockRule.None;
         PendingSlotKind = null;
         PendingDecisionReason = DecisionReasonCode.DefaultCadence;
-        ActionTimerRemaining = 0f;
-        ActionTimerTotal = 0f;
+        ActionTicksRemaining = 0;
+        ActionTicksTotal = 0;
         EngagementSlot = null;
 
         if (applySwitchDelay)
         {
-            TargetSwitchLockRemaining = Math.Max(TargetSwitchLockRemaining, TargetSwitchDelay);
+            TargetSwitchLockTicksRemaining = Math.Max(TargetSwitchLockTicksRemaining, BattleTickMath.DurationToTicks(TargetSwitchDelay));
         }
 
         if (hadTarget)
@@ -311,8 +320,9 @@ public sealed class UnitSnapshot
         PendingLane = actionType == BattleActionType.BasicAttack ? ActionLane.Primary : skill?.Lane ?? ActionLane.Primary;
         PendingLockRule = actionType == BattleActionType.BasicAttack ? ActionLockRule.SoftCommit : skill?.LockRule ?? ActionLockRule.HardCommit;
         PendingSlotKind = actionType == BattleActionType.BasicAttack ? ActionSlotKind.BasicAttack : skill?.EffectiveSlotKind;
-        ActionTimerRemaining = windupSeconds;
-        ActionTimerTotal = windupSeconds;
+        var windupTicks = BattleTickMath.DurationToTicks(windupSeconds);
+        ActionTicksRemaining = windupTicks;
+        ActionTicksTotal = windupTicks;
         ActionState = CombatActionState.ExecuteAction;
         IsDefending = false;
         if (actionType == BattleActionType.ActiveSkill && skill?.UsesEnergy == true)
@@ -325,8 +335,8 @@ public sealed class UnitSnapshot
 
     public void FinishWindup()
     {
-        ActionTimerRemaining = 0f;
-        ActionTimerTotal = 0f;
+        ActionTicksRemaining = 0;
+        ActionTicksTotal = 0;
         PendingDecisionReason = DecisionReasonCode.DefaultCadence;
     }
 
@@ -352,7 +362,7 @@ public sealed class UnitSnapshot
     public void StartRecovery(float? cooldownSeconds = null)
     {
         FinishWindup();
-        CooldownRemaining = cooldownSeconds ?? AttackCooldown;
+        CooldownTicksRemaining = BattleTickMath.DurationToTicks(cooldownSeconds ?? AttackCooldown);
         ActionState = CombatActionState.Recover;
         IsDefending = false;
         PendingLockRule = ActionLockRule.None;
@@ -368,8 +378,8 @@ public sealed class UnitSnapshot
         PendingTargetId = null;
         PendingActionType = null;
         PendingSkillId = null;
-        ActionTimerRemaining = 0f;
-        ActionTimerTotal = 0f;
+        ActionTicksRemaining = 0;
+        ActionTicksTotal = 0;
         IsDefending = true;
         ActionState = CombatActionState.Reposition;
     }
@@ -460,20 +470,22 @@ public sealed class UnitSnapshot
         if (existingIndex >= 0)
         {
             var existing = _statuses[existingIndex];
+            var durationTicks = BattleTickMath.DurationToTicks(spec.DurationSeconds);
             var stacks = Math.Min(spec.MaxStacks, existing.Stacks + 1);
-            var remaining = spec.RefreshDurationOnReapply ? Math.Max(existing.RemainingSeconds, spec.DurationSeconds) : existing.RemainingSeconds;
+            var remaining = spec.RefreshDurationOnReapply ? Math.Max(existing.RemainingTicks, durationTicks) : existing.RemainingTicks;
             var magnitude = Math.Max(existing.Magnitude, spec.Magnitude);
             _statuses[existingIndex] = existing with
             {
-                RemainingSeconds = remaining,
-                DurationSeconds = Math.Max(existing.DurationSeconds, spec.DurationSeconds),
+                RemainingTicks = remaining,
+                DurationTicks = Math.Max(existing.DurationTicks, durationTicks),
                 Magnitude = magnitude,
                 Stacks = stacks,
             };
             return;
         }
 
-        _statuses.Add(new AppliedStatusState(spec.StatusId, spec.DurationSeconds, spec.DurationSeconds, spec.Magnitude));
+        var newDurationTicks = BattleTickMath.DurationToTicks(spec.DurationSeconds);
+        _statuses.Add(new AppliedStatusState(spec.StatusId, newDurationTicks, newDurationTicks, spec.Magnitude));
     }
 
     public bool RemoveStatus(string statusId)
@@ -495,8 +507,9 @@ public sealed class UnitSnapshot
             return;
         }
 
+        var durationTicks = BattleTickMath.DurationToTicks(durationSeconds);
         ControlResistWindow = new ControlResistWindowState(
-            Math.Max(durationSeconds, ControlResistWindow?.RemainingSeconds ?? 0f),
+            Math.Max(durationTicks, ControlResistWindow?.RemainingTicks ?? 0),
             Math.Max(resistMultiplier, ControlResistWindow?.ResistMultiplier ?? 0f));
     }
 
@@ -581,7 +594,7 @@ public sealed class UnitSnapshot
     {
         if (Mobility is { } mobility)
         {
-            MobilityCooldownRemaining = ApplySkillHaste(Math.Max(0f, mobility.Cooldown));
+            MobilityCooldownTicksRemaining = BattleTickMath.DurationToTicks(ApplySkillHaste(Math.Max(0f, mobility.Cooldown)));
         }
     }
 
@@ -589,7 +602,7 @@ public sealed class UnitSnapshot
 
     public void TriggerBlockCooldown()
     {
-        BlockCooldownRemaining = Math.Max(0f, Behavior.BlockCooldownSeconds);
+        BlockCooldownTicksRemaining = BattleTickMath.DurationToTicks(Behavior.BlockCooldownSeconds);
     }
 
     public bool CanSpendSignatureCastEnergy()
@@ -604,13 +617,13 @@ public sealed class UnitSnapshot
 
     public void GainEnergyFromDirectHitTaken()
     {
-        if (DirectHitEnergyIcdRemaining > 0f)
+        if (DirectHitEnergyIcdTicksRemaining > 0)
         {
             return;
         }
 
         GainEnergy(EnergyPerDirectHit);
-        DirectHitEnergyIcdRemaining = DirectHitEnergyIcdSeconds;
+        DirectHitEnergyIcdTicksRemaining = BattleTickMath.DurationToTicks(DirectHitEnergyIcdSeconds);
     }
 
     public void GainEnergyFromKill()
@@ -635,7 +648,7 @@ public sealed class UnitSnapshot
             PendingReevaluationReason = reason;
         }
 
-        ReevaluationRemaining = 0f;
+        ReevaluationTicksRemaining = 0;
         MarkPositioningReplan(reason);
     }
 
@@ -685,7 +698,7 @@ public sealed class UnitSnapshot
     public void ConsumeReevaluation()
     {
         PendingReevaluationReason = ReevaluationReason.None;
-        ReevaluationRemaining = Math.Max(0.1f, Behavior.ReevaluationInterval);
+        ReevaluationTicksRemaining = Math.Max(1, BattleTickMath.DurationToTicks(Behavior.ReevaluationInterval));
     }
 
     private void MarkDead()
@@ -695,10 +708,10 @@ public sealed class UnitSnapshot
         CurrentEnergy = Math.Clamp(CurrentEnergy, 0f, MaxEnergy);
         IsDefending = false;
         ClearTarget(applySwitchDelay: false);
-        CooldownRemaining = 0f;
-        MobilityCooldownRemaining = 0f;
-        BlockCooldownRemaining = 0f;
-        DirectHitEnergyIcdRemaining = 0f;
+        CooldownTicksRemaining = 0;
+        MobilityCooldownTicksRemaining = 0;
+        BlockCooldownTicksRemaining = 0;
+        DirectHitEnergyIcdTicksRemaining = 0;
         ActionState = CombatActionState.Dead;
         _statuses.Clear();
         ControlResistWindow = null;
@@ -780,21 +793,21 @@ public sealed class UnitSnapshot
         return cooldownSeconds / Math.Max(1f, 1f + SkillHaste);
     }
 
-    public List<string> AdvanceStatusTimers(float deltaSeconds)
+    public List<string> AdvanceStatusTimers()
     {
         var removed = new List<string>();
         for (var index = _statuses.Count - 1; index >= 0; index--)
         {
             var status = _statuses[index];
-            var remaining = Math.Max(0f, status.RemainingSeconds - deltaSeconds);
-            if (remaining <= 0f)
+            var remaining = status.RemainingTicks - 1;
+            if (remaining <= 0)
             {
                 removed.Add(status.StatusId);
                 _statuses.RemoveAt(index);
                 continue;
             }
 
-            _statuses[index] = status with { RemainingSeconds = remaining };
+            _statuses[index] = status with { RemainingTicks = remaining };
         }
 
         return removed;

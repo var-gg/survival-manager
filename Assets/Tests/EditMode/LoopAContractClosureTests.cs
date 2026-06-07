@@ -192,12 +192,12 @@ public sealed class LoopAContractClosureTests
         for (var cycle = 0; cycle < 7; cycle++)
         {
             actor.GainEnergyFromBasicAttackResolved();
-            actor.AdvanceTime(0.8f);
+            for (var tick = 0; tick < 8; tick++) { actor.AdvanceTick(); } // 0.8s = 8 ticks (Phase 2.2c)
             elapsed += 0.8f;
         }
         actor.GainEnergyFromDirectHitTaken();
         elapsed += 0.35f;
-        actor.AdvanceTime(0.35f);
+        for (var tick = 0; tick < 4; tick++) { actor.AdvanceTick(); } // 0.35s -> 4 ticks (Phase 2.2c)
         var evaluated = TacticEvaluator.Evaluate(state, actor);
 
         Assert.That(elapsed, Is.InRange(5f, 9f));
@@ -281,7 +281,7 @@ public sealed class LoopAContractClosureTests
         actor.RequestReevaluation(ReevaluationReason.Cadence);
         var locked = TacticEvaluator.Evaluate(state, actor);
 
-        actor.AdvanceTime(1f);
+        for (var tick = 0; tick < 10; tick++) { actor.AdvanceTick(); } // 1.0s = 10 ticks (Phase 2.2c)
         actor.RequestReevaluation(ReevaluationReason.Cadence);
         var unlocked = TacticEvaluator.Evaluate(state, actor);
 

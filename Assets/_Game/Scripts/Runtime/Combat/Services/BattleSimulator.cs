@@ -48,7 +48,7 @@ public sealed class BattleSimulator
         var stepEvents = new List<BattleEvent>();
         foreach (var unit in State.AllUnits)
         {
-            unit.AdvanceTime(State.FixedStepSeconds);
+            unit.AdvanceTick();
         }
         State.AdvanceGroupDispersalLocks();
 
@@ -328,11 +328,13 @@ public sealed class BattleSimulator
 
     private void EmitWindupStarted(UnitSnapshot actor, EvaluatedAction evaluated)
     {
-        // This step is labelled state.StepIndex + 1 (AdvanceStep increments after the action loop), so
-        // the windup begins at that tick and the contact lands StepsUntilResolve ticks later — a value
-        // that mirrors the float decrement exactly and therefore equals the real resolve step.
+        // This step is labelled state.StepIndex + 1 (AdvanceStep increments after the action loop), so the
+        // windup begins at that tick and the contact lands ActionTicksTotal ticks later. The windup countdown
+        // is now an integer (AdvanceTick decrements ActionTicksRemaining by 1/step from ActionTicksTotal), so
+        // windupStartTick + ActionTicksTotal == the real resolve step by construction
+        // (Phase 2.2c — retires the float StepsUntilResolve drift).
         var windupStartTick = State.StepIndex + 1;
-        var contactTick = windupStartTick + BattleWindupTickMath.StepsUntilResolve(actor.ActionTimerTotal, State.FixedStepSeconds);
+        var contactTick = windupStartTick + actor.ActionTicksTotal;
         var actionInstanceId = State.AllocateActionInstanceId();
         var delivery = evaluated.Skill?.Delivery ?? SkillDelivery.Melee;
         actor.SetPendingActionInstance(actionInstanceId, windupStartTick, contactTick, delivery);

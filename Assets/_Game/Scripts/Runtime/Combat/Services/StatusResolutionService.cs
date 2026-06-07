@@ -22,7 +22,7 @@ public static class StatusResolutionService
                 ApplyPeriodicDamage(state, unit, statusId, stepEvents);
             }
 
-            var removedStatuses = unit.AdvanceStatusTimers(state.FixedStepSeconds);
+            var removedStatuses = unit.AdvanceStatusTimers();
             foreach (var statusId in removedStatuses)
             {
                 stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.StatusRemoved, statusId));
