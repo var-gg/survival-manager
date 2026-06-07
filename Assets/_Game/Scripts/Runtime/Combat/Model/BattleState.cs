@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Core.Ids;
 
@@ -9,7 +10,7 @@ public sealed class BattleState
 {
     private readonly Dictionary<string, HashSet<string>> _damageContributorsByVictim = new();
     private readonly HashSet<string> _scheduledOwnerDeaths = new();
-    private readonly Dictionary<string, float> _ownedEntityDespawnTimers = new();
+    private readonly Dictionary<string, int> _ownedEntityDespawnTimers = new();
     private readonly Dictionary<string, GroupDispersalLockState> _groupDispersalLocks = new();
     private int _tacticContextStep = -1;
     private TacticContext? _allyTacticContext;
@@ -51,7 +52,8 @@ public sealed class BattleState
     public CombatStatusRules StatusRules { get; }
     public BattleActivityTelemetryAccumulator ActivityTelemetry { get; } = new();
     public int StepIndex { get; private set; }
-    public float ElapsedSeconds { get; private set; }
+    // Phase 2.2d: StepIndex 파생(누산 float 제거). 권위는 정수 StepIndex, 이 값은 telemetry/read-model용 초 projection.
+    public float ElapsedSeconds => StepIndex * FixedStepSeconds;
     public EffectPositionSnapshot? EffectPositionSnapshot { get; private set; }
     public int EffectPositionSnapshotStep { get; private set; } = -1;
     public IEnumerable<GroupDispersalLockState> ActiveGroupDispersalLocks => _groupDispersalLocks.Values;
@@ -133,14 +135,14 @@ public sealed class BattleState
 
         var safeSeverity = System.Math.Clamp(severity, 0f, 1f);
         var duration = System.Math.Min(1.8f, 0.75f + (0.25f * System.Math.Max(0, affectedCount - 2)) + (0.25f * safeSeverity));
-        var until = ElapsedSeconds + duration;
+        var untilTick = StepIndex + BattleTickMath.DurationToTicks(duration);
         if (_groupDispersalLocks.TryGetValue(unit.Id.Value, out var existing)
-            && existing.DispersedUntilSeconds >= until - 0.001f)
+            && existing.DispersedUntilTick >= untilTick)
         {
             return false;
         }
 
-        _groupDispersalLocks[unit.Id.Value] = new GroupDispersalLockState(unit.Id.Value, center, until, safeSeverity);
+        _groupDispersalLocks[unit.Id.Value] = new GroupDispersalLockState(unit.Id.Value, center, untilTick, safeSeverity);
         unit.RequestReevaluation(ReevaluationReason.TargetMoved);
         return true;
     }
@@ -149,7 +151,7 @@ public sealed class BattleState
     {
         return unit != null
                && _groupDispersalLocks.TryGetValue(unit.Id.Value, out var state)
-               && state.DispersedUntilSeconds > ElapsedSeconds;
+               && state.DispersedUntilTick > StepIndex;
     }
 
     public void RegisterDamage(UnitSnapshot attacker, UnitSnapshot victim)
@@ -194,7 +196,7 @@ public sealed class BattleState
                          && ownership.OwnerEntity == owner.Id))
             {
                 var delay = owned.SummonProfile?.OwnerDeathDespawnDelaySeconds ?? 1f;
-                _ownedEntityDespawnTimers[owned.Id.Value] = delay;
+                _ownedEntityDespawnTimers[owned.Id.Value] = BattleTickMath.DurationToTicks(delay);
             }
         }
     }
@@ -204,8 +206,8 @@ public sealed class BattleState
         var keys = _ownedEntityDespawnTimers.Keys.ToList();
         foreach (var unitId in keys)
         {
-            var remaining = _ownedEntityDespawnTimers[unitId] - FixedStepSeconds;
-            if (remaining > 0f)
+            var remaining = _ownedEntityDespawnTimers[unitId] - 1;
+            if (remaining > 0)
             {
                 _ownedEntityDespawnTimers[unitId] = remaining;
                 continue;
@@ -223,7 +225,7 @@ public sealed class BattleState
     public void AdvanceGroupDispersalLocks()
     {
         foreach (var key in _groupDispersalLocks
-                     .Where(pair => pair.Value.DispersedUntilSeconds <= ElapsedSeconds)
+                     .Where(pair => pair.Value.DispersedUntilTick <= StepIndex)
                      .Select(pair => pair.Key)
                      .ToList())
         {
@@ -287,7 +289,6 @@ public sealed class BattleState
     public void AdvanceStep()
     {
         StepIndex++;
-        ElapsedSeconds += FixedStepSeconds;
         EffectPositionSnapshot = null;
         EffectPositionSnapshotStep = -1;
         _allyTacticContext = null;

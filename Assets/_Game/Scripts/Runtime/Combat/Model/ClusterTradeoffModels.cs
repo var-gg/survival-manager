@@ -87,7 +87,7 @@ public sealed record AoeClusterSelection(
 public sealed record GroupDispersalLockState(
     string UnitId,
     CombatVector2 Center,
-    float DispersedUntilSeconds,
+    int DispersedUntilTick,
     float Severity);
 
 public sealed record ClusterTradeoffTelemetryFrame(

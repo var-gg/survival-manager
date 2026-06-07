@@ -184,7 +184,7 @@ public static class EffectMembershipSampler
             return 0f;
         }
 
-        var remaining = active.Average(lockState => Math.Max(0f, lockState.DispersedUntilSeconds - state.ElapsedSeconds));
+        var remaining = active.Average(lockState => Math.Max(0, lockState.DispersedUntilTick - state.StepIndex) * state.FixedStepSeconds);
         return remaining * 1000f;
     }
 
