@@ -66,7 +66,7 @@ public sealed class BattleSimulator
             .Where(unit => unit.IsAlive)
             .OrderByDescending(unit => unit.Speed)
             .ThenBy(unit => unit.Side)
-            .ThenBy(unit => unit.Id.Value)
+            .ThenBy(unit => unit.Id.Value, StringComparer.Ordinal)
             .ToList();
 
         foreach (var actor in orderedUnits)

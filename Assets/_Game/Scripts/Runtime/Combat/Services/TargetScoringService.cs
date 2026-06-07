@@ -67,32 +67,32 @@ public static class TargetScoringService
         {
             TargetSelector.NearestReachableEnemy => candidates
                 .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
-                .ThenBy(target => target.Id.Value)
+                .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetSelector.NearestFrontlineEnemy => candidates
                 .Where(target => target.Behavior.FormationLine == FormationLine.Frontline)
                 .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
-                .ThenBy(target => target.Id.Value)
+                .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault() ?? ResolveFallback(state, actor, CloneRuleWithFallback(rule, TargetFallbackPolicy.NearestReachableEnemy), candidates),
-            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
-            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
-            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => target.Id.Value).FirstOrDefault(),
+            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
             TargetSelector.MarkedEnemy => candidates.FirstOrDefault(target => target.HasStatus("marked")) ?? ResolveFallback(state, actor, rule, candidates),
             TargetSelector.LargestEnemyCluster => candidates
                 .OrderByDescending(target => CountClusterTargets(candidates, target.Position, Math.Max(0.1f, rule.ClusterRadius)))
                 .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context))
                 .ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target))
-                .ThenBy(target => target.Id.Value)
+                .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetSelector.BacklineExposedEnemy => candidates
                 .Where(target => IsBacklineExposedEnemy(state, target))
                 .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
-                .ThenBy(target => target.Id.Value)
+                .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates),
-            TargetSelector.LowestCurrentHpAlly => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
-            TargetSelector.LowestHpPercentAlly => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
-            TargetSelector.LowestEhpAlly => candidates.OrderBy(EstimateEhpAgainstAverageThreat).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault(),
-            TargetSelector.NearestInjuredAlly => candidates.Where(target => target.CurrentHealth < target.MaxHealth).OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value).FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates),
+            TargetSelector.LowestCurrentHpAlly => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestHpPercentAlly => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestEhpAlly => candidates.OrderBy(EstimateEhpAgainstAverageThreat).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.NearestInjuredAlly => candidates.Where(target => target.CurrentHealth < target.MaxHealth).OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates),
             TargetSelector.EmptyPointNearSelf => actor,
             TargetSelector.EmptyPointNearTarget => currentTarget,
             _ => ResolveFallback(state, actor, rule, candidates, context),
@@ -287,13 +287,13 @@ public static class TargetScoringService
             TargetFallbackPolicy.NearestReachableEnemy => candidates
                 .Where(target => target.Side != actor.Side)
                 .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
-                .ThenBy(target => target.Id.Value)
+                .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetFallbackPolicy.LowestCurrentHpEnemy => candidates
                 .Where(target => target.Side != actor.Side)
                 .OrderBy(target => target.CurrentHealth)
                 .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context))
-                .ThenBy(target => target.Id.Value)
+                .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetFallbackPolicy.Self => actor,
             _ => null,

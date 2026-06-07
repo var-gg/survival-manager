@@ -292,7 +292,7 @@ public static class CombatActionResolver
             }
         }
 
-        foreach (var dead in caughtTargets.Where(target => !target.IsAlive).OrderBy(target => target.Id.Value))
+        foreach (var dead in caughtTargets.Where(target => !target.IsAlive).OrderBy(target => target.Id.Value, StringComparer.Ordinal))
         {
             events.AddRange(ResolveKillAndAssist(state, actor, dead, BattleActionType.ActiveSkill, skill));
         }
