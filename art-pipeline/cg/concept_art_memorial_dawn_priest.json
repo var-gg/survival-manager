@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_memorial_dawn_priest",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_memorial_dawn_priest",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_dawn_priest"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_dawn_priest_memorial_dawn_prayer",
+  "note": "단린 메모리얼 — 새벽 기도. 단독 캐릭터 정점.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_memorial_dawn_priest/default.png",
+  "prompt": "Single-figure cinematic memorial scene — a quiet narrative moment within an environment, NOT a splash pose. Subject: Dawn Priest (단린), a young priestess-vanguard, kneeling in solemn dawn prayer. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): warm copper-brown hair in a soft tidy flow that does not cover the face; ivory-and-gold priest robe with a rose chest accent and brown leather lower gear; warm ivory-gold palette. Field priest-paladin silhouette but at rest — her round platinum shield bearing a faint sacred sigil is set down beside her, the ritual sword sheathed. KEY GESTURE: her fingers rest on a small priest seal held loosely in her open palm, no longer bound to her wrist — the campaign's quietest hook, faith without faith. Environment: soft gold dawn light breaking over a still quiet landscape, first light warming the scene. Mood: low, private, reverent. Warm dawn color grading. Painterly anime fantasy cutscene, single figure inside a painted environment, cinematic medium framing. No magenta chroma, full painted environment. 16:9 wide. Do NOT add halos, large emblems, tattoos, scars, or extra props beyond the seal hint; do NOT change the outfit or hair from the refs.",
+  "refs": [
+    "hero_dawn_priest:portrait_full",
+    "hero_dawn_priest:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

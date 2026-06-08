@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_chapter_intro_ashen_frontier_01",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_chapter_intro_ashen_frontier_01",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_chapter_intro_ashen_frontier",
+  "note": "ch1 인트로 프레임. 무너진 변방문 + 까마귀.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_chapter_intro_ashen_frontier_01/default.png",
+  "prompt": "Wide cinematic establishing shot of a ruined frontier gate at overcast dawn. NO named characters in frame — environment only (story portraits are composited separately later). The great borderland gate is broken and half-collapsed, scattered iron fragments at its base, weathered grey stone. Thin ash drifts on the wind across a barren grey field. A few black crows perch on the broken iron and on the gate stones. In the far distance, the silhouette of a wolf-pine ridge under low rolling fog. Atmospheric depth with layered fog. Mood: the tense hush of a first crossing into a bleak borderland where ash flows — the first landscape of the frontier. Chapter-1 ash-grey color grading: desaturated cold greys, muted ash tones, overcast diffuse light. Painterly anime fantasy game cutscene, full painted environment, no magenta chroma. 16:9 wide establishing composition, environment fills the frame.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
