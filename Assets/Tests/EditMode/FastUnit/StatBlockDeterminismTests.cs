@@ -92,4 +92,38 @@ public sealed class StatBlockDeterminismTests
         var block = Block(new Dictionary<StatKey, float>());
         Assert.That(block.Get(StatKey.CritChance), Is.EqualTo(0f));
     }
+
+    // ── Phase 4: fixed stat 권위(GetWide/GetFixed) ──
+
+    [Test]
+    public void GetWide_ModifierPipeline_MatchesGetProjection()
+    {
+        // GetWide(Hp64 fixed 계산)의 float projection이 Get(float)과 같은 공식 결과여야 한다(양자화 오차 내).
+        var block = Block(
+            new Dictionary<StatKey, float> { [StatKey.PhysPower] = 100f },
+            Mod(StatKey.PhysPower, ModifierOp.Flat, 20f),
+            Mod(StatKey.PhysPower, ModifierOp.Increased, 0.5f),
+            Mod(StatKey.PhysPower, ModifierOp.More, 0.2f));
+        // (100+20)*1.5*1.2 = 216
+        Assert.That(block.GetWide(StatKey.PhysPower).ToFloat(), Is.EqualTo(216f).Within(0.01f));
+        Assert.That(block.GetWide(StatKey.PhysPower).ToFloat(), Is.EqualTo(block.Get(StatKey.PhysPower)).Within(0.01f));
+    }
+
+    [Test]
+    public void GetFixed_SmallStat_ComputesInFixed()
+    {
+        // 배수·퍼센트 stat(Int32 범위)은 GetFixed(Fixed32)로. 0.25 × (1+0.2) = 0.30.
+        var block = Block(
+            new Dictionary<StatKey, float> { [StatKey.CritChance] = 0.25f },
+            Mod(StatKey.CritChance, ModifierOp.Increased, 0.2f));
+        Assert.That(block.GetFixed(StatKey.CritChance).ToFloat(), Is.EqualTo(0.30f).Within(0.001f));
+    }
+
+    [Test]
+    public void GetWide_LargeMagnitude_RequiresHp64Authority()
+    {
+        // MaxHealth 규모(>32768)는 Fixed32 범위를 넘으므로 Hp64 권위(GetWide)가 필요하다.
+        var block = Block(new Dictionary<StatKey, float> { [StatKey.MaxHealth] = 250000f });
+        Assert.That(block.GetWide(StatKey.MaxHealth).ToFloat(), Is.EqualTo(250000f).Within(1f));
+    }
 }
