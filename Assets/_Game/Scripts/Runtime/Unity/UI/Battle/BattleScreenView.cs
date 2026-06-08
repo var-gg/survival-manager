@@ -925,12 +925,24 @@ public sealed class BattleScreenView
 
         foreach (var group in statLines.GroupBy(line => line.Category).OrderBy(group => group.Key))
         {
-            var title = new Label(group.Key.ToString());
+            var title = new Label(CategoryName(group.Key));
             title.AddToClassList("sm-bs-stat-category");
             _statsList.Add(title);
             RenderStatGrid(_statsList, group.ToArray(), compact: false);
         }
     }
+
+    // 스탯 카테고리 헤더 한국어 표시 — enum.ToString() 영문(Vital/Combat...)이 한국어 UI에 새던 것을 교정.
+    private static string CategoryName(BattleStatLineCategory category) => category switch
+    {
+        BattleStatLineCategory.Vital => "생존",
+        BattleStatLineCategory.Combat => "전투",
+        BattleStatLineCategory.Defense => "방어",
+        BattleStatLineCategory.Resource => "자원",
+        BattleStatLineCategory.Movement => "기동",
+        BattleStatLineCategory.Targeting => "표적",
+        _ => category.ToString(),
+    };
 
     private static bool IsOverviewDial(BattleTacticDial dial)
     {
