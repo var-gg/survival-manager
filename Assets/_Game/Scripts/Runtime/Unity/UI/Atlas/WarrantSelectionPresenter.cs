@@ -77,8 +77,8 @@ public sealed class WarrantSelectionPresenter
         return new WarrantSelectionViewState(
             Title: "출격 서약 선택",
             HeaderText: _siteCauseText.Length > 0
-                ? $"{_siteCauseText}\n출격 전 서약을 하나 고르거나 서약 없이 출격합니다."
-                : "출격 전 서약을 하나 고르거나 서약 없이 출격합니다.",
+                ? $"{_siteCauseText}\n출격 전 서약을 하나 고르거나 서약 없이 출격합니다. 신뢰가 쌓인 세력의 서약일수록 전투 효과가 강해집니다."
+                : "출격 전 서약을 하나 고르거나 서약 없이 출격합니다. 신뢰가 쌓인 세력의 서약일수록 전투 효과가 강해집니다.",
             Cards: cards,
             ProceedLabel: "출격(서약 없이)",
             ProceedIsSelected: _selectedWarrantId.Length == 0,
@@ -140,7 +140,8 @@ public sealed class WarrantSelectionPresenter
             }
 
             var sign = modifier.Value >= 0f ? "+" : string.Empty;
-            builder.Append($"{modifier.Stat.Value} {sign}{modifier.Value:0.#}");
+            // raw stat id("phys_power") 대신 한국어 표시명("공격력")으로 — 한국어 사용자가 코드 식별자를 해독하지 않게.
+            builder.Append($"{WarrantDisplayDefaults.StatName(modifier.Stat.Value)} {sign}{modifier.Value:0.#}");
         }
 
         return builder.ToString();

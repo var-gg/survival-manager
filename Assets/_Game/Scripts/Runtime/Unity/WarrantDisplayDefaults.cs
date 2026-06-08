@@ -75,4 +75,31 @@ public static class WarrantDisplayDefaults
         PoliticalChannel.EnemyAlertness => "적 경계",
         _ => string.Empty,
     };
+
+    // 전투 스탯 한국어 표시명 — warrant 패키지 요약이 raw id("phys_power")를 카드에 노출하던 문제 해소.
+    private static readonly IReadOnlyDictionary<string, string> StatNames = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["max_health"] = "최대 체력",
+        ["armor"] = "방어력",
+        ["resist"] = "마법 저항",
+        ["barrier_power"] = "보호막",
+        ["tenacity"] = "강인함",
+        ["heal_power"] = "치유력",
+        ["phys_power"] = "공격력",
+        ["mag_power"] = "주문력",
+        ["attack_speed"] = "공격 속도",
+        ["move_speed"] = "이동 속도",
+        ["attack_range"] = "사거리",
+        ["skill_haste"] = "재사용 감소",
+        ["crit_chance"] = "치명타 확률",
+        ["crit_multiplier"] = "치명타 피해",
+        ["phys_pen"] = "방어 관통",
+        ["mag_pen"] = "저항 관통",
+        ["lifesteal"] = "흡혈",
+        ["omnivamp"] = "전흡혈",
+    };
+
+    /// <summary>전투 스탯 한국어 표시명(warrant 패키지 요약용). 미등록이면 id 그대로 폴백.</summary>
+    public static string StatName(string statId) =>
+        !string.IsNullOrEmpty(statId) && StatNames.TryGetValue(statId, out var name) ? name : statId ?? string.Empty;
 }
