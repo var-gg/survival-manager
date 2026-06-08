@@ -19,6 +19,10 @@ namespace SM.Core.Numerics
         public static Resource64 FromInt(int value) => new((long)value << Fixed32.FractionBits);
         public static Resource64 FromFixed(Fixed32 value) => new(value.Raw);
 
+        /// <summary>Ingress 전용(stat/저작 float → resource 규모 양자화, truncate-toward-zero). authoritative
+        /// resource 분기 입력 금지 — Phase 4 stat/content 경계에서만 호출한다.</summary>
+        public static Resource64 FromFloatQuantized(float value) => new((long)(value * Fixed32.OneRaw));
+
         public static readonly Resource64 Zero = new(0);
 
         public static Resource64 operator +(Resource64 a, Resource64 b) => new(a.Raw + b.Raw);

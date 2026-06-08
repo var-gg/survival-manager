@@ -50,7 +50,7 @@ public sealed class UnitSnapshot
         Behavior = CombatProfileDefaults.ResolveBehavior(definition.Behavior, definition.ClassId);
         Mobility = CombatProfileDefaults.ResolveMobility(definition.Mobility, definition.ClassId);
         _health = Hp64.FromFloatQuantized(MaxHealth);
-        CurrentEnergy = Math.Clamp(definition.EffectiveEnergy.Starting, 0f, Math.Max(0f, definition.EffectiveEnergy.Max));
+        _energy = Resource64.FromFloatQuantized(Math.Clamp(definition.EffectiveEnergy.Starting, 0f, Math.Max(0f, definition.EffectiveEnergy.Max)));
         RequestReevaluation(ReevaluationReason.Cadence);
     }
 
@@ -103,10 +103,12 @@ public sealed class UnitSnapshot
     public float DirectHitEnergyIcdRemaining => DirectHitEnergyIcdTicksRemaining * BattleTickMath.TickSeconds;
     private Hp64 _health;
     private Hp64 _barrier;
+    private Resource64 _energy;
 
     /// <summary>read-model HP projection. 권위는 Hp64 backing(_health) — Phase 4.2.</summary>
     public float CurrentHealth => _health.ToFloat();
-    public float CurrentEnergy { get; private set; }
+    /// <summary>read-model energy projection. 권위는 Resource64 backing(_energy) — Phase 4.4.</summary>
+    public float CurrentEnergy => _energy.ToFloat();
     /// <summary>read-model barrier projection. 권위는 Hp64 backing(_barrier) — Phase 4.2.</summary>
     public float Barrier => _barrier.ToFloat();
     public IReadOnlyList<AppliedStatusState> Statuses => _statuses;
@@ -623,7 +625,7 @@ public sealed class UnitSnapshot
 
     public bool CanSpendSignatureCastEnergy()
     {
-        return CurrentEnergy >= SignatureCastThreshold;
+        return _energy >= Resource64.FromFloatQuantized(SignatureCastThreshold);
     }
 
     public void GainEnergyFromBasicAttackResolved()
@@ -721,7 +723,7 @@ public sealed class UnitSnapshot
     {
         _health = Hp64.Zero;
         _barrier = Hp64.Zero;
-        CurrentEnergy = Math.Clamp(CurrentEnergy, 0f, MaxEnergy);
+        _energy = Resource64.Clamp(_energy, Resource64.Zero, Resource64.FromFloatQuantized(MaxEnergy));
         IsDefending = false;
         ClearTarget(applySwitchDelay: false);
         CooldownTicksRemaining = 0;
@@ -759,7 +761,7 @@ public sealed class UnitSnapshot
             return;
         }
 
-        CurrentEnergy = Math.Clamp(CurrentEnergy + amount, 0f, MaxEnergy);
+        _energy = Resource64.Clamp(_energy + Resource64.FromFloatQuantized(amount), Resource64.Zero, Resource64.FromFloatQuantized(MaxEnergy));
     }
 
     private void SpendSignatureCastEnergy()
@@ -774,7 +776,7 @@ public sealed class UnitSnapshot
             return;
         }
 
-        CurrentEnergy = Math.Clamp(CurrentEnergy - SignatureCastThreshold, 0f, MaxEnergy);
+        _energy = Resource64.Clamp(_energy - Resource64.FromFloatQuantized(SignatureCastThreshold), Resource64.Zero, Resource64.FromFloatQuantized(MaxEnergy));
         _pendingSignatureEnergySpent = true;
     }
 
