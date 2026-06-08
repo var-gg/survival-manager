@@ -475,7 +475,7 @@ public sealed class RewardScreenPresenter
             .Replace("Applied", "적용됨", StringComparison.Ordinal)
             .Replace("Awaiting choice", "선택 대기", StringComparison.Ordinal)
             .Replace("Gold", "골드", StringComparison.Ordinal)
-            .Replace("Echo", "에코", StringComparison.Ordinal)
+            .Replace("Echo", "잔향", StringComparison.Ordinal)
             .Replace("items", "개", StringComparison.Ordinal)
             .Replace("Run stays active and can resume from Town.", "원정은 유지되고 마을에서 재개할 수 있습니다.", StringComparison.Ordinal)
             .Replace("Run closes after this return to Town.", "마을로 돌아가면 원정이 종료됩니다.", StringComparison.Ordinal);

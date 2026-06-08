@@ -108,7 +108,7 @@ public sealed class EquipmentRefitView
         _refitButton?.SetEnabled(state.SelectedItemCanRefit);
 
         if (state.EchoSprite != null) _echoIcon.style.backgroundImage = new StyleBackground(state.EchoSprite);
-        _refitCostLabel.text = $"REFIT (-{state.RefitCost} Echo)";
+        _refitCostLabel.text = $"재정비 (-{state.RefitCost} 잔향)";
 
         RenderAffixList(state.Affixes);
         RenderPool(state.Pool);

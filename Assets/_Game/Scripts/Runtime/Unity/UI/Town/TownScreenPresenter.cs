@@ -312,7 +312,7 @@ public sealed class TownScreenPresenter
 
         return new TownServiceDecisionViewState(
             SelectedHeroLabel: heroLabel,
-            WalletLabel: $"{session.Profile.Currencies.Gold:N0} Gold · {session.Profile.Currencies.Echo:N0} Echo",
+            WalletLabel: $"{session.Profile.Currencies.Gold:N0} 골드 · {session.Profile.Currencies.Echo:N0} 잔향",
             InventoryLabel: $"{session.Profile.Inventory.Count} inventory",
             RosterPressureLabel: $"{session.Profile.Heroes.Count}/12 roster · {deployCount}/4 deploy",
             ModalAvailabilityLabel: $"핵심 패널 {panelReady}/{panelTotal} 준비");

@@ -508,7 +508,7 @@ public sealed partial class GameSessionState
 
         if (Profile.Currencies.Echo < RecruitmentBalanceCatalog.ScoutEchoCost)
         {
-            return Result.Fail($"Echo가 부족합니다. scout에는 {RecruitmentBalanceCatalog.ScoutEchoCost} Echo가 필요합니다.");
+            return Result.Fail($"잔향이 부족합니다. 정찰에는 {RecruitmentBalanceCatalog.ScoutEchoCost} 잔향이 필요합니다.");
         }
 
         Profile.Currencies.Echo -= RecruitmentBalanceCatalog.ScoutEchoCost;
@@ -548,7 +548,7 @@ public sealed partial class GameSessionState
         var cost = RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(operation, retrainState);
         if (Profile.Currencies.Echo < cost)
         {
-            return Result.Fail($"Echo가 부족합니다. retrain에는 {cost} Echo가 필요합니다.");
+            return Result.Fail($"잔향이 부족합니다. 재훈련에는 {cost} 잔향이 필요합니다.");
         }
 
         var result = RetrainService.Retrain(
@@ -731,7 +731,7 @@ public sealed partial class GameSessionState
         var echoCost = MetaBalanceDefaults.RefitEchoCost;
         if (Profile.Currencies.Echo < echoCost)
         {
-            return Result.Fail($"Echo가 부족합니다. Refit에는 {echoCost} Echo가 필요합니다.");
+            return Result.Fail($"잔향이 부족합니다. 재정비에는 {echoCost} 잔향이 필요합니다.");
         }
 
         var availableAffixes = BuildRefitCandidateAffixIds(item, affixSlotIndex);
