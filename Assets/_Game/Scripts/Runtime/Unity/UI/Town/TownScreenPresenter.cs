@@ -229,10 +229,10 @@ public sealed class TownScreenPresenter
         // NPC 4 거점 — 정적 (Phase 8에 EmotionState/BarkBus 통합)
         var npcEntries = new List<TownNpcCardViewState>
         {
-            new("dalmok",  "달목", "amused",    "tavern"),
-            new("soemae",  "쇠매", "neutral",   "forge"),
-            new("galma",   "갈마", "concerned", "clinic"),
-            new("solgil",  "솔길", "neutral",   "records"),
+            new("dalmok",  "달목", "amused",    "tavern",  "모집"),
+            new("soemae",  "쇠매", "neutral",   "forge",   "장비"),
+            new("galma",   "갈마", "concerned", "clinic",  "수련"),
+            new("solgil",  "솔길", "neutral",   "records", "창고"),
         };
 
         // Deploy row — ExpeditionSquadHeroIds (deploy 4 cap)

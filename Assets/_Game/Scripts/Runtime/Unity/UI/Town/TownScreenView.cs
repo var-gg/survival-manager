@@ -201,7 +201,7 @@ public sealed class TownScreenView
         _npcStrip.Clear();
         foreach (var npc in state.NpcEntries)
         {
-            var card = BuildFaceCard(npc.NpcId, npc.DisplayName, npc.EmotionKey, npc.BadgeKey, "lg", "npc");
+            var card = BuildFaceCard(npc.NpcId, npc.DisplayName, npc.EmotionKey, npc.BadgeKey, "lg", "npc", npc.RoleLabel);
             var npcId = npc.NpcId;
             card.clicked += () => _onNpcClick?.Invoke(npcId);
             _npcStrip.Add(card);
@@ -261,7 +261,7 @@ public sealed class TownScreenView
     }
 
     /// <summary>HeroFaceCard atom build — NPC + hero 공용. badge로 위계 분리, size로 변형.</summary>
-    private static Button BuildFaceCard(string id, string displayName, string emotion, string badge, string size, string role)
+    private static Button BuildFaceCard(string id, string displayName, string emotion, string badge, string size, string role, string caption = "")
     {
         var card = new Button { name = $"FaceCard_{id}", text = string.Empty };
         card.AddToClassList("sm-face-card");
@@ -296,6 +296,15 @@ public sealed class TownScreenView
         nameLabel.AddToClassList("sm-face-card__name");
         nameLabel.pickingMode = PickingMode.Ignore;
         card.Add(nameLabel);
+
+        // NPC 거점은 이름 아래 기능 caption(모집/장비/수련/창고)을 노출 — hero 카드는 caption 없이 통과.
+        if (!string.IsNullOrEmpty(caption))
+        {
+            var captionLabel = new Label(caption);
+            captionLabel.AddToClassList("sm-face-card__caption");
+            captionLabel.pickingMode = PickingMode.Ignore;
+            card.Add(captionLabel);
+        }
 
         var pipRow = new VisualElement();
         pipRow.AddToClassList("sm-face-card__pip-row");

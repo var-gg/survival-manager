@@ -8,7 +8,8 @@ public sealed record TownNpcCardViewState(
     string NpcId,
     string DisplayName,
     string EmotionKey,
-    string BadgeKey);
+    string BadgeKey,
+    string RoleLabel);   // 모집 / 장비 / 수련 / 창고 — 카드가 어떤 시설인지 즉시 읽히게 (기능 매핑 추측 제거)
 
 /// <summary>잿골 hub V3 hero face card — deploy highlight 또는 roster thumbnail.</summary>
 public sealed record TownHeroCardViewState(

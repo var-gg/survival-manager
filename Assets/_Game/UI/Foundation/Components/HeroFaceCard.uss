@@ -163,6 +163,18 @@
 .sm-face-card--md .sm-face-card__name { font-size: 11px; }
 .sm-face-card--sm .sm-face-card__name { font-size: 9px; }
 
+/* NPC 거점 기능 caption(모집/장비/수련/창고) — 이름 아래 muted 보조 라벨 */
+.sm-face-card__caption {
+    color: var(--sm-gold-200);
+    font-size: 10px;
+    -unity-text-align: middle-center;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
 .sm-face-card__pip-row {
     flex-direction: row;
     justify-content: center;
