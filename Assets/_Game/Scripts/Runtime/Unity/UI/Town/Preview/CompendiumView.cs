@@ -415,7 +415,9 @@ public sealed class CompendiumView
         _detailTitle.text = detail.Title;
         _detailSubtitle.text = detail.Subtitle;
         _detailDescription.text = detail.Description;
+        // HookLabel은 dev 연출 메타 — release에선 빈 문자열로 와 숨긴다(빈 "연출:" 줄 방지).
         _detailHook.text = detail.HookLabel;
+        _detailHook.style.display = string.IsNullOrEmpty(detail.HookLabel) ? DisplayStyle.None : DisplayStyle.Flex;
         _vfxReplayButton.text = detail.VfxPreview.ReplayLabel;
         _vfxReplayButton.style.display = detail.VfxPreview.CanPreview ? DisplayStyle.Flex : DisplayStyle.None;
         _vfxPreview.Render(detail.VfxPreview);

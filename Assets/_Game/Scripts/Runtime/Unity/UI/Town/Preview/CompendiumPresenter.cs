@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Meta.Model;
 using SM.Unity.UI;
+using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
 
@@ -386,29 +387,39 @@ internal sealed class CompendiumPresenter : ICompendiumActions
             return EmptyDetail();
         }
 
+        // 플레이어는 "스킬이 뭘 하는지"(피해·전달·대상·위력·재사용·상태)만 본다. ID/아이콘/연출/큐/프리팹은
+        // 에셋 파이프라인 메타라 release 빌드 정보표에서 가린다(코드베이스 dev-gate 관례와 동일).
+        var showDevRows = Application.isEditor || Debug.isDebugBuild;
+        var metrics = new List<CompendiumMetricViewState>
+        {
+            new(_filterSupport.MetricLabel("damage", "피해"), skill.DamageLabel),
+            new(_filterSupport.MetricLabel("delivery", "전달"), skill.DeliveryLabel),
+            new(_filterSupport.MetricLabel("target", "대상"), skill.TargetLabel),
+            new(_filterSupport.MetricLabel("power", "위력"), skill.PowerLabel),
+            new(_filterSupport.MetricLabel("cooldown", "재사용"), skill.CooldownLabel),
+            new(_filterSupport.MetricLabel("status", "상태"), skill.StatusLabel),
+        };
+        if (showDevRows)
+        {
+            metrics.Add(new(_filterSupport.MetricLabel("id", "ID"), skill.Id));
+            metrics.Add(new(_filterSupport.MetricLabel("icon", "아이콘"), skill.IconId));
+            metrics.Add(new(_filterSupport.MetricLabel("vfx_family", "연출 계열"), skill.VfxFamilyLabel));
+            metrics.Add(new(_filterSupport.MetricLabel("vfx_skin", "연출 톤"), skill.VfxSkinLabel));
+            metrics.Add(new(_filterSupport.MetricLabel("animation", "동작"), skill.AnimationLabel));
+            metrics.Add(new(_filterSupport.MetricLabel("cue", "큐"), skill.CueSequenceLabel));
+            metrics.Add(new(_filterSupport.MetricLabel("prefab", "프리팹"), skill.VfxPrefabLabel));
+        }
+
         return new CompendiumDetailViewState(
             Title: skill.Name,
             Subtitle: $"{skill.SlotLabel} / {skill.ClassLabel}",
             Description: skill.Description,
-            HookLabel: $"{Localize("ui.town.compendium.hook.vfx", "연출")}: {skill.VfxHookId} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel}",
+            HookLabel: showDevRows
+                ? $"{Localize("ui.town.compendium.hook.vfx", "연출")}: {skill.VfxHookId} / {skill.VfxFamilyLabel} / {skill.VfxSkinLabel}"
+                : string.Empty,
             IconSprite: skill.IconSprite,
             VfxPreview: BuildSkillVfxPreview(skill),
-            Metrics: new[]
-            {
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("id", "ID"), skill.Id),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("icon", "아이콘"), skill.IconId),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("damage", "피해"), skill.DamageLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("delivery", "전달"), skill.DeliveryLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("target", "대상"), skill.TargetLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("power", "위력"), skill.PowerLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("cooldown", "재사용"), skill.CooldownLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("status", "상태"), skill.StatusLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("vfx_family", "연출 계열"), skill.VfxFamilyLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("vfx_skin", "연출 톤"), skill.VfxSkinLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("animation", "동작"), skill.AnimationLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("cue", "큐"), skill.CueSequenceLabel),
-                new CompendiumMetricViewState(_filterSupport.MetricLabel("prefab", "프리팹"), skill.VfxPrefabLabel),
-            });
+            Metrics: metrics.ToArray());
     }
 
     private CompendiumDetailViewState BuildStatusDetail(CompendiumStatusViewState? status)
