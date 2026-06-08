@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-07
+- 최종수정일: 2026-06-08
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -88,6 +88,8 @@
 - `content-loading-strategy.md`: MVP content loading 계약
 - `content-seed-assets.md`: sample seed asset과 Markdown catalog/live subset 기준
 - `combat-content-mapping.md`: spatial combat authored data와 runtime 매핑
+- `sfx-hook-id-contract.md`: skill/status/common combat cue SFX hook id와 생성 주문서 규칙
+- `sfx-sound-style-bible.md`: SFX 음색 규칙, MOSS caption-first 프롬프트 계약, layered 합성 워크플로우
 - `encounter-authoring-and-runtime-resolution.md`: chapter/site/encounter resolve와 debug fallback 경계
 - `recruit-offer-schema.md`: recruit preview, pack metadata, pity/scout state schema
 - `unit-economy-schema.md`: wallet, retrain state, duplicate conversion, dismiss footprint schema
