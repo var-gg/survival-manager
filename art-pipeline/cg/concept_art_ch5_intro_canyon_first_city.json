@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_ch5_intro_canyon_first_city",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_ch5_intro_canyon_first_city",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T4",
+  "motion": "video",
+  "scene_id": "cutscene_ch5_intro_canyon_first_city",
+  "note": "첫 도시 공개 + 바람이 멎는 8초 미세 모션. ladder 최상단.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_ch5_intro_canyon_first_city/default.png",
+  "prompt": "Wide epic cinematic establishing shot of the First City revealed deep within a vast canyon — NO named characters in frame, environment only (any human presence is a tiny distant silhouette at most, no close-up figures). A long-lost monumental city set between towering canyon walls, half-buried and ancient, great stone architecture catching the light in the held instant the wind goes still. Layered atmospheric depth, enormous scale, sun shafts and drifting haze across the canyon. Mood: the breath-held reveal of the first city — wonder and dread together, the air ceasing to move for one suspended beat. Chapter-5 ember color grading: warm amber light, deep canyon shadow, embered atmospheric haze. Painterly anime fantasy game cutscene, full painted environment, sweeping wide establishing composition, the environment filling the frame. No magenta chroma. 16:9 wide. No named characters, no close-up figures, no portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
