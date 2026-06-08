@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_chapter_clear_sunken_bastion_01",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_chapter_clear_sunken_bastion_01",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_chapter_clear_sunken_bastion",
+  "note": "ch2 클리어. 처형대 + 단현 일지 사본.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_chapter_clear_sunken_bastion_01/default.png",
+  "prompt": "Wide cinematic establishing shot — the aftermath at the sunken bastion — an empty weathered execution scaffold standing over still water, and on a foreground ledge a hand-copied journal page weighted by a stone, left behind. cold teal-and-slate color grading, damp dawn light. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

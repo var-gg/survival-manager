@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_ch4_intro_glass_voice",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_ch4_intro_glass_voice",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_ch4_intro_glass_voice",
+  "note": "ch4 인트로(본문 통합). 유리의 숲 + 선영 silhouette. (연출이 cutscene 토큰 아니라 추론 T1 → override)",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_ch4_intro_glass_voice/default.png",
+  "prompt": "Wide cinematic establishing shot — a forest of pale translucent glass and crystal trees, light refracting cold and thin through them, a single distant silhouette standing small among the glass trunks. pale frost blue-white color grading, cold thin light. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

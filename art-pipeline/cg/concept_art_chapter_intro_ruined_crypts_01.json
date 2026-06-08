@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_chapter_intro_ruined_crypts_01",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_chapter_intro_ruined_crypts_01",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_chapter_intro_ruined_crypts",
+  "note": "ch3 인트로. 청록 인광 이끼 + 묵향 silhouette.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_chapter_intro_ruined_crypts_01/default.png",
+  "prompt": "Wide cinematic establishing shot — the interior of ruined underground crypts lit by phosphorescent cyan-green moss glowing along the stone, rows of broken tombs receding into dark, a single lone distant cloaked silhouette among them. phosphor violet-and-cyan color grading, faint glow in deep shadow. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

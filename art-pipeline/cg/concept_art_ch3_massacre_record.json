@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_ch3_massacre_record",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_ch3_massacre_record",
+  "engine": "chatgpt-image",
+  "kind": "prop",
+  "subjects": [],
+  "tier": "T3",
+  "motion": "kenburns",
+  "scene_id": "dialogue_scene_crypts_massacre_record",
+  "note": "ch3 첫 도시 학살 기록 발견. ch5 massacre와 짝되는 정점.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_ch3_massacre_record/default.png",
+  "prompt": "A cinematic still-life tableau — NO characters, objects only (no people, no faces, no hands) — a grim discovered record of an earlier first-city massacre — a stamped official seal, a notched blade, a torn ledger of names, and a small dull mirror, arranged on cold stone as evidence; the first discovery that pairs with a later reckoning. phosphor violet-and-cyan color grading, faint glow in deep shadow. Painterly anime fantasy game cutscene, full painted environment, close intimate tableau composition, the objects filling the frame, dramatic low-key raking light. No magenta chroma. 16:9 wide. Do NOT add people, faces, hands, or named characters.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
