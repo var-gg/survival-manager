@@ -240,6 +240,20 @@
     -unity-text-align: middle-center;
 }
 
+/* 초상화 미연결 placeholder — 동료 이름 이니셜을 silhouette 중앙에 크게 노출(dev 약어 대체) */
+.sm-hpc__portrait-initials {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-size: 46px;
+    color: var(--sm-gold-200);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    opacity: 0.85;
+}
+
 .sm-hpc__portrait-glow {
     position: absolute;
     bottom: 0;

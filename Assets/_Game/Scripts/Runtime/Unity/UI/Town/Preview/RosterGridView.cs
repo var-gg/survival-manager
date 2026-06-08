@@ -113,13 +113,13 @@ public sealed class RosterGridView
         var silhouette = Add(portrait, "silhouette", "sm-hpc__silhouette");
         Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-bust");
         Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-head");
-        var placeholder = new Label("P09 RenderTexture");
-        placeholder.AddToClassList("sm-hpc__p09-placeholder-label");
-        silhouette.Add(placeholder);
+        // 초상화 RenderTexture는 후속 task에서 wire — 그 전까지 dev 약어("P09 RenderTexture" 워터마크,
+        // "P09" 코너 태그) 대신 동료 이름 이니셜을 placeholder로 노출한다(Battle/Recruit의 이니셜 fallback과 통일).
+        var initials = new Label(BuildFallbackInitials(hero.DisplayName)) { name = "portrait-initials" };
+        initials.AddToClassList("sm-hpc__portrait-initials");
+        initials.pickingMode = PickingMode.Ignore;
+        silhouette.Add(initials);
         Add(portrait, "portrait-glow", "sm-hpc__portrait-glow");
-        var tag = new Label("P09") { name = "tag" };
-        tag.AddToClassList("sm-hpc__tag");
-        portrait.Add(tag);
 
         var tier = Add(portrait, "tier", "sm-hpc__tier");
         Add(tier, string.Empty, "sm-hpc__tier-jewel", "sm-hpc__tier-jewel--1");
@@ -179,6 +179,29 @@ public sealed class RosterGridView
 
         RemoveClasses(card, "sm-hpc--rare-common", "sm-hpc--rare-rare", "sm-hpc--rare-epic");
         card.AddToClassList($"sm-hpc--rare-{hero.RarityKey}");
+    }
+
+    // 초상화 미연결 placeholder용 이니셜 — 이름을 공백/-/_로 나눠 앞 1~2 토큰의 첫 글자.
+    // (BattleScreenView.BuildInitial / RecruitView.BuildFallbackInitials와 동일 규칙, Linq 미사용 사본)
+    private static string BuildFallbackInitials(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "?";
+        }
+
+        var parts = value.Split(new[] { ' ', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+        {
+            return value.Substring(0, 1).ToUpperInvariant();
+        }
+
+        var initials = char.ToUpperInvariant(parts[0][0]).ToString();
+        if (parts.Length > 1)
+        {
+            initials += char.ToUpperInvariant(parts[1][0]);
+        }
+        return initials;
     }
 
     private static void ApplyHeroCardLabels(VisualElement card, RosterGridHeroCardViewState hero)
