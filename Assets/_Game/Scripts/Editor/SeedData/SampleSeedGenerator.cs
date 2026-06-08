@@ -893,6 +893,7 @@ public static class SampleSeedGenerator
             a.CanCrit = tuple.Item1 == "skill_precision_shot";
             a.IconId = ResolveSkillIconId(a.Id);
             a.VfxHookId = ResolveSkillVfxHookId(a.Id);
+            a.SfxHookId = ResolveSkillSfxHookId(a.Id);
             UpsertStringEntry(ContentLocalizationTables.Skills, a.NameKey, tuple.Item3, tuple.Item2);
             UpsertStringEntry(ContentLocalizationTables.Skills, a.DescriptionKey, tuple.Item5, tuple.Item4);
         }));
@@ -1428,6 +1429,7 @@ public static class SampleSeedGenerator
         skill.MutuallyExclusiveGroupId = mutuallyExclusiveGroupId;
         skill.IconId = ResolveSkillIconId(skill.Id);
         skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
+        skill.SfxHookId = ResolveSkillSfxHookId(skill.Id);
         skill.RecruitNativeTags = ResolveTags(tags, nativeTagIds);
         skill.RecruitPlanTags = ResolveTags(tags, planTagIds);
         skill.RecruitScoutTags = ResolveTags(tags, scoutTagIds);
@@ -3220,6 +3222,12 @@ public static class SampleSeedGenerator
             {
                 skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
             }
+
+            if (ShouldAssignSkillSfxHookId(skill) && string.IsNullOrWhiteSpace(skill.SfxHookId))
+            {
+                skill.SfxHookId = ResolveSkillSfxHookId(skill.Id);
+            }
+
             PatchSerializedSkillContract(skill, compileTags, blockedTags, weaponTags, classTags, skill.AppliedStatuses, skill.CleanseProfileId);
             EditorUtility.SetDirty(skill);
         }
@@ -3310,6 +3318,7 @@ public static class SampleSeedGenerator
                 asset.TenacityScale = definition.Scale;
                 asset.AppliesPeriodicDamage = definition.Id is "burn" or "bleed";
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
+                asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;
                 asset.CompileTags = new List<string> { definition.Id };
                 UpsertStringEntry(ContentLocalizationTables.Status, asset.NameKey, definition.Ko, definition.En);
@@ -4016,6 +4025,7 @@ public static class SampleSeedGenerator
         skill.CleanseProfileId = cleanseProfileId;
         skill.IconId = ResolveSkillIconId(skill.Id);
         skill.VfxHookId = ResolveSkillVfxHookId(skill.Id);
+        skill.SfxHookId = ResolveSkillSfxHookId(skill.Id);
         PatchSerializedSkillContract(skill, resolvedCompileTags, resolvedBlockedTags, resolvedWeaponTags, resolvedClassTags, resolvedStatuses, cleanseProfileId);
         EditorUtility.SetDirty(skill);
     }
@@ -4023,6 +4033,37 @@ public static class SampleSeedGenerator
     private static string ResolveSkillVfxHookId(string skillId)
     {
         return string.IsNullOrWhiteSpace(skillId) ? string.Empty : $"vfx.{skillId}";
+    }
+
+    private static string ResolveSkillSfxHookId(string skillId)
+    {
+        return string.IsNullOrWhiteSpace(skillId) ? string.Empty : $"sfx.skill.{skillId}";
+    }
+
+    private static string ResolveStatusSfxHookId(string statusId)
+    {
+        return string.IsNullOrWhiteSpace(statusId) ? string.Empty : $"sfx.status.{statusId}.apply";
+    }
+
+    private static bool ShouldAssignSkillSfxHookId(SkillDefinitionAsset skill)
+    {
+        return skill.SlotKind is SkillSlotKindValue.CoreActive or SkillSlotKindValue.UtilityActive;
+    }
+
+    private static bool ShouldAssignStatusSfxHookId(string statusId)
+    {
+        return statusId is "barrier"
+            or "bleed"
+            or "burn"
+            or "exposed"
+            or "guarded"
+            or "marked"
+            or "root"
+            or "silence"
+            or "slow"
+            or "sunder"
+            or "unstoppable"
+            or "wound";
     }
 
     private static string ResolveSkillIconId(string skillId)
@@ -4402,6 +4443,7 @@ public static class SampleSeedGenerator
         serializedObject.FindProperty(nameof(SkillDefinitionAsset.CleanseProfileId))!.stringValue = cleanseProfileId ?? string.Empty;
         serializedObject.FindProperty(nameof(SkillDefinitionAsset.IconId))!.stringValue = skill.IconId ?? string.Empty;
         serializedObject.FindProperty(nameof(SkillDefinitionAsset.VfxHookId))!.stringValue = skill.VfxHookId ?? string.Empty;
+        serializedObject.FindProperty(nameof(SkillDefinitionAsset.SfxHookId))!.stringValue = skill.SfxHookId ?? string.Empty;
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
     }
 

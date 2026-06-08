@@ -13,6 +13,11 @@ public readonly record struct BattleCameraSuggestedFrame(
 
 public sealed class BattleCameraFramingPolicy
 {
+    private const float EmptyFrameZoomHeight = 7.7f;
+    private const float BaseZoomHeight = 5.05f;
+    private const float MaxBootstrapZoomHeight = 10.8f;
+    private const float MaxUnitFocusZoomHeight = 6.4f;
+
     public BattleCameraSuggestedFrame BuildBootstrapFrame(BattleSimulationStep step, string selectedUnitId = "")
     {
         var points = CollectBootstrapPoints(step, selectedUnitId);
@@ -36,14 +41,14 @@ public sealed class BattleCameraFramingPolicy
         var points = new List<Vector3> { ToWorld(selected.Position) };
         AddUnitPoint(step, points, selected.TargetId);
         var frame = BuildFrame(points, isBootstrap: true);
-        return new BattleCameraSuggestedFrame(frame.GroundCenter, Mathf.Clamp(frame.ZoomHeight, 4.8f, 6.4f), true);
+        return new BattleCameraSuggestedFrame(frame.GroundCenter, Mathf.Clamp(frame.ZoomHeight, 5.0f, MaxUnitFocusZoomHeight), true);
     }
 
     private static BattleCameraSuggestedFrame BuildFrame(IReadOnlyList<Vector3> points, bool isBootstrap)
     {
         if (points.Count == 0)
         {
-            return new BattleCameraSuggestedFrame(Vector3.zero, 7.8f, isBootstrap);
+            return new BattleCameraSuggestedFrame(Vector3.zero, EmptyFrameZoomHeight, isBootstrap);
         }
 
         var minX = points.Min(point => point.x);
@@ -54,7 +59,7 @@ public sealed class BattleCameraFramingPolicy
         var center = new Vector3((minX + maxX) * 0.5f, 0f, (minZ + maxZ) * 0.5f);
         var extentX = maxX - minX;
         var extentZ = maxZ - minZ;
-        var zoom = Mathf.Clamp(5.1f + (extentX * 0.38f) + (extentZ * 0.72f), 4.8f, 10.8f);
+        var zoom = Mathf.Clamp(BaseZoomHeight + (extentX * 0.42f) + (extentZ * 0.76f), 5.0f, MaxBootstrapZoomHeight);
         return new BattleCameraSuggestedFrame(center, zoom, isBootstrap);
     }
 

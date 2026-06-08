@@ -18,7 +18,10 @@ public sealed partial class BattleHumanoidAnimationSet
 
         var idleClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/HumanM@CombatIdle01.fbx");
         var relaxedIdleClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Idles/HumanM@Idle01.fbx");
-        var moveClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Forward.fbx")
+        var walkMoveClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/RootMotion/HumanM@Walk01_Forward [RM].fbx");
+        var moveClip = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/RootMotion/HumanM@Run01_Forward [RM].fbx")
+                       ?? walkMoveClip
+                       ?? LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Forward.fbx")
                        ?? LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Forward.fbx");
 
         if (idleClip == null && moveClip == null)
@@ -31,7 +34,10 @@ public sealed partial class BattleHumanoidAnimationSet
         set.stance = BattleHumanoidAnimationStance.Default;
         set.relaxedIdle = relaxedIdleClip ?? idleClip!;
         set.idle = idleClip!;
+        set.walkMove = walkMoveClip ?? moveClip!;
         set.move = moveClip!;
+        set.authoredWalkLocomotionSpeed = DefaultWalkAuthoredLocomotionSpeed;
+        set.authoredLocomotionSpeed = DefaultRunAuthoredLocomotionSpeed;
         set.guardLoop = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Shield/HumanM@BlockShield01 - Loop.fbx") ?? idleClip!;
         set.guardEnter = set.guardLoop;
         set.guardExit = idleClip!;
@@ -69,14 +75,14 @@ public sealed partial class BattleHumanoidAnimationSet
             // A genuine burst (single-step distance ≥ 1.2m → Heavy) sprints. The old RunSlide01 variant (a
             // baseball-slide clip) tied with Run01 at Medium and won ~half the time, which read as the
             // "슬라이딩태클로 접근" the user reported — removed so a walk-up never slides.
-            MakeVariant(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, BattleAnimationIntensity.Heavy, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/HumanM@Sprint01_Forward.fbx"),
-            MakeVariant(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Forward.fbx"),
-            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Backward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/HumanM@Run01_Backward.fbx"),
-            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Backward, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/HumanM@Walk01_Backward.fbx"),
-            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Left, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/HumanM@StrafeRun01_BackwardLeft.fbx"),
-            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Right, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/HumanM@StrafeRun01_BackwardRight.fbx"),
-            MakeVariant(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Left, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/HumanM@StrafeRun01_Left.fbx"),
-            MakeVariant(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Right, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/HumanM@StrafeRun01_Right.fbx"),
+            MakeVariant(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, BattleAnimationIntensity.Heavy, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Sprint/RootMotion/HumanM@Sprint01_Forward [RM].fbx"),
+            MakeVariant(BattleAnimationSemantic.DashEngage, BattleAnimationDirection.Forward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/RootMotion/HumanM@Run01_Forward [RM].fbx"),
+            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Backward, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Run/RootMotion/HumanM@Run01_Backward [RM].fbx"),
+            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Backward, BattleAnimationIntensity.Light, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Walk/RootMotion/HumanM@Walk01_Backward [RM].fbx"),
+            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Left, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/RootMotion/HumanM@StrafeRun01_BackwardLeft [RM].fbx"),
+            MakeVariant(BattleAnimationSemantic.BackstepDisengage, BattleAnimationDirection.Right, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/RootMotion/HumanM@StrafeRun01_BackwardRight [RM].fbx"),
+            MakeVariant(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Left, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/RootMotion/HumanM@StrafeRun01_Left [RM].fbx"),
+            MakeVariant(BattleAnimationSemantic.LateralStrafe, BattleAnimationDirection.Right, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Movement/Strafe/StrafeRun/RootMotion/HumanM@StrafeRun01_Right [RM].fbx"),
             MakeVariant(BattleAnimationSemantic.BlockImpact, BattleAnimationDirection.Any, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Shield/HumanM@BlockShield01 - Hit.fbx"),
             MakeVariant(BattleAnimationSemantic.BlockImpact, BattleAnimationDirection.Any, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Spellcasting/HumanM@CastingBlock01_R - Hit.fbx"),
             MakeVariant(BattleAnimationSemantic.BlockImpact, BattleAnimationDirection.Any, BattleAnimationIntensity.Medium, "Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/1H/HumanM@Parry1H01_R - Hit.fbx"),

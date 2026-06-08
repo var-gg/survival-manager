@@ -719,6 +719,7 @@ internal sealed class StatusFamilySchemaRule : DefinitionSchemaRule<StatusFamily
         }
 
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(statusFamily.VfxCueId, "status.vfx_cue", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(statusFamily.SfxHookId, "status.sfx_hook", assetPath, issues);
         if (string.IsNullOrWhiteSpace(statusFamily.VfxCueId))
         {
             ContentValidationIssueFactory.AddError(issues, "status.vfx_cue_required", "Status VfxCueId is required as the pre-VFX catalog handshake.", assetPath);

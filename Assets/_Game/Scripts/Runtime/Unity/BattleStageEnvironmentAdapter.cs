@@ -15,14 +15,14 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
     [SerializeField] private Material skybox = null!;
     [SerializeField] private VolumeProfile volumeProfile = null!;
-    [SerializeField] private Color ambientSky = new(0.40f, 0.50f, 0.62f, 1f);
-    [SerializeField] private Color ambientEquator = new(0.46f, 0.50f, 0.50f, 1f);
-    [SerializeField] private Color ambientGround = new(0.18f, 0.17f, 0.12f, 1f);
-    [SerializeField, Range(0f, 3f)] private float ambientIntensity = 0.95f;
-    [SerializeField] private bool applyFog = true;
-    [SerializeField] private Color fogColor = new(0.66f, 0.74f, 0.82f, 1f);
-    [SerializeField, Range(0f, 200f)] private float fogStart = 45f;
-    [SerializeField, Range(1f, 400f)] private float fogEnd = 230f;
+    [SerializeField] private Color ambientSky = new(0.125f, 0.155f, 0.190f, 1f);
+    [SerializeField] private Color ambientEquator = new(0.105f, 0.112f, 0.100f, 1f);
+    [SerializeField] private Color ambientGround = new(0.040f, 0.045f, 0.036f, 1f);
+    [SerializeField, Range(0f, 3f)] private float ambientIntensity = 0.50f;
+    [SerializeField] private bool applyFog;
+    [SerializeField] private Color fogColor = new(0.045f, 0.055f, 0.050f, 1f);
+    [SerializeField, Range(0f, 200f)] private float fogStart = 40f;
+    [SerializeField, Range(1f, 400f)] private float fogEnd = 110f;
     [SerializeField] private bool applyCameraSkybox = true;
 
     private Volume? _runtimeVolume;
@@ -76,14 +76,14 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
             volumeProfile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(DefaultVolumeProfilePath);
         }
 #endif
-        ambientSky = new Color(0.36f, 0.44f, 0.52f, 1f);
-        ambientEquator = new Color(0.38f, 0.41f, 0.39f, 1f);
-        ambientGround = new Color(0.14f, 0.13f, 0.10f, 1f);
-        ambientIntensity = 1.05f;
+        ambientSky = new Color(0.125f, 0.155f, 0.190f, 1f);
+        ambientEquator = new Color(0.105f, 0.112f, 0.100f, 1f);
+        ambientGround = new Color(0.040f, 0.045f, 0.036f, 1f);
+        ambientIntensity = 0.50f;
         applyFog = false;
-        fogColor = new Color(0.28f, 0.34f, 0.38f, 1f);
-        fogStart = 22f;
-        fogEnd = 70f;
+        fogColor = new Color(0.045f, 0.055f, 0.050f, 1f);
+        fogStart = 40f;
+        fogEnd = 110f;
     }
 
     public void Apply()
@@ -159,25 +159,23 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
     private static void TuneRuntimeProfile(VolumeProfile profile)
     {
-        // 이 어댑터는 legacy fallback. BattleRenderEnvironmentAuthoring이 진실원이며,
-        // 정상 흐름에서는 Initialize가 Authoring을 발견해 이 Apply는 호출 안 함.
-        // 만약 Authoring 누락으로 여기까지 왔다면 그건 fix해야 할 환경 버그.
-        // 의도적으로 SDR-comp 강한 값을 유지 — 화면이 부자연스럽게 보여야 사용자가 즉시 인지.
+        // Legacy fallback. Keep it close to BattleRenderEnvironmentAuthoring so missing authoring
+        // does not produce a misleadingly different capture/runtime look.
         if (profile.TryGet<Bloom>(out var bloom))
         {
             bloom.active = true;
-            bloom.intensity.Override(0.12f);
-            bloom.threshold.Override(1.30f);
-            bloom.tint.Override(Color.white);
-            bloom.scatter.Override(0.55f);
+            bloom.intensity.Override(0.07f);
+            bloom.threshold.Override(1.35f);
+            bloom.tint.Override(new Color(1f, 0.97f, 0.90f, 1f));
+            bloom.scatter.Override(0.48f);
             bloom.clamp.Override(2.0f);
         }
 
         if (profile.TryGet<ColorAdjustments>(out var ca))
         {
-            ca.postExposure.Override(0.30f);
-            ca.contrast.Override(28f);
-            ca.saturation.Override(60f);
+            ca.postExposure.Override(-0.30f);
+            ca.contrast.Override(16f);
+            ca.saturation.Override(6f);
             ca.colorFilter.Override(Color.white);
         }
 
@@ -194,8 +192,8 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
         if (profile.TryGet<Vignette>(out var vignette))
         {
-            vignette.intensity.Override(0.12f);
-            vignette.smoothness.Override(0.42f);
+            vignette.intensity.Override(0.10f);
+            vignette.smoothness.Override(0.70f);
         }
 
         if (profile.TryGet<SplitToning>(out var split))
@@ -210,8 +208,8 @@ public sealed class BattleStageEnvironmentAdapter : MonoBehaviour
 
         if (profile.TryGet<WhiteBalance>(out var wb))
         {
-            wb.temperature.Override(4f);
-            wb.tint.Override(2f);
+            wb.temperature.Override(0f);
+            wb.tint.Override(0f);
         }
 
         if (profile.TryGet<ChannelMixer>(out var cm))

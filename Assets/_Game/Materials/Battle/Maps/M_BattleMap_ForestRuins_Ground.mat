@@ -87,7 +87,7 @@ Material:
     - _GradientCenterY: 0
     - _GradientEnabled: 0
     - _GradientSize: 10
-    - _LightContribution: 0.78
+    - _LightContribution: 0.58
     - _LightmapDirectionPitch: 0
     - _LightmapDirectionYaw: 0
     - _OutlineDepthOffset: 0
@@ -98,14 +98,14 @@ Material:
     - _OverrideLightAttenuation: 0
     - _OverrideLightmapDir: 0
     - _QueueOffset: 0
-    - _ReceiveShadows: 0
+    - _ReceiveShadows: 1
     - _RimEnabled: 0
     - _SelfShadingSize: 0.22
     - _SpecularEnabled: 0
     - _SrcBlend: 1
     - _Surface: 0
     - _TextureBlendingMode: 0
-    - _TextureImpact: 0.82
+    - _TextureImpact: 0.78
     - _UnityShadowOcclusion: 0
     - _VertexColorsEnabled: 0
     - _ZWrite: 1

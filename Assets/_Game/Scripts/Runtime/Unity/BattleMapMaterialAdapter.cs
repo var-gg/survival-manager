@@ -267,18 +267,19 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
         material.renderQueue = (int)RenderQueue.AlphaTest;
         material.EnableKeyword("_ALPHATEST_ON");
 
-        SetFloat(material, "_AlphaClipThreshold", 0.50f);
-        SetFloat(material, "Alpha_Clip_Threshold", 0.38f);
-        SetFloat(material, "_ShadowStrength", 0.16f);
+        SetFloat(material, "_AlphaClipThreshold", 0.60f);
+        SetFloat(material, "Alpha_Clip_Threshold", 0.50f);
+        SetFloat(material, "_ShadowStrength", 0.02f);
         SetFloat(material, "_UnityShadowMode", 1f);
-        SetFloat(material, "_UnityShadowPower", 0.42f);
-        SetFloat(material, "_UnityShadowSharpness", 7f);
+        SetFloat(material, "_UnityShadowPower", 0.18f);
+        SetFloat(material, "_UnityShadowSharpness", 4f);
+        SetFloat(material, "_LightContrib", 0.08f);
         SetFloat(material, "_WindEnabled", 0f);
         SetFloat(material, "_GustEnabled", 0f);
-        SetColor(material, "_ColorBottom", new Color(0.020f, 0.070f, 0.025f, 1f));
-        SetColor(material, "_ColorTop", new Color(0.15f, 0.24f, 0.065f, 1f));
-        SetColor(material, "_SecondaryColor", new Color(0.30f, 0.20f, 0.07f, 1f));
-        SetColor(material, "_PatchesColor", new Color(0.25f, 0.22f, 0.08f, 1f));
+        SetColor(material, "_ColorBottom", new Color(0.075f, 0.145f, 0.060f, 1f));
+        SetColor(material, "_ColorTop", new Color(0.195f, 0.315f, 0.105f, 1f));
+        SetColor(material, "_SecondaryColor", new Color(0.22f, 0.20f, 0.08f, 1f));
+        SetColor(material, "_PatchesColor", new Color(0.20f, 0.22f, 0.09f, 1f));
     }
 
     private static MaterialRole ResolveRole(Material source)
@@ -341,83 +342,83 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
     {
         return role switch
         {
-            // GPT-Pro recommended gameplay material profile: texture-heavy + 더 진한 shadow + 강한 unityShadow.
+            // GPT-Pro recommended gameplay material profile: texture/detail remains, but shadows are less crushed.
             MaterialRole.Foliage => new QuibliProfile(
-                textureImpact: 0.72f,
+                textureImpact: 0.78f,
                 lightContribution: 0.48f,
-                selfShadingSize: 0.38f,
-                shadowColor: new Color(0.07f, 0.16f, 0.045f, 1f),
-                unityShadowPower: 0.78f,
-                unityShadowSharpness: 6f,
-                shadowEdgeSize: 0.50f,
+                selfShadingSize: 0.22f,
+                shadowColor: new Color(0.105f, 0.185f, 0.070f, 1f),
+                unityShadowPower: 0.42f,
+                unityShadowSharpness: 4f,
+                shadowEdgeSize: 0.42f,
                 rimColor: new Color(1.00f, 0.80f, 0.42f, 1f),
-                rimSize: 0.16f,
+                rimSize: 0.04f,
                 rimEnabled: true),
             MaterialRole.Grass => new QuibliProfile(
-                textureImpact: 0.68f,
-                lightContribution: 0.50f,
-                selfShadingSize: 0.34f,
-                shadowColor: new Color(0.06f, 0.14f, 0.035f, 1f),
-                unityShadowPower: 0.72f,
-                unityShadowSharpness: 6f,
-                shadowEdgeSize: 0.54f,
-                rimColor: new Color(1.00f, 0.84f, 0.46f, 1f),
-                rimSize: 0.14f,
-                rimEnabled: true),
+                textureImpact: 0.70f,
+                lightContribution: 0.48f,
+                selfShadingSize: 0.18f,
+                shadowColor: new Color(0.105f, 0.180f, 0.065f, 1f),
+                unityShadowPower: 0.32f,
+                unityShadowSharpness: 4f,
+                shadowEdgeSize: 0.38f,
+                rimColor: Color.clear,
+                rimSize: 0f,
+                rimEnabled: false),
             MaterialRole.Bark => new QuibliProfile(
-                textureImpact: 0.76f,
-                lightContribution: 0.46f,
-                selfShadingSize: 0.42f,
-                shadowColor: new Color(0.15f, 0.075f, 0.025f, 1f),
-                unityShadowPower: 0.80f,
-                unityShadowSharpness: 7f,
-                shadowEdgeSize: 0.44f,
+                textureImpact: 0.74f,
+                lightContribution: 0.50f,
+                selfShadingSize: 0.38f,
+                shadowColor: new Color(0.175f, 0.095f, 0.040f, 1f),
+                unityShadowPower: 0.74f,
+                unityShadowSharpness: 6f,
+                shadowEdgeSize: 0.46f,
                 rimColor: new Color(1.00f, 0.74f, 0.38f, 1f),
-                rimSize: 0.18f,
+                rimSize: 0.12f,
                 rimEnabled: true),
             MaterialRole.Moss => new QuibliProfile(
-                textureImpact: 0.72f,
-                lightContribution: 0.48f,
-                selfShadingSize: 0.36f,
-                shadowColor: new Color(0.06f, 0.14f, 0.035f, 1f),
-                unityShadowPower: 0.76f,
+                textureImpact: 0.68f,
+                lightContribution: 0.52f,
+                selfShadingSize: 0.32f,
+                shadowColor: new Color(0.075f, 0.155f, 0.050f, 1f),
+                unityShadowPower: 0.68f,
                 unityShadowSharpness: 6f,
-                shadowEdgeSize: 0.48f,
+                shadowEdgeSize: 0.50f,
                 rimColor: new Color(0.98f, 0.80f, 0.42f, 1f),
-                rimSize: 0.14f,
+                rimSize: 0.08f,
                 rimEnabled: true),
             MaterialRole.Rock => new QuibliProfile(
-                textureImpact: 0.78f,
-                lightContribution: 0.44f,
-                selfShadingSize: 0.46f,
-                shadowColor: new Color(0.14f, 0.115f, 0.085f, 1f),
-                unityShadowPower: 0.82f,
-                unityShadowSharpness: 7f,
-                shadowEdgeSize: 0.42f,
+                textureImpact: 0.76f,
+                lightContribution: 0.50f,
+                selfShadingSize: 0.40f,
+                shadowColor: new Color(0.165f, 0.135f, 0.105f, 1f),
+                unityShadowPower: 0.72f,
+                unityShadowSharpness: 6f,
+                shadowEdgeSize: 0.44f,
                 rimColor: new Color(1.00f, 0.78f, 0.42f, 1f),
-                rimSize: 0.18f,
+                rimSize: 0.10f,
                 rimEnabled: true),
             MaterialRole.Soil => new QuibliProfile(
-                textureImpact: 0.80f,
-                lightContribution: 0.42f,
-                selfShadingSize: 0.40f,
-                shadowColor: new Color(0.22f, 0.10f, 0.035f, 1f),
-                unityShadowPower: 0.76f,
-                unityShadowSharpness: 7f,
-                shadowEdgeSize: 0.48f,
+                textureImpact: 0.76f,
+                lightContribution: 0.50f,
+                selfShadingSize: 0.34f,
+                shadowColor: new Color(0.235f, 0.125f, 0.052f, 1f),
+                unityShadowPower: 0.68f,
+                unityShadowSharpness: 6f,
+                shadowEdgeSize: 0.50f,
                 rimColor: Color.clear,
                 rimSize: 0f,
                 rimEnabled: false),
             _ => new QuibliProfile(
-                textureImpact: 0.72f,
-                lightContribution: 0.45f,
-                selfShadingSize: 0.38f,
-                shadowColor: new Color(0.13f, 0.09f, 0.05f, 1f),
-                unityShadowPower: 0.76f,
+                textureImpact: 0.70f,
+                lightContribution: 0.50f,
+                selfShadingSize: 0.34f,
+                shadowColor: new Color(0.150f, 0.100f, 0.065f, 1f),
+                unityShadowPower: 0.70f,
                 unityShadowSharpness: 6f,
-                shadowEdgeSize: 0.48f,
+                shadowEdgeSize: 0.50f,
                 rimColor: new Color(1.00f, 0.78f, 0.42f, 1f),
-                rimSize: 0.16f,
+                rimSize: 0.08f,
                 rimEnabled: true)
         };
     }
@@ -484,8 +485,8 @@ public sealed class BattleMapMaterialAdapter : MonoBehaviour
     {
         if (material.shader != null && material.shader.name == "Quibli/Grass")
         {
-            SetColor(material, "_ColorTop", new Color(0.15f, 0.24f, 0.065f, 1f));
-            SetColor(material, "_ColorBottom", new Color(0.020f, 0.070f, 0.025f, 1f));
+            SetColor(material, "_ColorTop", new Color(0.195f, 0.315f, 0.105f, 1f));
+            SetColor(material, "_ColorBottom", new Color(0.075f, 0.145f, 0.060f, 1f));
             return;
         }
 

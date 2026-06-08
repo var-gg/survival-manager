@@ -43,6 +43,10 @@ public static class TownPreviewCaptureUtility
     private static readonly (Action<VisualElement> Build, string FileName) EquipmentRefitSingleTarget =
         (r => Make<EquipmentRefitPreviewBootstrap>(b => b.BuildInto(r)), "equipment_refit");
 
+    // 디자인시스템 이식 검증용 단독 캡처 (production RecruitPack 패널).
+    private static readonly (Action<VisualElement> Build, string FileName) RecruitSingleTarget =
+        (r => Make<RecruitPreviewBootstrap>(b => b.BuildInto(r)), "recruit");
+
     private static readonly (Action<VisualElement> Build, string FileName)[] AllTargets =
     {
         (r => Make<TownRosterGridPreviewBootstrap>(b => b.BuildInto(r)),   "roster_grid"),
@@ -170,6 +174,12 @@ public static class TownPreviewCaptureUtility
     public static void CaptureEquipmentRefit()
     {
         StartCapture(new[] { EquipmentRefitSingleTarget });
+    }
+
+    [MenuItem("SM/Town/Capture Recruit", false, 10)]
+    public static void CaptureRecruit()
+    {
+        StartCapture(new[] { RecruitSingleTarget });
     }
 
     [MenuItem("SM/Town/▶ Preview 도감 PlayMode 캡쳐", false, 6)]

@@ -10,10 +10,11 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 {
     [SerializeField] private Animator animator = null!;
     [SerializeField] private BattleHumanoidAnimationSet animationSet = null!;
-    [SerializeField] private bool disableRootMotion = true;
+    [SerializeField] private bool usePresentationRootMotion = true;
     [SerializeField] private bool clearRuntimeAnimatorController = true;
     [SerializeField] private bool forceAlwaysAnimate;
     [SerializeField, Min(0.02f)] private float minimumOneShotSeconds = 0.12f;
+    [SerializeField, Min(0.02f)] private float maxRootMotionVisualOffset = 0.45f;
 
     private PlayableGraph _graph;
     private AnimationMixerPlayable _mixer;
@@ -34,6 +35,13 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private BattleHitstopWindow _hitstopWindow = BattleHitstopWindow.None;
     private double _lastSampleElapsed;
     private float _playbackSpeed = 1f;
+    private Transform? _rootMotionTarget;
+    private Vector3 _rootMotionTargetBaseLocalPosition;
+    private Vector3 _rootMotionVisualOffsetWorld;
+    private Vector3 _authoritativeRootMotionFrameDeltaWorld;
+    private bool _hasRootMotionTargetBase;
+    private bool _acceptRootMotionFrame;
+    private BattlePresentationRootMotionRelay? _rootMotionRelay;
 
     // Mirrors BattleSimulator.DefaultFixedStepSeconds (the sim's fixed tick). The contact-pin lives in the
     // scaled clock where one tick advances this many seconds in BOTH step dispatch and clip playback.
@@ -47,6 +55,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     public AnimationClip? CurrentLoopClip => _loopClip;
     public AnimationClip? CurrentOneShotClip => _oneShotClip;
     public bool IsHoldingTerminalPose => _isHoldingTerminalPose;
+    public Vector3 PresentationRootMotionOffsetWorld => _rootMotionVisualOffsetWorld;
     public int CuePlaybackCount { get; private set; }
 
     public void ConfigureAnimationSet(BattleHumanoidAnimationSet set)
@@ -63,6 +72,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     {
         _lastState = actor;
         ResolveAnimator(wrapper);
+        ConfigurePresentationRootMotion(wrapper);
         ConfigureAnimator();
         ApplyState(actor, _playbackSpeed, paused: false);
     }
@@ -84,6 +94,25 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         bool isLocomoting,
         BattleActorPresentationPhase presentationPhase)
     {
+        ApplyState(
+            state,
+            playbackSpeed,
+            paused,
+            isLocomoting,
+            presentationPhase,
+            worldSpeed: 0f,
+            authoritativeFrameDeltaWorld: Vector3.zero);
+    }
+
+    public void ApplyState(
+        BattleUnitReadModel state,
+        float playbackSpeed,
+        bool paused,
+        bool isLocomoting,
+        BattleActorPresentationPhase presentationPhase,
+        float worldSpeed,
+        Vector3 authoritativeFrameDeltaWorld)
+    {
         _lastState = state;
         _lastIsLocomoting = isLocomoting;
         _lastPresentationPhase = presentationPhase;
@@ -103,6 +132,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 
         if (IsTerminalState(state) && activeSet.TryResolveLoopClip(state, isLocomoting: false, out var terminalClip))
         {
+            BeginPresentationRootMotionFrame(isLocomoting: false, Vector3.zero);
             if (_oneShotRemaining <= 0f)
             {
                 PlayTerminalPose(terminalClip);
@@ -112,7 +142,9 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             return;
         }
 
-        if (_oneShotRemaining <= 0f && activeSet.TryResolveLoopClip(state, isLocomoting, presentationPhase, out var loopClip))
+        BeginPresentationRootMotionFrame(isLocomoting, authoritativeFrameDeltaWorld);
+
+        if (_oneShotRemaining <= 0f && activeSet.TryResolveLoopClip(state, isLocomoting, presentationPhase, worldSpeed, out var loopClip))
         {
             PlayLoop(loopClip);
         }
@@ -286,12 +318,22 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         }
     }
 
+    internal void DisposePresentationGraphForTests()
+    {
+        DestroyGraph();
+    }
+
     private void OnDisable()
     {
         DestroyGraph();
     }
 
     private void OnDestroy()
+    {
+        DestroyGraph();
+    }
+
+    private void OnApplicationQuit()
     {
         DestroyGraph();
     }
@@ -322,10 +364,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             return;
         }
 
-        if (disableRootMotion)
-        {
-            animator.applyRootMotion = false;
-        }
+        animator.applyRootMotion = usePresentationRootMotion && _rootMotionTarget != null;
 
         if (clearRuntimeAnimatorController && animator.runtimeAnimatorController != null)
         {
@@ -335,6 +374,27 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         animator.cullingMode = forceAlwaysAnimate
             ? AnimatorCullingMode.AlwaysAnimate
             : AnimatorCullingMode.CullUpdateTransforms;
+    }
+
+    private void ConfigurePresentationRootMotion(BattleActorWrapper wrapper)
+    {
+        _rootMotionTarget = wrapper.VendorVisualSlot != wrapper.transform
+            ? wrapper.VendorVisualSlot
+            : null;
+        CaptureRootMotionTargetBase();
+
+        if (!usePresentationRootMotion || animator == null)
+        {
+            return;
+        }
+
+        _rootMotionRelay = animator.GetComponent<BattlePresentationRootMotionRelay>();
+        if (_rootMotionRelay == null)
+        {
+            _rootMotionRelay = animator.gameObject.AddComponent<BattlePresentationRootMotionRelay>();
+        }
+
+        _rootMotionRelay.Configure(animator, this);
     }
 
     private BattleHumanoidAnimationSet? ResolveAnimationSet()
@@ -513,6 +573,73 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _mixer.SetInputWeight(1, 0f);
     }
 
+    internal void BeginPresentationRootMotionFrame(bool isLocomoting, Vector3 authoritativeFrameDeltaWorld)
+    {
+        _authoritativeRootMotionFrameDeltaWorld = Flatten(authoritativeFrameDeltaWorld);
+        _acceptRootMotionFrame = usePresentationRootMotion
+                                 && _rootMotionTarget != null
+                                 && isLocomoting
+                                 && _oneShotRemaining <= 0f
+                                 && !_isPinnedCommit
+                                 && !_isHoldingTerminalPose
+                                 && _authoritativeRootMotionFrameDeltaWorld.sqrMagnitude <= 1.0f;
+
+        if (!_acceptRootMotionFrame)
+        {
+            ResetPresentationRootMotionOffset();
+        }
+    }
+
+    internal void ConsumePresentationRootMotion(Vector3 animatorDeltaPositionWorld)
+    {
+        if (!_acceptRootMotionFrame || _rootMotionTarget == null)
+        {
+            return;
+        }
+
+        var visualRootDeltaWorld = Flatten(animatorDeltaPositionWorld);
+        _rootMotionVisualOffsetWorld += visualRootDeltaWorld - _authoritativeRootMotionFrameDeltaWorld;
+        _rootMotionVisualOffsetWorld = ClampHorizontal(_rootMotionVisualOffsetWorld, Mathf.Max(0.02f, maxRootMotionVisualOffset));
+        ApplyPresentationRootMotionOffset();
+    }
+
+    private void ResetPresentationRootMotionOffset()
+    {
+        if (_rootMotionVisualOffsetWorld.sqrMagnitude <= 0.000001f)
+        {
+            return;
+        }
+
+        _rootMotionVisualOffsetWorld = Vector3.zero;
+        ApplyPresentationRootMotionOffset();
+    }
+
+    private void ApplyPresentationRootMotionOffset()
+    {
+        if (_rootMotionTarget == null)
+        {
+            return;
+        }
+
+        CaptureRootMotionTargetBase();
+        var parent = _rootMotionTarget.parent;
+        var localOffset = parent != null
+            ? parent.InverseTransformVector(_rootMotionVisualOffsetWorld)
+            : _rootMotionVisualOffsetWorld;
+        _rootMotionTarget.localPosition = _rootMotionTargetBaseLocalPosition + localOffset;
+    }
+
+    private void CaptureRootMotionTargetBase()
+    {
+        if (_rootMotionTarget == null || _hasRootMotionTargetBase)
+        {
+            return;
+        }
+
+        _rootMotionTargetBaseLocalPosition = _rootMotionTarget.localPosition;
+        _hasRootMotionTargetBase = true;
+    }
+
     private void PlayTerminalPose(AnimationClip clip)
     {
         if (clip == null)
@@ -630,6 +757,23 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private static float ResolvePlaybackSpeed(float playbackSpeed)
     {
         return Mathf.Clamp(playbackSpeed, 0.05f, 4f);
+    }
+
+    private static Vector3 Flatten(Vector3 value)
+    {
+        value.y = 0f;
+        return value;
+    }
+
+    private static Vector3 ClampHorizontal(Vector3 value, float maxMagnitude)
+    {
+        var flat = Flatten(value);
+        if (flat.sqrMagnitude <= maxMagnitude * maxMagnitude)
+        {
+            return flat;
+        }
+
+        return flat.normalized * maxMagnitude;
     }
 
     private static bool IsTerminalState(BattleUnitReadModel state)

@@ -16,7 +16,9 @@ namespace SM.Editor.Bootstrap.UI;
 /// </summary>
 public sealed class RecruitPreviewBootstrap : EditorWindow
 {
-    private const string VisualTreePath = "Assets/_Game/UI/Screens/Town/Preview/RecruitPreview.uxml";
+    // 디자인시스템 이식: preview 중복 UXML 대신 production 패널 UXML 을 직접 렌더 → 캡처 = 실제 게임 패널 (divergence 해소).
+    // (stale RecruitPreview.uxml 은 decision panel / roster rail 누락 — RecruitView 의 rich 바인딩이 전부 죽어 빈약하게 캡처됨.)
+    private const string VisualTreePath = "Assets/_Game/UI/Panels/RecruitPack/RecruitPack.uxml";
     private const string ThemeTokensPath = "Assets/_Game/UI/Foundation/Styles/ThemeTokens.uss";
     private const string RuntimePanelThemePath = "Assets/_Game/UI/Foundation/Styles/RuntimePanelTheme.uss";
 

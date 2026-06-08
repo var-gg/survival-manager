@@ -78,7 +78,8 @@ public sealed class BattleScreenController : MonoBehaviour
     public TeamPostureType? ActiveAllyPosture => _simulator?.State.AllyPosture;
     public BattlePlaybackMode PlaybackMode => _policy.Mode;
 
-    private static readonly Vector3 DefaultCameraPosition = new(0.4f, 7.8f, -9.1f);
+    private const float DefaultCameraFieldOfView = 54f;
+    private static readonly Vector3 DefaultCameraPosition = new(0.4f, 7.7f, -8.9f);
     private static readonly Quaternion DefaultCameraRotation = Quaternion.Euler(33f, -12f, 0f);
     private bool IsSmokeLane => _policy.Mode == BattlePlaybackMode.QuickBattle;
 
@@ -102,6 +103,7 @@ public sealed class BattleScreenController : MonoBehaviour
         if (cameraController != null)
         {
             cameraController.Initialize(DefaultCameraPosition, DefaultCameraRotation);
+            cameraController.Camera.fieldOfView = DefaultCameraFieldOfView;
             cameraController.SetUiBlockPredicate(() => _view?.IsPointerOverBlockingUi ?? false);
         }
         else
@@ -110,7 +112,17 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         RenderLoadingState();
-        RunBattle();
+
+        // BattleStarted moment fire: boss-engage 대사 등 전투 시작 직전 연출을 재생한 뒤
+        // RunBattle로 이어진다. 매칭 event가 없으면 onCompleted가 즉시 호출되어 기존 흐름과 동일.
+        if (EnsureStoryBridgeReady())
+        {
+            _storyBridge.Advance(NarrativeMoment.BattleStarted, BuildStoryMomentContext(), RunBattle);
+        }
+        else
+        {
+            RunBattle();
+        }
     }
 
     private void OnDestroy()
@@ -862,6 +874,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         cam.transform.position = DefaultCameraPosition;
         cam.transform.rotation = DefaultCameraRotation;
+        cam.fieldOfView = DefaultCameraFieldOfView;
     }
 
     private void ApplyBootstrapCameraFrame(BattleSimulationStep step)

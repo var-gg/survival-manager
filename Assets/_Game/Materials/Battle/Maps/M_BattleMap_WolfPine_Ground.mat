@@ -145,7 +145,7 @@ Material:
     - _GradientCenterY: 0
     - _GradientEnabled: 0
     - _GradientSize: 10
-    - _LightContribution: 0.68
+    - _LightContribution: 0.58
     - _LightFalloffSize: 0.0001
     - _LightmapDirectionPitch: 0
     - _LightmapDirectionYaw: 0
@@ -162,7 +162,7 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RimEnabled: 0
-    - _SelfShadingSize: 0.34
+    - _SelfShadingSize: 0.24
     - _SelfShadingSizeExtra: 0.6
     - _ShadowEdgeSize: 0.05
     - _ShadowEdgeSizeExtra: 0.05
@@ -174,11 +174,11 @@ Material:
     - _SrcBlendAlpha: 1
     - _Surface: 0
     - _TextureBlendingMode: 0
-    - _TextureImpact: 0.45
+    - _TextureImpact: 0.62
     - _UnityShadowMode: 1
     - _UnityShadowOcclusion: 0
-    - _UnityShadowPower: 0.95
-    - _UnityShadowSharpness: 6
+    - _UnityShadowPower: 0.60
+    - _UnityShadowSharpness: 4
     - _VertexColorsEnabled: 0
     - _WindDirection: 0
     - _WindEnabled: 0
@@ -204,7 +204,7 @@ Material:
     - _LightAttenuation: {r: 0, g: 1, b: 0, a: 0}
     - _LightmapDirection: {r: 0, g: 1, b: 0, a: 0}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 0.035, g: 0.095, b: 0.025, a: 1}
+    - _ShadowColor: {r: 0.055, g: 0.12, b: 0.04, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _UnityShadowColor: {r: 0.03, g: 0.04, b: 0.06, a: 1}
   m_BuildTextureStacks: []

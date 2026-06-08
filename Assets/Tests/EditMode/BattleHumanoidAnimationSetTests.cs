@@ -24,7 +24,7 @@ public sealed class BattleHumanoidAnimationSetTests
         }
         finally
         {
-            Object.DestroyImmediate(root);
+            DestroyRoot(root);
         }
     }
 
@@ -80,7 +80,7 @@ public sealed class BattleHumanoidAnimationSetTests
         }
         finally
         {
-            Object.DestroyImmediate(root);
+            DestroyRoot(root);
             Destroy(set, idle, basic);
         }
     }
@@ -135,7 +135,7 @@ public sealed class BattleHumanoidAnimationSetTests
         }
         finally
         {
-            Object.DestroyImmediate(root);
+            DestroyRoot(root);
             Destroy(set, idle, death);
         }
     }
@@ -198,6 +198,51 @@ public sealed class BattleHumanoidAnimationSetTests
         finally
         {
             Destroy(set, idle, move);
+        }
+    }
+
+    [Test]
+    public void ResolveLoopClip_UsesWalkAndRunRootMotionCadenceByWorldSpeed()
+    {
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var walk = CreateClip("walk_rm");
+        var run = CreateClip("run_rm");
+
+        try
+        {
+            SetField(set, "idle", idle);
+            SetField(set, "walkMove", walk);
+            SetField(set, "move", run);
+            SetField(set, "authoredWalkLocomotionSpeed", BattleHumanoidAnimationSet.DefaultWalkAuthoredLocomotionSpeed);
+            SetField(set, "authoredLocomotionSpeed", BattleHumanoidAnimationSet.DefaultRunAuthoredLocomotionSpeed);
+            SetField(set, "walkRunSwitchWorldSpeed", 2.45f);
+
+            Assert.That(set.TryResolveLoopClip(
+                CreateUnit(CombatActionState.Approach),
+                isLocomoting: true,
+                BattleActorPresentationPhase.CombatReady,
+                worldSpeed: 1.6f,
+                out var walkClip), Is.True);
+            Assert.That(walkClip, Is.SameAs(walk));
+            Assert.That(
+                set.ResolveAuthoredLocomotionSpeed(1.6f),
+                Is.EqualTo(BattleHumanoidAnimationSet.DefaultWalkAuthoredLocomotionSpeed).Within(0.0001f));
+
+            Assert.That(set.TryResolveLoopClip(
+                CreateUnit(CombatActionState.Approach),
+                isLocomoting: true,
+                BattleActorPresentationPhase.CombatReady,
+                worldSpeed: 3.2f,
+                out var runClip), Is.True);
+            Assert.That(runClip, Is.SameAs(run));
+            Assert.That(
+                set.ResolveAuthoredLocomotionSpeed(3.2f),
+                Is.EqualTo(BattleHumanoidAnimationSet.DefaultRunAuthoredLocomotionSpeed).Within(0.0001f));
+        }
+        finally
+        {
+            Destroy(set, idle, walk, run);
         }
     }
 
@@ -347,6 +392,56 @@ public sealed class BattleHumanoidAnimationSetTests
     }
 
     [Test]
+    public void Driver_PresentationRootMotionOffsetsVendorSlotByResidualOnly()
+    {
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var move = CreateClip("move");
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            var animator = model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "move", move);
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.Approach));
+
+            Assert.That(animator.applyRootMotion, Is.True);
+            Assert.That(model.GetComponent<BattlePresentationRootMotionRelay>(), Is.Not.Null);
+
+            driver.BeginPresentationRootMotionFrame(isLocomoting: true, new Vector3(0.10f, 0f, 0f));
+            driver.ConsumePresentationRootMotion(new Vector3(0.12f, 0f, 0f));
+
+            Assert.That(root.transform.position, Is.EqualTo(Vector3.zero));
+            Assert.That(driver.PresentationRootMotionOffsetWorld.x, Is.EqualTo(0.02f).Within(0.0001f));
+            Assert.That(vendorSlot.localPosition.x, Is.EqualTo(0.02f).Within(0.0001f));
+
+            driver.BeginPresentationRootMotionFrame(isLocomoting: false, Vector3.zero);
+
+            Assert.That(driver.PresentationRootMotionOffsetWorld, Is.EqualTo(Vector3.zero));
+            Assert.That(vendorSlot.localPosition, Is.EqualTo(Vector3.zero));
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, move);
+        }
+    }
+
+    [Test]
     public void ResolveCueClip_MapsRangedWindupSemanticsToConfiguredVariants()
     {
         var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
@@ -433,6 +528,50 @@ public sealed class BattleHumanoidAnimationSetTests
         Assert.That(shotClip.name, Does.Contain("BowShot"));
     }
 
+    [Test]
+    public void RuntimeSet_UsesRootMotionLocomotionClipsAndMeasuredSpeeds()
+    {
+        var set = BattleHumanoidAnimationSet.ResolveRuntimeSet(null);
+
+        Assert.That(set, Is.Not.Null);
+        Assert.That(set!.TryResolveLoopClip(
+            CreateUnit(CombatActionState.Approach),
+            isLocomoting: true,
+            BattleActorPresentationPhase.CombatReady,
+            worldSpeed: 1.6f,
+            out var walkClip), Is.True);
+        Assert.That(walkClip.name, Does.Contain("Walk01_Forward"));
+        Assert.That(walkClip.name, Does.Contain("[RM]"));
+        Assert.That(
+            set.ResolveAuthoredLocomotionSpeed(1.6f),
+            Is.EqualTo(BattleHumanoidAnimationSet.DefaultWalkAuthoredLocomotionSpeed).Within(0.0001f));
+
+        Assert.That(set.TryResolveLoopClip(
+            CreateUnit(CombatActionState.Approach),
+            isLocomoting: true,
+            BattleActorPresentationPhase.CombatReady,
+            worldSpeed: 3.2f,
+            out var runClip), Is.True);
+        Assert.That(runClip.name, Does.Contain("Run01_Forward"));
+        Assert.That(runClip.name, Does.Contain("[RM]"));
+        Assert.That(
+            set.ResolveAuthoredLocomotionSpeed(3.2f),
+            Is.EqualTo(BattleHumanoidAnimationSet.DefaultRunAuthoredLocomotionSpeed).Within(0.0001f));
+
+        Assert.That(set.TryResolveCueClip(
+            new BattlePresentationCue(
+                BattlePresentationCueType.RepositionStart,
+                20,
+                "ally",
+                AnimationSemantic: BattleAnimationSemantic.LateralStrafe,
+                AnimationDirection: BattleAnimationDirection.Left,
+                AnimationIntensity: BattleAnimationIntensity.Medium),
+            CreateUnit(CombatActionState.Reposition),
+            out var strafeClip), Is.True);
+        Assert.That(strafeClip.name, Does.Contain("StrafeRun01_Left"));
+        Assert.That(strafeClip.name, Does.Contain("[RM]"));
+    }
+
     private static BattleUnitReadModel CreateUnit(
         CombatActionState state,
         bool isAlive = true,
@@ -486,5 +625,15 @@ public sealed class BattleHumanoidAnimationSetTests
         {
             Object.DestroyImmediate(target);
         }
+    }
+
+    private static void DestroyRoot(GameObject root)
+    {
+        foreach (var driver in root.GetComponentsInChildren<BattleHumanoidAnimationDriver>(true))
+        {
+            driver.DisposePresentationGraphForTests();
+        }
+
+        Object.DestroyImmediate(root);
     }
 }

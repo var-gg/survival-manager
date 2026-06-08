@@ -28,6 +28,7 @@ internal static class StatusFileParser
             definition.TenacityScale = ExtractFloat(lines, "TenacityScale:");
             definition.AppliesPeriodicDamage = ExtractBool(lines, "AppliesPeriodicDamage:");
             definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
+            definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
             definition.IsRuleModifierOnly = ExtractBool(lines, "IsRuleModifierOnly:");
             definition.AuthorityLayer = (AuthorityLayer)ExtractInt(lines, "AuthorityLayer:");

@@ -7,10 +7,12 @@ public sealed class BattleActorAudioSurface : MonoBehaviour
     public int TriggerCount { get; private set; }
     public BattlePresentationCueType LastCueType { get; private set; }
     public BattleActorSocketId LastSocketId { get; private set; }
+    public string LastHookId { get; private set; } = string.Empty;
 
     public void ConsumeCue(BattlePresentationCue cue, BattleActorWrapper wrapper)
     {
-        if (!TryResolveSocket(cue.CueType, out var socketId))
+        if (!TryResolveSocket(cue.CueType, out var socketId)
+            || !TryResolveHookId(cue.CueType, out var hookId))
         {
             return;
         }
@@ -18,6 +20,7 @@ public sealed class BattleActorAudioSurface : MonoBehaviour
         TriggerCount++;
         LastCueType = cue.CueType;
         LastSocketId = socketId;
+        LastHookId = hookId;
     }
 
     public void ClearTransientState(BattlePresentationCueType reason)
@@ -51,5 +54,25 @@ public sealed class BattleActorAudioSurface : MonoBehaviour
             or BattlePresentationCueType.RepositionStart
             or BattlePresentationCueType.RepositionStop
             or BattlePresentationCueType.DeathStart;
+    }
+
+    public static bool TryResolveHookId(BattlePresentationCueType cueType, out string hookId)
+    {
+        hookId = cueType switch
+        {
+            BattlePresentationCueType.ActionCommitBasic => "sfx.combat.action_commit_basic",
+            BattlePresentationCueType.ActionCommitSkill => "sfx.combat.action_commit_skill",
+            BattlePresentationCueType.ActionCommitHeal => "sfx.combat.action_commit_heal",
+            BattlePresentationCueType.ImpactDamage => "sfx.combat.impact_damage",
+            BattlePresentationCueType.ImpactHeal => "sfx.combat.impact_heal",
+            BattlePresentationCueType.GuardEnter => "sfx.combat.guard_enter",
+            BattlePresentationCueType.GuardExit => "sfx.combat.guard_exit",
+            BattlePresentationCueType.RepositionStart => "sfx.combat.reposition_start",
+            BattlePresentationCueType.RepositionStop => "sfx.combat.reposition_stop",
+            BattlePresentationCueType.DeathStart => "sfx.combat.death_start",
+            _ => string.Empty,
+        };
+
+        return !string.IsNullOrWhiteSpace(hookId);
     }
 }

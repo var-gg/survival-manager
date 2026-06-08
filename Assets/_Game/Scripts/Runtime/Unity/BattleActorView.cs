@@ -159,7 +159,9 @@ public sealed class BattleActorView : MonoBehaviour
         TryStartPendingTravelTrace(fromWorld, toWorld, distance);
 
         var presentationPosition = ResolvePresentationPosition(from, to, fromWorld, toWorld, clampedAlpha);
+        var previousPresentationPosition = transform.position;
         transform.position = ResolveTravelTracePosition(fromWorld, toWorld, clampedAlpha, presentationPosition);
+        var frameWorldDelta = transform.position - previousPresentationPosition;
 
         var displayedHealth = Mathf.Lerp(from.CurrentHealth, to.CurrentHealth, clampedAlpha);
         ApplyDisplay(to, displayedHealth);
@@ -168,7 +170,9 @@ public sealed class BattleActorView : MonoBehaviour
         // fixed 1x that produced the treadmill/foot-slide.
         const float simFixedStepSeconds = 0.1f;
         var worldSpeed = BattleLocomotionCadence.WorldSpeed(distance, simFixedStepSeconds);
-        var authoredLocomotionSpeed = _animationDriver?.ActiveAnimationSet?.AuthoredLocomotionSpeed ?? 1.6f;
+        var activeAnimationSet = _animationDriver?.ActiveAnimationSet;
+        var authoredLocomotionSpeed = activeAnimationSet?.ResolveAuthoredLocomotionSpeed(worldSpeed)
+                                      ?? BattleHumanoidAnimationSet.DefaultRunAuthoredLocomotionSpeed;
         var locomoting = BattleLocomotionCadence.IsLocomoting(worldSpeed) && clampedAlpha < 0.995f;
         _isLocomoting = locomoting;
         // Phase 0-E (moonwalk fix): remember the actual travel direction so facing can track movement while
@@ -189,7 +193,9 @@ public sealed class BattleActorView : MonoBehaviour
             BattleLocomotionCadence.ResolvePlaybackSpeed(worldSpeed, authoredLocomotionSpeed),
             paused: false,
             isLocomoting: locomoting,
-            _presentationPhase);
+            _presentationPhase,
+            worldSpeed,
+            frameWorldDelta);
         // GPT Pro D2 guard B: drive any contact-pinned commit from the absolute step anchor (step + alpha),
         // so the strike's contact frame lands on the damage tick independent of render framerate.
         _animationDriver?.EvaluateContactPin(currentStepIndex, clampedAlpha);

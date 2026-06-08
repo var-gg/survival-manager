@@ -133,10 +133,13 @@ public sealed class BattleHumanoidAnimationVariant
 public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
 {
     public const string ResourcesPath = "_Game/Battle/BattleHumanoidAnimationSet";
+    public const float DefaultWalkAuthoredLocomotionSpeed = 1.8977f;
+    public const float DefaultRunAuthoredLocomotionSpeed = 3.7954f;
 
     [SerializeField] private BattleHumanoidAnimationStance stance = BattleHumanoidAnimationStance.Default;
     [SerializeField] private AnimationClip relaxedIdle = null!;
     [SerializeField] private AnimationClip idle = null!;
+    [SerializeField] private AnimationClip walkMove = null!;
     [SerializeField] private AnimationClip move = null!;
     [SerializeField] private AnimationClip guardLoop = null!;
     [SerializeField] private AnimationClip guardEnter = null!;
@@ -148,12 +151,22 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     [SerializeField] private AnimationClip[] healSkills = Array.Empty<AnimationClip>();
     [SerializeField] private AnimationClip[] hits = Array.Empty<AnimationClip>();
     [SerializeField] private BattleHumanoidAnimationVariant[] variants = Array.Empty<BattleHumanoidAnimationVariant>();
-    [SerializeField, Min(0.1f)] private float authoredLocomotionSpeed = 1.6f;
+    [SerializeField, Min(0.1f)] private float authoredWalkLocomotionSpeed = DefaultWalkAuthoredLocomotionSpeed;
+    [SerializeField, Min(0.1f)] private float authoredLocomotionSpeed = DefaultRunAuthoredLocomotionSpeed;
+    [SerializeField, Min(0f)] private float walkRunSwitchWorldSpeed = 2.45f;
 
     public BattleHumanoidAnimationStance Stance => stance;
 
     /// <summary>World units/sec of locomotion the <c>move</c> clip is authored for; drives C2 cadence scaling.</summary>
-    public float AuthoredLocomotionSpeed => authoredLocomotionSpeed <= 0.1f ? 1.6f : authoredLocomotionSpeed;
+    public float AuthoredLocomotionSpeed => ResolvePositive(authoredLocomotionSpeed, DefaultRunAuthoredLocomotionSpeed);
+    public float AuthoredWalkLocomotionSpeed => ResolvePositive(authoredWalkLocomotionSpeed, DefaultWalkAuthoredLocomotionSpeed);
+
+    public float ResolveAuthoredLocomotionSpeed(float worldSpeed)
+    {
+        return ShouldUseWalkLocomotion(worldSpeed)
+            ? AuthoredWalkLocomotionSpeed
+            : AuthoredLocomotionSpeed;
+    }
 
     public bool TryResolveLoopClip(BattleUnitReadModel state, out AnimationClip clip)
     {
@@ -171,7 +184,17 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
         BattleActorPresentationPhase presentationPhase,
         out AnimationClip clip)
     {
-        clip = ResolveLoopClip(state, isLocomoting, presentationPhase)!;
+        return TryResolveLoopClip(state, isLocomoting, presentationPhase, worldSpeed: 0f, out clip);
+    }
+
+    public bool TryResolveLoopClip(
+        BattleUnitReadModel state,
+        bool isLocomoting,
+        BattleActorPresentationPhase presentationPhase,
+        float worldSpeed,
+        out AnimationClip clip)
+    {
+        clip = ResolveLoopClip(state, isLocomoting, presentationPhase, worldSpeed)!;
         return clip != null;
     }
 
@@ -204,7 +227,8 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     private AnimationClip? ResolveLoopClip(
         BattleUnitReadModel state,
         bool isLocomoting,
-        BattleActorPresentationPhase presentationPhase)
+        BattleActorPresentationPhase presentationPhase,
+        float worldSpeed)
     {
         if (!state.IsAlive || state.ActionState == CombatActionState.Dead)
         {
@@ -218,7 +242,12 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
 
         if (isLocomoting)
         {
-            return move != null ? move : idle;
+            if (ShouldUseWalkLocomotion(worldSpeed))
+            {
+                return walkMove != null ? walkMove : FirstNonNull(move, idle);
+            }
+
+            return move != null ? move : FirstNonNull(walkMove, idle);
         }
 
         if (state.IsDefending || state.PendingActionType == BattleActionType.WaitDefend)
@@ -357,6 +386,7 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     {
         return relaxedIdle != null
                || idle != null
+               || walkMove != null
                || move != null
                || guardLoop != null
                || guardEnter != null
@@ -404,6 +434,18 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
         }
 
         return false;
+    }
+
+    private bool ShouldUseWalkLocomotion(float worldSpeed)
+    {
+        return walkMove != null
+               && worldSpeed > 0f
+               && worldSpeed <= Mathf.Max(0.1f, walkRunSwitchWorldSpeed);
+    }
+
+    private static float ResolvePositive(float value, float fallback)
+    {
+        return value <= 0.1f ? fallback : value;
     }
 
     private static int ResolveCueSeed(BattlePresentationCue cue)
