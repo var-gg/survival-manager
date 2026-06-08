@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_cathedral_intro",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_cathedral_intro",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_event_dawn_priest_main_cathedral_intro",
+  "note": "본 대성당 외전 인트로 — 학파 본거지 establishing. 중간 대화는 loc_main_cathedral 공용.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_cathedral_intro/default.png",
+  "prompt": "Wide cinematic establishing shot — the grand interior establishing shot of the main cathedral, seat of a faith school — soaring stone arches, long pews, tall windows throwing shafts of pale gold light across the empty nave. warm cathedral stone color grading, shafts of pale gold light. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
