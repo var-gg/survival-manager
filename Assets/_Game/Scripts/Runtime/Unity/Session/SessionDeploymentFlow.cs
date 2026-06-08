@@ -55,7 +55,7 @@ public sealed partial class GameSessionState
         internal string? GetAssignedHeroId(DeploymentAnchorId anchor) => _session.GetAssignedHeroIdCore(anchor);
 
         internal bool AssignHeroToAnchor(DeploymentAnchorId anchor, string? heroId) =>
-            _session.AssignHeroToAnchorCore(anchor, heroId);
+            _session.AssignHeroToAnchorCore(anchor, heroId, markUserAuthored: true);
 
         internal bool CycleDeploymentAssignment(DeploymentAnchorId anchor) =>
             _session.CycleDeploymentAssignmentCore(anchor);

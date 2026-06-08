@@ -1,0 +1,64 @@
+.sortie-screen {
+    flex-grow: 1;
+    background-color: rgba(10, 12, 20, 0.92);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.sortie-screen__body {
+    flex-direction: row;
+}
+
+.sortie-deploy-panel {
+    flex-grow: 2;
+    margin-right: 12px;
+}
+
+.sortie-synergy-panel {
+    flex-grow: 1;
+}
+
+.sortie-deploy-list {
+    flex-direction: column;
+}
+
+.sortie-deploy-row {
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.sortie-deploy-row__anchor {
+    min-width: 96px;
+}
+
+.sortie-deploy-row__name {
+    flex-grow: 1;
+}
+
+.sortie-synergy-chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.sortie-synergy-chip {
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background-color: rgba(60, 70, 96, 0.6);
+}
+
+.sortie-synergy-chip--major {
+    -unity-font-style: bold;
+    background-color: rgba(96, 120, 72, 0.7);
+}

@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="SortieConfirmRoot" class="screen sortie-screen">
+        <ui:VisualElement class="screen__topbar sortie-screen__topbar">
+            <ui:Label name="SortieTitleLabel" class="screen__title" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="screen__body sortie-screen__body">
+            <ui:VisualElement class="panel sortie-deploy-panel">
+                <ui:Label name="SortieDeployHeader" class="panel__title" />
+                <ui:Label name="SortieDeployHint" class="panel__text panel__text--muted" />
+                <ui:VisualElement name="SortieDeployList" class="sortie-deploy-list" />
+            </ui:VisualElement>
+            <ui:VisualElement class="panel sortie-synergy-panel">
+                <ui:Label class="panel__title" text="활성 시너지" />
+                <ui:VisualElement name="SortieSynergyChips" class="sortie-synergy-chips" />
+                <ui:Label name="SortieSynergyEmpty" class="panel__text panel__text--muted" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="panel panel--dense status-bar sortie-screen__status-band">
+            <ui:VisualElement class="action-group">
+                <ui:VisualElement class="action-row">
+                    <ui:Button name="SortieEditButton" class="ui-button" />
+                    <ui:Button name="SortieLaunchButton" class="ui-button ui-button--accent" />
+                    <ui:Button name="SortieCancelButton" class="ui-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

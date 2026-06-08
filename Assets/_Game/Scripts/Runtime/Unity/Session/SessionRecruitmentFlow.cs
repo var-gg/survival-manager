@@ -292,10 +292,13 @@ public sealed partial class GameSessionState
     private void ResetDeploymentAssignments()
     {
         _deploymentAssignments.Clear();
+        _deploymentUserAuthored = false;
         EnsureAssignmentMapInitialized();
     }
 
-    private void EnsureDefaultDeploymentAssignments()
+    // squad에서 빠진 hero의 유령 배치를 정리한다. 유저 편성 의도와 무관하게 항상 안전하게 실행 가능 —
+    // 자동 채움(AutoFill)과 분리해, 출전 편성을 필수 게이트로 만들 때 "정리는 항상 / 채움은 fallback"을 구현한다.
+    private void ReconcileDeploymentWithSquad()
     {
         EnsureAssignmentMapInitialized();
 
@@ -311,6 +314,13 @@ public sealed partial class GameSessionState
         {
             ClearDeploymentForHero(heroId);
         }
+    }
+
+    // 빈 anchor를 원정대 앞쪽 hero로 자동 채운다. 유저 미편성 상태의 fallback 전용 —
+    // markUserAuthored: false로 배치하므로 이 자동배치는 "유저가 편성했다"는 신호를 남기지 않는다.
+    private void AutoFillDeploymentFromSquad()
+    {
+        EnsureAssignmentMapInitialized();
 
         foreach (var heroId in _expeditionSquadHeroIds.Take(MetaBalanceDefaults.BattleDeployCap))
         {
@@ -319,7 +329,7 @@ public sealed partial class GameSessionState
                 continue;
             }
 
-            AssignHeroToAnchor(ResolvePreferredAnchor(heroId), heroId);
+            AssignHeroToAnchorCore(ResolvePreferredAnchor(heroId), heroId, markUserAuthored: false);
             if (BattleDeployHeroIds.Count >= MetaBalanceDefaults.BattleDeployCap)
             {
                 break;

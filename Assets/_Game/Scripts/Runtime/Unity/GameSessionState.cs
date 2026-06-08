@@ -46,6 +46,8 @@ public sealed partial class GameSessionState
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
+    // 유저가 출전 anchor를 명시 편성했는지. 자동배치는 이 플래그를 세우지 않으며, true면 자동배치가 배치를 덮지 않는다.
+    private bool _deploymentUserAuthored;
     private readonly List<RecruitUnitPreview> _recruitOffers = new();
     private readonly List<ExpeditionNodeViewModel> _expeditionNodes = new();
     private readonly List<RewardChoiceViewModel> _pendingRewardChoices = new();
@@ -101,6 +103,7 @@ public sealed partial class GameSessionState
         .Cast<string>()
         .ToList();
     public IReadOnlyDictionary<DeploymentAnchorId, string?> DeploymentAssignments => _deploymentAssignments;
+    public bool IsDeploymentUserAuthored => _deploymentUserAuthored;
     public IReadOnlyList<RecruitUnitPreview> RecruitOffers => _recruitOffers;
     public IReadOnlyList<ExpeditionNodeViewModel> ExpeditionNodes => _expeditionNodes;
     public IReadOnlyList<RewardChoiceViewModel> PendingRewardChoices => _pendingRewardChoices;
@@ -234,6 +237,7 @@ public sealed partial class GameSessionState
             Roster = new RosterState(ToHeroRecords(Profile));
             EnsureRecruitOffers();
             EnsureDefaultSquad();
+            RestoreDeploymentFromActiveBlueprint();
             EnsureBattleDeployReady();
             EnsureCampaignSelection();
             EnsureExpeditionNodes(reset: true);
@@ -1027,7 +1031,14 @@ public sealed partial class GameSessionState
             return;
         }
 
-        EnsureDefaultDeploymentAssignments();
+        // squad에서 빠진 hero의 유령 배치는 항상 정리하되(reconcile), 빈 보드 자동 채움(fill)은
+        // 유저가 편성을 만진 적이 없고(_deploymentUserAuthored == false) 현재 배치가 완전히 빈 경우에만 한다.
+        // 즉 출전 편성은 유저 1급 결정으로 존중되고, 자동배치는 신규/미편성 상태의 fallback으로만 동작한다.
+        ReconcileDeploymentWithSquad();
+        if (!_deploymentUserAuthored && BattleDeployHeroIds.Count == 0)
+        {
+            AutoFillDeploymentFromSquad();
+        }
     }
 
     internal void ApplyQuickBattleAllySlotOverrides(CombatSandboxConfig config) =>
@@ -1052,7 +1063,9 @@ public sealed partial class GameSessionState
 
         if (configuredHeroIds.Count == 0)
         {
-            EnsureDefaultDeploymentAssignments();
+            // Quick Battle smoke는 유저 편성과 무관하게 항상 자동배치로 채운다.
+            ReconcileDeploymentWithSquad();
+            AutoFillDeploymentFromSquad();
             return;
         }
 
@@ -1108,7 +1121,7 @@ public sealed partial class GameSessionState
     public bool AssignHeroToAnchor(DeploymentAnchorId anchor, string? heroId) =>
         _deploymentFlow.AssignHeroToAnchor(anchor, heroId);
 
-    private bool AssignHeroToAnchorCore(DeploymentAnchorId anchor, string? heroId)
+    private bool AssignHeroToAnchorCore(DeploymentAnchorId anchor, string? heroId, bool markUserAuthored)
     {
         EnsureDefaultSquad();
         EnsureAssignmentMapInitialized();
@@ -1147,6 +1160,13 @@ public sealed partial class GameSessionState
         }
 
         _deploymentAssignments[anchor] = heroId;
+        // 유저 진입(승격/cycle/reset)은 편성 의도를 기록 — 이후 자동배치가 이 배치를 덮지 않는다.
+        // 자동배치(AutoFillDeploymentFromSquad)는 markUserAuthored: false로 호출해 이 신호를 남기지 않는다.
+        if (markUserAuthored)
+        {
+            _deploymentUserAuthored = true;
+        }
+
         CaptureBlueprintState();
         SyncActiveRunIfPresent();
         return true;

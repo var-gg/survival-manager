@@ -149,7 +149,8 @@ public sealed class LaunchCoreRosterBaselineCatalog
             archetype.FlexSupportSkillPool?.FirstOrDefault()?.Id);
     }
 
-    private static string BuildSynergyId(string familyId)
+    // race/class family id를 synergy id로. SortieConfirm 등 squad-level synergy 집계가 재사용.
+    public static string BuildSynergyId(string familyId)
     {
         return string.IsNullOrWhiteSpace(familyId)
             ? string.Empty

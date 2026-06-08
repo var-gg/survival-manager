@@ -902,6 +902,7 @@ public sealed partial class GameSessionState
         record.DeploymentAssignments = blueprint.DeploymentAssignments.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value, StringComparer.Ordinal);
         record.ExpeditionSquadHeroIds = blueprint.ExpeditionSquadHeroIds.ToList();
         record.HeroRoleIds = blueprint.HeroRoleIds.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        record.DeploymentUserAuthored = _deploymentUserAuthored;
         Profile.ActiveBlueprintId = blueprint.BlueprintId;
         return blueprint;
     }
@@ -929,6 +930,39 @@ public sealed partial class GameSessionState
                 .ToDictionary(pair => Enum.Parse<DeploymentAnchorId>(pair.Key), pair => pair.Value),
             record.ExpeditionSquadHeroIds,
             record.HeroRoleIds);
+    }
+
+    // 유저가 명시 편성한 출전 배치를 active blueprint record에서 live _deploymentAssignments로 복원한다.
+    // record.DeploymentUserAuthored == true일 때만 복원 — 자동배치 결과(false)는 복원 대상이 아니다.
+    // squad에 없는 hero는 건너뛴다(reconcile과 일관). 복원 시 _deploymentUserAuthored를 세워 후속
+    // EnsureBattleDeployReady의 자동 채움이 복원된(또는 유저가 의도적으로 비운) 배치를 덮지 않게 한다.
+    private void RestoreDeploymentFromActiveBlueprint()
+    {
+        if (string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId))
+        {
+            return;
+        }
+
+        var record = Profile.SquadBlueprints.FirstOrDefault(existing => existing.BlueprintId == Profile.ActiveBlueprintId);
+        if (record is not { DeploymentUserAuthored: true })
+        {
+            return;
+        }
+
+        EnsureAssignmentMapInitialized();
+        foreach (var pair in record.DeploymentAssignments)
+        {
+            if (string.IsNullOrWhiteSpace(pair.Value)
+                || !Enum.TryParse<DeploymentAnchorId>(pair.Key, out var anchor)
+                || !_expeditionSquadHeroIds.Contains(pair.Value))
+            {
+                continue;
+            }
+
+            _deploymentAssignments[anchor] = pair.Value;
+        }
+
+        _deploymentUserAuthored = true;
     }
 
     private static IReadOnlyDictionary<string, HeroLoadoutState> ToHeroLoadoutStates(SaveProfile profile)

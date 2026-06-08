@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
+using SM.Combat.Model;
 using SM.Core;
 using SM.Meta;
 using SM.Unity.Narrative;
@@ -417,6 +418,13 @@ public sealed class AtlasScreenController : MonoBehaviour
                 return;
             }
 
+            // 출격 편성 확인 게이트 — 배치/시너지를 보여주고 슬롯 클릭으로 조정 + 출격/취소.
+            // overlay가 뜨면 이후 warrant/battle 진행은 SortieConfirm 콜백이 잇는다. asset 미배치면 false→직행.
+            if (TryShowSortieConfirm())
+            {
+                return;
+            }
+
             // ADR-0028 P2b: 출격 전 warrant 선택 surface(UXML 할당 시). 카드=이 서약으로 출격, 스킵=서약 없이.
             // asset 미할당이면 false → 기존대로 직행(흐름 안전, fallback).
             if (TryShowWarrantSelection())
@@ -497,6 +505,85 @@ public sealed class AtlasScreenController : MonoBehaviour
         view.Render(presenter.BuildState());
         return true;
     }
+
+    // 출격 편성 확인 게이트 overlay — TryShowWarrantSelection 패턴. 배치/시너지를 보여주고 슬롯 클릭으로
+    // anchor cycle, 출격 시 warrant 게이트로 체이닝(없으면 GoToBattle). asset 미배치면 false → 직행(fallback).
+    private bool TryShowSortieConfirm()
+    {
+        var uxml = Resources.Load<VisualTreeAsset>("SortieConfirm");
+        var uss = Resources.Load<StyleSheet>("SortieConfirm");
+        var root = _root;
+        var host = panelHost;
+        if (uxml == null || root == null || host == null)
+        {
+            return false;
+        }
+
+        var overlay = uxml.Instantiate();
+        overlay.style.position = Position.Absolute;
+        overlay.style.left = 0f;
+        overlay.style.top = 0f;
+        overlay.style.right = 0f;
+        overlay.style.bottom = 0f;
+        if (uss != null && !overlay.styleSheets.Contains(uss))
+        {
+            overlay.styleSheets.Add(uss);
+        }
+
+        host.Root.Add(overlay);
+
+        var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
+        var baselineCatalog = new LaunchCoreRosterBaselineCatalog(root.CombatContentLookup);
+        var view = new SortieConfirmView(overlay);
+        var presenter = new SortieConfirmPresenter(
+            root.SessionState,
+            baselineCatalog,
+            contentText.GetArchetypeName,
+            contentText.GetSynergyName,
+            SortieAnchorLabel);
+
+        void CloseOverlay()
+        {
+            if (host.Root.Contains(overlay))
+            {
+                host.Root.Remove(overlay);
+            }
+        }
+
+        view.SlotCycled += anchor =>
+        {
+            root.SessionState.CycleDeploymentAssignment(anchor);
+            view.Render(presenter.BuildState());
+        };
+        view.Launched += () =>
+        {
+            CloseOverlay();
+            if (!TryShowWarrantSelection())
+            {
+                root.SceneFlow.GoToBattle();
+            }
+        };
+        view.EditRequested += () =>
+        {
+            CloseOverlay();
+            root.SceneFlow.GoToTown(); // posture/tactic 등 세부 편성은 Town SquadBuilder에서.
+        };
+        view.Cancelled += CloseOverlay;
+        view.Bind();
+        view.Render(presenter.BuildState());
+        return true;
+    }
+
+    private static string SortieAnchorLabel(DeploymentAnchorId anchor) => anchor switch
+    {
+        DeploymentAnchorId.FrontTop => "전열 상",
+        DeploymentAnchorId.FrontCenter => "전열 중",
+        DeploymentAnchorId.FrontBottom => "전열 하",
+        DeploymentAnchorId.BackTop => "후열 상",
+        DeploymentAnchorId.BackCenter => "후열 중",
+        DeploymentAnchorId.BackBottom => "후열 하",
+        _ => anchor.ToString(),
+    };
 
     private bool EnsureStoryBridgeReady()
     {
