@@ -291,7 +291,10 @@ public sealed class SquadBuilderPresenter
     {
         button.Clear();
         button.text = row?.DisplayName ?? "비어있음";
-        button.tooltip = row?.DisplayName ?? LocalizeAnchor(anchor);
+        // 채워진 슬롯도 클릭 = 다음 동료로 순환이라는 멘탈 모델을 항상 노출(빈 슬롯에서만 안내되던 문제 보완).
+        button.tooltip = row != null
+            ? $"{row.DisplayName} · 클릭하면 다음 동료로 순환"
+            : $"{LocalizeAnchor(anchor)} · 클릭하면 동료 배치";
 
         var card = new VisualElement();
         card.AddToClassList("sm-sqb-modal__anchor-card");

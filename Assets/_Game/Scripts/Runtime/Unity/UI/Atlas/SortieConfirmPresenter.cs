@@ -79,7 +79,7 @@ public sealed class SortieConfirmPresenter
         return new SortieConfirmViewState(
             Title: "출격 편성 확인",
             DeployHeader: $"출전 배치 {deployRecords.Count}/{MetaBalanceDefaults.BattleDeployCap}",
-            DeployHint: "슬롯을 눌러 배치를 바꿀 수 있습니다.",
+            DeployHint: "슬롯을 누를 때마다 다음 동료로 순환합니다 (계속 누르면 '비어 있음'까지).",
             DeploySlots: slots,
             DeployCount: deployRecords.Count,
             DeployCap: MetaBalanceDefaults.BattleDeployCap,
