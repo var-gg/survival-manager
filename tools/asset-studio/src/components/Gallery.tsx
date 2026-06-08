@@ -3,7 +3,7 @@ import { FileQuestion, Image, Mic2, Music, Video, Volume2 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { formatBytes } from "../lib/format";
-import { ensureThumbnail } from "../lib/ipc";
+import { ensureThumbnail, readSidecar } from "../lib/ipc";
 import { materialLabelForVariantKey, qcLabel } from "../lib/sfxPlan";
 import type { AssetItem, AssetType } from "../types";
 import "./Gallery.css";
@@ -146,6 +146,7 @@ export function Gallery({ assets, selectedId, onSelect }: Props) {
                   {asset.assetType}
                 </span>
                 <SfxBadges asset={asset} />
+                <GenModelBadge asset={asset} />
                 <strong title={asset.name}>{asset.name}</strong>
                 <span className="asset-card__meta">
                   {asset.unityUsageLabel}
@@ -180,6 +181,58 @@ function SfxBadges({ asset }: { asset: AssetItem }) {
       ) : null}
     </span>
   );
+}
+
+function GenModelBadge({ asset }: { asset: AssetItem }) {
+  const [model, setModel] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (asset.assetType !== "bgm" || !asset.sidecarPath) {
+      setModel(null);
+      return;
+    }
+    let disposed = false;
+    readSidecar(asset.sidecarPath)
+      .then((sidecar) => {
+        if (!disposed) {
+          setModel(normalizeGenModel(sidecar));
+        }
+      })
+      .catch(() => {
+        if (!disposed) {
+          setModel(null);
+        }
+      });
+    return () => {
+      disposed = true;
+    };
+  }, [asset.assetType, asset.sidecarPath]);
+
+  if (!model) {
+    return null;
+  }
+  return (
+    <span className={`asset-card__genmodel asset-card__genmodel--${model}`} title="DiT model (생성 품질 티어)">
+      {model}
+    </span>
+  );
+}
+
+function normalizeGenModel(sidecar: unknown): string | null {
+  if (!sidecar || typeof sidecar !== "object") {
+    return null;
+  }
+  const dit = (sidecar as Record<string, unknown>).dit_model;
+  if (typeof dit !== "string") {
+    return null;
+  }
+  if (dit.includes("turbo")) {
+    return "turbo";
+  }
+  if (dit.includes("base")) {
+    return "base";
+  }
+  return "model";
 }
 
 function compactVariant(variantKey: string): string {

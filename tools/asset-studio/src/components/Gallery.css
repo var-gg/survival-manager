@@ -119,6 +119,35 @@
   white-space: nowrap;
 }
 
+.asset-card__genmodel {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  min-height: 22px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.asset-card__genmodel--turbo {
+  background: rgba(120, 86, 20, 0.88);
+  color: #ffd98a;
+}
+
+.asset-card__genmodel--base {
+  background: rgba(36, 94, 56, 0.9);
+  color: #b8f0c6;
+}
+
+.asset-card__genmodel--model {
+  background: rgba(12, 12, 11, 0.72);
+  color: #d8d1c2;
+}
+
 .preview {
   display: flex;
   align-items: center;
