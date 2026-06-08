@@ -65,6 +65,13 @@ public sealed class RosterGridView
         if (state == null) throw new ArgumentNullException(nameof(state));
 
         _gridContainer.Clear();
+        if (state.Heroes.Count == 0)
+        {
+            // 빈 명부를 텅 빈 그리드로 두지 않고 다음 행동을 안내(신규 프로필/전원 이탈 시).
+            var empty = new Label("아직 합류한 동료가 없습니다. 모집소(달목)에서 동료를 영입하세요.");
+            empty.AddToClassList("rgp-empty-state");
+            _gridContainer.Add(empty);
+        }
         foreach (var hero in state.Heroes)
         {
             _gridContainer.Add(BuildHeroCard(hero));

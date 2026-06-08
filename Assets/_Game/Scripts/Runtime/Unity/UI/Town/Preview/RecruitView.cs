@@ -140,6 +140,14 @@ public sealed class RecruitView
     private void RenderCards(IReadOnlyList<RecruitCandidateViewState> candidates)
     {
         _cardRow.Clear();
+        if (candidates.Count == 0)
+        {
+            // 빈 목록을 텅 빈 채 두면 "소진? 잔향 부족? 버그?"로 막힌다 — 다음 행동을 안내한다.
+            var empty = new Label("지금은 영입할 수 있는 후보가 없습니다. 갱신하거나 잔향을 모아 다시 찾아오세요.");
+            empty.AddToClassList("rcp-empty-state");
+            _cardRow.Add(empty);
+            return;
+        }
         foreach (var c in candidates)
         {
             _cardRow.Add(BuildCard(c));
