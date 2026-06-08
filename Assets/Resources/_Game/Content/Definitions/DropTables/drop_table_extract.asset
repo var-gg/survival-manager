@@ -25,7 +25,7 @@ MonoBehaviour:
     IsGuaranteed: 1
     RequiredContextTags: []
   - Id: ember_dust_extract
-    RewardType: 7
+    RewardType: 6
     Amount: 5
     RarityBracket: 1
     Weight: 1

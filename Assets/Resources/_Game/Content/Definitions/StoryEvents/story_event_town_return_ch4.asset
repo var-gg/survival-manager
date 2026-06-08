@@ -46,7 +46,7 @@ MonoBehaviour:
   _id: story_event_town_return_ch4__effect__00
   _kind: 1
   _payload: story_flag_town_return_ch4
---- !u!114 &-4319545574600569276
+--- !u!114 &-560783427300874969
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -81,7 +81,7 @@ MonoBehaviour:
   _conditions:
   - {fileID: 8126117400205375591}
   - {fileID: -7286750845092807714}
-  - {fileID: -4319545574600569276}
+  - {fileID: -560783427300874969}
   _effects:
   - {fileID: -5278837057994237692}
   - {fileID: -5678841965405400219}

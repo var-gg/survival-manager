@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_scout_utility
   VfxHookId: vfx.skill_scout_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_scout_utility
   LearnSource: 0
   EffectFamilyId: scout_exposed
   MutuallyExclusiveGroupId: 

@@ -68,5 +68,6 @@ MonoBehaviour:
   - StatId: move_speed
     Op: 0
     Value: 0.05
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_hexer_core
   VfxHookId: vfx.skill_hexer_core
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_hexer_core
   LearnSource: 0
   EffectFamilyId: hexer_signature
   MutuallyExclusiveGroupId: 

@@ -70,7 +70,7 @@ MonoBehaviour:
     Scope: 0
     Magnitude: 40
     ThresholdRatio: 0
-    StatusId:
+    StatusId: 
     DurationSeconds: 0
     MaxStacks: 1
   legacyDisplayName: 

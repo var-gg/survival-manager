@@ -40,24 +40,24 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
-    Rarity: 0
+    Rarity: 1
     PowerBand: 2
-    RoleProfile: 0
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 3
+      SustainedDamage: 4
       BurstDamage: 4
       Durability: 0
-      Control: 1
-      Mobility: 1
+      Control: 0
+      Mobility: 2
       Support: 0
       CounterCoverage: 0
-      Reliability: 3
+      Reliability: 2
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
-    ConditionClauseCount: 1
+    KeywordCount: 3
+    ConditionClauseCount: 2
     RuleExceptionCount: 0
-    DeclaredThreatPatterns:
+    DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   ManaCost: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   RecoverySeconds: -1
   PowerBudget: 0
   InterruptRefundScalar: 0.5
-  AiIntents:
+  AiIntents: 
   AiScoreHints:
     BurstBias: 1
     ProtectBias: 0
@@ -79,13 +79,13 @@ MonoBehaviour:
     MaximumTargetHealthRatio: 1
     MinimumDistance: 0
     MaximumDistance: 1.5
-  AnimationHookId:
+  AnimationHookId: 
   IconId: skill_icon_rusthide_charge
   VfxHookId: vfx.skill_rusthide_charge
-  SfxHookId:
+  SfxHookId: sfx.skill.skill_rusthide_charge
   LearnSource: 2
   EffectFamilyId: expansion_v1_vanguard
-  MutuallyExclusiveGroupId:
+  MutuallyExclusiveGroupId: 
   RecruitNativeTags: []
   RecruitPlanTags: []
   RecruitScoutTags: []
@@ -123,7 +123,8 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags:
@@ -141,5 +142,5 @@ MonoBehaviour:
     ProcAttributionPolicy: 0
     OwnershipPolicy: 0
     Effects: []
-  CleanseProfileId:
-  legacyDisplayName:
+  CleanseProfileId: 
+  legacyDisplayName: 

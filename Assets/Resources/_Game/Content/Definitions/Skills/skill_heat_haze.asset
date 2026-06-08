@@ -42,22 +42,22 @@ MonoBehaviour:
     Domain: 1
     Rarity: 0
     PowerBand: 1
-    RoleProfile: 3
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
-      Durability: 2
+      SustainedDamage: 4
+      BurstDamage: 1
+      Durability: 0
       Control: 0
       Mobility: 1
-      Support: 4
+      Support: 0
       CounterCoverage: 0
-      Reliability: 1
+      Reliability: 2
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 1
-    ConditionClauseCount: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
     RuleExceptionCount: 0
-    DeclaredThreatPatterns:
+    DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   ManaCost: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   RecoverySeconds: -1
   PowerBudget: 0
   InterruptRefundScalar: 0.5
-  AiIntents:
+  AiIntents: 
   AiScoreHints:
     BurstBias: 0
     ProtectBias: 1
@@ -79,13 +79,13 @@ MonoBehaviour:
     MaximumTargetHealthRatio: 1
     MinimumDistance: 0
     MaximumDistance: 0
-  AnimationHookId:
+  AnimationHookId: 
   IconId: skill_icon_heat_haze
   VfxHookId: vfx.skill_heat_haze
-  SfxHookId:
+  SfxHookId: 
   LearnSource: 2
   EffectFamilyId: expansion_v1_ranger
-  MutuallyExclusiveGroupId:
+  MutuallyExclusiveGroupId: 
   RecruitNativeTags: []
   RecruitPlanTags: []
   RecruitScoutTags: []
@@ -123,11 +123,12 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AppliedStatuses: []
-  CleanseProfileId:
-  legacyDisplayName:
+  CleanseProfileId: 
+  legacyDisplayName: 

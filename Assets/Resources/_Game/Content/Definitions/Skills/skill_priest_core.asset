@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_priest_core
   VfxHookId: vfx.skill_priest_core
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_priest_core
   LearnSource: 0
   EffectFamilyId: priest_signature
   MutuallyExclusiveGroupId: 

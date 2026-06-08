@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_reaver_core
   VfxHookId: vfx.skill_reaver_core
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_reaver_core
   LearnSource: 0
   EffectFamilyId: 
   MutuallyExclusiveGroupId: 

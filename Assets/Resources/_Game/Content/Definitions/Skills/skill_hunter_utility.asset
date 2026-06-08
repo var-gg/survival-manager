@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_hunter_utility
   VfxHookId: vfx.skill_hunter_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_hunter_utility
   LearnSource: 0
   EffectFamilyId: hunter_mark
   MutuallyExclusiveGroupId: 

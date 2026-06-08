@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_guardian_utility
   VfxHookId: vfx.skill_guardian_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_guardian_utility
   LearnSource: 0
   EffectFamilyId: guard_rally
   MutuallyExclusiveGroupId: 

@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_reaver_utility
   VfxHookId: vfx.skill_reaver_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_reaver_utility
   LearnSource: 0
   EffectFamilyId: burst_followup
   MutuallyExclusiveGroupId: 

@@ -18,35 +18,35 @@ MonoBehaviour:
   RewardSourceId: reward_source_boss
   Entries:
   - Id: boss_sigil_drop
-    RewardType: 9
+    RewardType: 8
     Amount: 1
     RarityBracket: 3
     Weight: 1
     IsGuaranteed: 1
     RequiredContextTags: []
   - Id: echo_crystal_boss
-    RewardType: 8
+    RewardType: 7
     Amount: 2
     RarityBracket: 2
     Weight: 1
     IsGuaranteed: 1
     RequiredContextTags: []
   - Id: item_prayer_bead
-    RewardType: 3
+    RewardType: 2
     Amount: 1
     RarityBracket: 3
     Weight: 2
     IsGuaranteed: 0
     RequiredContextTags: []
   - Id: skill_minor_heal
-    RewardType: 10
+    RewardType: 9
     Amount: 1
     RarityBracket: 3
     Weight: 2
     IsGuaranteed: 0
     RequiredContextTags: []
   - Id: boss_site_ashen_gate_answer_lane_guard_anchor
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -55,7 +55,7 @@ MonoBehaviour:
     - site_ashen_gate
     - answer_lane_guard_anchor
   - Id: boss_site_wolfpine_trail_answer_lane_peel_anti_dive
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -64,7 +64,7 @@ MonoBehaviour:
     - site_wolfpine_trail
     - answer_lane_peel_anti_dive
   - Id: boss_site_sunken_bastion_answer_lane_break_formation
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -73,7 +73,7 @@ MonoBehaviour:
     - site_sunken_bastion
     - answer_lane_break_formation
   - Id: boss_site_tithe_road_answer_lane_anti_mark_cleanse
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -82,7 +82,7 @@ MonoBehaviour:
     - site_tithe_road
     - answer_lane_anti_mark_cleanse
   - Id: boss_site_ruined_crypts_answer_lane_anti_sustain_finish
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -91,7 +91,7 @@ MonoBehaviour:
     - site_ruined_crypts
     - answer_lane_anti_sustain_finish
   - Id: boss_site_bone_orchard_answer_lane_anti_summon_burst
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -100,7 +100,7 @@ MonoBehaviour:
     - site_bone_orchard
     - answer_lane_anti_summon_burst
   - Id: boss_site_glass_forest_answer_lane_cleanse_mobility
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -109,7 +109,7 @@ MonoBehaviour:
     - site_glass_forest
     - answer_lane_cleanse_mobility
   - Id: boss_site_starved_menagerie_answer_lane_anti_swarm_persistence
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -118,7 +118,7 @@ MonoBehaviour:
     - site_starved_menagerie
     - answer_lane_anti_swarm_persistence
   - Id: boss_site_heartforge_gate_answer_lane_hybrid_break
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -127,7 +127,7 @@ MonoBehaviour:
     - site_heartforge_gate
     - answer_lane_hybrid_break
   - Id: boss_site_worldscar_depths_answer_lane_adaptive_mastery
-    RewardType: 0
+    RewardType: 7
     Amount: 1
     RarityBracket: 3
     Weight: 1
@@ -135,19 +135,5 @@ MonoBehaviour:
     RequiredContextTags:
     - site_worldscar_depths
     - answer_lane_adaptive_mastery
-  - Id: item_bulwark_armor
-    RewardType: 3
-    Amount: 1
-    RarityBracket: 3
-    Weight: 2
-    IsGuaranteed: 0
-    RequiredContextTags: []
-  - Id: item_rift_bow
-    RewardType: 3
-    Amount: 1
-    RarityBracket: 3
-    Weight: 2
-    IsGuaranteed: 0
-    RequiredContextTags: []
   legacyDisplayName: 
   legacyDescription: 

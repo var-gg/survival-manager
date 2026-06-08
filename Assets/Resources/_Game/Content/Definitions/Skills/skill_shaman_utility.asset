@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_shaman_utility
   VfxHookId: vfx.skill_shaman_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_shaman_utility
   LearnSource: 0
   EffectFamilyId: shaman_zone
   MutuallyExclusiveGroupId: 

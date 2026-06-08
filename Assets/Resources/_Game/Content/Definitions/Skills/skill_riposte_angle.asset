@@ -41,23 +41,23 @@ MonoBehaviour:
   BudgetCard:
     Domain: 1
     Rarity: 0
-    PowerBand: 2
-    RoleProfile: 2
+    PowerBand: 1
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
-      Durability: 2
+      SustainedDamage: 4
+      BurstDamage: 1
+      Durability: 0
       Control: 0
       Mobility: 1
-      Support: 4
+      Support: 0
       CounterCoverage: 0
-      Reliability: 5
+      Reliability: 2
       Economy: 0
       DrawbackCredit: 0
     KeywordCount: 2
     ConditionClauseCount: 1
     RuleExceptionCount: 0
-    DeclaredThreatPatterns:
+    DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   ManaCost: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   RecoverySeconds: -1
   PowerBudget: 0
   InterruptRefundScalar: 0.5
-  AiIntents:
+  AiIntents: 
   AiScoreHints:
     BurstBias: 0
     ProtectBias: 1
@@ -79,13 +79,13 @@ MonoBehaviour:
     MaximumTargetHealthRatio: 1
     MinimumDistance: 0
     MaximumDistance: 0
-  AnimationHookId:
+  AnimationHookId: 
   IconId: skill_icon_riposte_angle
   VfxHookId: vfx.skill_riposte_angle
-  SfxHookId:
+  SfxHookId: sfx.skill.skill_riposte_angle
   LearnSource: 2
   EffectFamilyId: expansion_v1_duelist
-  MutuallyExclusiveGroupId:
+  MutuallyExclusiveGroupId: 
   RecruitNativeTags: []
   RecruitPlanTags: []
   RecruitScoutTags: []
@@ -123,7 +123,8 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags:
@@ -141,5 +142,5 @@ MonoBehaviour:
     ProcAttributionPolicy: 0
     OwnershipPolicy: 0
     Effects: []
-  CleanseProfileId:
-  legacyDisplayName:
+  CleanseProfileId: 
+  legacyDisplayName: 

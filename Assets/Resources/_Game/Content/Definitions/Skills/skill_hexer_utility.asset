@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_hexer_utility
   VfxHookId: vfx.skill_hexer_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_hexer_utility
   LearnSource: 0
   EffectFamilyId: hexer_silence
   MutuallyExclusiveGroupId: 

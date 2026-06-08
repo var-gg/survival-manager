@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-2524685602948827965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_ashen_priest_first_crack__cond__00
+  _kind: 0
+  _operandA: chapter_ashen_gate
+  _operandB: 
+--- !u!114 &-131931520379812352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_ashen_priest_first_crack__cond__02
+  _kind: 2
+  _operandA: 4
+  _operandB: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
+  m_Name: story_event_ashen_priest_first_crack
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEventDefinition
+  _id: story_event_ashen_priest_first_crack
+  _moment: 5
+  _priority: 250
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: -2524685602948827965}
+  - {fileID: 7129852669565366351}
+  - {fileID: -131931520379812352}
+  _effects:
+  - {fileID: 3549207589610768472}
+  - {fileID: 5229989059390910082}
+  _presentationKey: dialogue_scene_priest_first_crack
+--- !u!114 &3549207589610768472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_ashen_priest_first_crack__effect__00
+  _kind: 1
+  _payload: story_flag_ashen_boss_cleared
+--- !u!114 &5229989059390910082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_ashen_priest_first_crack__effect__01
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &7129852669565366351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_ashen_priest_first_crack__cond__01
+  _kind: 1
+  _operandA: site_ashen_gate
+  _operandB: 

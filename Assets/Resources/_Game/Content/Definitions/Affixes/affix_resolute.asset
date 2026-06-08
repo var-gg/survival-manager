@@ -36,20 +36,20 @@ MonoBehaviour:
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 1
+    PowerBand: 2
     RoleProfile: -1
     Vector:
       SustainedDamage: 0
       BurstDamage: 0
-      Durability: 0
+      Durability: 4
       Control: 0
       Mobility: 0
-      Support: 0
+      Support: 1
       CounterCoverage: 0
-      Reliability: 6
+      Reliability: 1
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
+    KeywordCount: 1
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 

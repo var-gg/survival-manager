@@ -64,5 +64,6 @@ MonoBehaviour:
   - StatId: phys_power
     Op: 0
     Value: 3
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

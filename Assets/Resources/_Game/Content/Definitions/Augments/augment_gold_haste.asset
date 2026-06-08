@@ -64,5 +64,6 @@ MonoBehaviour:
   - StatId: cooldown_recovery
     Op: 0
     Value: 0.08
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_raider_utility
   VfxHookId: vfx.skill_raider_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_raider_utility
   LearnSource: 0
   EffectFamilyId: mark_followup
   MutuallyExclusiveGroupId: 

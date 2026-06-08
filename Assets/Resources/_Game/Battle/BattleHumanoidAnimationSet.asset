@@ -1,0 +1,234 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: BattleHumanoidAnimationSet
+  m_EditorClassIdentifier: SM.Unity:SM.Unity:BattleHumanoidAnimationSet
+  stance: 0
+  relaxedIdle: {fileID: -2576967968662016515, guid: 56fd86b76fc74d24d83522069f5deb9b, type: 3}
+  idle: {fileID: 3094330708855449807, guid: f136ef28d67ab0f4f8e00c33ed181abb, type: 3}
+  walkMove: {fileID: 3094330708855449807, guid: 9259db9271971e54ab8991d4aa53aae2, type: 3}
+  move: {fileID: 3094330708855449807, guid: 9500e467e35d4684880037a0762df59b, type: 3}
+  guardLoop: {fileID: 3094330708855449807, guid: 47e702d39cca6d040a91d04069cdee77, type: 3}
+  guardEnter: {fileID: 3094330708855449807, guid: 47e702d39cca6d040a91d04069cdee77, type: 3}
+  guardExit: {fileID: 3094330708855449807, guid: f136ef28d67ab0f4f8e00c33ed181abb, type: 3}
+  death: {fileID: 3094330708855449807, guid: 3efbd3b8cb129e64598937492de2b27d, type: 3}
+  windups:
+  - {fileID: 3094330708855449807, guid: 3763882290e6e4348831adc7e32fa919, type: 3}
+  - {fileID: 3094330708855449807, guid: 329eb16787e0e0a42806e4e0ad6dd8a4, type: 3}
+  basicAttacks:
+  - {fileID: 3094330708855449807, guid: ef751e951ed91ed4fbc94d82726c9eed, type: 3}
+  - {fileID: 3094330708855449807, guid: 39df77266a31a2547b7cc6c67a54a62c, type: 3}
+  damagingSkills:
+  - {fileID: 3094330708855449807, guid: c2160d1a58a158543817a3f1c504dc91, type: 3}
+  - {fileID: 3094330708855449807, guid: 6681ba7b977f63948bd54bbc58ac4e14, type: 3}
+  healSkills:
+  - {fileID: 3094330708855449807, guid: 39e2b573902399d4fbd58117e24ea1d2, type: 3}
+  - {fileID: 3094330708855449807, guid: 2f6016e9e7e6ff247b2c268a733fe053, type: 3}
+  hits:
+  - {fileID: 3094330708855449807, guid: e191b1e6013333f4f8fcf7db4018a4d2, type: 3}
+  - {fileID: 3094330708855449807, guid: 18afe56f6fdf0b0478209f4b1512c8cc, type: 3}
+  variants:
+  - semantic: 14
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: -8447606201520082545, guid: f367d1e1743ee3d458e2144d909e91b1, type: 3}
+  - semantic: 14
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: -6315306624463399002, guid: 37aae99a3fef2d748a03b8d0e3cf6264, type: 3}
+  - semantic: 14
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: -4106997953325088264, guid: 40e2885fda90a014caffc8e11a9fccfe, type: 3}
+  - semantic: 12
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: -1500649498564232044, guid: ddaf42e3f94093e47aa6cd529ba439aa, type: 3}
+  - semantic: 12
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 4548383073398505166, guid: 149989e885f807c4d8d812cff3c153e6, type: 3}
+  - semantic: 12
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 7572700182753157781, guid: d99d0d6e81ced0e4a9ab2858b5856fbd, type: 3}
+  - semantic: 15
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 3763882290e6e4348831adc7e32fa919, type: 3}
+  - semantic: 15
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 005e89b9999786b4d8d63a59bcfd8b34, type: 3}
+  - semantic: 13
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: c2160d1a58a158543817a3f1c504dc91, type: 3}
+  - semantic: 13
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 6681ba7b977f63948bd54bbc58ac4e14, type: 3}
+  - semantic: 4
+    direction: 0
+    intensity: 1
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 6e0b3a7c890a92049a002fca252fbec0, type: 3}
+  - semantic: 4
+    direction: 0
+    intensity: 1
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: f58871d9345644f46901b59542797f2e, type: 3}
+  - semantic: 4
+    direction: 0
+    intensity: 1
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 37624f1f0ed78f84e989d25619f7daa6, type: 3}
+  - semantic: 6
+    direction: 1
+    intensity: 3
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 5a0e32c255e96fa4294a09f20c564818, type: 3}
+  - semantic: 6
+    direction: 1
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 9500e467e35d4684880037a0762df59b, type: 3}
+  - semantic: 7
+    direction: 2
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 31116f689ea4d374593385937d990c7c, type: 3}
+  - semantic: 7
+    direction: 2
+    intensity: 1
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: e63154bedee9a5f48aaca17e98adc5ce, type: 3}
+  - semantic: 7
+    direction: 3
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: -6313650752802900462, guid: 3f28925e980a3b1499ad08da1b4ef221, type: 3}
+  - semantic: 7
+    direction: 4
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: -7072701719231043848, guid: 32a619b04d843b1469dc3a0df13bc78d, type: 3}
+  - semantic: 8
+    direction: 3
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: d76213e9ae7231c4dbaf2b5d0c34edfc, type: 3}
+  - semantic: 8
+    direction: 4
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: b4491ea68adcdf5488915320b7f9eb43, type: 3}
+  - semantic: 5
+    direction: 0
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 772f29ee37bacbb41a04c5148d93100c, type: 3}
+  - semantic: 5
+    direction: 0
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: d3ba61bedef7c8141a1f7afbdae8dad2, type: 3}
+  - semantic: 5
+    direction: 0
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 2ba79b60b0128c047a2a106aae3134f1, type: 3}
+  - semantic: 3
+    direction: 2
+    intensity: 3
+    stance: 0
+    weight: 1
+    clip: {fileID: 1404342185995519959, guid: 4001e1a018fc1cb41a5ab5e87c4a3d1d, type: 3}
+  - semantic: 3
+    direction: 2
+    intensity: 3
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 97122988e12a9754e841333bdbbe644b, type: 3}
+  - semantic: 9
+    direction: 2
+    intensity: 3
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 9b137246d561dc540b25d5d2e248a02e, type: 3}
+  - semantic: 2
+    direction: 2
+    intensity: 3
+    stance: 0
+    weight: 1
+    clip: {fileID: 2461811748921261868, guid: 89a38ade15d5f8b46b351f3c9d0deb76, type: 3}
+  - semantic: 2
+    direction: 2
+    intensity: 3
+    stance: 0
+    weight: 1
+    clip: {fileID: 1404342185995519959, guid: 4001e1a018fc1cb41a5ab5e87c4a3d1d, type: 3}
+  - semantic: 1
+    direction: 2
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: e191b1e6013333f4f8fcf7db4018a4d2, type: 3}
+  - semantic: 1
+    direction: 2
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 4050334072264406587, guid: cb39cc081e8c25949933de84478f43a8, type: 3}
+  - semantic: 1
+    direction: 2
+    intensity: 2
+    stance: 0
+    weight: 1
+    clip: {fileID: 3094330708855449807, guid: 18afe56f6fdf0b0478209f4b1512c8cc, type: 3}
+  authoredWalkLocomotionSpeed: 1.8977
+  authoredLocomotionSpeed: 3.7954
+  walkRunSwitchWorldSpeed: 2.45

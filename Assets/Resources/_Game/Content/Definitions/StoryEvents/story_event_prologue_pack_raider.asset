@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8469255101477793159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_prologue_pack_raider__cond__00
+  _kind: 3
+  _operandA: story_flag_prologue_intro
+  _operandB: 
+--- !u!114 &-6773560086947908541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_prologue_pack_raider__cond__03
+  _kind: 1
+  _operandA: site_ashen_gate
+  _operandB: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
+  m_Name: story_event_prologue_pack_raider
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEventDefinition
+  _id: story_event_prologue_pack_raider
+  _moment: 3
+  _priority: 180
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: -8469255101477793159}
+  - {fileID: 6528878322575051882}
+  - {fileID: 4392312110336225340}
+  - {fileID: -6773560086947908541}
+  _effects:
+  - {fileID: 7344871380119310353}
+  _presentationKey: cutscene_prologue_pack_raider_meets
+--- !u!114 &4392312110336225340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_prologue_pack_raider__cond__02
+  _kind: 0
+  _operandA: chapter_ashen_gate
+  _operandB: 
+--- !u!114 &6528878322575051882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_prologue_pack_raider__cond__01
+  _kind: 4
+  _operandA: story_flag_prologue_departure
+  _operandB: 
+--- !u!114 &7344871380119310353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_prologue_pack_raider__effect__00
+  _kind: 3
+  _payload: DialogueScene

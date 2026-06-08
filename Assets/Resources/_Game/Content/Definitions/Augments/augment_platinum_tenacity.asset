@@ -64,5 +64,6 @@ MonoBehaviour:
   - StatId: tenacity
     Op: 0
     Value: 0.2
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

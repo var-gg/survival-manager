@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_slayer_utility
   VfxHookId: vfx.skill_slayer_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_slayer_utility
   LearnSource: 0
   EffectFamilyId: bleed_followup
   MutuallyExclusiveGroupId: 

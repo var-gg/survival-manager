@@ -64,5 +64,6 @@ MonoBehaviour:
   - StatId: armor
     Op: 0
     Value: 3
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

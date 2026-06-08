@@ -22,6 +22,7 @@ MonoBehaviour:
   TenacityScale: 0
   AppliesPeriodicDamage: 1
   VfxCueId: vfx.status_burn
+  SfxHookId: sfx.status.burn.apply
   BudgetCard:
     Domain: 7
     Rarity: 0

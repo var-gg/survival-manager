@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_raider_core
   VfxHookId: vfx.skill_raider_core
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_raider_core
   LearnSource: 0
   EffectFamilyId: raider_signature
   MutuallyExclusiveGroupId: 

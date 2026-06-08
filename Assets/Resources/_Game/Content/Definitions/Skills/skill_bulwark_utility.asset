@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_bulwark_utility
   VfxHookId: vfx.skill_bulwark_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_bulwark_utility
   LearnSource: 0
   EffectFamilyId: 
   MutuallyExclusiveGroupId: 

@@ -71,5 +71,6 @@ MonoBehaviour:
   - StatId: mag_power
     Op: 0
     Value: 1.8
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

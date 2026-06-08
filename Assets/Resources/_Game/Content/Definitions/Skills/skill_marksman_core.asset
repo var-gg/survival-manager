@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_marksman_core
   VfxHookId: vfx.skill_marksman_core
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_marksman_core
   LearnSource: 0
   EffectFamilyId: 
   MutuallyExclusiveGroupId: 

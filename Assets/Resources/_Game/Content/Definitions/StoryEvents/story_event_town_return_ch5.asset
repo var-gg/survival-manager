@@ -16,7 +16,7 @@ MonoBehaviour:
   _kind: 3
   _operandA: story_flag_intro_heartforge_gate
   _operandB: 
---- !u!114 &-4607335384927992757
+--- !u!114 &-6306322132157193596
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -66,7 +66,7 @@ MonoBehaviour:
   _conditions:
   - {fileID: -8992089589281280927}
   - {fileID: 1101819413006856543}
-  - {fileID: -4607335384927992757}
+  - {fileID: -6306322132157193596}
   _effects:
   - {fileID: -3260079382126023085}
   - {fileID: 3235610683061021685}

@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_guardian_core
   VfxHookId: vfx.skill_guardian_core
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_guardian_core
   LearnSource: 0
   EffectFamilyId: guard_signature
   MutuallyExclusiveGroupId: 

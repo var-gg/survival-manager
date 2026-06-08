@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_marksman_utility
   VfxHookId: vfx.skill_marksman_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_marksman_utility
   LearnSource: 0
   EffectFamilyId: marksman_pierce
   MutuallyExclusiveGroupId: 

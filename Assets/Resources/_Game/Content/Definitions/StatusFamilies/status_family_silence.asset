@@ -22,6 +22,7 @@ MonoBehaviour:
   TenacityScale: 0.5
   AppliesPeriodicDamage: 0
   VfxCueId: vfx.status_silence
+  SfxHookId: sfx.status.silence.apply
   BudgetCard:
     Domain: 7
     Rarity: 0

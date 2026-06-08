@@ -40,24 +40,24 @@ MonoBehaviour:
   AuthorityLayer: 1
   BudgetCard:
     Domain: 1
-    Rarity: 0
+    Rarity: 1
     PowerBand: 2
-    RoleProfile: 2
+    RoleProfile: -1
     Vector:
       SustainedDamage: 3
       BurstDamage: 4
       Durability: 0
-      Control: 2
-      Mobility: 1
+      Control: 3
+      Mobility: 0
       Support: 0
       CounterCoverage: 0
       Reliability: 2
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 2
-    ConditionClauseCount: 1
+    KeywordCount: 3
+    ConditionClauseCount: 2
     RuleExceptionCount: 0
-    DeclaredThreatPatterns:
+    DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
   ManaCost: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   RecoverySeconds: -1
   PowerBudget: 0
   InterruptRefundScalar: 0.5
-  AiIntents:
+  AiIntents: 
   AiScoreHints:
     BurstBias: 1
     ProtectBias: 0
@@ -79,13 +79,13 @@ MonoBehaviour:
     MaximumTargetHealthRatio: 1
     MinimumDistance: 0
     MaximumDistance: 1.5
-  AnimationHookId:
+  AnimationHookId: 
   IconId: skill_icon_shardblade_sever
   VfxHookId: vfx.skill_shardblade_sever
-  SfxHookId:
+  SfxHookId: sfx.skill.skill_shardblade_sever
   LearnSource: 2
   EffectFamilyId: expansion_v1_duelist
-  MutuallyExclusiveGroupId:
+  MutuallyExclusiveGroupId: 
   RecruitNativeTags: []
   RecruitPlanTags: []
   RecruitScoutTags: []
@@ -123,7 +123,8 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags:
@@ -153,5 +154,5 @@ MonoBehaviour:
     ProcAttributionPolicy: 0
     OwnershipPolicy: 0
     Effects: []
-  CleanseProfileId:
-  legacyDisplayName:
+  CleanseProfileId: 
+  legacyDisplayName: 

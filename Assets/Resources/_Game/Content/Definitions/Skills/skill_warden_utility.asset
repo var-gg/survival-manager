@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_warden_utility
   VfxHookId: vfx.skill_warden_utility
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_warden_utility
   LearnSource: 0
   EffectFamilyId: guard_cleanse
   MutuallyExclusiveGroupId: 

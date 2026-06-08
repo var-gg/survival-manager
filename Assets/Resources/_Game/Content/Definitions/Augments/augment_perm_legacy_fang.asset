@@ -62,5 +62,6 @@ MonoBehaviour:
   - StatId: crit_chance
     Op: 0
     Value: 0.02
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

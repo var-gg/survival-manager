@@ -68,5 +68,6 @@ MonoBehaviour:
   - StatId: attack_range
     Op: 0
     Value: 0.25
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

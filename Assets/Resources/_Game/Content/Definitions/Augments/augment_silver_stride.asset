@@ -64,5 +64,6 @@ MonoBehaviour:
   - StatId: attack_speed
     Op: 0
     Value: 1
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

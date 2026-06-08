@@ -63,5 +63,6 @@ MonoBehaviour:
   - StatId: max_health
     Op: 0
     Value: 2
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_slayer_core
   VfxHookId: vfx.skill_slayer_core
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_slayer_core
   LearnSource: 0
   EffectFamilyId: slayer_signature
   MutuallyExclusiveGroupId: 

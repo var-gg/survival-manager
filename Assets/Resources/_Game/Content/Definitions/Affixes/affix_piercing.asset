@@ -35,20 +35,20 @@ MonoBehaviour:
   BudgetCard:
     Domain: 4
     Rarity: 0
-    PowerBand: 1
+    PowerBand: 2
     RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
+      SustainedDamage: 3
+      BurstDamage: 2
       Durability: 0
       Control: 0
       Mobility: 0
       Support: 0
       CounterCoverage: 0
-      Reliability: 6
+      Reliability: 1
       Economy: 0
       DrawbackCredit: 0
-    KeywordCount: 0
+    KeywordCount: 1
     ConditionClauseCount: 0
     RuleExceptionCount: 0
     DeclaredThreatPatterns: 
@@ -66,6 +66,6 @@ MonoBehaviour:
   Modifiers:
   - StatId: phys_pen
     Op: 0
-    Value: 0.65
+    Value: 0.7
   legacyDisplayName: 
   legacyDescription: 

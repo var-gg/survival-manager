@@ -63,5 +63,6 @@ MonoBehaviour:
   - StatId: heal_power
     Op: 0
     Value: 0.9
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

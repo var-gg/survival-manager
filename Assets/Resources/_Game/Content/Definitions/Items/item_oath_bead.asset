@@ -17,7 +17,7 @@ MonoBehaviour:
   DescriptionKey: content.item.item_oath_bead.desc
   IconId: item_icon_trinket
   SlotType: 2
-  IdentityKind: 1
+  IdentityKind: 0
   ItemFamilyTag: accessory
   WeaponFamilyTag: 
   RarityTier: 2

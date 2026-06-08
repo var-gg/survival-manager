@@ -22,6 +22,7 @@ MonoBehaviour:
   TenacityScale: 0
   AppliesPeriodicDamage: 0
   VfxCueId: vfx.status_wound
+  SfxHookId: sfx.status.wound.apply
   BudgetCard:
     Domain: 7
     Rarity: 0

@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_precision_shot
   VfxHookId: vfx.skill_precision_shot
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_precision_shot
   LearnSource: 0
   EffectFamilyId: 
   MutuallyExclusiveGroupId: 

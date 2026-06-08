@@ -42,23 +42,25 @@ MonoBehaviour:
     Domain: 1
     Rarity: 0
     PowerBand: 1
-    RoleProfile: 4
+    RoleProfile: -1
     Vector:
-      SustainedDamage: 0
-      BurstDamage: 0
+      SustainedDamage: 2
+      BurstDamage: 2
       Durability: 0
-      Control: 4
+      Control: 2
       Mobility: 0
       Support: 0
-      CounterCoverage: 0
-      Reliability: 4
+      CounterCoverage: 1
+      Reliability: 1
       Economy: 0
       DrawbackCredit: 0
     KeywordCount: 2
     ConditionClauseCount: 1
     RuleExceptionCount: 0
-    DeclaredThreatPatterns:
-    DeclaredCounterTools: []
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools:
+    - Tool: 1
+      Strength: 1
     DeclaredFeatureFlags: 0
   ManaCost: 0
   ResourceCost: -1
@@ -68,7 +70,7 @@ MonoBehaviour:
   RecoverySeconds: -1
   PowerBudget: 0
   InterruptRefundScalar: 0.5
-  AiIntents:
+  AiIntents: 
   AiScoreHints:
     BurstBias: 0
     ProtectBias: 0
@@ -79,13 +81,13 @@ MonoBehaviour:
     MaximumTargetHealthRatio: 1
     MinimumDistance: 0
     MaximumDistance: 0
-  AnimationHookId:
+  AnimationHookId: 
   IconId: skill_icon_savant_last_word
   VfxHookId: vfx.skill_savant_last_word
-  SfxHookId:
+  SfxHookId: 
   LearnSource: 2
   EffectFamilyId: expansion_v1_mystic
-  MutuallyExclusiveGroupId:
+  MutuallyExclusiveGroupId: 
   RecruitNativeTags: []
   RecruitPlanTags: []
   RecruitScoutTags: []
@@ -123,7 +125,8 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   RuleModifierTags: []
-  SupportAllowedTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags:
@@ -141,5 +144,5 @@ MonoBehaviour:
     ProcAttributionPolicy: 0
     OwnershipPolicy: 0
     Effects: []
-  CleanseProfileId:
-  legacyDisplayName:
+  CleanseProfileId: 
+  legacyDisplayName: 

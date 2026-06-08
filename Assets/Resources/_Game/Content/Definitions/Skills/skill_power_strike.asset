@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_power_strike
   VfxHookId: vfx.skill_power_strike
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_power_strike
   LearnSource: 0
   EffectFamilyId: 
   MutuallyExclusiveGroupId: 

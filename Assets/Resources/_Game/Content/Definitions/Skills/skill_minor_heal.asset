@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_minor_heal
   VfxHookId: vfx.skill_minor_heal
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_minor_heal
   LearnSource: 0
   EffectFamilyId: minor_heal
   MutuallyExclusiveGroupId: 

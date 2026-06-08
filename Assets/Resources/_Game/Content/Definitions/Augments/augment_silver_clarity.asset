@@ -64,5 +64,6 @@ MonoBehaviour:
   - StatId: resist
     Op: 0
     Value: 1
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

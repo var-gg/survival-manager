@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1654314487459135439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_boss_engage_gate_warden__cond__02
+  _kind: 2
+  _operandA: 4
+  _operandB: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
+  m_Name: story_event_boss_engage_gate_warden
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEventDefinition
+  _id: story_event_boss_engage_gate_warden
+  _moment: 4
+  _priority: 300
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: 8004319472484669123}
+  - {fileID: 2046016607774556310}
+  - {fileID: -1654314487459135439}
+  _effects:
+  - {fileID: 4224800797086823029}
+  _presentationKey: dialogue_scene_gate_warden
+--- !u!114 &2046016607774556310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_boss_engage_gate_warden__cond__01
+  _kind: 1
+  _operandA: site_ashen_gate
+  _operandB: 
+--- !u!114 &4224800797086823029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_boss_engage_gate_warden__effect__00
+  _kind: 3
+  _payload: DialogueScene
+--- !u!114 &8004319472484669123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_boss_engage_gate_warden__cond__00
+  _kind: 0
+  _operandA: chapter_ashen_gate
+  _operandB: 

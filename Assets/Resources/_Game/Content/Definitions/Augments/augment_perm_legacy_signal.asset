@@ -64,5 +64,6 @@ MonoBehaviour:
   - StatId: protect_radius
     Op: 0
     Value: 0.25
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 
