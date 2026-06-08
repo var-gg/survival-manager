@@ -1,0 +1,11 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+.cache/
+*.log
+*.local
+asset-studio-live*.png
+asset-studio-printwindow.png
+asset-studio-narrative*.png
+asset-studio-release*.png

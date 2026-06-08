@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the Survival Asset Studio main window",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}
