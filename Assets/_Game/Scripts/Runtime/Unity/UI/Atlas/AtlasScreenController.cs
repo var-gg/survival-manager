@@ -399,11 +399,6 @@ public sealed class AtlasScreenController : MonoBehaviour
         if (selectedNode.RequiresBattle)
         {
             session.EnsureBattleDeployReady();
-            if (session.BattleDeployHeroIds.Count == 0)
-            {
-                _root.SetBlockingError("배치 가능한 영웅이 없습니다.");
-                return;
-            }
 
             if (!session.PrepareSelectedBattleNodeHandoff())
             {
@@ -418,10 +413,19 @@ public sealed class AtlasScreenController : MonoBehaviour
                 return;
             }
 
-            // 출격 편성 확인 게이트 — 배치/시너지를 보여주고 슬롯 클릭으로 조정 + 출격/취소.
+            // 출격 편성 확인 게이트 — 빈 배치여도 열어 슬롯 클릭으로 영웅을 다시 채워 출격하게 한다
+            // (빈 배치는 게이트의 CanLaunch=false가 출격을 막는다). slot cycle로 배치 조정 + 출격/취소.
             // overlay가 뜨면 이후 warrant/battle 진행은 SortieConfirm 콜백이 잇는다. asset 미배치면 false→직행.
             if (TryShowSortieConfirm())
             {
+                return;
+            }
+
+            // 게이트 asset이 없을 때만 닿는 직행 fallback — 빈 배치는 여기서 막는다
+            // (BuildBattleLoadoutSnapshot이 0 ally면 실패하므로). 게이트가 뜨면 위에서 return되어 안 닿는다.
+            if (session.BattleDeployHeroIds.Count == 0)
+            {
+                _root.SetBlockingError("배치 가능한 영웅이 없습니다.");
                 return;
             }
 
