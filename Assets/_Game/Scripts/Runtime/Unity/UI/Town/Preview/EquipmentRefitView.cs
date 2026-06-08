@@ -106,9 +106,16 @@ public sealed class EquipmentRefitView
         if (_equippedHeroLabel != null)
             _equippedHeroLabel.text = state.EquippedHeroLabel;
         _refitButton?.SetEnabled(state.SelectedItemCanRefit);
+        if (_refitButton != null)
+        {
+            // Refit이 무작위 affix 리롤임을 명시 + 비활성 사유 노출(경고 없이 잔향을 태우던 문제 보완).
+            _refitButton.tooltip = state.SelectedItemCanRefit
+                ? "선택한 장비의 옵션(affix)을 잔향으로 다시 굴립니다 — 결과는 표시된 범위 안에서 무작위입니다."
+                : "재정비할 장비를 먼저 선택하세요.";
+        }
 
         if (state.EchoSprite != null) _echoIcon.style.backgroundImage = new StyleBackground(state.EchoSprite);
-        _refitCostLabel.text = $"재정비 (-{state.RefitCost} 잔향)";
+        _refitCostLabel.text = $"재정비 (-{state.RefitCost} 잔향) · 옵션 무작위 재굴림";
 
         RenderAffixList(state.Affixes);
         RenderPool(state.Pool);
