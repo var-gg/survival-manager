@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_chapter_clear_ruined_crypts_01",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_chapter_clear_ruined_crypts_01",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_chapter_clear_ruined_crypts",
+  "note": "ch3 클리어. 네 lead 첫 회담 wide.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_chapter_clear_ruined_crypts_01/default.png",
+  "prompt": "Wide cinematic cutscene establishing still — a first council in the ruined crypts. Four cloaked lead figures gathered around a low broken stone, seen WIDE and from a distance, the figures as shadowed silhouettes with faces NOT detailed (character portraits are composited separately later). Phosphorescent cyan-green moss glow lights the gathering from below; broken tombs and stone arches recede into violet dark. Mood: a wary first alliance, four shadows meeting in the glow. Phosphor violet-and-cyan color grading, faint glow in deep shadow. Painterly anime fantasy game cutscene, full painted environment, wide establishing composition — the crypt environment dominant with the four small figures gathered at center. No magenta chroma. 16:9 wide. Figures distant and silhouetted — do NOT render detailed faces; no name text, no captions.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

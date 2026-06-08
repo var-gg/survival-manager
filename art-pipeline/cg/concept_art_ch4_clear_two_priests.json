@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_ch4_clear_two_priests",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_ch4_clear_two_priests",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_ch4_clear_two_priests",
+  "note": "ch4 클리어. 거울 앞 두 사제 대치. env still + 포트레잇 overlay(char-heavy, 디테일 시 char 승격 가능).",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_ch4_clear_two_priests/default.png",
+  "prompt": "Cinematic cutscene establishing still — two robed priest figures facing off before a great mirror, faces NOT detailed (seen in three-quarter back or shadowed silhouette; character portraits are composited separately later). On the left, a figure in ivory-and-gold priest robes; on the right, a figure in shadowed violet-grey mirror-faction robes; the two stand in tense opposition before a tall dark mirror set in a hall of pale glass trees. Cold reflective light, the mirror catching a faint doubled glow. Mood: a quiet standoff, two faiths meeting at a mirror. Pale frost blue-white color grading, cold thin light. Painterly anime fantasy game cutscene, full painted environment, cinematic composition with the two figures framing the mirror and the mirror prominent. No magenta chroma. 16:9 wide. Faces turned away or shadowed — do NOT render detailed faces; no name text, no captions.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

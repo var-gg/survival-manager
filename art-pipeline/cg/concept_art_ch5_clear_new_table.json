@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_ch5_clear_new_table",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_ch5_clear_new_table",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_ch5_clear_new_table",
+  "note": "새 테이블 + 빈 의자 둘. 캠페인 마감. 캡션: 탁자에는 네 사람이 앉았다. 빈 의자는 둘이었다. (char-heavy, 디테일 시 char 승격 가능)",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_ch5_clear_new_table/default.png",
+  "prompt": "Cinematic cutscene establishing still — the campaign's closing tableau. A new round wooden table in warm ember light, set for six. Four places hold seated figures shown as warm shadowed silhouettes (faces NOT detailed, character portraits composited separately later); two chairs stand conspicuously empty, pulled slightly back from the table. The two empty chairs are the emotional focus of the composition. Mood: a quiet, bittersweet ending — four sat down, two seats stayed empty. Warm ember amber color grading, soft low light pooling on the table. Painterly anime fantasy game cutscene, full painted environment, intimate composition centered on the table and the two empty chairs. No magenta chroma. 16:9 wide. Seated figures shadowed and faceless — do NOT render detailed faces; no name text, no captions.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
