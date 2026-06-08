@@ -1,3 +1,4 @@
+import { convertFileSrc } from "@tauri-apps/api/core";
 import {
   AlertTriangle,
   BookOpenText,
@@ -5,6 +6,7 @@ import {
   FileText,
   FolderOpen,
   Gamepad2,
+  ImageOff,
   Languages,
   Mic2,
   PackageCheck,
@@ -17,8 +19,14 @@ import {
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { compactPath, formatDate } from "../lib/format";
-import { getNarrativeIndex, openAssetExternal } from "../lib/ipc";
-import type { NarrativeIndex, NarrativeLine, NarrativeSequence, SceneVisual } from "../types";
+import { getNarrativeIndex, openAssetExternal, resolveBackdropImage } from "../lib/ipc";
+import type {
+  NarrativeIndex,
+  NarrativeLine,
+  NarrativeSequence,
+  ResolvedBackdrop,
+  SceneVisual,
+} from "../types";
 import "./NarrativeWorkbench.css";
 
 export function NarrativeWorkbench() {
@@ -570,16 +578,93 @@ function VisualChip({ meta }: { meta: Record<string, unknown> | null }) {
   );
 }
 
+function backdropSourceLabel(source: string | null): string {
+  if (source === "cg") {
+    return "정전 자산";
+  }
+  if (source === "output") {
+    return "raw 후보";
+  }
+  return "";
+}
+
 function VisualSection({ meta }: { meta: Record<string, unknown> | null }) {
   const visual = sceneVisual(meta);
+  const backdrop = visual?.backdrop ?? null;
+  const [resolved, setResolved] = useState<ResolvedBackdrop | null>(null);
+  const [resolving, setResolving] = useState(false);
+
+  useEffect(() => {
+    if (!backdrop) {
+      setResolved(null);
+      setResolving(false);
+      return;
+    }
+    let disposed = false;
+    setResolving(true);
+    resolveBackdropImage(backdrop)
+      .then((next) => {
+        if (!disposed) {
+          setResolved(next);
+        }
+      })
+      .catch(() => {
+        if (!disposed) {
+          setResolved(null);
+        }
+      })
+      .finally(() => {
+        if (!disposed) {
+          setResolving(false);
+        }
+      });
+    return () => {
+      disposed = true;
+    };
+  }, [backdrop]);
+
   if (!visual) {
     return null;
   }
+
+  const openImage = () => {
+    if (resolved?.path) {
+      void openAssetExternal(resolved.path);
+    }
+  };
+
   return (
     <section className="narrative-detail__section">
       <h2>
         <Clapperboard size={15} /> Visual
       </h2>
+      {backdrop ? (
+        <div className="narrative-backdrop">
+          {resolving ? (
+            <div className="narrative-backdrop__placeholder">
+              <RefreshCw className="spin" size={16} />
+              <span>일러 조회 중</span>
+            </div>
+          ) : resolved?.exists && resolved.path ? (
+            <button
+              className="narrative-backdrop__thumb"
+              type="button"
+              onClick={openImage}
+              title="원본 일러 열기"
+            >
+              <img src={convertFileSrc(resolved.path)} alt="" />
+              <span className={`narrative-backdrop__badge narrative-backdrop__badge--${resolved.source ?? "none"}`}>
+                {backdropSourceLabel(resolved.source)}
+              </span>
+            </button>
+          ) : (
+            <div className="narrative-backdrop__placeholder narrative-backdrop__placeholder--missing">
+              <ImageOff size={18} />
+              <span>미생성{resolved?.id ? ` · ${resolved.id}` : ""}</span>
+            </div>
+          )}
+        </div>
+      ) : null}
       <dl>
         <dt>Tier</dt>
         <dd>

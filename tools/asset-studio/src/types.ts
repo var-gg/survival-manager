@@ -120,6 +120,15 @@ export interface NarrativeIndex {
   diagnostics: string[];
 }
 
+export interface ResolvedBackdrop {
+  backdrop: string;
+  mode: string; // "bespoke" | "shared" | "none"
+  id: string;
+  path: string | null;
+  exists: boolean;
+  source: string | null; // "cg" (canonical) | "output" (raw) | null
+}
+
 export interface SceneVisual {
   tier: string; // T0 | T1 | T2 | T3 | T4 | card
   medium: string; // cutscene | dialogue-scene | dialogue-overlay | combat-bark | reward-join | story-card | dialogue

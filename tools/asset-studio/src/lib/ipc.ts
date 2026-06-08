@@ -10,6 +10,7 @@ import type {
   GenerateVoiceRequest,
   ImageInfo,
   NarrativeIndex,
+  ResolvedBackdrop,
 } from "../types";
 
 export async function getConfig(): Promise<AppConfig> {
@@ -46,6 +47,10 @@ export async function openAssetExternal(path: string): Promise<void> {
 
 export async function getNarrativeIndex(): Promise<NarrativeIndex> {
   return invoke<NarrativeIndex>("get_narrative_index");
+}
+
+export async function resolveBackdropImage(backdrop: string): Promise<ResolvedBackdrop> {
+  return invoke<ResolvedBackdrop>("resolve_backdrop_image", { backdrop });
 }
 
 export async function checkEngineHealth(): Promise<EngineHealth[]> {

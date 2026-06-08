@@ -738,7 +738,29 @@ fn derive_structure_key(root: &ScanRoot, relative_path: &str, asset_type: &str) 
     {
         return "characters".to_string();
     }
+    // Narrative illustrations: bespoke story cutscene CGs (concept_art_*) vs reusable
+    // environment backdrops (site_/town_/loc_*). Keyed by path-segment prefix so they
+    // categorize correctly whether canonical (art-pipeline/cg) or raw (art-pipeline/output).
+    if asset_type == "image"
+        && (has_segment_prefix(&lowered, "concept_art") || lowered.contains("cutscene"))
+    {
+        return "cutscene".to_string();
+    }
+    if asset_type == "image"
+        && (has_segment_prefix(&lowered, "site_")
+            || has_segment_prefix(&lowered, "town_")
+            || has_segment_prefix(&lowered, "loc_")
+            || lowered.contains("backdrop"))
+    {
+        return "backgrounds".to_string();
+    }
     root_key.to_string()
+}
+
+/// True when any "/"-separated segment of `path` starts with `prefix`.
+/// Avoids false positives from substrings (e.g. "opposite_" containing "site_").
+fn has_segment_prefix(path: &str, prefix: &str) -> bool {
+    path.split('/').any(|segment| segment.starts_with(prefix))
 }
 
 fn structure_label(key: &str) -> &'static str {
@@ -746,6 +768,8 @@ fn structure_label(key: &str) -> &'static str {
         "selected" => "Selected",
         "runtime" => "Runtime",
         "characters" => "Characters",
+        "cutscene" => "Cutscene CG",
+        "backgrounds" => "Backgrounds",
         "icons" => "Icons",
         "ui" => "UI",
         "ai" => "AI Results",

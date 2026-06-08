@@ -1,5 +1,6 @@
 mod asset_index;
 mod assets;
+mod backdrop;
 mod commands;
 mod config;
 mod engines;
@@ -20,6 +21,7 @@ pub fn run() {
             commands::get_image_info,
             commands::open_asset_external,
             commands::get_narrative_index,
+            commands::resolve_backdrop_image,
             commands::check_engine_health,
             commands::start_engine,
             commands::generate_voice,

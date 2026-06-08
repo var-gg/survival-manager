@@ -9,6 +9,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use crate::assets::{self, AssetItem, AssetScanOptions};
+use crate::backdrop::{self, ResolvedBackdrop};
 use crate::config::{load_config, AppConfig};
 use crate::engines::{self, EngineHealth, EngineStartResult};
 use crate::narrative::{self, NarrativeIndex};
@@ -122,6 +123,12 @@ pub fn open_asset_external(path: String) -> Result<(), String> {
 pub fn get_narrative_index() -> Result<NarrativeIndex, String> {
     let config = load_config()?;
     narrative::load(&config)
+}
+
+#[tauri::command]
+pub fn resolve_backdrop_image(backdrop: String) -> Result<ResolvedBackdrop, String> {
+    let config = load_config()?;
+    Ok(backdrop::resolve(&config, &backdrop))
 }
 
 #[tauri::command]
