@@ -155,8 +155,7 @@ public static class EngagementSlotService
                 continue;
             }
 
-            var angleRadians = (startDegrees + (stepDegrees * candidateIndex)) * (MathF.PI / 180f);
-            var candidateSideSign = MathF.Sin(angleRadians) >= 0f ? 1 : -1;
+            var candidateSideSign = ResolveSlotSideSign(startDegrees + (stepDegrees * candidateIndex));
             var handScore = candidateSideSign == handSign ? handWeight : -handWeight;
             var baseScore = -MathF.Abs(candidateIndex - preferredSlotIndex) * 0.035f;
             var score = baseScore + handScore;
@@ -174,12 +173,21 @@ public static class EngagementSlotService
 
         if (!found)
         {
-            var angleRadians = (startDegrees + (stepDegrees * preferredSlotIndex)) * (MathF.PI / 180f);
-            var candidateSideSign = MathF.Sin(angleRadians) >= 0f ? 1 : -1;
+            var candidateSideSign = ResolveSlotSideSign(startDegrees + (stepDegrees * preferredSlotIndex));
             bestPreferenceHit = handSign == 0 || candidateSideSign == handSign;
         }
 
         return (bestSlotIndex, bestPosition, bestPreferenceHit, handSign != 0);
+    }
+
+    // sin(angle°) ≥ 0 의 부호(상/하 반각)를 transcendental 없이 판정 — angle을 [0,360)로 정규화 후 ≤180이면 +.
+    // MathF.Sin(cross-platform 분기 위험)을 슬롯 handedness 선택에서 제거(Phase 3.3 잔여). Floor·비교는 portable.
+    // 종전 MathF.Sin은 180° 근방에서 float π 오차로 미세 음수를 줘 부호가 갈렸으나, 여기서는 수학적으로 정확한
+    // 반각 부호를 쓴다(결정적·플랫폼 무관). 슬롯 각이 정확히 180°인 경우 부호가 종전과 달라질 수 있다(의도된 drift).
+    private static int ResolveSlotSideSign(float angleDegrees)
+    {
+        var normalized = angleDegrees - (360f * MathF.Floor(angleDegrees / 360f));
+        return normalized <= 180f ? 1 : -1;
     }
 
     private static CombatVector2 BuildSlotPosition(UnitSnapshot target, float startDegrees, float stepDegrees, int slotIndex, float radius)
