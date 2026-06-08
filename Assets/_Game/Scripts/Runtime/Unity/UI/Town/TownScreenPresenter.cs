@@ -147,7 +147,10 @@ public sealed class TownScreenPresenter
     public void OpenSettings()
     {
         if (_settingsOpener != null) _settingsOpener.Invoke();
-        else Refresh("Settings — V1 모델 미존재 (audit §4.1 P2, 후속 wire)");
+        // 별도 설정 패널(오디오 등)은 아직 없다. 유일한 설정인 언어 전환은 상단 KO/EN 토글로 이미 가능 —
+        // dev 메모를 노출하던 자리를 플레이어가 이해할 honest 안내로 바꾼다(silent/jargon dead button 제거).
+        // sibling placeholder 메시지(OpenTheater/OnNpcClick)와 같이 하드코딩 status 문자열 패턴을 따른다.
+        else Refresh("설정은 준비 중입니다. 언어 전환은 상단의 한국어 / English 버튼을 사용하세요.");
     }
 
     public void OpenTheater()
