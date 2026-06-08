@@ -1,0 +1,32 @@
+{
+  "_doc": "Narrative 음악 배급 맵 (narrative-visual-map.json의 청각 짝). wiki_narrative_extract.py가 읽어 scene.meta.audio로 emit → seed → asset-studio. grammar: pindoc://analysis-narrative-music-direction. register/mood/cue는 chapter·scene_id에서 추론(scene-mood 재사용), overrides가 bespoke 정점·leitmotif 결정. register: politics-weight | growth-emotion | warmth-humor. channel: Bgm | Ambience.",
+  "defaults": {
+    "chapterMood": {
+      "ch1": "cold-sparse (얇은 현·바람·재)",
+      "ch2": "drowned-hollow (잠긴 공명·빈 종)",
+      "ch3": "memory-choral (기억의 합창·인광)",
+      "ch4": "crystalline-fractured (결정질·차가운 광신)",
+      "ch5": "lava-tension (용암 긴장 → 결정의 정적)"
+    },
+    "channel": "Bgm"
+  },
+  "registers": {
+    "politics-weight": "삼국지 — 오케스트라·긴장·무게. site/대치/보스. 만화 악당 금지",
+    "growth-emotion": "십이국기 — 멜로디·친밀·leitmotif. 캐릭터 turn/회상/결정",
+    "warmth-humor": "JRPG — 따뜻·가벼움. 거점/야영지/Atlas/Town/TC. 연결 조직"
+  },
+  "overrides": {
+    "cutscene_prologue_first_city_silhouette": { "register": "politics-weight", "mood": "cold-vast-reveal", "cue_id": "bgm_main_theme", "leitmotif": "main", "reuse": "bespoke", "note": "오프닝 — 메인테마 첫 statement, 영웅적 아님" },
+    "cutscene_ch5_intro_canyon_first_city": { "register": "politics-weight", "mood": "approaching-dread", "cue_id": "bgm_ch5_intro", "leitmotif": "main", "reuse": "bespoke", "note": "다가가는 공포. 메인테마 변형" },
+    "dialogue_town_pre_ch5_empty_table": { "register": "politics-weight", "mood": "tense-stillness", "cue_id": "bgm_ch5_empty_table", "reuse": "bespoke", "note": "결전 전 정적 — town이지만 유머 아님" },
+    "dialogue_scene_crypts_massacre_record": { "register": "politics-weight", "mood": "near-silent-witness", "cue_id": "bgm_ch3_massacre", "reuse": "bespoke", "note": "학살 목격 — 거의 무음, 멈춰 세움" },
+    "dialogue_scene_massacre_record": { "register": "politics-weight", "mood": "near-silent-witness", "cue_id": "bgm_ch5_massacre", "reuse": "bespoke", "note": "네 세력 학살 기록 — 거의 무음, 정점" },
+    "dialogue_scene_baekgyu_first_encounter": { "register": "politics-weight", "mood": "calm-cold-pressure", "cue_id": "bgm_baekgyu", "leitmotif": "faction_baekgyu", "reuse": "bespoke", "note": "백규 권유 — 분노 안 함, 긴장+연민" },
+    "dialogue_scene_final_record_decision": { "register": "growth-emotion", "mood": "weighted-quiet-resolve", "cue_id": "bgm_ch5_final", "leitmotif": "main", "reuse": "bespoke", "note": "선택된 무게의 정적 — 승리 팡파르 아님, 음소거도 아님" },
+    "cutscene_ch5_clear_new_table": { "register": "growth-emotion", "mood": "somber-landing", "cue_id": "bgm_ch5_clear", "leitmotif": "main", "reuse": "bespoke", "note": "세계 평화 아닌 미완의 착지" },
+    "cutscene_dawn_priest_memorial_dawn_prayer": { "register": "growth-emotion", "mood": "intimate-fragile", "cue_id": "bgm_memorial_dawn_priest", "leitmotif": "lead_dawn_priest", "reuse": "bespoke", "note": "단린 메모리얼 — 신앙 균열→자기 것" },
+    "cutscene_pack_raider_memorial_black_paint_at_camp": { "register": "growth-emotion", "mood": "intimate-grief", "cue_id": "bgm_memorial_pack_raider", "leitmotif": "lead_pack_raider", "reuse": "bespoke", "note": "이빨바람 메모리얼 — 형제 비용" },
+    "cutscene_grave_hexer_memorial_new_bell_in_empty_seat": { "register": "growth-emotion", "mood": "intimate-bittersweet", "cue_id": "bgm_memorial_grave_hexer", "leitmotif": "lead_grave_hexer", "reuse": "bespoke", "note": "묵향 메모리얼 — 빈 자리의 새 종" },
+    "cutscene_echo_savant_memorial_external_witness_beyond_door": { "register": "growth-emotion", "mood": "intimate-quiet", "cue_id": "bgm_memorial_echo_savant", "leitmotif": "lead_echo_savant", "reuse": "bespoke", "note": "공한 메모리얼 — 문 밖 증언자" }
+  }
+}

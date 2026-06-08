@@ -39,6 +39,7 @@ RAW_WIKI_DIR = REPO_ROOT / "tools" / "raw-wiki"
 AUTHORING_MAP = REPO_ROOT / "tools" / "narrative-authoring-map.json"
 EVENT_MAP = REPO_ROOT / "tools" / "narrative-event-map.json"
 VISUAL_MAP = REPO_ROOT / "tools" / "narrative-visual-map.json"
+AUDIO_MAP = REPO_ROOT / "tools" / "narrative-audio-map.json"
 OUTPUT_DIR = REPO_ROOT / "Logs" / "Narrative"
 OUTPUT_FILE = OUTPUT_DIR / "narrative-seed-wiki.json"
 
@@ -689,7 +690,74 @@ def compute_visual(scene: WikiScene, vmap: dict, inherited_site: str = "") -> di
     return visual
 
 
-def build_seed(scenes: dict[str, WikiScene], visual_map: Optional[dict] = None) -> dict:
+def load_audio_map() -> dict:
+    """narrative-audio-map.json (defaults + per-scene overrides)을 읽는다."""
+    if not AUDIO_MAP.exists():
+        return {}
+    with open(AUDIO_MAP, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def detect_register(scene: WikiScene) -> str:
+    """beat 종류에서 음악 register 추론. 연결 조직(town/atlas/TC)은 warmth-humor,
+    그 외 기본 politics-weight. growth-emotion 등 예외는 overrides가 결정."""
+    sid = scene.scene_id
+    slug = scene.artifact_slug or ""
+    if "town" in sid or "town" in slug or "atlas" in sid or "_tc" in sid:
+        return "warmth-humor"
+    return "politics-weight"
+
+
+def compute_audio(scene: WikiScene, amap: dict) -> dict:
+    """scene별 음악 계획을 산출한다. register/mood/cue 추론 위에 overrides를 덮는다.
+
+    scene.meta["audio"] = {register, mood, cue_id, leitmotif, channel, reuse, curated}.
+    cue_id는 scene-mood 재사용(chapter/town/boss 루프), bespoke는 overrides."""
+    defaults = amap.get("defaults", {})
+    chapter_mood = defaults.get("chapterMood", {})
+    channel = defaults.get("channel", "Bgm")
+
+    sid = scene.scene_id
+    slug = scene.artifact_slug or ""
+    chapter = chapter_of(slug)
+    register = detect_register(scene)
+    mood = chapter_mood.get(chapter, "neutral")
+
+    if "town" in sid or "town" in slug:
+        cue = "bgm_town_ashglen"
+    elif "atlas" in sid:
+        cue = "bgm_atlas"
+    elif any(k in sid for k in ("boss_bark", "boss_engage", "boss_break")):
+        cue = f"bgm_{chapter or 'x'}_boss"
+    elif chapter:
+        cue = f"bgm_{chapter}_field"
+    else:
+        cue = "bgm_event_field"
+
+    audio = {
+        "register": register,
+        "mood": mood,
+        "cue_id": cue,
+        "leitmotif": None,
+        "channel": channel,
+        "reuse": "shared",
+        "curated": False,
+    }
+
+    ov = amap.get("overrides", {}).get(sid)
+    if ov:
+        for key, value in ov.items():
+            if key == "note":
+                continue
+            audio[key] = value
+        audio["curated"] = True
+        if ov.get("note"):
+            audio["note"] = ov["note"]
+    return audio
+
+
+def build_seed(scenes: dict[str, WikiScene], visual_map: Optional[dict] = None,
+               audio_map: Optional[dict] = None) -> dict:
     """Emit narrative-seed-wiki.json.
 
     Schema-compatible with NarrativeSeedImporter.cs (NarrativeSeedManifest):
@@ -706,6 +774,7 @@ def build_seed(scenes: dict[str, WikiScene], visual_map: Optional[dict] = None) 
     line_index_map = {}  # scene_id -> [line_id, ...] in order
 
     visual_map = visual_map or {}
+    audio_map = audio_map or {}
     site_list = visual_map.get("defaults", {}).get("sites")
     prev_slug = None
     current_site = ""
@@ -719,6 +788,7 @@ def build_seed(scenes: dict[str, WikiScene], visual_map: Optional[dict] = None) 
         if own_site:
             current_site = own_site
         scene.meta["visual"] = compute_visual(scene, visual_map, inherited_site=current_site)
+        scene.meta["audio"] = compute_audio(scene, audio_map)
         # 분기 평탄화: 첫 분기만 정본으로 채택한다. 선택지 미지원 상태에서
         # branch별 lineIndex(3a/3b/3c → 3) 충돌로 textKey가 겹쳐, 같은 줄이
         # 화자만 바뀐 채 반복 재생되던 문제를 제거한다.
@@ -812,7 +882,7 @@ def main() -> int:
     for md in md_files:
         parser.parse_file(md)
 
-    seed = build_seed(parser.scenes, load_visual_map())
+    seed = build_seed(parser.scenes, load_visual_map(), load_audio_map())
     sequence_ids = {seq["sequenceId"] for seq in seed["dialogueSequences"]}
     seed["storyEvents"] = build_story_events(
         load_event_map(), sequence_ids, parser.diagnostics)
