@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_ch5_massacre_record",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_ch5_massacre_record",
+  "engine": "chatgpt-image",
+  "kind": "prop",
+  "subjects": [],
+  "tier": "T3",
+  "motion": "kenburns",
+  "scene_id": "dialogue_scene_massacre_record",
+  "note": "인장/칼/두루마리/거울 tableau. 도덕적 정점 = 멈춰 세우는 전용 일러.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_ch5_massacre_record/default.png",
+  "prompt": "A cinematic still-life tableau — NO characters in frame, objects only (no people, no faces, no hands) — laid out as the discovered record of the First City massacre. On a worn stone-and-wood surface, four objects are arranged as evidence and reckoning: an official wax seal / signet stamp; a bared knife or short sword laid flat; an unrolled scroll or ledger covered in dense writing; and a small upright mirror reflecting a sliver of the scene back. The four objects composed as a moral reckoning, the stop-and-reckon weight of proof. Atmospheric depth, dramatic low-key light raking across the objects, fine dust in the air. Mood: grim, hushed, the held weight of a moral apex — proof of what was done. Chapter-5 ember color grading: warm amber key light, deep shadow, embered low light. Painterly anime fantasy game cutscene, full painted environment, close intimate tableau composition, the objects filling the frame. No magenta chroma. 16:9 wide. Do NOT add people, faces, hands, or named characters.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

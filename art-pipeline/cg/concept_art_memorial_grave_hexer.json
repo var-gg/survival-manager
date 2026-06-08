@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_memorial_grave_hexer",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_memorial_grave_hexer",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_grave_hexer"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_grave_hexer_memorial_new_bell_in_empty_seat",
+  "note": "묵향 메모리얼 — 빈 자리의 새 종. 단독 캐릭터 정점.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_memorial_grave_hexer/default.png",
+  "prompt": "Single-figure cinematic memorial scene — a quiet narrative moment within an environment, NOT a splash pose. Subject: Grave Hexer (묵향), a composed female memory keeper with a faint dry half-smile, kneeling beside an empty seat on which a single small new bell rests. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): ash-bone hair, pale warm skin, warm amber eyes; a bone-grey ritual robe with a muted violet waist sash and a small jade-green signal accent; her slender ritual staff with a faint jade accent is set down beside her, at rest. KEY GESTURE: her fingers rest near a small new hand-bell placed on the empty seat — a new bell hung for the empty place, quiet remembrance and succession. Environment: a still, dim interior with one empty wooden seat, soft low light, the little bell catching a faint jade glint. Mood: low, wry-tender, reverent. Muted bone-and-jade color grading, warm shadow. Painterly anime fantasy cutscene, single figure inside a painted environment, cinematic medium framing. No magenta chroma, full painted environment. 16:9 wide. Do NOT add a black necromancer robe, skull motifs, a scythe, a shield, hood, or extra props beyond the single bell; do NOT change the outfit or hair from the refs.",
+  "refs": [
+    "hero_grave_hexer:portrait_full",
+    "hero_grave_hexer:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

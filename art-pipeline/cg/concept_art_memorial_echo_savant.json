@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_memorial_echo_savant",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_memorial_echo_savant",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_echo_savant"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_echo_savant_memorial_external_witness_beyond_door",
+  "note": "공한 메모리얼 — 문 밖 외부 증언자. 단독 캐릭터 정점.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_memorial_echo_savant/default.png",
+  "prompt": "Single-figure cinematic memorial scene — a quiet narrative moment within an environment, NOT a splash pose. Subject: Echo Savant (공한), a young male ritual archer and quiet outside observer, standing just beyond an open doorway, half-turned to look back through it — the external witness who stayed outside the door. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): smoky violet short tousled hair, amber eyes, pale cool skin; a smoky violet-grey hooded cowl and layered rogue-ritual coat with pale lavender trim; a pale lavender-white ritual sash at the waist with a faint cyan accent; slim dark-violet trousers. His recurve prism ritual bow with cool cyan accents is held low at his side, NOT drawn. KEY MOMENT: he stands at the far threshold of an open door, the one who remained outside to witness — the campaign's quiet observer, attentive but unmoved. Environment: a dim stone threshold, an open doorway with cool pale light spilling through, the witness in the liminal space just beyond it. Mood: still, watchful, restrained — a witness, not a mourner. Cool violet-grey color grading with a faint cyan key light. Painterly anime fantasy cutscene, single figure inside a painted environment, cinematic medium framing. No magenta chroma, full painted environment. 16:9 wide. Do NOT add a shield, a second weapon, halos, large emblems, tattoos, or extra props; do NOT change the outfit or hair from the refs.",
+  "refs": [
+    "hero_echo_savant:portrait_full",
+    "hero_echo_savant:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
