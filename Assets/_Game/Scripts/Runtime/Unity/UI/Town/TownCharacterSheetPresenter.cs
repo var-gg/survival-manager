@@ -49,6 +49,8 @@ public sealed class TownCharacterSheetPresenter
     public void Initialize()
     {
         _view.Bind(this);
+        // 기본 잠금 — BindActionBar 전(또는 미호출 시) 해고·재훈련이 dead 상태로 활성 노출되지 않게 한다.
+        _view.SetActionAvailability(_dismissHandler != null, _retrainHandler != null);
     }
 
     /// <summary>wave-50 P2 action bar — cross-presenter Open과 service wire를 controller에서 주입.</summary>
@@ -62,6 +64,8 @@ public sealed class TownCharacterSheetPresenter
         _refitOpener = refitOpener;
         _dismissHandler = dismissHandler;
         _retrainHandler = retrainHandler;
+        // 핸들러 주입 결과를 버튼 활성/잠금에 반영 — wire되면 활성, 아니면 "(준비 중)"로 정직 잠금.
+        _view.SetActionAvailability(_dismissHandler != null, _retrainHandler != null);
     }
 
     public void OnDismissClicked()

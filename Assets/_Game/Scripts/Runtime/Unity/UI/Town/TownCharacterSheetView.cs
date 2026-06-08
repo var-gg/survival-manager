@@ -97,6 +97,23 @@ public sealed class TownCharacterSheetView
         if (_refitButton != null) _refitButton.clicked += presenter.OnRefitClicked;
     }
 
+    /// <summary>해고·재훈련 service가 wire되지 않은 동안 버튼을 정직하게 잠근다 — 비용/환급을 보여주며
+    /// 눌리는 척하다 무반응하던 silent dead button을 방지. 후속 wave가 BindActionBar로 핸들러를
+    /// 주입하면(wired=true) 자동으로 다시 활성화된다.</summary>
+    public void SetActionAvailability(bool dismissWired, bool retrainWired)
+    {
+        ApplyActionLock(_dismissButton, dismissWired, "해고");
+        ApplyActionLock(_retrainButton, retrainWired, "재훈련");
+    }
+
+    private static void ApplyActionLock(Button? button, bool wired, string baseLabel)
+    {
+        if (button == null) return;
+        button.SetEnabled(wired);
+        button.text = wired ? baseLabel : $"{baseLabel} (준비 중)";
+        button.tooltip = wired ? string.Empty : $"{baseLabel} 기능은 아직 준비 중입니다.";
+    }
+
     public void Open()
     {
         _modalRoot.style.display = DisplayStyle.Flex;
