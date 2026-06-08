@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_empty_chair_intro",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_empty_chair_intro",
+  "engine": "chatgpt-image",
+  "kind": "prop",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_event_empty_chair_intro",
+  "note": "회조 외전 인트로 — 빈 의자 모티프(오브젝트 중심). 중간 대화는 포트레잇.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_empty_chair_intro/default.png",
+  "prompt": "A cinematic still-life tableau — NO characters, objects only (no people, no faces, no hands) — a single empty wooden chair as a quiet motif, standing alone in a still dim interior, a folded cloak left over its back, the object centered and unmistakable — the empty-chair theme. muted neutral color grading, low quiet light. Painterly anime fantasy game cutscene, full painted environment, close intimate tableau composition, the objects filling the frame, dramatic low-key raking light. No magenta chroma. 16:9 wide. Do NOT add people, faces, hands, or named characters.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

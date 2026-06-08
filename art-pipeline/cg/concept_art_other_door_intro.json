@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_other_door_intro",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_other_door_intro",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_event_other_door_intro",
+  "note": "결사 외전 인트로 — 다른 문 threshold(환경). 중간 대화는 포트레잇.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_other_door_intro/default.png",
+  "prompt": "Wide cinematic establishing shot — a single closed door standing apart as a threshold — 'the other door' — set in a bare wall with pale cold light leaking from its seams, an environmental threshold motif, no one present. cool liminal color grading, a single source of pale light beyond a threshold. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
