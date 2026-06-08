@@ -112,17 +112,15 @@ public sealed class SortieConfirmPresenter
             var synergyId = LaunchCoreRosterBaselineCatalog.BuildSynergyId(group.Key);
             var (minor, major) = _baselineCatalog.ResolveSynergyThresholds(synergyId, isClassFamily);
             var count = group.Count();
-            if (count < minor)
-            {
-                continue; // breakpoint 미달은 비활성 — 활성 시너지만 칩으로 노출한다.
-            }
-
+            // breakpoint 미달(count<minor)도 회색 칩으로 노출 — "한 명만 더 모으면 켜진다"를 가르친다(수집 동기).
+            // 활성 여부는 IsActive로 내려 View가 회색/강조를 구분한다.
             chips.Add(new SortieSynergyChipViewState(
                 _synergyName(synergyId),
                 count,
                 minor,
                 major,
-                count >= major));
+                MajorReached: count >= major,
+                IsActive: count >= minor));
         }
     }
 }

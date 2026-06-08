@@ -30,10 +30,12 @@ public sealed record SortieDeploySlotViewState(
     string ArchetypeName,
     bool IsEmpty);
 
-/// <summary>활성 시너지 칩 — family 이름 + 현재 인원수 + minor/major breakpoint + major 도달 여부.</summary>
+/// <summary>시너지 칩 — family 이름 + 현재 인원수 + minor/major breakpoint + major 도달 여부 + 활성 여부.
+/// IsActive=false(count&lt;minor)는 회색 칩으로 "한 명만 더 모으면 켜진다"를 보여주는 교육용 노출이다.</summary>
 public sealed record SortieSynergyChipViewState(
     string FamilyName,
     int Count,
     int Minor,
     int Major,
-    bool MajorReached);
+    bool MajorReached,
+    bool IsActive);

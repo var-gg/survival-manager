@@ -104,9 +104,14 @@ public sealed class SortieConfirmView
 
         foreach (var chip in state.SynergyChips)
         {
-            var element = new Label($"{chip.FamilyName} {chip.Count} ({chip.Minor}/{chip.Major})");
+            // 활성 칩은 "{family} {count} ({minor}/{major})", 미달 칩은 "한 명만 더 모으면" 신호를 덧붙인다.
+            var label = chip.IsActive
+                ? $"{chip.FamilyName} {chip.Count} ({chip.Minor}/{chip.Major})"
+                : $"{chip.FamilyName} {chip.Count}/{chip.Minor} · {chip.Minor - chip.Count}명 더";
+            var element = new Label(label);
             element.AddToClassList("sortie-synergy-chip");
             element.EnableInClassList("sortie-synergy-chip--major", chip.MajorReached);
+            element.EnableInClassList("sortie-synergy-chip--inactive", !chip.IsActive);
             _synergyChips.Add(element);
         }
     }

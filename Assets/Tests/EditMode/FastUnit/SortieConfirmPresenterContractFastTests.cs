@@ -28,7 +28,7 @@ public sealed class SortieConfirmPresenterContractFastTests
     };
 
     [Test]
-    public void BuildState_AggregatesDeployedSynergies_ExcludesBelowBreakpoint_MarksMajor()
+    public void BuildState_ShowsAllSynergies_MarksActiveInactiveAndMajor()
     {
         var (session, catalog) = CreateSessionAndCatalog(
             CreateHero("hero-1", "선봉 하나", race: "human", classId: "vanguard"),
@@ -51,21 +51,27 @@ public sealed class SortieConfirmPresenterContractFastTests
         Assert.That(state.CanLaunch, Is.True, "1명 이상 배치면 출격 가능.");
 
         var chips = state.SynergyChips;
-        Assert.That(chips.All(chip => chip.Count >= chip.Minor), Is.True,
-            "활성 칩은 모두 minor breakpoint 이상이다(미달 family는 노출되지 않는다).");
+        Assert.That(chips.All(chip => chip.IsActive == (chip.Count >= chip.Minor)), Is.True,
+            "IsActive는 count>=minor와 정확히 일치한다(활성/비활성 분류 일관).");
 
         var human = chips.SingleOrDefault(chip => chip.FamilyName == SynergyName("human"));
-        Assert.That(human, Is.Not.Null, "human 4명 → race 시너지 활성.");
+        Assert.That(human, Is.Not.Null, "human 4명 → race 시너지 칩 노출.");
         Assert.That(human!.Count, Is.EqualTo(4));
+        Assert.That(human.IsActive, Is.True, "human 4명은 race minor(2) 이상 → 활성.");
         Assert.That(human.MajorReached, Is.True, "human 4명은 race major(4)를 채운다.");
 
         var vanguard = chips.SingleOrDefault(chip => chip.FamilyName == SynergyName("vanguard"));
-        Assert.That(vanguard, Is.Not.Null, "vanguard 3명 → class 시너지 활성.");
+        Assert.That(vanguard, Is.Not.Null, "vanguard 3명 → class 시너지 칩 노출.");
         Assert.That(vanguard!.Count, Is.EqualTo(3));
+        Assert.That(vanguard.IsActive, Is.True, "vanguard 3명은 class minor(2) 이상 → 활성.");
         Assert.That(vanguard.MajorReached, Is.True, "vanguard 3명은 class major(3)를 채운다.");
 
-        Assert.That(chips.Any(chip => chip.FamilyName == SynergyName("ranger")), Is.False,
-            "ranger 1명은 class minor(2) 미달 → 칩으로 노출되지 않는다.");
+        // 미달 family도 회색(비활성) 칩으로 노출 — "한 명만 더 모으면 켜진다" 교육(더 이상 제외하지 않음).
+        var ranger = chips.SingleOrDefault(chip => chip.FamilyName == SynergyName("ranger"));
+        Assert.That(ranger, Is.Not.Null, "ranger 1명도 비활성 칩으로 노출된다.");
+        Assert.That(ranger!.Count, Is.EqualTo(1));
+        Assert.That(ranger.IsActive, Is.False, "ranger 1명은 class minor(2) 미달 → 비활성.");
+        Assert.That(ranger.MajorReached, Is.False);
     }
 
     [Test]
