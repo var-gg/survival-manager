@@ -630,6 +630,7 @@ def compute_visual(scene: WikiScene, vmap: dict, inherited_site: str = "") -> di
     chapter_lut = defaults.get("chapterLut", {})
     tier_motion = defaults.get("tierMotion", {})
     town_backdrop = defaults.get("townBackdrop", "shared:town_ashglen")
+    slug_backdrop = defaults.get("slugBackdrop", {})
     sites = defaults.get("sites", _SITES)
 
     medium = detect_medium(scene.meta.get("연출", ""))
@@ -642,12 +643,18 @@ def compute_visual(scene: WikiScene, vmap: dict, inherited_site: str = "") -> di
 
     backdrop = None
     if tier not in ("T0", "card"):
-        if "town" in sid or "town" in (scene.artifact_slug or ""):
+        slug = scene.artifact_slug or ""
+        if "town" in sid or "town" in slug:
             backdrop = town_backdrop
         else:
-            site = detect_site(scene, sites) or inherited_site
-            if site:
-                backdrop = f"shared:site_{site}"
+            # slug 기반 story-location 배경(전투 site 아닌 반복 장소, 예: 본 대성당)
+            loc = next((bd for key, bd in slug_backdrop.items() if key in slug), "")
+            if loc:
+                backdrop = f"shared:{loc}"
+            else:
+                site = detect_site(scene, sites) or inherited_site
+                if site:
+                    backdrop = f"shared:site_{site}"
 
     visual = {
         "tier": tier,
