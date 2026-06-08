@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_prologue_letter",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_prologue_letter",
+  "engine": "chatgpt-image",
+  "kind": "prop",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_prologue_letter_from_council",
+  "note": "프롤로그 — 집정관 편지 문서 close-up(오브젝트, 가벼운 bespoke).",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_prologue_letter/default.png",
+  "prompt": "A cinematic still-life tableau — NO characters, objects only (no people, no faces, no hands) — a single official summons letter from the council — an opened parchment with a broken red wax seal and a hanging cord, laid alone on a worn wooden desk, a quill and a guttering candle beside it. muted neutral color grading, low quiet light. Painterly anime fantasy game cutscene, full painted environment, close intimate tableau composition, the objects filling the frame, dramatic low-key raking light. No magenta chroma. 16:9 wide. Do NOT add people, faces, hands, or named characters.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

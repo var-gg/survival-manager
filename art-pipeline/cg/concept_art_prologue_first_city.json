@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_prologue_first_city",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_prologue_first_city",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T4",
+  "motion": "video",
+  "scene_id": "cutscene_prologue_first_city_silhouette",
+  "note": "게임 오프닝 첫 도시 silhouette — 환경 wide, 인물 close-up 금지(T4 규칙).",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_prologue_first_city/default.png",
+  "prompt": "Wide cinematic establishing shot — the distant silhouette of a great lost city on the far horizon at dusk, seen from very far away across a bleak land — the game's opening reveal, environment wide, the city tiny and monumental on the skyline. desaturated cold ash-grey color grading, overcast diffuse light. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

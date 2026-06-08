@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_prologue_arrival_gate",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_prologue_arrival_gate",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_prologue_arrival_at_gate",
+  "note": "변방문 도착. 프롤로그 마감 key art. env still + 포트레잇 overlay.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_prologue_arrival_gate/default.png",
+  "prompt": "Wide cinematic establishing shot — arrival at the great borderland frontier gate, the towering weathered stone gate looming over a travel-worn approach road, ash drifting — the threshold of crossing into the frontier. desaturated cold ash-grey color grading, overcast diffuse light. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "concept_art_chapter_intro_sunken_bastion_01",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_chapter_intro_sunken_bastion_01",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_chapter_intro_sunken_bastion",
+  "note": "ch2 인트로. 침몰한 보루 + 새벽 안개.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_chapter_intro_sunken_bastion_01/default.png",
+  "prompt": "Wide cinematic establishing shot — a half-sunken stone fortress bastion rising out of flooded marsh ground in heavy dawn mist, broken battlements reflected in still grey water. cold teal-and-slate color grading, damp dawn light. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
