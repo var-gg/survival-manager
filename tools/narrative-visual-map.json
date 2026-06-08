@@ -1,5 +1,5 @@
 {
-  "_doc": "Narrative 비주얼 비트 맵. scene별 매체(T0~T4)/배경/모션/색보정 배급. wiki_narrative_extract.py가 읽어 scene.meta.visual로 emit → seed → asset-studio. grammar: pindoc://analysis-narrative-visual-beat-map. medium/chapter는 연출 토큰에서 추론하고, overrides가 전용(bespoke) 배급을 덮는다. backdrop: null | shared:{bg_id} | bespoke:{cut_id}.",
+  "_doc": "Narrative 비주얼 비트 맵. scene별 매체(T0~T4)/배경/모션/색보정 배급. wiki_narrative_extract.py가 읽어 scene.meta.visual로 emit → seed → asset-studio. grammar: pindoc://analysis-narrative-visual-beat-map. medium/chapter/site는 연출 토큰·artifact_slug·scene_id에서 추론(공용 배경 자동 재사용), overrides는 bespoke/예외만 결정. backdrop: null | shared:{id} | bespoke:{id}. id 규약: site=site_<name>(battle-map 갤러리/art-pipeline output), 챕터프레임=concept_art_chapter_<intro|clear>_<region>_01(chapter-intro-clear-v1), town=town_ashglen.",
   "defaults": {
     "mediumTier": {
       "cutscene": "T3",
@@ -24,43 +24,38 @@
       "T3": "kenburns",
       "T4": "video",
       "card": "none"
-    }
+    },
+    "townBackdrop": "shared:town_ashglen"
   },
   "sharedBackdrops": [
-    "bg_ashen_gate",
-    "bg_wolfpine_trail",
-    "bg_sunken_bastion",
-    "bg_tithe_road",
-    "bg_ruined_crypts",
-    "bg_bone_orchard",
-    "bg_glass_forest",
-    "bg_starved_menagerie",
-    "bg_heartforge_gate",
-    "bg_worldscar_depths",
-    "bg_town_hall"
+    "site_ashen_gate",
+    "site_wolfpine_trail",
+    "site_sunken_bastion",
+    "site_tithe_road",
+    "site_ruined_crypts",
+    "site_bone_orchard",
+    "site_glass_forest",
+    "site_starved_menagerie",
+    "site_heartforge_gate",
+    "site_worldscar_depths",
+    "town_ashglen"
   ],
   "overrides": {
-    "cutscene_ch5_intro_canyon_first_city": { "tier": "T4", "backdrop": "bespoke:cut_ch5_intro_canyon_first_city", "motion": "video", "note": "첫 도시 공개 + 네 갈래 관문. 바람이 멎는 8초 미세 모션. ladder 최상단." },
-    "dialogue_town_pre_ch5_empty_table": { "tier": "T1", "backdrop": "shared:bg_town_hall", "note": "빈 자리. 일상 톤." },
-    "dialogue_atlas_route_heartforge_gate": { "tier": "T0", "backdrop": null, "note": "Atlas overlay. 지도 위 오버레이라 배경 일러 없음." },
-    "dialogue_scene_heartforge_gate_intro": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "문턱 site 확립. gate 공용 배경 첫 등장." },
-    "dialogue_scene_four_costs_before_gate": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
-    "dialogue_scene_grey_fang_signal": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
-    "dialogue_scene_black_vellum_names": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "좌측 검은 두루마리 close-up insert. 전용 일러 아님." },
-    "dialogue_scene_silent_moon_gate": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "결사 결별 의례. 공용 배경 재사용." },
-    "dialogue_overlay_boss_bark_gate_warden": { "tier": "T0", "backdrop": null, "note": "자동전투 직전 bark. 뒤에서 전투가 도므로 배경 의도적 공백." },
-    "dialogue_overlay_boss_defeat_gate_warden": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "문이 열림." },
-    "dialogue_reward_mirror_cantor_join": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
-    "dialogue_scene_lyra_threshold_ritual": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
-    "dialogue_scene_worldscar_depths_intro": { "tier": "T2", "backdrop": "shared:bg_worldscar_depths", "note": "첫 도시 내부 wide shot. P09 3D 인게임 establishing (T2)." },
-    "dialogue_scene_massacre_record": { "tier": "T3", "backdrop": "bespoke:cut_massacre_record", "motion": "kenburns", "note": "인장/칼/두루마리/거울 tableau. 도덕적 정점 = 멈춰 세우는 전용 일러." },
-    "dialogue_scene_baekgyu_first_encounter": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths" },
-    "dialogue_overlay_boss_bark_baekgyu": { "tier": "T0", "backdrop": null, "note": "최종 보스 bark. 배경 공백 유지." },
-    "dialogue_overlay_boss_defeat_baekgyu": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths", "note": "단현 일지 인용." },
-    "dialogue_scene_final_record_decision": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths", "note": "조용한 절정. 거울 문양 도장 close-up insert. 스펙터클보다 구도." },
-    "dialogue_scene_four_leads_closure": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths" },
-    "dialogue_town_return_after_ch5": { "tier": "T1", "backdrop": "shared:bg_town_hall", "note": "변방 회담 시작." },
-    "cutscene_ch5_clear_new_table": { "tier": "T3", "backdrop": "bespoke:cut_ch5_clear_new_table", "motion": "kenburns", "note": "새 테이블. 챕터 마감 전용 일러." },
-    "story_card_extract_worldscar_depths": { "tier": "card", "backdrop": null, "note": "텍스트 카드. 일러 없음." }
+    "cutscene_prologue_first_city_silhouette": { "tier": "T4", "backdrop": "bespoke:concept_art_prologue_first_city", "motion": "video", "note": "게임 오프닝 첫 도시 silhouette — 환경 wide, 인물 close-up 금지(T4 규칙)." },
+    "cutscene_prologue_arrival_at_gate": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_arrival_gate", "note": "변방문 도착. 프롤로그 마감 key art." },
+    "cutscene_chapter_intro_ashen_frontier": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_intro_ashen_frontier_01", "note": "ch1 인트로 프레임. 무너진 변방문 + 까마귀." },
+    "cutscene_chapter_clear_ashen_frontier": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_clear_ashen_frontier_01", "note": "ch1 클리어. 회조 부축 silhouette + 피의 서약 흉터. (연출 last-wins로 추론은 overlay라 override 필요)" },
+    "cutscene_chapter_intro_sunken_bastion": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_intro_sunken_bastion_01", "note": "ch2 인트로. 침몰한 보루 + 새벽 안개." },
+    "cutscene_chapter_clear_sunken_bastion": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_clear_sunken_bastion_01", "note": "ch2 클리어. 처형대 + 단현 일지 사본." },
+    "cutscene_chapter_intro_ruined_crypts": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_intro_ruined_crypts_01", "note": "ch3 인트로. 청록 인광 이끼 + 묵향 silhouette." },
+    "cutscene_chapter_clear_ruined_crypts": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_clear_ruined_crypts_01", "note": "ch3 클리어. 네 lead 첫 회담 wide." },
+    "cutscene_ch4_intro_glass_voice": { "tier": "T3", "backdrop": "bespoke:concept_art_ch4_intro_glass_voice", "note": "ch4 인트로(본문 통합). 유리의 숲 + 선영 silhouette. (연출이 cutscene 토큰 아니라 추론 T1 → override)" },
+    "cutscene_ch4_clear_two_priests": { "tier": "T3", "backdrop": "bespoke:concept_art_ch4_clear_two_priests", "note": "ch4 클리어. 거울 앞 두 사제 대치." },
+    "cutscene_ch5_intro_canyon_first_city": { "tier": "T4", "backdrop": "bespoke:concept_art_ch5_intro_canyon_first_city", "motion": "video", "note": "첫 도시 공개 + 바람이 멎는 8초 미세 모션. ladder 최상단." },
+    "cutscene_ch5_clear_new_table": { "tier": "T3", "backdrop": "bespoke:concept_art_ch5_clear_new_table", "note": "새 테이블 + 빈 의자 둘. 캠페인 마감. 캡션: 탁자에는 네 사람이 앉았다. 빈 의자는 둘이었다." },
+    "dialogue_scene_crypts_massacre_record": { "tier": "T3", "backdrop": "bespoke:concept_art_ch3_massacre_record", "motion": "kenburns", "note": "ch3 첫 도시 학살 기록 발견. ch5 massacre와 짝되는 정점." },
+    "dialogue_scene_worldscar_depths_intro": { "tier": "T2", "backdrop": "shared:site_worldscar_depths", "note": "첫 도시 내부 wide shot. P09 3D 인게임 establishing(T2)." },
+    "dialogue_scene_massacre_record": { "tier": "T3", "backdrop": "bespoke:concept_art_ch5_massacre_record", "motion": "kenburns", "note": "인장/칼/두루마리/거울 tableau. 도덕적 정점 = 멈춰 세우는 전용 일러." },
+    "dialogue_scene_final_record_decision": { "tier": "T1", "backdrop": "shared:site_worldscar_depths", "note": "조용한 절정. 거울 문양 도장 close-up insert. 스펙터클보다 구도." }
   }
 }

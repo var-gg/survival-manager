@@ -592,23 +592,60 @@ def chapter_of(artifact_slug: str) -> str:
     return f"ch{m.group(1)}" if m else ""
 
 
-def compute_visual(scene: WikiScene, vmap: dict) -> dict:
-    """scene별 비주얼 계획을 산출한다. medium/chapter 추론값 위에 overrides를 덮는다.
+_SITES = [
+    "ashen_gate", "wolfpine_trail", "sunken_bastion", "tithe_road",
+    "ruined_crypts", "bone_orchard", "glass_forest", "starved_menagerie",
+    "heartforge_gate", "worldscar_depths",
+]
 
+# scene_id에 들어가면 전투 위 overlay라 배경을 비우는(T0) 패턴
+_T0_SCENE_TOKENS = ("boss_bark", "boss_engage", "boss_break", "atlas_route")
+
+
+def detect_site(scene: WikiScene, sites: list) -> str:
+    """scene_id + 컨텍스트에서 site 토큰을 찾는다 (공용 site 배경 자동 bind용)."""
+    hay = f"{scene.scene_id} {scene.meta.get('컨텍스트', '')}"
+    for s in (sites or _SITES):
+        if s in hay:
+            return s
+    return ""
+
+
+def compute_visual(scene: WikiScene, vmap: dict) -> dict:
+    """scene별 비주얼 계획을 산출한다. medium/chapter/site 추론 위에 overrides를 덮는다.
+
+    - tier: 연출 medium 토큰 → mediumTier. 단 boss_bark/atlas 류 scene_id는 T0(배경 공백).
+    - backdrop: T0/card는 없음. town scene은 공용 town 배경, site scene은 공용 site 배경.
+    - bespoke/예외 배급은 overrides가 결정(curated=True).
     반환 dict는 scene.meta["visual"]로 실려 asset-studio가 그대로 읽는다."""
     defaults = vmap.get("defaults", {})
     medium_tier = defaults.get("mediumTier", {})
     chapter_lut = defaults.get("chapterLut", {})
     tier_motion = defaults.get("tierMotion", {})
+    town_backdrop = defaults.get("townBackdrop", "shared:town_ashglen")
+    sites = defaults.get("sites", _SITES)
 
     medium = detect_medium(scene.meta.get("연출", ""))
     tier = medium_tier.get(medium, "T1")
+    sid = scene.scene_id
+    if any(tok in sid for tok in _T0_SCENE_TOKENS):
+        tier = "T0"
+
     lut = chapter_lut.get(chapter_of(scene.artifact_slug), "neutral")
+
+    backdrop = None
+    if tier not in ("T0", "card"):
+        if "town" in sid or "town" in (scene.artifact_slug or ""):
+            backdrop = town_backdrop
+        else:
+            site = detect_site(scene, sites)
+            if site:
+                backdrop = f"shared:site_{site}"
 
     visual = {
         "tier": tier,
         "medium": medium or "dialogue",
-        "backdrop": None,
+        "backdrop": backdrop,
         "motion": tier_motion.get(tier, "static"),
         "lut": lut,
         "curated": False,
