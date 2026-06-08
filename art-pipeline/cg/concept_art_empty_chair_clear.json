@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_empty_chair_clear",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_empty_chair_clear",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_pack_raider"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_event_empty_chair_clear",
+  "note": "회조 외전 마감 — 형제 미해결 결별. 이빨바람이 주체.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_empty_chair_clear/default.png",
+  "prompt": "Single-figure cinematic cutscene — a quiet narrative beat within an environment, NOT a splash pose. Subject: Pack Raider (이빨바람), a young alert male hunter-leader, at the unresolved parting of brothers — the close of the empty-chair arc. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): near-black wild shag hair, warm brown-amber eyes, lightly tanned skin; warm burnt-leather chest and legs with moss-green forest accents on the arm and waist; a single short hunting sword sheathed at his side. KEY MOMENT: he half-turns away from a single empty wooden chair, unable to resolve the parting — one last look back, jaw set, the brother who chose to leave. Environment: a dim quiet interior, the lone empty chair behind him catching low light, gear by the door. Mood: rough, unresolved, a wound left open. Muted ash-and-amber color grading. Painterly anime fantasy cutscene, single figure inside a painted environment, cinematic medium framing. No magenta chroma, full painted environment. 16:9 wide. Do NOT change the outfit or hair from the refs; do NOT add a shield, a second blade, a face tattoo, animal ears, or extra props.",
+  "refs": [
+    "hero_pack_raider:portrait_full",
+    "hero_pack_raider:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

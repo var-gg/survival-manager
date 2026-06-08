@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_prologue_pack_raider",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_prologue_pack_raider",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_pack_raider"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_prologue_pack_raider_meets",
+  "note": "프롤로그 — 이빨바람 조우(캐릭터 intro 샷).",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_prologue_pack_raider/default.png",
+  "prompt": "Single-figure cinematic character-introduction cutscene — a story intro beat within an environment, NOT a splash pose. Subject: Pack Raider (이빨바람), a young alert male hunter-leader, first encountered in the prologue. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): near-black wild shag hair, warm brown-amber eyes, lightly tanned skin; warm burnt-leather chest and legs with moss-green forest accents on the arm and waist; a single short hunting sword. KEY MOMENT: he is met for the first time — coiled and wary, half-rising from cover, sizing up the viewer, one hand near his sword but not drawn. Environment: the ash-grey frontier wilds, scrub and broken ground, thin ash drifting on the wind. Mood: a wary first encounter, coiled tension. Chapter-1 ash-grey color grading with a warm key light on the figure. Painterly anime fantasy cutscene, single figure inside a painted environment, cinematic medium framing. No magenta chroma, full painted environment. 16:9 wide. Do NOT change the outfit or hair from the refs; do NOT add a shield, a bow, a second blade, or extra props.",
+  "refs": [
+    "hero_pack_raider:portrait_full",
+    "hero_pack_raider:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

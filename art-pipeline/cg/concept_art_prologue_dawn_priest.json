@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_prologue_dawn_priest",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_prologue_dawn_priest",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_dawn_priest"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_prologue_dawn_priest_arrives",
+  "note": "프롤로그 — 단린 도착(캐릭터 intro 샷).",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_prologue_dawn_priest/default.png",
+  "prompt": "Single-figure cinematic character-introduction cutscene — a story intro beat within an environment, NOT a splash pose. Subject: Dawn Priest (단린), a young priestess-vanguard, first appearing at the frontier in the prologue. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): warm copper-brown hair in a soft tidy flow; an ivory-and-gold priest robe with a rose chest accent and brown leather lower gear; her round platinum shield bearing a faint sacred sigil, a ritual sword sheathed. KEY MOMENT: she arrives and turns toward the viewer for the first time, composed and earnest, shield held but lowered — a first-meeting introduction shot. Environment: the bleak ash-grey frontier, the broken borderland gate behind her, thin ash drifting on the wind. Mood: an earnest arrival, the start of a long road. Chapter-1 ash-grey color grading with a faint warm key light on the figure. Painterly anime fantasy cutscene, single figure inside a painted environment, cinematic medium framing. No magenta chroma, full painted environment. 16:9 wide. Do NOT change the outfit or hair from the refs; do NOT add halos, emblems, tattoos, or extra props.",
+  "refs": [
+    "hero_dawn_priest:portrait_full",
+    "hero_dawn_priest:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

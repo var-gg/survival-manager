@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_cathedral_clear",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_cathedral_clear",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_dawn_priest"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_event_dawn_priest_clear",
+  "note": "본 대성당 외전 마감 — 단린 신앙 정리. 단린이 주체.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_cathedral_clear/default.png",
+  "prompt": "Single-figure cinematic cutscene — a quiet narrative beat within an environment, NOT a splash pose. Subject: Dawn Priest (단린), a young priestess-vanguard, standing alone in the great cathedral as she quietly settles her faith — a private reckoning at the close of the cathedral arc. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): warm copper-brown hair in a soft tidy flow that does not cover the face; an ivory-and-gold priest robe with a rose chest accent and brown leather lower gear; her round platinum shield bearing a faint sacred sigil. KEY MOMENT: she stands beneath the cathedral's tall windows, head slightly bowed, one hand resting over her chest or loosely on a small priest seal — faith re-examined, not abandoned. Environment: the soaring stone nave of the main cathedral, shafts of pale gold light from tall windows, long empty pews receding behind her. Mood: solemn, resolved, intimate. Warm cathedral-stone color grading with pale gold light. Painterly anime fantasy cutscene, single figure inside a painted environment, cinematic medium framing. No magenta chroma, full painted environment. 16:9 wide. Do NOT change the outfit or hair from the refs; do NOT add halos, large emblems, tattoos, or extra props.",
+  "refs": [
+    "hero_dawn_priest:portrait_full",
+    "hero_dawn_priest:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
