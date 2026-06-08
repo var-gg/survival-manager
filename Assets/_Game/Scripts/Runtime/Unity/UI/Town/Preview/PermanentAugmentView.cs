@@ -164,7 +164,11 @@ public sealed class PermanentAugmentView
         // subtitle — posture 매핑 폐기, 영문 별칭 + family bucket
         _detailSubtitle.text = $"{detail.EnLabel}  ·  {detail.FamilyBucket}";
         _detailEffect.text = detail.SignatureEffect;
-        _detailFlavor.text = detail.FlavorText;
+        // 잠긴 augment는 flavor 대신 해금 경로를 보여준다 — 패널 어디에도 "푸는 법"이 없던 blocker 해소.
+        // (effect는 유지 — 무엇을 얻는지가 해금 동기). 해금 인과: 원정 보상에서 첫 임시 강화 선택.
+        _detailFlavor.text = detail.IsUnlocked
+            ? detail.FlavorText
+            : "🔒 잠김 — 원정 보상에서 임시 강화를 처음 선택하면 대응하는 영구 강화가 해금됩니다.";
 
         if (detail.IconSprite != null)
             _equipSlot.style.backgroundImage = new StyleBackground(detail.IconSprite);
