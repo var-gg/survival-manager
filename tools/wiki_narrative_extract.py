@@ -598,8 +598,14 @@ _SITES = [
     "heartforge_gate", "worldscar_depths",
 ]
 
-# scene_id에 들어가면 전투 위 overlay라 배경을 비우는(T0) 패턴
-_T0_SCENE_TOKENS = ("boss_bark", "boss_engage", "boss_break", "atlas_route")
+def is_combat_overlay(scene_id: str) -> bool:
+    """전투 위 overlay(배경 비움 T0): atlas route, boss bark/engage/break.
+
+    boss bark류는 scene_id에 적 이름이 끼어들 수 있어(boss_wolfpine_engage)
+    'boss' + 동작 키워드 조합으로 판정한다. boss_defeat는 전투 후라 제외(배경 가능)."""
+    if "atlas_route" in scene_id:
+        return True
+    return "boss" in scene_id and any(k in scene_id for k in ("bark", "engage", "break"))
 
 
 def detect_site(scene: WikiScene, sites: list) -> str:
@@ -611,11 +617,12 @@ def detect_site(scene: WikiScene, sites: list) -> str:
     return ""
 
 
-def compute_visual(scene: WikiScene, vmap: dict) -> dict:
+def compute_visual(scene: WikiScene, vmap: dict, inherited_site: str = "") -> dict:
     """scene별 비주얼 계획을 산출한다. medium/chapter/site 추론 위에 overrides를 덮는다.
 
-    - tier: 연출 medium 토큰 → mediumTier. 단 boss_bark/atlas 류 scene_id는 T0(배경 공백).
-    - backdrop: T0/card는 없음. town scene은 공용 town 배경, site scene은 공용 site 배경.
+    - tier: 연출 medium 토큰 → mediumTier. 단 boss bark/atlas 류 scene_id는 T0(배경 공백).
+    - backdrop: T0/card는 없음. town scene은 공용 town 배경. site는 scene 자체 토큰,
+      없으면 같은 챕터 직전 site(inherited_site) 상속 → 공용 site 배경.
     - bespoke/예외 배급은 overrides가 결정(curated=True).
     반환 dict는 scene.meta["visual"]로 실려 asset-studio가 그대로 읽는다."""
     defaults = vmap.get("defaults", {})
@@ -628,7 +635,7 @@ def compute_visual(scene: WikiScene, vmap: dict) -> dict:
     medium = detect_medium(scene.meta.get("연출", ""))
     tier = medium_tier.get(medium, "T1")
     sid = scene.scene_id
-    if any(tok in sid for tok in _T0_SCENE_TOKENS):
+    if is_combat_overlay(sid):
         tier = "T0"
 
     lut = chapter_lut.get(chapter_of(scene.artifact_slug), "neutral")
@@ -638,7 +645,7 @@ def compute_visual(scene: WikiScene, vmap: dict) -> dict:
         if "town" in sid or "town" in (scene.artifact_slug or ""):
             backdrop = town_backdrop
         else:
-            site = detect_site(scene, sites)
+            site = detect_site(scene, sites) or inherited_site
             if site:
                 backdrop = f"shared:site_{site}"
 
@@ -682,8 +689,19 @@ def build_seed(scenes: dict[str, WikiScene], visual_map: Optional[dict] = None) 
     line_index_map = {}  # scene_id -> [line_id, ...] in order
 
     visual_map = visual_map or {}
+    site_list = visual_map.get("defaults", {}).get("sites")
+    prev_slug = None
+    current_site = ""
     for scene_id, scene in scenes.items():
-        scene.meta["visual"] = compute_visual(scene, visual_map)
+        # 같은 챕터(artifact) 안에서 직전 site를 상속한다. 캐릭터 외전/메모리얼/
+        # 프롤로그는 site-intro가 없어 current_site가 비어 null로 남는다.
+        if scene.artifact_slug != prev_slug:
+            prev_slug = scene.artifact_slug
+            current_site = ""
+        own_site = detect_site(scene, site_list)
+        if own_site:
+            current_site = own_site
+        scene.meta["visual"] = compute_visual(scene, visual_map, inherited_site=current_site)
         # 분기 평탄화: 첫 분기만 정본으로 채택한다. 선택지 미지원 상태에서
         # branch별 lineIndex(3a/3b/3c → 3) 충돌로 textKey가 겹쳐, 같은 줄이
         # 화자만 바뀐 채 반복 재생되던 문제를 제거한다.
