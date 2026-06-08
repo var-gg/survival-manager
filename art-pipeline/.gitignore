@@ -13,3 +13,9 @@ scripts/*.pyc
 *.egg-info/
 .venv/
 *.tmp.png
+
+# 아트 생성 작업/리뷰 staging (최종 아트는 Assets/로 import) — 미추적 유지, git add 사고 방지.
+# _review/ 는 contact sheet + 폐기(_rejected) 더미, characters/ 는 캐릭터 생성 후보 staging.
+# 의도적으로 추적하려면 git add -f 로 강제 추가.
+selected/_review/
+selected/characters/
