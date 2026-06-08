@@ -38,6 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 RAW_WIKI_DIR = REPO_ROOT / "tools" / "raw-wiki"
 AUTHORING_MAP = REPO_ROOT / "tools" / "narrative-authoring-map.json"
 EVENT_MAP = REPO_ROOT / "tools" / "narrative-event-map.json"
+VISUAL_MAP = REPO_ROOT / "tools" / "narrative-visual-map.json"
 OUTPUT_DIR = REPO_ROOT / "Logs" / "Narrative"
 OUTPUT_FILE = OUTPUT_DIR / "narrative-seed-wiki.json"
 
@@ -542,7 +543,92 @@ def build_story_events(
     return out
 
 
-def build_seed(scenes: dict[str, WikiScene]) -> dict:
+# ---------------------------------------------------------------------------
+# Visual beat map — presentation tier / backdrop / motion / LUT
+# ---------------------------------------------------------------------------
+#
+# 각 scene이 어떤 매체(T0~T4)·배경(없음/공용/전용)·모션·색보정으로 연출되는지를
+# 비파괴적으로 산출한다. medium은 기존 `> **연출**:` 첫 토큰에서 추론하고, chapter는
+# artifact_slug에서, 세부 배급은 git-tracked narrative-visual-map.json overrides로
+# 덮어쓴다. 결과는 scene.meta["visual"]에 실려 seed → asset-studio(Tauri)로 흐른다.
+# (narrative.rs가 meta를 serde_json::Value로 그대로 통과시키므로 Rust 변경 불요.)
+
+_MEDIUM_PREFIXES = [
+    ("cutscene", "cutscene"),
+    ("dialogue-scene", "dialogue-scene"),
+    ("dialogue-overlay", "dialogue-overlay"),
+    ("combat bark", "combat-bark"),
+    ("combat-bark", "combat-bark"),
+    ("reward", "reward-join"),
+    ("story card", "story-card"),
+    ("story-card", "story-card"),
+    ("dialogue", "dialogue"),
+]
+
+_CHAPTER_RE = re.compile(r"ch([1-5])\b")
+
+
+def load_visual_map() -> dict:
+    """narrative-visual-map.json (defaults + per-scene overrides)을 읽는다.
+
+    없으면 빈 dict → medium/chapter 추론만으로 동작한다."""
+    if not VISUAL_MAP.exists():
+        return {}
+    with open(VISUAL_MAP, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def detect_medium(staging: str) -> str:
+    """`연출` 첫 토큰에서 매체를 식별한다 (cutscene / dialogue-scene / ...)."""
+    s = (staging or "").strip().lower()
+    for prefix, medium in _MEDIUM_PREFIXES:
+        if s.startswith(prefix):
+            return medium
+    return ""
+
+
+def chapter_of(artifact_slug: str) -> str:
+    m = _CHAPTER_RE.search(artifact_slug or "")
+    return f"ch{m.group(1)}" if m else ""
+
+
+def compute_visual(scene: WikiScene, vmap: dict) -> dict:
+    """scene별 비주얼 계획을 산출한다. medium/chapter 추론값 위에 overrides를 덮는다.
+
+    반환 dict는 scene.meta["visual"]로 실려 asset-studio가 그대로 읽는다."""
+    defaults = vmap.get("defaults", {})
+    medium_tier = defaults.get("mediumTier", {})
+    chapter_lut = defaults.get("chapterLut", {})
+    tier_motion = defaults.get("tierMotion", {})
+
+    medium = detect_medium(scene.meta.get("연출", ""))
+    tier = medium_tier.get(medium, "T1")
+    lut = chapter_lut.get(chapter_of(scene.artifact_slug), "neutral")
+
+    visual = {
+        "tier": tier,
+        "medium": medium or "dialogue",
+        "backdrop": None,
+        "motion": tier_motion.get(tier, "static"),
+        "lut": lut,
+        "curated": False,
+    }
+
+    ov = vmap.get("overrides", {}).get(scene.scene_id)
+    if ov:
+        for key, value in ov.items():
+            if key == "note":
+                continue
+            visual[key] = value
+        if "tier" in ov and "motion" not in ov:
+            visual["motion"] = tier_motion.get(ov["tier"], visual["motion"])
+        visual["curated"] = True
+        if ov.get("note"):
+            visual["note"] = ov["note"]
+    return visual
+
+
+def build_seed(scenes: dict[str, WikiScene], visual_map: Optional[dict] = None) -> dict:
     """Emit narrative-seed-wiki.json.
 
     Schema-compatible with NarrativeSeedImporter.cs (NarrativeSeedManifest):
@@ -558,7 +644,9 @@ def build_seed(scenes: dict[str, WikiScene]) -> dict:
     presentations = []
     line_index_map = {}  # scene_id -> [line_id, ...] in order
 
+    visual_map = visual_map or {}
     for scene_id, scene in scenes.items():
+        scene.meta["visual"] = compute_visual(scene, visual_map)
         # 분기 평탄화: 첫 분기만 정본으로 채택한다. 선택지 미지원 상태에서
         # branch별 lineIndex(3a/3b/3c → 3) 충돌로 textKey가 겹쳐, 같은 줄이
         # 화자만 바뀐 채 반복 재생되던 문제를 제거한다.
@@ -652,7 +740,7 @@ def main() -> int:
     for md in md_files:
         parser.parse_file(md)
 
-    seed = build_seed(parser.scenes)
+    seed = build_seed(parser.scenes, load_visual_map())
     sequence_ids = {seq["sequenceId"] for seq in seed["dialogueSequences"]}
     seed["storyEvents"] = build_story_events(
         load_event_map(), sequence_ids, parser.diagnostics)

@@ -1,0 +1,66 @@
+{
+  "_doc": "Narrative 비주얼 비트 맵. scene별 매체(T0~T4)/배경/모션/색보정 배급. wiki_narrative_extract.py가 읽어 scene.meta.visual로 emit → seed → asset-studio. grammar: pindoc://analysis-narrative-visual-beat-map. medium/chapter는 연출 토큰에서 추론하고, overrides가 전용(bespoke) 배급을 덮는다. backdrop: null | shared:{bg_id} | bespoke:{cut_id}.",
+  "defaults": {
+    "mediumTier": {
+      "cutscene": "T3",
+      "dialogue-scene": "T1",
+      "dialogue-overlay": "T1",
+      "combat-bark": "T0",
+      "reward-join": "T1",
+      "story-card": "card",
+      "dialogue": "T1"
+    },
+    "chapterLut": {
+      "ch1": "ash",
+      "ch2": "teal",
+      "ch3": "violet",
+      "ch4": "frost",
+      "ch5": "ember"
+    },
+    "tierMotion": {
+      "T0": "none",
+      "T1": "static",
+      "T2": "static",
+      "T3": "kenburns",
+      "T4": "video",
+      "card": "none"
+    }
+  },
+  "sharedBackdrops": [
+    "bg_ashen_gate",
+    "bg_wolfpine_trail",
+    "bg_sunken_bastion",
+    "bg_tithe_road",
+    "bg_ruined_crypts",
+    "bg_bone_orchard",
+    "bg_glass_forest",
+    "bg_starved_menagerie",
+    "bg_heartforge_gate",
+    "bg_worldscar_depths",
+    "bg_town_hall"
+  ],
+  "overrides": {
+    "cutscene_ch5_intro_canyon_first_city": { "tier": "T4", "backdrop": "bespoke:cut_ch5_intro_canyon_first_city", "motion": "video", "note": "첫 도시 공개 + 네 갈래 관문. 바람이 멎는 8초 미세 모션. ladder 최상단." },
+    "dialogue_town_pre_ch5_empty_table": { "tier": "T1", "backdrop": "shared:bg_town_hall", "note": "빈 자리. 일상 톤." },
+    "dialogue_atlas_route_heartforge_gate": { "tier": "T0", "backdrop": null, "note": "Atlas overlay. 지도 위 오버레이라 배경 일러 없음." },
+    "dialogue_scene_heartforge_gate_intro": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "문턱 site 확립. gate 공용 배경 첫 등장." },
+    "dialogue_scene_four_costs_before_gate": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
+    "dialogue_scene_grey_fang_signal": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
+    "dialogue_scene_black_vellum_names": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "좌측 검은 두루마리 close-up insert. 전용 일러 아님." },
+    "dialogue_scene_silent_moon_gate": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "결사 결별 의례. 공용 배경 재사용." },
+    "dialogue_overlay_boss_bark_gate_warden": { "tier": "T0", "backdrop": null, "note": "자동전투 직전 bark. 뒤에서 전투가 도므로 배경 의도적 공백." },
+    "dialogue_overlay_boss_defeat_gate_warden": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate", "note": "문이 열림." },
+    "dialogue_reward_mirror_cantor_join": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
+    "dialogue_scene_lyra_threshold_ritual": { "tier": "T1", "backdrop": "shared:bg_heartforge_gate" },
+    "dialogue_scene_worldscar_depths_intro": { "tier": "T2", "backdrop": "shared:bg_worldscar_depths", "note": "첫 도시 내부 wide shot. P09 3D 인게임 establishing (T2)." },
+    "dialogue_scene_massacre_record": { "tier": "T3", "backdrop": "bespoke:cut_massacre_record", "motion": "kenburns", "note": "인장/칼/두루마리/거울 tableau. 도덕적 정점 = 멈춰 세우는 전용 일러." },
+    "dialogue_scene_baekgyu_first_encounter": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths" },
+    "dialogue_overlay_boss_bark_baekgyu": { "tier": "T0", "backdrop": null, "note": "최종 보스 bark. 배경 공백 유지." },
+    "dialogue_overlay_boss_defeat_baekgyu": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths", "note": "단현 일지 인용." },
+    "dialogue_scene_final_record_decision": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths", "note": "조용한 절정. 거울 문양 도장 close-up insert. 스펙터클보다 구도." },
+    "dialogue_scene_four_leads_closure": { "tier": "T1", "backdrop": "shared:bg_worldscar_depths" },
+    "dialogue_town_return_after_ch5": { "tier": "T1", "backdrop": "shared:bg_town_hall", "note": "변방 회담 시작." },
+    "cutscene_ch5_clear_new_table": { "tier": "T3", "backdrop": "bespoke:cut_ch5_clear_new_table", "motion": "kenburns", "note": "새 테이블. 챕터 마감 전용 일러." },
+    "story_card_extract_worldscar_depths": { "tier": "card", "backdrop": null, "note": "텍스트 카드. 일러 없음." }
+  }
+}

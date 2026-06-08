@@ -2,7 +2,7 @@
 
 - 상태: draft
 - 소유자: repository
-- 최종수정일: 2026-04-10
+- 최종수정일: 2026-06-08
 - 소스오브트루스: `docs/02_design/narrative/dialogue-event-schema.md`
 - 관련문서:
   - Pindoc narrative script / beat artifacts
@@ -12,6 +12,14 @@
 ## 목적
 
 스토리 이벤트와 대사 시퀀스의 ID 규칙, trigger schema, once policy, presentation grade를 고정한다. 이 문서는 code-facing narrative event authoring contract이며, 창작 beat와 production script는 Pindoc을 우선한다.
+
+## presentation 비주얼 층 (visual beat map)
+
+각 presentation이 어떤 매체·배경으로 연출되는지는 별도 비주얼 비트 맵 층이 담당한다. scene 단위 배급 grammar(T0~T4 + card, backdrop `none`/`shared`/`bespoke`, motion, LUT)와 경제는 `pindoc://analysis-narrative-visual-beat-map`이 SoT다.
+
+- 배급 데이터 SoT: `tools/narrative-visual-map.json` (defaults 추론 + per-scene overrides). `narrative-event-map.json`과 같은 git-tracked 패턴.
+- 런타임 전파: `tools/wiki_narrative_extract.py`의 `compute_visual()`이 `> **연출**:` medium 토큰 + chapter + overrides를 합쳐 `dialogueSequences[].meta.visual = {tier, medium, backdrop, motion, lut, curated}`로 emit → seed → asset-studio. (`narrative.rs`가 meta를 그대로 통과시켜 Rust 변경 불요.)
+- `presentation_key` 접두사(`cutscene_` / `dialogue_scene_` / `dialogue_overlay_` / `story_card_`)가 medium 추론의 1차 신호다. 이 표의 grade와 비주얼 tier는 1:1이 아니라 medium-mix ladder로 매핑된다.
 
 ## 명명 규칙
 
