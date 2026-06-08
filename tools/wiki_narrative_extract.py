@@ -676,6 +676,16 @@ def compute_visual(scene: WikiScene, vmap: dict, inherited_site: str = "") -> di
         visual["curated"] = True
         if ov.get("note"):
             visual["note"] = ov["note"]
+
+    # 배경 종류(env/char/prop) + 등장 캐릭터: 순수 배경 일러와 캐릭터 포함 일러를
+    # 분리한다. char는 생성 시 캐릭터 ref(P09 anchor + 포트레잇 chained REF) 필수.
+    # bespoke override가 kind/subjects를 주면 그대로, 아니면 backdrop 유무로 기본값.
+    if not visual.get("backdrop"):
+        visual["kind"] = None
+        visual["subjects"] = []
+    else:
+        visual.setdefault("kind", "env")
+        visual.setdefault("subjects", [])
     return visual
 
 

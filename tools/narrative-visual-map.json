@@ -1,5 +1,5 @@
 {
-  "_doc": "Narrative 비주얼 비트 맵. scene별 매체(T0~T4)/배경/모션/색보정 배급. wiki_narrative_extract.py가 읽어 scene.meta.visual로 emit → seed → asset-studio. grammar: pindoc://analysis-narrative-visual-beat-map. medium/chapter/site는 연출 토큰·artifact_slug·scene_id에서 추론(공용 배경 자동 재사용), overrides는 bespoke/예외만 결정. backdrop: null | shared:{id} | bespoke:{id}. id 규약: site=site_<name>(battle-map 갤러리/art-pipeline output), 챕터프레임=concept_art_chapter_<intro|clear>_<region>_01(chapter-intro-clear-v1), town=town_ashglen.",
+  "_doc": "Narrative 비주얼 비트 맵. scene별 매체(T0~T4)/배경/모션/색보정/일러종류 배급. wiki_narrative_extract.py가 읽어 scene.meta.visual로 emit → seed → asset-studio. grammar: pindoc://analysis-narrative-visual-beat-map, 생성 spec: pindoc://decision-narrative-cutscene-gen-spec. backdrop: null | shared:{id} | bespoke:{id}. kind: env(순수 배경, 캐릭터 ref 없음) | char(캐릭터 주체, P09 anchor+포트레잇 ref 필수, subjects 명시) | prop(오브젝트 중심). shared 배경은 항상 env. id 규약: site=site_<name>, town=town_ashglen, story-location=loc_<name>, 챕터프레임/외전/정점=concept_art_<...>.",
   "defaults": {
     "mediumTier": {
       "cutscene": "T3",
@@ -44,7 +44,7 @@
   ],
   "overrides": {
     "cutscene_prologue_first_city_silhouette": { "tier": "T4", "backdrop": "bespoke:concept_art_prologue_first_city", "motion": "video", "note": "게임 오프닝 첫 도시 silhouette — 환경 wide, 인물 close-up 금지(T4 규칙)." },
-    "cutscene_prologue_arrival_at_gate": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_arrival_gate", "note": "변방문 도착. 프롤로그 마감 key art." },
+    "cutscene_prologue_arrival_at_gate": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_arrival_gate", "note": "변방문 도착. 프롤로그 마감 key art. env still + 포트레잇 overlay." },
     "cutscene_chapter_intro_ashen_frontier": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_intro_ashen_frontier_01", "note": "ch1 인트로 프레임. 무너진 변방문 + 까마귀." },
     "cutscene_chapter_clear_ashen_frontier": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_clear_ashen_frontier_01", "note": "ch1 클리어. 회조 부축 silhouette + 피의 서약 흉터. (연출 last-wins로 추론은 overlay라 override 필요)" },
     "cutscene_chapter_intro_sunken_bastion": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_intro_sunken_bastion_01", "note": "ch2 인트로. 침몰한 보루 + 새벽 안개." },
@@ -52,26 +52,26 @@
     "cutscene_chapter_intro_ruined_crypts": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_intro_ruined_crypts_01", "note": "ch3 인트로. 청록 인광 이끼 + 묵향 silhouette." },
     "cutscene_chapter_clear_ruined_crypts": { "tier": "T3", "backdrop": "bespoke:concept_art_chapter_clear_ruined_crypts_01", "note": "ch3 클리어. 네 lead 첫 회담 wide." },
     "cutscene_ch4_intro_glass_voice": { "tier": "T3", "backdrop": "bespoke:concept_art_ch4_intro_glass_voice", "note": "ch4 인트로(본문 통합). 유리의 숲 + 선영 silhouette. (연출이 cutscene 토큰 아니라 추론 T1 → override)" },
-    "cutscene_ch4_clear_two_priests": { "tier": "T3", "backdrop": "bespoke:concept_art_ch4_clear_two_priests", "note": "ch4 클리어. 거울 앞 두 사제 대치." },
+    "cutscene_ch4_clear_two_priests": { "tier": "T3", "backdrop": "bespoke:concept_art_ch4_clear_two_priests", "note": "ch4 클리어. 거울 앞 두 사제 대치. env still + 포트레잇 overlay(char-heavy, 디테일 시 char 승격 가능)." },
     "cutscene_ch5_intro_canyon_first_city": { "tier": "T4", "backdrop": "bespoke:concept_art_ch5_intro_canyon_first_city", "motion": "video", "note": "첫 도시 공개 + 바람이 멎는 8초 미세 모션. ladder 최상단." },
-    "cutscene_ch5_clear_new_table": { "tier": "T3", "backdrop": "bespoke:concept_art_ch5_clear_new_table", "note": "새 테이블 + 빈 의자 둘. 캠페인 마감. 캡션: 탁자에는 네 사람이 앉았다. 빈 의자는 둘이었다." },
-    "dialogue_scene_crypts_massacre_record": { "tier": "T3", "backdrop": "bespoke:concept_art_ch3_massacre_record", "motion": "kenburns", "note": "ch3 첫 도시 학살 기록 발견. ch5 massacre와 짝되는 정점." },
+    "cutscene_ch5_clear_new_table": { "tier": "T3", "backdrop": "bespoke:concept_art_ch5_clear_new_table", "note": "새 테이블 + 빈 의자 둘. 캠페인 마감. 캡션: 탁자에는 네 사람이 앉았다. 빈 의자는 둘이었다. (char-heavy, 디테일 시 char 승격 가능)" },
+    "dialogue_scene_crypts_massacre_record": { "tier": "T3", "backdrop": "bespoke:concept_art_ch3_massacre_record", "motion": "kenburns", "kind": "prop", "note": "ch3 첫 도시 학살 기록 발견. ch5 massacre와 짝되는 정점." },
     "dialogue_scene_worldscar_depths_intro": { "tier": "T2", "backdrop": "shared:site_worldscar_depths", "note": "첫 도시 내부 wide shot. P09 3D 인게임 establishing(T2)." },
-    "dialogue_scene_massacre_record": { "tier": "T3", "backdrop": "bespoke:concept_art_ch5_massacre_record", "motion": "kenburns", "note": "인장/칼/두루마리/거울 tableau. 도덕적 정점 = 멈춰 세우는 전용 일러." },
+    "dialogue_scene_massacre_record": { "tier": "T3", "backdrop": "bespoke:concept_art_ch5_massacre_record", "motion": "kenburns", "kind": "prop", "note": "인장/칼/두루마리/거울 tableau. 도덕적 정점 = 멈춰 세우는 전용 일러." },
     "dialogue_scene_final_record_decision": { "tier": "T1", "backdrop": "shared:site_worldscar_depths", "note": "조용한 절정. 거울 문양 도장 close-up insert. 스펙터클보다 구도." },
 
     "cutscene_event_dawn_priest_main_cathedral_intro": { "tier": "T3", "backdrop": "bespoke:concept_art_cathedral_intro", "note": "본 대성당 외전 인트로 — 학파 본거지 establishing. 중간 대화는 loc_main_cathedral 공용." },
-    "cutscene_event_dawn_priest_clear": { "tier": "T3", "backdrop": "bespoke:concept_art_cathedral_clear", "note": "본 대성당 외전 마감 — 단린 신앙 정리." },
-    "cutscene_event_empty_chair_intro": { "tier": "T3", "backdrop": "bespoke:concept_art_empty_chair_intro", "note": "회조 외전 인트로 — 빈 의자 모티프. 중간 대화는 포트레잇." },
-    "cutscene_event_empty_chair_clear": { "tier": "T3", "backdrop": "bespoke:concept_art_empty_chair_clear", "note": "회조 외전 마감 — 형제 미해결 결별." },
-    "cutscene_event_other_door_intro": { "tier": "T3", "backdrop": "bespoke:concept_art_other_door_intro", "note": "결사 외전 인트로 — 다른 문 threshold. 중간 대화는 포트레잇." },
-    "cutscene_event_other_door_clear": { "tier": "T3", "backdrop": "bespoke:concept_art_other_door_clear", "note": "결사 외전 마감 — 침월/명음 비용." },
-    "cutscene_dawn_priest_memorial_dawn_prayer": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_dawn_priest", "note": "단린 메모리얼 — 새벽 기도." },
-    "cutscene_echo_savant_memorial_external_witness_beyond_door": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_echo_savant", "note": "공한 메모리얼 — 문 밖 외부 증언자." },
-    "cutscene_grave_hexer_memorial_new_bell_in_empty_seat": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_grave_hexer", "note": "묵향 메모리얼 — 빈 자리의 새 종." },
-    "cutscene_pack_raider_memorial_black_paint_at_camp": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_pack_raider", "note": "이빨바람 메모리얼 — 야영지 검은 칠." },
-    "cutscene_prologue_letter_from_council": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_letter", "note": "프롤로그 — 집정관 편지 문서 close-up(가벼운 bespoke)." },
-    "cutscene_prologue_dawn_priest_arrives": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_dawn_priest", "note": "프롤로그 — 단린 도착." },
-    "cutscene_prologue_pack_raider_meets": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_pack_raider", "note": "프롤로그 — 이빨바람 조우." }
+    "cutscene_event_dawn_priest_clear": { "tier": "T3", "backdrop": "bespoke:concept_art_cathedral_clear", "kind": "char", "subjects": ["hero_dawn_priest"], "note": "본 대성당 외전 마감 — 단린 신앙 정리. 단린이 주체." },
+    "cutscene_event_empty_chair_intro": { "tier": "T3", "backdrop": "bespoke:concept_art_empty_chair_intro", "kind": "prop", "note": "회조 외전 인트로 — 빈 의자 모티프(오브젝트 중심). 중간 대화는 포트레잇." },
+    "cutscene_event_empty_chair_clear": { "tier": "T3", "backdrop": "bespoke:concept_art_empty_chair_clear", "kind": "char", "subjects": ["hero_pack_raider"], "note": "회조 외전 마감 — 형제 미해결 결별. 이빨바람이 주체." },
+    "cutscene_event_other_door_intro": { "tier": "T3", "backdrop": "bespoke:concept_art_other_door_intro", "note": "결사 외전 인트로 — 다른 문 threshold(환경). 중간 대화는 포트레잇." },
+    "cutscene_event_other_door_clear": { "tier": "T3", "backdrop": "bespoke:concept_art_other_door_clear", "kind": "char", "subjects": ["hero_mirror_cantor"], "note": "결사 외전 마감 — 침월/명음 비용. 명음(hero_mirror_cantor) 주체, 침월은 NPC." },
+    "cutscene_dawn_priest_memorial_dawn_prayer": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_dawn_priest", "kind": "char", "subjects": ["hero_dawn_priest"], "note": "단린 메모리얼 — 새벽 기도. 단독 캐릭터 정점." },
+    "cutscene_echo_savant_memorial_external_witness_beyond_door": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_echo_savant", "kind": "char", "subjects": ["hero_echo_savant"], "note": "공한 메모리얼 — 문 밖 외부 증언자. 단독 캐릭터 정점." },
+    "cutscene_grave_hexer_memorial_new_bell_in_empty_seat": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_grave_hexer", "kind": "char", "subjects": ["hero_grave_hexer"], "note": "묵향 메모리얼 — 빈 자리의 새 종. 단독 캐릭터 정점." },
+    "cutscene_pack_raider_memorial_black_paint_at_camp": { "tier": "T3", "backdrop": "bespoke:concept_art_memorial_pack_raider", "kind": "char", "subjects": ["hero_pack_raider"], "note": "이빨바람 메모리얼 — 야영지 검은 칠. 단독 캐릭터 정점." },
+    "cutscene_prologue_letter_from_council": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_letter", "kind": "prop", "note": "프롤로그 — 집정관 편지 문서 close-up(오브젝트, 가벼운 bespoke)." },
+    "cutscene_prologue_dawn_priest_arrives": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_dawn_priest", "kind": "char", "subjects": ["hero_dawn_priest"], "note": "프롤로그 — 단린 도착(캐릭터 intro 샷)." },
+    "cutscene_prologue_pack_raider_meets": { "tier": "T3", "backdrop": "bespoke:concept_art_prologue_pack_raider", "kind": "char", "subjects": ["hero_pack_raider"], "note": "프롤로그 — 이빨바람 조우(캐릭터 intro 샷)." }
   }
 }

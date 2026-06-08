@@ -543,6 +543,19 @@ function backdropLabel(backdrop: string | null): string {
   return backdrop;
 }
 
+function kindLabel(kind: string | null): string {
+  switch (kind) {
+    case "env":
+      return "환경 배경 (캐릭터 ref 없음)";
+    case "char":
+      return "캐릭터 CG (ref 필수)";
+    case "prop":
+      return "오브젝트";
+    default:
+      return "—";
+  }
+}
+
 function VisualChip({ meta }: { meta: Record<string, unknown> | null }) {
   const visual = sceneVisual(meta);
   if (!visual) {
@@ -577,6 +590,11 @@ function VisualSection({ meta }: { meta: Record<string, unknown> | null }) {
         <dd>{visual.medium}</dd>
         <dt>Backdrop</dt>
         <dd>{backdropLabel(visual.backdrop)}</dd>
+        <dt>Kind</dt>
+        <dd>
+          {kindLabel(visual.kind)}
+          {visual.subjects && visual.subjects.length > 0 ? ` · ${visual.subjects.join(", ")}` : ""}
+        </dd>
         <dt>Motion</dt>
         <dd>{visual.motion}</dd>
         <dt>LUT</dt>

@@ -127,6 +127,8 @@ export interface SceneVisual {
   motion: string; // none | static | kenburns | parallax | video
   lut: string; // ash | teal | violet | frost | ember | neutral
   curated: boolean;
+  kind: string | null; // env(순수 배경) | char(캐릭터 주체, ref 필수) | prop(오브젝트) | null
+  subjects: string[]; // char CG의 등장 캐릭터 id (생성 시 ref 첨부 대상)
   note?: string;
 }
 
