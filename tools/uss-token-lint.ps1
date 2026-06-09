@@ -129,8 +129,9 @@ foreach ($f in $ussFiles) {
 }
 
 # baseline (회귀 방지 — 현재 측정치를 천장으로). 토큰 채택이 진행되면 이 값을 내려간다.
-$BASELINE_FONT_LITS  = 9999
-$BASELINE_RAW_COLORS = 9999
+# 2026-06 batch 9-11 render-identical 배선 후 측정치로 lock. 이보다 늘면 StrictMetrics 실패.
+$BASELINE_FONT_LITS  = 222
+$BASELINE_RAW_COLORS = 1939
 
 if ($Json) {
     $out = [pscustomobject]@{
