@@ -55,7 +55,8 @@ public sealed class TownServiceHubFastTests
         Assert.That(presenter, Does.Contain("SetCorePanelReadiness"));
         Assert.That(presenter, Does.Contain("ShowSettings: _settingsOpener != null"));
         Assert.That(presenter, Does.Contain("ShowTheater: _theaterOpener != null"));
-        Assert.That(presenter, Does.Contain("핵심 패널"));
+        // dev 텔레메트리 "핵심 패널 N/M 준비" → 플레이어 의미 "시설 … 이용 가능"으로 교정됨.
+        Assert.That(presenter, Does.Contain("이용 가능"));
         Assert.That(presenter, Does.Not.Contain("Settings/Theater 후속"));
 
         var controller = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs");

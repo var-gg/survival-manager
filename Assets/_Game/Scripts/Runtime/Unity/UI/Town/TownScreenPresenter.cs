@@ -310,12 +310,16 @@ public sealed class TownScreenPresenter
         var panelTotal = _corePanelTotalCount > 0 ? _corePanelTotalCount : 10;
         var panelReady = _corePanelReadyCount > 0 ? _corePanelReadyCount : _npcOpeners.Count + (_heroOpener != null ? 1 : 0);
 
+        // 플레이어 의미로: 영문 jargon(inventory/roster/deploy) + dev 텔레메트리("핵심 패널 N/M 준비") 제거.
+        var allFacilitiesReady = panelReady >= panelTotal;
         return new TownServiceDecisionViewState(
             SelectedHeroLabel: heroLabel,
             WalletLabel: $"{session.Profile.Currencies.Gold:N0} 골드 · {session.Profile.Currencies.Echo:N0} 잔향",
-            InventoryLabel: $"{session.Profile.Inventory.Count} inventory",
-            RosterPressureLabel: $"{session.Profile.Heroes.Count}/12 roster · {deployCount}/4 deploy",
-            ModalAvailabilityLabel: $"핵심 패널 {panelReady}/{panelTotal} 준비");
+            InventoryLabel: $"소지품 {session.Profile.Inventory.Count}개",
+            RosterPressureLabel: $"동료 {session.Profile.Heroes.Count}/12 · 출전 {deployCount}/4",
+            ModalAvailabilityLabel: allFacilitiesReady
+                ? "모든 시설 이용 가능"
+                : $"시설 {panelReady}/{panelTotal} 이용 가능");
     }
 
     private string ResolveHeroDisplayName(string heroId, string? heroName)
