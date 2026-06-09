@@ -101,7 +101,7 @@ public sealed class TownScreenController : MonoBehaviour
         }
 
         panelHost.EnsureReady();
-        var view = new TownScreenView(panelHost.Root);
+        var view = new TownScreenView(panelHost.Root, _contentIconResolver.ResolveCharacterPortrait);
         _presenter = new TownScreenPresenter(_root, _localization, _contentText, view);
 
         // Modal Presenter 인스턴스화 — 각 modal 별도 try/catch로 격리.

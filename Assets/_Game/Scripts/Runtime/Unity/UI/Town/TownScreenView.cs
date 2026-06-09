@@ -59,15 +59,18 @@ public sealed class TownScreenView
     private Action<string>? _onNpcClick;
     private Action<string>? _onHeroClick;
     private string _welcomeHeroId = string.Empty;
+    // NPC id(달목/쇠매/갈마/솔길) → 흉상 Texture. null이면 글리프 placeholder 유지.
+    private readonly Func<string, UnityEngine.Texture2D?>? _portraitLoader;
 
     // wave-36-barkbus: bark popup attach 대상 face card lookup table.
     // 매 Render마다 재구축 — face card는 list mutation 시 재생성되므로 stale ref 방지.
     private readonly Dictionary<string, VisualElement> _faceCardsBySourceId = new(StringComparer.Ordinal);
     private IDisposable? _barkSubscription;
 
-    public TownScreenView(VisualElement root)
+    public TownScreenView(VisualElement root, Func<string, UnityEngine.Texture2D?>? portraitLoader = null)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
+        _portraitLoader = portraitLoader;
 
         _titleEyebrowLabel = Require<Label>(root, "TitleEyebrowLabel");
         _titleLabel = Require<Label>(root, "TitleLabel");
@@ -201,7 +204,8 @@ public sealed class TownScreenView
         _npcStrip.Clear();
         foreach (var npc in state.NpcEntries)
         {
-            var card = BuildFaceCard(npc.NpcId, npc.DisplayName, npc.EmotionKey, npc.BadgeKey, "lg", "npc", npc.RoleLabel);
+            var npcPortrait = _portraitLoader?.Invoke(npc.NpcId);
+            var card = BuildFaceCard(npc.NpcId, npc.DisplayName, npc.EmotionKey, npc.BadgeKey, "lg", "npc", npc.RoleLabel, npcPortrait);
             var npcId = npc.NpcId;
             card.clicked += () => _onNpcClick?.Invoke(npcId);
             _npcStrip.Add(card);
@@ -261,7 +265,7 @@ public sealed class TownScreenView
     }
 
     /// <summary>HeroFaceCard atom build — NPC + hero 공용. badge로 위계 분리, size로 변형.</summary>
-    private static Button BuildFaceCard(string id, string displayName, string emotion, string badge, string size, string role, string caption = "")
+    private static Button BuildFaceCard(string id, string displayName, string emotion, string badge, string size, string role, string caption = "", UnityEngine.Texture2D? portraitTex = null)
     {
         var card = new Button { name = $"FaceCard_{id}", text = string.Empty };
         card.AddToClassList("sm-face-card");
@@ -280,16 +284,25 @@ public sealed class TownScreenView
         var portrait = new VisualElement { name = "Portrait" };
         portrait.AddToClassList("sm-face-card__portrait");
         portrait.AddToClassList($"sm-face-card__emotion--{emotion}");
-        // wave-35-placeholder: NPC role 4명별 portrait BG tint — P09 import 전 visually distinct하게.
+        // NPC role 4명별 portrait BG tint — 실제 얼굴이 없을 때 visually distinct하게(glyph fallback 배경).
         if (!string.IsNullOrEmpty(badge) && badge != "none")
         {
             portrait.AddToClassList($"sm-face-card__portrait--{badge}");
         }
         portrait.pickingMode = PickingMode.Ignore;
-        var portraitGlyph = new Label(ResolvePortraitGlyph(badge, role, id));
-        portraitGlyph.AddToClassList("sm-face-card__portrait-glyph");
-        portraitGlyph.pickingMode = PickingMode.Ignore;
-        portrait.Add(portraitGlyph);
+        if (portraitTex != null)
+        {
+            // 라이브러리에 실제 흉상이 있으면 얼굴을 채워 crop — glyph placeholder 대체.
+            portrait.style.backgroundImage = new StyleBackground(portraitTex);
+            portrait.style.unityBackgroundScaleMode = UnityEngine.ScaleMode.ScaleAndCrop;
+        }
+        else
+        {
+            var portraitGlyph = new Label(ResolvePortraitGlyph(badge, role, id));
+            portraitGlyph.AddToClassList("sm-face-card__portrait-glyph");
+            portraitGlyph.pickingMode = PickingMode.Ignore;
+            portrait.Add(portraitGlyph);
+        }
         card.Add(portrait);
 
         var nameLabel = new Label(displayName);

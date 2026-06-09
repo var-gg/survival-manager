@@ -87,7 +87,8 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(characterSheetUxml, Does.Contain("TcsProgressionTrack"));
         Assert.That(characterSheetUxml, Does.Contain("TcsSkillList"));
         Assert.That(characterSheetUxml, Does.Contain("TcsEquipmentRow"));
-        Assert.That(characterSheetUxml, Does.Contain("tcs-tab-strip"));
+        // 장식 tcs-tab-strip(라벨·핸들러 0, false affordance)은 제거됨 — 실제 스킬 패널 존재로 검증 대체.
+        Assert.That(characterSheetUxml, Does.Contain("tcs-panel--skill-list"));
         Assert.That(characterSheetUxml, Does.Contain("tcs-panel--equipment"));
         var townPresenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenPresenter.cs");
         Assert.That(townPresenter, Does.Contain("SetHeroOpener"));

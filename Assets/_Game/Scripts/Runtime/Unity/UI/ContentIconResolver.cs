@@ -31,6 +31,11 @@ internal sealed class ContentIconResolver
         ["shaman"] = "hero_storm_shaman",
         ["slayer"] = "hero_oath_slayer",
         ["warden"] = "hero_iron_warden",
+        // Town 허브 NPC 거점 short key → 포트레잇 subject (달목/쇠매/솔길/갈마).
+        ["dalmok"] = "npc_dalmok_inn_keeper",
+        ["soemae"] = "npc_swemae_blacksmith",
+        ["solgil"] = "npc_solgil_general_store",
+        ["galma"] = "npc_galma_mercenary_post",
     };
 
     private static readonly IReadOnlyDictionary<string, string> AffixIconIds = new Dictionary<string, string>(StringComparer.Ordinal)
