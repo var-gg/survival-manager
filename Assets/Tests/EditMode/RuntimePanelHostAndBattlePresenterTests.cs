@@ -57,7 +57,8 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
 
             var state = presenter.BuildLoadingState();
 
-            Assert.That(state.Title, Is.EqualTo("Battle"));
+            // uxqa1: fallback Korean-first 전환(65a08f75) 이후 stale이던 영문 기대값을 현행 계약으로 갱신.
+            Assert.That(state.Title, Is.EqualTo("전투 전황"));
             Assert.That(state.LocaleKoLabel, Is.EqualTo("한국어"));
             Assert.That(state.LocaleEnLabel, Is.EqualTo("English"));
             Assert.That(state.Settings.OverheadLabel.Contains("ui.battle"), Is.False);
@@ -134,11 +135,13 @@ public sealed class RuntimePanelHostAndBattlePresenterTests
 
             Assert.That(state.LogText, Does.Contain("hit"));
             Assert.That(state.LogText.Contains("combat.log.damage"), Is.False);
-            Assert.That(state.SpeedText, Is.EqualTo("Expedition Battle"));
+            // uxqa1: playback fallback Korean-first 전환 반영.
+            Assert.That(state.SpeedText, Is.EqualTo("원정 전투"));
             Assert.That(state.StatusText.Contains("ui.battle.status"), Is.False);
             Assert.That(state.Settings.TeamSummaryLabel, Does.Contain("Team Summary"));
             Assert.That(state.Settings.IsVisible, Is.True);
-            Assert.That(state.AllyHpText, Does.Contain("Allies 1/1"));
+            // uxqa1: strip 헤더의 팀 라벨 prefix 제거(인접 타이틀이 팀명 표시) — 생존/총원 포맷만 단언.
+            Assert.That(state.AllyHpText, Does.Contain("1/1"));
             Assert.That(state.ShowPlaybackControls, Is.False);
             Assert.That(state.ShowSmokeActions, Is.False);
         }

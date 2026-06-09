@@ -52,7 +52,8 @@ public sealed class BattleScreenPresenterReadabilityTests
             Assert.That(state.StatusText, Does.Contain("Result"));
             Assert.That(state.ReplayLabel, Is.EqualTo("Replay"));
             Assert.That(state.LogText, Does.Contain("Enemy down"));
-            Assert.That(state.AllyHpText, Does.Contain("Allies"));
+            // uxqa1: strip 헤더의 팀 라벨 prefix 제거 — 생존/총원 포맷만 단언.
+            Assert.That(state.AllyHpText, Does.Contain("1/1"));
             Assert.That(state.ShowPlaybackControls, Is.False);
         }
         finally
