@@ -68,7 +68,7 @@
 
 .reward-screen .reward-bible__title {
     color: var(--sm-gold-100);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     -unity-font-style: bold;
     letter-spacing: 1px;
 }
@@ -199,7 +199,7 @@
 
 .reward-screen .panel__text {
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     line-height: 15px;
     white-space: normal;
 }
@@ -278,7 +278,7 @@
     padding-top: 2px;
     padding-bottom: 2px;
     color: var(--sm-gold-100);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     background-color: var(--sm-gold-300-a12);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -351,7 +351,7 @@
     width: 120px;
     min-width: 120px;
     color: var(--sm-gold-200);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
 }
 
@@ -359,7 +359,7 @@
     /* wave-28-continue: value font 10→12, line-height 13→16. survivor row readability. */
     flex-grow: 1;
     color: var(--sm-vellum);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     line-height: 16px;
     white-space: normal;
 }
@@ -422,7 +422,7 @@
 }
 .reward-screen .reward-survivor-row__hp {
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     min-width: 60px;
 }
 .reward-screen .reward-survivor-row__hp-bar {
@@ -593,7 +593,7 @@
 
 .reward-screen .reward-card .card__title {
     color: var(--sm-gold-100);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     -unity-font-style: bold;
     white-space: normal;
 }
@@ -602,7 +602,7 @@
     min-height: 58px;
     margin-top: 12px;
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     line-height: 15px;
     white-space: normal;
 }
@@ -709,7 +709,7 @@
     background-color: rgba(17, 22, 36, 0.96);
     color: var(--sm-gold-200);
     -unity-text-align: middle-center;
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-font-style: bold;
     border-left-width: 1px;
     border-right-width: 1px;
@@ -733,7 +733,7 @@
 
 .reward-screen .reward-timeline-tick__text {
     color: var(--sm-ink-2);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     line-height: 11px;
     -unity-text-align: upper-center;
     white-space: normal;

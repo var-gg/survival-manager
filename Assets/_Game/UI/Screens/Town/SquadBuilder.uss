@@ -118,7 +118,7 @@
 
 .sm-sqb-modal__section-title {
     color: var(--sm-gold-200);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-font-style: bold;
     letter-spacing: 1px;
     margin-bottom: 6px;
@@ -126,13 +126,13 @@
 
 .sm-sqb-modal__count {
     color: var(--sm-ink-3);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     margin-bottom: 6px;
 }
 
 .sm-sqb-modal__hint {
     color: var(--sm-ink-3);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     margin-bottom: 10px;
 }
 
@@ -166,7 +166,7 @@
 
 .sm-sqb-modal__roster-name {
     color: var(--sm-ink-1);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
 }
 
@@ -190,7 +190,7 @@
 
 .sm-sqb-modal__column-title {
     color: var(--sm-ink-2);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     margin-bottom: 8px;
     -unity-text-align: middle-center;
     letter-spacing: 2px;
@@ -203,7 +203,7 @@
     -unity-text-align: middle-center;
     color: var(--sm-ink-1);
     white-space: normal;
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     overflow: hidden;
 }
 
@@ -224,20 +224,20 @@
 
 .sm-sqb-modal__detail-name {
     color: var(--sm-ink-1);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     -unity-font-style: bold;
     margin-bottom: 6px;
 }
 
 .sm-sqb-modal__detail-meta {
     color: var(--sm-gold-100);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     margin-bottom: 8px;
 }
 
 .sm-sqb-modal__detail-body {
     color: var(--sm-ink-2);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     white-space: normal;
     margin-bottom: 10px;
 }
@@ -271,7 +271,7 @@
     margin-bottom: 8px;
     -unity-text-align: middle-center;
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     overflow: hidden;
 }
 
@@ -287,7 +287,7 @@
 
 .sm-sqb-modal__status {
     color: var(--sm-ink-3);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-text-align: middle-center;
     margin-top: 6px;
 }

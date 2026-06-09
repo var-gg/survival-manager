@@ -39,4 +39,15 @@ if ($missing.Count -gt 0) {
     exit 1
 }
 
+# USS 디자인 토큰 conformance — 미정의 var() 렌더버그 가드(로직은 standalone lint에 위임).
+# 미정의 토큰 참조(no-fallback)가 있으면 smoke를 실패시킨다. METRIC/WARN은 정보용이라 깨지 않음.
+$ussLint = Join-Path $PSScriptRoot 'uss-token-lint.ps1'
+if (Test-Path $ussLint) {
+    & pwsh -NoProfile -File $ussLint -RepoRoot $RepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error 'USS 토큰 lint 실패 — 미정의 토큰 참조(렌더버그). tools/uss-token-lint.ps1 출력 확인.'
+        exit 1
+    }
+}
+
 Write-Host 'Repo structure smoke check passed.'

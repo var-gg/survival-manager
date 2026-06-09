@@ -133,7 +133,7 @@
     border-right-color: rgba(230, 183, 81, 0.18);
     border-top-color: rgba(230, 183, 81, 0.16);
     border-bottom-color: rgba(230, 183, 81, 0.24);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-text-align: middle-center;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .sm-sqb-modal__roster-name {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-vellum);
     -unity-text-align: middle-center;
 }
@@ -394,7 +394,7 @@
     flex-grow: 1;
     width: 100%;
     color: rgba(245, 214, 138, 0.92);
-    font-size: 24px;
+    font-size: var(--sm-fs-xl);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
@@ -403,7 +403,7 @@
     width: 100%;
     flex-grow: 0;
     color: var(--sm-vellum);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
@@ -466,18 +466,18 @@
 }
 
 .sm-sqb-modal__detail-name {
-    font-size: 28px;
+    font-size: var(--sm-fs-3xl);
     margin-bottom: 16px;
 }
 
 .sm-sqb-modal__detail-meta {
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     line-height: 16px;
     margin-bottom: 14px;
 }
 
 .sm-sqb-modal__detail-body {
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     line-height: 16px;
     margin-bottom: 16px;
 }
@@ -503,7 +503,7 @@
     height: 34px;
     margin-right: 8px;
     margin-bottom: 8px;
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     background-color: rgba(28, 22, 12, 0.88);
 }
 
@@ -558,12 +558,12 @@
 .sm-sqb-modal__operation-value {
     flex-grow: 1;
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-text-align: middle-right;
 }
 
 .sm-sqb-modal__response-summary {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     line-height: 14px;
     color: var(--sm-ink-2);
     white-space: normal;

@@ -362,7 +362,7 @@
 }
 
 .sm-hpc__ko-banner-en {
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-font-style: bold;
     color: var(--sm-ink-2);
     -unity-text-align: middle-center;
@@ -431,7 +431,7 @@
 }
 
 .sm-hpc__name-en {
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     color: var(--sm-gold-200);
     -unity-text-align: middle-center;
     margin-top: 2px;
@@ -574,7 +574,7 @@
 .sm-hpc--fam-mystic   .sm-hpc__archetype-jewel { background-color: var(--sm-fam-mystic-glow); }
 
 .sm-hpc__archetype-text {
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     color: var(--sm-fam-striker-glow);
 }

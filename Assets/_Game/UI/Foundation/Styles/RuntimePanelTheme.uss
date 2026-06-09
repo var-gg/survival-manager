@@ -620,7 +620,7 @@
 /* --- Eyebrow caption --- */
 /* 헤드라인 위 작은 dev tag (mono). */
 .sm-eyebrow {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-gold-300);
     -unity-font-style: bold;
     letter-spacing: 2px;

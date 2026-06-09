@@ -117,7 +117,7 @@
     height: 30px;
     padding-left: 12px;
     padding-right: 12px;
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
 }
 
 /* Help strip: opt-in overlay below command bar. */
@@ -146,7 +146,7 @@
 .town-hub__help-body {
     flex-grow: 1;
     color: var(--sm-ink-2);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     white-space: normal;
 }
 
@@ -168,7 +168,7 @@
 
 .town-hub__column-eyebrow {
     color: var(--sm-gold-300);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     letter-spacing: 0;
     -unity-font-style: bold;
     margin-bottom: 14px;
@@ -303,7 +303,7 @@
 
 .town-hub__feature-stat-icon {
     color: var(--sm-gold-200);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     margin-bottom: 8px;
     -unity-text-align: middle-center;
 }
@@ -366,7 +366,7 @@
     height: 52px;
     margin-right: 10px;
     -unity-text-align: middle-center;
-    font-size: 24px;
+    font-size: var(--sm-fs-xl);
     color: var(--sm-gold-100);
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
     -unity-slice-left: 56;
@@ -399,7 +399,7 @@
 .town-hub__utility-arrow {
     width: 20px;
     color: var(--sm-gold-200);
-    font-size: 28px;
+    font-size: var(--sm-fs-3xl);
     -unity-text-align: middle-center;
 }
 
@@ -457,7 +457,7 @@
 
 .town-hub__service-line {
     color: var(--sm-ink-2);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     margin-bottom: 9px;
     white-space: normal;
 }
@@ -490,7 +490,7 @@
 
 .town-hub__cluster-eyebrow {
     color: var(--sm-gold-300);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     letter-spacing: 0;
     -unity-font-style: bold;
     margin-bottom: 10px;
@@ -552,7 +552,7 @@
 .town-hub__status {
     flex-grow: 1;
     color: var(--sm-ink-3);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-text-align: middle-left;
 }
 
@@ -704,7 +704,7 @@
     left: 48px;
     right: 48px;
     height: 30px;
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     background-color: rgba(7, 12, 29, 0.70);
     border-left-width: 1px;
     border-right-width: 1px;

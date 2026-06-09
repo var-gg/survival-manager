@@ -79,7 +79,7 @@
     border-bottom-color: var(--sm-gold-500);
     -unity-text-align: middle-center;
     -unity-font-style: bold;
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: rgb(31, 19, 9);
 }
 
@@ -114,7 +114,7 @@
     flex-grow: 1;
     /* wave-35-placeholder: glyph 가시성 ↑ — P09 import 전 임시 placeholder가 의도되어 보이도록 */
     color: rgba(255, 226, 153, 0.92);
-    font-size: 24px;
+    font-size: var(--sm-fs-xl);
     -unity-text-align: middle-center;
     -unity-font-style: bold;
 }
@@ -131,7 +131,7 @@
 
 .sm-face-card--lg .sm-face-card__portrait-glyph { font-size: 34px; }
 .sm-face-card--md .sm-face-card__portrait-glyph { font-size: 26px; }
-.sm-face-card--sm .sm-face-card__portrait-glyph { font-size: 18px; }
+.sm-face-card--sm .sm-face-card__portrait-glyph { font-size: var(--sm-fs-l); }
 
 /* emotion swap — face_emotion_sheet은 4×2 (8 cell). cell offset은 Unity USS의
    -unity-background-image-tint-color 또는 background-position-x/y로 cell 1개 노출.
@@ -150,7 +150,7 @@
 /* name */
 .sm-face-card__name {
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     white-space: nowrap;
@@ -160,8 +160,8 @@
 }
 
 .sm-face-card--lg .sm-face-card__name { font-size: 13px; }
-.sm-face-card--md .sm-face-card__name { font-size: 11px; }
-.sm-face-card--sm .sm-face-card__name { font-size: 9px; }
+.sm-face-card--md .sm-face-card__name { font-size: var(--sm-fs-eb); }
+.sm-face-card--sm .sm-face-card__name { font-size: var(--sm-fs-xs); }
 
 /* NPC 거점 기능 caption(모집/장비/수련/창고) — 이름 아래 muted 보조 라벨 */
 .sm-face-card__caption {
@@ -259,7 +259,7 @@
     border-right-color: var(--sm-gold-300);
     border-bottom-color: var(--sm-gold-500);
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-text-align: middle-center;
     -unity-font-style: bold;
     white-space: normal;

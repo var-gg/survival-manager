@@ -75,7 +75,7 @@
 .battle-screen .sm-bs-result {
     min-width: 130px;
     color: var(--sm-vellum);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-font-style: bold;
 }
 
@@ -83,7 +83,7 @@
     flex-grow: 1;
     margin-left: 10px;
     color: var(--sm-ink-1);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -93,7 +93,7 @@
     min-width: 150px;
     margin-left: 10px;
     color: var(--sm-gold-100);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-text-align: middle-right;
 }
 
@@ -226,7 +226,7 @@
 .battle-screen .sm-bs-rail-summary {
     margin-top: 6px;
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     white-space: normal;
 }
 
@@ -333,7 +333,7 @@
 
 .battle-screen .sm-bs-roster-name {
     color: var(--sm-ink-0);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
     white-space: nowrap;
     overflow: hidden;
@@ -343,7 +343,7 @@
 .battle-screen .sm-bs-roster-status {
     margin-top: 5px;
     color: var(--sm-ink-2);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -381,7 +381,7 @@
 
 .battle-screen .sm-bs-event-feed .sm-bs-section-title {
     color: var(--sm-gold-200);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
 }
 
@@ -389,7 +389,7 @@
     margin-top: 3px;
     white-space: normal;
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     line-height: 15px;
 }
 
@@ -486,7 +486,7 @@
     margin-bottom: 0;
     padding-left: 6px;
     padding-right: 6px;
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
 }
 
 .battle-screen .sm-bs-control-btn:hover {
@@ -619,7 +619,7 @@
 .battle-screen .sm-bs-unit-detail-tab {
     min-width: 86px;
     margin-right: 6px;
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
 }
 
 .battle-screen .sm-bs-unit-detail-tab--active {
@@ -635,7 +635,7 @@
     white-space: normal;
     -unity-text-align: upper-left;
     color: var(--sm-ink-1);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     line-height: 16px;
 }
 
@@ -739,7 +739,7 @@
 .battle-screen .sm-bs-stat-value {
     margin-top: 2px;
     color: var(--sm-ink-0);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
     white-space: nowrap;
     overflow: hidden;
@@ -753,7 +753,7 @@
     margin-top: 8px;
     margin-bottom: 5px;
     color: var(--sm-gold-200);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
 }
 
@@ -907,7 +907,7 @@
 .battle-screen .sm-bs-skill-label {
     flex-grow: 1;
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     white-space: normal;
 }
 
@@ -945,7 +945,7 @@
 
 .battle-screen .sm-bs-equipment-label {
     color: var(--sm-gold-100);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
 }
 
@@ -1034,7 +1034,7 @@
 
 .battle-screen .sm-bs-empty-line {
     color: var(--sm-ink-2);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
 }
 
 .battle-screen .sm-bs-settings-panel {
@@ -1057,7 +1057,7 @@
 .battle-screen .screen__locale-status,
 .battle-screen .sm-bs-settings-status {
     color: var(--sm-ink-2);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     white-space: normal;
 }
 
@@ -1151,7 +1151,7 @@
 .battle-screen .sm-bs-title {
     width: 138px;
     color: var(--sm-gold-100);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
 }
 
 .battle-screen .sm-bs-result {
@@ -1340,7 +1340,7 @@
     margin-right: 6px;
     -unity-text-align: middle-center;
     color: var(--sm-gold-100);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     background-color: var(--sm-bg-portrait-a82);
     border-width: 1px;
@@ -1363,7 +1363,7 @@
 
 .battle-screen .sm-bs-combatant-token__action {
     color: var(--sm-ink-2);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1407,7 +1407,7 @@
 
 .battle-screen .sm-bs-intel-title {
     color: var(--sm-gold-100);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
 }
 
@@ -1500,7 +1500,7 @@
 
 .battle-screen .sm-bs-intel-legend-label {
     color: var(--sm-ink-2);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1533,7 +1533,7 @@
     width: 100%;
     margin-bottom: 9px;
     color: var(--sm-gold-100);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-text-align: middle-center;
     white-space: nowrap;
     overflow: hidden;
@@ -1579,7 +1579,7 @@
 
 .battle-screen .sm-bs-side-rail-token__mark {
     color: var(--sm-gold-100);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
@@ -1628,7 +1628,7 @@
 .battle-screen .sm-bs-control-bar .sm-bs-control-btn {
     min-width: 58px;
     min-height: 44px;
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
 }
 
 .battle-screen .sm-bs-control-bar .sm-bs-control-btn--primary {
@@ -1649,7 +1649,7 @@
     height: 14px;
     margin-bottom: 5px;
     color: var(--sm-gold-100);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
 }
 
 .battle-screen .sm-bs-observer-chips {

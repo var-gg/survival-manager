@@ -33,14 +33,14 @@
     padding-bottom: 10px;
 }
 .gallery-eyebrow {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-gold-300);
     letter-spacing: 3px;
     -unity-font-style: bold;
     margin-bottom: 3px;
 }
 .gallery-title {
-    font-size: 28px;
+    font-size: var(--sm-fs-3xl);
     color: var(--sm-gold-200);
     letter-spacing: 3px;
     -unity-font-style: bold;
@@ -59,7 +59,7 @@
     margin-bottom: 18px;
 }
 .gallery-section__label {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-gold-300);
     letter-spacing: 2px;
     -unity-font-style: bold;
@@ -79,7 +79,7 @@
 }
 
 .gallery-cap {
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     color: var(--sm-ink-3);
     letter-spacing: 1px;
     margin-top: 4px;
@@ -100,7 +100,7 @@
     border-top-right-radius: 12px;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
 }
 .gchip--state {
@@ -162,7 +162,7 @@
 }
 .g-stat__cap {
     width: 52px;
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-gold-200);
     -unity-font-style: bold;
     letter-spacing: 1px;
@@ -196,7 +196,7 @@
 .g-stat__val {
     width: 80px;
     margin-left: 8px;
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-ink-2);
     -unity-text-align: middle-right;
 }
@@ -227,7 +227,7 @@
     justify-content: center;
 }
 .g-fam-name {
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     color: var(--sm-ink-1);
     -unity-font-style: bold;
     letter-spacing: 1px;

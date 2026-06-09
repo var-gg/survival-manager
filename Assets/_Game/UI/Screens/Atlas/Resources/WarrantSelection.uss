@@ -28,7 +28,7 @@
 
 .warrant-screen .screen__title {
     color: var(--sm-gold-100);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     -unity-font-style: bold;
     letter-spacing: 1px;
 }
@@ -60,7 +60,7 @@
 
 .warrant-screen .panel__text {
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     line-height: 15px;
     white-space: normal;
 }
@@ -118,7 +118,7 @@
 
 .warrant-screen .warrant-card .card__title {
     color: var(--sm-gold-100);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     -unity-font-style: bold;
     white-space: normal;
 }
@@ -135,7 +135,7 @@
     min-height: 58px;
     margin-top: 12px;
     color: var(--sm-ink-1);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     line-height: 16px;
     white-space: normal;
 }

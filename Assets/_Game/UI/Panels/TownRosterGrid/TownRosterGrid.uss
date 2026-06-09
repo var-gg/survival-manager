@@ -52,7 +52,7 @@
 }
 
 .rgp-header__eyebrow {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-gold-300);
     letter-spacing: 4px;
     -unity-font-style: bold;
@@ -60,7 +60,7 @@
 }
 
 .rgp-header__title {
-    font-size: 28px;
+    font-size: var(--sm-fs-3xl);
     color: var(--sm-gold-200);
     -unity-font-style: bold;
 }
@@ -77,7 +77,7 @@
 }
 
 .rgp-header__hint {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-ink-3);
     margin-top: 4px;
 }
@@ -115,7 +115,7 @@
     border-top-color: var(--sm-line-2);
     border-bottom-color: var(--sm-line-2);
     color: var(--sm-ink-2);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
 }
 
 .rgp-filter-chip:hover {
@@ -187,7 +187,7 @@
 }
 .rgp-profile-overlay__level-label {
     color: var(--sm-gold-100);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     margin-right: 4px;
     min-width: 28px;
@@ -233,7 +233,7 @@
     bottom: 32px;
     width: 184px;
     color: var(--sm-ink-0);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-font-style: bold;
 }
 

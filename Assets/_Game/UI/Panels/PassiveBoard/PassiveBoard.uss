@@ -30,7 +30,7 @@
 .pbp-header__class-row { flex-direction: row; align-items: center; }
 .pbp-header__class-icon { width: 18px; height: 18px; margin-right: 6px;
     -unity-background-scale-mode: scale-to-fit; }
-.pbp-header__class-label { color: var(--sm-ink-2); font-size: 11px; letter-spacing: 3px;
+.pbp-header__class-label { color: var(--sm-ink-2); font-size: var(--sm-fs-eb); letter-spacing: 3px;
     -unity-font-style: bold; }
 
 .pbp-body { flex-direction: row; flex-grow: 1; padding: 18px; }
@@ -146,7 +146,7 @@
     margin-top: 12px; margin-bottom: 12px; }
 .pbp-detail__desc { width: 240px; padding: 8px 14px; }
 .pbp-detail__desc-text {
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     color: var(--sm-ink-1);
     white-space: normal;
     -unity-text-align: middle-center;
@@ -160,17 +160,17 @@
     -unity-text-align: middle-center;
     -unity-font-style: bold;
 }
-.pbp-detail__available { color: rgba(120,200,140,0.92); font-size: 11px; letter-spacing: 3px;
+.pbp-detail__available { color: rgba(120,200,140,0.92); font-size: var(--sm-fs-eb); letter-spacing: 3px;
     -unity-font-style: bold; margin-top: 14px; margin-bottom: 8px; }
 /* Activate CTA: visual은 sm-cta sm-cta--md sm-cta--primary. width/color/font만 surface 고유. */
 .pbp-detail__activate { width: 200px; color: rgba(20,16,8,1);
-    font-size: 14px; letter-spacing: 4px; -unity-font-style: bold; }
-.pbp-detail__progress { margin-top: 8px; color: var(--sm-ink-2); font-size: 11px; }
+    font-size: var(--sm-fs-m); letter-spacing: 4px; -unity-font-style: bold; }
+.pbp-detail__progress { margin-top: 8px; color: var(--sm-ink-2); font-size: var(--sm-fs-eb); }
 
 /* Footer — point-budget 폐기. per-kind active 카운트만 노출. */
 .pbp-footer { flex-direction: row; align-items: center; justify-content: space-between;
     padding: 10px 24px; border-top-width: 1px; border-top-color: rgba(230,183,81,0.28); }
-.pbp-footer__breakdown { color: var(--sm-gold-200); font-size: 11px; letter-spacing: 2px; -unity-font-style: bold; }
+.pbp-footer__breakdown { color: var(--sm-gold-200); font-size: var(--sm-fs-eb); letter-spacing: 2px; -unity-font-style: bold; }
 .pbp-footer__close { width: 28px; height: 28px; background-color: rgba(38,45,84,0.72); color: var(--sm-gold-200); }
 
 /* Panel-local ArtBible ownership overrides. */

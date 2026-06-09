@@ -46,7 +46,7 @@
     padding-bottom: 7px;
     padding-left: 14px;
     padding-right: 14px;
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     min-height: 32px;
 }
 
@@ -259,7 +259,7 @@
 
 .sm-btn--s .sm-btn__label-ko,
 .sm-btn--sm .sm-btn__label-ko {
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
 }
 
 .sm-btn--l .sm-btn__label-ko,

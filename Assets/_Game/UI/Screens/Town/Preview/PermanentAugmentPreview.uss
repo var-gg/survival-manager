@@ -10,7 +10,7 @@
 
 .pap-header { flex-direction: row; align-items: center; justify-content: space-between;
     padding: 18px 32px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
-.pap-header__title { font-size: 18px; color: var(--sm-gold-100); letter-spacing: 3px; -unity-font-style: bold; }
+.pap-header__title { font-size: var(--sm-fs-l); color: var(--sm-gold-100); letter-spacing: 3px; -unity-font-style: bold; }
 .pap-header__close { width: 36px; height: 36px; background-color: rgba(38,45,84,0.86); color: var(--sm-gold-200);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
@@ -55,7 +55,7 @@
     padding-top: 2px;
     padding-bottom: 2px;
     margin-bottom: 4px;
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     letter-spacing: 1px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
@@ -71,7 +71,7 @@
 .pap-augment-cell__name {
     margin-top: 6px;
     color: var(--sm-gold-100);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
     letter-spacing: 1px;
     -unity-text-align: middle-center;
@@ -91,7 +91,7 @@
 }
 .pap-augment-cell__status-text {
     -unity-text-align: middle-center;
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     letter-spacing: 1px;
     white-space: normal;
@@ -152,7 +152,7 @@
     white-space: normal;
 }
 .pap-detail-subtitle {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: var(--sm-ink-2);
     letter-spacing: 1px;
     -unity-text-align: middle-center;
@@ -169,7 +169,7 @@
     border-top-color: rgba(230,183,81,0.24);
     border-bottom-color: rgba(230,183,81,0.24); }
 .pap-detail-effect__heading {
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     color: var(--sm-gold-300);
     letter-spacing: 2px;
     -unity-font-style: bold;
@@ -187,7 +187,7 @@
     border-left-color: rgba(230,183,81,0.28); border-right-color: rgba(230,183,81,0.28);
     border-top-color: rgba(230,183,81,0.28); border-bottom-color: rgba(230,183,81,0.28); }
 .pap-detail-flavor__text {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     color: rgba(216,199,153,0.82);
     white-space: normal;
     -unity-text-align: middle-left;
@@ -218,14 +218,14 @@
 }
 .pap-meta-row__label {
     color: var(--sm-gold-300);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     letter-spacing: 2px;
     -unity-font-style: bold;
     margin-bottom: 2px;
 }
 .pap-meta-row__value {
     color: var(--sm-ink-1);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     white-space: normal;
 }
 
@@ -234,7 +234,7 @@
 .pap-equip-cta { flex-direction: column; }
 .pap-equip-cta__label {
     color: rgba(61, 47, 18, 1);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     letter-spacing: 2px;
     -unity-font-style: bold;
 }

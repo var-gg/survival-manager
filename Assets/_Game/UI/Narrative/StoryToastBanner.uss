@@ -32,6 +32,6 @@
 
 .story-toast-body {
     color: var(--story-text-color);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     white-space: normal;
 }

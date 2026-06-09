@@ -42,7 +42,7 @@
     border-bottom-color: rgba(138, 100, 24, 0.45);
 }
 .twp-header__eyebrow {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     letter-spacing: 4px;
     color: var(--sm-gold-500);
     -unity-font-style: bold;
@@ -238,7 +238,7 @@
 .twp-posture-card__label {
     -unity-text-align: middle-center;
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     letter-spacing: 1px;
     padding-top: 4px;
@@ -297,7 +297,7 @@
 }
 .twp-tactic-hero__name {
     color: rgba(61, 47, 18, 1);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
     margin-right: 10px;
 }
@@ -310,7 +310,7 @@
 /* formation · range — BehaviorProfile 요약 */
 .twp-tactic-hero__behavior {
     color: rgba(138, 100, 24, 1);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     letter-spacing: 1px;
     padding-left: 4px;
     padding-bottom: 4px;
@@ -330,7 +330,7 @@
 .twp-tactic-bias__label {
     width: 56px;
     color: rgba(61, 47, 18, 1);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
 }
 .twp-tactic-bias__bar {
     flex-grow: 1;
@@ -346,7 +346,7 @@
 .twp-tactic-bias__value {
     width: 22px;
     color: rgba(138, 100, 24, 1);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     -unity-text-align: middle-right;
 }
@@ -442,7 +442,7 @@
 .twp-threat-chip__label {
     -unity-text-align: middle-center;
     color: var(--sm-vellum);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     letter-spacing: 1px;
     padding-top: 2px;

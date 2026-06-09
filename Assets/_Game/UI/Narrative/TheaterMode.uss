@@ -43,7 +43,7 @@
     border-top-width: 0;
     border-bottom-width: 0;
     color: rgb(222, 216, 228);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-text-align: middle-left;
     white-space: normal;
 }

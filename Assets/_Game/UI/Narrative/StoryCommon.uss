@@ -91,7 +91,7 @@
 .story-continue-hint {
     margin-top: 10px;
     color: var(--story-muted-text-color);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     unity-font-style: italic;
 }
 

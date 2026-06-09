@@ -19,7 +19,7 @@
 .thp-entry-list { width: 256px; margin-right: 12px; }
 .thp-entry-list .unity-scroll-view__content-container { flex-direction: column; }
 .thp-entry-group { padding-bottom: 12px; }
-.thp-entry-group__title { color: var(--sm-gold-300); font-size: 12px; letter-spacing: 2px;
+.thp-entry-group__title { color: var(--sm-gold-300); font-size: var(--sm-fs-s); letter-spacing: 2px;
     -unity-font-style: bold; padding-left: 4px; padding-right: 4px; padding-top: 12px; padding-bottom: 7px;
     white-space: normal; }
 .thp-entry { flex-direction: row; align-items: center; padding: 9px 10px; margin-bottom: 6px;
@@ -41,7 +41,7 @@
 .thp-entry__info { flex-grow: 1; flex-direction: column; }
 .thp-entry__title-text {
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     letter-spacing: 1px;
     margin-bottom: 3px;

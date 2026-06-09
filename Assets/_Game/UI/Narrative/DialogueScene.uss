@@ -62,7 +62,7 @@
 }
 
 .dialogue-scene-line {
-    font-size: 24px;
+    font-size: var(--sm-fs-xl);
     min-height: 92px;
     white-space: normal;
 }

@@ -42,7 +42,7 @@
 .sm-tw-sandbox__title {
     margin-top: var(--sm-s-1);
     color: var(--sm-gold-100);
-    font-size: 28px;
+    font-size: var(--sm-fs-3xl);
     -unity-font-style: bold;
 }
 

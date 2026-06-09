@@ -55,7 +55,7 @@
 .rcp-header__ornament--left { margin-right: 18px; }
 .rcp-header__ornament--right { margin-left: 18px; }
 .rcp-header__title {
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     color: var(--sm-gold-100);
     letter-spacing: 3px;
     -unity-font-style: bold;
@@ -169,7 +169,7 @@
     padding-right: 8px;
     padding-top: 2px;
     padding-bottom: 2px;
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     letter-spacing: 2px;
     -unity-font-style: bold;
     color: var(--sm-vellum);
@@ -254,7 +254,7 @@
     padding-right: 6px;
     padding-top: 1px;
     padding-bottom: 1px;
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     letter-spacing: 1px;
     -unity-font-style: bold;
     color: var(--sm-vellum);
@@ -322,7 +322,7 @@
     border-top-color: rgba(127, 163, 224, 0.55);
     border-bottom-color: rgba(127, 163, 224, 0.55);
     color: rgba(31, 59, 102, 1);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
 }
 
@@ -364,7 +364,7 @@
     padding-bottom: 6px;
 }
 .rcp-card__cost-label {
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     color: var(--sm-gold-500);
     letter-spacing: 1px;
@@ -376,7 +376,7 @@
     margin-right: 12px;
     margin-top: 2px;
     color: rgba(61, 47, 18, 1);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     letter-spacing: 2px;
     -unity-font-style: bold;
 }
@@ -462,7 +462,7 @@
 
 .rcp-detail__name {
     color: var(--sm-gold-100);
-    font-size: 14px;
+    font-size: var(--sm-fs-m);
     -unity-font-style: bold;
 }
 
@@ -474,7 +474,7 @@
 .rcp-pressure__plan {
     margin-top: 5px;
     color: var(--sm-ink-2);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
 }
 
 .rcp-detail__plan,
@@ -784,7 +784,7 @@
 .rcp-command-strip__label,
 .rcp-command-strip__hint {
     color: rgba(216, 199, 153, 0.82);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     letter-spacing: 2px;
 }
@@ -849,7 +849,7 @@
 
 .rcp-rail__eyebrow {
     color: var(--sm-gold-100);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     letter-spacing: 3px;
     margin-bottom: 8px;
@@ -857,7 +857,7 @@
 
 .rcp-pressure__count {
     color: var(--sm-gold-100);
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     -unity-font-style: bold;
 }
 
@@ -869,7 +869,7 @@
 
 .rcp-pressure__plan {
     color: rgba(127, 163, 224, 0.95);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     margin-top: 8px;
     white-space: normal;
 }
@@ -891,7 +891,7 @@
 
 .rcp-rail__signal-title {
     color: rgba(216, 199, 153, 0.72);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     letter-spacing: 2px;
 }
@@ -1086,7 +1086,7 @@
 
 .rcp-skill-pip__slot {
     color: var(--sm-ink-0);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
 }
 
@@ -1150,7 +1150,7 @@
 }
 
 .rcp-detail__name {
-    font-size: 18px;
+    font-size: var(--sm-fs-l);
     -unity-text-align: middle-center;
 }
 
@@ -1242,7 +1242,7 @@
 .rcp-command-strip__wallet {
     margin-left: 18px;
     color: var(--sm-gold-100);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     letter-spacing: 1px;
 }
@@ -1325,7 +1325,7 @@
     margin-top: 14px;
     height: 38px;
     color: rgb(36, 25, 8);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     letter-spacing: 2px;
     -unity-font-style: bold;
     border-top-color: var(--sm-gold-100);

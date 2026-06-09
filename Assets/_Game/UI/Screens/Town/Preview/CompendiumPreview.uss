@@ -120,7 +120,7 @@
 
 .cmp-subtitle {
     color: rgba(245, 234, 208, 0.70);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     margin-top: 4px;
 }
 
@@ -232,7 +232,7 @@
 .cmp-filter__summary {
     min-width: 92px;
     color: var(--sm-ink-3);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-text-align: middle-right;
 }
 
@@ -448,7 +448,7 @@
 
 .cmp-skill-card__stats {
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     margin-top: 6px;
     white-space: normal;
@@ -552,7 +552,7 @@
 
 .cmp-character-card__title {
     color: var(--sm-vellum);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
     margin-top: 8px;
     white-space: normal;
@@ -572,7 +572,7 @@
     padding-left: 5px;
     padding-right: 5px;
     color: var(--sm-gold-100);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     background-color: rgba(245, 234, 208, 0.07);
     white-space: normal;
 }
@@ -661,7 +661,7 @@
 
 .cmp-entry__meta {
     color: var(--sm-gold-200);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     margin-top: 4px;
     white-space: normal;
 }
@@ -771,7 +771,7 @@
 
 .cmp-detail__subtitle {
     color: var(--sm-gold-200);
-    font-size: 12px;
+    font-size: var(--sm-fs-s);
     margin-top: 4px;
     white-space: normal;
 }
@@ -786,7 +786,7 @@
 .cmp-detail__hook {
     display: none;
     color: var(--sm-ink-3);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     margin-top: 10px;
     white-space: normal;
 }
@@ -985,7 +985,7 @@
     padding-left: 6px;
     padding-right: 6px;
     color: var(--sm-vellum);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     background-color: rgba(11, 17, 35, 0.74);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -1013,7 +1013,7 @@
 .cmp-vfx-actor-label {
     position: absolute;
     color: var(--sm-ink-2);
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     background-color: rgba(9, 13, 28, 0.62);
 }
@@ -1036,7 +1036,7 @@
 
 .cmp-vfx-caption__title {
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
 }
 
@@ -1125,12 +1125,12 @@
 .cmp-metric__label {
     width: 112px;
     color: var(--sm-ink-3);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
 }
 
 .cmp-metric__value {
     flex-grow: 1;
     color: var(--sm-vellum);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     white-space: normal;
 }
