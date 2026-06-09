@@ -141,8 +141,10 @@
 .erp-echo-cost__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: var(--sm-s-2); }
 .erp-echo-cost__glyph { width: 50px; height: 6px; background-color: rgba(180,150,230,0.78); }
 
-/* Refit CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. 15 Echo single-affix reroll. */
-.erp-refit-cta { width: 220px; }
+/* Refit CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. 15 Echo single-affix reroll.
+   uxqa1: 고정폭 220px은 영문 placeholder 기준이라 한글 라벨이 보더 밖으로 흘러나옴
+   — min-width로 완화해 라벨이 버튼을 키우게. */
+.erp-refit-cta { min-width: 220px; }
 .erp-refit-cta__label {
     color: rgba(61, 47, 18, 1);
     font-size: 13px;
@@ -152,7 +154,9 @@
 
 /* Pool column */
 .erp-pool { flex-grow: 1; flex-direction: column; padding-top: 0; }
-.erp-pool-row { flex-direction: row; align-items: center; height: 40px; margin-bottom: 6px;
+/* uxqa1: flex-shrink 기본 1이라 인벤토리가 늘면 row가 부모 높이에 맞춰 짓눌려
+   판독 불가 줄무늬가 되던 것 차단 (InventoryPool ScrollView 전환과 세트). */
+.erp-pool-row { flex-direction: row; align-items: center; height: 40px; flex-shrink: 0; margin-bottom: 6px;
     padding-left: var(--sm-s-2); padding-right: var(--sm-s-3);
     background-color: rgba(28,34,67,0.72);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;

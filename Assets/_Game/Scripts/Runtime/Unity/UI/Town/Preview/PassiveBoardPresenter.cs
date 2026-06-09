@@ -204,7 +204,9 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
                 RuleSummary: "보드의 노드를 클릭하면 효과와 태그가 표시됩니다.",
                 Tags: string.Empty,
                 AvailableLabel: "—",
-                ButtonLabel: "ACTIVATE",
+                // uxqa1: 미선택 상태의 ACTIVATE는 눌러도 no-op인 죽은 버튼 — 빈 라벨로 내려
+                // View가 버튼을 숨기게 한다 (노드 선택 시에만 CTA 노출).
+                ButtonLabel: string.Empty,
                 IconSprite: null);
         }
 

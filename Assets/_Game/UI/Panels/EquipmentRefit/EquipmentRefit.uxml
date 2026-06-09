@@ -28,14 +28,11 @@
             <ui:VisualElement class="erp-columns">
                 <!-- Left: 장착 hero standee + 3 slot + 선택 item 컨텍스트 -->
                 <ui:VisualElement class="erp-col erp-col--standee">
+                    <!-- uxqa1: erp-slot 3박스는 어떤 상태에서도 채워지지 않는 greeking 잔재(바인딩 0)
+                         — 죽은 affordance 일괄 제거 정책으로 삭제. 장착 슬롯 시스템 도입 시 재설계. -->
                     <ui:VisualElement class="erp-standee-row">
                         <ui:VisualElement class="erp-standee">
                             <ui:VisualElement name="StandeePortrait" class="erp-standee__portrait" picking-mode="Ignore" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="erp-slot-stack">
-                            <ui:VisualElement class="erp-slot erp-slot--weapon" picking-mode="Ignore" />
-                            <ui:VisualElement class="erp-slot erp-slot--armor" picking-mode="Ignore" />
-                            <ui:VisualElement class="erp-slot erp-slot--accessory" picking-mode="Ignore" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement class="erp-item-context">
@@ -48,9 +45,10 @@
                 <ui:VisualElement class="erp-col erp-col--affix">
                     <ui:VisualElement name="AffixList" class="erp-affix-list" />
                     <ui:VisualElement class="erp-cta-block">
+                        <!-- uxqa1: erp-echo-cost__glyph(50x6 보라 막대)는 와이어프레임 greeking 잔재 제거
+                             — 비용 수치는 CTA 라벨이 표기. -->
                         <ui:VisualElement name="EchoCost" class="erp-echo-cost">
                             <ui:VisualElement name="EchoIcon" class="erp-echo-cost__icon" picking-mode="Ignore" />
-                            <ui:VisualElement class="erp-echo-cost__glyph" picking-mode="Ignore" />
                         </ui:VisualElement>
                         <ui:Button class="erp-refit-cta sm-cta sm-cta--lg sm-cta--primary">
                             <ui:Label name="RefitCostLabel" class="erp-refit-cta__label" text="REFIT (-15 Echo)" />
@@ -58,16 +56,12 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
 
-                <!-- Right: 8 inventory pool -->
+                <!-- Right: inventory pool.
+                     uxqa1: 일반 VisualElement였을 때 인벤토리가 커지면 row들이 부모 높이에
+                     맞춰 무한 압축돼 판독 불가 줄무늬 띠가 되던 결함 — ScrollView로 교체.
+                     하단 erp-pool-actions__chip 5개는 와이어프레임 greeking 잔재(바인딩 0) 제거. -->
                 <ui:VisualElement class="erp-col erp-col--pool">
-                    <ui:VisualElement name="InventoryPool" class="erp-pool" />
-                    <ui:VisualElement class="erp-pool-actions">
-                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
-                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
-                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
-                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
-                        <ui:VisualElement class="erp-pool-actions__chip" picking-mode="Ignore" />
-                    </ui:VisualElement>
+                    <ui:ScrollView name="InventoryPool" class="erp-pool" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

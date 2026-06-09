@@ -236,7 +236,12 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                     ? _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId)
                     : selectedItem.EquippedHeroId;
                 equippedHeroLabel = $"장착: {heroName}";
-                equippedHeroPortrait = _portraitLoader(selectedItem.EquippedHeroId);
+                // uxqa1: EquippedHeroId는 save instance id(hero-1/GUID)라 포트레잇 해석 불가 —
+                // 스탠디가 영구 빈 박스로 렌더되던 결함. 이름과 같은 CharacterId→ArchetypeId 키 사용.
+                var portraitKey = !string.IsNullOrWhiteSpace(hero?.CharacterId) ? hero!.CharacterId
+                    : !string.IsNullOrWhiteSpace(hero?.ArchetypeId) ? hero!.ArchetypeId
+                    : selectedItem.EquippedHeroId;
+                equippedHeroPortrait = _portraitLoader(portraitKey);
             }
         }
 

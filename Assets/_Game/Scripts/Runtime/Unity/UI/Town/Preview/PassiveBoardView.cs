@@ -164,7 +164,14 @@ public sealed class PassiveBoardView
                 : DisplayStyle.Flex;
         }
         if (_availableLabel != null) _availableLabel.text = detail.AvailableLabel;
-        if (_activateButton != null) _activateButton.text = detail.ButtonLabel;
+        if (_activateButton != null)
+        {
+            _activateButton.text = detail.ButtonLabel;
+            // uxqa1: 라벨이 비면(노드 미선택) 버튼 숨김 — 눌러도 no-op인 죽은 CTA 노출 방지.
+            _activateButton.style.display = string.IsNullOrEmpty(detail.ButtonLabel)
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
+        }
     }
 
     private void HandleActivateClicked()
