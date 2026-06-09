@@ -1,10 +1,17 @@
 using SM.Combat.Model;
+using SM.Combat.Services;
 using UnityEngine;
 
 namespace SM.Unity;
 
 public sealed class BattleActorVfxSurface : MonoBehaviour
 {
+    // 원거리 commit(활/지팡이)의 투사체 비행 연출 상수. presentation 전용 — sim truth와 무관.
+    private const float MinProjectileTravelSeconds = 0.12f;
+    private const float MaxProjectileTravelSeconds = 0.5f;
+    private const float ProjectileVisualSpeed = 22f;
+    private const float ProjectileArrivalLingerSeconds = 0.04f;
+
     [SerializeField] private BattleVfxCatalog catalog = null!;
 
     private BattleVfxCatalog? _resolvedCatalog;
@@ -47,7 +54,7 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
 
         if (hasCatalogEntry && entry != null)
         {
-            SpawnCatalogEntry(entry, wrapper, relatedWorld);
+            SpawnCatalogEntry(entry, wrapper, relatedWorld, cue);
         }
     }
 
@@ -71,7 +78,7 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
         return _resolvedCatalog;
     }
 
-    private void SpawnCatalogEntry(BattleVfxCatalogEntry entry, BattleActorWrapper wrapper, Vector3? relatedWorld)
+    private void SpawnCatalogEntry(BattleVfxCatalogEntry entry, BattleActorWrapper wrapper, Vector3? relatedWorld, BattlePresentationCue cue)
     {
         var socket = wrapper.GetSocketTransform(entry.SocketId);
         var position = socket != null ? socket.TransformPoint(entry.LocalOffset) : LastSpawnPosition + entry.LocalOffset;
@@ -79,14 +86,31 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
         var instance = Instantiate(entry.Prefab, position, rotation * Quaternion.Euler(entry.LocalEulerAngles));
         instance.name = $"{entry.Prefab.name}_{entry.CueType}";
         instance.transform.localScale = Vector3.Scale(instance.transform.localScale, entry.LocalScale);
-        if (entry.ParentToSocket && socket != null)
+
+        // 활/지팡이 원거리 commit은 시전자 ProjectileOrigin에서 대상까지 실제로 가로질러 날아가는 투사체로 렌더한다.
+        // (그 전엔 origin에 정적 burst만 떠서 화살/마법탄이 갭을 건너지 않아 "거리/모션 없이 피만 닳는" 것처럼 보였다.)
+        // 근접 휘두름·임팩트·힐·가드 등 비투사체 cue는 기존대로 소켓에 정적 스폰한다.
+        var isTravelingProjectile = relatedWorld.HasValue
+            && entry.AnimationSemantic is BattleAnimationSemantic.BowShot or BattleAnimationSemantic.ProjectileCast;
+
+        if (entry.ParentToSocket && socket != null && !isTravelingProjectile)
         {
             instance.transform.SetParent(socket, worldPositionStays: true);
         }
 
         LastSpawnedPrefabName = entry.Prefab.name;
         _activeSpawnedVfx.Add(instance);
-        if (Application.isPlaying)
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
+        if (isTravelingProjectile)
+        {
+            StartCoroutine(TravelProjectileThenRelease(
+                instance, position, relatedWorld!.Value, ResolveProjectileTravelSeconds(cue, position, relatedWorld.Value)));
+        }
+        else
         {
             StartCoroutine(ReleaseSpawnedVfxAfterLifetime(instance, entry.LifetimeSeconds));
         }
@@ -110,6 +134,48 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
     private System.Collections.IEnumerator ReleaseSpawnedVfxAfterLifetime(GameObject instance, float lifetimeSeconds)
     {
         yield return new WaitForSeconds(lifetimeSeconds);
+        _activeSpawnedVfx.Remove(instance);
+        if (instance != null)
+        {
+            DestroyPresentationObject(instance);
+        }
+    }
+
+    // 비행 시간 = sim의 windup→contact 간격(CommitSchedule)을 그대로 사용한다. 그래야 투사체가 정확히
+    // ContactTick(=데미지·임팩트 VFX가 터지는 순간)에 대상에 도착해 cause→effect가 시각적으로 일치한다.
+    // 스케줄이 없으면(예: 일부 스킬) 거리/속도로 추정한다. presentation 전용 — sim truth를 읽지도 바꾸지도 않는다.
+    private static float ResolveProjectileTravelSeconds(BattlePresentationCue cue, Vector3 from, Vector3 to)
+    {
+        if (cue.CommitSchedule is { } schedule)
+        {
+            var windupTicks = Mathf.Max(0, schedule.ContactTick - schedule.WindupStartTick);
+            var seconds = windupTicks * BattleSimulator.DefaultFixedStepSeconds;
+            return Mathf.Clamp(seconds, MinProjectileTravelSeconds, MaxProjectileTravelSeconds);
+        }
+
+        var distance = Vector3.Distance(from, to);
+        return Mathf.Clamp(distance / ProjectileVisualSpeed, MinProjectileTravelSeconds, MaxProjectileTravelSeconds);
+    }
+
+    // 투사체를 origin → 대상으로 직선 보간 이동시킨 뒤 짧은 잔상만 남기고 정리한다.
+    // 임팩트 폭발은 별도 ImpactDamage cue가 대상의 Hit 소켓에서 띄우므로 여기서는 비행만 담당한다.
+    private System.Collections.IEnumerator TravelProjectileThenRelease(GameObject instance, Vector3 from, Vector3 to, float travelSeconds)
+    {
+        var duration = Mathf.Max(0.0001f, travelSeconds);
+        var elapsed = 0f;
+        while (elapsed < duration && instance != null)
+        {
+            elapsed += Time.deltaTime;
+            instance.transform.position = Vector3.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
+            yield return null;
+        }
+
+        if (instance != null)
+        {
+            instance.transform.position = to;
+        }
+
+        yield return new WaitForSeconds(ProjectileArrivalLingerSeconds);
         _activeSpawnedVfx.Remove(instance);
         if (instance != null)
         {
