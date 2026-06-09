@@ -129,6 +129,12 @@ export interface ResolvedBackdrop {
   source: string | null; // "cg" (canonical) | "output" (raw) | null
 }
 
+export interface ResolvedCue {
+  cueId: string;
+  path: string | null; // 생성된 BGM 트랙 절대경로 (없으면 null)
+  exists: boolean;
+}
+
 export interface SceneVisual {
   tier: string; // T0 | T1 | T2 | T3 | T4 | card
   medium: string; // cutscene | dialogue-scene | dialogue-overlay | combat-bark | reward-join | story-card | dialogue
@@ -138,6 +144,17 @@ export interface SceneVisual {
   curated: boolean;
   kind: string | null; // env(순수 배경) | char(캐릭터 주체, ref 필수) | prop(오브젝트) | null
   subjects: string[]; // char CG의 등장 캐릭터 id (생성 시 ref 첨부 대상)
+  note?: string;
+}
+
+export interface SceneAudio {
+  register: string; // politics-weight(정치-무게) | growth-emotion(성장-정서) | warmth-humor(유머-온기)
+  mood: string; // 챕터 audio mood (cold-sparse 등) | neutral
+  cue_id: string; // 계획 cue id (scene-mood 재사용 또는 bespoke override)
+  leitmotif: string | null; // 잠긴 모티프 id (캐릭터/세력) | null
+  channel: string; // Bgm
+  reuse: string; // shared(공용 루프) | bespoke(전용)
+  curated: boolean;
   note?: string;
 }
 

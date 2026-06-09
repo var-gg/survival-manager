@@ -8,6 +8,7 @@
       "ch4": "crystalline-fractured (결정질·차가운 광신)",
       "ch5": "lava-tension (용암 긴장 → 결정의 정적)"
     },
+    "chapterLut": { "ch1": "ash", "ch2": "teal", "ch3": "violet", "ch4": "frost", "ch5": "ember" },
     "channel": "Bgm"
   },
   "registers": {
@@ -21,7 +22,7 @@
     "dialogue_town_pre_ch5_empty_table": { "register": "politics-weight", "mood": "tense-stillness", "cue_id": "bgm_ch5_empty_table", "reuse": "bespoke", "note": "결전 전 정적 — town이지만 유머 아님" },
     "dialogue_scene_crypts_massacre_record": { "register": "politics-weight", "mood": "near-silent-witness", "cue_id": "bgm_ch3_massacre", "reuse": "bespoke", "note": "학살 목격 — 거의 무음, 멈춰 세움" },
     "dialogue_scene_massacre_record": { "register": "politics-weight", "mood": "near-silent-witness", "cue_id": "bgm_ch5_massacre", "reuse": "bespoke", "note": "네 세력 학살 기록 — 거의 무음, 정점" },
-    "dialogue_scene_baekgyu_first_encounter": { "register": "politics-weight", "mood": "calm-cold-pressure", "cue_id": "bgm_baekgyu", "leitmotif": "faction_baekgyu", "reuse": "bespoke", "note": "백규 권유 — 분노 안 함, 긴장+연민" },
+    "dialogue_scene_baekgyu_first_encounter": { "register": "politics-weight", "mood": "calm-cold-pressure", "cue_id": "bgm_baekgyu", "leitmotif": "faction_solarum", "reuse": "bespoke", "note": "백규(npc_baekgyu_sternheim) 권유 — solarum 학파 boss, 분노 안 함, 긴장+연민" },
     "dialogue_scene_final_record_decision": { "register": "growth-emotion", "mood": "weighted-quiet-resolve", "cue_id": "bgm_ch5_final", "leitmotif": "main", "reuse": "bespoke", "note": "선택된 무게의 정적 — 승리 팡파르 아님, 음소거도 아님" },
     "cutscene_ch5_clear_new_table": { "register": "growth-emotion", "mood": "somber-landing", "cue_id": "bgm_ch5_clear", "leitmotif": "main", "reuse": "bespoke", "note": "세계 평화 아닌 미완의 착지" },
     "cutscene_dawn_priest_memorial_dawn_prayer": { "register": "growth-emotion", "mood": "intimate-fragile", "cue_id": "bgm_memorial_dawn_priest", "leitmotif": "lead_dawn_priest", "reuse": "bespoke", "note": "단린 메모리얼 — 신앙 균열→자기 것" },

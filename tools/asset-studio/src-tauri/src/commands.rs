@@ -10,6 +10,7 @@ use serde_json::Value;
 
 use crate::assets::{self, AssetItem, AssetScanOptions};
 use crate::backdrop::{self, ResolvedBackdrop};
+use crate::cue::{self, ResolvedCue};
 use crate::config::{load_config, AppConfig};
 use crate::engines::{self, EngineHealth, EngineStartResult};
 use crate::narrative::{self, NarrativeIndex};
@@ -129,6 +130,12 @@ pub fn get_narrative_index() -> Result<NarrativeIndex, String> {
 pub fn resolve_backdrop_image(backdrop: String) -> Result<ResolvedBackdrop, String> {
     let config = load_config()?;
     Ok(backdrop::resolve(&config, &backdrop))
+}
+
+#[tauri::command]
+pub fn resolve_cue_track(cue_id: String) -> Result<ResolvedCue, String> {
+    let config = load_config()?;
+    Ok(cue::resolve(&config, &cue_id))
 }
 
 #[tauri::command]

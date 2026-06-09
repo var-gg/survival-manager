@@ -9,6 +9,7 @@ import {
   ImageOff,
   Languages,
   Mic2,
+  Music,
   PackageCheck,
   Palette,
   RefreshCw,
@@ -19,12 +20,19 @@ import {
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { compactPath, formatDate } from "../lib/format";
-import { getNarrativeIndex, openAssetExternal, resolveBackdropImage } from "../lib/ipc";
+import {
+  getNarrativeIndex,
+  openAssetExternal,
+  resolveBackdropImage,
+  resolveCueTrack,
+} from "../lib/ipc";
 import type {
   NarrativeIndex,
   NarrativeLine,
   NarrativeSequence,
   ResolvedBackdrop,
+  ResolvedCue,
+  SceneAudio,
   SceneVisual,
 } from "../types";
 import "./NarrativeWorkbench.css";
@@ -169,6 +177,7 @@ export function NarrativeWorkbench() {
               <span className="narrative-sequence__id">{sequence.presentationKey}</span>
               <span className="narrative-sequence__chips">
                 <VisualChip meta={sequence.meta} />
+                <AudioChip meta={sequence.meta} />
                 <StatusPill tone={reachabilityTone(sequence.reachability)}>
                   {reachabilityLabel(sequence.reachability)}
                 </StatusPill>
@@ -406,6 +415,8 @@ function NarrativeDetail({
 
       <VisualSection meta={sequence.meta} />
 
+      <AudioSection meta={sequence.meta} />
+
       {meta.length > 0 ? (
         <section className="narrative-detail__section">
           <h2>Meta</h2>
@@ -509,7 +520,7 @@ function metaEntries(meta: Record<string, unknown> | null): Array<[string, strin
     return [];
   }
   return Object.entries(meta)
-    .filter(([key]) => key !== "visual")
+    .filter(([key]) => key !== "visual" && key !== "audio")
     .map(([key, value]) => [key, String(value)]);
 }
 
@@ -586,6 +597,129 @@ function backdropSourceLabel(source: string | null): string {
     return "raw 후보";
   }
   return "";
+}
+
+function sceneAudio(meta: Record<string, unknown> | null): SceneAudio | null {
+  if (!meta || typeof meta !== "object") {
+    return null;
+  }
+  const raw = (meta as Record<string, unknown>).audio;
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+  return raw as SceneAudio;
+}
+
+function registerLabel(register: string): string {
+  switch (register) {
+    case "politics-weight":
+      return "정치-무게";
+    case "growth-emotion":
+      return "성장-정서";
+    case "warmth-humor":
+      return "유머-온기";
+    default:
+      return register;
+  }
+}
+
+function registerTone(register: string): string {
+  switch (register) {
+    case "politics-weight":
+      return "warn";
+    case "growth-emotion":
+      return "good";
+    case "warmth-humor":
+      return "neutral";
+    default:
+      return "neutral";
+  }
+}
+
+function AudioChip({ meta }: { meta: Record<string, unknown> | null }) {
+  const audio = sceneAudio(meta);
+  if (!audio) {
+    return null;
+  }
+  return <StatusPill tone={registerTone(audio.register)}>{registerLabel(audio.register)}</StatusPill>;
+}
+
+function AudioSection({ meta }: { meta: Record<string, unknown> | null }) {
+  const audio = sceneAudio(meta);
+  const cueId = audio?.cue_id ?? "";
+  const [resolved, setResolved] = useState<ResolvedCue | null>(null);
+
+  useEffect(() => {
+    if (!cueId) {
+      setResolved(null);
+      return;
+    }
+    let disposed = false;
+    resolveCueTrack(cueId)
+      .then((next) => {
+        if (!disposed) {
+          setResolved(next);
+        }
+      })
+      .catch(() => {
+        if (!disposed) {
+          setResolved(null);
+        }
+      });
+    return () => {
+      disposed = true;
+    };
+  }, [cueId]);
+
+  if (!audio) {
+    return null;
+  }
+
+  return (
+    <section className="narrative-detail__section">
+      <h2>
+        <Music size={15} /> Audio (BGM)
+      </h2>
+      {resolved?.exists && resolved.path ? (
+        <audio
+          controls
+          preload="none"
+          style={{ width: "100%", marginBottom: "8px" }}
+          src={convertFileSrc(resolved.path)}
+        />
+      ) : (
+        <p style={{ margin: "0 0 8px", opacity: 0.65, fontSize: "12px" }}>
+          <Volume2 size={13} /> 미생성 cue · {cueId || "—"}
+        </p>
+      )}
+      <dl>
+        <dt>Register</dt>
+        <dd>
+          <StatusPill tone={registerTone(audio.register)}>{registerLabel(audio.register)}</StatusPill>
+          {audio.curated ? "" : " (추론)"}
+        </dd>
+        <dt>Mood</dt>
+        <dd>{audio.mood}</dd>
+        <dt>Cue</dt>
+        <dd>
+          {audio.cue_id}
+          {audio.reuse === "bespoke" ? " · 전용" : " · 공용"}
+        </dd>
+        {audio.leitmotif ? (
+          <>
+            <dt>Leitmotif</dt>
+            <dd>{audio.leitmotif}</dd>
+          </>
+        ) : null}
+        {audio.note ? (
+          <>
+            <dt>Note</dt>
+            <dd>{audio.note}</dd>
+          </>
+        ) : null}
+      </dl>
+    </section>
+  );
 }
 
 function VisualSection({ meta }: { meta: Record<string, unknown> | null }) {

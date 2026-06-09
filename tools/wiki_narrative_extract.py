@@ -703,7 +703,7 @@ def detect_register(scene: WikiScene) -> str:
     그 외 기본 politics-weight. growth-emotion 등 예외는 overrides가 결정."""
     sid = scene.scene_id
     slug = scene.artifact_slug or ""
-    if "town" in sid or "town" in slug or "atlas" in sid or "_tc" in sid:
+    if "town" in sid or "town" in slug or "atlas" in sid or "_tc" in sid or "camp" in sid:
         return "warmth-humor"
     return "politics-weight"
 
@@ -715,6 +715,7 @@ def compute_audio(scene: WikiScene, amap: dict) -> dict:
     cue_id는 scene-mood 재사용(chapter/town/boss 루프), bespoke는 overrides."""
     defaults = amap.get("defaults", {})
     chapter_mood = defaults.get("chapterMood", {})
+    chapter_lut = defaults.get("chapterLut", {})
     channel = defaults.get("channel", "Bgm")
 
     sid = scene.scene_id
@@ -723,16 +724,24 @@ def compute_audio(scene: WikiScene, amap: dict) -> dict:
     register = detect_register(scene)
     mood = chapter_mood.get(chapter, "neutral")
 
+    # default cue → 실제 shared cue(자산화된 16 canonical 중 loop/bed 류).
+    # bespoke 정점(massacre/memorial/boss intro 등)은 overrides가 따로 지정.
     if "town" in sid or "town" in slug:
-        cue = "bgm_town_ashglen"
+        cue = "bgm_town_ashglen_cozy"
     elif "atlas" in sid:
-        cue = "bgm_atlas"
+        cue = "bgm_atlas_travel"
+    elif "camp" in sid:
+        cue = "bgm_camp_rest"
     elif any(k in sid for k in ("boss_bark", "boss_engage", "boss_break")):
-        cue = f"bgm_{chapter or 'x'}_boss"
+        cue = "bgm_boss_climax"
+    elif register == "warmth-humor":
+        cue = "bgm_town_ashglen_cozy"
+    elif register == "growth-emotion":
+        cue = "bgm_motif_dawn_priest"
     elif chapter:
-        cue = f"bgm_{chapter}_field"
+        cue = f"bgm_site_intro_{chapter_lut.get(chapter, 'ash')}"  # per-chapter field bed
     else:
-        cue = "bgm_event_field"
+        cue = "bgm_main_theme"
 
     audio = {
         "register": register,

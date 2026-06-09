@@ -11,6 +11,7 @@ import type {
   ImageInfo,
   NarrativeIndex,
   ResolvedBackdrop,
+  ResolvedCue,
 } from "../types";
 
 export async function getConfig(): Promise<AppConfig> {
@@ -51,6 +52,10 @@ export async function getNarrativeIndex(): Promise<NarrativeIndex> {
 
 export async function resolveBackdropImage(backdrop: string): Promise<ResolvedBackdrop> {
   return invoke<ResolvedBackdrop>("resolve_backdrop_image", { backdrop });
+}
+
+export async function resolveCueTrack(cueId: string): Promise<ResolvedCue> {
+  return invoke<ResolvedCue>("resolve_cue_track", { cueId });
 }
 
 export async function checkEngineHealth(): Promise<EngineHealth[]> {
