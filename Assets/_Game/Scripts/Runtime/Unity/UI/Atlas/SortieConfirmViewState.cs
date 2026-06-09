@@ -22,13 +22,15 @@ public sealed record SortieConfirmViewState(
     string EditLabel,
     string CancelLabel);
 
-/// <summary>배치 1슬롯 — anchor 위치 + hero 이름 + archetype 라벨. 클릭하면 이 anchor를 cycle한다.</summary>
+/// <summary>배치 1슬롯 — anchor 위치 + hero 이름 + archetype 라벨 + 흉상. 클릭하면 이 anchor를 cycle한다.
+/// PortraitSprite는 Presenter가 pre-resolve(View는 리소스 로딩 안 함). null이면 빈 슬롯 또는 미해상.</summary>
 public sealed record SortieDeploySlotViewState(
     DeploymentAnchorId Anchor,
     string AnchorLabel,
     string HeroName,
     string ArchetypeName,
-    bool IsEmpty);
+    bool IsEmpty,
+    UnityEngine.Texture2D? PortraitSprite = null);
 
 /// <summary>시너지 칩 — family 이름 + 현재 인원수 + minor/major breakpoint + major 도달 여부 + 활성 여부.
 /// IsActive=false(count&lt;minor)는 회색 칩으로 "한 명만 더 모으면 켜진다"를 보여주는 교육용 노출이다.</summary>

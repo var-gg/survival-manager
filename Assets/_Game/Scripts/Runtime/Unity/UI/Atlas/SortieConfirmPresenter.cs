@@ -22,19 +22,23 @@ public sealed class SortieConfirmPresenter
     private readonly Func<string, string> _archetypeName;
     private readonly Func<string, string> _synergyName;
     private readonly Func<DeploymentAnchorId, string> _anchorName;
+    // 흉상 resolve — FastUnit 경량화를 위해 optional(default null). 런타임은 ResolveCharacterPortrait 주입.
+    private readonly Func<string, UnityEngine.Texture2D?>? _portraitSprite;
 
     public SortieConfirmPresenter(
         GameSessionState session,
         LaunchCoreRosterBaselineCatalog baselineCatalog,
         Func<string, string> archetypeName,
         Func<string, string> synergyName,
-        Func<DeploymentAnchorId, string> anchorName)
+        Func<DeploymentAnchorId, string> anchorName,
+        Func<string, UnityEngine.Texture2D?>? portraitSprite = null)
     {
         _session = session ?? throw new ArgumentNullException(nameof(session));
         _baselineCatalog = baselineCatalog ?? throw new ArgumentNullException(nameof(baselineCatalog));
         _archetypeName = archetypeName ?? throw new ArgumentNullException(nameof(archetypeName));
         _synergyName = synergyName ?? throw new ArgumentNullException(nameof(synergyName));
         _anchorName = anchorName ?? throw new ArgumentNullException(nameof(anchorName));
+        _portraitSprite = portraitSprite;
     }
 
     public SortieConfirmViewState BuildState()
@@ -50,12 +54,14 @@ public sealed class SortieConfirmPresenter
             var heroId = _session.GetAssignedHeroId(anchor);
             if (!string.IsNullOrWhiteSpace(heroId) && heroesById.TryGetValue(heroId!, out var hero))
             {
+                var portraitKey = string.IsNullOrWhiteSpace(hero.CharacterId) ? hero.ArchetypeId : hero.CharacterId;
                 slots.Add(new SortieDeploySlotViewState(
                     anchor,
                     _anchorName(anchor),
                     string.IsNullOrWhiteSpace(hero.Name) ? hero.HeroId : hero.Name,
                     _archetypeName(hero.ArchetypeId),
-                    IsEmpty: false));
+                    IsEmpty: false,
+                    PortraitSprite: string.IsNullOrWhiteSpace(portraitKey) ? null : _portraitSprite?.Invoke(portraitKey)));
             }
             else
             {

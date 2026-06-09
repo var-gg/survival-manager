@@ -530,13 +530,15 @@ public sealed class AtlasScreenController : MonoBehaviour
 
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
         var baselineCatalog = new LaunchCoreRosterBaselineCatalog(root.CombatContentLookup);
+        var iconResolver = new ContentIconResolver(root.CombatContentLookup);
         var view = new SortieConfirmView(overlay);
         var presenter = new SortieConfirmPresenter(
             root.SessionState,
             baselineCatalog,
             contentText.GetArchetypeName,
             contentText.GetSynergyName,
-            SortieAnchorLabel);
+            SortieAnchorLabel,
+            iconResolver.ResolveCharacterPortrait);
 
         void CloseOverlay()
         {

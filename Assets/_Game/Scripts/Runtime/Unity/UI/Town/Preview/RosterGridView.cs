@@ -123,7 +123,8 @@ public sealed class RosterGridView
             }
             previousGroup = chip.GroupKey;
 
-            var button = new Button { text = chip.Label };
+            // 칩 라벨에 인원수 부기 — "전위 3"처럼 탐색을 돕는다(0이면 수치 생략).
+            var button = new Button { text = chip.Count > 0 ? $"{chip.Label} {chip.Count}" : chip.Label };
             button.AddToClassList("rgp-filter-chip");
             button.AddToClassList("sm-cta");
             button.AddToClassList("sm-cta--inline");

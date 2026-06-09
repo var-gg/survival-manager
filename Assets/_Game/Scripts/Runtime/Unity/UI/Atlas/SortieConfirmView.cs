@@ -78,6 +78,17 @@ public sealed class SortieConfirmView
             row.EnableInClassList("sortie-deploy-row--empty", slot.IsEmpty);
             row.RegisterCallback<ClickEvent>(_ => SlotCycled?.Invoke(anchorId));
 
+            // 출격 게이트는 '내 파티 누구인지 확인하는 마지막 관문' — 흉상으로 얼굴 식별.
+            var portrait = new VisualElement();
+            portrait.AddToClassList("sortie-deploy-row__portrait");
+            if (slot.PortraitSprite != null)
+            {
+                portrait.style.backgroundImage = new StyleBackground(slot.PortraitSprite);
+                portrait.AddToClassList("sortie-deploy-row__portrait--art");
+            }
+            portrait.pickingMode = PickingMode.Ignore;
+            row.Add(portrait);
+
             var anchor = new Label(slot.AnchorLabel);
             anchor.AddToClassList("sortie-deploy-row__anchor");
             row.Add(anchor);

@@ -117,17 +117,20 @@ public sealed class RosterGridPresenter : IRosterGridActions
             .ToList();
 
         // 3) 필터 칩 — 로스터에 실재하는 race/class만 (dead 필터 없음). 라벨은 ContentTextResolver 산출.
+        //    각 칩에 해당 인원수도 실어 12+ 명부에서 탐색을 돕는다.
         var filters = new List<RosterGridFilterChipViewState>
         {
-            new("all", "전체", "all", _selectedFilterKey == "all"),
+            new("all", "전체", "all", _selectedFilterKey == "all", rows.Count),
         };
         foreach (var (key, label) in DistinctOrdered(rows.Select(r => (r.raceId, r.raceName))))
         {
-            filters.Add(new(key, label, "race", _selectedFilterKey == key));
+            var count = rows.Count(r => r.raceId == key);
+            filters.Add(new(key, label, "race", _selectedFilterKey == key, count));
         }
         foreach (var (key, label) in DistinctOrdered(rows.Select(r => (r.classId, r.className))))
         {
-            filters.Add(new(key, label, "class", _selectedFilterKey == key));
+            var count = rows.Count(r => r.classId == key);
+            filters.Add(new(key, label, "class", _selectedFilterKey == key, count));
         }
 
         return new RosterGridViewState(

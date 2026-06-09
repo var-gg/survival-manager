@@ -31,6 +31,27 @@
     padding-bottom: 4px;
 }
 
+.sortie-deploy-row__portrait {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    background-color: rgba(20, 16, 10, 0.9);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(230, 183, 81, 0.34);
+    border-right-color: rgba(230, 183, 81, 0.34);
+    border-top-color: rgba(245, 214, 138, 0.34);
+    border-bottom-color: rgba(138, 100, 24, 0.5);
+}
+
+/* 실제 흉상 연결 시 — 얼굴을 꽉 채워 crop. */
+.sortie-deploy-row__portrait--art {
+    -unity-background-scale-mode: scale-and-crop;
+}
+
 .sortie-deploy-row__anchor {
     min-width: 96px;
 }

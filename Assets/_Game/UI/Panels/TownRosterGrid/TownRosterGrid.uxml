@@ -17,13 +17,13 @@
 
         <ui:VisualElement name="HeaderBar" class="rgp-header">
             <ui:VisualElement class="rgp-header__title-group">
-                <ui:Label class="rgp-header__eyebrow" text="ASHGLEN — ROSTER" />
-                <ui:Label class="rgp-header__title" text="잿골 — 동료 목록" />
+                <ui:Label class="rgp-header__eyebrow" text="잿골 주둔지" />
+                <ui:Label class="rgp-header__title" text="동료 명부" />
             </ui:VisualElement>
             <ui:VisualElement class="rgp-header__meta">
                 <ui:Label name="HeroCount" class="rgp-header__count" text="12 / 12" />
                 <ui:Label class="rgp-header__hint" text="동료를 선택해 시트를 봅니다" />
-                <ui:Button name="RosterGridCloseButton" class="rgp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
+                <ui:Button name="RosterGridCloseButton" class="rgp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="닫기" />
             </ui:VisualElement>
         </ui:VisualElement>
 

@@ -25,7 +25,8 @@ public sealed record RosterGridFilterChipViewState(
     string Key,                     // all / human / beastkin / undead / vanguard / duelist / ranger / mystic
     string Label,
     string GroupKey,                // all / race / class (divider 구분용)
-    bool IsSelected
+    bool IsSelected,
+    int Count = 0                   // 이 필터에 해당하는 동료 수 (탐색 보조). all=전체.
 );
 
 public sealed record RosterGridViewState(
