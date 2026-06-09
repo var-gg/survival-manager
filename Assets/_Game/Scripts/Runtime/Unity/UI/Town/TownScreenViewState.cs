@@ -17,14 +17,16 @@ public sealed record TownHeroCardViewState(
     string DisplayName,
     string EmotionKey,
     string BadgeKey,    // captain (deploy 첫 hero) 또는 none
-    bool IsDeploy);
+    bool IsDeploy,
+    string CharacterId = "");   // 흉상 resolve 키 (HeroId는 instance라 별도 필요). 비면 글리프 fallback.
 
 /// <summary>잿골 hub V3 Welcome captain — center stage standee, narrative receptionist.</summary>
 public sealed record TownWelcomeViewState(
     string HeroId,
     string DisplayName,
     string EmotionKey,
-    string Greeting);
+    string Greeting,
+    string CharacterId = "");   // 흉상 resolve 키. 비면 글리프 fallback.
 
 public sealed record TownServiceDecisionViewState(
     string SelectedHeroLabel,

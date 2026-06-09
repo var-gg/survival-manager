@@ -223,7 +223,8 @@ public sealed class TownScreenView
                 state.WelcomeCaptain.EmotionKey,
                 "captain",
                 "lg",
-                "hero-deploy");
+                "hero-deploy",
+                portraitTex: _portraitLoader?.Invoke(state.WelcomeCaptain.CharacterId));
             var heroId = state.WelcomeCaptain.HeroId;
             welcome.clicked += () => _onHeroClick?.Invoke(heroId);
             _welcomeMount.Add(welcome);
@@ -235,7 +236,8 @@ public sealed class TownScreenView
         _deployRow.Clear();
         foreach (var h in state.DeployHeroes)
         {
-            var card = BuildFaceCard(h.HeroId, h.DisplayName, h.EmotionKey, h.BadgeKey, "md", "hero-deploy");
+            var card = BuildFaceCard(h.HeroId, h.DisplayName, h.EmotionKey, h.BadgeKey, "md", "hero-deploy",
+                portraitTex: _portraitLoader?.Invoke(h.CharacterId));
             var heroId = h.HeroId;
             card.clicked += () => _onHeroClick?.Invoke(heroId);
             _deployRow.Add(card);
@@ -247,7 +249,8 @@ public sealed class TownScreenView
         _rosterRow.Clear();
         foreach (var h in state.RosterHeroes)
         {
-            var card = BuildFaceCard(h.HeroId, h.DisplayName, h.EmotionKey, h.BadgeKey, "sm", "hero");
+            var card = BuildFaceCard(h.HeroId, h.DisplayName, h.EmotionKey, h.BadgeKey, "sm", "hero",
+                portraitTex: _portraitLoader?.Invoke(h.CharacterId));
             var heroId = h.HeroId;
             card.clicked += () => _onHeroClick?.Invoke(heroId);
             _rosterRow.Add(card);

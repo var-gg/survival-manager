@@ -242,7 +242,8 @@ public sealed class TownScreenPresenter
             var hero = session.Profile.Heroes.FirstOrDefault(h => string.Equals(h.HeroId, hid, StringComparison.Ordinal));
             var displayName = ResolveHeroDisplayName(hid, hero?.Name);
             var badge = string.Equals(hid, welcomeHeroId, StringComparison.Ordinal) ? "captain" : "none";
-            deployCards.Add(new TownHeroCardViewState(hid, displayName, "neutral", badge, IsDeploy: true));
+            deployCards.Add(new TownHeroCardViewState(hid, displayName, "neutral", badge, IsDeploy: true,
+                CharacterId: ResolvePortraitKey(hero?.CharacterId, hero?.ArchetypeId)));
         }
 
         // Roster row — Profile.Heroes 중 deploy 외
@@ -254,7 +255,8 @@ public sealed class TownScreenPresenter
                 DisplayName: ResolveHeroDisplayName(h.HeroId, h.Name),
                 EmotionKey: "neutral",
                 BadgeKey: "none",
-                IsDeploy: false))
+                IsDeploy: false,
+                CharacterId: ResolvePortraitKey(h.CharacterId, h.ArchetypeId)))
             .ToList();
 
         return new TownScreenViewState(
@@ -277,7 +279,8 @@ public sealed class TownScreenPresenter
                 HeroId: welcomeHeroId,
                 DisplayName: welcomeName,
                 EmotionKey: "confident",
-                Greeting: welcomeGreeting),
+                Greeting: welcomeGreeting,
+                CharacterId: ResolvePortraitKey(welcomeHero?.CharacterId, welcomeHero?.ArchetypeId)),
             DeployHeroes: deployCards,
             RosterHeroes: rosterCards,
             ExpeditionLabel: BuildExpeditionLabel(session),
@@ -320,6 +323,14 @@ public sealed class TownScreenPresenter
             ModalAvailabilityLabel: allFacilitiesReady
                 ? "모든 시설 이용 가능"
                 : $"시설 {panelReady}/{panelTotal} 이용 가능");
+    }
+
+    // 흉상 resolve 키 — instance CharacterId 우선, 비면 archetype id로 fallback
+    // (ContentIconResolver.CharacterArtAliases가 archetype id도 매핑). 둘 다 비면 빈 문자열 → 글리프 fallback.
+    private static string ResolvePortraitKey(string? characterId, string? archetypeId)
+    {
+        if (!string.IsNullOrWhiteSpace(characterId)) return characterId!;
+        return string.IsNullOrWhiteSpace(archetypeId) ? string.Empty : archetypeId!;
     }
 
     private string ResolveHeroDisplayName(string heroId, string? heroName)
