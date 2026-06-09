@@ -10,14 +10,14 @@
     -unity-font-definition: url("project://database/Assets/ThirdParty/Fonts/NotoSansCJK/NotoSansCJKkr-Regular.otf");
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: var(--sm-s-5);
 }
 .cc-title {
     font-size: 23px;
     color: var(--sm-gold-200);
     -unity-font-style: bold;
     letter-spacing: 1px;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
 }
 .cc-sub {
     font-size: var(--sm-fs-s);

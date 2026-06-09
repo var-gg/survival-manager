@@ -13,8 +13,8 @@
     align-items: center;
     padding-top: 6px;
     padding-bottom: 6px;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: var(--sm-s-1);
+    padding-right: var(--sm-s-1);
     background-color: rgba(28, 22, 12, 0.84);
     border-top-width: 1px;
     border-left-width: 1.5px;
@@ -98,7 +98,7 @@
     width: 100%;
     /* wave-35-placeholder: navy(8,12,28) → sepia 통일 (다른 production panel과 mood 일관). */
     background-color: rgba(28, 22, 12, 0.55);
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
     border-top-width: 1px;
     border-left-width: 1px;
     border-right-width: 1px;
@@ -245,7 +245,7 @@
     left: -52px;
     right: -52px;
     top: -36px;
-    padding-top: 4px;
+    padding-top: var(--sm-s-1);
     padding-bottom: 5px;
     padding-left: 10px;
     padding-right: 10px;

@@ -21,7 +21,7 @@
     border-top-color: var(--sm-gold-300); border-bottom-color: var(--sm-gold-300); }
 .pbp-header__info { flex-direction: column; }
 .pbp-header__hero-name { color: var(--sm-gold-100); font-size: 16px; -unity-font-style: bold;
-    letter-spacing: 1px; margin-bottom: 4px; }
+    letter-spacing: 1px; margin-bottom: var(--sm-s-1); }
 .pbp-header__class-row { flex-direction: row; align-items: center; }
 .pbp-header__class-icon { width: 18px; height: 18px; margin-right: 6px;
     -unity-background-scale-mode: scale-to-fit; }
@@ -133,19 +133,19 @@
 .pbp-detail__tier-bar { width: 100%; padding: 6px 0; align-items: center;
     background-color: rgba(28,34,67,0.92); }
 .pbp-detail__tier-label { color: var(--sm-gold-200); font-size: 13px; letter-spacing: 4px; -unity-font-style: bold; }
-.pbp-detail__icon { width: 80px; height: 80px; margin-top: 16px; -unity-background-scale-mode: scale-to-fit;
+.pbp-detail__icon { width: 80px; height: 80px; margin-top: var(--sm-s-4); -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(200,147,42,0.18);
     border-top-left-radius: 40px; border-top-right-radius: 40px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
 }
 .pbp-detail__title { color: var(--sm-gold-100); font-size: 15px; letter-spacing: 3px; -unity-font-style: bold;
-    margin-top: 12px; margin-bottom: 12px; }
+    margin-top: var(--sm-s-3); margin-bottom: var(--sm-s-3); }
 .pbp-detail__desc { width: 240px; padding: 8px 14px; }
 .pbp-detail__desc-text {
     font-size: var(--sm-fs-s);
     color: var(--sm-ink-1);
     white-space: normal;
     -unity-text-align: middle-center;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
 }
 .pbp-detail__desc-tags {
     font-size: 10px;
@@ -156,11 +156,11 @@
     -unity-font-style: bold;
 }
 .pbp-detail__available { color: rgba(120,200,140,0.92); font-size: var(--sm-fs-eb); letter-spacing: 3px;
-    -unity-font-style: bold; margin-top: 14px; margin-bottom: 8px; }
+    -unity-font-style: bold; margin-top: 14px; margin-bottom: var(--sm-s-2); }
 /* Activate CTA: visual은 sm-cta sm-cta--md sm-cta--primary. width/color/font만 surface 고유. */
 .pbp-detail__activate { width: 200px; color: rgba(20,16,8,1);
     font-size: var(--sm-fs-m); letter-spacing: 4px; -unity-font-style: bold; }
-.pbp-detail__progress { margin-top: 8px; color: var(--sm-ink-2); font-size: var(--sm-fs-eb); }
+.pbp-detail__progress { margin-top: var(--sm-s-2); color: var(--sm-ink-2); font-size: var(--sm-fs-eb); }
 
 /* Footer — point-budget 폐기. per-kind active 카운트만 노출. */
 .pbp-footer { flex-direction: row; align-items: center; justify-content: space-between;

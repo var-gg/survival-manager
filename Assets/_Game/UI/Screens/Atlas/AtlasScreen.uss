@@ -13,9 +13,9 @@
     background-color: rgba(5, 8, 18, 0.86);
     border-width: 1px;
     border-color: rgba(230, 183, 81, 0.58);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     padding: 8px 14px;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
 }
 
 .atlas-title {
@@ -46,7 +46,7 @@
     background-color: rgba(4, 7, 15, 0.82);
     border-width: 1px;
     border-color: var(--sm-gold-300-a42);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     margin-right: 10px;
     opacity: 0.88;
 }
@@ -65,7 +65,7 @@
     margin-right: 6px;
     border-width: 1px;
     border-color: var(--sm-gold-300-a28);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     background-color: rgba(11, 16, 28, 0.78);
     color: rgb(184, 160, 95);
     font-size: 16px;
@@ -95,7 +95,7 @@
 .atlas-stage-candidate-button {
     min-height: 44px;
     margin-bottom: 6px;
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     border-width: 1px;
     border-color: var(--sm-gold-300-a34);
     background-color: rgba(28, 22, 12, 0.78);
@@ -151,7 +151,7 @@
     border-right-color: var(--sm-gold-300-a42);
     border-top-color: rgba(245, 214, 138, 0.34);
     border-bottom-color: rgba(138, 100, 24, 0.58);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     background-color: rgba(36, 26, 14, 0.62);
     /* wave-test-cleanup: art bible AB151 정책 위반. */
     background-image: none;
@@ -237,7 +237,7 @@
 .atlas-map-route-segment {
     position: absolute;
     height: 2px;
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     border-width: 1px;
     border-color: rgba(255, 239, 174, 0.30);
     background-color: rgba(255, 214, 108, 0.30);
@@ -309,7 +309,7 @@
 .atlas-hex-hit-zone {
     position: absolute;
     border-width: 0;
-    border-radius: 8px;
+    border-radius: var(--radius-l);
     background-color: rgba(0, 0, 0, 0);
     color: rgba(0, 0, 0, 0);
     -unity-background-image-tint-color: rgba(0, 0, 0, 0);
@@ -362,12 +362,12 @@
 
 .atlas-hex {
     position: absolute;
-    border-radius: 8px;
+    border-radius: var(--radius-l);
     border-width: 1px;
     border-color: rgba(255, 255, 255, 0.20);
     background-color: rgb(49, 56, 55);
     color: rgb(235, 237, 228);
-    padding: 4px;
+    padding: var(--sm-s-1);
 }
 
 .atlas-hex.has-aura {
@@ -399,7 +399,7 @@
     top: 2px;
     bottom: 2px;
     flex-direction: row;
-    border-radius: 6px;
+    border-radius: var(--sm-r-lg);
     overflow: hidden;
     opacity: 0.66;
 }
@@ -491,7 +491,7 @@
     margin-bottom: 2px;
     padding-left: 3px;
     padding-right: 3px;
-    border-radius: 4px;
+    border-radius: var(--sm-r-md);
     color: rgb(14, 18, 20);
 }
 
@@ -616,13 +616,13 @@
     background-color: rgba(4, 7, 15, 0.90);
     border-width: 1px;
     border-color: rgba(230, 183, 81, 0.62);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
 }
 
 .atlas-decision-card {
     border-width: 1px;
     border-color: rgba(230, 183, 81, 0.32);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     background-color: rgba(28, 22, 12, 0.74);
     /* wave-test-cleanup: art bible AB151 정책 위반. */
     background-image: none;
@@ -631,7 +631,7 @@
     -unity-slice-top: 48;
     -unity-slice-bottom: 48;
     -unity-background-image-tint-color: rgba(255, 235, 200, 0.26);
-    padding: 8px;
+    padding: var(--sm-s-2);
     margin-bottom: 7px;
 }
 
@@ -674,7 +674,7 @@
 
 .atlas-preview-banner {
     height: 44px;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
     flex-direction: row;
     border-width: 1px;
     border-color: var(--sm-gold-300-a24);
@@ -683,7 +683,7 @@
 
 .atlas-preview-banner__sigil {
     width: 54px;
-    margin: 8px;
+    margin: var(--sm-s-2);
     border-width: 1px;
     border-color: rgba(245, 204, 112, 0.60);
     background-color: rgba(33, 52, 74, 0.82);
@@ -703,14 +703,14 @@
     font-size: var(--sm-fs-l);
     unity-font-style: bold;
     color: rgb(250, 247, 232);
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
     white-space: normal;
 }
 
 .atlas-judgement {
     color: rgb(245, 204, 112);
     unity-font-style: bold;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
     white-space: normal;
 }
 
@@ -722,9 +722,9 @@
 .atlas-preview-action-ribbon {
     align-self: flex-start;
     margin-right: 6px;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
     padding: 4px 8px;
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     border-width: 1px;
     border-color: rgba(245, 204, 112, 0.36);
     background-color: rgba(53, 47, 34, 0.72);
@@ -736,9 +736,9 @@
 .atlas-preview-threat-band {
     align-self: flex-start;
     margin-top: 0;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
     padding: 3px 8px;
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     border-width: 1px;
     border-color: rgba(95, 173, 126, 0.52);
     background-color: rgba(38, 64, 50, 0.62);
@@ -770,7 +770,7 @@
     unity-font-style: bold;
     color: rgb(233, 215, 168);
     margin-top: 0;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
 }
 
 .atlas-preview-body {
@@ -790,8 +790,8 @@
 
 .atlas-boundary-note {
     margin-top: 0;
-    padding: 8px;
-    border-radius: 2px;
+    padding: var(--sm-s-2);
+    border-radius: var(--sm-r-sm);
     background-color: rgba(35, 28, 16, 0.92);
     color: rgb(235, 217, 164);
     font-size: var(--sm-fs-eb);
@@ -801,7 +801,7 @@
 .atlas-continue-button {
     min-height: 42px;
     margin-top: 2px;
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     border-width: 1px;
     border-color: rgb(245, 204, 112);
     background-color: rgb(69, 62, 43);
@@ -849,17 +849,17 @@
     background-color: rgba(5, 8, 18, 0.78);
     border-width: 1px;
     border-color: rgba(230, 183, 81, 0.38);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     margin-top: 7px;
-    padding: 4px;
+    padding: var(--sm-s-1);
 }
 
 .atlas-spine-stage {
     min-width: 74px;
     height: 24px;
-    margin-left: 4px;
-    margin-right: 4px;
-    border-radius: 6px;
+    margin-left: var(--sm-s-1);
+    margin-right: var(--sm-s-1);
+    border-radius: var(--sm-r-lg);
     border-width: 1px;
     border-color: rgba(255, 255, 255, 0.16);
     background-color: rgba(40, 47, 53, 0.70);
@@ -891,7 +891,7 @@
     background-color: rgba(5, 8, 18, 0.78);
     border-width: 1px;
     border-color: rgba(230, 183, 81, 0.38);
-    border-radius: 2px;
+    border-radius: var(--sm-r-sm);
     margin-top: 6px;
     padding: 5px 8px;
 }
@@ -899,9 +899,9 @@
 .sitetrack-node {
     width: 84px;
     min-height: 36px;
-    margin-left: 4px;
-    margin-right: 4px;
-    border-radius: 6px;
+    margin-left: var(--sm-s-1);
+    margin-right: var(--sm-s-1);
+    border-radius: var(--sm-r-lg);
     border-width: 1px;
     border-color: rgba(255, 255, 255, 0.18);
     background-color: rgba(40, 47, 53, 0.72);

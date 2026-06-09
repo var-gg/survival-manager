@@ -1,8 +1,8 @@
 .warrant-screen {
     color: var(--sm-ink-1);
     background-color: rgb(7, 10, 19);
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: var(--sm-s-5);
+    padding-right: var(--sm-s-5);
     padding-top: 18px;
     padding-bottom: 18px;
 }
@@ -92,7 +92,7 @@
     flex-basis: 0;
     min-width: 0;
     min-height: 320px;
-    margin-right: 12px;
+    margin-right: var(--sm-s-3);
     padding-left: 14px;
     padding-right: 14px;
     padding-top: 14px;
@@ -124,7 +124,7 @@
 }
 
 .warrant-screen .warrant-card .panel__text--muted {
-    margin-top: 8px;
+    margin-top: var(--sm-s-2);
     font-size: 10px;
     line-height: 13px;
     white-space: normal;
@@ -133,7 +133,7 @@
 .warrant-screen .warrant-card .card__body {
     flex-grow: 1;
     min-height: 58px;
-    margin-top: 12px;
+    margin-top: var(--sm-s-3);
     color: var(--sm-ink-1);
     font-size: var(--sm-fs-eb);
     line-height: 16px;
@@ -171,11 +171,11 @@
 .warrant-screen .warrant-screen__status-band {
     height: 72px;
     min-height: 72px;
-    margin-top: 12px;
+    margin-top: var(--sm-s-3);
     flex-direction: row;
     align-items: center;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--sm-s-4);
+    padding-right: var(--sm-s-4);
 }
 
 .warrant-screen .warrant-screen__status-band .action-group {

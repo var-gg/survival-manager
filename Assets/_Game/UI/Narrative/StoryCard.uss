@@ -27,10 +27,10 @@
     bottom: 0;
     justify-content: center;
     align-items: center;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 24px;
-    padding-bottom: 24px;
+    padding-left: var(--sm-s-5);
+    padding-right: var(--sm-s-5);
+    padding-top: var(--sm-s-5);
+    padding-bottom: var(--sm-s-5);
     background-color: rgba(0, 0, 0, 0.62);
     background-image: none;
 }
@@ -53,7 +53,7 @@
 .story-card-body-scroll {
     flex-grow: 1;
     max-height: 380px;
-    margin-bottom: 24px;
+    margin-bottom: var(--sm-s-5);
 }
 
 .story-card-body {

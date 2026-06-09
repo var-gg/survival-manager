@@ -35,8 +35,8 @@
     justify-content: space-between;
     padding-top: 18px;
     padding-bottom: 18px;
-    padding-left: 32px;
-    padding-right: 32px;
+    padding-left: var(--sm-s-6);
+    padding-right: var(--sm-s-6);
     border-bottom-width: 1px;
     border-bottom-color: rgba(230, 183, 81, 0.32);
 }
@@ -78,17 +78,17 @@
     justify-content: center;
     padding-top: 22px;
     padding-bottom: 22px;
-    padding-left: 32px;
-    padding-right: 32px;
+    padding-left: var(--sm-s-6);
+    padding-right: var(--sm-s-6);
     flex-grow: 1;
 }
 
 .rcp-card {
     width: 220px;
     height: 100%;
-    margin-left: 8px;
-    margin-right: 8px;
-    padding-bottom: 8px;
+    margin-left: var(--sm-s-2);
+    margin-right: var(--sm-s-2);
+    padding-bottom: var(--sm-s-2);
     background-color: rgba(245, 234, 208, 0.94);
     border-left-width: 2px;
     border-right-width: 2px;
@@ -131,18 +131,18 @@
     font-size: 8px;
     letter-spacing: 1px;
     -unity-font-style: bold;
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-top-left-radius: var(--sm-r-sm);
+    border-top-right-radius: var(--sm-r-sm);
+    border-bottom-left-radius: var(--sm-r-sm);
+    border-bottom-right-radius: var(--sm-r-sm);
 }
 
 /* Slot type badge — top of card. Recruitment 4 slot 정합 */
 .rcp-card__slot-badge {
     align-self: center;
     margin-top: 6px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
     padding-top: 2px;
     padding-bottom: 2px;
     font-size: var(--sm-fs-xs);
@@ -181,8 +181,8 @@
     align-items: center;
     justify-content: center;
     margin-top: 3px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
 }
 .rcp-card__class-glyph {
     width: 16px;
@@ -201,8 +201,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: var(--sm-s-3);
+    padding-right: var(--sm-s-3);
     margin-top: 6px;
 }
 
@@ -263,8 +263,8 @@
     margin-top: 6px;
 }
 .rcp-card__tag {
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: var(--sm-s-1);
+    padding-right: var(--sm-s-1);
     padding-top: 1px;
     padding-bottom: 1px;
     margin-right: 3px;
@@ -289,7 +289,7 @@
     padding-left: 10px;
     padding-right: 10px;
     margin-top: 6px;
-    padding-top: 4px;
+    padding-top: var(--sm-s-1);
     border-top-width: 1px;
     border-top-color: rgba(138, 100, 24, 0.32);
 }
@@ -329,8 +329,8 @@
 
 /* Per-card Recruit CTA — visual은 sm-cta sm-cta--md sm-cta--primary */
 .rcp-card__recruit {
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-left: var(--sm-s-3);
+    margin-right: var(--sm-s-3);
     margin-top: 2px;
     color: rgba(61, 47, 18, 1);
     font-size: var(--sm-fs-s);
@@ -344,7 +344,7 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 18px;
-    padding-bottom: 12px;
+    padding-bottom: var(--sm-s-3);
     padding-left: 56px;
     padding-right: 56px;
     border-top-width: 1px;
@@ -397,7 +397,7 @@
 
 .rcp-footer {
     align-items: center;
-    padding-bottom: 12px;
+    padding-bottom: var(--sm-s-3);
 }
 .rcp-footer__glyph {
     width: 240px;

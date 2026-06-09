@@ -50,7 +50,7 @@
     font-size: 15px;
     unity-font-style: bold;
     letter-spacing: 0.6px;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
 }
 
 .story-text--character {

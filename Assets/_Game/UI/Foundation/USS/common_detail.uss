@@ -78,7 +78,7 @@
 }
 
 .sm-cd-tag {
-    margin-right: 4px;
+    margin-right: var(--sm-s-1);
     margin-bottom: 3px;
     padding-left: 5px;
     padding-right: 5px;

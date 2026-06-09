@@ -53,7 +53,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: var(--sm-s-3);
 }
 
 .dialogue-scene-nameplate {
@@ -86,7 +86,7 @@
     color: var(--story-accent-color);
     font-size: 19px;
     -unity-font-style: bold;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
 }
 
 .dialogue-scene-confirm-body {

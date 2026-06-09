@@ -36,8 +36,8 @@
     -unity-slice-bottom: 96;
     -unity-slice-scale: 0.5;
     background-color: var(--sm-bg-0);
-    padding-left: 48px;
-    padding-right: 48px;
+    padding-left: var(--sm-s-7);
+    padding-right: var(--sm-s-7);
     padding-top: 36px;
     padding-bottom: 36px;
 }
@@ -48,8 +48,8 @@
     align-items: center;
     justify-content: space-between;
     height: 56px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
     border-bottom-width: 1px;
     border-bottom-color: var(--sm-gold-300-a24);
 }
@@ -79,8 +79,8 @@
     align-items: center;
     justify-content: space-between;
     height: 36px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
     border-bottom-width: 1px;
     border-bottom-color: var(--sm-gold-300-a20);
 }
@@ -98,7 +98,7 @@
     height: var(--sm-chip-h);
     padding-left: 10px;
     padding-right: 10px;
-    margin-left: 8px;
+    margin-left: var(--sm-s-2);
     font-size: var(--sm-fs-xs);
     color: var(--sm-chip-state-text);
     background-color: var(--sm-chip-state-bg);
@@ -129,14 +129,14 @@
 .twp-main {
     flex-direction: row;
     flex-grow: 1;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: var(--sm-s-3);
+    padding-bottom: var(--sm-s-3);
 }
 
 /* LEFT — anchor pad (520) */
 .twp-left-anchor {
     width: 520px;
-    margin-right: 16px;
+    margin-right: var(--sm-s-4);
     background-color: var(--sm-bg-1);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -150,7 +150,7 @@
     border-top-right-radius: 12px;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-    padding: 16px;
+    padding: var(--sm-s-4);
 }
 
 .twp-zone-label {
@@ -174,19 +174,19 @@
     border-right-color: var(--sm-gold-300-a24);
     border-top-color: var(--sm-gold-300-a24);
     border-bottom-color: var(--sm-gold-300-a24);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    margin-top: 24px;
-    margin-bottom: 8px;
+    border-top-left-radius: var(--radius-l);
+    border-top-right-radius: var(--radius-l);
+    border-bottom-left-radius: var(--radius-l);
+    border-bottom-right-radius: var(--radius-l);
+    margin-top: var(--sm-s-5);
+    margin-bottom: var(--sm-s-2);
 }
 
 .twp-anchor-pad__readonly-hint {
     -unity-text-align: middle-right;
     font-size: var(--sm-fs-xs);
     color: var(--sm-ink-3);
-    padding-right: 4px;
+    padding-right: var(--sm-s-1);
     padding-top: 2px;
 }
 
@@ -214,7 +214,7 @@
     border-top-right-radius: 7px;
     border-bottom-left-radius: 7px;
     border-bottom-right-radius: 7px;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
 }
 .twp-standee__pillar--empty { background-color: rgba(157, 138, 94, 0.32); }
 
@@ -243,8 +243,8 @@
     border-top-right-radius: 12px;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-    padding: 12px;
-    margin-bottom: 12px;
+    padding: var(--sm-s-3);
+    margin-bottom: var(--sm-s-3);
 }
 .twp-section--posture { height: 240px; }
 .twp-section--synergy { height: 88px; padding-top: 6px; padding-bottom: 6px; }
@@ -266,7 +266,7 @@
 .twp-posture-card {
     flex-grow: 1;
     flex-basis: 0;
-    margin-right: 8px;
+    margin-right: var(--sm-s-2);
     background-color: var(--sm-bg-2);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -276,10 +276,10 @@
     border-right-color: var(--sm-gold-300-a32);
     border-top-color: var(--sm-gold-300-a42);
     border-bottom-color: var(--sm-gold-300-a32);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-top-left-radius: var(--radius-l);
+    border-top-right-radius: var(--radius-l);
+    border-bottom-left-radius: var(--radius-l);
+    border-bottom-right-radius: var(--radius-l);
     -unity-background-scale-mode: scale-and-crop;
     justify-content: flex-end;
 }
@@ -300,7 +300,7 @@
     font-size: var(--sm-fs-m);
     -unity-font-style: bold;
     letter-spacing: 1px;
-    padding-top: 4px;
+    padding-top: var(--sm-s-1);
     padding-bottom: 6px;
     background-color: rgba(12, 17, 38, 0.78);
     white-space: normal;
@@ -326,10 +326,10 @@
     border-right-color: var(--sm-gold-300-a32);
     border-top-color: var(--sm-gold-300-a32);
     border-bottom-color: var(--sm-gold-300-a32);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-top-left-radius: var(--radius-l);
+    border-top-right-radius: var(--radius-l);
+    border-bottom-left-radius: var(--radius-l);
+    border-bottom-right-radius: var(--radius-l);
 }
 /* Race chip — color block placeholder (sprite 미발행) */
 .twp-synergy-chip--human    { background-color: var(--sm-chip-category-border); }
@@ -371,10 +371,10 @@
     border-right-color: var(--sm-gold-300-a32);
     border-top-color: var(--sm-gold-300-a32);
     border-bottom-color: var(--sm-gold-300-a32);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-top-left-radius: var(--radius-l);
+    border-top-right-radius: var(--radius-l);
+    border-bottom-left-radius: var(--radius-l);
+    border-bottom-right-radius: var(--radius-l);
     justify-content: flex-end;
 }
 .twp-threat-chip__label {
@@ -383,8 +383,8 @@
     font-size: var(--sm-fs-xs);
     -unity-font-style: bold;
     letter-spacing: 1px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: var(--sm-s-1);
+    padding-bottom: var(--sm-s-1);
     background-color: rgba(12, 17, 38, 0.78);
     white-space: normal;
 }

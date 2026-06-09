@@ -1,10 +1,10 @@
 .sortie-screen {
     flex-grow: 1;
     background-color: rgba(10, 12, 20, 0.92);
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 24px;
-    padding-bottom: 24px;
+    padding-left: var(--sm-s-5);
+    padding-right: var(--sm-s-5);
+    padding-top: var(--sm-s-5);
+    padding-bottom: var(--sm-s-5);
 }
 
 .sortie-screen__body {
@@ -13,7 +13,7 @@
 
 .sortie-deploy-panel {
     flex-grow: 2;
-    margin-right: 12px;
+    margin-right: var(--sm-s-3);
 }
 
 .sortie-synergy-panel {
@@ -27,8 +27,8 @@
 .sortie-deploy-row {
     flex-direction: row;
     justify-content: space-between;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: var(--sm-s-1);
+    padding-bottom: var(--sm-s-1);
 }
 
 .sortie-deploy-row__portrait {
@@ -66,16 +66,16 @@
 }
 
 .sortie-synergy-chip {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
     padding-top: 2px;
     padding-bottom: 2px;
     margin-right: 6px;
     margin-bottom: 6px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
     background-color: rgba(60, 70, 96, 0.6);
 }
 

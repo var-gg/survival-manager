@@ -25,7 +25,7 @@
 .inv-body { flex-direction: row; flex-grow: 1; padding: 14px; }
 
 /* Left sidebar */
-.inv-sidebar { width: 140px; flex-direction: column; margin-right: 12px; }
+.inv-sidebar { width: 140px; flex-direction: column; margin-right: var(--sm-s-3); }
 .inv-sidebar__row { flex-direction: row; align-items: center; padding: 12px 8px; margin-bottom: 6px;
     background-color: rgba(38,45,84,0.72);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
@@ -43,17 +43,17 @@
 .inv-sidebar__row-count { color: var(--sm-ink-3); font-size: 10px; margin-top: 2px; }
 
 /* Center main grid */
-.inv-main { flex-grow: 1; flex-direction: column; margin-right: 12px; }
+.inv-main { flex-grow: 1; flex-direction: column; margin-right: var(--sm-s-3); }
 .inv-main__filter-row { flex-direction: row; justify-content: flex-end; padding: 6px 0; }
 .inv-main__filter-glyph { width: 36px; height: 22px;
     background-color: rgba(28,34,67,0.72);
-    margin-left: 4px;
+    margin-left: var(--sm-s-1);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
 
 .inv-grid { flex-direction: row; flex-wrap: wrap; padding: 6px; }
-.inv-grid__cell { width: 88px; height: 88px; margin: 4px;
+.inv-grid__cell { width: 88px; height: 88px; margin: var(--sm-s-1);
     background-color: rgba(28,34,67,0.78);
     border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
     border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
@@ -130,12 +130,12 @@
 .inv-detail__icon { width: 120px; height: 120px; align-self: center;
     -unity-background-scale-mode: scale-to-fit;
     background-color: var(--sm-vellum-a06); }
-.inv-detail__name-bar { padding-top: 12px; padding-bottom: 8px;
+.inv-detail__name-bar { padding-top: var(--sm-s-3); padding-bottom: var(--sm-s-2);
     border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
 .inv-detail__name-glyph { height: 8px; background-color: rgba(216,199,153,0.62); }
 /* Affix detail — item-and-affix-system.md V1: implicit 1 + prefix 2 + suffix 2 = 5 line.
    group header (IMPLICIT/PREFIX/SUFFIX) + left-tint row으로 그룹 시각 분리. */
-.inv-detail__affixes { flex-direction: column; margin-top: 12px; }
+.inv-detail__affixes { flex-direction: column; margin-top: var(--sm-s-3); }
 
 .inv-detail__affix-group {
     font-size: var(--sm-fs-xs);
@@ -153,7 +153,7 @@
     flex-direction: row;
     align-items: center;
     padding-top: 3px; padding-bottom: 3px;
-    padding-left: 6px; padding-right: 4px;
+    padding-left: 6px; padding-right: var(--sm-s-1);
     margin-bottom: 2px;
 }
 .inv-detail__affix-row--implicit { border-left-width: 2px; border-left-color: var(--sm-gold-200); }
@@ -172,10 +172,10 @@
     color: var(--sm-gold-200);
     font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
-    margin-left: 8px;
+    margin-left: var(--sm-s-2);
 }
-.inv-detail__owner { flex-direction: row; align-items: center; margin-top: 12px; padding: 6px 0; }
-.inv-detail__owner-icon { width: 24px; height: 24px; -unity-background-scale-mode: scale-to-fit; margin-right: 8px;
+.inv-detail__owner { flex-direction: row; align-items: center; margin-top: var(--sm-s-3); padding: 6px 0; }
+.inv-detail__owner-icon { width: 24px; height: 24px; -unity-background-scale-mode: scale-to-fit; margin-right: var(--sm-s-2);
     background-color: var(--sm-vellum-a18);
     border-top-left-radius: 12px; border-top-right-radius: 12px;
     border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
@@ -183,7 +183,7 @@
 .inv-detail__owner-glyph { flex-grow: 1; height: 6px; background-color: rgba(216,199,153,0.42); }
 /* btn stack: visual은 sm-cta sm-cta--inline + secondary/primary variant.
    inv-detail__btn--equip/sell/compare UXML 측에서 variant 지정. column layout만 surface 고유. */
-.inv-detail__buttons { flex-direction: column; margin-top: 12px; }
+.inv-detail__buttons { flex-direction: column; margin-top: var(--sm-s-3); }
 .inv-detail__btn { margin-bottom: 6px; }
 .inv-detail__btn-glyph { height: 6px; background-color: rgba(245,234,208,0.62);
     align-self: center; width: 70%; }

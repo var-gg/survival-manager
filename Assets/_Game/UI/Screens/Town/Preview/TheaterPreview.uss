@@ -16,11 +16,11 @@
 .thp-body { flex-direction: row; flex-grow: 1; padding: 14px; }
 
 /* Entry list — ScrollView (6 group / 23 entry archive). 옛 220px 좁은 폭 + 빡빡한 padding 보강. */
-.thp-entry-list { width: 256px; margin-right: 12px; }
+.thp-entry-list { width: 256px; margin-right: var(--sm-s-3); }
 .thp-entry-list .unity-scroll-view__content-container { flex-direction: column; }
-.thp-entry-group { padding-bottom: 12px; }
+.thp-entry-group { padding-bottom: var(--sm-s-3); }
 .thp-entry-group__title { color: var(--sm-gold-300); font-size: var(--sm-fs-s); letter-spacing: 2px;
-    -unity-font-style: bold; padding-left: 4px; padding-right: 4px; padding-top: 12px; padding-bottom: 7px;
+    -unity-font-style: bold; padding-left: var(--sm-s-1); padding-right: var(--sm-s-1); padding-top: var(--sm-s-3); padding-bottom: 7px;
     white-space: normal; }
 .thp-entry { flex-direction: row; align-items: center; padding: 9px 10px; margin-bottom: 6px;
     background-color: rgba(38,45,84,0.62);
@@ -54,7 +54,7 @@
 .thp-entry__meta-text {
     color: rgba(216, 199, 153, 0.62);
     font-size: 10px;
-    margin-right: 4px;
+    margin-right: var(--sm-s-1);
 }
 .thp-entry__meta-text--partial { color: rgba(232, 169, 59, 0.92); }
 .thp-entry__meta-text--watched { color: rgba(120, 200, 140, 0.78); }
@@ -63,12 +63,12 @@
 .thp-entry__title-glyph { height: 6px; background-color: rgba(216,199,153,0.55); margin-bottom: 3px; }
 .thp-entry__meta-glyph { height: 5px; width: 60%; background-color: rgba(216,199,153,0.32); }
 .thp-entry__check { width: 16px; height: 16px; background-color: rgba(120,200,140,0.85);
-    border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+    border-top-left-radius: var(--radius-l); border-top-right-radius: var(--radius-l); border-bottom-left-radius: var(--radius-l); border-bottom-right-radius: var(--radius-l); }
 .thp-entry__lock { width: 14px; height: 14px; background-color: rgba(216,199,153,0.32); }
 
 /* Player */
-.thp-player { flex-grow: 1; flex-direction: column; margin-right: 12px; }
-.thp-player__controls-top { flex-direction: row; justify-content: center; padding-bottom: 8px; }
+.thp-player { flex-grow: 1; flex-direction: column; margin-right: var(--sm-s-3); }
+.thp-player__controls-top { flex-direction: row; justify-content: center; padding-bottom: var(--sm-s-2); }
 .thp-player__control-btn { width: 80px; height: 28px; margin: 0 4px;
     background-color: rgba(38,45,84,0.85);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
@@ -84,9 +84,9 @@
     border-left-width: 1px; border-right-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
 .thp-player__scrub-prev, .thp-player__scrub-play, .thp-player__scrub-speed { width: 28px; height: 22px;
-    background-color: rgba(38,45,84,0.85); margin-right: 8px; }
-.thp-player__scrub-time { width: 60px; height: 8px; background-color: rgba(216,199,153,0.55); margin-right: 12px; }
-.thp-player__scrub-bar { flex-grow: 1; height: 6px; background-color: rgba(216,199,153,0.32); margin-right: 8px; }
+    background-color: rgba(38,45,84,0.85); margin-right: var(--sm-s-2); }
+.thp-player__scrub-time { width: 60px; height: 8px; background-color: rgba(216,199,153,0.55); margin-right: var(--sm-s-3); }
+.thp-player__scrub-bar { flex-grow: 1; height: 6px; background-color: rgba(216,199,153,0.32); margin-right: var(--sm-s-2); }
 
 .thp-player__caption { padding: 8px 12px;
     background-color: rgba(20,26,53,0.78);
@@ -102,12 +102,12 @@
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
 .thp-detail__banner { height: 120px; -unity-background-scale-mode: scale-and-crop;
     background-color: var(--sm-vellum-a18); margin-bottom: 10px; }
-.thp-detail__title-block { padding-bottom: 8px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
+.thp-detail__title-block { padding-bottom: var(--sm-s-2); border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
 .thp-detail__title-glyph { height: 10px; background-color: rgba(245,214,138,0.78); }
 .thp-detail__meta { flex-direction: column; padding: 8px 0; }
-.thp-detail__meta-row { height: 6px; margin-bottom: 4px; background-color: rgba(216,199,153,0.42); }
+.thp-detail__meta-row { height: 6px; margin-bottom: var(--sm-s-1); background-color: rgba(216,199,153,0.42); }
 .thp-detail__beats { flex-direction: column; padding: 4px 0; flex-grow: 1; }
-.thp-detail__beats-line { height: 5px; margin-bottom: 4px; background-color: rgba(216,199,153,0.32); width: 90%; }
+.thp-detail__beats-line { height: 5px; margin-bottom: var(--sm-s-1); background-color: rgba(216,199,153,0.32); width: 90%; }
 .thp-detail__attrs { flex-direction: row; padding: 8px 0; }
 .thp-detail__attr { flex-grow: 1; height: 18px; margin: 0 2px;
     background-color: rgba(38,45,84,0.78);
@@ -115,5 +115,5 @@
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
 /* Replay CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. margin만 surface 고유. */
-.thp-detail__replay { margin-top: 12px; }
+.thp-detail__replay { margin-top: var(--sm-s-3); }
 .thp-detail__replay-glyph { align-self: center; width: 60%; height: 8px; background-color: rgba(61,47,18,0.78); }

@@ -63,10 +63,10 @@
     color: var(--sm-gold-300);
     letter-spacing: 2px;
     -unity-font-style: bold;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
     border-bottom-width: 1px;
     border-bottom-color: var(--sm-vellum-a10);
-    padding-bottom: 4px;
+    padding-bottom: var(--sm-s-1);
 }
 .gallery-row {
     flex-direction: row;
@@ -75,14 +75,14 @@
 }
 .gallery-row > * {
     margin-right: 10px;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
 }
 
 .gallery-cap {
     font-size: var(--sm-fs-xs);
     color: var(--sm-ink-3);
     letter-spacing: 1px;
-    margin-top: 4px;
+    margin-top: var(--sm-s-1);
     -unity-text-align: middle-center;
 }
 
@@ -195,7 +195,7 @@
 .g-bar__fill--xp { background-color: var(--sm-gold-300); }
 .g-stat__val {
     width: 80px;
-    margin-left: 8px;
+    margin-left: var(--sm-s-2);
     font-size: var(--sm-fs-eb);
     color: var(--sm-ink-2);
     -unity-text-align: middle-right;

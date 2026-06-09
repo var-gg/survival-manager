@@ -17,7 +17,7 @@
     border-top-color: rgba(230,183,81,0.55); border-bottom-color: rgba(230,183,81,0.55); }
 
 .pap-columns { flex-direction: row; flex-grow: 1; padding: 18px; }
-.pap-col { margin-left: 8px; margin-right: 8px; flex-direction: column; }
+.pap-col { margin-left: var(--sm-s-2); margin-right: var(--sm-s-2); flex-direction: column; }
 .pap-col--grid { width: 360px; }
 /* Detail column — dark navy feature card. ceremony frame texture가 parchment라
    bare bg에 gold text를 얹으면 저대비 → 좌/우 column처럼 dark card로 통일. */
@@ -30,7 +30,7 @@
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
 }
-.pap-col--equip { width: 280px; align-items: stretch; padding-top: 12px; }
+.pap-col--equip { width: 280px; align-items: stretch; padding-top: var(--sm-s-3); }
 
 /* 4 augment grid (2x2) — pindoc V1: permanent 4개 only, 자세 1:1 매핑.
    각 cell: icon + 한국어 표시명 + 자세 매핑 라벨. 이전 12 motif grid 폐기. */
@@ -38,8 +38,8 @@
 .pap-augment-cell {
     width: 162px;
     height: 200px;
-    margin: 4px;
-    padding: 8px;
+    margin: var(--sm-s-1);
+    padding: var(--sm-s-2);
     background-color: rgba(28,34,67,0.86);
     border-left-width: 2px; border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
     border-left-color: rgba(230,183,81,0.55); border-right-color: rgba(230,183,81,0.55);
@@ -50,11 +50,11 @@
    P0-4 다운스코프: 5 bucket 색축 폐기 → neutral chip. */
 .pap-augment-cell__family {
     align-self: stretch;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: var(--sm-s-1);
+    padding-right: var(--sm-s-1);
     padding-top: 2px;
     padding-bottom: 2px;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
     font-size: var(--sm-fs-xs);
     letter-spacing: 1px;
     -unity-font-style: bold;
@@ -82,10 +82,10 @@
 .pap-augment-cell__status {
     align-self: stretch;
     margin-top: 6px;
-    padding-top: 4px;
+    padding-top: var(--sm-s-1);
     padding-bottom: 2px;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: var(--sm-s-1);
+    padding-right: var(--sm-s-1);
     border-top-width: 1px;
     border-top-color: rgba(230, 183, 81, 0.32);
 }
@@ -130,7 +130,7 @@
    콘솔급: warm glow 뒤판 + 중앙 augment motif. */
 .pap-detail-hero {
     width: 200px; height: 200px;
-    margin-bottom: 12px;
+    margin-bottom: var(--sm-s-3);
     align-items: center;
     justify-content: center;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
@@ -173,7 +173,7 @@
     color: var(--sm-gold-300);
     letter-spacing: 2px;
     -unity-font-style: bold;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
 }
 .pap-detail-effect__body {
     font-size: 13px;
@@ -181,7 +181,7 @@
     white-space: normal;
 }
 
-.pap-detail-flavor { width: 260px; padding: 12px; margin-top: 12px;
+.pap-detail-flavor { width: 260px; padding: var(--sm-s-3); margin-top: var(--sm-s-3);
     background-color: var(--sm-vellum-a08);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: var(--sm-gold-300-a28); border-right-color: var(--sm-gold-300-a28);
@@ -200,11 +200,11 @@
     border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px;
     border-left-color: var(--sm-gold-200); border-right-color: var(--sm-gold-200);
     border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
-    margin-bottom: 16px; }
+    margin-bottom: var(--sm-s-4); }
 
 /* Meta rows — permanent augment는 stat boost가 아니라 family + signature effect.
    label / value 두 줄 row 구성. (P0-4: thesis/posture 매핑 row 폐기) */
-.pap-meta-rows { flex-direction: column; padding-top: 8px; padding-bottom: 16px; }
+.pap-meta-rows { flex-direction: column; padding-top: var(--sm-s-2); padding-bottom: var(--sm-s-4); }
 .pap-meta-row {
     flex-direction: column;
     padding: 8px 12px;

@@ -19,7 +19,7 @@
     height: 220px;
     justify-content: flex-end;
     overflow: hidden;
-    margin-right: 16px;
+    margin-right: var(--sm-s-4);
 }
 
 .dialogue-overlay-portrait {
@@ -34,11 +34,11 @@
 .dialogue-overlay-center {
     flex-grow: 1;
     min-width: 0;
-    padding-bottom: 4px;
+    padding-bottom: var(--sm-s-1);
 }
 
 .dialogue-overlay-speaker {
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
 }
 
 .dialogue-overlay-line {
@@ -52,5 +52,5 @@
 .dialogue-overlay-actions {
     justify-content: flex-start;
     align-items: flex-end;
-    margin-left: 16px;
+    margin-left: var(--sm-s-4);
 }

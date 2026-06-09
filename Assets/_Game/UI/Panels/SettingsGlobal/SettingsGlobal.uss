@@ -24,7 +24,7 @@
 
 /* Sidebar */
 .stp-sidebar { width: 160px; flex-direction: column; margin-right: 14px; }
-.stp-sidebar__row { flex-direction: row; align-items: center; padding: 8px; margin-bottom: 4px;
+.stp-sidebar__row { flex-direction: row; align-items: center; padding: var(--sm-s-2); margin-bottom: var(--sm-s-1);
     background-color: rgba(38,45,84,0.65);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
@@ -53,7 +53,7 @@
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
-.stp-opt-row__control { flex-grow: 1; flex-direction: row; align-items: center; padding-left: 12px; }
+.stp-opt-row__control { flex-grow: 1; flex-direction: row; align-items: center; padding-left: var(--sm-s-3); }
 
 /* per-row reset button — 4차 round column. dirty 일 때만 활성 시각. */
 .stp-opt-row__reset {
@@ -91,11 +91,11 @@
     align-items: flex-end; padding: 2px; }
 .stp-opt-row__toggle--on { background-color: rgba(200,147,42,0.62); align-items: flex-start; }
 .stp-opt-row__toggle-knob { width: 16px; height: 16px; background-color: var(--sm-vellum);
-    border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+    border-top-left-radius: var(--radius-l); border-top-right-radius: var(--radius-l); border-bottom-left-radius: var(--radius-l); border-bottom-right-radius: var(--radius-l); }
 
 /* Segmented variant */
 .stp-opt-row__seg { flex-direction: row; }
-.stp-opt-row__seg-cell { width: 28px; height: 22px; margin-right: 4px;
+.stp-opt-row__seg-cell { width: 28px; height: 22px; margin-right: var(--sm-s-1);
     background-color: rgba(38,45,84,0.62);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
@@ -108,7 +108,7 @@
 .stp-actions { width: 160px; flex-direction: column; margin-left: 14px; }
 /* Apply/Cancel/Reset CTAs: visual은 sm-cta sm-cta--md + primary/secondary/utility variant.
    margin만 surface 고유. */
-.stp-actions__apply, .stp-actions__cancel, .stp-actions__reset { margin-bottom: 8px; }
+.stp-actions__apply, .stp-actions__cancel, .stp-actions__reset { margin-bottom: var(--sm-s-2); }
 .stp-actions__apply-glyph, .stp-actions__cancel-glyph, .stp-actions__reset-glyph {
     width: 80px; height: 8px; background-color: rgba(245,234,208,0.78); }
 .stp-actions__apply-glyph { background-color: rgba(61,47,18,0.78); }

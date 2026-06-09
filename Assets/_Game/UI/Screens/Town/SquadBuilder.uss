@@ -48,7 +48,7 @@
     border-top-color: var(--sm-frame-trim-color);
     border-bottom-color: var(--sm-frame-trim-color);
     padding-top: 28px;
-    padding-bottom: 24px;
+    padding-bottom: var(--sm-s-5);
     padding-left: 36px;
     padding-right: 36px;
     overflow: hidden;
@@ -64,7 +64,7 @@
 .sm-sqb-modal__title-group { flex-direction: column; }
 
 .sm-sqb-modal__eyebrow {
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
     letter-spacing: 4px;
 }
 
@@ -191,7 +191,7 @@
 .sm-sqb-modal__column-title {
     color: var(--sm-ink-2);
     font-size: var(--sm-fs-s);
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
     -unity-text-align: middle-center;
     letter-spacing: 2px;
 }
@@ -199,7 +199,7 @@
 .sm-sqb-modal__anchor-button {
     min-height: 62px;
     height: 62px;
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
     -unity-text-align: middle-center;
     color: var(--sm-ink-1);
     white-space: normal;
@@ -232,7 +232,7 @@
 .sm-sqb-modal__detail-meta {
     color: var(--sm-gold-100);
     font-size: var(--sm-fs-s);
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
 }
 
 .sm-sqb-modal__detail-body {
@@ -267,8 +267,8 @@
 .sm-sqb-modal__posture-button {
     min-height: 34px;
     flex-grow: 1;
-    margin-right: 8px;
-    margin-bottom: 8px;
+    margin-right: var(--sm-s-2);
+    margin-bottom: var(--sm-s-2);
     -unity-text-align: middle-center;
     color: var(--sm-ink-1);
     font-size: var(--sm-fs-eb);

@@ -230,8 +230,8 @@
     position: relative;
     width: 31%;
     height: 43%;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-left: var(--sm-s-1);
+    margin-right: var(--sm-s-1);
     margin-top: 5px;
     margin-bottom: 5px;
     align-items: center;

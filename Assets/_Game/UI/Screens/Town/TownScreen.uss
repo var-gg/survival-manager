@@ -56,7 +56,7 @@
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 22px;
-    padding-right: 16px;
+    padding-right: var(--sm-s-4);
     background-color: rgba(8, 13, 32, 0.62);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -75,7 +75,7 @@
 }
 
 .town-hub__eyebrow {
-    margin-right: 12px;
+    margin-right: var(--sm-s-3);
     margin-bottom: 0;
     font-size: 10px;
     letter-spacing: 2px;
@@ -107,7 +107,7 @@
     width: 1px;
     height: 22px;
     background-color: var(--sm-gold-300-a34);
-    margin-left: 8px;
+    margin-left: var(--sm-s-2);
     margin-right: 6px;
 }
 
@@ -115,8 +115,8 @@
     margin-left: 6px;
     min-width: 0;
     height: 30px;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: var(--sm-s-3);
+    padding-right: var(--sm-s-3);
     font-size: var(--sm-fs-eb);
 }
 
@@ -129,8 +129,8 @@
     flex-direction: row;
     align-items: center;
     background-color: rgba(28, 34, 67, 0.94);
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: var(--sm-s-2);
+    padding-bottom: var(--sm-s-2);
     padding-left: 18px;
     padding-right: 18px;
     border-left-width: 1px;
@@ -150,7 +150,7 @@
     white-space: normal;
 }
 
-.town-hub__help-dismiss { margin-left: 12px; }
+.town-hub__help-dismiss { margin-left: var(--sm-s-3); }
 
 /* Service board */
 .town-hub__stage {
@@ -159,7 +159,7 @@
     margin-top: 34px;
     margin-left: 72px;
     margin-right: 72px;
-    margin-bottom: 12px;
+    margin-bottom: var(--sm-s-3);
     padding-top: 26px;
     padding-bottom: 18px;
     padding-left: 28px;
@@ -289,8 +289,8 @@
     height: 74px;
     margin-left: 7px;
     margin-right: 7px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--sm-s-4);
+    padding-right: var(--sm-s-4);
     justify-content: center;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
     -unity-slice-left: 64;
@@ -304,7 +304,7 @@
 .town-hub__feature-stat-icon {
     color: var(--sm-gold-200);
     font-size: var(--sm-fs-l);
-    margin-bottom: 8px;
+    margin-bottom: var(--sm-s-2);
     -unity-text-align: middle-center;
 }
 
@@ -405,7 +405,7 @@
 
 .town-hub__pip-row {
     flex-direction: row;
-    margin-top: 8px;
+    margin-top: var(--sm-s-2);
 }
 
 .town-hub__pip {
@@ -474,7 +474,7 @@
     margin-right: 72px;
     margin-bottom: 0;
     padding-top: 14px;
-    padding-bottom: 16px;
+    padding-bottom: var(--sm-s-4);
     padding-left: 28px;
     padding-right: 28px;
     background-color: rgba(8, 13, 32, 0.82);
@@ -514,10 +514,10 @@
     flex-direction: row;
     flex-wrap: wrap;
     flex-grow: 1;
-    margin-left: 16px;
+    margin-left: var(--sm-s-4);
     border-left-width: 1px;
     border-left-color: rgba(230, 183, 81, 0.32);
-    padding-left: 16px;
+    padding-left: var(--sm-s-4);
     align-items: flex-end;
 }
 
@@ -533,9 +533,9 @@
     align-items: center;
     margin-left: 44px;
     margin-right: 44px;
-    margin-bottom: 24px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    margin-bottom: var(--sm-s-5);
+    padding-top: var(--sm-s-3);
+    padding-bottom: var(--sm-s-3);
     padding-left: 28px;
     padding-right: 28px;
     background-color: rgba(8, 13, 32, 0.92);
@@ -622,13 +622,13 @@
 .town-hub__feature-service {
     width: 46%;
     height: 72px;
-    margin-left: 8px;
-    margin-right: 8px;
-    margin-bottom: 12px;
+    margin-left: var(--sm-s-2);
+    margin-right: var(--sm-s-2);
+    margin-bottom: var(--sm-s-3);
     flex-direction: row;
     align-items: center;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: var(--sm-s-3);
+    padding-right: var(--sm-s-3);
     background-color: rgba(28, 22, 12, 0.78);
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
     -unity-slice-left: 64;
@@ -650,7 +650,7 @@
 .town-hub__feature-service-icon {
     width: 44px;
     height: 44px;
-    margin-right: 12px;
+    margin-right: var(--sm-s-3);
     color: var(--sm-gold-100);
     font-size: 22px;
     -unity-font-style: bold;
@@ -781,7 +781,7 @@
 .town-hub__feature-service-value {
     color: var(--sm-ink-2);
     font-size: 10px;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
 }
 
 .town-hub__feature-service-line {

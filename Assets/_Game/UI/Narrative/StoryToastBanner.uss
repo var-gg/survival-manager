@@ -13,8 +13,8 @@
     width: 100%;
     justify-content: center;
     align-items: center;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: var(--sm-s-5);
+    padding-right: var(--sm-s-5);
 }
 
 .story-toast-panel {
@@ -27,7 +27,7 @@
     color: var(--story-accent-color);
     font-size: 17px;
     unity-font-style: bold;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
 }
 
 .story-toast-body {

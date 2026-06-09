@@ -1,8 +1,8 @@
 .theater-root {
     flex-grow: 1;
     background-color: rgba(20, 18, 24, 0.97);
-    padding-top: 32px;
-    padding-bottom: 32px;
+    padding-top: var(--sm-s-6);
+    padding-bottom: var(--sm-s-6);
     padding-left: 40px;
     padding-right: 40px;
 }
@@ -26,7 +26,7 @@
 
 .theater-list-item {
     margin-top: 0;
-    margin-bottom: 4px;
+    margin-bottom: var(--sm-s-1);
     margin-left: 0;
     margin-right: 0;
     padding-top: 9px;
@@ -34,10 +34,10 @@
     padding-left: 14px;
     padding-right: 14px;
     background-color: rgba(48, 44, 58, 0.92);
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-left-radius: var(--sm-r-lg);
+    border-top-right-radius: var(--sm-r-lg);
+    border-bottom-left-radius: var(--sm-r-lg);
+    border-bottom-right-radius: var(--sm-r-lg);
     border-left-width: 0;
     border-right-width: 0;
     border-top-width: 0;
