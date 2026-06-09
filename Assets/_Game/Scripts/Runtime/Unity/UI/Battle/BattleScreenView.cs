@@ -34,8 +34,11 @@ public readonly record struct BattleScreenActions(
 
 public sealed class BattleScreenView
 {
-    private const float AllyRosterPortraitWidth = 128f;
-    private const float AllyRosterPortraitHeight = 152f;
+    // USS .sm-bs-roster-portrait(pass-2 override)와 일치해야 한다. 실제 크기는 레이아웃 후
+    // GeometryChangedEvent로 재적용하므로 이 값은 첫 프레임 추정치 역할만 한다.
+    // (과거 128x152 stale 값 때문에 1:1 얼굴이 82x70 창에 152px로 렌더돼 정수리만 보이던 버그)
+    private const float AllyRosterPortraitWidth = 82f;
+    private const float AllyRosterPortraitHeight = 70f;
     private const float EnemyRosterPortraitWidth = 64f;
     private const float EnemyRosterPortraitHeight = 76f;
 
@@ -1040,6 +1043,15 @@ public sealed class BattleScreenView
         };
         image.AddToClassList("sm-bs-roster-portrait-image");
         ApplyCoverFit(image, texture, frameWidth, frameHeight);
+        // USS가 frame 크기를 바꿔도(과거 82x70 override ↔ C# 128x152 상수 drift로 정수리만
+        // 보이던 버그) 실제 레이아웃 크기로 cover-fit을 재적용해 자가 교정한다.
+        frame.RegisterCallback<GeometryChangedEvent>(evt =>
+        {
+            if (evt.newRect.width > 1f && evt.newRect.height > 1f)
+            {
+                ApplyCoverFit(image, texture, evt.newRect.width, evt.newRect.height);
+            }
+        });
         frame.Add(image);
         return frame;
     }
