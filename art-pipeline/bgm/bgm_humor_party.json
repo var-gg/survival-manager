@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_humor_party",
+  "register": "유머-온기",
+  "role": "party banter humor motif",
+  "context": "light register(유머-온기) seed — party banter humor motif",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "light playful character theme, anime JRPG comedic, bouncy pizzicato strings, cheerful woodwinds, light marimba, mischievous and warm, charming and lighthearted, makes you smile, NOT epic NOT sad, cozy folk pop, clean production",
+  "caption_used": "light playful character theme, anime JRPG comedic, bouncy pizzicato strings, cheerful woodwinds, light marimba, mischievous and warm, charming and lighthearted, makes you smile, NOT epic NOT sad, cozy folk pop, clean production",
+  "lyrics": "[Intro - playful pizzicato]\n[Main - bouncy cheerful]\n[Main - woodwind variation]\n[Outro - wink]",
+  "instrumental": true,
+  "bpm": 120,
+  "audio_duration": 52.0,
+  "key_scale": "G major",
+  "inference_steps": 8,
+  "seed": "3972012556,4170497863",
+  "audio_format": "wav",
+  "canonical": true
+}

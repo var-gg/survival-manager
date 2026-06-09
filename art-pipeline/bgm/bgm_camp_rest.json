@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_camp_rest",
+  "register": "유머-온기",
+  "role": "campfire rest loop",
+  "context": "light register(유머-온기) seed — campfire rest loop",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "intimate campfire rest theme, anime fantasy, soft acoustic guitar and gentle hand percussion, warm low strings, calm and safe, a quiet breath between battles, tender and cozy, light folk, clean production",
+  "caption_used": "intimate campfire rest theme, anime fantasy, soft acoustic guitar and gentle hand percussion, warm low strings, calm and safe, a quiet breath between battles, tender and cozy, light folk, clean production",
+  "lyrics": "[Intro - soft guitar]\n[Main - calm warm loop]\n[Outro - gentle fade]",
+  "instrumental": true,
+  "bpm": 82,
+  "audio_duration": 76.0,
+  "key_scale": "D major",
+  "inference_steps": 8,
+  "seed": "2612059871,3529053918",
+  "audio_format": "wav",
+  "canonical": true
+}

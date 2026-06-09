@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_menu_ambient",
+  "register": "중립-앰비언트",
+  "role": "menu/neutral background bed",
+  "context": "seed batch3 — menu/neutral background bed",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "calm neutral menu ambient, anime fantasy, soft sustained warm pads and gentle sparse piano, spacious and unobtrusive, stays in the background, gentle and clean, NOT melodic-forward NOT sad, clean production",
+  "caption_used": "calm neutral menu ambient, anime fantasy, soft sustained warm pads and gentle sparse piano, spacious and unobtrusive, stays in the background, gentle and clean, NOT melodic-forward NOT sad, clean production",
+  "lyrics": "[Intro - soft pad]\n[Main - calm spacious]\n[Main - gentle piano]\n[Outro - fade]",
+  "instrumental": true,
+  "bpm": 72,
+  "audio_duration": 80.0,
+  "key_scale": "C major",
+  "inference_steps": 8,
+  "seed": "2302919566,2225665289",
+  "audio_format": "wav",
+  "canonical": true
+}

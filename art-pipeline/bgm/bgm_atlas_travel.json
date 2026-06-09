@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_atlas_travel",
+  "register": "유머-온기",
+  "role": "world-map travel loop (light breezy)",
+  "context": "seed batch2 — world-map travel loop (light breezy)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "light breezy travel theme, anime fantasy world map, gentle marching acoustic guitar and warm flute, curious and easygoing, hopeful journey, cozy folk, NOT melancholic NOT epic, clean bright production",
+  "caption_used": "light breezy travel theme, anime fantasy world map, gentle marching acoustic guitar and warm flute, curious and easygoing, hopeful journey, cozy folk, NOT melancholic NOT epic, clean bright production",
+  "lyrics": "[Intro - gentle march]\n[Main - breezy journey]\n[Main - flute variation]\n[Outro - soft]",
+  "instrumental": true,
+  "bpm": 110,
+  "audio_duration": 80.0,
+  "key_scale": "G major",
+  "inference_steps": 8,
+  "seed": "1726775287,1911514797",
+  "audio_format": "wav",
+  "canonical": true
+}

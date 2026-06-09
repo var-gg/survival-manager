@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_motif_pale_conclave",
+  "register": "정치-무게",
+  "leitmotif": "faction_pale_conclave",
+  "role": "결사 모티프 (오래된 종)",
+  "context": "faction leitmotif seed — 결사 모티프 (오래된 종)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "solemn ancient order leitmotif, anime fantasy, deep aged tolling bells and low male choir, weighty reverent and grave, ritual memory of an old order, clean production",
+  "caption_used": "solemn ancient order leitmotif, anime fantasy, deep aged tolling bells and low male choir, weighty reverent and grave, ritual memory of an old order, clean production",
+  "instrumental": true,
+  "bpm": 64,
+  "audio_duration": 52.0,
+  "key_scale": "D minor",
+  "inference_steps": 8,
+  "seed": "285394135,2316287612",
+  "audio_format": "wav",
+  "canonical": true
+}

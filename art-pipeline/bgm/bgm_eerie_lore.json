@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_eerie_lore",
+  "register": "신비-불온(eerie)",
+  "role": "lore/codex/ruins mystery bed",
+  "context": "seed batch3 — lore/codex/ruins mystery bed",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "mysterious unsettling lore theme, anime dark fantasy, sparse cold sustained strings, distant prepared piano, faint metallic bells, ambiguous dread and quiet tension, NOT melodic NOT warm NOT action, eerie atmosphere, clean production",
+  "caption_used": "mysterious unsettling lore theme, anime dark fantasy, sparse cold sustained strings, distant prepared piano, faint metallic bells, ambiguous dread and quiet tension, NOT melodic NOT warm NOT action, eerie atmosphere, clean production",
+  "lyrics": "[Intro - cold drone]\n[Main - sparse unease]\n[Main - distant bells]\n[Outro - unresolved]",
+  "instrumental": true,
+  "bpm": 70,
+  "audio_duration": 70.0,
+  "key_scale": "F minor",
+  "inference_steps": 8,
+  "seed": "64885607,1041272274",
+  "audio_format": "wav",
+  "canonical": true
+}

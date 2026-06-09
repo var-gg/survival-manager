@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_battle_normal",
+  "register": "정치-무게",
+  "role": "normal combat loop (drive, moral-grey)",
+  "context": "seed batch2 — normal combat loop (drive, moral-grey)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "tense propulsive anime fantasy battle, hybrid orchestral with driving low strings and restrained taiko percussion, urgent and weighted, morally heavy not triumphant, NOT cartoon-villain NOT heroic hype, cinematic combat, clean production",
+  "caption_used": "tense propulsive anime fantasy battle, hybrid orchestral with driving low strings and restrained taiko percussion, urgent and weighted, morally heavy not triumphant, NOT cartoon-villain NOT heroic hype, cinematic combat, clean production",
+  "lyrics": "[Intro - tense build]\n[Main - driving combat]\n[Main - intensify]\n[Outro - unresolved]",
+  "instrumental": true,
+  "bpm": 140,
+  "audio_duration": 85.0,
+  "key_scale": "D minor",
+  "inference_steps": 8,
+  "seed": "2560557760,2380176892",
+  "audio_format": "wav",
+  "canonical": true
+}

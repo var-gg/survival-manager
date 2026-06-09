@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_motif_wolfpine_tribes",
+  "register": "정치-무게",
+  "leitmotif": "faction_wolfpine_tribes",
+  "role": "씨족 모티프 (토템·바람)",
+  "context": "faction leitmotif seed — 씨족 모티프 (토템·바람)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "tribal clan leitmotif, anime fantasy, hand drums and bone flute and open wind, primal earthy and free, totemic and rugged, modal melody, clean production",
+  "caption_used": "tribal clan leitmotif, anime fantasy, hand drums and bone flute and open wind, primal earthy and free, totemic and rugged, modal melody, clean production",
+  "instrumental": true,
+  "bpm": 100,
+  "audio_duration": 50.0,
+  "key_scale": "A minor",
+  "inference_steps": 8,
+  "seed": "3460921089,814928911",
+  "audio_format": "wav",
+  "canonical": true
+}

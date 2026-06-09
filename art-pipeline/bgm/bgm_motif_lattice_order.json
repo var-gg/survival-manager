@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_motif_lattice_order",
+  "register": "정치-무게",
+  "leitmotif": "faction_lattice_order",
+  "role": "솔라룸 모티프 (의례)",
+  "context": "faction leitmotif seed — 솔라룸 모티프 (의례)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "ceremonial ritual leitmotif, anime fantasy, sacred wordless chant and resonant chimes and warm organ, luminous devotional and ceremonial, clean production",
+  "caption_used": "ceremonial ritual leitmotif, anime fantasy, sacred wordless chant and resonant chimes and warm organ, luminous devotional and ceremonial, clean production",
+  "instrumental": true,
+  "bpm": 72,
+  "audio_duration": 52.0,
+  "key_scale": "F major",
+  "inference_steps": 8,
+  "seed": "4060480067,848699767",
+  "audio_format": "wav",
+  "canonical": true
+}

@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_town_ashglen_cozy",
+  "register": "유머-온기",
+  "role": "town hub loop (cozy redo)",
+  "context": "light register(유머-온기) seed — town hub loop (cozy redo)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "warm cozy fantasy town theme, anime JRPG, gentle fingerpicked acoustic guitar, soft flute and light pizzicato strings, easygoing daily-life warmth, hopeful and inviting, NOT melancholic NOT epic, cozy folk, clean bright production",
+  "caption_used": "warm cozy fantasy town theme, anime JRPG, gentle fingerpicked acoustic guitar, soft flute and light pizzicato strings, easygoing daily-life warmth, hopeful and inviting, NOT melancholic NOT epic, cozy folk, clean bright production",
+  "lyrics": "[Intro - gentle guitar]\n[Main - warm cozy loop]\n[Main - light variation, flute]\n[Outro - soft]",
+  "instrumental": true,
+  "bpm": 95,
+  "audio_duration": 82.0,
+  "key_scale": "C major",
+  "inference_steps": 8,
+  "seed": "4057560903,3748438057",
+  "audio_format": "wav",
+  "canonical": true
+}

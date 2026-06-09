@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_site_intro_ash",
+  "register": "정치-무게",
+  "role": "ch1 exploration/dialogue bed (ash)",
+  "context": "seed batch3 — ch1 exploration/dialogue bed (ash)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "cold desolate exploration bed, anime fantasy ashen frontier, thin high sustained strings, low wind, distant restrained percussion, tense and barren, weighted and sparse not melodic, cinematic, clean production",
+  "caption_used": "cold desolate exploration bed, anime fantasy ashen frontier, thin high sustained strings, low wind, distant restrained percussion, tense and barren, weighted and sparse not melodic, cinematic, clean production",
+  "lyrics": "[Intro - thin strings]\n[Main - barren tension]\n[Main - low percussion]\n[Outro - wind]",
+  "instrumental": true,
+  "bpm": 84,
+  "audio_duration": 80.0,
+  "key_scale": "A minor",
+  "inference_steps": 8,
+  "seed": "999452690,935177421",
+  "audio_format": "wav",
+  "canonical": true
+}

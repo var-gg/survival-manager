@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_motif_solarum",
+  "register": "정치-무게",
+  "leitmotif": "faction_solarum",
+  "role": "백규 학파 모티프 (차가운 지적)",
+  "context": "faction leitmotif seed — 백규 학파 모티프 (차가운 지적)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "cold intellectual leitmotif, anime fantasy, precise solo piano and glassy high strings, cerebral detached and elegant, a scholar's restrained calm, measured and clear, NOT warm NOT epic, clean production",
+  "caption_used": "cold intellectual leitmotif, anime fantasy, precise solo piano and glassy high strings, cerebral detached and elegant, a scholar's restrained calm, measured and clear, NOT warm NOT epic, clean production",
+  "instrumental": true,
+  "bpm": 88,
+  "audio_duration": 50.0,
+  "key_scale": "E minor",
+  "inference_steps": 8,
+  "seed": "199605530,1621781239",
+  "audio_format": "wav",
+  "canonical": true
+}
