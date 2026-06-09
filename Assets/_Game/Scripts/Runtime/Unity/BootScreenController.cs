@@ -69,18 +69,20 @@ public sealed class BootScreenController : MonoBehaviour
             return _root.LastBlockingError ?? string.Empty;
         }
 
+        // 빌드 파이프라인 설명(영문)이 아니라 플레이어용 도입 1줄을 fallback으로 — Boot 온보딩 0줄 문제 해소.
         return Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.status",
-            "This build runs a local loop from Town through Expedition, Battle, and Reward.");
+            "잿골 마을로 이동 중 — 동료를 편성하고 첫 원정을 떠납니다.");
     }
 
     private string BuildHintText()
     {
+        // 빈 문자열 대신 첫 행동을 안내 — 신규 플레이어가 시작 화면에서 막히지 않게.
         return Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.hint",
-            string.Empty);
+            "마을에서 동료를 모은 뒤 [원정으로]를 눌러 첫 전투를 시작하세요.");
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)
