@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_site_intro_frost",
+  "register": "politics-weight",
+  "role": "ch4 유리의 숲 (crystalline-fractured)",
+  "context": "per-chapter field bed — ch4 유리의 숲 (crystalline-fractured)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "crystalline exploration bed, anime fantasy, glassy fractured high strings and cold brittle glints, fragile icy beauty turning unsettling, the glass forest, sparse and sharp, weighted not melodic, clean production",
+  "caption_used": "crystalline exploration bed, anime fantasy, glassy fractured high strings and cold brittle glints, fragile icy beauty turning unsettling, the glass forest, sparse and sharp, weighted not melodic, clean production",
+  "instrumental": true,
+  "bpm": 80,
+  "audio_duration": 80.0,
+  "key_scale": "C# minor",
+  "inference_steps": 8,
+  "seed": "1888137935,664288436",
+  "audio_format": "wav",
+  "reuse": "shared",
+  "canonical": true
+}

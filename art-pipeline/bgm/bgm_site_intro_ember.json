@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_site_intro_ember",
+  "register": "politics-weight",
+  "role": "ch5 심장로 (lava-tension)",
+  "context": "per-chapter field bed — ch5 심장로 (lava-tension)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "molten tension exploration bed, anime dark fantasy, low ominous drones and distant heat shimmer, simmering dread approaching a terrible stillness, the heartforge depths, sparse heavy and cold, weighted not melodic, clean production",
+  "caption_used": "molten tension exploration bed, anime dark fantasy, low ominous drones and distant heat shimmer, simmering dread approaching a terrible stillness, the heartforge depths, sparse heavy and cold, weighted not melodic, clean production",
+  "instrumental": true,
+  "bpm": 68,
+  "audio_duration": 80.0,
+  "key_scale": "D minor",
+  "inference_steps": 8,
+  "seed": "1621129465,554350076",
+  "audio_format": "wav",
+  "reuse": "shared",
+  "canonical": true
+}

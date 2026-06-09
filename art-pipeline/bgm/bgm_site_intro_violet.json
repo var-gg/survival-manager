@@ -1,0 +1,23 @@
+{
+  "engine": "acestep",
+  "dit_model": "acestep-v15-xl-turbo",
+  "lm_model": "(bypassed)",
+  "channel": "Bgm",
+  "cue_id": "bgm_site_intro_violet",
+  "register": "politics-weight",
+  "role": "ch3 무너진 묘역 (memory-choral)",
+  "context": "per-chapter field bed — ch3 무너진 묘역 (memory-choral)",
+  "task_type": "text2music",
+  "thinking": false,
+  "input_prompt": "memory exploration bed, anime dark fantasy, distant wordless choir and faint phosphorescent shimmer, haunting and sparse, the ruined crypts, ghostly cold resonance, weighted not melodic, clean production",
+  "caption_used": "memory exploration bed, anime dark fantasy, distant wordless choir and faint phosphorescent shimmer, haunting and sparse, the ruined crypts, ghostly cold resonance, weighted not melodic, clean production",
+  "instrumental": true,
+  "bpm": 72,
+  "audio_duration": 80.0,
+  "key_scale": "F# minor",
+  "inference_steps": 8,
+  "seed": "4085475041,2184487348",
+  "audio_format": "wav",
+  "reuse": "shared",
+  "canonical": true
+}
