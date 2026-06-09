@@ -17,7 +17,9 @@
 }
 
 .town-hub__backdrop {
-    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    /* 잿골 광장 dusk 환경 일러스트 — 허브 첫 화면 분위기 backdrop (game-image-gen 발주, dark/gold painterly). */
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_ashglen_plaza_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
 }
 
 .town-hub__backdrop-dim {
