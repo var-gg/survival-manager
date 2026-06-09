@@ -468,18 +468,17 @@ public sealed class BattleScreenPresenter
 
     private string BuildTeamSummary(IEnumerable<BattleUnitReadModel> units)
     {
-        // 팀 이름(아군/적군)은 인접한 strip 타이틀이 이미 보여주므로 라벨 prefix를 중복 표기하지 않는다.
-        // 전체 HP 합/최대는 readout 패널이 담당 — 여기선 생존 수 + 현재 HP만 간결히.
+        // 좌/우 strip의 본분은 '누가 팀에 있나'(얼굴 로스터)다 → 생존 수만 표기한다.
+        // 팀 HP 합계는 전황판단(readout) + 유닛별 HP바 + 머리 위 바가 이미 담당하므로
+        // strip 헤더에서는 중복 표기를 제거한다. 팀 이름은 인접 타이틀이 보여준다.
         var snapshot = units.ToList();
         if (snapshot.Count == 0)
         {
-            return "0/0 · 0 HP";
+            return "0/0";
         }
 
         var alive = snapshot.Count(unit => unit.IsAlive);
-        var total = snapshot.Count;
-        var currentHp = snapshot.Sum(unit => UnityEngine.Mathf.Max(0f, unit.CurrentHealth));
-        return $"{alive}/{total} · {currentHp:0} HP";
+        return $"{alive}/{snapshot.Count}";
     }
 
     private string BuildStatus(BattleSimulationStep step, bool isPaused)
