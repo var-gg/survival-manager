@@ -268,7 +268,7 @@
 }
 
 .sm-btn__label-en {
-    font-size: 9px;
+    font-size: var(--sm-fs-xs);
     color: rgba(245, 234, 208, 0.7);
     margin-left: 4px;
     padding-left: 8px;

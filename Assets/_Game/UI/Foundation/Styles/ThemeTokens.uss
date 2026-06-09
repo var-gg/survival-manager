@@ -126,6 +126,12 @@
     --sm-gold-muted-a44: rgba(218, 187, 118, 0.44);
     --sm-gold-muted-a54: rgba(218, 187, 118, 0.54);
     --sm-gold-muted-a72: rgba(218, 187, 118, 0.72);
+    /* a10/a12/a18: surface USS가 이미 참조 중이었으나 SoT에 미정의 → 칩/막대/active 슬롯 배경이
+       조용히 빠지던 렌더 버그. 의도된 lighter gold alpha로 정식 정의(common_detail tag, Reward 정산 칩,
+       Battle skill-slot active / readout track). */
+    --sm-gold-300-a10: rgba(230, 183, 81, 0.10);
+    --sm-gold-300-a12: rgba(230, 183, 81, 0.12);
+    --sm-gold-300-a18: rgba(230, 183, 81, 0.18);
     --sm-gold-300-a20: rgba(230, 183, 81, 0.20);
     --sm-gold-300-a22: rgba(230, 183, 81, 0.22);
     --sm-gold-300-a24: rgba(230, 183, 81, 0.24);
@@ -139,6 +145,8 @@
     --sm-gold-300-a78: rgba(230, 183, 81, 0.78);
     --sm-fam-vanguard-glow-a45: rgba(127, 163, 224, 0.45);
     --sm-state-warn-a56: rgba(232, 169, 59, 0.56);
+    /* a78: Battle 경고 막대 fill/테두리가 참조하나 미정의였던 렌더 버그 → 정식 정의. */
+    --sm-state-warn-a78: rgba(232, 169, 59, 0.78);
     --sm-state-safe-a86: rgba(166, 220, 154, 0.86);
     --sm-state-safe-a92: rgba(166, 220, 154, 0.92);
     --sm-state-shield-a82: rgba(118, 168, 230, 0.82);

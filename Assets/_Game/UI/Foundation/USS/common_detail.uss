@@ -58,7 +58,7 @@
 
 .sm-cd-title {
     color: var(--sm-ink-0);
-    font-size: 11px;
+    font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     white-space: normal;
 }
@@ -85,7 +85,7 @@
     padding-top: 2px;
     padding-bottom: 2px;
     color: var(--sm-gold-100);
-    font-size: 8px;
+    font-size: var(--sm-fs-xs);
     background-color: var(--sm-gold-300-a12);
     border-left-width: 1px;
     border-right-width: 1px;

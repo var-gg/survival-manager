@@ -1692,7 +1692,7 @@
 
 .battle-screen .sm-bs-observer-chip__label {
     color: var(--sm-ink-2);
-    font-size: 8px;
+    font-size: var(--sm-fs-xs);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
