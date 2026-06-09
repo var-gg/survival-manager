@@ -18,7 +18,7 @@
 .rcp-backdrop-dim {
     position: absolute;
     left: 0; right: 0; top: 0; bottom: 0;
-    background-color: rgba(12, 17, 38, 0.55);
+    background-color: var(--sm-backdrop-dim);
 }
 
 /* --- Modal frame ---
@@ -47,7 +47,7 @@
 .rcp-header__ornament {
     width: 56px;
     height: 6px;
-    background-color: rgba(230, 183, 81, 0.78);
+    background-color: var(--sm-gold-300-a78);
 }
 .rcp-header__ornament--left { margin-right: 18px; }
 .rcp-header__ornament--right { margin-left: 18px; }
@@ -348,7 +348,7 @@
     padding-left: 56px;
     padding-right: 56px;
     border-top-width: 1px;
-    border-top-color: rgba(230, 183, 81, 0.28);
+    border-top-color: var(--sm-gold-300-a28);
 }
 
 /* Scout CTA: visual은 sm-cta sm-cta--lg sm-cta--secondary. width만 surface 고유.

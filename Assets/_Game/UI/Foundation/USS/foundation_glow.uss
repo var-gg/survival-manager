@@ -42,10 +42,10 @@
     opacity: 0.45;
     scale: 1.00 1.00;
     background-color: rgba(230, 183, 81, 0.06);
-    border-left-color: rgba(230, 183, 81, 0.28);
-    border-right-color: rgba(230, 183, 81, 0.28);
-    border-top-color: rgba(230, 183, 81, 0.28);
-    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
 }
 
 .sm-foundation-glow-pulse-gold--high {
@@ -88,7 +88,7 @@
 
 .sm-foundation-hover-highlight--active {
     opacity: 1;
-    background-color: rgba(245, 234, 208, 0.08);
+    background-color: var(--sm-vellum-a08);
 }
 
 .sm-foundation-focus-outline {

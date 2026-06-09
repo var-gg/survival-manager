@@ -332,7 +332,7 @@
     border-bottom-right-radius: 8px;
 }
 /* Race chip — color block placeholder (sprite 미발행) */
-.twp-synergy-chip--human    { background-color: rgba(245, 234, 208, 0.42); }
+.twp-synergy-chip--human    { background-color: var(--sm-chip-category-border); }
 .twp-synergy-chip--beastkin { background-color: rgba(122, 138, 82, 0.62); }
 .twp-synergy-chip--undead   { background-color: rgba(82, 74, 104, 0.72); }
 /* Class chip — sprite */

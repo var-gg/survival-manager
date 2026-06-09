@@ -170,9 +170,9 @@
     background-color: rgba(38, 45, 84, 0.55);
     border-left-width: 2px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: var(--sm-gold-300);
-    border-right-color: rgba(230,183,81,0.24);
-    border-top-color: rgba(230,183,81,0.24);
-    border-bottom-color: rgba(230,183,81,0.24); }
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a24);
+    border-bottom-color: var(--sm-gold-300-a24); }
 .pap-detail-effect__heading {
     font-size: var(--sm-fs-xs);
     color: var(--sm-gold-300);
@@ -187,10 +187,10 @@
 }
 
 .pap-detail-flavor { width: 260px; padding: 12px; margin-top: 12px;
-    background-color: rgba(245,234,208,0.08);
+    background-color: var(--sm-vellum-a08);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
-    border-left-color: rgba(230,183,81,0.28); border-right-color: rgba(230,183,81,0.28);
-    border-top-color: rgba(230,183,81,0.28); border-bottom-color: rgba(230,183,81,0.28); }
+    border-left-color: var(--sm-gold-300-a28); border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28); border-bottom-color: var(--sm-gold-300-a28); }
 .pap-detail-flavor__text {
     font-size: var(--sm-fs-eb);
     color: rgba(216,199,153,0.82);
@@ -217,9 +217,9 @@
     background-color: rgba(38, 45, 84, 0.65);
     border-left-width: 2px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: var(--sm-gold-300);
-    border-right-color: rgba(230,183,81,0.28);
-    border-top-color: rgba(230,183,81,0.28);
-    border-bottom-color: rgba(230,183,81,0.28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
 }
 .pap-meta-row__label {
     color: var(--sm-gold-300);
@@ -260,10 +260,10 @@
 .pap-col--equip {
     background-image: none;
     background-color: rgba(28, 22, 12, 0.90);
-    border-left-color: rgba(230, 183, 81, 0.20);
-    border-right-color: rgba(230, 183, 81, 0.20);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.24);
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a24);
 }
 
 .pap-augment-cell,
@@ -272,10 +272,10 @@
 .pap-detail-flavor {
     background-image: none;
     background-color: rgba(28, 22, 12, 0.86);
-    border-left-color: rgba(230, 183, 81, 0.20);
-    border-right-color: rgba(230, 183, 81, 0.20);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.24);
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a24);
 }
 
 .pap-augment-cell--selected,

@@ -50,7 +50,7 @@
 .rcp-header__ornament {
     width: 56px;
     height: 6px;
-    background-color: rgba(230, 183, 81, 0.78);
+    background-color: var(--sm-gold-300-a78);
 }
 .rcp-header__ornament--left { margin-right: 18px; }
 .rcp-header__ornament--right { margin-left: 18px; }
@@ -391,7 +391,7 @@
     padding-left: 56px;
     padding-right: 56px;
     border-top-width: 1px;
-    border-top-color: rgba(230, 183, 81, 0.28);
+    border-top-color: var(--sm-gold-300-a28);
 }
 
 /* Scout CTA: visual은 sm-cta sm-cta--lg sm-cta--secondary. width만 surface 고유.
@@ -448,8 +448,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
     border-top-color: rgba(245, 214, 138, 0.24);
     border-bottom-color: rgba(138, 100, 24, 0.54);
 }
@@ -457,7 +457,7 @@
 .rcp-detail {
     padding-bottom: 12px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.22);
+    border-bottom-color: var(--sm-gold-300-a22);
 }
 
 .rcp-detail__name {
@@ -580,8 +580,8 @@
     border-right-width: 2px;
     border-top-width: 1px;
     border-bottom-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
     border-top-color: rgba(245, 214, 138, 0.24);
     border-bottom-color: rgba(138, 100, 24, 0.54);
     border-top-left-radius: 1px;
@@ -699,7 +699,7 @@
 /* Panel-local override moved to Design Tokens v1 chip tokens — see L535. */
 
 .rcp-card__skills {
-    border-top-color: rgba(230, 183, 81, 0.20);
+    border-top-color: var(--sm-gold-300-a20);
 }
 
 .rcp-card__skill-name {
@@ -707,7 +707,7 @@
 }
 
 .rcp-card__skill-line--flex .rcp-card__skill-slot {
-    color: rgb(127, 163, 224);
+    color: var(--sm-fam-vanguard-glow);
 }
 
 .rcp-header__ornament,
@@ -730,7 +730,7 @@
 
 .rcp-card__recruit,
 .rcp-actions__refresh {
-    color: rgb(36, 25, 8);
+    color: var(--sm-cta-primary-text);
 }
 
 .rcp-card__recruit {
@@ -777,7 +777,7 @@
     padding-left: 34px;
     padding-right: 34px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: var(--sm-gold-300-a18);
     background-color: rgba(28, 22, 12, 0.36);
 }
 
@@ -841,8 +841,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.42);
-    border-right-color: rgba(230, 183, 81, 0.42);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
     border-top-color: rgba(245, 214, 138, 0.36);
     border-bottom-color: rgba(138, 100, 24, 0.66);
 }
@@ -882,7 +882,7 @@
     margin-top: 12px;
     padding-top: 12px;
     border-top-width: 1px;
-    border-top-color: rgba(230, 183, 81, 0.18);
+    border-top-color: var(--sm-gold-300-a18);
 }
 
 .rcp-rail__signal {
@@ -1125,8 +1125,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
     border-top-color: rgba(245, 214, 138, 0.34);
     border-bottom-color: rgba(138, 100, 24, 0.58);
     overflow: hidden;
@@ -1301,9 +1301,9 @@
     padding-top: 8px;
     padding-bottom: 8px;
     border-top-width: 1px;
-    border-top-color: rgba(230, 183, 81, 0.18);
+    border-top-color: var(--sm-gold-300-a18);
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: var(--sm-gold-300-a18);
 }
 
 .rcp-detail__cost-row .rcp-detail__plan,
@@ -1324,7 +1324,7 @@
 .rcp-detail__recruit {
     margin-top: 14px;
     height: 38px;
-    color: rgb(36, 25, 8);
+    color: var(--sm-cta-primary-text);
     font-size: var(--sm-fs-s);
     letter-spacing: 2px;
     -unity-font-style: bold;

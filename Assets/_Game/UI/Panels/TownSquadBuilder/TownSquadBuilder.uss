@@ -17,9 +17,9 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
-    border-top-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
+    border-top-color: var(--sm-gold-300-a28);
     border-bottom-color: rgba(230, 183, 81, 0.48);
     padding-left: var(--sm-s-4);
     padding-right: var(--sm-s-4);
@@ -129,10 +129,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
     border-top-color: rgba(230, 183, 81, 0.16);
-    border-bottom-color: rgba(230, 183, 81, 0.24);
+    border-bottom-color: var(--sm-gold-300-a24);
     font-size: var(--sm-fs-s);
     -unity-text-align: middle-center;
 }
@@ -167,8 +167,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.36);
-    border-right-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a36);
+    border-right-color: var(--sm-gold-300-a28);
     border-top-color: rgba(245, 214, 138, 0.30);
     border-bottom-color: rgba(138, 100, 24, 0.46);
 }
@@ -186,8 +186,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.24);
-    border-right-color: rgba(230, 183, 81, 0.24);
+    border-left-color: var(--sm-gold-300-a24);
+    border-right-color: var(--sm-gold-300-a24);
     border-top-color: rgba(245, 214, 138, 0.22);
     border-bottom-color: rgba(138, 100, 24, 0.38);
     -unity-background-scale-mode: scale-to-fit;
@@ -240,10 +240,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a18);
     rotate: 45deg;
 }
 
@@ -307,9 +307,9 @@
 
 .sm-sqb-modal__anchor-button--occupied {
     background-color: rgba(40, 30, 14, 0.92);
-    border-left-color: rgba(230, 183, 81, 0.42);
-    border-right-color: rgba(230, 183, 81, 0.42);
-    border-top-color: rgba(230, 183, 81, 0.36);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a36);
     border-bottom-color: rgba(230, 183, 81, 0.52);
 }
 
@@ -349,14 +349,14 @@
     height: 20px;
     padding-left: 5px;
     padding-right: 5px;
-    color: rgb(245, 214, 138);
+    color: var(--sm-gold-200);
     background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.42);
-    border-right-color: rgba(230, 183, 81, 0.42);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
     border-top-color: rgba(245, 214, 138, 0.46);
     border-bottom-color: rgba(138, 100, 24, 0.54);
     font-size: 10px;
@@ -375,8 +375,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
     border-top-color: rgba(245, 214, 138, 0.32);
     border-bottom-color: rgba(138, 100, 24, 0.56);
     -unity-background-scale-mode: scale-to-fit;
@@ -435,10 +435,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a18);
 }
 
 .sm-sqb-modal__anchor-pip--on {
@@ -546,7 +546,7 @@
     margin-top: 2px;
     padding-bottom: 2px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.12);
+    border-bottom-color: var(--sm-gold-300-a12);
 }
 
 .sm-sqb-modal__operation-key {
@@ -636,8 +636,8 @@
     border-right-width: 2px;
     border-top-width: 2px;
     border-bottom-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.26);
-    border-right-color: rgba(230, 183, 81, 0.26);
+    border-left-color: var(--sm-gold-300-a26);
+    border-right-color: var(--sm-gold-300-a26);
     border-top-color: rgba(245, 214, 138, 0.24);
     border-bottom-color: rgba(138, 100, 24, 0.46);
 }
@@ -722,7 +722,7 @@
     left: 28px;
     right: 28px;
     height: 2px;
-    background-color: rgba(230, 183, 81, 0.18);
+    background-color: var(--sm-gold-300-a18);
 }
 
 .sm-sqb-modal__formation-line--top {

@@ -85,7 +85,7 @@
 
 .sm-face-card__badge--tavern  { background-color: rgba(127, 163, 224, 0.92); }   /* sapphire — 여관 */
 .sm-face-card__badge--forge   { background-color: rgba(181, 138, 54, 0.92); }    /* ranger ochre — 공방 */
-.sm-face-card__badge--clinic  { background-color: rgba(166, 220, 154, 0.92); }   /* safe green — 진료소 */
+.sm-face-card__badge--clinic  { background-color: var(--sm-state-safe-a92); }   /* safe green — 진료소 */
 .sm-face-card__badge--records { background-color: rgba(212, 180, 240, 0.92); }   /* mystic — 기록 */
 .sm-face-card__badge--captain { background-color: rgba(245, 214, 138, 0.95); }   /* gold-200 — captain */
 .sm-face-card__badge--none    { display: none; }
@@ -191,10 +191,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a18);
 }
 
 .sm-face-card__pip--on {
@@ -269,7 +269,7 @@
 .sm-bark-popup--confident  { border-top-color: rgba(255, 234, 174, 0.95); }
 .sm-bark-popup--amused     { border-top-color: rgba(245, 200, 122, 0.95); }
 .sm-bark-popup--surprised  { border-top-color: rgba(180, 200, 248, 0.95); }
-.sm-bark-popup--concerned  { border-top-color: rgba(166, 220, 154, 0.92); }
+.sm-bark-popup--concerned  { border-top-color: var(--sm-state-safe-a92); }
 .sm-bark-popup--pained     { border-top-color: rgba(220, 138, 138, 0.92); }
 .sm-bark-popup--angry      { border-top-color: rgba(232, 120, 96, 0.92); }
 .sm-bark-popup--determined { border-top-color: rgba(245, 214, 138, 0.95); }

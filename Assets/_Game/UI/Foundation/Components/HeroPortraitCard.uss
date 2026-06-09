@@ -177,10 +177,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.25);
-    border-right-color: rgba(230, 183, 81, 0.25);
-    border-top-color: rgba(230, 183, 81, 0.25);
-    border-bottom-color: rgba(230, 183, 81, 0.25);
+    border-left-color: var(--sm-gold-300-a25);
+    border-right-color: var(--sm-gold-300-a25);
+    border-top-color: var(--sm-gold-300-a25);
+    border-bottom-color: var(--sm-gold-300-a25);
 }
 
 .sm-hpc__silhouette {
@@ -349,8 +349,8 @@
     background-color: rgba(20, 20, 28, 0.92);
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-top-color: rgba(245, 214, 138, 0.35);
-    border-bottom-color: rgba(245, 214, 138, 0.35);
+    border-top-color: var(--sm-gold-glow);
+    border-bottom-color: var(--sm-gold-glow);
     padding-top: 6px;
     padding-bottom: 6px;
     align-items: center;

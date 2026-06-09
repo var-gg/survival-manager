@@ -9,7 +9,7 @@
     background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
     -unity-background-scale-mode: scale-and-crop;
 }
-.erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+.erp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: var(--sm-backdrop-dim); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .erp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
@@ -34,7 +34,7 @@
 
 /* Standee column — 장착 hero standee + 3 slot (row), 그 아래 선택 item 컨텍스트 */
 .erp-standee-row { flex-direction: row; flex-grow: 1; }
-.erp-standee { width: 200px; background-color: rgba(245,234,208,0.06); border-left-width: 1px; border-right-width: 1px;
+.erp-standee { width: 200px; background-color: var(--sm-vellum-a06); border-left-width: 1px; border-right-width: 1px;
     border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgba(230,183,81,0.32);
     border-right-color: rgba(230,183,81,0.32); border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32);
 }
@@ -85,7 +85,7 @@
 }
 .erp-affix-group--implicit { color: var(--sm-gold-200); }
 .erp-affix-group--prefix   { color: rgba(127, 163, 224, 0.92); }
-.erp-affix-group--suffix   { color: rgba(166, 220, 154, 0.92); }
+.erp-affix-group--suffix   { color: var(--sm-state-safe-a92); }
 
 .erp-affix-row {
     height: 38px; flex-direction: row; align-items: center; margin-bottom: 4px;
@@ -160,7 +160,7 @@
     border-top-color: var(--sm-gold-200); border-bottom-color: var(--sm-gold-200);
 }
 .erp-pool-row__weapon-icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px;
-    background-color: rgba(245,234,208,0.18); }
+    background-color: var(--sm-vellum-a18); }
 /* item 이름 — ItemBaseDefinition.NameKey resolved */
 .erp-pool-row__name {
     flex-grow: 1;
@@ -188,6 +188,6 @@
     width: 32px; height: 24px;
     background-color: rgba(38,45,84,0.72);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
-    border-left-color: rgba(230,183,81,0.42); border-right-color: rgba(230,183,81,0.42);
-    border-top-color: rgba(230,183,81,0.42); border-bottom-color: rgba(230,183,81,0.42);
+    border-left-color: var(--sm-gold-300-a42); border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42); border-bottom-color: var(--sm-gold-300-a42);
 }

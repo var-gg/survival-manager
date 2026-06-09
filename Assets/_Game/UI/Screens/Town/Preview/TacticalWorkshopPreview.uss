@@ -39,7 +39,7 @@
     padding-left: 32px;
     padding-right: 32px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(138, 100, 24, 0.45);
+    border-bottom-color: var(--sm-frame-divider-parchment);
 }
 .twp-header__eyebrow {
     font-size: var(--sm-fs-eb);
@@ -266,7 +266,7 @@
     padding-bottom: 6px;
     padding-left: 6px;
     padding-right: 6px;
-    background-color: rgba(245, 234, 208, 0.42);
+    background-color: var(--sm-chip-category-border);
     border-left-width: 2px;
     border-left-color: rgba(107, 93, 63, 0.55);
     border-top-width: 1px;

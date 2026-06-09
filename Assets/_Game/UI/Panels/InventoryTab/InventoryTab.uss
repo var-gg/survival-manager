@@ -113,10 +113,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.42);
-    border-right-color: rgba(230, 183, 81, 0.42);
-    border-top-color: rgba(230, 183, 81, 0.42);
-    border-bottom-color: rgba(230, 183, 81, 0.42);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
 }
 .inv-compare__delta-chip--gain {
     color: rgba(180, 232, 140, 0.98);
@@ -239,7 +239,7 @@
 }
 .inv-detail__icon { width: 120px; height: 120px; align-self: center;
     -unity-background-scale-mode: scale-to-fit;
-    background-color: rgba(245,234,208,0.06); }
+    background-color: var(--sm-vellum-a06); }
 .inv-detail__name-bar { padding-top: 12px; padding-bottom: 8px;
     border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
 .inv-detail__name-glyph { height: 8px; background-color: rgba(216,199,153,0.62); }
@@ -257,7 +257,7 @@
 }
 .inv-detail__affix-group--implicit { color: var(--sm-gold-200); }
 .inv-detail__affix-group--prefix   { color: rgba(127, 163, 224, 0.92); }
-.inv-detail__affix-group--suffix   { color: rgba(166, 220, 154, 0.92); }
+.inv-detail__affix-group--suffix   { color: var(--sm-state-safe-a92); }
 
 .inv-detail__affix-row {
     flex-direction: row;
@@ -286,7 +286,7 @@
 }
 .inv-detail__owner { flex-direction: row; align-items: center; margin-top: 12px; padding: 6px 0; }
 .inv-detail__owner-icon { width: 24px; height: 24px; -unity-background-scale-mode: scale-to-fit; margin-right: 8px;
-    background-color: rgba(245,234,208,0.18);
+    background-color: var(--sm-vellum-a18);
     border-top-left-radius: 12px; border-top-right-radius: 12px;
     border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
 }
@@ -337,10 +337,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.28);
-    border-right-color: rgba(230, 183, 81, 0.28);
-    border-top-color: rgba(230, 183, 81, 0.36);
-    border-bottom-color: rgba(230, 183, 81, 0.22);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a36);
+    border-bottom-color: var(--sm-gold-300-a22);
 }
 
 .inv-compare__card--selected {
@@ -436,9 +436,9 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
-    border-top-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
+    border-top-color: var(--sm-gold-300-a28);
     border-bottom-color: rgba(230, 183, 81, 0.48);
     border-top-left-radius: var(--sm-r-lg);
     border-top-right-radius: var(--sm-r-lg);
@@ -985,7 +985,7 @@
     border-top-width: 1px;
     border-bottom-width: 2px;
     border-left-color: rgba(245, 214, 138, 0.44);
-    border-right-color: rgba(230, 183, 81, 0.24);
+    border-right-color: var(--sm-gold-300-a24);
     border-top-color: rgba(245, 214, 138, 0.26);
     border-bottom-color: rgba(138, 100, 24, 0.58);
 }
@@ -1002,7 +1002,7 @@
     min-height: 88px;
     margin-bottom: 8px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: var(--sm-gold-300-a18);
 }
 
 .inv-detail__name {
@@ -1051,7 +1051,7 @@
     margin-bottom: 5px;
     background-color: rgba(28, 22, 12, 0.86);
     border-left-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
 }
 
 .inv-compare__row--different {

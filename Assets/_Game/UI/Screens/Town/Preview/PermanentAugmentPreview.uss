@@ -3,7 +3,7 @@
 .pap-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: var(--sm-backdrop-dim); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .pap-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
@@ -165,9 +165,9 @@
     background-color: rgba(38, 45, 84, 0.55);
     border-left-width: 2px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: var(--sm-gold-300);
-    border-right-color: rgba(230,183,81,0.24);
-    border-top-color: rgba(230,183,81,0.24);
-    border-bottom-color: rgba(230,183,81,0.24); }
+    border-right-color: var(--sm-gold-300-a24);
+    border-top-color: var(--sm-gold-300-a24);
+    border-bottom-color: var(--sm-gold-300-a24); }
 .pap-detail-effect__heading {
     font-size: var(--sm-fs-xs);
     color: var(--sm-gold-300);
@@ -182,10 +182,10 @@
 }
 
 .pap-detail-flavor { width: 260px; padding: 12px; margin-top: 12px;
-    background-color: rgba(245,234,208,0.08);
+    background-color: var(--sm-vellum-a08);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
-    border-left-color: rgba(230,183,81,0.28); border-right-color: rgba(230,183,81,0.28);
-    border-top-color: rgba(230,183,81,0.28); border-bottom-color: rgba(230,183,81,0.28); }
+    border-left-color: var(--sm-gold-300-a28); border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28); border-bottom-color: var(--sm-gold-300-a28); }
 .pap-detail-flavor__text {
     font-size: var(--sm-fs-eb);
     color: rgba(216,199,153,0.82);
@@ -212,9 +212,9 @@
     background-color: rgba(38, 45, 84, 0.65);
     border-left-width: 2px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
     border-left-color: var(--sm-gold-300);
-    border-right-color: rgba(230,183,81,0.28);
-    border-top-color: rgba(230,183,81,0.28);
-    border-bottom-color: rgba(230,183,81,0.28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
 }
 .pap-meta-row__label {
     color: var(--sm-gold-300);

@@ -782,8 +782,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.20);
-    border-right-color: rgba(230, 183, 81, 0.20);
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
     border-top-color: rgba(245, 214, 138, 0.20);
     border-bottom-color: rgba(138, 100, 24, 0.34);
 }
@@ -810,10 +810,10 @@
 .reward-screen .reward-bible__victory-ring--inner {
     width: 68px;
     height: 68px;
-    border-left-color: rgba(230, 183, 81, 0.28);
-    border-right-color: rgba(230, 183, 81, 0.28);
-    border-top-color: rgba(230, 183, 81, 0.28);
-    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
+    border-top-color: var(--sm-gold-300-a28);
+    border-bottom-color: var(--sm-gold-300-a28);
 }
 
 .reward-screen .reward-bible__victory-icon {
@@ -836,7 +836,7 @@
 .reward-screen .reward-bible__victory-rune {
     width: 46px;
     height: 5px;
-    background-color: rgba(230, 183, 81, 0.34);
+    background-color: var(--sm-gold-300-a34);
 }
 
 .reward-screen .reward-bible__victory-rune--blue {
@@ -894,7 +894,7 @@
     flex-direction: row;
     justify-content: space-between;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.22);
+    border-bottom-color: var(--sm-gold-300-a22);
 }
 
 .reward-screen .reward-bible__victory-banner-text {
@@ -911,7 +911,7 @@
 
 .reward-screen .reward-card {
     border-left-color: rgba(245, 214, 138, 0.36);
-    border-right-color: rgba(230, 183, 81, 0.24);
+    border-right-color: var(--sm-gold-300-a24);
     border-top-color: rgba(245, 214, 138, 0.30);
 }
 

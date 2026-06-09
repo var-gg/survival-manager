@@ -155,8 +155,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.36);
-    border-right-color: rgba(230, 183, 81, 0.36);
+    border-left-color: var(--sm-gold-300-a36);
+    border-right-color: var(--sm-gold-300-a36);
     border-top-color: rgba(245, 214, 138, 0.30);
     border-bottom-color: rgba(138, 100, 24, 0.52);
 }
@@ -182,9 +182,9 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.22);
-    border-right-color: rgba(230, 183, 81, 0.22);
-    border-top-color: rgba(230, 183, 81, 0.20);
+    border-left-color: var(--sm-gold-300-a22);
+    border-right-color: var(--sm-gold-300-a22);
+    border-top-color: var(--sm-gold-300-a20);
     border-bottom-color: rgba(230, 183, 81, 0.30);
 }
 
@@ -318,10 +318,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.20);
-    border-right-color: rgba(230, 183, 81, 0.20);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a28);
 }
 
 .tcs-mini-token--active {
@@ -347,10 +347,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a18);
     rotate: 45deg;
 }
 
@@ -418,9 +418,9 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
-    border-top-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
+    border-top-color: var(--sm-gold-300-a28);
     border-bottom-color: rgba(230, 183, 81, 0.48);
 }
 
@@ -453,7 +453,7 @@
     margin-bottom: 10px;
     padding-bottom: 6px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.20);
+    border-bottom-color: var(--sm-gold-300-a20);
 }
 
 .tcs-stat-grid {
@@ -478,8 +478,8 @@
     border-bottom-width: 1px;
     border-left-color: rgba(230, 183, 81, 0.14);
     border-right-color: rgba(230, 183, 81, 0.14);
-    border-top-color: rgba(230, 183, 81, 0.12);
-    border-bottom-color: rgba(230, 183, 81, 0.26);
+    border-top-color: var(--sm-gold-300-a12);
+    border-bottom-color: var(--sm-gold-300-a26);
 }
 
 .tcs-stat__label {
@@ -489,7 +489,7 @@
 }
 
 .tcs-stat__value {
-    color: rgb(245, 214, 138);
+    color: var(--sm-gold-200);
     font-size: 20px;
     -unity-font-style: bold;
     margin-top: 2px;
@@ -548,7 +548,7 @@
     margin-bottom: 10px;
     background-color: rgba(6, 10, 24, 0.52);
     border-bottom-width: 1px;
-    border-bottom-color: rgba(230, 183, 81, 0.18);
+    border-bottom-color: var(--sm-gold-300-a18);
 }
 
 .tcs-progression-node {
@@ -564,10 +564,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.22);
-    border-right-color: rgba(230, 183, 81, 0.22);
-    border-top-color: rgba(230, 183, 81, 0.18);
-    border-bottom-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a22);
+    border-right-color: var(--sm-gold-300-a22);
+    border-top-color: var(--sm-gold-300-a18);
+    border-bottom-color: var(--sm-gold-300-a34);
 }
 
 .tcs-progression-node--state-active {
@@ -591,7 +591,7 @@
 }
 
 .tcs-progression-node__label {
-    color: rgb(245, 214, 138);
+    color: var(--sm-gold-200);
     font-size: 13px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
@@ -617,8 +617,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
     border-top-color: rgba(230, 183, 81, 0.14);
     border-bottom-color: rgba(230, 183, 81, 0.30);
 }
@@ -708,8 +708,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
     border-top-color: rgba(230, 183, 81, 0.14);
     border-bottom-color: rgba(230, 183, 81, 0.32);
 }
@@ -718,7 +718,7 @@
     background-color: rgba(51, 35, 13, 0.84);
     border-left-color: var(--sm-gold-100);
     border-right-color: rgba(245, 214, 138, 0.34);
-    border-top-color: rgba(245, 214, 138, 0.40);
+    border-top-color: var(--sm-chip-state-bg);
     border-bottom-color: rgba(245, 214, 138, 0.52);
 }
 
@@ -857,8 +857,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.22);
-    border-right-color: rgba(230, 183, 81, 0.22);
+    border-left-color: var(--sm-gold-300-a22);
+    border-right-color: var(--sm-gold-300-a22);
     border-top-color: rgba(245, 214, 138, 0.18);
     border-bottom-color: rgba(138, 100, 24, 0.36);
 }
@@ -914,7 +914,7 @@
     margin-bottom: 12px;
     background-color: rgba(28, 22, 12, 0.92);
     border-left-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.42);
+    border-left-color: var(--sm-gold-300-a42);
 }
 
 .tcs-panel__title {

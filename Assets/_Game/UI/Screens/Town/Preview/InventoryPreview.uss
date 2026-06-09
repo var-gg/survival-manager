@@ -3,7 +3,7 @@
 .inv-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.inv-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+.inv-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: var(--sm-backdrop-dim); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--parchment + sm-frame-corner-cap. */
 .inv-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
@@ -129,7 +129,7 @@
 }
 .inv-detail__icon { width: 120px; height: 120px; align-self: center;
     -unity-background-scale-mode: scale-to-fit;
-    background-color: rgba(245,234,208,0.06); }
+    background-color: var(--sm-vellum-a06); }
 .inv-detail__name-bar { padding-top: 12px; padding-bottom: 8px;
     border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
 .inv-detail__name-glyph { height: 8px; background-color: rgba(216,199,153,0.62); }
@@ -147,7 +147,7 @@
 }
 .inv-detail__affix-group--implicit { color: var(--sm-gold-200); }
 .inv-detail__affix-group--prefix   { color: rgba(127, 163, 224, 0.92); }
-.inv-detail__affix-group--suffix   { color: rgba(166, 220, 154, 0.92); }
+.inv-detail__affix-group--suffix   { color: var(--sm-state-safe-a92); }
 
 .inv-detail__affix-row {
     flex-direction: row;
@@ -176,7 +176,7 @@
 }
 .inv-detail__owner { flex-direction: row; align-items: center; margin-top: 12px; padding: 6px 0; }
 .inv-detail__owner-icon { width: 24px; height: 24px; -unity-background-scale-mode: scale-to-fit; margin-right: 8px;
-    background-color: rgba(245,234,208,0.18);
+    background-color: var(--sm-vellum-a18);
     border-top-left-radius: 12px; border-top-right-radius: 12px;
     border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
 }

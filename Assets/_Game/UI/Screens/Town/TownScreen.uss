@@ -62,8 +62,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
     border-top-color: rgba(245, 214, 138, 0.30);
     border-bottom-color: rgba(138, 100, 24, 0.50);
 }
@@ -106,7 +106,7 @@
 .town-hub__utility-divider {
     width: 1px;
     height: 22px;
-    background-color: rgba(230, 183, 81, 0.34);
+    background-color: var(--sm-gold-300-a34);
     margin-left: 8px;
     margin-right: 6px;
 }
@@ -379,7 +379,7 @@
 
 .town-hub__utility-entry--roster .town-hub__utility-icon { color: rgb(129, 184, 245); }
 .town-hub__utility-entry--compendium .town-hub__utility-icon { color: rgb(197, 137, 235); }
-.town-hub__utility-entry--squad .town-hub__utility-icon { color: rgb(245, 214, 138); }
+.town-hub__utility-entry--squad .town-hub__utility-icon { color: var(--sm-gold-200); }
 .town-hub__utility-entry--workshop .town-hub__utility-icon { color: rgb(145, 208, 111); }
 .town-hub__utility-entry--augment .town-hub__utility-icon { color: rgb(235, 116, 91); }
 
@@ -416,10 +416,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.22);
-    border-right-color: rgba(230, 183, 81, 0.22);
-    border-top-color: rgba(230, 183, 81, 0.22);
-    border-bottom-color: rgba(230, 183, 81, 0.22);
+    border-left-color: var(--sm-gold-300-a22);
+    border-right-color: var(--sm-gold-300-a22);
+    border-top-color: var(--sm-gold-300-a22);
+    border-bottom-color: var(--sm-gold-300-a22);
     background-color: rgba(30, 37, 68, 0.72);
     rotate: 45deg;
 }
@@ -449,8 +449,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.28);
-    border-right-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
     border-top-color: rgba(245, 214, 138, 0.24);
     border-bottom-color: rgba(138, 100, 24, 0.42);
 }
@@ -482,8 +482,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.22);
-    border-right-color: rgba(230, 183, 81, 0.22);
+    border-left-color: var(--sm-gold-300-a22);
+    border-right-color: var(--sm-gold-300-a22);
     border-top-color: rgba(245, 214, 138, 0.20);
     border-bottom-color: rgba(138, 100, 24, 0.38);
 }
@@ -601,8 +601,8 @@
     border-right-width: 2px;
     border-top-width: 2px;
     border-bottom-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.42);
-    border-right-color: rgba(230, 183, 81, 0.42);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
     border-top-color: rgba(245, 214, 138, 0.36);
     border-bottom-color: rgba(138, 100, 24, 0.58);
     background-color: rgba(7, 11, 28, 0.86);
@@ -673,7 +673,7 @@
     height: 6px;
     width: 54%;
     margin-top: 5px;
-    background-color: rgba(230, 183, 81, 0.28);
+    background-color: var(--sm-gold-300-a28);
 }
 
 .town-hub__feature-service-line--wide {
@@ -710,8 +710,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.18);
-    border-right-color: rgba(230, 183, 81, 0.18);
+    border-left-color: var(--sm-gold-300-a18);
+    border-right-color: var(--sm-gold-300-a18);
     border-top-color: rgba(245, 214, 138, 0.18);
     border-bottom-color: rgba(138, 100, 24, 0.32);
 }
@@ -801,5 +801,5 @@
 .town-hub__service-line {
     padding-left: 6px;
     border-left-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.20);
+    border-left-color: var(--sm-gold-300-a20);
 }

@@ -978,10 +978,10 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.20);
-    border-right-color: rgba(230, 183, 81, 0.20);
-    border-top-color: rgba(230, 183, 81, 0.20);
-    border-bottom-color: rgba(230, 183, 81, 0.20);
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a20);
+    border-bottom-color: var(--sm-gold-300-a20);
 }
 
 /* --- ArtBible chrome hierarchy ---

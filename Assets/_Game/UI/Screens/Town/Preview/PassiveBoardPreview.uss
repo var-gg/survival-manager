@@ -3,7 +3,7 @@
 .pbp-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.pbp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,17,38,0.55); }
+.pbp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: var(--sm-backdrop-dim); }
 
 /* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
 .pbp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
@@ -51,10 +51,10 @@
     position: absolute;
     background-color: rgba(0,0,0,0);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
-    border-left-color: rgba(230,183,81,0.20);
-    border-right-color: rgba(230,183,81,0.20);
-    border-top-color: rgba(230,183,81,0.20);
-    border-bottom-color: rgba(230,183,81,0.20);
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a20);
+    border-bottom-color: var(--sm-gold-300-a20);
     border-top-left-radius: 50%; border-top-right-radius: 50%;
     border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;
 }
@@ -164,6 +164,6 @@
 
 /* Footer — point-budget 폐기. per-kind active 카운트만 노출. */
 .pbp-footer { flex-direction: row; align-items: center; justify-content: space-between;
-    padding: 10px 24px; border-top-width: 1px; border-top-color: rgba(230,183,81,0.28); }
+    padding: 10px 24px; border-top-width: 1px; border-top-color: var(--sm-gold-300-a28); }
 .pbp-footer__breakdown { color: var(--sm-gold-200); font-size: var(--sm-fs-eb); letter-spacing: 2px; -unity-font-style: bold; }
 .pbp-footer__close { width: 28px; height: 28px; background-color: rgba(38,45,84,0.72); color: var(--sm-gold-200); }

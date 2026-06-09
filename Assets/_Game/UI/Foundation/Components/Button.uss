@@ -273,7 +273,7 @@
     margin-left: 4px;
     padding-left: 8px;
     border-left-width: 1px;
-    border-left-color: rgba(245, 214, 138, 0.35);
+    border-left-color: var(--sm-gold-glow);
 }
 
 /* ============================================================ */
@@ -311,10 +311,10 @@
 }
 
 .sm-btn--secondary > .sm-btn__inset {
-    border-left-color: rgba(245, 214, 138, 0.35);
-    border-right-color: rgba(245, 214, 138, 0.35);
-    border-top-color: rgba(245, 214, 138, 0.35);
-    border-bottom-color: rgba(245, 214, 138, 0.35);
+    border-left-color: var(--sm-gold-glow);
+    border-right-color: var(--sm-gold-glow);
+    border-top-color: var(--sm-gold-glow);
+    border-bottom-color: var(--sm-gold-glow);
 }
 
 .sm-btn--secondary:hover > .sm-btn__inset,

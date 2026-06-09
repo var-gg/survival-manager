@@ -45,7 +45,7 @@
     padding: 10px 10px 8px 10px;
     background-color: rgba(4, 7, 15, 0.82);
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.42);
+    border-color: var(--sm-gold-300-a42);
     border-radius: 2px;
     margin-right: 10px;
     opacity: 0.88;
@@ -64,7 +64,7 @@
     height: 30px;
     margin-right: 6px;
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.28);
+    border-color: var(--sm-gold-300-a28);
     border-radius: 2px;
     background-color: rgba(11, 16, 28, 0.78);
     color: rgb(184, 160, 95);
@@ -97,7 +97,7 @@
     margin-bottom: 6px;
     border-radius: 2px;
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.34);
+    border-color: var(--sm-gold-300-a34);
     background-color: rgba(28, 22, 12, 0.78);
     /* wave-test-cleanup: art bible AB151_MONITORED_PANEL_INNER_CHROME 정책 — monitored panel은 inner chrome image 금지. */
     background-image: none;
@@ -147,8 +147,8 @@
     position: relative;
     overflow: hidden;
     border-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.42);
-    border-right-color: rgba(230, 183, 81, 0.42);
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
     border-top-color: rgba(245, 214, 138, 0.34);
     border-bottom-color: rgba(138, 100, 24, 0.58);
     border-radius: 2px;
@@ -677,7 +677,7 @@
     margin-bottom: 8px;
     flex-direction: row;
     border-width: 1px;
-    border-color: rgba(230, 183, 81, 0.24);
+    border-color: var(--sm-gold-300-a24);
     background-color: rgba(18, 23, 30, 0.56);
 }
 
@@ -981,7 +981,7 @@
 }
 
 .atlas-board-pane {
-    border-color: rgba(230, 183, 81, 0.28);
+    border-color: var(--sm-gold-300-a28);
     background-color: rgba(4, 8, 18, 0.12);
 }
 
@@ -996,8 +996,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.24);
-    border-right-color: rgba(230, 183, 81, 0.24);
+    border-left-color: var(--sm-gold-300-a24);
+    border-right-color: var(--sm-gold-300-a24);
     border-top-color: rgba(245, 204, 112, 0.18);
     border-bottom-color: rgba(138, 100, 24, 0.34);
 }
@@ -1079,8 +1079,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.28);
-    border-right-color: rgba(230, 183, 81, 0.28);
+    border-left-color: var(--sm-gold-300-a28);
+    border-right-color: var(--sm-gold-300-a28);
     border-top-color: rgba(245, 204, 112, 0.22);
     border-bottom-color: rgba(138, 100, 24, 0.38);
 }
@@ -1093,7 +1093,7 @@
     padding-top: 6px;
     padding-bottom: 5px;
     border-left-width: 2px;
-    border-left-color: rgba(230, 183, 81, 0.42);
+    border-left-color: var(--sm-gold-300-a42);
     background-color: rgba(9, 14, 27, 0.62);
 }
 

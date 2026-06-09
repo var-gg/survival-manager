@@ -41,8 +41,8 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.34);
-    border-right-color: rgba(230, 183, 81, 0.34);
+    border-left-color: var(--sm-gold-300-a34);
+    border-right-color: var(--sm-gold-300-a34);
     border-top-color: rgba(245, 214, 138, 0.34);
     border-bottom-color: rgba(138, 100, 24, 0.5);
 }

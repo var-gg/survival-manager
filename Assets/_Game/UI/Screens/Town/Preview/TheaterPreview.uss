@@ -101,7 +101,7 @@
     border-left-color: rgba(230,183,81,0.32); border-right-color: rgba(230,183,81,0.32);
     border-top-color: rgba(230,183,81,0.32); border-bottom-color: rgba(230,183,81,0.32); }
 .thp-detail__banner { height: 120px; -unity-background-scale-mode: scale-and-crop;
-    background-color: rgba(245,234,208,0.18); margin-bottom: 10px; }
+    background-color: var(--sm-vellum-a18); margin-bottom: 10px; }
 .thp-detail__title-block { padding-bottom: 8px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }
 .thp-detail__title-glyph { height: 10px; background-color: rgba(245,214,138,0.78); }
 .thp-detail__meta { flex-direction: column; padding: 8px 0; }
