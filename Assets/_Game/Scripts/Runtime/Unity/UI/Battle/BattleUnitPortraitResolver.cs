@@ -124,13 +124,16 @@ internal sealed class BattleUnitPortraitResolver
         {
             yield return "hero_echo_savant";
         }
-        if (token.Contains("감시", StringComparison.Ordinal))
+        if (token.Contains("gate", StringComparison.Ordinal) || token.Contains("파수", StringComparison.Ordinal))
         {
-            yield return "hero_prism_seeker";
-        }
-        if (token.Contains("gate", StringComparison.Ordinal) || token.Contains("warden", StringComparison.Ordinal) || token.Contains("파수", StringComparison.Ordinal))
-        {
+            // 게이트 파수꾼 보스(적). 플레이어 'warden' 아키타입과 섞이지 않도록 gate/파수 토큰만 매칭.
             yield return "boss_gate_warden";
+        }
+        else if (token.Contains("warden", StringComparison.Ordinal) || token.Contains("감시", StringComparison.Ordinal))
+        {
+            // 플레이어 '감시자(warden)' 아키타입 → 실제 hero_iron_warden 페이스 아트.
+            // (이전엔 boss_gate_warden으로 잘못 매핑돼 face 자산이 없어 빈 카드로 렌더됨)
+            yield return "hero_iron_warden";
         }
         if (token.Contains("root", StringComparison.Ordinal) || token.Contains("watcher", StringComparison.Ordinal))
         {

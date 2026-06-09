@@ -114,12 +114,8 @@ public sealed class BattleScreenPresenter
     {
         var selectedState = selectedUnit ?? BattleSelectedUnitViewState.Hidden;
         return CreateState(
-            BuildTeamSummary(
-                Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.allies", "Allies"),
-                step.Units.Where(actor => actor.Side == TeamSide.Ally)),
-            BuildTeamSummary(
-                Localize(GameLocalizationTables.UIBattle, "ui.battle.hp.enemies", "Enemies"),
-                step.Units.Where(actor => actor.Side == TeamSide.Enemy)),
+            BuildTeamSummary(step.Units.Where(actor => actor.Side == TeamSide.Ally)),
+            BuildTeamSummary(step.Units.Where(actor => actor.Side == TeamSide.Enemy)),
             BuildLogText(step, recentLogs, decisiveTimeline),
             BuildResultText(step, totalEventCount),
             BuildPlaybackText(isPaused, playbackSpeed),
@@ -470,19 +466,20 @@ public sealed class BattleScreenPresenter
         return Localize(GameLocalizationTables.UIBattle, "ui.battle.playback.ingame", "원정 전투");
     }
 
-    private string BuildTeamSummary(string label, IEnumerable<BattleUnitReadModel> units)
+    private string BuildTeamSummary(IEnumerable<BattleUnitReadModel> units)
     {
+        // 팀 이름(아군/적군)은 인접한 strip 타이틀이 이미 보여주므로 라벨 prefix를 중복 표기하지 않는다.
+        // 전체 HP 합/최대는 readout 패널이 담당 — 여기선 생존 수 + 현재 HP만 간결히.
         var snapshot = units.ToList();
         if (snapshot.Count == 0)
         {
-            return $"{label} 0/0 | 0 / 0 HP";
+            return "0/0 · 0 HP";
         }
 
         var alive = snapshot.Count(unit => unit.IsAlive);
         var total = snapshot.Count;
         var currentHp = snapshot.Sum(unit => UnityEngine.Mathf.Max(0f, unit.CurrentHealth));
-        var maxHp = snapshot.Sum(unit => UnityEngine.Mathf.Max(1f, unit.MaxHealth));
-        return $"{label} {alive}/{total} | {currentHp:0} / {maxHp:0} HP";
+        return $"{alive}/{total} · {currentHp:0} HP";
     }
 
     private string BuildStatus(BattleSimulationStep step, bool isPaused)
