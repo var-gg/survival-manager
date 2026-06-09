@@ -63,37 +63,25 @@
                             <ui:VisualElement class="town-hub__feature-service-icon" />
                             <ui:VisualElement class="town-hub__feature-service-lines">
                                 <ui:Label name="TownFeatureServiceGoldName" class="town-hub__feature-service-name" text="장비 정비" />
-                                <ui:Label name="TownFeatureServiceGoldValue" class="town-hub__feature-service-value" text="슬롯 교체 · 재가공" />
-                                <ui:VisualElement class="town-hub__feature-service-line town-hub__feature-service-line--wide" />
-                                <ui:VisualElement class="town-hub__feature-service-line" />
-                            </ui:VisualElement>
+                                <ui:Label name="TownFeatureServiceGoldValue" class="town-hub__feature-service-value" text="슬롯 교체 · 재가공" />                            </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="town-hub__feature-service town-hub__feature-service--blue">
                             <ui:VisualElement class="town-hub__feature-service-icon" />
                             <ui:VisualElement class="town-hub__feature-service-lines">
                                 <ui:Label name="TownFeatureServiceBlueName" class="town-hub__feature-service-name" text="동료 선발" />
-                                <ui:Label name="TownFeatureServiceBlueValue" class="town-hub__feature-service-value" text="전열 후보 · 보호" />
-                                <ui:VisualElement class="town-hub__feature-service-line town-hub__feature-service-line--wide" />
-                                <ui:VisualElement class="town-hub__feature-service-line" />
-                            </ui:VisualElement>
+                                <ui:Label name="TownFeatureServiceBlueValue" class="town-hub__feature-service-value" text="전열 후보 · 보호" />                            </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="town-hub__feature-service town-hub__feature-service--green">
                             <ui:VisualElement class="town-hub__feature-service-icon" />
                             <ui:VisualElement class="town-hub__feature-service-lines">
                                 <ui:Label name="TownFeatureServiceGreenName" class="town-hub__feature-service-name" text="회복 지원" />
-                                <ui:Label name="TownFeatureServiceGreenValue" class="town-hub__feature-service-value" text="원정 준비 · 보급" />
-                                <ui:VisualElement class="town-hub__feature-service-line town-hub__feature-service-line--wide" />
-                                <ui:VisualElement class="town-hub__feature-service-line" />
-                            </ui:VisualElement>
+                                <ui:Label name="TownFeatureServiceGreenValue" class="town-hub__feature-service-value" text="원정 준비 · 보급" />                            </ui:VisualElement>
                         </ui:VisualElement>
                         <ui:VisualElement class="town-hub__feature-service town-hub__feature-service--red">
                             <ui:VisualElement class="town-hub__feature-service-icon" />
                             <ui:VisualElement class="town-hub__feature-service-lines">
                                 <ui:Label name="TownFeatureServiceRedName" class="town-hub__feature-service-name" text="영구 강화" />
-                                <ui:Label name="TownFeatureServiceRedValue" class="town-hub__feature-service-value" text="룬 투자 · 성장" />
-                                <ui:VisualElement class="town-hub__feature-service-line town-hub__feature-service-line--wide" />
-                                <ui:VisualElement class="town-hub__feature-service-line" />
-                            </ui:VisualElement>
+                                <ui:Label name="TownFeatureServiceRedValue" class="town-hub__feature-service-value" text="룬 투자 · 성장" />                            </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement class="town-hub__feature-stats" picking-mode="Ignore">

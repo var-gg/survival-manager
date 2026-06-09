@@ -669,17 +669,9 @@
     justify-content: center;
 }
 
-.town-hub__feature-service-line {
-    height: 6px;
-    width: 54%;
-    margin-top: 5px;
-    background-color: var(--sm-gold-300-a28);
-}
-
-.town-hub__feature-service-line--wide {
-    width: 84%;
-    background-color: rgba(245, 214, 138, 0.52);
-}
+/* town-hub__feature-service-line / --wide: 초기 와이어프레임 스켈레톤 바였으나
+   실제 이름/태그 라벨이 들어오며 redundant decorative noise가 되어 UXML element와 함께 제거.
+   (아이콘 backing color를 함께 지정하던 --색상 결합 선택자는 아이콘에 유효해 보존.) */
 
 .town-hub__welcome-mount {
     position: absolute;
@@ -782,10 +774,6 @@
     color: var(--sm-ink-2);
     font-size: 10px;
     margin-bottom: var(--sm-s-1);
-}
-
-.town-hub__feature-service-line {
-    margin-top: 3px;
 }
 
 .town-hub__feature-stats {
