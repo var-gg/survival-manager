@@ -28,6 +28,8 @@ public sealed class SquadBuilderPresenter
     private readonly VisualElement _panelRoot;
     private readonly GameSessionRoot _root;
     private readonly ContentTextResolver _contentText;
+    // CharacterId → 초상화 흉상 Texture. null이면 이니셜 글리프 fallback. (다른 형제 surface와 동일 패턴)
+    private readonly Func<string, Texture2D?>? _portraitSprite;
     private readonly VisualElement _modalRoot;
     private readonly Button _closeButton;
     private readonly Label _statusLabel;
@@ -53,11 +55,16 @@ public sealed class SquadBuilderPresenter
     private string _statusText = "편성 상태를 확인하세요.";
     private bool _isOpen;
 
-    public SquadBuilderPresenter(VisualElement panelRoot, GameSessionRoot root, ContentTextResolver contentText)
+    public SquadBuilderPresenter(
+        VisualElement panelRoot,
+        GameSessionRoot root,
+        ContentTextResolver contentText,
+        Func<string, Texture2D?>? portraitSprite = null)
     {
         _panelRoot = panelRoot ?? throw new ArgumentNullException(nameof(panelRoot));
         _root = root ?? throw new ArgumentNullException(nameof(root));
         _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
+        _portraitSprite = portraitSprite;
 
         _modalRoot = Require<VisualElement>(_panelRoot, "SquadBuilderRoot");
         _closeButton = Require<Button>(_panelRoot, "SquadBuilderCloseButton");
@@ -255,9 +262,18 @@ public sealed class SquadBuilderPresenter
             container.AddToClassList("sm-sqb-modal__roster-row");
             container.EnableInClassList("sm-sqb-modal__roster-row--deployed", row.IsDeployed);
 
-            var icon = new Label(BuildRosterGlyph(row));
+            var rosterPortraitTex = ResolvePortrait(row);
+            var icon = new Label(rosterPortraitTex != null ? string.Empty : BuildRosterGlyph(row));
             icon.AddToClassList("sm-sqb-modal__roster-icon");
-            AddClassIconClass(icon, row.ClassKey);
+            if (rosterPortraitTex != null)
+            {
+                icon.style.backgroundImage = new StyleBackground(rosterPortraitTex);
+                icon.AddToClassList("sm-sqb-modal__roster-icon--art");
+            }
+            else
+            {
+                AddClassIconClass(icon, row.ClassKey);
+            }
             container.Add(icon);
 
             var copy = new VisualElement();
@@ -314,14 +330,24 @@ public sealed class SquadBuilderPresenter
 
         var portrait = new VisualElement();
         portrait.AddToClassList("sm-sqb-modal__anchor-portrait");
-        if (row != null)
+        var anchorPortraitTex = row != null ? ResolvePortrait(row) : null;
+        if (anchorPortraitTex != null)
         {
-            AddClassIconClass(portrait, row.ClassKey);
+            // 실제 흉상이 있으면 figure를 그리고 글리프는 숨김 — 편성 보드에서 누가 어디 있는지 얼굴로 식별.
+            portrait.style.backgroundImage = new StyleBackground(anchorPortraitTex);
+            portrait.AddToClassList("sm-sqb-modal__anchor-portrait--art");
         }
+        else
+        {
+            if (row != null)
+            {
+                AddClassIconClass(portrait, row.ClassKey);
+            }
 
-        var glyph = new Label(row != null ? BuildRosterGlyph(row) : "+");
-        glyph.AddToClassList("sm-sqb-modal__anchor-glyph");
-        portrait.Add(glyph);
+            var glyph = new Label(row != null ? BuildRosterGlyph(row) : "+");
+            glyph.AddToClassList("sm-sqb-modal__anchor-glyph");
+            portrait.Add(glyph);
+        }
         card.Add(portrait);
 
         var name = new Label(row != null ? Shorten(row.DisplayName, 14) : "비어있음");
@@ -511,8 +537,13 @@ public sealed class SquadBuilderPresenter
             BiasLabel: biasLabel,
             ClassKey: NormalizeClassKey(hero.ClassId),
             RarityLabel: hero.RecruitTier.ToString().ToLowerInvariant(),
-            IsDeployed: anchorByHeroId.ContainsKey(hero.HeroId));
+            IsDeployed: anchorByHeroId.ContainsKey(hero.HeroId),
+            CharacterId: string.IsNullOrWhiteSpace(hero.CharacterId) ? hero.ArchetypeId : hero.CharacterId);
     }
+
+    // 흉상 resolve — 못 찾으면 null (caller가 글리프 fallback). 빈 슬롯(row==null)은 호출 안 함.
+    private Texture2D? ResolvePortrait(SquadBuilderHeroRow row)
+        => string.IsNullOrWhiteSpace(row.CharacterId) ? null : _portraitSprite?.Invoke(row.CharacterId);
 
     private static string NormalizeClassKey(string classId)
     {
@@ -735,7 +766,8 @@ public sealed class SquadBuilderPresenter
         string BiasLabel,
         string ClassKey,
         string RarityLabel,
-        bool IsDeployed);
+        bool IsDeployed,
+        string CharacterId);
 
     private static T Require<T>(VisualElement root, string name) where T : VisualElement
     {

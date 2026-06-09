@@ -234,7 +234,7 @@ public sealed class TownScreenController : MonoBehaviour
     {
         try
         {
-            _squadBuilderPresenter = new SquadBuilderPresenter(root, _root, _contentText);
+            _squadBuilderPresenter = new SquadBuilderPresenter(root, _root, _contentText, _contentIconResolver.ResolveCharacterPortrait);
             view.BindTacticalSetupOpen(_squadBuilderPresenter.Open);
             return true;
         }
@@ -285,7 +285,7 @@ public sealed class TownScreenController : MonoBehaviour
     {
         try
         {
-            _rosterModalView = new RosterGridView(root, heroCardTemplate: null);
+            _rosterModalView = new RosterGridView(root, heroCardTemplate: null, portraitLoader: _contentIconResolver.ResolveCharacterPortrait);
             _rosterGridPresenter = new RosterGridPresenter(
                 _root,
                 _rosterModalView,

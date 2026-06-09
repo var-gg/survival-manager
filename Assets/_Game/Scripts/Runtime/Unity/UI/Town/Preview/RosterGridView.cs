@@ -17,6 +17,9 @@ public sealed class RosterGridView
     private readonly VisualTreeAsset? _heroCardTemplate;
     private readonly VisualElement? _modalRoot;
     private readonly Button? _closeButton;
+    private readonly VisualElement? _filterStrip;
+    private readonly Button? _quickBattleButton;
+    private readonly Func<string, Texture2D?>? _portraitLoader;
 
     private IRosterGridActions? _actions;
 
@@ -44,25 +47,35 @@ public sealed class RosterGridView
         if (wrapper != null) wrapper.style.display = DisplayStyle.None;
     }
 
-    public RosterGridView(VisualElement root, VisualTreeAsset? heroCardTemplate)
+    public RosterGridView(VisualElement root, VisualTreeAsset? heroCardTemplate, Func<string, Texture2D?>? portraitLoader = null)
     {
         if (root == null) throw new ArgumentNullException(nameof(root));
         _heroCardTemplate = heroCardTemplate;   // production hub modal은 null 허용 (heroCardTemplate은 후속 task)
+        _portraitLoader = portraitLoader;       // CharacterId → 초상화 Texture. null이면 이니셜 placeholder 유지.
         _modalRoot = root.Q<VisualElement>("RosterGridPreviewRoot");
         _closeButton = root.Q<Button>(className: "rgp-header__close");
         _gridContainer = root.Q<VisualElement>("GridContainer")
             ?? throw new ArgumentException("GridContainer 못 찾음");
         _heroCountLabel = root.Q<Label>("HeroCount");
+        _filterStrip = root.Q<VisualElement>("FilterStrip");
+        _quickBattleButton = root.Q<Button>("QuickBattleButton");
     }
 
     public void Bind(IRosterGridActions actions)
     {
         _actions = actions;
+        // 빠른 전투 CTA — Presenter.OnQuickBattleClicked는 이미 구현돼 있음(스모크 진입). 버튼만 연결.
+        if (_quickBattleButton != null)
+        {
+            _quickBattleButton.clicked += () => _actions?.OnQuickBattleClicked();
+        }
     }
 
     public void Render(RosterGridViewState state)
     {
         if (state == null) throw new ArgumentNullException(nameof(state));
+
+        RenderFilters(state.Filters);
 
         _gridContainer.Clear();
         if (state.Heroes.Count == 0)
@@ -80,6 +93,49 @@ public sealed class RosterGridView
         if (_heroCountLabel != null)
         {
             _heroCountLabel.text = $"{state.Heroes.Count} / {state.RosterCap}";
+        }
+    }
+
+    // 필터 칩을 data-driven으로 재구축 — UXML 하드코딩 칩(세력명, 핸들러 0)을 제거하고
+    // Presenter가 로스터 실재 race/class로 만든 칩만 렌더 + 클릭 wire. group 전환 시 divider 삽입.
+    private void RenderFilters(IReadOnlyList<RosterGridFilterChipViewState>? filters)
+    {
+        if (_filterStrip == null)
+        {
+            return;
+        }
+
+        _filterStrip.Clear();
+        if (filters == null || filters.Count == 0)
+        {
+            return;
+        }
+
+        string? previousGroup = null;
+        foreach (var chip in filters)
+        {
+            if (previousGroup != null && chip.GroupKey != previousGroup)
+            {
+                var divider = new VisualElement();
+                divider.AddToClassList("rgp-filter-divider");
+                divider.pickingMode = PickingMode.Ignore;
+                _filterStrip.Add(divider);
+            }
+            previousGroup = chip.GroupKey;
+
+            var button = new Button { text = chip.Label };
+            button.AddToClassList("rgp-filter-chip");
+            button.AddToClassList("sm-cta");
+            button.AddToClassList("sm-cta--inline");
+            button.AddToClassList("sm-cta--secondary");
+            if (chip.IsSelected)
+            {
+                button.AddToClassList("rgp-filter-chip--selected");
+            }
+
+            var key = chip.Key;
+            button.clicked += () => _actions?.OnFilterSelected(key);
+            _filterStrip.Add(button);
         }
     }
 
@@ -118,14 +174,24 @@ public sealed class RosterGridView
         var portrait = Add(card, "portrait", "sm-hpc__portrait");
         Add(portrait, "portrait-inset", "sm-hpc__portrait-inset");
         var silhouette = Add(portrait, "silhouette", "sm-hpc__silhouette");
-        Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-bust");
-        Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-head");
-        // 초상화 RenderTexture는 후속 task에서 wire — 그 전까지 dev 약어("P09 RenderTexture" 워터마크,
-        // "P09" 코너 태그) 대신 동료 이름 이니셜을 placeholder로 노출한다(Battle/Recruit의 이니셜 fallback과 통일).
-        var initials = new Label(BuildFallbackInitials(hero.DisplayName)) { name = "portrait-initials" };
-        initials.AddToClassList("sm-hpc__portrait-initials");
-        initials.pickingMode = PickingMode.Ignore;
-        silhouette.Add(initials);
+        // 초상화 라이브러리(Resources/_Game/Art/Characters)에서 CharacterId로 bust를 resolve.
+        // 찾으면 실제 얼굴을 silhouette window에 그리고, 못 찾을 때만 이니셜 placeholder로 fallback.
+        var portraitTex = string.IsNullOrWhiteSpace(hero.CharacterId)
+            ? null
+            : _portraitLoader?.Invoke(hero.CharacterId);
+        if (portraitTex != null)
+        {
+            silhouette.style.backgroundImage = new StyleBackground(portraitTex);
+        }
+        else
+        {
+            Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-bust");
+            Add(silhouette, string.Empty, "sm-hpc__p09-placeholder-head");
+            var initials = new Label(BuildFallbackInitials(hero.DisplayName)) { name = "portrait-initials" };
+            initials.AddToClassList("sm-hpc__portrait-initials");
+            initials.pickingMode = PickingMode.Ignore;
+            silhouette.Add(initials);
+        }
         Add(portrait, "portrait-glow", "sm-hpc__portrait-glow");
 
         var tier = Add(portrait, "tier", "sm-hpc__tier");

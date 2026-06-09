@@ -194,6 +194,13 @@
     -unity-background-image-tint-color: rgba(180, 205, 255, 0.68);
 }
 
+/* 실제 흉상 연결 시 — class 아이콘용 scale-to-fit/파란 tint를 끄고 얼굴을 꽉 채워 crop. */
+.sm-sqb-modal__roster-icon--art {
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgb(20, 16, 10);
+}
+
 .sm-sqb-modal__roster-row--deployed .sm-sqb-modal__roster-icon {
     color: var(--sm-gold-100);
 }
@@ -374,6 +381,13 @@
     border-bottom-color: rgba(138, 100, 24, 0.56);
     -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: rgba(170, 205, 255, 0.72);
+}
+
+/* 실제 흉상 연결 시 — 편성 보드 앵커에 얼굴을 꽉 채워 crop(누가 어디 있는지 식별). */
+.sm-sqb-modal__anchor-portrait--art {
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgb(20, 16, 10);
 }
 
 .sm-sqb-modal__anchor-glyph {

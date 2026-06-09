@@ -112,7 +112,8 @@ public sealed class TownBuildHotPathTests
         var result = session.RefitItem(item.ItemInstanceId, 0);
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Error, Does.Contain("Echo"));
+        // 화폐 표시명 한국어 우선 정책으로 사용자向 에러 문구는 "잔향"(코드 id Currencies.Echo는 보존).
+        Assert.That(result.Error, Does.Contain("잔향"));
     }
 
     // ──────────────────────────────────────────────

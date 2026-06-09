@@ -17,7 +17,8 @@ public sealed record RosterGridHeroCardViewState(
     string RarityKey,               // common / rare / epic ← HeroInstanceRecord.RecruitTier
     int EquipSlots,                 // 0..3 ← EquippedItemIds count
     int Level,                      // ← HeroProgressionRecord.Level
-    int XpPct                       // 0..100 ← HeroProgressionRecord.Experience 파생 (커브 미정 근사)
+    int XpPct,                      // 0..100 ← HeroProgressionRecord.Experience 파생 (커브 미정 근사)
+    string CharacterId = ""         // 초상화 resolve 키 (CharacterId → ArchetypeId fallback). 비면 이니셜 placeholder.
 );
 
 public sealed record RosterGridFilterChipViewState(
@@ -30,5 +31,8 @@ public sealed record RosterGridFilterChipViewState(
 public sealed record RosterGridViewState(
     IReadOnlyList<RosterGridHeroCardViewState> Heroes,
     int RosterCap,                  // 12 (MetaBalanceDefaults.TownRosterCap V1)
-    string SelectedFilterKey
+    string SelectedFilterKey,
+    // 필터 칩은 로스터에 실제 존재하는 race/class만 data-driven 생성 → dead 필터 없음 +
+    // 라벨이 ContentTextResolver 산출이라 UXML 하드코딩(세력명) ↔ 런타임(race) drift 제거.
+    IReadOnlyList<RosterGridFilterChipViewState>? Filters = null
 );

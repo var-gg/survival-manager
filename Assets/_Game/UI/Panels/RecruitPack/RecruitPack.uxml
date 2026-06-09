@@ -56,6 +56,12 @@
 
                 <ui:VisualElement name="RecruitDecisionPanel" class="rcp-decision-panel sm-chrome-l2">
                     <ui:VisualElement name="SelectedCandidateDetail" class="rcp-detail">
+                        <!-- 우측 결정 패널의 focal point — 선택 후보 흉상. RenderPortrait가 이 요소에
+                             backgroundImage를 세팅(없으면 이니셜 fallback). 그동안 UXML 요소 누락으로
+                             _detailPortrait=null → no-op이라 dead CSS였던 frame을 회생. -->
+                        <ui:VisualElement class="rcp-detail__portrait-frame">
+                            <ui:VisualElement name="SelectedCandidatePortrait" class="rcp-detail__portrait" />
+                        </ui:VisualElement>
                         <ui:VisualElement class="rcp-detail__identity-row">
                             <ui:VisualElement name="SelectedCandidateClassGlyph" class="rcp-detail__class-glyph" />
                             <ui:VisualElement class="rcp-detail__identity-text">

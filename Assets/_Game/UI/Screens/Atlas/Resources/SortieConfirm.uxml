@@ -19,10 +19,14 @@
 
         <ui:VisualElement class="panel panel--dense status-bar sortie-screen__status-band">
             <ui:VisualElement class="action-group">
-                <ui:VisualElement class="action-row">
-                    <ui:Button name="SortieEditButton" class="ui-button" />
-                    <ui:Button name="SortieLaunchButton" class="ui-button ui-button--accent" />
-                    <ui:Button name="SortieCancelButton" class="ui-button" />
+                <!-- 게이트의 1차 목표(출격)가 좌→우 읽기에서 매몰되지 않게 양극화:
+                     좌측에 보조(취소·편성 수정), 우측 끝에 primary(출격) 강조 배치. -->
+                <ui:VisualElement class="action-row sortie-action-row">
+                    <ui:VisualElement class="sortie-action-row__secondary">
+                        <ui:Button name="SortieCancelButton" class="ui-button" />
+                        <ui:Button name="SortieEditButton" class="ui-button" />
+                    </ui:VisualElement>
+                    <ui:Button name="SortieLaunchButton" class="ui-button ui-button--accent sortie-launch-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

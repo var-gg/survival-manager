@@ -68,3 +68,19 @@
     background-color: rgba(48, 52, 64, 0.45);
     opacity: 0.6;
 }
+
+/* 출격 게이트 CTA 양극화 — 좌측 보조(취소·편성), 우측 끝 primary(출격) 강조. */
+.sortie-action-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sortie-action-row__secondary {
+    flex-direction: row;
+}
+
+.sortie-launch-button {
+    min-width: 240px;
+    -unity-font-style: bold;
+}

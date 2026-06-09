@@ -524,12 +524,13 @@ public sealed class RecruitView
 
     private void RenderActionBar(RecruitActionBarViewState bar)
     {
+        // 정찰 방향 지정 UI(6-kind ScoutDirective)는 Sprint 3 — OnScoutClicked가 아직 no-op이라
+        // 버튼이 활성+'-35 잔향' 비용을 약속하면 누를 때 잔향만 빠진 듯한 dead-click(무피드백)이 된다.
+        // directive picker가 붙기 전까지는 비활성 + '준비 중'으로 비용 약속을 거둔다.
+        _scoutButton?.SetEnabled(false);
         if (_scoutLabel != null)
         {
-            // wave-31 GPT Pro patch: English enum → 한국어 localized (production hygiene).
-            _scoutLabel.text = bar.CanUseScout
-                ? $"정찰 · {bar.ScoutDirectiveLabel} (-{bar.ScoutEchoCost} 잔향)"
-                : "정찰 — 사용됨";
+            _scoutLabel.text = "정찰 (준비 중) — 방향 지정 기능 준비 중";
         }
         if (_refreshLabel != null)
         {
