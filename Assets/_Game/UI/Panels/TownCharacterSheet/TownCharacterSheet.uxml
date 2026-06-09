@@ -57,12 +57,8 @@
                 </ui:VisualElement>
 
                 <ui:VisualElement class="tcs-column tcs-column--skills">
-                    <ui:VisualElement class="tcs-tab-strip" picking-mode="Ignore">
-                        <ui:VisualElement class="tcs-tab tcs-tab--active" />
-                        <ui:VisualElement class="tcs-tab" />
-                        <ui:VisualElement class="tcs-tab" />
-                        <ui:VisualElement class="tcs-tab" />
-                    </ui:VisualElement>
+                    <!-- 라벨·핸들러 0이고 picking-mode=Ignore라 누를 수도 없던 장식 탭 strip(false affordance) 제거.
+                         실제 탭 전환 기능이 생기면 그때 data-driven으로 재도입. -->
                     <ui:VisualElement class="tcs-panel tcs-panel--skill-list sm-chrome-l2">
                         <ui:Label name="TcsPassivesTitle" class="tcs-panel__title" />
                         <ui:VisualElement name="TcsSkillList" class="tcs-skill-list" picking-mode="Ignore" />

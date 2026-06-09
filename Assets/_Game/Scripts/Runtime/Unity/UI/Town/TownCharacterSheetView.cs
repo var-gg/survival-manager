@@ -87,9 +87,12 @@ public sealed class TownCharacterSheetView
         _refitButton = root.Q<Button>("TcsRefitButton");
     }
 
+    private TownCharacterSheetPresenter? _presenter;
+
     public void Bind(TownCharacterSheetPresenter presenter)
     {
         if (presenter == null) throw new ArgumentNullException(nameof(presenter));
+        _presenter = presenter;
         _closeButton.clicked += presenter.Close;
         if (_dismissButton != null) _dismissButton.clicked += presenter.OnDismissClicked;
         if (_retrainButton != null) _retrainButton.clicked += presenter.OnRetrainClicked;
@@ -185,6 +188,11 @@ public sealed class TownCharacterSheetView
             {
                 item.AddToClassList("tcs-hero-rail__entry--selected");
             }
+            // 레일 항목 클릭 → 시트 내에서 해당 동료로 전환(Presenter.Open이 heroId 재바인딩).
+            // 그동안 핸들러 0이라 포트레잇만 보이고 누르면 무반응이던 dead-end 해소.
+            var railHeroId = entry.HeroId;
+            item.RegisterCallback<ClickEvent>(_ => _presenter?.Open(railHeroId));
+            item.tooltip = entry.IsSelected ? entry.DisplayName : $"{entry.DisplayName} · 클릭해 전환";
 
             var portrait = new VisualElement();
             portrait.AddToClassList("tcs-hero-rail__portrait");
