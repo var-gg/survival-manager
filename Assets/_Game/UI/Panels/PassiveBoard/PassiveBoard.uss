@@ -7,11 +7,15 @@
 .pbp-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_passive_board_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.pbp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12, 17, 38, 0.78); }
-/* wave-41: dim 0.32 -> 0.78. Town hub UI가 backdrop edge로 새던 z-order 이슈 해소. */
+.pbp-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12, 17, 38, 0.92); }
+/* wave-41: dim 0.32 -> 0.78. Town hub UI가 backdrop edge로 새던 z-order 이슈 해소.
+   uxqa1: 0.78 -> 0.92. backdrop(ui_passive_board_dusk.png)에 구워진 가짜 UI(헥스 트리·ACTIVATE·
+   페이저·X)가 frame 밖 여백으로 판독 가능하게 새던 것을 근접 불투명으로 차단. */
 
-/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
-.pbp-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap.
+   uxqa1: wave-39에서 sm-modal-frame 제거 시 position:absolute 상실 → inset이 offset으로
+   오작동, 모달이 화면 상단 절반에서 끊기고 하단에 backdrop 가짜 UI 노출. absolute 복원. */
+.pbp-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
 /* Board 헤더 — per-hero 컨텍스트. hero portrait + 이름 + 클래스 보드 인디케이터 (고정, 비대화).
    옛 4-class 자유 전환 탭 폐기 — 보드는 hero 클래스로 고정. */

@@ -28,6 +28,8 @@
 /* --- Modal frame (centered) ---
    chrome budget: outer 1 — frame texture만 사용, corner cap / center ornament 없음. */
 .twp-frame {
+    /* uxqa1: inset 기반 frame인데 position:absolute 부재 — pap/pbp와 동일 결손 복원 */
+    position: absolute;
     left: 60px; right: 60px; top: 40px; bottom: 40px;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_outer.png");
     -unity-slice-left: 96;

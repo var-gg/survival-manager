@@ -8,8 +8,10 @@
     -unity-background-scale-mode: scale-and-crop; }
 .inv-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(28, 22, 12, 0.32); }
 
-/* Modal frame visual은 sm-modal-frame sm-modal-frame--parchment + sm-frame-corner-cap. */
-.inv-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--parchment + sm-frame-corner-cap.
+   uxqa1: wave-39 sm-modal-frame 제거로 잃은 position:absolute 복원 (pap/pbp와 동일 결손 —
+   inset이 offset으로 오작동해 frame이 content 높이로 붕괴). */
+.inv-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
 /* Currency header */
 .inv-currency-header { flex-direction: row; align-items: center; padding: 14px 24px;

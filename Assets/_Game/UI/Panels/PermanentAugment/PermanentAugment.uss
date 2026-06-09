@@ -7,11 +7,16 @@
 .pap-backdrop { position: absolute; left: 0; right: 0; top: 0; bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Backdrops/ui_permanent_augment_dusk.png");
     -unity-background-scale-mode: scale-and-crop; }
-.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12, 17, 38, 0.78); }
-/* wave-41: dim 0.32 -> 0.78. Town hub UI가 backdrop edge로 새던 z-order 이슈 해소. */
+.pap-backdrop-dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12, 17, 38, 0.92); }
+/* wave-41: dim 0.32 -> 0.78. Town hub UI가 backdrop edge로 새던 z-order 이슈 해소.
+   uxqa1: 0.78 -> 0.92. backdrop(ui_permanent_augment_dusk.png)은 AI 목업 UI가 통째로 구워진
+   에셋이라 frame 밖 여백(50-60px)으로 새는 가짜 버튼/룬 텍스트가 판독 가능했음 — 근접 불투명으로 차단. */
 
-/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap. */
-.pap-frame { left: 60px; right: 60px; top: 50px; bottom: 50px; }
+/* Modal frame visual은 sm-modal-frame sm-modal-frame--ceremony + sm-frame-corner-cap.
+   uxqa1: wave-39 chrome cleanup에서 sm-modal-frame 클래스 제거 시 그 atom의 position:absolute를
+   같이 잃어 inset이 offset으로 오작동 — 프레임이 content 높이로 붕괴하고 하단 40%가 backdrop
+   가짜 UI로 뚫리던 결함. absolute 복원으로 inset stretch 회복. */
+.pap-frame { position: absolute; left: 60px; right: 60px; top: 50px; bottom: 50px; }
 
 .pap-header { flex-direction: row; align-items: center; justify-content: space-between;
     padding: 18px 32px; border-bottom-width: 1px; border-bottom-color: rgba(230,183,81,0.32); }

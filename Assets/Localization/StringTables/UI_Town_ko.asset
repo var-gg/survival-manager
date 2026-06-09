@@ -41,11 +41,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1
-    m_Localized: "Town \uC6B4\uC601 \uD654\uBA74"
+    m_Localized: "\uBCC0\uBC29 \uC7BF\uACE8 \uB9C8\uC744"
     m_Metadata:
       m_Items: []
   - m_Id: 2
-    m_Localized: "\uACE8\uB4DC: {0} | Echo: {1} | \uC601\uAD6C \uC2AC\uB86F: {2}"
+    m_Localized: "\uACE8\uB4DC: {0} | \uC794\uD5A5: {1} | \uC601\uAD6C \uC2AC\uB86F:
+      {2}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769991
@@ -434,7 +435,7 @@ MonoBehaviour:
       m_Items:
       - rid: 162163771961769991
   - m_Id: 89
-    m_Localized: "\uC5D0\uCF54: {0}"
+    m_Localized: "\uC794\uD5A5: {0}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769991
