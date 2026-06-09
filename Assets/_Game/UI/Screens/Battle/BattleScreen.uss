@@ -1603,7 +1603,10 @@
 
 .battle-screen .sm-bs-control-bar {
     position: absolute;
-    left: 760px;
+    /* wave-portrait-pass: 좌하단 아군 strip 우측 끝(~756px)에 컨트롤바 좌측(760px)이 바짝 붙어
+       카드가 뭉개져 보였고, 컨트롤바 우측~전황판단 사이엔 ~500px 빈 공간이 떴다.
+       컨트롤바를 그 빈 중앙으로 옮겨 smush 해소 + dead gap 채움 (원래 의도인 화면 중앙 배치 복원). */
+    left: 920px;
     bottom: 28px;
     width: 468px;
     min-width: 420px;
