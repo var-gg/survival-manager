@@ -71,14 +71,15 @@ public sealed class AtlasScreenView
         _continueButton = Require<Button>("atlas-continue-button");
         _continueButton.clicked += () => ContinueSelected?.Invoke();
         // wave-59 mockup-align — optional buttons / label.
-        // 정찰 service 미연결 — 클릭해도 아무 일 없는 silent dead button 대신 정직하게 잠근다.
-        // 후속 wave에서 Atlas 정찰 service가 wire되면 SetEnabled(true) + click 핸들러를 복구한다.
+        // Atlas 정찰 service는 미연결이지만 정찰 기능 자체는 모집소(달목)에서 작동한다 — silent dead button 대신
+        // 정직하게 잠그되 tooltip으로 실제 동선을 안내해 "여기선 준비중인데 정찰은 어디서?" 상반 신호를 없앤다.
+        // 후속 wave에서 Atlas 정찰이 wire되면 SetEnabled(true) + click 핸들러를 복구한다.
         _scoutButton = _root.Q<Button>("atlas-scout-button");
         if (_scoutButton != null)
         {
             _scoutButton.SetEnabled(false);
             _scoutButton.text = "정찰 (준비 중)";
-            _scoutButton.tooltip = "정찰 기능은 아직 준비 중입니다.";
+            _scoutButton.tooltip = "정찰은 모집소(달목)에서 잔향으로 가능합니다. 여기 Atlas 정찰은 후속 업데이트 예정입니다.";
         }
         _returnTownButton = _root.Q<Button>("atlas-return-town-button");
         if (_returnTownButton != null) _returnTownButton.clicked += () => ReturnTownSelected?.Invoke();

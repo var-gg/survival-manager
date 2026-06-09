@@ -288,10 +288,10 @@ public sealed class RecruitView
         // 7) skill summary block — 고정(archetype 고정) gold / 유연(offer rolled) blue
         var skills = new VisualElement();
         skills.AddToClassList("rcp-card__skills");
-        skills.Add(BuildSkillLine("고·액", c.SigActive, "sig"));
-        skills.Add(BuildSkillLine("고·패", c.SigPassive, "sig"));
-        skills.Add(BuildSkillLine("유·액", c.FlexActive, "flex"));
-        skills.Add(BuildSkillLine("유·패", c.FlexPassive, "flex"));
+        skills.Add(BuildSkillLine("고정 액티브", c.SigActive, "sig"));
+        skills.Add(BuildSkillLine("고정 패시브", c.SigPassive, "sig"));
+        skills.Add(BuildSkillLine("유연 액티브", c.FlexActive, "flex"));
+        skills.Add(BuildSkillLine("유연 패시브", c.FlexPassive, "flex"));
         card.Add(skills);
 
         // 8) gold cost
