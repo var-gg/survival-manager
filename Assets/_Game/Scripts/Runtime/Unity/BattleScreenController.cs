@@ -115,7 +115,9 @@ public sealed class BattleScreenController : MonoBehaviour
 
         // BattleStarted moment fire: boss-engage 대사 등 전투 시작 직전 연출을 재생한 뒤
         // RunBattle로 이어진다. 매칭 event가 없으면 onCompleted가 즉시 호출되어 기존 흐름과 동일.
-        if (EnsureStoryBridgeReady())
+        // 단 전투테스트(QuickBattle smoke)는 전투 중심 빠른 확인용 레인이라 narrative 연출을
+        // 건너뛰고 곧장 전투로 진입한다 (site-intro 대화가 HUD를 덮는 것을 방지).
+        if (!_root.SessionState.IsQuickBattleSmokeActive && EnsureStoryBridgeReady())
         {
             _storyBridge.Advance(NarrativeMoment.BattleStarted, BuildStoryMomentContext(), RunBattle);
         }
