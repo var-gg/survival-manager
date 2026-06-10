@@ -182,9 +182,17 @@ public sealed class BattlePresentationTransientSurfaceTests
                 CombatActionState.Recover,
                 new[]
                 {
-                    new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 8f, Note: "profile_lunge"),
+                    new BattleEvent(1, 0.1f, new CoreEntityId("ally"), "Ally", BattleActionType.BasicAttack, BattleLogCode.BasicAttackDamage, new CoreEntityId("enemy"), "Enemy", 8f),
                 },
-                new CombatVector2(-0.34f, 0f));
+                new CombatVector2(-0.34f, 0f)) with
+            {
+                // J8: presentation은 event Note(profile_lunge)를 읽지 않는다. one-tick pre-impact
+                // lunge trace는 sim이 기록한 discrete Approach motion intent가 arm한다.
+                Motions = new[]
+                {
+                    new BattleMotionIntent(1, 0, new CoreEntityId("ally"), BattleMotionKind.Approach, new CombatVector2(-1f, 0f), new CombatVector2(-0.34f, 0f), null, true),
+                },
+            };
 
             ExpectAuthoringMissingError();
             controller.Initialize(initial);
