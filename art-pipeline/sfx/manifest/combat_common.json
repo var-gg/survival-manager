@@ -2,8 +2,9 @@
   "_doc": "combat_common 생성 주문서. 필드 계약은 docs/03_architecture/sfx-hook-id-contract.md '생성 주문서 행', 프롬프트 규칙은 docs/03_architecture/sfx-sound-style-bible.md (caption-first, negative 분리, 메타데이터 미포함). 실행은 art-pipeline/scripts/generate_sfx_batch.py가 ai-infra MOSS 서버(port 8003)로 보낸다.",
   "category": "combat_common",
   "generation_defaults": {
+    "_note": "벌크 후보 라운드 기본값. 데스크톱 GPU 점유 시 step당 17초+로 치솟으므로(2026-06-10 실측) 높은 steps는 가벼운 GPU 윈도우에서 --steps로 올려 쓴다.",
     "prompt_contract": "caption-first-p3",
-    "num_inference_steps": 100,
+    "num_inference_steps": 24,
     "cfg_scale": 4.0,
     "candidate_seeds": [6201, 7411]
   },

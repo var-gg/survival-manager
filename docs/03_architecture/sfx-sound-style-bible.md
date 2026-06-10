@@ -72,7 +72,16 @@ Layered magic 작업에서는 runtime hook을 늘리지 않고 작업용 layer i
 
 ## MOSS 공통 프롬프트 구조
 
-MOSS request는 `prompt`, `negative_prompt`, `seconds`, `output_name`, `num_inference_steps`, `cfg_scale`, `seed`를 사용한다. 기본값은 검증 단계에서 `num_inference_steps=80~120`, `cfg_scale=3.5~5.0`, `seconds<=3.0`을 권장한다. 같은 prompt wording을 비교할 때만 seed를 고정하고, 후보 질감 다양화가 목적이면 seed를 바꾼다.
+MOSS request는 `prompt`, `negative_prompt`, `seconds`, `output_name`, `num_inference_steps`, `cfg_scale`, `seed`를 사용한다. 같은 prompt wording을 비교할 때만 seed를 고정하고, 후보 질감 다양화가 목적이면 seed를 바꾼다.
+
+steps는 2-티어로 운용한다 (2026-06-10 실측 기준).
+
+| 티어 | 설정 | 용도 |
+| --- | --- | --- |
+| 벌크 후보 | `num_inference_steps=24`, `cfg_scale=4.0` | 후보 라운드 기본값. p2final에서 텍스처 통과 검증 |
+| 품질/최종 | `num_inference_steps=50~100`, `cfg_scale=4.0` | keeper 재생성, 24-step 질감이 얇은 variant. 가벼운 GPU 윈도우 전용 |
+
+step당 비용은 데스크톱 GPU 점유에 따라 0.2초(경부하 벤치)에서 17~19초(중부하 실측)까지 흔들린다. 중부하에서 100 steps 단일 클립이 28분을 돌고 VRAM free 0 상태의 decode 단계에서 프로세스가 무음 사망한 사례가 있다 — 중부하에서는 클립당 10분을 넘기는 장주행 설정을 금지한다.
 
 MOSS의 `prompt`는 게임 설계 문장이 아니라 구체적인 소리 캡션이다. 첫 문장에 물리 소스와 동작을 넣고, 뒤에 재질, 강도, 거리, 공간감을 짧게 붙인다. ai-infra MOSS pipeline이 내부에서 `duration: <seconds>s`를 덧붙이므로 prompt 본문에 `Duration about ...`을 반복하지 않는다.
 
