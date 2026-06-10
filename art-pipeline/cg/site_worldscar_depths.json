@@ -1,0 +1,20 @@
+{
+  "id": "site_worldscar_depths",
+  "asset_class": "narrative_cg",
+  "category": "backgrounds",
+  "backdrop": "shared:site_worldscar_depths",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": "T2",
+  "motion": null,
+  "scene_id": "dialogue_scene_worldscar_depths_intro",
+  "note": "첫 도시 내부 wide shot. P09 3D 인게임 establishing(T2).",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/site_worldscar_depths/default.png",
+  "prompt": "Wide cinematic establishing shot — the interior of 'the First City', an ancient ruined city hidden inside a canyon, collapsed for eighteen centuries yet eerily tended: dust swept from the stone plaza, empty rooms kept tidy, no decay smell, as if someone has cleaned it every day for ages. A central plaza with an old well, broken colonnades, four faded faction motifs carved at equal height on the surviving arches, pale white lamplight glowing cold from deeper inside the city. Uninhabited stillness, unnervingly clean ruin, thin drifting haze. Cool liminal grading with faint violet undertones, the pale white inner light as the key light source. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is a small distant silhouette only, no close-up faces or portraits. No text or lettering.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}

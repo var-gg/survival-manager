@@ -33,12 +33,17 @@ VMAP = REPO / "tools" / "narrative-visual-map.json"
 _BG_PREFIXES = ("site_", "town_", "loc_")
 
 
+def backdrop_mode(subject_id: str) -> str:
+    """concept_art_* 신작은 bespoke, site_/town_/loc_ 공용 배경은 shared 토큰."""
+    return "bespoke" if subject_id.startswith("concept_art_") else "shared"
+
+
 def beatmap_meta(subject_id: str) -> dict:
     """Look up tier/kind/subjects/motion/note from the visual beat map override."""
     if not VMAP.exists():
         return {}
     vmap = json.loads(VMAP.read_text(encoding="utf-8"))
-    target = f"bespoke:{subject_id}"
+    target = f"{backdrop_mode(subject_id)}:{subject_id}"
     for scene_id, override in vmap.get("overrides", {}).items():
         if override.get("backdrop") == target:
             return {
@@ -81,7 +86,7 @@ def main() -> None:
         "id": args.subject_id,
         "asset_class": "narrative_cg",
         "category": category_for(args.subject_id),
-        "backdrop": f"bespoke:{args.subject_id}",
+        "backdrop": f"{backdrop_mode(args.subject_id)}:{args.subject_id}",
         "engine": args.engine,
         "kind": meta.get("kind", "env"),
         "subjects": meta.get("subjects", []),

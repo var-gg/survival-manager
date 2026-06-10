@@ -1,0 +1,20 @@
+{
+  "id": "town_ashglen",
+  "asset_class": "narrative_cg",
+  "category": "backgrounds",
+  "backdrop": "shared:town_ashglen",
+  "engine": "chatgpt-image",
+  "kind": "env",
+  "subjects": [],
+  "tier": null,
+  "motion": null,
+  "scene_id": null,
+  "note": null,
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/town_ashglen/default.png",
+  "prompt": "Wide cinematic establishing shot — 'Ashglen', a small frontier scout village in a misty valley at dawn: black volcanic soil paths, weathered tents and timber huts with low warm lantern light, a modest scout-guild post with a wooden ledger table near its entrance, thin chimney smoke, a lone totem pole at the village edge, fog rolling between roofs, distant silhouette of a ruined frontier gate far beyond the valley. Lived-in, quiet, hospitable frontier mood — the campaign's home base. Ash-grey dawn grading: cool grey mist with small pools of warm campfire and lantern light, black soil contrast. Painterly anime fantasy game cutscene, full painted environment, atmospheric depth, sweeping establishing composition, environment fills the frame. No magenta chroma. 16:9 wide. No named characters in frame; any human presence is small distant silhouettes only, no close-up faces or portraits. No text or lettering.",
+  "refs": [],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
