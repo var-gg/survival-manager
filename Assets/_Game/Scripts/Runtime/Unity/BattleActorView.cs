@@ -32,6 +32,7 @@ public sealed class BattleActorView : MonoBehaviour
     private BattleHumanoidAnimationDriver? _animationDriver;
     private BattleActorVfxSurface? _vfxSurface;
     private BattleActorAudioSurface? _audioSurface;
+    private BattleP09ArrowNockSurface? _arrowNockSurface;
     private RectTransform _overlayParent = null!;
     private RectTransform _overlayRoot = null!;
     private Image _overlayBackground = null!;
@@ -99,6 +100,11 @@ public sealed class BattleActorView : MonoBehaviour
     private Quaternion _lastAliveRotation = Quaternion.identity;
     private Vector3 _lastMoveDirection = Vector3.zero;
     private bool _isLocomoting;
+    // 표시 facing 평활 상태 — 킬 후 리타겟/이동↔조준 전환의 1프레임 회전 스냅 방지(시각 전용).
+    private Quaternion _displayedFacingRotation = Quaternion.identity;
+    private bool _hasDisplayedFacingRotation;
+    private int _lastFacingSmoothFrame = -1;
+    private const float FacingTurnDegreesPerSecond = 720f;
     private bool _hasPendingTravelTrace;
     private BattleAnimationSemantic _pendingTravelTraceSemantic = BattleAnimationSemantic.None;
     private float _pendingTravelTraceDistance;
@@ -225,6 +231,7 @@ public sealed class BattleActorView : MonoBehaviour
         _animationDriver?.ConsumeCue(cue, _currentState, 1f);
         _vfxSurface?.ConsumeCue(cue, _wrapper, relatedWorld);
         _audioSurface?.ConsumeCue(cue, _wrapper);
+        _arrowNockSurface?.ConsumeCue(cue);
 
         var animationSemantic = ResolveAnimationSemantic(cue);
         switch (cue.CueType)
@@ -349,10 +356,12 @@ public sealed class BattleActorView : MonoBehaviour
         _accentColor = Color.clear;
         _impactColor = Color.clear;
         _floatingColor = Color.clear;
+        _hasDisplayedFacingRotation = false;
         _animationEventBridge?.ClearTransientState(reason);
         _animationDriver?.ClearTransientState(reason);
         _vfxSurface?.ClearTransientState(reason);
         _audioSurface?.ClearTransientState(reason);
+        _arrowNockSurface?.ClearTransientState();
 
         if (_floatingText != null)
         {
@@ -366,6 +375,7 @@ public sealed class BattleActorView : MonoBehaviour
     public void TickTransients(float deltaTime, float playbackSpeed, bool paused)
     {
         _animationDriver?.Tick(deltaTime, playbackSpeed, paused);
+        _arrowNockSurface?.Tick(deltaTime, playbackSpeed, paused);
 
         if (paused)
         {
@@ -659,7 +669,34 @@ public sealed class BattleActorView : MonoBehaviour
             }
         }
 
-        return (position, scale, rotation);
+        return (position, scale, SmoothDisplayedFacing(rotation));
+    }
+
+    // 표시 회전은 목표 회전의 순수 함수가 아니라 최대 각속도로 수렴하는 상태다 — 타겟 사망 직후
+    // 리타겟이나 이동→조준 전환에서 몸이 1렌더프레임에 150°+ 휙 돌던 스냅을 막는다. sim의 조준/
+    // 판정 truth와 무관한 presentation 평활이며, 스폰과 seek/reset(ClearTransients)은 즉시 스냅한다.
+    private Quaternion SmoothDisplayedFacing(Quaternion target)
+    {
+        if (!_hasDisplayedFacingRotation)
+        {
+            _hasDisplayedFacingRotation = true;
+            _displayedFacingRotation = target;
+            _lastFacingSmoothFrame = Time.frameCount;
+            return target;
+        }
+
+        // RefreshVisualState는 한 프레임에 여러 번 불린다(ApplyBlend/cue/transients) — 각속도
+        // 예산은 렌더 프레임당 한 번만 소진하고 같은 프레임의 재호출은 현재 표시 회전을 유지한다.
+        if (Time.frameCount != _lastFacingSmoothFrame)
+        {
+            _lastFacingSmoothFrame = Time.frameCount;
+            _displayedFacingRotation = Quaternion.RotateTowards(
+                _displayedFacingRotation,
+                target,
+                FacingTurnDegreesPerSecond * Mathf.Max(Time.deltaTime, 0.001f));
+        }
+
+        return _displayedFacingRotation;
     }
 
     private BattleAnimationSemantic ResolveActiveMovementSemantic()
@@ -1066,6 +1103,7 @@ public sealed class BattleActorView : MonoBehaviour
         _animationDriver?.Initialize(_wrapper, actor);
         _vfxSurface = GetComponent<BattleActorVfxSurface>();
         _audioSurface = GetComponent<BattleActorAudioSurface>();
+        _arrowNockSurface = GetComponent<BattleP09ArrowNockSurface>();
         _baseColor = ResolveBaseColor(actor);
     }
 

@@ -134,6 +134,7 @@ public sealed partial class BattleActorPresentationCatalog
         root.AddComponent<BattleHumanoidAnimationDriver>();
         root.AddComponent<BattleActorVfxSurface>();
         root.AddComponent<BattleActorAudioSurface>();
+        root.AddComponent<BattleP09ArrowNockSurface>();
 
         var socketRig = CreateChild(root.transform, "SocketRig");
         var center = CreateChild(socketRig, "Center");
