@@ -53,12 +53,20 @@ public sealed class BattleClipTimingCatalogTests
     }
 
     [Test]
-    public void RangedReleaseIsLaterThanMeleeContact()
+    public void RangedReleaseIsEarlyInSplitReleaseClip()
     {
+        // v2 계약: commit에 배선되는 활/시전 클립은 Load/Hold/Release 분할 팩의 Release 전용
+        // 클립이다 — 시위를 놓는 순간은 그 클립의 초반부에 온다(노름이 크면 windup 예산이
+        // 클립 앞부분을 통째로 건너뛰어 '움찔 트윗치'로 보인다). 근접 스윙 미드포인트(0.40)보다
+        // 빨라야 한다.
         Assert.That(
             BattleClipTimingCatalog.Resolve(BattleAnimationSemantic.BowShot).ReleaseNorm,
-            Is.GreaterThan(BattleClipTimingCatalog.Resolve(BattleAnimationSemantic.None).ContactNorm),
-            "a bow looses later in its clip than a melee strike lands.");
+            Is.LessThan(BattleClipTimingCatalog.Resolve(BattleAnimationSemantic.None).ContactNorm),
+            "a split Release-only bow clip looses early in the clip.");
+        Assert.That(
+            BattleClipTimingCatalog.Resolve(BattleAnimationSemantic.ProjectileCast).ReleaseNorm,
+            Is.LessThanOrEqualTo(0.35f),
+            "a split Cast-only clip releases early as well.");
     }
 
     [Test]
@@ -79,6 +87,6 @@ public sealed class BattleClipTimingCatalogTests
     public void CatalogVersion_IsStableAndPositive()
     {
         Assert.That(BattleClipTimingCatalog.CatalogVersion, Is.GreaterThan(0));
-        Assert.That(BattleClipTimingCatalog.CatalogVersion, Is.EqualTo(1), "bump deliberately when the default table changes (J26).");
+        Assert.That(BattleClipTimingCatalog.CatalogVersion, Is.EqualTo(2), "bump deliberately when the default table changes (J26). v2 = 분할 클립 release 노름 보정.");
     }
 }

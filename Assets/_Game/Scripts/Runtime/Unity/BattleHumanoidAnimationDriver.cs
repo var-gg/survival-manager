@@ -49,6 +49,10 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private int _pinWindupStartTick;
     private float _pinTotalSeconds;
     private ActionInstanceId _pinActionInstanceId = ActionInstanceId.None;
+    // 활 commit(Release 클립)이 자연 종료되면 이어 붙일 재장전 draw(Load) 클립. windup ~0.22s에는
+    // 1초짜리 당김이 물리적으로 안 들어가므로 당김 모션은 발사 후 재장전 자리에서 재생한다
+    // (조준 Hold idle → Release → Load 체인 → Hold 복귀). 취소된 commit은 체인하지 않는다.
+    private AnimationClip? _pinFollowUpClip;
     private BattleHitstopWindow _hitstopWindow = BattleHitstopWindow.None;
     private double _lastSampleElapsed;
     // 속도 분리 계약(러닝머신 수술): _playbackSpeed는 타임라인 배속(Tick/ConsumeCue가 기록),
@@ -218,6 +222,8 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         {
             if (_isPinnedCommit && cue.CommitSchedule is { } canceled && _pinActionInstanceId.Equals(canceled.ActionInstanceId))
             {
+                // 취소된 발사는 재장전 follow-through를 보여주지 않는다.
+                _pinFollowUpClip = null;
                 EndPinnedCommit();
             }
 
@@ -248,6 +254,18 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             if (cue.CommitSchedule is { } schedule)
             {
                 PlayPinnedCommit(clip, timing, schedule, cue.AnimationSemantic);
+                // 활 commit이 자연 종료되면 재장전 draw(Load)를 이어 붙인다 — 시위 당김 모션이
+                // 재생되는 유일한 자리. 클립은 commit 시점에 미리 해석해 둔다(종료 시점 해석 금지).
+                if (cue.AnimationSemantic == BattleAnimationSemantic.BowShot)
+                {
+                    var drawCue = cue with
+                    {
+                        CueType = BattlePresentationCueType.WindupEnter,
+                        AnimationSemantic = BattleAnimationSemantic.BowDraw,
+                        CommitSchedule = null,
+                    };
+                    _pinFollowUpClip = activeSet.TryResolveCueClip(drawCue, state, out var drawClip) ? drawClip : null;
+                }
             }
             else
             {
@@ -688,6 +706,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _isHoldingTerminalPose = false;
         _oneShotIsMobility = false;
         _isDeathOneShotActive = false;
+        _pinFollowUpClip = null;
 
         _isPinnedCommit = true;
         _pinWindupStartTick = schedule.WindupStartTick;
@@ -726,7 +745,17 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     {
         _isPinnedCommit = false;
         _pinActionInstanceId = ActionInstanceId.None;
+        var followUp = _pinFollowUpClip;
+        _pinFollowUpClip = null;
         StopOneShot();
+        // 재장전 체인(비핀·대칭 크로스페이드): 당김이 끝나면 드로운 조준 idle(Hold)로 복귀하므로
+        // 포즈가 이어져 꼬리 스왑이 보이지 않는다. 죽은 유닛에는 체인하지 않는다(시체 포즈 보호).
+        if (followUp != null && _lastState != null && !IsTerminalState(_lastState))
+        {
+            PlayOneShot(followUp, BattleClipTiming.NonPinnable);
+            return;
+        }
+
         ReapplyLastState();
     }
 
@@ -749,6 +778,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _isPinnedCommit = false;
         _oneShotIsMobility = false;
         _isDeathOneShotActive = false;
+        _pinFollowUpClip = null;
         _pinActionInstanceId = ActionInstanceId.None;
         _hitstopWindow = BattleHitstopWindow.None;
         _blendEnvelope = BattleBlendEnvelope.InstantFull;
@@ -960,6 +990,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _isPinnedCommit = false;
         _oneShotIsMobility = false;
         _isDeathOneShotActive = false;
+        _pinFollowUpClip = null;
     }
 
     private static float ResolvePlaybackSpeed(float playbackSpeed)

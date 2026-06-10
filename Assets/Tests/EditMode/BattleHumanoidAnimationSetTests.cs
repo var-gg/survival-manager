@@ -595,6 +595,11 @@ public sealed class BattleHumanoidAnimationSetTests
         var set = BattleHumanoidAnimationSet.ResolveRuntimeSet(null);
 
         Assert.That(set, Is.Not.Null);
+        // 활 전투 대기 = 시위 당긴 조준 유지(Hold) 루프 — '조준 → 발사 → 재장전' 문법의 기준점.
+        Assert.That(set!.TryResolveLoopClip(
+            CreateUnit(CombatActionState.AcquireTarget, classId: "ranger"),
+            out var bowIdleClip), Is.True);
+        Assert.That(bowIdleClip.name, Does.Contain("Hold"));
         Assert.That(set!.TryResolveCueClip(
             new BattlePresentationCue(
                 BattlePresentationCueType.WindupEnter,
@@ -964,6 +969,84 @@ public sealed class BattleHumanoidAnimationSetTests
         {
             DestroyRoot(root);
             Destroy(set, idle, basic);
+        }
+    }
+
+    [Test]
+    public void Driver_ChainsBowReloadDraw_AfterNaturalCommitEnd_ButNotAfterCancel()
+    {
+        // 활 연출 문법: windup(~0.22s)에는 1초짜리 당김이 안 들어가므로 시위 당김(Load)은
+        // 발사(Release commit)가 자연 종료된 뒤 재장전 자리에서 재생된다. 취소된 commit은
+        // 재장전 follow-through를 보여주지 않는다.
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var basic = CreateClip("basic");
+        basic.SetCurve(string.Empty, typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        var draw = CreateClip("bow_reload_draw");
+        draw.SetCurve(string.Empty, typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "basicAttacks", new[] { basic });
+            SetField(set, "variants", new[]
+            {
+                new BattleHumanoidAnimationVariant(BattleAnimationSemantic.BowDraw, draw),
+            });
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.AcquireTarget));
+
+            var schedule = new BattleCommitSchedule(new ActionInstanceId(1), 0, WindupStartTick: 10, ContactTick: 15);
+            var commitCue = new BattlePresentationCue(
+                BattlePresentationCueType.ActionCommitBasic,
+                10,
+                "ally",
+                ActionType: BattleActionType.BasicAttack,
+                AnimationSemantic: BattleAnimationSemantic.BowShot,
+                CommitSchedule: schedule);
+
+            driver.ConsumeCue(commitCue, CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack), 1f);
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(basic));
+
+            // 자연 종료(스케줄 시간 경과) → 재장전 draw 체인.
+            driver.EvaluateContactPin(currentStepIndex: 30, alpha: 0f);
+
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(draw), "commit 자연 종료 후 재장전 당김이 이어진다");
+
+            // 취소 경로 — 재장전 체인 금지.
+            driver.ClearTransientState(BattlePresentationCueType.PlaybackReset);
+            driver.ConsumeCue(commitCue, CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack), 1f);
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(basic));
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.ActionCanceled,
+                    11,
+                    "ally",
+                    CommitSchedule: schedule),
+                CreateUnit(CombatActionState.AcquireTarget),
+                1f);
+
+            Assert.That(driver.CurrentOneShotClip, Is.Null, "취소된 발사는 재장전을 보여주지 않는다");
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, basic, draw);
         }
     }
 

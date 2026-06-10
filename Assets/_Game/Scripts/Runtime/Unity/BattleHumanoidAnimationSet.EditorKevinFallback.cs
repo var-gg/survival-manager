@@ -34,7 +34,10 @@ public sealed partial class BattleHumanoidAnimationSet
         set.stance = BattleHumanoidAnimationStance.Default;
         set.relaxedIdle = relaxedIdleClip ?? idleClip!;
         set.idle = idleClip!;
-        set.bowReadyIdle = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Bow/HumanM@BowIdle01.fbx");
+        // 활 전투 대기 = 시위 당긴 조준 유지(Hold) 루프. 기본공격 windup(~0.22s)에는 1초짜리
+        // 당김(Load)이 물리적으로 안 들어가므로, 연출 문법을 '조준 대기 → 발사(Release) →
+        // 재장전 당김(Load 체인) → 조준 복귀'로 잡는다. BowIdle01(활 내린 대기)은 부적합.
+        set.bowReadyIdle = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Bow/HumanM@BowShot01 - Hold.fbx");
         set.walkMove = walkMoveClip ?? moveClip!;
         set.move = moveClip!;
         set.authoredWalkLocomotionSpeed = DefaultWalkAuthoredLocomotionSpeed;

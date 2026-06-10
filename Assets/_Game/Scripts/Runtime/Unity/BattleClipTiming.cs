@@ -34,8 +34,9 @@ public readonly record struct BattleClipTiming(
 public static class BattleClipTimingCatalog
 {
     /// <summary>Bumped whenever the default table changes; included in the replay/save schedule contract
-    /// so a recording made under an older table is detected rather than silently re-timed (GPT Pro J26).</summary>
-    public const int CatalogVersion = 1;
+    /// so a recording made under an older table is detected rather than silently re-timed (GPT Pro J26).
+    /// v2: 원거리 release 노름을 분할 클립 실물에 맞게 보정(BowShot 0.70→0.15, ProjectileCast 0.45→0.30).</summary>
+    public const int CatalogVersion = 2;
 
     private const float DefaultLeadSeconds = 0.02f;
     private const float DefaultHoldSeconds = 0.04f;
@@ -60,8 +61,12 @@ public static class BattleClipTimingCatalog
 
             // Ranged: release (the body's decisive marker) is the contact pin; the projectile travels
             // from release to the sim ContactTick separately (J12). Release == Contact at this layer.
-            BattleAnimationSemantic.BowShot => Release(release: 0.70f),
-            BattleAnimationSemantic.ProjectileCast => Release(release: 0.45f),
+            // 노름은 실제 배선 클립 기준이다 — Kevin 팩은 활/시전이 Load(당김)/Hold(조준)/Release(발사)
+            // 분할 클립이고 commit에는 Release 전용 클립이 들어간다. 시위를 놓는 순간은 그 클립의
+            // 초반부(0.70은 가상의 풀클립 기준 오작 — windup 0.2~0.3s 예산에서 클립의 70%를
+            // 건너뛰어 '움찔하고 화살만 나가는' 트윗치로 보였다).
+            BattleAnimationSemantic.BowShot => Release(release: 0.15f),
+            BattleAnimationSemantic.ProjectileCast => Release(release: 0.30f),
 
             // Windups are anticipation that completes into the commit; they pin their end to the windup
             // budget rather than a contact, so ContactNorm sits at the clip end.
