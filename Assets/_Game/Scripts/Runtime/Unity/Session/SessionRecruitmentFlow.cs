@@ -43,6 +43,222 @@ public sealed partial class GameSessionState
             _session.GrantHeroDirectCore(archetypeId, source);
     }
 
+    // recruit 책임 축 transactional 본체 — public facade(GameSessionState.cs)는 _recruitmentFlow로
+    // 위임만 하고, 실제 통화 검증/telemetry/state sync는 여기 *Core 메서드가 소유한다.
+    private Result RerollRecruitOffersCore()
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Refresh는 Town에서만 사용할 수 있습니다.");
+        }
+
+        var refreshCost = RefreshCostService.GetRefreshCost(_recruitPhaseState);
+        if (refreshCost > 0 && Profile.Currencies.Gold < refreshCost)
+        {
+            return Result.Fail($"Gold가 부족합니다. refresh에는 {refreshCost} Gold가 필요합니다.");
+        }
+
+        Profile.Currencies.Gold -= refreshCost;
+        _recruitPhaseState = RefreshCostService.ConsumeRefresh(_recruitPhaseState);
+        _recruitOfferGeneration += 1;
+        _recruitOffers.Clear();
+        EnsureRecruitOffers();
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateRecruitRefreshed(
+            ResolveTelemetryRunId(),
+            refreshCost,
+            _recruitPhaseState.PaidRefreshCountThisPhase));
+        SyncRecruitState();
+        return Result.Success();
+    }
+
+    private Result RecruitCore(int offerIndex)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Recruit는 Town에서만 사용할 수 있습니다.");
+        }
+
+        if (offerIndex < 0 || offerIndex >= _recruitOffers.Count)
+        {
+            return Result.Fail("유효하지 않은 영입 후보입니다.");
+        }
+
+        var offer = _recruitOffers[offerIndex];
+        if (Profile.Currencies.Gold < offer.Metadata.GoldCost)
+        {
+            return Result.Fail($"Gold가 부족합니다. 영입에는 {offer.Metadata.GoldCost} Gold가 필요합니다.");
+        }
+
+        if (Profile.Heroes.Count >= MetaBalanceDefaults.TownRosterCap)
+        {
+            return Result.Fail($"Town roster cap {MetaBalanceDefaults.TownRosterCap}에 도달했습니다.");
+        }
+
+        if (!TryGrantRecruitPreview(offer, RecruitOfferSource.RecruitPhase, out _, out var error))
+        {
+            return Result.Fail(error);
+        }
+
+        Profile.Currencies.Gold -= offer.Metadata.GoldCost;
+        _recruitOffers.RemoveAt(offerIndex);
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateRecruitPurchased(
+            ResolveTelemetryRunId(),
+            offer,
+            offerIndex));
+        SyncRecruitState();
+        return Result.Success();
+    }
+
+    private Result UseScoutCore(ScoutDirective directive)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Scout는 Town에서만 사용할 수 있습니다.");
+        }
+
+        directive ??= new ScoutDirective();
+        if (directive.IsNone)
+        {
+            return Result.Fail("Scout directive가 필요합니다.");
+        }
+
+        if (_recruitPhaseState.ScoutUsedThisPhase)
+        {
+            return Result.Fail("이번 recruit phase에서는 이미 scout를 사용했습니다.");
+        }
+
+        if (Profile.Currencies.Echo < RecruitmentBalanceCatalog.ScoutEchoCost)
+        {
+            return Result.Fail($"잔향이 부족합니다. 정찰에는 {RecruitmentBalanceCatalog.ScoutEchoCost} 잔향이 필요합니다.");
+        }
+
+        Profile.Currencies.Echo -= RecruitmentBalanceCatalog.ScoutEchoCost;
+        _recruitPhaseState.ScoutUsedThisPhase = true;
+        _recruitPhaseState.PendingScoutDirective = directive.Clone();
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateScoutUsed(
+            ResolveTelemetryRunId(),
+            directive,
+            RecruitmentBalanceCatalog.ScoutEchoCost));
+        SyncRecruitState();
+        return Result.Success();
+    }
+
+    private Result RetrainHeroCore(string heroId, RetrainOperationKind operation)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Retrain은 Town에서만 사용할 수 있습니다.");
+        }
+
+        if (!TryGetHero(heroId, out var hero))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        if (!_combatContentLookup.Snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype))
+        {
+            return Result.Fail($"Archetype '{hero.ArchetypeId}'를 찾을 수 없습니다.");
+        }
+
+        var currentFlexActiveId = ResolveHeroFlexActiveId(hero, archetype);
+        var currentFlexPassiveId = ResolveHeroFlexPassiveId(hero, archetype);
+        var retrainState = hero.RetrainState?.Clone() ?? new UnitRetrainState();
+        var cost = RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(operation, retrainState);
+        if (Profile.Currencies.Echo < cost)
+        {
+            return Result.Fail($"잔향이 부족합니다. 재훈련에는 {cost} 잔향이 필요합니다.");
+        }
+
+        var result = RetrainService.Retrain(
+            archetype,
+            currentFlexActiveId,
+            currentFlexPassiveId,
+            operation,
+            retrainState,
+            BuildTeamPlanProfile(),
+            RecruitmentBalanceCatalog.DefaultRetrainCosts,
+            BuildStableSeed(heroId, retrainState.RetrainCount + (int)operation + _recruitOfferGeneration));
+
+        Profile.Currencies.Echo -= result.EchoCost;
+        hero.FlexActiveId = result.FlexActiveId;
+        hero.FlexPassiveId = result.FlexPassiveId;
+        hero.RetrainState = result.RetrainState;
+        hero.EconomyFootprint ??= new UnitEconomyFootprint();
+        hero.EconomyFootprint.RetrainEchoPaid += result.EchoCost;
+        Roster = new RosterState(ToHeroRecords(Profile));
+        SyncHeroBuildState(hero);
+        AppendRuntimeTelemetry(MetaTelemetryRecorder.CreateRetrainPerformed(
+            ResolveTelemetryRunId(),
+            hero.HeroId,
+            hero.ArchetypeId,
+            operation,
+            result));
+        SyncActiveRunIfPresent();
+        return Result.Success();
+    }
+
+    private Result DismissHeroCore(string heroId)
+    {
+        if (!IsTownEconomyPhase())
+        {
+            return Result.Fail("Dismiss는 Town에서만 사용할 수 있습니다.");
+        }
+
+        if (Profile.Heroes.Count <= 1)
+        {
+            return Result.Fail("마지막 roster unit은 dismiss할 수 없습니다.");
+        }
+
+        if (!TryGetHero(heroId, out var hero))
+        {
+            return Result.Fail("유닛을 찾을 수 없습니다.");
+        }
+
+        var refund = DismissService.CalculateRefund(hero.EconomyFootprint ?? new UnitEconomyFootprint());
+        Profile.Currencies.Gold += refund.GoldRefund;
+        Profile.Currencies.Echo += refund.EchoRefund;
+        UnequipHeroItems(hero.HeroId);
+        RemoveHeroFromRoster(hero.HeroId);
+        Roster = new RosterState(ToHeroRecords(Profile));
+        _recruitOffers.RemoveAll(offer => string.Equals(offer.UnitBlueprintId, hero.ArchetypeId, StringComparison.Ordinal));
+        EnsureRecruitOffers();
+        SyncRecruitState();
+        SyncActiveRunIfPresent();
+        return Result.Success();
+    }
+
+    private Result GrantHeroDirectCore(string archetypeId, RecruitOfferSource source = RecruitOfferSource.DirectGrant)
+    {
+        if (!_combatContentLookup.Snapshot.Archetypes.TryGetValue(archetypeId, out var template))
+        {
+            return Result.Fail($"Archetype '{archetypeId}'를 찾을 수 없습니다.");
+        }
+
+        var preview = RecruitPreviewBuilder.Roll(
+            template,
+            BuildTeamPlanProfile(),
+            null,
+            FlexRollBiasMode.NativeBiased,
+            BuildStableSeed(archetypeId, Profile.Heroes.Count + _recruitOfferGeneration));
+        var directPreview = new RecruitUnitPreview
+        {
+            UnitBlueprintId = archetypeId,
+            UnitInstanceSeed = $"grant:{source}:{archetypeId}:{Profile.Heroes.Count}",
+            FlexActiveId = preview.FlexActiveId,
+            FlexPassiveId = preview.FlexPassiveId,
+            Metadata = new RecruitOfferMetadata
+            {
+                SlotType = RecruitOfferSlotType.StandardA,
+                Tier = template.RecruitTier,
+                GoldCost = RecruitmentBalanceCatalog.DefaultRecruitTierCosts.GetCost(template.RecruitTier),
+            }
+        };
+
+        return TryGrantRecruitPreview(directPreview, source, out _, out var error)
+            ? Result.Success()
+            : Result.Fail(error);
+    }
+
     private void EnsureRecruitOffers()
     {
         if (_recruitOffers.Count > 0)
