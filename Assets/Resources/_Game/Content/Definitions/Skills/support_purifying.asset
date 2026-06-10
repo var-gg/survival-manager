@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_purifying
   VfxHookId: vfx.support_purifying
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_purifying
   LearnSource: 0
   EffectFamilyId: priest_signature
   MutuallyExclusiveGroupId: mystic_alignment

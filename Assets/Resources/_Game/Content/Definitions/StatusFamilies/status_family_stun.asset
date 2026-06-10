@@ -22,6 +22,7 @@ MonoBehaviour:
   TenacityScale: 1
   AppliesPeriodicDamage: 0
   VfxCueId: vfx.status_stun
+  SfxHookId: 
   BudgetCard:
     Domain: 7
     Rarity: 0

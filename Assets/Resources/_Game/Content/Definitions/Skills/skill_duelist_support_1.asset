@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_duelist_support_1
   VfxHookId: vfx.skill_duelist_support_1
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_duelist_support_1
   LearnSource: 0
   EffectFamilyId: slayer_support
   MutuallyExclusiveGroupId: 

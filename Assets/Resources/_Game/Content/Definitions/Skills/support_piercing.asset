@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_piercing
   VfxHookId: vfx.support_piercing
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_piercing
   LearnSource: 0
   EffectFamilyId: piercing_support
   MutuallyExclusiveGroupId: 

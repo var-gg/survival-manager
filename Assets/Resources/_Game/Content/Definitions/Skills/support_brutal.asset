@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_brutal
   VfxHookId: vfx.support_brutal
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_brutal
   LearnSource: 0
   EffectFamilyId: brutal_support
   MutuallyExclusiveGroupId: duelist_stance

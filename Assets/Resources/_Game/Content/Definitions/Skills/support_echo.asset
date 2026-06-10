@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_echo
   VfxHookId: vfx.support_echo
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_echo
   LearnSource: 0
   EffectFamilyId: echo_support
   MutuallyExclusiveGroupId: 

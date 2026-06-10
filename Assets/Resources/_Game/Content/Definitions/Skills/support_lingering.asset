@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_lingering
   VfxHookId: vfx.support_lingering
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_lingering
   LearnSource: 0
   EffectFamilyId: lingering_support
   MutuallyExclusiveGroupId: 

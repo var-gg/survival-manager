@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_ranger_support_1
   VfxHookId: vfx.skill_ranger_support_1
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_ranger_support_1
   LearnSource: 0
   EffectFamilyId: hunter_support
   MutuallyExclusiveGroupId: 

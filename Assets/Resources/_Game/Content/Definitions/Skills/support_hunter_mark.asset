@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_hunter_mark
   VfxHookId: vfx.support_hunter_mark
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_hunter_mark
   LearnSource: 0
   EffectFamilyId: hunter_mark_support
   MutuallyExclusiveGroupId: ranger_tempo

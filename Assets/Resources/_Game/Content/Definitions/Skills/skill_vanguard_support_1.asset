@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_vanguard_support_1
   VfxHookId: vfx.skill_vanguard_support_1
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_vanguard_support_1
   LearnSource: 0
   EffectFamilyId: guard_support
   MutuallyExclusiveGroupId: 

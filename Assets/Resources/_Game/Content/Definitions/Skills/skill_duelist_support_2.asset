@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_duelist_support_2
   VfxHookId: vfx.skill_duelist_support_2
-  SfxHookId: 
+  SfxHookId: sfx.skill.skill_duelist_support_2
   LearnSource: 0
   EffectFamilyId: raider_support
   MutuallyExclusiveGroupId: 

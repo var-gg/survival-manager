@@ -84,7 +84,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_longshot
   VfxHookId: vfx.support_longshot
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_longshot
   LearnSource: 0
   EffectFamilyId: longshot_support
   MutuallyExclusiveGroupId: ranger_tempo

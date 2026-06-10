@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_executioner
   VfxHookId: vfx.support_executioner
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_executioner
   LearnSource: 0
   EffectFamilyId: executioner_support
   MutuallyExclusiveGroupId: duelist_stance

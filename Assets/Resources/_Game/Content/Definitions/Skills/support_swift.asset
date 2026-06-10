@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_swift
   VfxHookId: vfx.support_swift
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_swift
   LearnSource: 0
   EffectFamilyId: swift_support
   MutuallyExclusiveGroupId: 

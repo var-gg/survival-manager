@@ -82,7 +82,7 @@ MonoBehaviour:
   AnimationHookId: 
   IconId: skill_icon_support_siphon
   VfxHookId: vfx.support_siphon
-  SfxHookId: 
+  SfxHookId: sfx.skill.support_siphon
   LearnSource: 0
   EffectFamilyId: siphon_support
   MutuallyExclusiveGroupId: mystic_alignment
