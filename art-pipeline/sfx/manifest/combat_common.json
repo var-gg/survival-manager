@@ -1,0 +1,250 @@
+{
+  "_doc": "combat_common 생성 주문서. 필드 계약은 docs/03_architecture/sfx-hook-id-contract.md '생성 주문서 행', 프롬프트 규칙은 docs/03_architecture/sfx-sound-style-bible.md (caption-first, negative 분리, 메타데이터 미포함). 실행은 art-pipeline/scripts/generate_sfx_batch.py가 ai-infra MOSS 서버(port 8003)로 보낸다.",
+  "category": "combat_common",
+  "generation_defaults": {
+    "prompt_contract": "caption-first-p3",
+    "num_inference_steps": 100,
+    "cfg_scale": 4.0,
+    "candidate_seeds": [6201, 7411]
+  },
+  "items": [
+    {
+      "runtime_hook_id": "sfx.combat.impact_damage",
+      "hook_id": "sfx.combat.impact_damage.flesh.light",
+      "variant_key": "combat.impact.flesh.light",
+      "profile_key": "combat.impact.flesh.light",
+      "category": "combat_common.impact",
+      "trigger": "ImpactDamage",
+      "seconds": 0.7,
+      "prompt": "A light blunt hit on a humanoid body, short cloth thump, soft skin impact, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, vehicle crash, warhammer slam, trailer boom, explosion, giant armor crash, sci-fi laser, electrical zap, metal clink",
+      "expected_audio_profile": { "duration_s": { "min": 0.25, "max": 0.7 }, "attack_ms": { "max": 45 }, "low_band_ratio": { "max": 0.35 }, "leading_silence_ms": { "max": 50 } },
+      "review_context": {
+        "where_used": "BattleActorAudioSurface가 ImpactDamage cue를 받을 때 선택할 수 있는 살/천 light 피격 variant 후보입니다.",
+        "variant_role": "살/천에 가까운 가벼운 피격. 가죽/금속/목재 타격을 대신하지 않는다.",
+        "review_focus": "금속 clink 없이 body/cloth 중심으로 들리는지, 차량 충돌급 과중 저역이 아닌지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.impact_damage",
+      "hook_id": "sfx.combat.impact_damage.leather.light",
+      "variant_key": "combat.impact.leather.light",
+      "profile_key": "combat.impact.leather.light",
+      "category": "combat_common.impact",
+      "trigger": "ImpactDamage",
+      "seconds": 0.7,
+      "prompt": "A light leather armor hit, short cloth body thump, leather creak, close dry fantasy foley, one-shot.",
+      "negative_prompt": "music, voice, vehicle crash, warhammer slam, trailer boom, explosion, giant armor crash, sci-fi laser, electrical zap",
+      "expected_audio_profile": { "duration_s": { "min": 0.25, "max": 0.7 }, "attack_ms": { "max": 45 }, "low_band_ratio": { "max": 0.35 }, "leading_silence_ms": { "max": 50 } },
+      "review_context": {
+        "where_used": "BattleActorAudioSurface가 ImpactDamage cue를 받을 때 선택할 수 있는 leather/light 피격 variant 후보입니다.",
+        "variant_role": "가죽 방어구에 닿는 가벼운 피격. 금속/목재/살 타격을 대신하지 않는다.",
+        "review_focus": "가죽과 천의 짧은 접촉으로 들리는지, 큰 금속 충돌이 아닌지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.impact_damage",
+      "hook_id": "sfx.combat.impact_damage.metal.light",
+      "variant_key": "combat.impact.metal.light",
+      "profile_key": "combat.impact.metal.light",
+      "category": "combat_common.impact",
+      "trigger": "ImpactDamage",
+      "seconds": 0.7,
+      "prompt": "A small metal armor tap from a light weapon hit, quick bright clink, tiny buckle rattle, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, vehicle crash, warhammer slam, trailer boom, explosion, giant armor crash, sci-fi laser, electrical zap, church bell",
+      "expected_audio_profile": { "duration_s": { "min": 0.25, "max": 0.7 }, "attack_ms": { "max": 45 }, "low_band_ratio": { "max": 0.3 }, "leading_silence_ms": { "max": 50 } },
+      "review_context": {
+        "where_used": "BattleActorAudioSurface가 ImpactDamage cue를 받을 때 선택할 수 있는 small metal 피격 variant 후보입니다.",
+        "variant_role": "작은 금속 방어구/장식의 짧은 접촉. 대형 갑옷 충돌이 아니다.",
+        "review_focus": "작고 짧은 clink인지, 망치 타격/종소리로 커지지 않는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.impact_damage",
+      "hook_id": "sfx.combat.impact_damage.wood_block.light",
+      "variant_key": "combat.impact.wood_block.light",
+      "profile_key": "combat.impact.wood_block.light",
+      "category": "combat_common.impact",
+      "trigger": "ImpactDamage",
+      "seconds": 0.7,
+      "prompt": "A light hit stopped by a wooden shield, short hollow wood knock, small leather strap movement, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, vehicle crash, warhammer slam, trailer boom, explosion, giant armor crash, sci-fi laser, electrical zap, door knock",
+      "expected_audio_profile": { "duration_s": { "min": 0.25, "max": 0.7 }, "attack_ms": { "max": 45 }, "low_band_ratio": { "max": 0.4 }, "leading_silence_ms": { "max": 50 } },
+      "review_context": {
+        "where_used": "BattleActorAudioSurface가 ImpactDamage cue를 받을 때 선택할 수 있는 wood block 피격 variant 후보입니다.",
+        "variant_role": "목재 방패/봉쇄 표면에 닿는 block성 접촉. damage body thump와 섞이지 않는다.",
+        "review_focus": "방패에 막힌 소리로 읽히는지, 문 두드림/몸통 타격으로 들리지 않는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.guard_enter",
+      "hook_id": "sfx.combat.guard_enter.wood_shield",
+      "variant_key": "combat.guard_enter.wood_shield",
+      "profile_key": "combat.guard_enter.wood_shield",
+      "category": "combat_common.guard",
+      "trigger": "GuardEnter",
+      "seconds": 0.8,
+      "prompt": "A wooden shield is raised into a guard position, short wood and leather strap movement, one firm grip setting, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, impact hit, explosion, trailer boom, sci-fi laser, metal slam, door",
+      "expected_audio_profile": { "duration_s": { "min": 0.3, "max": 0.9 }, "attack_ms": { "max": 90 }, "low_band_ratio": { "max": 0.4 }, "leading_silence_ms": { "max": 60 } },
+      "review_context": {
+        "where_used": "GuardEnter cue에서 재생되는 나무 방패 방어 준비음 후보입니다.",
+        "variant_role": "나무 방패를 올리는 준비음. 피격/타격음이 아니다.",
+        "review_focus": "준비 동작으로 들리는지, hit/impact 성분이 섞이지 않았는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.guard_enter",
+      "hook_id": "sfx.combat.guard_enter.leather_bracer",
+      "variant_key": "combat.guard_enter.leather_bracer",
+      "profile_key": "combat.guard_enter.leather_bracer",
+      "category": "combat_common.guard",
+      "trigger": "GuardEnter",
+      "seconds": 0.8,
+      "prompt": "A leather bracer strap is pulled tight for defense, short leather creak and cloth shift, a small buckle tick, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, impact hit, explosion, trailer boom, sci-fi laser, metal slam, whip crack",
+      "expected_audio_profile": { "duration_s": { "min": 0.3, "max": 0.9 }, "attack_ms": { "max": 90 }, "low_band_ratio": { "max": 0.3 }, "leading_silence_ms": { "max": 60 } },
+      "review_context": {
+        "where_used": "GuardEnter cue에서 재생되는 가죽 bracer/strap 방어 준비음 후보입니다.",
+        "variant_role": "가죽 strap을 당기는 준비음. 나무 방패 variant를 대신하지 않는다.",
+        "review_focus": "가죽 creak 중심으로 들리는지, 채찍/타격으로 변질되지 않았는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.guard_exit",
+      "hook_id": "sfx.combat.guard_exit.wood_shield",
+      "variant_key": "combat.guard_exit.wood_shield",
+      "profile_key": "combat.guard_exit.wood_shield",
+      "category": "combat_common.guard",
+      "trigger": "GuardExit",
+      "seconds": 0.8,
+      "prompt": "A wooden shield is lowered from a guard position, short wood and strap release, soft cloth settle, a small relaxed thud, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, impact hit, explosion, trailer boom, sci-fi laser, metal slam, door",
+      "expected_audio_profile": { "duration_s": { "min": 0.3, "max": 0.9 }, "attack_ms": { "max": 90 }, "low_band_ratio": { "max": 0.4 }, "leading_silence_ms": { "max": 60 } },
+      "review_context": {
+        "where_used": "GuardExit cue에서 재생되는 방어 해제음 후보입니다. guard_enter와 짝으로 들립니다.",
+        "variant_role": "방패를 내리고 strap이 풀리는 해제음. 준비음(enter)과 방향이 반대로 들려야 한다.",
+        "review_focus": "enter 후보와 연달아 재생해 '올림→내림' 쌍으로 읽히는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.reposition_start",
+      "hook_id": "sfx.combat.reposition_start.boot_dirt",
+      "variant_key": "combat.reposition_start.boot_dirt",
+      "profile_key": "combat.reposition_start.boot_dirt",
+      "category": "combat_common.reposition",
+      "trigger": "RepositionStart",
+      "seconds": 0.7,
+      "prompt": "A boot scuffs dirt and gravel starting a quick sidestep, short foot scrape, small pebble scatter, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, horse hooves, running loop, explosion, trailer boom, sci-fi laser",
+      "expected_audio_profile": { "duration_s": { "min": 0.2, "max": 0.8 }, "attack_ms": { "max": 60 }, "low_band_ratio": { "max": 0.35 }, "leading_silence_ms": { "max": 50 } },
+      "review_context": {
+        "where_used": "RepositionStart cue에서 재생되는 전술 이동 시작음 후보입니다.",
+        "variant_role": "흙/돌 바닥의 짧은 발 긁힘 1회. 연속 발소리 루프가 아니다.",
+        "review_focus": "단발 긁힘인지, 여러 걸음 루프로 들리지 않는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.reposition_stop",
+      "hook_id": "sfx.combat.reposition_stop.boot_dirt",
+      "variant_key": "combat.reposition_stop.boot_dirt",
+      "profile_key": "combat.reposition_stop.boot_dirt",
+      "category": "combat_common.reposition",
+      "trigger": "RepositionStop",
+      "seconds": 0.7,
+      "prompt": "A boot lands and settles on packed dirt ending a short dash, one firm step thud, tiny gravel shift, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, horse hooves, running loop, explosion, trailer boom, sci-fi laser, body fall",
+      "expected_audio_profile": { "duration_s": { "min": 0.2, "max": 0.8 }, "attack_ms": { "max": 50 }, "low_band_ratio": { "max": 0.4 }, "leading_silence_ms": { "max": 50 } },
+      "review_context": {
+        "where_used": "RepositionStop cue에서 재생되는 이동 정지/착지음 후보입니다.",
+        "variant_role": "흙/돌 바닥의 짧은 정지 1보. 쓰러짐/낙하가 아니다.",
+        "review_focus": "정지 1보로 들리는지, body fall처럼 무겁지 않은지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.action_commit_basic",
+      "hook_id": "sfx.combat.action_commit_basic.blade_light",
+      "variant_key": "combat.action_commit.blade_light",
+      "profile_key": "combat.action_commit.blade_light",
+      "category": "combat_common.commit",
+      "trigger": "ActionCommitBasic",
+      "seconds": 0.6,
+      "prompt": "A light blade starts a quick swing, short metal sing, soft cloth motion, a small air swish, no impact, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, impact hit, clang, explosion, trailer boom, sci-fi laser, heavy whoosh",
+      "expected_audio_profile": { "duration_s": { "min": 0.2, "max": 0.7 }, "attack_ms": { "max": 60 }, "low_band_ratio": { "max": 0.3 }, "leading_silence_ms": { "max": 50 } },
+      "review_context": {
+        "where_used": "ActionCommitBasic cue에서 재생되는 기본 공격 시작음 후보입니다. 명중음이 아니라 동작 시작점에 붙습니다.",
+        "variant_role": "가벼운 blade/몸동작 시작. impact 성분 금지.",
+        "review_focus": "스윙 시작으로만 들리는지, 명중/clang이 섞이지 않았는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.action_commit_skill",
+      "hook_id": "sfx.combat.action_commit_skill.focus_release",
+      "variant_key": "combat.action_commit_skill.focus_release",
+      "profile_key": "combat.action_commit_skill.focus_release",
+      "category": "combat_common.commit",
+      "trigger": "ActionCommitSkill",
+      "seconds": 0.8,
+      "prompt": "A burst of focused energy releases from a raised hand, a quick airy gather then a soft bright snap, faint cloth motion, close dry fantasy foley, one-shot.",
+      "negative_prompt": "music, voice, explosion, trailer boom, sci-fi laser, electrical zap, gunshot, long magic drone",
+      "expected_audio_profile": { "duration_s": { "min": 0.3, "max": 0.9 }, "attack_ms": { "max": 150 }, "low_band_ratio": { "max": 0.3 }, "leading_silence_ms": { "max": 60 } },
+      "review_context": {
+        "where_used": "skill별 cast clip이 아직 연결되지 않았을 때 ActionCommitSkill cue가 받을 공용 fallback 시전 시작음 후보입니다.",
+        "variant_role": "기본 공격(blade_light)과 구분되는 '스킬 쓰는 중' 신호. 특정 속성으로 치우치지 않는 중립 에너지.",
+        "review_focus": "basic commit과 나란히 들어 구분되는지, 특정 원소(불/번개)로 좁게 들리지 않는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.action_commit_heal",
+      "hook_id": "sfx.combat.action_commit_heal.soft_invoke",
+      "variant_key": "combat.action_commit_heal.soft_invoke",
+      "profile_key": "combat.action_commit_heal.soft_invoke",
+      "category": "combat_common.heal",
+      "trigger": "ActionCommitHeal",
+      "seconds": 1.0,
+      "prompt": "A gentle healing invocation begins, a soft warm chime swell, faint airy glow rising, light cloth motion, close fantasy foley, short one-shot.",
+      "negative_prompt": "music, voice, choir, phone notification, 8-bit, chiptune, combat impact, explosion, church organ",
+      "expected_audio_profile": { "duration_s": { "min": 0.4, "max": 1.2 }, "attack_ms": { "max": 250 }, "low_band_ratio": { "max": 0.25 }, "leading_silence_ms": { "max": 80 } },
+      "review_context": {
+        "where_used": "ActionCommitHeal cue(Cast socket)에서 재생되는 힐 시전 시작음 후보입니다.",
+        "variant_role": "힐이 '시작됐다'는 부드러운 상승 신호. 도착음(impact_heal)이 아니다.",
+        "review_focus": "상승/예열로 들리는지, 완결감 있는 도착음으로 들리지 않는지, 알림음처럼 가볍지 않은지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.impact_heal",
+      "hook_id": "sfx.combat.impact_heal.warm_mend",
+      "variant_key": "combat.impact_heal.warm_mend",
+      "profile_key": "combat.impact_heal.warm_mend",
+      "category": "combat_common.heal",
+      "trigger": "ImpactHeal",
+      "seconds": 1.0,
+      "prompt": "A warm healing light lands on a person, a soft glowing chime bloom, gentle airy sparkle settling down, close fantasy foley, one-shot.",
+      "negative_prompt": "music, voice, choir, phone notification, 8-bit, chiptune, combat impact, explosion, glass break",
+      "expected_audio_profile": { "duration_s": { "min": 0.4, "max": 1.2 }, "attack_ms": { "max": 150 }, "low_band_ratio": { "max": 0.25 }, "leading_silence_ms": { "max": 60 } },
+      "review_context": {
+        "where_used": "ImpactHeal cue(Hit socket)에서 재생되는 힐 도착음 후보입니다.",
+        "variant_role": "힐이 대상에게 '닿았다'는 완결 신호. 시전음(soft_invoke)과 짝.",
+        "review_focus": "도착/완결로 들리는지, soft_invoke와 연달아 재생해 '예열→도착' 쌍으로 읽히는지 확인합니다."
+      }
+    },
+    {
+      "runtime_hook_id": "sfx.combat.death_start",
+      "hook_id": "sfx.combat.death_start.humanoid_light",
+      "variant_key": "combat.death_start.humanoid_light",
+      "profile_key": "combat.death_start.humanoid_light",
+      "category": "combat_common.death",
+      "trigger": "DeathStart",
+      "seconds": 1.2,
+      "prompt": "A human-sized body crumples and falls onto packed dirt, cloth rustle, a soft body thump, small gear clatter, no voice, close dry foley, one-shot.",
+      "negative_prompt": "music, voice, scream, groan, explosion, trailer boom, sci-fi laser, giant monster fall, bone crack",
+      "expected_audio_profile": { "duration_s": { "min": 0.5, "max": 1.4 }, "attack_ms": { "max": 200 }, "low_band_ratio": { "max": 0.45 }, "leading_silence_ms": { "max": 80 } },
+      "review_context": {
+        "where_used": "DeathStart cue에서 재생되는 인간형 쓰러짐 시작음 후보입니다.",
+        "variant_role": "보이스 없는 인간형 쓰러짐. 신음/비명 금지(보이스는 별도 채널).",
+        "review_focus": "사람 크기 쓰러짐으로 들리는지, 신음 성분이 없는지, 거인 낙하처럼 과중하지 않은지 확인합니다."
+      }
+    }
+  ]
+}

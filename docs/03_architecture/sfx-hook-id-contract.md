@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-08
+- 최종수정일: 2026-06-10
 - 소스오브트루스: `docs/03_architecture/sfx-hook-id-contract.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-and-balance-data.md`
@@ -149,9 +149,24 @@ common combat cue는 runtime event 단위라 넓다. 실제 생성과 검수는 
 | `sfx.combat.reposition_start` | `sfx.combat.reposition_start.boot_dirt` | `combat.reposition_start.boot_dirt` | 흙/돌 바닥의 짧은 발 긁힘 |
 | `sfx.combat.reposition_stop` | `sfx.combat.reposition_stop.boot_dirt` | `combat.reposition_stop.boot_dirt` | 흙/돌 바닥의 짧은 정지/착지 |
 | `sfx.combat.action_commit_basic` | `sfx.combat.action_commit_basic.blade_light` | `combat.action_commit.blade_light` | 기본 공격 시작의 가벼운 blade/몸동작 |
+| `sfx.combat.action_commit_skill` | `sfx.combat.action_commit_skill.focus_release` | `combat.action_commit_skill.focus_release` | skill별 cast clip 미연결 시 공용 fallback 시전 시작음 |
+| `sfx.combat.action_commit_heal` | `sfx.combat.action_commit_heal.soft_invoke` | `combat.action_commit_heal.soft_invoke` | 힐 시전 시작의 부드러운 상승 신호 |
+| `sfx.combat.impact_heal` | `sfx.combat.impact_heal.warm_mend` | `combat.impact_heal.warm_mend` | 힐이 대상에게 닿는 완결 신호 |
+| `sfx.combat.guard_exit` | `sfx.combat.guard_exit.wood_shield` | `combat.guard_exit.wood_shield` | 방패를 내리는 방어 해제음. guard_enter와 쌍 |
 | `sfx.combat.death_start` | `sfx.combat.death_start.humanoid_light` | `combat.death_start.humanoid_light` | 보이스 없는 인간형 쓰러짐 시작 |
 
 초기 생성 단계에서는 한 variant가 모든 소재를 커버한다고 가정하지 않는다. 승인된 variant가 쌓인 뒤에만 runtime resolver나 audio catalog에서 조건별 선택 규칙을 추가한다.
+
+## Skill sound class
+
+skill 생성 주문서는 44개 active skill을 두 sound class로 나눈다. 분류는 `SkillDefinitionAsset.DamageType`에서 결정론으로 파생한다.
+
+| sound class | 파생 규칙 | 생성 방식 |
+| --- | --- | --- |
+| `physical` | `DamageType == Physical` (26개) | cast/impact 단발 생성. 무기/몸체 foley 중심 |
+| `layered_magic` | `DamageType in (Magical, Healing)` (18개) | `work.sfx.skill.<skill_id>.{charge,cast,impact,tail}.raw` 4-layer 생성 후 합성 |
+
+skill별 분류 행과 소재 메모(`foley_hint`)는 `art-pipeline/sfx/manifest/skills.json`이 단일 소스다. 단일 skill의 분류를 바꾸려면 manifest를 고치고, 파생 규칙 자체를 바꾸려면 이 문서를 먼저 고친다.
 
 ## 생성 주문서 행
 
@@ -177,4 +192,5 @@ SFX 생성 매니페스트는 최소 아래 필드를 가진다.
 - `BattlePresentationCue`는 현재 skill id를 직접 들고 있지 않다. 따라서 `ActionCommitSkill`은 공용 hook까지만 runtime audio surface에 매핑되고, `sfx.skill.<skill_id>.cast/impact`는 생성 주문서와 asset binding 기준으로 먼저 유지한다.
 - status apply hook은 authored data에 존재하지만, status application 전용 presentation cue surface는 아직 없다.
 - story SFX는 `DialogueLineDefinition`에 line-level field가 없으므로 MediaCueSheet 분리 설계 이후에 별도 계약으로 추가한다.
+- UI SFX는 이번 매니페스트 범위 밖이다. 게임 UI 오디오 재생 surface가 아직 없으므로, UI 오디오 runtime 배선이 생길 때 `sfx.ui.*` hook 계약을 함께 추가한다. style bible의 UI 음색 규칙은 그 시점의 생성 기준으로 유지한다.
 - common combat generation variant는 아직 runtime resolver에 연결되지 않는다. 현재 단계에서는 생성/검수/Asset Studio metadata 기준이며, 실제 선택 규칙은 weapon/surface tag와 audio catalog가 생긴 뒤 별도 task로 배선한다.

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-08
+- 최종수정일: 2026-06-10
 - 소스오브트루스: `docs/03_architecture/sfx-sound-style-bible.md`
 - 관련문서:
   - `docs/03_architecture/sfx-hook-id-contract.md`
@@ -254,6 +254,31 @@ music, voice, phone notification, 8-bit, chiptune, combat impact, explosion, har
 | normalize | final peak 제한 | 검증 샘플은 -3 dBFS 이하 |
 | export | WAV PCM 16-bit 48 kHz | metadata JSON과 함께 보관 |
 
+## 배치 생성 운영 절차
+
+배치 생성은 단발(unload) 모드가 아니라 keep-loaded 모드로만 돌린다. 단발 모드는 클립당 cold load ~20 s를 다시 내고, 무거운 데스크톱 세션에서는 load preflight(기본 free 12 GB)에 걸려 재로드가 거부될 수 있다.
+
+```powershell
+pwsh -File C:\projects\ai-infra\scripts\serve-sfx.ps1 -KeepLoaded -IdleUnloadSeconds 1800 `
+    -MinLoadFreeVramMB 9000 -MinGenerateFreeVramMB 0
+```
+
+- MOSS는 어떤 설정에서도 VRAM peak가 풀(16.3 GB)에 닿는다. SFX 배치 중에는 다른 GPU 생성 작업(보이스/BGM/영상/이미지)을 돌리지 않는다. Unity 에디터는 켜져 있어도 동작하지만 데스크톱 GPU 점유만큼 느려진다.
+- 데스크톱 점유가 커서 preflight가 막히면 Unity AssetImportWorker 프로세스(커맨드라인에 `AssetImportWorker` 포함)만 종료해 VRAM을 회수한다. 메인 에디터는 건드리지 않는다.
+- 서버가 unload된 상태에서 free가 load 임계 아래면 재로드가 영구 거부된다. keep-loaded 세션 유지가 자산이다.
+
+도구 체인은 다음 순서로 고정한다. raw WAV는 어느 단계에서도 수정하지 않는다.
+
+| 단계 | 도구 | 산출 |
+| --- | --- | --- |
+| 생성 | `art-pipeline/scripts/generate_sfx_batch.py --manifest art-pipeline/sfx/manifest/<category>.json` | ai-infra `data/sfx/outputs/`에 wav + sidecar(매니페스트 메타 머지) |
+| 자동 QC | `art-pipeline/scripts/qc_sfx.py <files> --write` | sidecar에 `qc_status`(red/yellow/green) + 측정값 기록 |
+| 검수 사본 | `art-pipeline/scripts/reviewnorm_sfx.py <files>` | `<id>-reviewnorm.wav` 청취용 peak normalize 사본 |
+| 사람 검수 | Asset Studio SFX 탭 | hook별 후보 청취, 합격 판정 |
+| 승격 | `art-pipeline/scripts/promote_sfx.py <wav> [--note ...]` | `art-pipeline/sfx/approved/<hook_id>.wav` + sidecar (trim/fade/-3 dBFS 마스터) |
+
+검수 노트: MOSS raw 출력은 극도로 작을 수 있다(-45 dBFS peak 실측). 검수는 반드시 reviewnorm 사본으로 듣는다. +40 dB대 게인은 noise floor도 같이 올리므로, 사본에서 들리는 hiss는 생성 결함이 아니라 normalize 부작용일 수 있다 — hiss 판정은 promote 후 -3 dBFS 마스터본 기준으로 한다.
+
 ## 검증 샘플 계획
 
 대량 생성 전 검증 샘플은 아래 2개로 제한한다.
@@ -280,4 +305,4 @@ music, voice, phone notification, 8-bit, chiptune, combat impact, explosion, har
 
 - story/dialogue line-level SFX는 MediaCueSheet 설계 이후에 추가한다.
 - Unity audio mixer group, volume curve, runtime randomization은 이 문서가 아니라 audio import/runtime binding 단계에서 결정한다.
-- MOSS 후보 다중 생성, A/B ranking, batch naming은 다음 생성 단계에서 다룬다.
+- 후보 A/B ranking 자동화는 보류. batch naming은 `generate_sfx_batch.py`의 `sm-<batch>-<hook>-s<seed>` 규칙을 쓴다.
