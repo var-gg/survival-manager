@@ -58,7 +58,7 @@ public sealed partial class BattleActorPresentationCatalog
         "Yellow",
     };
 
-    private static BattleActorPresentationCatalog? TryCreateEditorP09FallbackCatalog()
+    internal static BattleActorPresentationCatalog? TryCreateEditorP09FallbackCatalog()
     {
         var visualPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(EditorP09VisualPrefabPath);
         if (visualPrefab == null)
@@ -104,6 +104,11 @@ public sealed partial class BattleActorPresentationCatalog
         for (var i = 0; i < BattleP09AppearanceRoster.CanonicalCharacterIds.Count; i++)
         {
             var characterId = BattleP09AppearanceRoster.CanonicalCharacterIds[i];
+            if (!ShouldRegisterEditorP09CharacterOverride(characterId, appearancePresets.Keys))
+            {
+                continue;
+            }
+
             var wrapper = ResolveWrapper(characterId, i);
             catalog.SetCharacterOverride(characterId, wrapper);
             catalog.SetArchetypeOverride(characterId, wrapper);
@@ -116,6 +121,17 @@ public sealed partial class BattleActorPresentationCatalog
         }
 
         return catalog;
+    }
+
+    // 전용 프리셋이 없는 extra 캐릭터에 character override를 등록하면 맨손
+    // rough variant가 character-우선 해석에서 archetype 프리셋(무장 외형)을
+    // 가린다. 등록을 생략해 squad ArchetypeId 경로로 떨어지게 한다.
+    internal static bool ShouldRegisterEditorP09CharacterOverride(
+        string characterId,
+        IReadOnlyCollection<string> presetCharacterIds)
+    {
+        return presetCharacterIds.Contains(characterId)
+               || !ExtraActorCharacterRegistry.TryGetProfile(characterId, out _);
     }
 
     private static BattleActorWrapper CreateEditorP09WrapperTemplate(
