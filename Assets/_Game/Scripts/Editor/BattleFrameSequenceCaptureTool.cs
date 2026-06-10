@@ -130,6 +130,8 @@ public static class BattleFrameSequenceCaptureTool
             return;
         }
 
+        AutoSkipStoryPresentation();
+
         if (s_CloseUp)
         {
             AimCloseUpCameraAtCombat();
@@ -147,6 +149,40 @@ public static class BattleFrameSequenceCaptureTool
         {
             EditorApplication.ExitPlaymode();
         }
+    }
+
+    // 전투 전 인트로 컷씬/스토리 카드가 캡쳐 프레임 전체를 잡아먹지 않도록 자동 스킵한다(이 하네스는
+    // 모션 검증용이라 내러티브 연출은 캡쳐 대상이 아니다). 러너의 presenter 필드는 비공개라 에디터
+    // 진단 도구 한정으로 reflection을 쓴다 — 런타임 코드에는 이 패턴을 들이지 않는다.
+    private static void AutoSkipStoryPresentation()
+    {
+        var runner = UnityEngine.Object.FindFirstObjectByType<SM.Unity.Narrative.StoryPresentationRunner>();
+        if (runner == null || !runner.IsBusy)
+        {
+            return;
+        }
+
+        InvokePresenterSkip(runner, "_dialogueScenePresenter", "ConfirmSkipAll");
+        InvokePresenterSkip(runner, "_dialogueOverlayPresenter", "SkipAll");
+        InvokePresenterSkip(runner, "_storyCardPresenter", "Skip");
+    }
+
+    private static void InvokePresenterSkip(object runner, string fieldName, string skipMethodName)
+    {
+        var field = runner.GetType().GetField(fieldName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        var presenter = field?.GetValue(runner);
+        if (presenter == null)
+        {
+            return;
+        }
+
+        var isPlaying = presenter.GetType().GetProperty("IsPlaying")?.GetValue(presenter) as bool? ?? false;
+        if (!isPlaying)
+        {
+            return;
+        }
+
+        presenter.GetType().GetMethod(skipMethodName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)?.Invoke(presenter, null);
     }
 
     // Frames the live combat for foot-slide review: disables the battle camera controller (which would
