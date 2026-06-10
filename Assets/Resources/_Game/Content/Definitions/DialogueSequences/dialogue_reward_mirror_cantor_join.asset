@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: dialogue_reward_mirror_cantor_join__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_reward_mirror_cantor_join.006
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uACE0\uAC1C \uB044\uB355\uC784"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.nod
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -72,8 +72,8 @@ MonoBehaviour:
   _id: dialogue_reward_mirror_cantor_join__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_reward_mirror_cantor_join.004
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uD765\uBBF8"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.curious
   _autoAdvanceHint: 0
 --- !u!114 &2125520036848066281
 MonoBehaviour:
@@ -90,8 +90,8 @@ MonoBehaviour:
   _id: dialogue_reward_mirror_cantor_join__line__002
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_reward_mirror_cantor_join.002
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC791\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.small
   _autoAdvanceHint: 0
 --- !u!114 &3641287674340797544
 MonoBehaviour:
@@ -108,8 +108,8 @@ MonoBehaviour:
   _id: dialogue_reward_mirror_cantor_join__line__001
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_reward_mirror_cantor_join.001
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uCC28\uBD84"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.calm
   _autoAdvanceHint: 0
 --- !u!114 &5284496033213689343
 MonoBehaviour:
@@ -126,8 +126,8 @@ MonoBehaviour:
   _id: dialogue_reward_mirror_cantor_join__line__005
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_reward_mirror_cantor_join.005
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB2E8\uB9B0\uC5D0\uAC8C"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.composed
   _autoAdvanceHint: 0
 --- !u!114 &8851939105184726140
 MonoBehaviour:
@@ -144,6 +144,6 @@ MonoBehaviour:
   _id: dialogue_reward_mirror_cantor_join__line__003
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_reward_mirror_cantor_join.003
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB2E8\uC815"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.composed
   _autoAdvanceHint: 0

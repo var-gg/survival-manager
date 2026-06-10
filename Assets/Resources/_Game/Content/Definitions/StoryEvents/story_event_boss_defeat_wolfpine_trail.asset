@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_wolfpine_trail__cond__00
+  _id: story_event_boss_defeat_wolfpine_trail.condition.00
   _kind: 0
   _operandA: chapter_ashen_gate
   _operandB: 
@@ -39,7 +39,7 @@ MonoBehaviour:
   _effects:
   - {fileID: 4978522263926888417}
   - {fileID: 6459248486682107872}
-  _presentationKey: dialogue_scene_boss_wolfpine_defeat
+  _presentationKey: dialogue_scene_boss_defeat_wolfpine_trail
 --- !u!114 &567655759262928824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_wolfpine_trail__cond__01
+  _id: story_event_boss_defeat_wolfpine_trail.condition.01
   _kind: 1
   _operandA: site_wolfpine_trail
   _operandB: 
@@ -68,7 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_wolfpine_trail__effect__00
+  _id: story_event_boss_defeat_wolfpine_trail.effect.00
   _kind: 1
   _payload: story_flag_grey_fang_defeated
 --- !u!114 &6141309214380335495
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_02
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_wolfpine_trail__cond__02
+  _id: story_event_boss_defeat_wolfpine_trail.condition.02
   _kind: 2
   _operandA: 4
   _operandB: 
@@ -99,6 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_wolfpine_trail__effect__01
+  _id: story_event_boss_defeat_wolfpine_trail.effect.01
   _kind: 3
   _payload: DialogueScene

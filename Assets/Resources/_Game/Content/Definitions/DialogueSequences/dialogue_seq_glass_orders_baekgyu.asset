@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_glass_orders_baekgyu__line__009
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.009
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.dark
   _autoAdvanceHint: 0
 --- !u!114 &-203364826635060927
@@ -184,7 +184,7 @@ MonoBehaviour:
   _id: dialogue_seq_glass_orders_baekgyu__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_glass_orders_baekgyu.007
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0
 --- !u!114 &8103766380737224893

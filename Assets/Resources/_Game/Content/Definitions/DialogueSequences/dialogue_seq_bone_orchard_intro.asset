@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_bone_orchard_intro__line__006
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_bone_orchard_intro.006
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.nod
   _autoAdvanceHint: 0
 --- !u!114 &-4872977382975999033

@@ -16,7 +16,7 @@ MonoBehaviour:
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_baekgyu_letter.002
   _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &-8012150376438980684
 MonoBehaviour:
@@ -34,7 +34,7 @@ MonoBehaviour:
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_baekgyu_letter.003
   _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &-5536019122787504423
 MonoBehaviour:

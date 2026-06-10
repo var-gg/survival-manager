@@ -317,7 +317,7 @@ MonoBehaviour:
   _id: dialogue_seq_pack_names__line__011
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_pack_names.011
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.steady
   _autoAdvanceHint: 0
 --- !u!114 &4995983430870649705
@@ -335,7 +335,7 @@ MonoBehaviour:
   _id: dialogue_seq_pack_names__line__010
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_pack_names.010
-  _emote: Default
+  _emote: anger
   _emotionTextKey: loc.story.emotion.furious
   _autoAdvanceHint: 0
 --- !u!114 &8517262915079104629

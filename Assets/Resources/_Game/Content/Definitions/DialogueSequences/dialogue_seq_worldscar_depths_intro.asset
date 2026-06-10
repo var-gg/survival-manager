@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: dialogue_seq_worldscar_depths_intro__line__005
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.005
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uAC70\uC6B8\uC744 \uAE30\uC6B8\uC784"
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.ritual_act
   _autoAdvanceHint: 0
 --- !u!114 &-8201244772160004358
 MonoBehaviour:
@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_worldscar_depths_intro__line__003
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.003
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC0C1\uCC98"
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.hurt
   _autoAdvanceHint: 0
 --- !u!114 &-7747698591535937424
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_worldscar_depths_intro__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.004
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-7565377161726928863
 MonoBehaviour:
@@ -69,8 +69,8 @@ MonoBehaviour:
   _id: dialogue_seq_worldscar_depths_intro__line__001
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.001
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uBD88\uCF8C"
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.uneasy
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -107,8 +107,8 @@ MonoBehaviour:
   _id: dialogue_seq_worldscar_depths_intro__line__002
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_worldscar_depths_intro.002
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC870\uC6A9"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &3366592816902741905
 MonoBehaviour:

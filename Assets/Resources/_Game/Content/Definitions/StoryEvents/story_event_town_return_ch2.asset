@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_01
   m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
-  _id: story_event_town_return_ch2__effect__01
+  _id: story_event_town_return_ch2.effect.01
   _kind: 3
   _payload: DialogueOverlay
 --- !u!114 &-967125036682801425
@@ -27,25 +27,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_00
   m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
-  _id: story_event_town_return_ch2__cond__00
+  _id: story_event_town_return_ch2.condition.00
   _kind: 3
-  _operandA: story_flag_intro_sunken_bastion
-  _operandB: 
---- !u!114 &-523128226740301924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
-  m_Name: condition_02
-  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
-  _id: story_event_town_return_ch2__cond__02
-  _kind: 4
-  _operandA: story_flag_town_return_ch2
+  _operandA: story_flag_pale_executor_joined
   _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -66,7 +50,6 @@ MonoBehaviour:
   _conditions:
   - {fileID: -967125036682801425}
   - {fileID: 2574312554190764132}
-  - {fileID: -523128226740301924}
   _effects:
   - {fileID: 7175197895457227215}
   - {fileID: -6870194925490369383}
@@ -83,9 +66,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
-  _id: story_event_town_return_ch2__cond__01
-  _kind: 3
-  _operandA: story_flag_intro_tithe_road
+  _id: story_event_town_return_ch2.condition.01
+  _kind: 4
+  _operandA: story_flag_town_return_ch2
   _operandB: 
 --- !u!114 &7175197895457227215
 MonoBehaviour:
@@ -99,6 +82,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
-  _id: story_event_town_return_ch2__effect__00
+  _id: story_event_town_return_ch2.effect.00
   _kind: 1
   _payload: story_flag_town_return_ch2

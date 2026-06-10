@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: dialogue_seq_hexer_memory_intro__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_hexer_memory_intro.002
-  _emote: Default
+  _emote: shock
   _emotionTextKey: loc.story.emotion.disturbed
   _autoAdvanceHint: 0
 --- !u!114 &-7210830043800482934
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_seq_hexer_memory_intro__line__007
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_hexer_memory_intro.007
-  _emote: Default
+  _emote: smile
   _emotionTextKey: loc.story.emotion.pleased
   _autoAdvanceHint: 0

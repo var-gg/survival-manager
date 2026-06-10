@@ -1,5 +1,77 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5784874654676792906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_15
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__015
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.015
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4916626894379066639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__011
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.011
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2004271652479483546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_18
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__018
+  _speakerId: npc_han_sae
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.018
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &-1984738937852593213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__012
+  _speakerId: npc_han_sae
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.012
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.direct
+  _autoAdvanceHint: 0
 --- !u!114 &-1543712645706560653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,6 +168,16 @@ MonoBehaviour:
   - {fileID: -1543712645706560653}
   - {fileID: -827173393040337420}
   - {fileID: 2764680863589532940}
+  - {fileID: 4495543767464000781}
+  - {fileID: -4916626894379066639}
+  - {fileID: -1984738937852593213}
+  - {fileID: 5856328943320931478}
+  - {fileID: 6796211496849335591}
+  - {fileID: -5784874654676792906}
+  - {fileID: 2956594131083289006}
+  - {fileID: 5818784039091540777}
+  - {fileID: -2004271652479483546}
+  - {fileID: 9109534634743667809}
 --- !u!114 &346546307461158221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,6 +213,96 @@ MonoBehaviour:
   _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.009
   _emote: default
   _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2956594131083289006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_16
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__016
+  _speakerId: npc_han_sae
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.016
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.direct
+  _autoAdvanceHint: 0
+--- !u!114 &4495543767464000781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__010
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.010
+  _emote: default
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5818784039091540777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_17
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__017
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.017
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.weary
+  _autoAdvanceHint: 0
+--- !u!114 &5856328943320931478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__013
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.013
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &6796211496849335591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_14
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__014
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.014
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.bitter
   _autoAdvanceHint: 0
 --- !u!114 &7515336504048424369
 MonoBehaviour:
@@ -203,4 +375,22 @@ MonoBehaviour:
   _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.005
   _emote: sad
   _emotionTextKey: loc.story.emotion.weary
+  _autoAdvanceHint: 0
+--- !u!114 &9109534634743667809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_19
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: cutscene_chapter_clear_ashen_frontier__line__019
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.cutscene_chapter_clear_ashen_frontier.019
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0

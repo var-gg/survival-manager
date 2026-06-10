@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_boss_wolfpine_defeat__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.001
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.steady
   _autoAdvanceHint: 0
 --- !u!114 &-2364304035195297302
@@ -147,7 +147,7 @@ MonoBehaviour:
   _id: dialogue_seq_boss_wolfpine_defeat__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_boss_wolfpine_defeat.005
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.steady
   _autoAdvanceHint: 0
 --- !u!114 &7328919553293286283

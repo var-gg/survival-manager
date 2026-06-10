@@ -165,7 +165,7 @@ MonoBehaviour:
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_lyra_first_question.006
   _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emotionTextKey: loc.story.emotion.almost_whisper
   _autoAdvanceHint: 0
 --- !u!114 &6881915483548624596
 MonoBehaviour:

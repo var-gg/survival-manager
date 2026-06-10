@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_black_vellum_judgment__line__010
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_black_vellum_judgment.010
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.steady
   _autoAdvanceHint: 0
 --- !u!114 &-7824785619001297582
@@ -69,7 +69,7 @@ MonoBehaviour:
   _id: dialogue_seq_black_vellum_judgment__line__009
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_black_vellum_judgment.009
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.colder
   _autoAdvanceHint: 0
 --- !u!114 &-2558411585159982314
@@ -123,8 +123,8 @@ MonoBehaviour:
   _id: dialogue_seq_black_vellum_judgment__line__005
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_black_vellum_judgment.005
-  _emote: Default
-  _emotionTextKey: loc.story.emotion.to Danlin
+  _emote: default
+  _emotionTextKey: loc.story.emotion.to_danlin
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -187,7 +187,7 @@ MonoBehaviour:
   _id: dialogue_seq_black_vellum_judgment__line__007
   _speakerId: npc_black_vellum
   _textKey: loc.story.dialogue.dialogue_seq_black_vellum_judgment.007
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0
 --- !u!114 &2594999350775516313

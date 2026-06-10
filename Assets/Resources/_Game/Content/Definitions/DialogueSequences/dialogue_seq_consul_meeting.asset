@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_consul_meeting__line__011
   _speakerId: consul_council
   _textKey: loc.story.dialogue.dialogue_seq_consul_meeting.011
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.resolute
+  _emote: default
+  _emotionTextKey: loc.story.emotion.accepting
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -150,8 +150,8 @@ MonoBehaviour:
   _id: dialogue_seq_consul_meeting__line__008
   _speakerId: consul_council
   _textKey: loc.story.dialogue.dialogue_seq_consul_meeting.008
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: default
+  _emotionTextKey: loc.story.emotion.pause
   _autoAdvanceHint: 0
 --- !u!114 &4627635488889210260
 MonoBehaviour:
@@ -205,7 +205,7 @@ MonoBehaviour:
   _speakerId: consul_council
   _textKey: loc.story.dialogue.dialogue_seq_consul_meeting.001
   _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emotionTextKey: loc.story.emotion.formal
   _autoAdvanceHint: 0
 --- !u!114 &6082244735476516908
 MonoBehaviour:
@@ -258,6 +258,6 @@ MonoBehaviour:
   _id: dialogue_seq_consul_meeting__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_consul_meeting.002
-  _emote: serious
-  _emotionTextKey: loc.story.emotion.direct
+  _emote: default
+  _emotionTextKey: loc.story.emotion.composed
   _autoAdvanceHint: 0

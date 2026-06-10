@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_bone_orchard__effect__01
+  _id: story_event_boss_defeat_bone_orchard.effect.01
   _kind: 3
   _payload: DialogueOverlay
 --- !u!114 &-3718278445377462936
@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_bone_orchard__cond__00
+  _id: story_event_boss_defeat_bone_orchard.condition.00
   _kind: 0
   _operandA: chapter_ruined_crypts
   _operandB: 
@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_02
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_bone_orchard__cond__02
+  _id: story_event_boss_defeat_bone_orchard.condition.02
   _kind: 2
   _operandA: 4
   _operandB: 
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_boss_defeat_bone_orchard__cond__01
+  _id: story_event_boss_defeat_bone_orchard.condition.01
   _kind: 1
   _operandA: site_bone_orchard
   _operandB: 
@@ -99,6 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_boss_defeat_bone_orchard__effect__00
+  _id: story_event_boss_defeat_bone_orchard.effect.00
   _kind: 1
   _payload: story_flag_root_watcher_defeated

@@ -33,7 +33,7 @@ MonoBehaviour:
   _id: dialogue_seq_lyra_first_voice__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_lyra_first_voice.004
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0
 --- !u!114 &-3261902946504234170
@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_lyra_first_voice__line__001
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_lyra_first_voice.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.distant
   _autoAdvanceHint: 0
 --- !u!114 &11400000

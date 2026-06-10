@@ -87,7 +87,7 @@ MonoBehaviour:
   _id: dialogue_seq_town_return_ch2__line__005
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_town_return_ch2.005
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.steady
   _autoAdvanceHint: 0
 --- !u!114 &-1715156908682380391

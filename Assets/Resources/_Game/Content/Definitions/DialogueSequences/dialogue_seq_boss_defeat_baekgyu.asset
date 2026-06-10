@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__009
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.009
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uBB34\uB98E \uAFC7\uC740 \uCC44"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.barely
   _autoAdvanceHint: 0
 --- !u!114 &-4265706009765699217
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__011
   _speakerId: hero_mirror_cantor
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.011
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uAE30\uB85D"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.composed
   _autoAdvanceHint: 0
 --- !u!114 &-2778060652993260096
 MonoBehaviour:
@@ -87,8 +87,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__004
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.004
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC778\uC6A9\uD558\uB2E4 \uBA48\uCDA4"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.reading
   _autoAdvanceHint: 0
 --- !u!114 &-1713435385049051070
 MonoBehaviour:
@@ -105,8 +105,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.002
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC870\uC6A9\uD788"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &-1692736102428096844
 MonoBehaviour:
@@ -123,8 +123,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__008
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.008
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uAC70\uC758 \uC778\uC815"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.accepting
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -167,8 +167,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__005
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.005
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uBC29\uC5B4"
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.controlled
   _autoAdvanceHint: 0
 --- !u!114 &4188420894706128240
 MonoBehaviour:
@@ -185,8 +185,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__010
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.010
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC544\uC8FC \uC791\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.barely
   _autoAdvanceHint: 0
 --- !u!114 &4717159228805542646
 MonoBehaviour:
@@ -203,8 +203,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__006
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.006
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &5081360571355507889
 MonoBehaviour:
@@ -221,8 +221,8 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__001
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.001
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC228 \uB2A6\uC74C"
+  _emote: sad
+  _emotionTextKey: loc.story.emotion.weak
   _autoAdvanceHint: 0
 --- !u!114 &8764188475611373663
 MonoBehaviour:
@@ -239,6 +239,6 @@ MonoBehaviour:
   _id: dialogue_seq_boss_defeat_baekgyu__line__003
   _speakerId: npc_baekgyu_sternheim
   _textKey: loc.story.dialogue.dialogue_seq_boss_defeat_baekgyu.003
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uBA48\uCDA4"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.pause
   _autoAdvanceHint: 0

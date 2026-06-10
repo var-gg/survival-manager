@@ -33,8 +33,8 @@ MonoBehaviour:
   _id: dialogue_town_pre_ch5_empty_table__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.006
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB2E8\uB2E8\uD788"
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0
 --- !u!114 &-6812892789092286707
 MonoBehaviour:
@@ -69,8 +69,8 @@ MonoBehaviour:
   _id: dialogue_town_pre_ch5_empty_table__line__004
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.004
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC501\uC4F8\uD55C \uB18D\uB2F4"
+  _emote: smile
+  _emotionTextKey: loc.story.emotion.wry
   _autoAdvanceHint: 0
 --- !u!114 &-3594302876632204795
 MonoBehaviour:
@@ -87,8 +87,8 @@ MonoBehaviour:
   _id: dialogue_town_pre_ch5_empty_table__line__003
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.003
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC870\uC2EC"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0
 --- !u!114 &-2977553000804707620
 MonoBehaviour:
@@ -105,8 +105,8 @@ MonoBehaviour:
   _id: dialogue_town_pre_ch5_empty_table__line__005
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.005
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-166574205001498383
 MonoBehaviour:
@@ -123,8 +123,8 @@ MonoBehaviour:
   _id: dialogue_town_pre_ch5_empty_table__line__007
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.007
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uACB0\uC2EC"
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.resolute
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -163,6 +163,6 @@ MonoBehaviour:
   _id: dialogue_town_pre_ch5_empty_table__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_town_pre_ch5_empty_table.002
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uAC74\uC870"
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0

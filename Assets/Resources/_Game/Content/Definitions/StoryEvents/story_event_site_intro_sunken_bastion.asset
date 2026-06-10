@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_sunken_bastion__cond__00
+  _id: story_event_site_intro_sunken_bastion.condition.00
   _kind: 0
   _operandA: chapter_sunken_bastion
   _operandB: 
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_sunken_bastion__effect__00
+  _id: story_event_site_intro_sunken_bastion.effect.00
   _kind: 1
   _payload: story_flag_intro_sunken_bastion
 --- !u!114 &6795788439491423161
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_sunken_bastion__effect__01
+  _id: story_event_site_intro_sunken_bastion.effect.01
   _kind: 3
   _payload: DialogueScene
 --- !u!114 &7371306632037281455
@@ -81,7 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_sunken_bastion__cond__01
+  _id: story_event_site_intro_sunken_bastion.condition.01
   _kind: 1
   _operandA: site_sunken_bastion
   _operandB: 

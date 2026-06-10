@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_boss_wolfpine_break__line__008
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_boss_wolfpine_break.008
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.steady
   _autoAdvanceHint: 0
 --- !u!114 &-2201045381090383792

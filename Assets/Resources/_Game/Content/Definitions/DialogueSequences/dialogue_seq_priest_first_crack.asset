@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: line_06
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_priest_first_crack__line__006
-  _speakerId: hero_pack_raider
+  _speakerId: Narrator
   _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.006
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.low
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &-7031175771607506274
 MonoBehaviour:
@@ -54,6 +54,24 @@ MonoBehaviour:
   _emote: serious
   _emotionTextKey: loc.story.emotion.blunt
   _autoAdvanceHint: 0
+--- !u!114 &-5192831814137556672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_priest_first_crack__line__012
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.012
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
 --- !u!114 &-1077468382972141539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,10 +85,10 @@ MonoBehaviour:
   m_Name: line_09
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_priest_first_crack__line__009
-  _speakerId: Narrator
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.009
-  _emote: default
-  _emotionTextKey: 
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.dry
   _autoAdvanceHint: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -96,6 +114,28 @@ MonoBehaviour:
   - {fileID: 3645055553336300132}
   - {fileID: 1659980724888895118}
   - {fileID: -1077468382972141539}
+  - {fileID: 1501935741116995519}
+  - {fileID: 4526273302378419443}
+  - {fileID: -5192831814137556672}
+  - {fileID: 2489027506574340993}
+--- !u!114 &1501935741116995519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_priest_first_crack__line__010
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.010
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
 --- !u!114 &1659980724888895118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,10 +149,28 @@ MonoBehaviour:
   m_Name: line_08
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_priest_first_crack__line__008
-  _speakerId: hero_pack_raider
+  _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.008
   _emote: quiet
   _emotionTextKey: loc.story.emotion.quiet
+  _autoAdvanceHint: 0
+--- !u!114 &2489027506574340993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_priest_first_crack__line__013
+  _speakerId: Narrator
+  _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.013
+  _emote: default
+  _emotionTextKey: 
   _autoAdvanceHint: 0
 --- !u!114 &3613164134880847305
 MonoBehaviour:
@@ -145,10 +203,10 @@ MonoBehaviour:
   m_Name: line_07
   m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
   _id: dialogue_seq_priest_first_crack__line__007
-  _speakerId: hero_dawn_priest
+  _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.007
-  _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.blunt
   _autoAdvanceHint: 0
 --- !u!114 &3757727593083162563
 MonoBehaviour:
@@ -167,6 +225,24 @@ MonoBehaviour:
   _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.003
   _emote: quiet
   _emotionTextKey: loc.story.emotion.low
+  _autoAdvanceHint: 0
+--- !u!114 &4526273302378419443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_seq_priest_first_crack__line__011
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.dialogue.dialogue_seq_priest_first_crack.011
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.quiet
   _autoAdvanceHint: 0
 --- !u!114 &6611702874378600352
 MonoBehaviour:

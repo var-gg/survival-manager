@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: cutscene_ch4_intro_glass_voice__line__002
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.cutscene_ch4_intro_glass_voice.002
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.distant
   _autoAdvanceHint: 0
 --- !u!114 &-3923486657324989681

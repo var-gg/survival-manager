@@ -319,7 +319,7 @@ MonoBehaviour:
   _id: dialogue_seq_four_leads_costs__line__009
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_costs.009
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0
 --- !u!114 &7320841142250232574
@@ -355,7 +355,7 @@ MonoBehaviour:
   _id: dialogue_seq_four_leads_costs__line__019
   _speakerId: hero_echo_savant
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_costs.019
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.nod
   _autoAdvanceHint: 0
 --- !u!114 &8818617091073271251
@@ -391,6 +391,6 @@ MonoBehaviour:
   _id: dialogue_seq_four_leads_costs__line__018
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_four_leads_costs.018
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0

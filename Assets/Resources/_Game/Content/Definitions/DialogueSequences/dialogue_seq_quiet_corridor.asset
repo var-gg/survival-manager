@@ -70,7 +70,7 @@ MonoBehaviour:
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_quiet_corridor.006
   _emote: quiet
-  _emotionTextKey: loc.story.emotion.quiet
+  _emotionTextKey: loc.story.emotion.almost_whisper
   _autoAdvanceHint: 0
 --- !u!114 &-5576845154318253839
 MonoBehaviour:

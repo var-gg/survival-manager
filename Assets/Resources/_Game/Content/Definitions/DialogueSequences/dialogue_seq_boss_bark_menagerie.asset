@@ -125,6 +125,6 @@ MonoBehaviour:
   _id: dialogue_seq_boss_bark_menagerie__line__001
   _speakerId: boss_menagerie_overseer
   _textKey: loc.story.dialogue.dialogue_seq_boss_bark_menagerie.001
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.even
   _autoAdvanceHint: 0

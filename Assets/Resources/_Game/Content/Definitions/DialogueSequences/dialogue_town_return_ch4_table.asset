@@ -357,7 +357,7 @@ MonoBehaviour:
   _id: dialogue_town_return_ch4_table__line__001
   _speakerId: npc_dalmok_inn_keeper
   _textKey: loc.story.dialogue.dialogue_town_return_ch4_table.001
-  _emote: Default
+  _emote: smile
   _emotionTextKey: loc.story.emotion.warm
   _autoAdvanceHint: 0
 --- !u!114 &7076847021669046648
@@ -375,7 +375,7 @@ MonoBehaviour:
   _id: dialogue_town_return_ch4_table__line__017
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_town_return_ch4_table.017
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0
 --- !u!114 &8113833268162174376

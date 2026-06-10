@@ -51,7 +51,7 @@ MonoBehaviour:
   _id: dialogue_seq_crypts_massacre_record__line__008
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_crypts_massacre_record.008
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.firm
   _autoAdvanceHint: 0
 --- !u!114 &-6926158102524466039

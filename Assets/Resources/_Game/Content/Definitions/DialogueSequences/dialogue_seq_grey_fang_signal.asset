@@ -15,8 +15,8 @@ MonoBehaviour:
   _id: dialogue_seq_grey_fang_signal__line__008
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.008
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &-5522112855088750397
 MonoBehaviour:
@@ -51,8 +51,8 @@ MonoBehaviour:
   _id: dialogue_seq_grey_fang_signal__line__006
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.006
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC791\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.small
   _autoAdvanceHint: 0
 --- !u!114 &-2615688740205686293
 MonoBehaviour:
@@ -69,8 +69,8 @@ MonoBehaviour:
   _id: dialogue_seq_grey_fang_signal__line__001
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.001
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC870\uC2EC"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.careful
   _autoAdvanceHint: 0
 --- !u!114 &-744772963799207427
 MonoBehaviour:
@@ -165,8 +165,8 @@ MonoBehaviour:
   _id: dialogue_seq_grey_fang_signal__line__005
   _speakerId: hero_grave_hexer
   _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.005
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uB0AE\uAC8C"
+  _emote: quiet
+  _emotionTextKey: loc.story.emotion.low
   _autoAdvanceHint: 0
 --- !u!114 &6070972499509015917
 MonoBehaviour:
@@ -183,8 +183,8 @@ MonoBehaviour:
   _id: dialogue_seq_grey_fang_signal__line__002
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.002
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uBCF4\uACE0 \uC788\uC74C"
+  _emote: default
+  _emotionTextKey: loc.story.emotion.looking
   _autoAdvanceHint: 0
 --- !u!114 &9037202508116943597
 MonoBehaviour:
@@ -201,6 +201,6 @@ MonoBehaviour:
   _id: dialogue_seq_grey_fang_signal__line__004
   _speakerId: hero_pack_raider
   _textKey: loc.story.dialogue.dialogue_seq_grey_fang_signal.004
-  _emote: Default
-  _emotionTextKey: "loc.story.emotion.\uC228 \uBA4E\uC74C"
+  _emote: shock
+  _emotionTextKey: loc.story.emotion.stunned
   _autoAdvanceHint: 0

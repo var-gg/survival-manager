@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_ashen_gate__effect__01
+  _id: story_event_site_intro_ashen_gate.effect.01
   _kind: 3
   _payload: DialogueScene
 --- !u!114 &-5526729380715241834
@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_01
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_ashen_gate__cond__01
+  _id: story_event_site_intro_ashen_gate.condition.01
   _kind: 1
   _operandA: site_ashen_gate
   _operandB: 
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_site_intro_ashen_gate__effect__00
+  _id: story_event_site_intro_ashen_gate.effect.00
   _kind: 1
   _payload: story_flag_intro_ashen_gate
 --- !u!114 &8298132887988259447
@@ -81,7 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
   m_Name: condition_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
-  _id: story_event_site_intro_ashen_gate__cond__00
+  _id: story_event_site_intro_ashen_gate.condition.00
   _kind: 0
   _operandA: chapter_ashen_gate
   _operandB: 

@@ -222,7 +222,7 @@ MonoBehaviour:
   _id: dialogue_town_return_ch3_table__line__009
   _speakerId: npc_dalmok_inn_keeper
   _textKey: loc.story.dialogue.dialogue_town_return_ch3_table.009
-  _emote: Default
+  _emote: smile
   _emotionTextKey: loc.story.emotion.warm
   _autoAdvanceHint: 0
 --- !u!114 &2743901712389046545

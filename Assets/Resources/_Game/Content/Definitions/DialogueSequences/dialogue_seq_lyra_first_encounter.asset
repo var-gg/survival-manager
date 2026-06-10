@@ -246,8 +246,8 @@ MonoBehaviour:
   _id: dialogue_seq_lyra_first_encounter__line__009
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_lyra_first_encounter.009
-  _emote: Default
-  _emotionTextKey: loc.story.emotion.cold glance
+  _emote: serious
+  _emotionTextKey: loc.story.emotion.cold_glance
   _autoAdvanceHint: 0
 --- !u!114 &1703262494250796252
 MonoBehaviour:
@@ -336,7 +336,7 @@ MonoBehaviour:
   _id: dialogue_seq_lyra_first_encounter__line__006
   _speakerId: npc_lyra_sternfeld
   _textKey: loc.story.dialogue.dialogue_seq_lyra_first_encounter.006
-  _emote: Default
+  _emote: sad
   _emotionTextKey: loc.story.emotion.sorrowful
   _autoAdvanceHint: 0
 --- !u!114 &8954833161113088498

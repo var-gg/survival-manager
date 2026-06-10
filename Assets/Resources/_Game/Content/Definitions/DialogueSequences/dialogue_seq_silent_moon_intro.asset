@@ -265,7 +265,7 @@ MonoBehaviour:
   _id: dialogue_seq_silent_moon_intro__line__010
   _speakerId: npc_silent_moon
   _textKey: loc.story.dialogue.dialogue_seq_silent_moon_intro.010
-  _emote: Default
+  _emote: default
   _emotionTextKey: loc.story.emotion.glance
   _autoAdvanceHint: 0
 --- !u!114 &4852599795601418305

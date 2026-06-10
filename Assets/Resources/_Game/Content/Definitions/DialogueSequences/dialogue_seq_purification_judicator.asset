@@ -105,7 +105,7 @@ MonoBehaviour:
   _id: dialogue_seq_purification_judicator__line__002
   _speakerId: hero_dawn_priest
   _textKey: loc.story.dialogue.dialogue_seq_purification_judicator.002
-  _emote: Default
+  _emote: serious
   _emotionTextKey: loc.story.emotion.steady
   _autoAdvanceHint: 0
 --- !u!114 &11400000
