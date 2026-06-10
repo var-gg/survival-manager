@@ -86,6 +86,66 @@ public sealed class BattleHumanoidAnimationSetTests
     }
 
     [Test]
+    public void Driver_StartsImpactReactionAtRecoilLead_AndDeathFromClipStart()
+    {
+        // 피격 리액션 가시화 계약: ImpactDamage 리액션 one-shot은 클립 0초(중립)가 아니라
+        // reactionPoseLeadSeconds 지점에서 시작한다. hitstop이 시작 포즈를 고정하고 다음 액션이
+        // 수십 ms 안에 리액션을 교체해도 "맞은 포즈"가 화면에 보이게 하는 수술. 사망은 0초부터.
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var hit = CreateClip("hit");
+        hit.SetCurve(string.Empty, typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        var death = CreateClip("death");
+        death.SetCurve(string.Empty, typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "hits", new[] { hit });
+            SetField(set, "death", death);
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.AcquireTarget));
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(BattlePresentationCueType.ImpactDamage, 1, "ally", Magnitude: 5f),
+                CreateUnit(CombatActionState.AcquireTarget),
+                1f);
+
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(hit));
+            Assert.That(driver.CurrentOneShotClipTimeForTests, Is.EqualTo(0.18d).Within(0.001d),
+                "reaction one-shot starts at the recoil lead, not at the neutral first frame");
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(BattlePresentationCueType.DeathStart, 2, "ally"),
+                CreateUnit(CombatActionState.Dead, isAlive: false),
+                1f);
+
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(death));
+            Assert.That(driver.CurrentOneShotClipTimeForTests, Is.EqualTo(0d).Within(0.001d),
+                "death one-shot plays the full fall from the clip start");
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, hit, death);
+        }
+    }
+
+    [Test]
     public void Driver_HoldsDeathFinalPoseAfterDeathCue()
     {
         var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
@@ -174,6 +234,37 @@ public sealed class BattleHumanoidAnimationSetTests
         finally
         {
             Destroy(set, idle, move, guard, death);
+        }
+    }
+
+    [Test]
+    public void ResolveLoopClip_UsesBowReadyIdle_ForBowClassifiedUnits()
+    {
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var bowReady = CreateClip("bow_ready");
+
+        try
+        {
+            SetField(set, "idle", idle);
+            SetField(set, "bowReadyIdle", bowReady);
+
+            // 활 분류(ranger) 유닛의 전투 대기는 bow ready idle.
+            Assert.That(set.TryResolveLoopClip(CreateUnit(CombatActionState.AcquireTarget, classId: "ranger"), out var bowIdleClip), Is.True);
+            Assert.That(bowIdleClip, Is.SameAs(bowReady));
+
+            // 근접 유닛은 기존 idle 그대로.
+            Assert.That(set.TryResolveLoopClip(CreateUnit(CombatActionState.AcquireTarget), out var meleeIdleClip), Is.True);
+            Assert.That(meleeIdleClip, Is.SameAs(idle));
+
+            // 클립이 비어 있으면 활 유닛도 idle로 폴백.
+            SetField(set, "bowReadyIdle", null!);
+            Assert.That(set.TryResolveLoopClip(CreateUnit(CombatActionState.AcquireTarget, classId: "ranger"), out var fallbackClip), Is.True);
+            Assert.That(fallbackClip, Is.SameAs(idle));
+        }
+        finally
+        {
+            Destroy(set, idle, bowReady);
         }
     }
 
@@ -416,6 +507,8 @@ public sealed class BattleHumanoidAnimationSetTests
             wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
 
             var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            // presentation root motion은 기본 비활성(회귀 방지). 이 테스트는 잔차 오프셋 메커니즘을 검증하므로 명시적으로 켠다.
+            driver.SetPresentationRootMotionEnabledForTests(true);
             driver.ConfigureAnimationSet(set);
             driver.Initialize(wrapper, CreateUnit(CombatActionState.Approach));
 
@@ -577,7 +670,8 @@ public sealed class BattleHumanoidAnimationSetTests
         bool isAlive = true,
         bool isDefending = false,
         BattleActionType? pendingActionType = null,
-        string currentSelector = "")
+        string currentSelector = "",
+        string classId = "vanguard")
     {
         return new BattleUnitReadModel(
             "ally",
@@ -585,7 +679,7 @@ public sealed class BattleHumanoidAnimationSetTests
             TeamSide.Ally,
             DeploymentAnchorId.FrontCenter,
             "human",
-            "vanguard",
+            classId,
             new CombatVector2(0f, 0f),
             isAlive ? 10f : 0f,
             10f,

@@ -10,11 +10,18 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
 {
     [SerializeField] private Animator animator = null!;
     [SerializeField] private BattleHumanoidAnimationSet animationSet = null!;
-    [SerializeField] private bool usePresentationRootMotion = true;
+    // 회귀(2026-06): 미검증 presentation root motion(메시 슬롯에 최대 0.45u 오프셋 누적)이 몸을 권위 위치에서
+    // 벗어나게 해 "사거리 밖처럼 보이는데 데미지" + 멈출 때 1프레임 snap pop을 유발했다. 권위 보간 위치에 메시를
+    // 정확히 앉히도록 기능을 끈다(commit 7594c75c 통째 revert 대신 외과적 비활성화). foot-slide가 거슬리면
+    // cadence(authoredLocomotionSpeed)를 PlayMode로 정합한 뒤 재활성화한다.
+    [SerializeField] private bool usePresentationRootMotion = false;
     [SerializeField] private bool clearRuntimeAnimatorController = true;
     [SerializeField] private bool forceAlwaysAnimate;
     [SerializeField, Min(0.02f)] private float minimumOneShotSeconds = 0.12f;
     [SerializeField, Min(0.02f)] private float maxRootMotionVisualOffset = 0.45f;
+    // 피격 리액션 one-shot의 시작 지점(초). Kevin Damage 클립들의 리코일 apex가 0.15~0.3s 부근이라
+    // 이만큼 건너뛰고 시작해야 hitstop 고정·빠른 교체 속에서도 "맞은 포즈"가 화면에 보인다.
+    [SerializeField, Min(0f)] private float reactionPoseLeadSeconds = 0.18f;
 
     private PlayableGraph _graph;
     private AnimationMixerPlayable _mixer;
@@ -54,6 +61,9 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     public BattleHumanoidAnimationSet? ActiveAnimationSet => ResolveAnimationSet();
     public AnimationClip? CurrentLoopClip => _loopClip;
     public AnimationClip? CurrentOneShotClip => _oneShotClip;
+
+    /// <summary>리액션 시작 오프셋 검증용 — 현재 one-shot 플레이어블의 클립 로컬 시간(초).</summary>
+    internal double CurrentOneShotClipTimeForTests => _oneShotPlayable.IsValid() ? _oneShotPlayable.GetTime() : -1d;
     public bool IsHoldingTerminalPose => _isHoldingTerminalPose;
     public Vector3 PresentationRootMotionOffsetWorld => _rootMotionVisualOffsetWorld;
     public int CuePlaybackCount { get; private set; }
@@ -184,7 +194,11 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             }
             else
             {
-                PlayOneShot(clip, timing);
+                // 피격 리액션(ImpactDamage)만 리코일 전개 지점에서 시작 — 사망/가드 등은 0초부터.
+                var startOffset = cue.CueType == BattlePresentationCueType.ImpactDamage
+                    ? Mathf.Min(reactionPoseLeadSeconds, clip.length * 0.4f)
+                    : 0f;
+                PlayOneShot(clip, timing, startOffset);
             }
         }
     }
@@ -323,6 +337,13 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         DestroyGraph();
     }
 
+    // presentation root motion은 기본 비활성(회귀 방지). 메커니즘 검증 테스트는 이 훅으로 opt-in한다.
+    // Initialize/ConfigureAnimator보다 먼저 호출해야 한다.
+    internal void SetPresentationRootMotionEnabledForTests(bool enabled)
+    {
+        usePresentationRootMotion = enabled;
+    }
+
     private void OnDisable()
     {
         DestroyGraph();
@@ -448,7 +469,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _mixer.SetInputWeight(0, _oneShotPlayable.IsValid() ? 0f : 1f);
     }
 
-    private void PlayOneShot(AnimationClip clip, BattleClipTiming timing)
+    private void PlayOneShot(AnimationClip clip, BattleClipTiming timing, float startOffsetSeconds = 0f)
     {
         if (clip == null)
         {
@@ -460,14 +481,24 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _graph.Connect(_oneShotPlayable, 0, _mixer, 1);
         _oneShotClip = clip;
         _isHoldingTerminalPose = false;
-        _oneShotRemaining = Mathf.Max(minimumOneShotSeconds, clip.length / _playbackSpeed);
-        _oneShotElapsed = 0f;
+        // 피격 리액션 가시화: 리액션 one-shot은 클립 0초(중립 포즈)가 아니라 리코일이 전개된
+        // 지점에서 시작할 수 있다. 타겟 hitstop이 시작 시점 포즈를 고정하고(StartHitstop의
+        // contactTime = _oneShotElapsed) 다음 액션이 리액션을 수십 ms 안에 교체하는 전장에서,
+        // 0초 시작은 "중립 포즈 고정 → 교체"로 끝나 리코일이 화면에 한 번도 안 나온다.
+        var offset = Mathf.Clamp(startOffsetSeconds, 0f, Mathf.Max(0f, clip.length - 0.05f));
+        _oneShotRemaining = Mathf.Max(minimumOneShotSeconds, (clip.length - offset) / _playbackSpeed);
+        _oneShotElapsed = offset;
+        if (offset > 0f)
+        {
+            _oneShotPlayable.SetTime(offset);
+        }
+
         _hitstopWindow = BattleHitstopWindow.None;
         // Stage 4 blend driver (GPT Pro J5): ramp the one-shot layer in/out across the contact window
         // instead of the old instant 1<->0 weight swap that popped the layer (D1). Weight is full from
         // (contact - lead) through (contact + hold), then fades back to the loop at the tail.
         _blendEnvelope = BattleOneShotBlendResolver.Resolve(clip.length, _playbackSpeed, timing);
-        ApplyBlendWeights(0f);
+        ApplyBlendWeights(offset);
         CuePlaybackCount++;
     }
 
