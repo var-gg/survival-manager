@@ -1,0 +1,25 @@
+{
+  "id": "concept_art_other_door_clear",
+  "asset_class": "narrative_cg",
+  "category": "cutscene",
+  "backdrop": "bespoke:concept_art_other_door_clear",
+  "engine": "chatgpt-image",
+  "kind": "char",
+  "subjects": [
+    "hero_mirror_cantor"
+  ],
+  "tier": "T3",
+  "motion": null,
+  "scene_id": "cutscene_event_other_door_clear",
+  "note": "결사 외전 마감 — 침월/명음 비용. 명음(hero_mirror_cantor) 주체, 침월은 NPC.",
+  "variant": "default",
+  "promoted_from": "art-pipeline/output/concept_art_other_door_clear/default.png",
+  "prompt": "Single-figure cinematic closing scene — a quiet narrative aftermath moment within an environment, NOT a splash pose. Subject: Mirror Cantor (명음), a serene young woman, keeper of records of a reclusive order. IDENTITY STRICTLY per ATTACHED refs (canonical portrait_full + face portrait — refs win on identity, hair, face, outfit): long straight blue-black hair with a violet sheen, calm violet eyes; pale grey pointed wide-brimmed hat with gold trim; white hooded capelet over a deep violet dress with gold corset lacing; lavender-grey gold-trimmed overskirt; violet thigh-high laced boots. She sits beside a small low night campfire, her ornate silver ritual hand-mirror set down at her side with its glass catching a faint extra gleam of light, and a single blank handwritten letter resting on her lap under her fingertips. Her expression is composed with the faintest tenderness — a record-keeper allowing herself one quiet human moment. Background: a vast closed ancient stone door — 'the other door' — sealed with carved knotwork patterns, a thin seam of pale cold light leaking along its edge; in the far middle distance a small hooded figure in moonlight-violet robes walks away toward the inner dark, back turned, face unseen. Cool liminal night color grading with violet accents; the campfire is only a small local pool of warm light. Painterly anime fantasy game cutscene, full painted environment, cinematic atmospheric depth, 16:9 wide. No magenta chroma. No text or lettering anywhere in frame.",
+  "refs": [
+    "hero_mirror_cantor:portrait_full",
+    "hero_mirror_cantor:portrait_face_default"
+  ],
+  "aspect": "16:9",
+  "output_size": "1920x1080",
+  "gen_kind": "cutscene_cut"
+}
