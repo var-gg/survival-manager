@@ -107,8 +107,9 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
 
         if (isTravelingProjectile)
         {
+            var (releaseDelaySeconds, travelSeconds) = ResolveProjectileFlightWindow(cue, position, relatedWorld!.Value);
             StartCoroutine(TravelProjectileThenRelease(
-                instance, position, relatedWorld!.Value, ResolveProjectileTravelSeconds(cue, position, relatedWorld.Value)));
+                instance, position, relatedWorld.Value, releaseDelaySeconds, travelSeconds));
         }
         else
         {
@@ -141,26 +142,44 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
         }
     }
 
-    // 비행 시간 = sim의 windup→contact 간격(CommitSchedule)을 그대로 사용한다. 그래야 투사체가 정확히
-    // ContactTick(=데미지·임팩트 VFX가 터지는 순간)에 대상에 도착해 cause→effect가 시각적으로 일치한다.
-    // 스케줄이 없으면(예: 일부 스킬) 거리/속도로 추정한다. presentation 전용 — sim truth를 읽지도 바꾸지도 않는다.
-    private static float ResolveProjectileTravelSeconds(BattlePresentationCue cue, Vector3 from, Vector3 to)
+    // J12 인과 복원: cue는 WindupStartTick에 소비되지만 투사체는 release tick(제스처가 시위를 놓는
+    // 순간, driver의 원거리 핀과 같은 산식)까지 숨겨 두었다가 출발시키고, 비행은 release→ContactTick
+    // 구간만 차지해 정확히 데미지 틱에 도착한다. 기존엔 windup 시작에 출발해 '이펙트가 제스처를
+    // 선행'하는 역전이 보였다. 스케줄이 없으면 거리/속도 추정 즉시 출발 폴백. presentation 전용.
+    private static (float releaseDelaySeconds, float travelSeconds) ResolveProjectileFlightWindow(
+        BattlePresentationCue cue, Vector3 from, Vector3 to)
     {
         if (cue.CommitSchedule is { } schedule)
         {
-            var windupTicks = Mathf.Max(0, schedule.ContactTick - schedule.WindupStartTick);
-            var seconds = windupTicks * BattleSimulator.DefaultFixedStepSeconds;
-            return Mathf.Clamp(seconds, MinProjectileTravelSeconds, MaxProjectileTravelSeconds);
+            var releaseTick = BattleContactPinScheduler.ResolvePresentationReleaseTick(
+                schedule.WindupStartTick, schedule.ContactTick, BattleContactPinScheduler.DefaultProjectileTravelTicks);
+            var delaySeconds = Mathf.Max(0, releaseTick - schedule.WindupStartTick) * BattleSimulator.DefaultFixedStepSeconds;
+            var travelSeconds = Mathf.Max(0, schedule.ContactTick - releaseTick) * BattleSimulator.DefaultFixedStepSeconds;
+            return (delaySeconds, Mathf.Clamp(travelSeconds, MinProjectileTravelSeconds, MaxProjectileTravelSeconds));
         }
 
         var distance = Vector3.Distance(from, to);
-        return Mathf.Clamp(distance / ProjectileVisualSpeed, MinProjectileTravelSeconds, MaxProjectileTravelSeconds);
+        return (0f, Mathf.Clamp(distance / ProjectileVisualSpeed, MinProjectileTravelSeconds, MaxProjectileTravelSeconds));
     }
 
     // 투사체를 origin → 대상으로 직선 보간 이동시킨 뒤 짧은 잔상만 남기고 정리한다.
     // 임팩트 폭발은 별도 ImpactDamage cue가 대상의 Hit 소켓에서 띄우므로 여기서는 비행만 담당한다.
-    private System.Collections.IEnumerator TravelProjectileThenRelease(GameObject instance, Vector3 from, Vector3 to, float travelSeconds)
+    private System.Collections.IEnumerator TravelProjectileThenRelease(
+        GameObject instance, Vector3 from, Vector3 to, float releaseDelaySeconds, float travelSeconds)
     {
+        if (releaseDelaySeconds > 0f && instance != null)
+        {
+            // release까지 숨김 — 같은 구간에 화살 nock(시위의 화살)이 가시 상태라 바통터치가 맞는다.
+            instance.SetActive(false);
+            yield return new WaitForSeconds(releaseDelaySeconds);
+            if (instance == null)
+            {
+                yield break;
+            }
+
+            instance.SetActive(true);
+        }
+
         var duration = Mathf.Max(0.0001f, travelSeconds);
         var elapsed = 0f;
         while (elapsed < duration && instance != null)

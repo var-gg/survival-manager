@@ -13,6 +13,10 @@ public sealed class BattlePresentationCueBuilder
     public IReadOnlyList<BattlePresentationCue> Build(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
     {
         var cues = new List<BattlePresentationCue>();
+        // 사망 cue는 별도 버퍼에 모아 맨 끝에 붙인다 — 같은 step의 살해 ImpactDamage 리액션이
+        // 리스트에서 death 뒤에 오면 driver가 막 시작한 death one-shot을 리액션으로 교체해
+        // 쓰러지는 모션이 영영 재생되지 않는다. death가 자세의 마지막 발언권을 가져야 한다.
+        var deathCues = new List<BattlePresentationCue>();
         var deathCueSubjects = new HashSet<string>(System.StringComparer.Ordinal);
         var previousById = previousStep.Units.ToDictionary(unit => unit.Id);
         var currentById = currentStep.Units.ToDictionary(unit => unit.Id);
@@ -98,7 +102,7 @@ public sealed class BattlePresentationCueBuilder
 
             if (previous.IsAlive && !current.IsAlive)
             {
-                AddDeathCue(cues, deathCueSubjects, new BattlePresentationCue(
+                AddDeathCue(deathCues, deathCueSubjects, new BattlePresentationCue(
                     BattlePresentationCueType.DeathStart,
                     currentStep.StepIndex,
                     current.Id,
@@ -151,7 +155,7 @@ public sealed class BattlePresentationCueBuilder
 
             if (eventData.EventKind == BattleEventKind.Kill && eventData.TargetId != null)
             {
-                AddDeathCue(cues, deathCueSubjects, new BattlePresentationCue(
+                AddDeathCue(deathCues, deathCueSubjects, new BattlePresentationCue(
                     BattlePresentationCueType.DeathStart,
                     currentStep.StepIndex,
                     eventData.TargetId.Value.Value,
@@ -178,6 +182,8 @@ public sealed class BattlePresentationCueBuilder
             }
         }
 
+        // 사망 cue가 같은 step의 모든 리액션/임팩트 뒤에 오도록 마지막에 붙인다 (위 버퍼 주석 참조).
+        cues.AddRange(deathCues);
         return cues;
     }
 

@@ -550,6 +550,38 @@ public sealed class BattlePresentationCueBuilderTests
     }
 
     [Test]
+    public void Build_AppendsDeathCue_AfterSameStepImpactReaction()
+    {
+        // 살해 step에서 DeathStart는 같은 유닛의 ImpactDamage 리액션보다 반드시 뒤에 와야 한다 —
+        // 앞서면 driver가 막 시작한 death 낙하 one-shot을 리액션으로 교체해 쓰러지는 모션이
+        // 영영 재생되지 않고 '직립 고정 → 눕기 1프레임 스냅'으로 끝난다(자세의 마지막 발언권).
+        var previousUnits = new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy"),
+            CreateUnit("enemy", TeamSide.Enemy),
+        };
+        var currentUnits = new[]
+        {
+            CreateUnit("ally", TeamSide.Ally, targetId: "enemy"),
+            CreateUnit("enemy", TeamSide.Enemy, isAlive: false),
+        };
+        var previous = CreateStep(units: previousUnits);
+        var current = CreateStep(
+            units: currentUnits,
+            combatEvents: new[]
+            {
+                Contacted("ally", CombatEventKind.BasicAttack, Contact("enemy", CombatOutcome.Hit, 24f)),
+            });
+
+        var cues = new BattlePresentationCueBuilder().Build(previous, current).ToList();
+
+        var impactIndex = cues.FindIndex(cue => cue.CueType == BattlePresentationCueType.ImpactDamage && cue.SubjectActorId == "enemy");
+        var deathIndex = cues.FindIndex(cue => cue.CueType == BattlePresentationCueType.DeathStart && cue.SubjectActorId == "enemy");
+        Assert.That(impactIndex, Is.GreaterThanOrEqualTo(0), "죽는 유닛의 피격 리액션 cue는 그대로 발행된다");
+        Assert.That(deathIndex, Is.GreaterThan(impactIndex), "DeathStart는 같은 step의 리액션 뒤에 와야 한다");
+    }
+
+    [Test]
     public void Build_EmitsBattleResolvedCue_WithoutForcedMovementTrace()
     {
         var previous = CreateStep(units: new[]

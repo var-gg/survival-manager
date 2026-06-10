@@ -25,6 +25,13 @@ public readonly record struct BattleChoreographySchedule(
 public static class BattleContactPinScheduler
 {
     /// <summary>
+    /// 원거리 투사체의 authored 비행 틱(presentation 전용, J12). 원거리 commit은 release 프레임을
+    /// ContactTick − travel에 정렬하고, 투사체는 그 release에 출발해 정확히 ContactTick에 도착한다.
+    /// driver 핀 / VFX 비행 / 화살 nock 숨김이 모두 이 한 값을 공유해야 인과가 맞는다.
+    /// </summary>
+    public const int DefaultProjectileTravelTicks = 2;
+
+    /// <summary>
     /// Clip start time (seconds, relative to the choreography clock) such that the clip's contact frame
     /// (at <paramref name="contactNorm"/> of its length) is sampled exactly at
     /// <c>contactTick * fixedStepSeconds</c>. May be negative when the contact frame sits past the

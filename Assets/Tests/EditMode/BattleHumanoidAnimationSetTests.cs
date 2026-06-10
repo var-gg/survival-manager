@@ -665,6 +665,308 @@ public sealed class BattleHumanoidAnimationSetTests
         Assert.That(strafeClip.name, Does.Contain("[RM]"));
     }
 
+    [Test]
+    public void Driver_LoopPlayableSpeed_ComposesTimelineAndLocomotionCadence()
+    {
+        // 러닝머신 회귀의 직접 수술 검증: SetBlend(ApplyState, cadence 기록) 직후 TickTransients
+        // (Tick, 타임라인 배속 기록)가 와도 cadence가 클로버되지 않고 루프 속도 = 타임라인 × cadence.
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var move = CreateClip("move");
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "move", move);
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.AcquireTarget));
+
+            driver.ApplyState(
+                CreateUnit(CombatActionState.Approach),
+                playbackSpeed: 1.6f,
+                paused: false,
+                isLocomoting: true,
+                BattleActorPresentationPhase.CombatReady,
+                worldSpeed: 3.2f,
+                authoritativeFrameDeltaWorld: Vector3.zero);
+            driver.Tick(0.016f, 2f, paused: false);
+
+            Assert.That(driver.CurrentLoopClip, Is.SameAs(move));
+            Assert.That(driver.LoopPlaybackSpeedForTests, Is.EqualTo(3.2f).Within(0.0001f),
+                "loop speed = timeline(2.0) × cadence(1.6) — Tick이 cadence를 덮어쓰면 안 된다");
+
+            // 정지(비로코모션) 상태는 cadence 1 고정 — idle이 0.35x 하한으로 기어가지 않는다.
+            driver.ApplyState(
+                CreateUnit(CombatActionState.AcquireTarget),
+                playbackSpeed: 0.35f,
+                paused: false,
+                isLocomoting: false,
+                BattleActorPresentationPhase.CombatReady,
+                worldSpeed: 0f,
+                authoritativeFrameDeltaWorld: Vector3.zero);
+            driver.Tick(0.016f, 1f, paused: false);
+
+            Assert.That(driver.LoopPlaybackSpeedForTests, Is.EqualTo(1f).Within(0.0001f),
+                "비로코모션 루프(idle)는 타임라인 속도 그대로");
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, move);
+        }
+    }
+
+    [Test]
+    public void Driver_CrossfadesLoopClipSwap_AndReleasesOutgoingSlot()
+    {
+        // 게이트 해제/걷기↔달리기 1프레임 포즈 스냅 수술: 루프 클립 교체는 하드 스왑이 아니라
+        // 서브믹서 크로스페이드. 페이드 완료 후 outgoing 슬롯은 해제되어야 한다.
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var move = CreateClip("move");
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "move", move);
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.AcquireTarget));
+
+            Assert.That(driver.HasOutgoingLoopForTests, Is.False, "첫 루프는 페이드 없이 단독 재생");
+
+            driver.ApplyState(
+                CreateUnit(CombatActionState.Approach),
+                playbackSpeed: 1f,
+                paused: false,
+                isLocomoting: true,
+                BattleActorPresentationPhase.CombatReady,
+                worldSpeed: 3.2f,
+                authoritativeFrameDeltaWorld: Vector3.zero);
+
+            Assert.That(driver.CurrentLoopClip, Is.SameAs(move));
+            Assert.That(driver.HasOutgoingLoopForTests, Is.True, "이전 루프(idle)가 페이드 아웃 슬롯에 살아 있어야 한다");
+
+            driver.Tick(0.3f, 1f, paused: false);
+
+            Assert.That(driver.HasOutgoingLoopForTests, Is.False, "0.18s 페이드 완료 후 outgoing 슬롯 해제");
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, move);
+        }
+    }
+
+    [Test]
+    public void Driver_IgnoresImpactReaction_WhileDeathOneShotActive()
+    {
+        // 사망 one-shot의 마지막 발언권: 같은 step의 살해 ImpactDamage가 뒤따라 들어와도
+        // 막 시작한 death 낙하를 교체하지 못한다 (cue 소비 시점 state는 stale-alive라 플래그 가드).
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var hit = CreateClip("hit");
+        var death = CreateClip("death");
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "hits", new[] { hit });
+            SetField(set, "death", death);
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.AcquireTarget));
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(BattlePresentationCueType.DeathStart, 1, "ally"),
+                CreateUnit(CombatActionState.Dead, isAlive: false),
+                1f);
+
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(death));
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(BattlePresentationCueType.ImpactDamage, 1, "ally", Magnitude: 5f),
+                CreateUnit(CombatActionState.AcquireTarget),
+                1f);
+
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(death), "death 재생 중 피격 리액션은 무시된다");
+            Assert.That(driver.CuePlaybackCount, Is.EqualTo(1));
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, hit, death);
+        }
+    }
+
+    [Test]
+    public void Driver_StartsKnockdownReactionFromClipStart()
+    {
+        // 리코일 리드(0.18s)는 리코일 계열 전용 — Knockdown 같은 전신 변위 클립에 적용하면
+        // 살아있는 유닛에 첫 프레임부터 수평 포즈가 번쩍인다(lying flash).
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var knockdown = CreateClip("knockdown");
+        knockdown.SetCurve(string.Empty, typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "variants", new[]
+            {
+                new BattleHumanoidAnimationVariant(
+                    BattleAnimationSemantic.Knockdown,
+                    knockdown,
+                    intensity: BattleAnimationIntensity.Heavy),
+            });
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.AcquireTarget));
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.ImpactDamage,
+                    1,
+                    "ally",
+                    Magnitude: 9f,
+                    AnimationSemantic: BattleAnimationSemantic.Knockdown,
+                    AnimationIntensity: BattleAnimationIntensity.Heavy),
+                CreateUnit(CombatActionState.AcquireTarget),
+                1f);
+
+            Assert.That(driver.CurrentOneShotClip, Is.SameAs(knockdown));
+            Assert.That(driver.CurrentOneShotClipTimeForTests, Is.EqualTo(0d).Within(0.001d),
+                "Knockdown은 0초부터 — 리코일 리드를 적용하지 않는다");
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, knockdown);
+        }
+    }
+
+    [Test]
+    public void Driver_PinsRangedCommitAtReleaseTick_MeleeAtContactTick()
+    {
+        // J12 인과 복원: 원거리 commit의 핀 대상은 ContactTick − travel(release tick).
+        // 근접은 그대로 ContactTick. budget(초)으로 정렬 지점을 검증한다.
+        var set = ScriptableObject.CreateInstance<BattleHumanoidAnimationSet>();
+        var idle = CreateClip("idle");
+        var basic = CreateClip("basic");
+        basic.SetCurve(string.Empty, typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        var root = new GameObject("Wrapper");
+        var visualRoot = new GameObject("VisualRoot").transform;
+        var vendorSlot = new GameObject("VendorVisualSlot").transform;
+        var model = new GameObject("HumanoidModel");
+
+        try
+        {
+            visualRoot.SetParent(root.transform, false);
+            vendorSlot.SetParent(visualRoot, false);
+            model.transform.SetParent(vendorSlot, false);
+            model.AddComponent<Animator>();
+
+            SetField(set, "idle", idle);
+            SetField(set, "basicAttacks", new[] { basic });
+
+            var wrapper = root.AddComponent<BattleActorWrapper>();
+            wrapper.ConfigureAuthoring(visualRoot, vendorSlot, null, null, null, null, null, null, null, null, null);
+
+            var driver = root.AddComponent<BattleHumanoidAnimationDriver>();
+            driver.ConfigureAnimationSet(set);
+            driver.Initialize(wrapper, CreateUnit(CombatActionState.AcquireTarget));
+
+            var schedule = new BattleCommitSchedule(new ActionInstanceId(1), 0, WindupStartTick: 10, ContactTick: 15);
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.ActionCommitBasic,
+                    10,
+                    "ally",
+                    ActionType: BattleActionType.BasicAttack,
+                    AnimationSemantic: BattleAnimationSemantic.BowShot,
+                    CommitSchedule: schedule),
+                CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack),
+                1f);
+
+            Assert.That(driver.PinBudgetSecondsForTests, Is.EqualTo(0.3d).Within(1e-6),
+                "BowShot release는 tick 13(=15 − travel 2)에 정렬 — budget 0.3s");
+
+            driver.ClearTransientState(BattlePresentationCueType.PlaybackReset);
+
+            driver.ConsumeCue(
+                new BattlePresentationCue(
+                    BattlePresentationCueType.ActionCommitBasic,
+                    10,
+                    "ally",
+                    ActionType: BattleActionType.BasicAttack,
+                    CommitSchedule: schedule),
+                CreateUnit(CombatActionState.ExecuteAction, pendingActionType: BattleActionType.BasicAttack),
+                1f);
+
+            Assert.That(driver.PinBudgetSecondsForTests, Is.EqualTo(0.5d).Within(1e-6),
+                "근접 commit은 ContactTick 15 그대로 — budget 0.5s");
+        }
+        finally
+        {
+            DestroyRoot(root);
+            Destroy(set, idle, basic);
+        }
+    }
+
     private static BattleUnitReadModel CreateUnit(
         CombatActionState state,
         bool isAlive = true,
