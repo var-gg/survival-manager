@@ -318,7 +318,12 @@ public static class TargetScoringService
             ? -context.FocusModeBias * currentFocus * 0.35f
             : MathF.Abs(context.FocusModeBias) * currentFocus * 0.55f;
         var flankBias = MathF.Abs(context.FlankBias) * (target.Behavior.FormationLine == FormationLine.Backline ? -0.08f : 0f);
-        return switchPenalty + focusBias + flankBias;
+        // P0 차단: 스크린이 멀쩡한 후열은 일반 타게팅에서 덜 매력적이다(거리 미터 등가 페널티).
+        // Dive 의도는 RoleBrain 경로로 이 페널티를 거치지 않는다 — 스크린을 뚫는 건 다이버의 일.
+        var screenPenalty = BattleFormationConsequence.IsScreenedBackline(state, target)
+            ? BattleFormationConsequence.ScreenedTargetScorePenalty
+            : 0f;
+        return switchPenalty + focusBias + flankBias + screenPenalty;
     }
 
     private static float ResolveAcquireRange(UnitSnapshot actor, TargetRule rule)
@@ -354,13 +359,7 @@ public static class TargetScoringService
 
     private static bool IsBacklineExposedEnemy(BattleState state, UnitSnapshot target)
     {
-        if (target.Behavior.FormationLine != FormationLine.Backline)
-        {
-            return false;
-        }
-
-        return !state.GetTeam(target.Side)
-            .Where(unit => unit.IsAlive && unit.Id != target.Id && unit.Behavior.FormationLine == FormationLine.Frontline)
-            .Any(frontliner => frontliner.Position.DistanceTo(target.Position) <= frontliner.Behavior.FrontlineGuardRadius);
+        // 노출 술어의 단일 진실은 BattleFormationConsequence — 타게팅과 피해 경감이 같은 판정을 공유한다.
+        return BattleFormationConsequence.IsBacklineExposed(state, target);
     }
 }

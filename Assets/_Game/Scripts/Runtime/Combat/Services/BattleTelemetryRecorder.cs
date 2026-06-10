@@ -320,6 +320,13 @@ public static class BattleTelemetryRecorder
         AddMetric(state, "BuffValueContribution", snapshot.BuffValueContribution);
         AddMetric(state, "AOECostTaken", snapshot.AoeCostTaken);
         AddMetric(state, "ClusterTradeoffNetValue", snapshot.ClusterTradeoffNetValue);
+        AddMetric(state, "ScreenMitigationContribution", snapshot.ScreenMitigationContribution);
+        AddMetric(state, "ScreenAbsorbCount", snapshot.ScreenAbsorbCount);
+        AddMetric(state, "FlankDamageContribution", snapshot.FlankDamageContribution);
+        AddMetric(state, "FlankStrikeCount", snapshot.FlankStrikeCount);
+        AddMetric(state, "RearStrikeCount", snapshot.RearStrikeCount);
+        AddMetric(state, "BacklineDiveKillCount", snapshot.BacklineDiveKillCount);
+        AddMetric(state, "SaveMomentCount", snapshot.SaveMomentCount);
         AddMetric(state, "HandednessSlotPreferenceHitRatio", snapshot.HandednessSlotPreferenceHitRatio);
         AddMetric(state, "HandednessLateralResetSideHistogram", 0f, 0f, Serialize(snapshot.HandednessLateralResetSideHistogram));
         AddMetric(state, "ReplayHash", 0f, 0f, snapshot.ReplayHash);

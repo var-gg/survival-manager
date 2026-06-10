@@ -32,6 +32,13 @@ public sealed record BattleActivityTelemetrySnapshot(
     float BuffValueContribution,
     float AoeCostTaken,
     float ClusterTradeoffNetValue,
+    float ScreenMitigationContribution,
+    int ScreenAbsorbCount,
+    float FlankDamageContribution,
+    int FlankStrikeCount,
+    int RearStrikeCount,
+    int BacklineDiveKillCount,
+    int SaveMomentCount,
     float HandednessSlotPreferenceHitRatio,
     IReadOnlyDictionary<string, float> HandednessLateralResetSideHistogram,
     string ReplayHash);
@@ -72,6 +79,13 @@ public sealed class BattleActivityTelemetryAccumulator
     public float BuffValueContribution { get; private set; }
     public float AoeCostTaken { get; private set; }
     public float ClusterTradeoffNetValue { get; private set; }
+    public float ScreenMitigationContribution { get; private set; }
+    public int ScreenAbsorbCount { get; private set; }
+    public float FlankDamageContribution { get; private set; }
+    public int FlankStrikeCount { get; private set; }
+    public int RearStrikeCount { get; private set; }
+    public int BacklineDiveKillCount { get; private set; }
+    public int SaveMomentCount { get; private set; }
 
     public void RecordStep(BattleState state)
     {
@@ -156,6 +170,36 @@ public sealed class BattleActivityTelemetryAccumulator
     public void RecordKnockbackDispersalEvent()
     {
         KnockbackDispersalEvents++;
+    }
+
+    /// <summary>P0 차단: 스크린이 멀쩡한 후열이 흡수한 피해 기여(경감 전후 차).</summary>
+    public void RecordScreenAbsorb(float contribution)
+    {
+        ScreenMitigationContribution += Math.Max(0f, contribution);
+        ScreenAbsorbCount++;
+    }
+
+    /// <summary>P0 측면: 측면/후방 공격이 추가한 피해 기여.</summary>
+    public void RecordFlankStrike(float contribution, bool isRear)
+    {
+        FlankDamageContribution += Math.Max(0f, contribution);
+        FlankStrikeCount++;
+        if (isRear)
+        {
+            RearStrikeCount++;
+        }
+    }
+
+    /// <summary>cinematic detector: Dive 의도 유닛이 후열을 처치.</summary>
+    public void RecordBacklineDiveKill()
+    {
+        BacklineDiveKillCount++;
+    }
+
+    /// <summary>cinematic detector: 빈사(25% 미만) 아군을 회복으로 구출.</summary>
+    public void RecordSaveMoment()
+    {
+        SaveMomentCount++;
     }
 
     public void RecordHandednessSlotPreference(bool preferenceHit, bool hasPreference)
@@ -258,6 +302,13 @@ public sealed class BattleActivityTelemetryAccumulator
             BuffValueContribution,
             AoeCostTaken,
             ClusterTradeoffNetValue,
+            ScreenMitigationContribution,
+            ScreenAbsorbCount,
+            FlankDamageContribution,
+            FlankStrikeCount,
+            RearStrikeCount,
+            BacklineDiveKillCount,
+            SaveMomentCount,
             _handednessSlotPreferenceSamples <= 0
                 ? 0f
                 : (float)_handednessSlotPreferenceHits / _handednessSlotPreferenceSamples,
@@ -366,7 +417,14 @@ public sealed class BattleActivityTelemetryAccumulator
             .Append(Format(snapshot.FocusDamageContribution)).Append('|')
             .Append(Format(snapshot.BuffValueContribution)).Append('|')
             .Append(Format(snapshot.AoeCostTaken)).Append('|')
-            .Append(Format(snapshot.ClusterTradeoffNetValue)).Append('|');
+            .Append(Format(snapshot.ClusterTradeoffNetValue)).Append('|')
+            .Append(Format(snapshot.ScreenMitigationContribution)).Append('|')
+            .Append(snapshot.ScreenAbsorbCount).Append('|')
+            .Append(Format(snapshot.FlankDamageContribution)).Append('|')
+            .Append(snapshot.FlankStrikeCount).Append('|')
+            .Append(snapshot.RearStrikeCount).Append('|')
+            .Append(snapshot.BacklineDiveKillCount).Append('|')
+            .Append(snapshot.SaveMomentCount).Append('|');
         builder.Append(Format(snapshot.HandednessSlotPreferenceHitRatio)).Append('|');
 
         foreach (var pair in snapshot.MeanPairwiseDistanceByTeam.OrderBy(pair => pair.Key))

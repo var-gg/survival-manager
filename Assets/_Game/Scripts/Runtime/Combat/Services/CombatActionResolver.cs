@@ -11,6 +11,9 @@ public static class CombatActionResolver
     private const float ImpactRangeTolerance = 0.12f;
     private const string RangeMissNote = "miss_range";
 
+    /// <summary>SaveMoment detector: 회복 직전 HP 비율이 이 값 미만이면 "구출"로 센다.</summary>
+    private const float SaveMomentHealthRatio = 0.25f;
+
     public static IReadOnlyList<BattleEvent> Resolve(BattleState state, UnitSnapshot actor)
     {
         var events = new List<BattleEvent>();
@@ -106,7 +109,14 @@ public static class CombatActionResolver
                 if (skill?.Kind == SkillKind.Heal)
                 {
                     var heal = HitResolutionService.ResolveSupportValue(actor, skill);
+                    // cinematic detector(SaveMoment): 빈사 아군을 회복으로 구출한 순간 — 회복 전 HP로 판정.
+                    var isSaveMoment = target.Side == actor.Side && target.HealthRatio < SaveMomentHealthRatio;
                     target.Heal(heal);
+                    if (isSaveMoment)
+                    {
+                        state.ActivityTelemetry.RecordSaveMoment();
+                    }
+
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.ActiveSkill, skill, heal);
                     BattleTelemetryRecorder.RecordImpact(
@@ -117,7 +127,14 @@ public static class CombatActionResolver
                         BattleActionType.ActiveSkill,
                         skill,
                         heal);
-                    events.Add(BuildEvent(state, actor, BattleActionType.ActiveSkill, BattleLogCode.ActiveSkillHeal, target, heal));
+                    events.Add(BuildEvent(
+                        state,
+                        actor,
+                        BattleActionType.ActiveSkill,
+                        BattleLogCode.ActiveSkillHeal,
+                        target,
+                        heal,
+                        note: isSaveMoment ? "save_moment" : ""));
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                 }
                 else if (skill?.Kind == SkillKind.Shield)
@@ -402,6 +419,14 @@ public static class CombatActionResolver
         var events = new List<BattleEvent>();
         var killPayload = BuildKillPayload(actor, target);
 
+        // cinematic detector(BacklineDive): Dive 의도로 들어간 유닛이 후열을 처치 — "내가 그린 그림"의 1급 순간.
+        var isBacklineDiveKill = actor.CurrentCombatIntent.Type == CombatIntentType.Dive
+                                 && target.Behavior.FormationLine == FormationLine.Backline;
+        if (isBacklineDiveKill)
+        {
+            state.ActivityTelemetry.RecordBacklineDiveKill();
+        }
+
         actor.GainEnergyFromKill();
 
         if (killPayload.IsMirroredFromOwnedSummon && killPayload.MirroredOwner != default)
@@ -431,7 +456,9 @@ public static class CombatActionResolver
             BattleEventKind.Kill,
             string.Empty,
             0f,
-            killPayload.IsMirroredFromOwnedSummon ? "mirrored_kill" : "kill",
+            ComposeNote(
+                killPayload.IsMirroredFromOwnedSummon ? "mirrored_kill" : "kill",
+                isBacklineDiveKill ? "backline_dive" : ""),
             killPayload));
         BattleTelemetryRecorder.RecordKill(state, actor, target, actionType, skill, killPayload);
 

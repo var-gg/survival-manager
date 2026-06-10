@@ -108,9 +108,30 @@ public static class HitResolutionService
         var focusMultiplier = Fixed32.FromFloatQuantized(ResolveFocusDamageMultiplier(state, actor, target, skill));
         var resolved = Hp64.Max(oneHp, baseResolved * focusMultiplier);
         state.ActivityTelemetry.RecordFocusDamageContribution((resolved - baseResolved).ToFloat());
+
+        // P0 positional consequence — 위치가 결과를 바꾸는 항. 판정 진실은 BattleFormationConsequence,
+        // 곱셈 체인 합류(crit→block→mitigation→incoming→focus→screen→flank)와 1 HP floor는 여기가 소유.
         var note = blocked
             ? critical ? "crit+block" : "block"
             : critical ? "crit" : string.Empty;
+        var screenMitigation = BattleFormationConsequence.ResolveScreenMitigation(state, actor, target);
+        if (screenMitigation > 0f)
+        {
+            var screened = Hp64.Max(oneHp, resolved * (Fixed32.One - Fixed32.FromFloatQuantized(screenMitigation)));
+            state.ActivityTelemetry.RecordScreenAbsorb((resolved - screened).ToFloat());
+            resolved = screened;
+            note = ComposeNoteToken(note, "screened");
+        }
+
+        var flank = BattleFormationConsequence.ResolveFlankArc(state, actor, target);
+        if (flank.IsFlanking)
+        {
+            var flanked = Hp64.Max(oneHp, resolved * (Fixed32.One + Fixed32.FromFloatQuantized(flank.DamageBonus)));
+            state.ActivityTelemetry.RecordFlankStrike((flanked - resolved).ToFloat(), isRear: flank.NoteToken == "rear");
+            resolved = flanked;
+            note = ComposeNoteToken(note, flank.NoteToken);
+        }
+
         return new HitResolutionResult(resolved.ToFloat(), false, critical, blocked, mitigation, note);
     }
 
@@ -246,5 +267,10 @@ public static class HitResolutionService
     private static bool IsApproximately(float left, float right)
     {
         return Math.Abs(left - right) <= 0.0001f;
+    }
+
+    private static string ComposeNoteToken(string note, string token)
+    {
+        return string.IsNullOrEmpty(note) ? token : $"{note}+{token}";
     }
 }
