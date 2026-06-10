@@ -157,6 +157,14 @@ fn default_scan_roots(project_root: &Path, ai_infra_root: &Path) -> Vec<ScanRoot
             "cutscene",
         ),
         (
+            "art-sfx",
+            "SFX Approved",
+            "art-pipeline/sfx/approved",
+            "approved",
+            true,
+            "sfx",
+        ),
+        (
             "art-ref",
             "Art Pipeline References",
             "art-pipeline/ref",
