@@ -13,6 +13,8 @@ public sealed class SquadBlueprintRecord
     public Dictionary<string, string> DeploymentAssignments = new();
     public List<string> ExpeditionSquadHeroIds = new();
     public Dictionary<string, string> HeroRoleIds = new();
+    // P1 유닛별 타겟 지시 — heroId → PlayerTargetDirective 안정 id ("nearest"/"finish_lowest"/"hunt_backline"/"break_cluster").
+    public Dictionary<string, string> HeroTargetDirectives = new();
     // 유저가 출전 배치(anchor)를 명시적으로 편성했는지. true면 reload 시 자동배치가 덮지 않고 배치를 복원한다.
     public bool DeploymentUserAuthored;
 }

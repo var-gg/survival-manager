@@ -48,7 +48,10 @@ public sealed record SquadBlueprintState(
     string TeamTacticId,
     IReadOnlyDictionary<DeploymentAnchorId, string> DeploymentAssignments,
     IReadOnlyList<string> ExpeditionSquadHeroIds,
-    IReadOnlyDictionary<string, string> HeroRoleIds);
+    IReadOnlyDictionary<string, string> HeroRoleIds,
+    // P1 유닛별 타겟 지시 — heroId → PlayerTargetDirective 안정 id (PlayerTargetDirectiveRules.ToStableId).
+    // null이면 전원 Default. HeroRoleIds와 같은 패턴의 세션-소유 사용자 입력.
+    IReadOnlyDictionary<string, string>? HeroTargetDirectives = null);
 
 public sealed record RunOverlayState(
     int CurrentNodeIndex,

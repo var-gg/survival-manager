@@ -65,6 +65,26 @@ public sealed class LoadoutCompilerClosureTests
     }
 
     [Test]
+    public void LoadoutCompiler_ChangingTargetDirectiveChangesHash_AndCarriesDirective()
+    {
+        var compiler = new LoadoutCompiler();
+        var content = BuildContentSnapshot();
+        var baseline = CompileSquad(compiler, content, BuildBaselineSpec());
+        var directed = CompileSquad(compiler, content, BuildBaselineSpec(), heroTargetDirectives: new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["hero.raider"] = "finish_lowest",
+        });
+
+        Assert.That(directed.CompileHash, Is.Not.EqualTo(baseline.CompileHash),
+            "P1 타겟 지시는 로드아웃 입력 — compile hash가 반영해야 replay/audit 무결성이 유지된다");
+        Assert.That(directed.Allies.Single(ally => ally.Id == "hero.raider").TargetDirective,
+            Is.EqualTo(PlayerTargetDirective.FinishLowestHp));
+        Assert.That(directed.Allies.Single(ally => ally.Id == "hero.warden").TargetDirective,
+            Is.EqualTo(PlayerTargetDirective.Default));
+        Assert.That(baseline.Allies.All(ally => ally.TargetDirective == PlayerTargetDirective.Default), Is.True);
+    }
+
+    [Test]
     public void LoadoutCompiler_NormalizesLegacyStatAliasAndSkillSlot()
     {
         var compiler = new LoadoutCompiler();
@@ -184,7 +204,8 @@ public sealed class LoadoutCompilerClosureTests
         LoadoutCompiler compiler,
         CombatContentSnapshot content,
         SquadSpec spec,
-        IReadOnlyList<CombatModifierPackage>? squadSupportPackages = null)
+        IReadOnlyList<CombatModifierPackage>? squadSupportPackages = null,
+        IReadOnlyDictionary<string, string>? heroTargetDirectives = null)
     {
         var heroes = new List<HeroRecord>(spec.Heroes.Count);
         var heroLoadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal);
@@ -258,7 +279,8 @@ public sealed class LoadoutCompilerClosureTests
                 spec.TeamTacticId,
                 deploymentAssignments,
                 heroes.Select(hero => hero.Id).ToList(),
-                heroRoleIds),
+                heroRoleIds,
+                heroTargetDirectives),
             new RunOverlayState(0, spec.TemporaryAugmentIds, Array.Empty<string>(), LoadoutCompiler.CurrentCompileVersion, string.Empty),
             content,
             squadSupportPackages);

@@ -887,7 +887,11 @@ public sealed partial class GameSessionState
             SelectedTeamTacticId,
             deploymentAssignments,
             _expeditionSquadHeroIds.ToList(),
-            Profile.Heroes.ToDictionary(hero => hero.HeroId, hero => ResolveBlueprintRoleInstructionId(hero.HeroId, hero.ClassId, ResolvePreferredAnchor(hero.HeroId)), StringComparer.Ordinal));
+            Profile.Heroes.ToDictionary(hero => hero.HeroId, hero => ResolveBlueprintRoleInstructionId(hero.HeroId, hero.ClassId, ResolvePreferredAnchor(hero.HeroId)), StringComparer.Ordinal),
+            _heroTargetDirectives.ToDictionary(
+                pair => pair.Key,
+                pair => PlayerTargetDirectiveRules.ToStableId(pair.Value),
+                StringComparer.Ordinal));
 
         var record = Profile.SquadBlueprints.FirstOrDefault(existing => existing.BlueprintId == blueprint.BlueprintId);
         if (record == null)
@@ -902,6 +906,8 @@ public sealed partial class GameSessionState
         record.DeploymentAssignments = blueprint.DeploymentAssignments.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value, StringComparer.Ordinal);
         record.ExpeditionSquadHeroIds = blueprint.ExpeditionSquadHeroIds.ToList();
         record.HeroRoleIds = blueprint.HeroRoleIds.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        record.HeroTargetDirectives = (blueprint.HeroTargetDirectives ?? new Dictionary<string, string>())
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
         record.DeploymentUserAuthored = _deploymentUserAuthored;
         Profile.ActiveBlueprintId = blueprint.BlueprintId;
         return blueprint;
@@ -929,7 +935,8 @@ public sealed partial class GameSessionState
                 .Where(pair => Enum.TryParse<DeploymentAnchorId>(pair.Key, out _))
                 .ToDictionary(pair => Enum.Parse<DeploymentAnchorId>(pair.Key), pair => pair.Value),
             record.ExpeditionSquadHeroIds,
-            record.HeroRoleIds);
+            record.HeroRoleIds,
+            record.HeroTargetDirectives);
     }
 
     // 유저가 명시 편성한 출전 배치를 active blueprint record에서 live _deploymentAssignments로 복원한다.
@@ -963,6 +970,31 @@ public sealed partial class GameSessionState
         }
 
         _deploymentUserAuthored = true;
+    }
+
+    // P1 유닛별 타겟 지시 복원 — 배치와 달리 user-authored 플래그가 없다(지시 존재 자체가 사용자 의도).
+    private void RestoreHeroTargetDirectivesFromActiveBlueprint()
+    {
+        if (string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId))
+        {
+            return;
+        }
+
+        var record = Profile.SquadBlueprints.FirstOrDefault(existing => existing.BlueprintId == Profile.ActiveBlueprintId);
+        if (record?.HeroTargetDirectives is not { Count: > 0 })
+        {
+            return;
+        }
+
+        _heroTargetDirectives.Clear();
+        foreach (var pair in record.HeroTargetDirectives)
+        {
+            var directive = PlayerTargetDirectiveRules.ParseStableId(pair.Value);
+            if (directive != PlayerTargetDirective.Default)
+            {
+                _heroTargetDirectives[pair.Key] = directive;
+            }
+        }
     }
 
     private static IReadOnlyDictionary<string, HeroLoadoutState> ToHeroLoadoutStates(SaveProfile profile)

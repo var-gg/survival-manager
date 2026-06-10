@@ -48,6 +48,8 @@ public sealed partial class GameSessionState
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
     // 유저가 출전 anchor를 명시 편성했는지. 자동배치는 이 플래그를 세우지 않으며, true면 자동배치가 배치를 덮지 않는다.
     private bool _deploymentUserAuthored;
+    // P1 유닛별 타겟 지시 — heroId → directive. Default는 저장하지 않는다(사전 부재 = Default).
+    private readonly Dictionary<string, PlayerTargetDirective> _heroTargetDirectives = new(StringComparer.Ordinal);
     private readonly List<RecruitUnitPreview> _recruitOffers = new();
     private readonly List<ExpeditionNodeViewModel> _expeditionNodes = new();
     private readonly List<RewardChoiceViewModel> _pendingRewardChoices = new();
@@ -238,6 +240,7 @@ public sealed partial class GameSessionState
             EnsureRecruitOffers();
             EnsureDefaultSquad();
             RestoreDeploymentFromActiveBlueprint();
+            RestoreHeroTargetDirectivesFromActiveBlueprint();
             EnsureBattleDeployReady();
             EnsureCampaignSelection();
             EnsureExpeditionNodes(reset: true);
@@ -1010,6 +1013,46 @@ public sealed partial class GameSessionState
         SelectedTeamTacticId = teamTacticId ?? string.Empty;
         CaptureBlueprintState();
         SyncActiveRunIfPresent();
+    }
+
+    /// <summary>P1 유닛별 타겟 지시 조회 — 미설정은 Default.</summary>
+    public PlayerTargetDirective GetHeroTargetDirective(string heroId)
+    {
+        return !string.IsNullOrWhiteSpace(heroId) && _heroTargetDirectives.TryGetValue(heroId, out var directive)
+            ? directive
+            : PlayerTargetDirective.Default;
+    }
+
+    public void SetHeroTargetDirective(string heroId, PlayerTargetDirective directive) =>
+        _deploymentFlow.SetHeroTargetDirective(heroId, directive);
+
+    private void SetHeroTargetDirectiveCore(string heroId, PlayerTargetDirective directive)
+    {
+        if (string.IsNullOrWhiteSpace(heroId))
+        {
+            return;
+        }
+
+        if (directive == PlayerTargetDirective.Default)
+        {
+            _heroTargetDirectives.Remove(heroId);
+        }
+        else
+        {
+            _heroTargetDirectives[heroId] = directive;
+        }
+
+        CaptureBlueprintState();
+        SyncActiveRunIfPresent();
+    }
+
+    /// <summary>P1 지시 cycle — Default → 최근접 → 마무리 → 후열 사냥 → 밀집 격파 → Default.</summary>
+    public PlayerTargetDirective CycleHeroTargetDirective(string heroId)
+    {
+        var values = (PlayerTargetDirective[])Enum.GetValues(typeof(PlayerTargetDirective));
+        var next = values[(Array.IndexOf(values, GetHeroTargetDirective(heroId)) + 1) % values.Length];
+        SetHeroTargetDirective(heroId, next);
+        return next;
     }
 
     public IEnumerable<(DeploymentAnchorId Anchor, string? HeroId)> EnumerateDeploymentAssignments() =>

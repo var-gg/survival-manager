@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SM.Combat.Model;
 using SM.Content;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using SM.Core.Results;
 using SM.Meta.Model;
 using SM.Unity.Sandbox;
@@ -65,6 +66,9 @@ public sealed partial class GameSessionState
         internal void SetTeamPosture(TeamPostureType posture) => _session.SetTeamPostureCore(posture);
 
         internal void SetTeamTactic(string teamTacticId) => _session.SetTeamTacticCore(teamTacticId);
+
+        internal void SetHeroTargetDirective(string heroId, PlayerTargetDirective directive) =>
+            _session.SetHeroTargetDirectiveCore(heroId, directive);
 
         internal IEnumerable<(DeploymentAnchorId Anchor, string? HeroId)> EnumerateDeploymentAssignments() =>
             _session.EnumerateDeploymentAssignmentsCore();

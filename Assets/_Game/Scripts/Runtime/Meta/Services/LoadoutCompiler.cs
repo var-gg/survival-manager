@@ -223,6 +223,13 @@ public sealed class LoadoutCompiler
             artifacts.CompileTags.Add($"role_variant:{roleVariant}");
             var dominantHand = ResolveDominantHand(hero, archetype, content);
             artifacts.CompileTags.Add($"dominant_hand:{dominantHand}");
+            // P1 유닛별 타겟 지시(세션 사용자 입력) — compile tag + 로드아웃 + hash(아래)로 흘러
+            // replay/audit 무결성에 포함된다.
+            var targetDirective = ResolveTargetDirective(hero, blueprint);
+            if (targetDirective != PlayerTargetDirective.Default)
+            {
+                artifacts.CompileTags.Add($"target_directive:{PlayerTargetDirectiveRules.ToStableId(targetDirective)}");
+            }
 
             compiled.Add(new BattleUnitLoadout(
                 hero.Id,
@@ -264,7 +271,8 @@ public sealed class LoadoutCompiler
                 hero.CharacterId,
                 roleSelection.Id,
                 dominantHand,
-                artifacts.TriggeredEffects.ToList()));
+                artifacts.TriggeredEffects.ToList(),
+                targetDirective));
 
             compileProvenance.AddRange(artifacts.Provenance);
         }
@@ -663,6 +671,14 @@ public sealed class LoadoutCompiler
         return new ResolvedRoleInstructionSelection(fallbackRoleTag, new SlotRoleInstruction(anchor, fallbackRoleTag));
     }
 
+    private static PlayerTargetDirective ResolveTargetDirective(HeroRecord hero, SquadBlueprintState blueprint)
+    {
+        return blueprint.HeroTargetDirectives != null
+               && blueprint.HeroTargetDirectives.TryGetValue(hero.Id, out var directiveId)
+            ? PlayerTargetDirectiveRules.ParseStableId(directiveId)
+            : PlayerTargetDirective.Default;
+    }
+
     private static RoleVariantTag ResolveRoleVariant(
         CombatArchetypeTemplate archetype,
         SlotRoleInstruction roleInstruction)
@@ -751,6 +767,7 @@ public sealed class LoadoutCompiler
                 .Append(unit.RoleInstruction?.ProtectCarryBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.RoleInstruction?.BacklinePressureBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.RoleInstruction?.RetreatBias.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
+                .Append(PlayerTargetDirectiveRules.ToStableId(unit.TargetDirective)).Append(':')
                 .Append(unit.Footprint?.NavigationRadius.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.Footprint?.SeparationRadius.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')
                 .Append(unit.Footprint?.CombatReach.ToString("0.###", CultureInfo.InvariantCulture) ?? "0").Append(':')

@@ -448,6 +448,11 @@ public sealed class SquadBuilderPresenter
 
         AddOperationRow("전열", selectedRow?.DeploymentLabel ?? LocalizeAnchor(_selectedAnchor));
         AddOperationRow("역할", selectedRow?.RoleLabel ?? "선택 없음");
+        // P1 유닛별 타겟 지시 — 클릭 cycle. 세션 SetHeroTargetDirective → 로드아웃 compile hash까지 흐른다.
+        if (selectedRow != null)
+        {
+            AddTargetDirectiveRow(session, selectedRow.HeroId);
+        }
         AddOperationRow("거리", selectedRow?.RangeLabel ?? "기본 교전 거리");
         AddOperationRow("편성", $"배치 {deployedCount}/6 · 원정 {session.ExpeditionSquadHeroIds.Count}/4");
 
@@ -482,6 +487,38 @@ public sealed class SquadBuilderPresenter
 
         _operationRows.Add(row);
     }
+
+    // P1 타겟 지시 행 — 값 자리에 cycle 버튼. UXML 무변경(동적 생성, roster row와 같은 패턴).
+    private void AddTargetDirectiveRow(GameSessionState session, string heroId)
+    {
+        var row = new VisualElement { name = "SquadBuilderTargetDirectiveRow" };
+        row.AddToClassList("sm-sqb-modal__operation-row");
+
+        var keyLabel = new Label("지시");
+        keyLabel.AddToClassList("sm-sqb-modal__operation-key");
+        row.Add(keyLabel);
+
+        var cycleButton = new Button { name = "SquadBuilderTargetDirectiveButton", text = LocalizeDirective(session.GetHeroTargetDirective(heroId)) };
+        cycleButton.AddToClassList("sm-sqb-modal__operation-value");
+        cycleButton.clicked += () =>
+        {
+            var next = _root.SessionState.CycleHeroTargetDirective(heroId);
+            _statusText = $"타겟 지시 변경: {LocalizeDirective(next)}";
+            Render();
+        };
+        row.Add(cycleButton);
+
+        _operationRows.Add(row);
+    }
+
+    private static string LocalizeDirective(PlayerTargetDirective directive) => directive switch
+    {
+        PlayerTargetDirective.NearestEnemy => "최근접 교전",
+        PlayerTargetDirective.FinishLowestHp => "마무리 우선",
+        PlayerTargetDirective.HuntExposedBackline => "후열 사냥",
+        PlayerTargetDirective.BreakLargestCluster => "밀집 격파",
+        _ => "기본(자동)",
+    };
 
     private SquadBuilderHeroRow BuildHeroRow(
         GameSessionState session,

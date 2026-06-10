@@ -81,7 +81,13 @@ public static class TacticEvaluator
     private static EvaluatedAction EvaluateLoopA(BattleState state, UnitSnapshot actor, ReevaluationReason reevaluationReason)
     {
         var fallbackRule = new TacticRule(999, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self, null);
-        var stableTarget = ResolveStableTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
+        // P1 플레이어 타겟 지시: 기본공격(=교전 대상) 타게팅에만 적용한다. 저작된 스킬 규칙은 보존,
+        // Dive/Peel 의도와 melee 최근접 가드(Q5)는 지시보다 우선. stable-target 히스테리시스도 그대로
+        // (지시는 재획득 시점에 작동) — 안티-스래시 계약 불변.
+        var directedBasicRule = PlayerTargetDirectiveRules.Apply(
+            actor.Definition.TargetDirective,
+            actor.Definition.EffectiveBasicAttack.TargetRuleData);
+        var stableTarget = ResolveStableTarget(state, actor, directedBasicRule);
         var baseRangeBand = ResolveLoopARangeBand(actor, null, BattleActionType.BasicAttack);
 
         // Mobility interrupt
@@ -112,7 +118,7 @@ public static class TacticEvaluator
         }
 
         // Ground state: BasicAttack — default combat action, generates energy
-        var basicResult = TryBasicAttack(state, actor, stableTarget, baseRangeBand, fallbackRule, reevaluationReason);
+        var basicResult = TryBasicAttack(state, actor, stableTarget, directedBasicRule, baseRangeBand, fallbackRule, reevaluationReason);
         if (basicResult.ActionType != BattleActionType.WaitDefend)
         {
             return basicResult;
@@ -189,11 +195,11 @@ public static class TacticEvaluator
     }
 
     private static EvaluatedAction TryBasicAttack(
-        BattleState state, UnitSnapshot actor, UnitSnapshot? stableTarget,
+        BattleState state, UnitSnapshot actor, UnitSnapshot? stableTarget, TargetRule basicRule,
         FloatRange baseRangeBand, TacticRule fallbackRule, ReevaluationReason reevaluationReason)
     {
         var basicTarget = stableTarget
-                          ?? TargetScoringService.SelectTarget(state, actor, actor.Definition.EffectiveBasicAttack.TargetRuleData);
+                          ?? TargetScoringService.SelectTarget(state, actor, basicRule);
         if (basicTarget != null)
         {
             var requiresSlot = basicTarget.Side != actor.Side && EngagementSlotService.RequiresSlotting(actor, baseRangeBand);
