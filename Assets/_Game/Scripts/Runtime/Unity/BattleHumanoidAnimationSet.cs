@@ -139,6 +139,8 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
     [SerializeField] private BattleHumanoidAnimationStance stance = BattleHumanoidAnimationStance.Default;
     [SerializeField] private AnimationClip relaxedIdle = null!;
     [SerializeField] private AnimationClip idle = null!;
+    // 활 분류 유닛의 전투 대기 자세(활을 들고 겨눌 준비를 한 bow idle). 비어 있으면 idle로 폴백.
+    [SerializeField] private AnimationClip? bowReadyIdle;
     [SerializeField] private AnimationClip walkMove = null!;
     [SerializeField] private AnimationClip move = null!;
     [SerializeField] private AnimationClip guardLoop = null!;
@@ -253,6 +255,14 @@ public sealed partial class BattleHumanoidAnimationSet : ScriptableObject
         if (state.IsDefending || state.PendingActionType == BattleActionType.WaitDefend)
         {
             return guardLoop != null ? guardLoop : FirstNonNull(guardEnter, idle);
+        }
+
+        // 활 분류 유닛은 전투 대기에서 활을 든 ready idle로 선다 — 등/빈손 generic idle 대신
+        // 궁수로 읽히게 하는 presentation 분기. 클립이 비어 있으면 기존 idle 그대로.
+        if (bowReadyIdle != null
+            && BattleBasicAttackPresentationClassifier.Resolve(state) == BattleBasicAttackPresentationKind.Bow)
+        {
+            return bowReadyIdle;
         }
 
         return idle;

@@ -79,6 +79,9 @@ public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
 
         ApplyModelTransform();
         ApplyAppearancePreset();
+        // 원거리 유닛(활/지팡이)은 P09 기본 거치(등 홀스터)를 손 거치로 전환한다 — 전투 모션이
+        // 빈손으로 재생되던 "활을 등에 멘 채 공격" 수술. 외형 프리셋이 무기 메시를 켠 뒤에 호출해야 한다.
+        BattleP09WeaponStanceRig.ApplyRangedHandStance(p09ModelRoot, actor);
         EnsureReadableP09Materials();
         EnsureProxyRenderers();
         EnsureMaterial(pulseProxyRenderer, Color.clear);

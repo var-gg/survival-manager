@@ -555,24 +555,16 @@ public sealed class BattlePresentationCueBuilder
         return BattleAnimationCueDescriptor.None;
     }
 
+    // 활/투사체 분류는 BattleBasicAttackPresentationClassifier로 단일화됐다 — commit 모션 semantic,
+    // 무기 손 거치 rig(BattleP09WeaponStanceRig), bow ready idle이 같은 truth를 공유한다.
     private static bool IsBowBasicAttacker(BattleUnitReadModel actor)
     {
-        return IsTag(actor.ClassId, "ranger")
-               || IsTag(actor.ArchetypeId, "hunter")
-               || IsTag(actor.ArchetypeId, "scout")
-               || IsTag(actor.ArchetypeId, "marksman")
-               || IsTag(actor.ArchetypeId, "rift_stalker");
+        return BattleBasicAttackPresentationClassifier.IsBowBasicAttacker(actor);
     }
 
     private static bool IsProjectileBasicAttacker(BattleUnitReadModel actor)
     {
-        return actor.PreferredRangeMin >= 1.8f
-               || actor.PreferredRangeMax >= 2.4f;
-    }
-
-    private static bool IsTag(string value, string expected)
-    {
-        return string.Equals(value, expected, System.StringComparison.Ordinal);
+        return BattleBasicAttackPresentationClassifier.IsProjectileBasicAttacker(actor);
     }
 
     private static Dictionary<string, List<BattleMotionIntent>> BuildMotionsByActor(BattleSimulationStep step)

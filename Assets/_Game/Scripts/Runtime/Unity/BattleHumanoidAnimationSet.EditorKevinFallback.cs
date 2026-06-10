@@ -34,6 +34,7 @@ public sealed partial class BattleHumanoidAnimationSet
         set.stance = BattleHumanoidAnimationStance.Default;
         set.relaxedIdle = relaxedIdleClip ?? idleClip!;
         set.idle = idleClip!;
+        set.bowReadyIdle = LoadEditorClip("Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/Bow/HumanM@BowIdle01.fbx");
         set.walkMove = walkMoveClip ?? moveClip!;
         set.move = moveClip!;
         set.authoredWalkLocomotionSpeed = DefaultWalkAuthoredLocomotionSpeed;
