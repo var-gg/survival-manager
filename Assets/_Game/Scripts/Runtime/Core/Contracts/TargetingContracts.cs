@@ -80,6 +80,26 @@ public enum RetargetLockMode
 }
 
 /// <summary>
+/// P3 스킬 강제이동 — 스킬이 접촉 시 위치를 강제로 바꾸는 저작 의도. 콘텐츠 에셋(SM.Content)과
+/// 컴파일된 스킬 스펙(SM.Combat)이 공유하는 계약이라 SM.Core에 둔다. 방향은 시전자↔대상 축에서
+/// 파생(저작 jitter 없음 — 결정론은 구성으로 보장), 거리는 저작값에 대상 Stability 보정.
+/// </summary>
+public enum SkillDisplacementKind
+{
+    /// <summary>강제이동 없음.</summary>
+    None = 0,
+
+    /// <summary>돌진 — 시전자가 대상을 향해 접촉 거리 직전까지 이동.</summary>
+    SelfTowardTarget = 1,
+
+    /// <summary>넉백 — 적 대상을 시전자 반대 방향으로 밀어낸다.</summary>
+    EnemyAwayFromCaster = 2,
+
+    /// <summary>끌기 — 적 대상을 시전자 쪽으로 끌어온다(최소 간격 유지).</summary>
+    EnemyTowardCaster = 3,
+}
+
+/// <summary>
 /// P1 플레이어 전술 레버 — 유닛별 교전 타게팅 지시. 기본공격(=교전 대상 결정)의 authored
 /// TargetRule에서 PrimarySelector만 교체하는 curated 소수 집합이다. 저작된 스킬 규칙·Dive/Peel
 /// 의도·melee 최근접 가드(Q5)는 지시보다 우선한다 — 지시는 "선호"지 "강제"가 아니다.

@@ -447,6 +447,92 @@ public static class MovementResolver
         MovePosition(state, target, next, BattleMotionKind.Knockback, isDiscrete: true, sourceActorId: actor.Id);
     }
 
+    /// <summary>돌진이 대상 앞에서 멈추는 최소 간격 하한(m).</summary>
+    private const float SkillDashContactGapFloor = 0.15f;
+
+    /// <summary>끌기가 시전자 앞에서 멈추는 최소 간격(m) — 겹침 방지.</summary>
+    private const float SkillPullMinGap = 0.6f;
+
+    /// <summary>강제이동으로 의미 있다고 보는 최소 이동량(m).</summary>
+    private const float SkillDisplacementMinTravel = 0.05f;
+
+    /// <summary>
+    /// P3 스킬 강제이동(적 대상) — 넉백/끌기. 저작 방향(시전자↔대상 축)과 거리(×대상 Stability 보정)로
+    /// 결정적이며 roll이 없다. unstoppable은 강제이동을 무시한다(신설 저항 규칙 — micro-knockback과 달리
+    /// 저작 의도가 명시적인 이동이라 status 카운터가 성립). 이동하면 true — 호출부가 micro-knockback을
+    /// 대체한다. 연출은 기존 Knockback motion 채널(트레이스)을 그대로 탄다.
+    /// </summary>
+    public static bool TryApplySkillTargetDisplacement(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec skill)
+    {
+        if (skill.DisplacementKind is not (SkillDisplacementKind.EnemyAwayFromCaster or SkillDisplacementKind.EnemyTowardCaster)
+            || skill.DisplacementDistance <= 0f
+            || !target.IsAlive
+            || target.Side == actor.Side
+            || target.IsUnstoppable)
+        {
+            return false;
+        }
+
+        var awayFromCaster = FixedDirection(actor, target, actor.Side == TeamSide.Ally
+            ? new CombatVector2(1f, 0f)
+            : new CombatVector2(-1f, 0f));
+        var stabilityFactor = MathF.Max(0.2f, 1f - target.Behavior.Stability);
+        float travel;
+        CombatVector2 direction;
+        if (skill.DisplacementKind == SkillDisplacementKind.EnemyAwayFromCaster)
+        {
+            direction = awayFromCaster;
+            travel = skill.DisplacementDistance * stabilityFactor;
+        }
+        else
+        {
+            // 끌기 — 시전자 쪽으로, 최소 간격(SkillPullMinGap)은 남긴다.
+            direction = awayFromCaster * -1f;
+            var gap = actor.Position.DistanceTo(target.Position);
+            travel = MathF.Min(skill.DisplacementDistance * stabilityFactor, gap - SkillPullMinGap);
+        }
+
+        if (travel <= SkillDisplacementMinTravel)
+        {
+            return false;
+        }
+
+        var next = ClampToArena(ClampToLeash(state, target, target.Position + (direction * travel)));
+        MovePosition(state, target, next, BattleMotionKind.Knockback, isDiscrete: true, sourceActorId: actor.Id);
+        return true;
+    }
+
+    /// <summary>
+    /// P3 스킬 강제이동(자기) — 돌진. 시전자가 대상을 향해 저작 거리만큼, 접촉 간격 직전까지 이동한다.
+    /// contact 시점 적용이라 사거리 의미는 불변(위치 이득은 다음 행동부터) — follow-through 재배치.
+    /// </summary>
+    public static bool TryApplySkillSelfDash(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec skill)
+    {
+        if (skill.DisplacementKind != SkillDisplacementKind.SelfTowardTarget
+            || skill.DisplacementDistance <= 0f
+            || !actor.IsAlive
+            || !target.IsAlive
+            || target.Side == actor.Side)
+        {
+            return false;
+        }
+
+        var gap = ComputeEdgeDistance(actor, target);
+        var contactGap = MathF.Max(SkillDashContactGapFloor, actor.CombatReach * 0.5f);
+        var travel = MathF.Min(skill.DisplacementDistance, gap - contactGap);
+        if (travel <= SkillDisplacementMinTravel)
+        {
+            return false;
+        }
+
+        var direction = FixedDirection(actor, target, actor.Side == TeamSide.Ally
+            ? new CombatVector2(1f, 0f)
+            : new CombatVector2(-1f, 0f));
+        var next = ClampToArena(actor.Position + (direction * travel));
+        MovePosition(state, actor, next, BattleMotionKind.MobilityDash, isDiscrete: true, sourceActorId: null);
+        return true;
+    }
+
     // 넉백 결정적 roll의 정수 basis [0, 9999]. 각도(turn-LUT)·거리(float) 모두 이 basis에서 파생한다.
     private static int KnockbackRollBasis(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
     {

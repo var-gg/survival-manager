@@ -103,7 +103,9 @@ internal static class SkillConverter
             BuildGovernanceSummary(skill.BudgetCard),
             IconId: string.IsNullOrWhiteSpace(skill.IconId) ? $"skill_icon_{StripPrefix(skill.Id, "skill_")}" : skill.IconId,
             VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? $"vfx.{skill.Id}" : skill.VfxHookId,
-            PresentationProfile: presentationProfile);
+            PresentationProfile: presentationProfile,
+            DisplacementKind: skill.DisplacementKind,
+            DisplacementDistance: Mathf.Max(0f, skill.DisplacementDistance));
     }
 
     internal static BattleBasicAttackSpec BuildBasicAttackSpec(UnitArchetypeDefinition definition)

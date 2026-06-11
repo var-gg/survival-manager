@@ -28,6 +28,8 @@ MonoBehaviour:
   Radius: 0
   Width: 0
   ArcDegrees: 0
+  DisplacementKind: 2
+  DisplacementDistance: 0.8
   PowerFlat: 3.4
   PhysCoeff: 1
   MagCoeff: 0

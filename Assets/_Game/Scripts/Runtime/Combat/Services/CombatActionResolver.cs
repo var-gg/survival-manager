@@ -200,7 +200,12 @@ public static class CombatActionResolver
                         target.GainEnergyFromDirectHitTaken();
                         if (target.IsAlive)
                         {
-                            MovementResolver.ApplyKnockback(state, actor, target, skillResult.WasCritical);
+                            // P3: 저작 강제이동(넉백/끌기)이 있으면 micro-knockback을 대체한다 — 이중 이동 방지.
+                            var displaced = skill != null && MovementResolver.TryApplySkillTargetDisplacement(state, actor, target, skill);
+                            if (!displaced)
+                            {
+                                MovementResolver.ApplyKnockback(state, actor, target, skillResult.WasCritical);
+                            }
                         }
                         BattleTelemetryRecorder.RecordImpact(
                             state,
@@ -212,6 +217,13 @@ public static class CombatActionResolver
                             skillResult.Value,
                             skillResult.MitigationValue,
                             skillResult.Note);
+                    }
+
+                    // P3 돌진 — contact 시점 follow-through(사거리 의미 불변, 위치 이득은 다음 행동부터).
+                    // dodge로 피해가 0이어도 몸은 들어간다.
+                    if (skill != null)
+                    {
+                        MovementResolver.TryApplySkillSelfDash(state, actor, target, skill);
                     }
 
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
@@ -273,6 +285,11 @@ public static class CombatActionResolver
                 ApplyDamageDrain(state, actor, BattleActionType.ActiveSkill, skill, resolvedValue);
                 target.GainEnergyFromDirectHitTaken();
                 caughtTargets.Add(target);
+                if (target.IsAlive)
+                {
+                    // P3: AoE 강제이동 — 대상별 시전자 기준 축으로 적용(현 AoE 경로는 micro-knockback 없음).
+                    MovementResolver.TryApplySkillTargetDisplacement(state, actor, target, skill);
+                }
                 BattleTelemetryRecorder.RecordImpact(
                     state,
                     TelemetryEventKind.DamageApplied,

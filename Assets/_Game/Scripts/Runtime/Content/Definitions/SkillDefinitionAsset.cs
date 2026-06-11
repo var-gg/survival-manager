@@ -26,6 +26,9 @@ namespace SM.Content.Definitions
         public float Radius = 0f;
         public float Width = 0f;
         public float ArcDegrees = 0f;
+        // P3 강제이동 — 돌진(SelfTowardTarget)/넉백(EnemyAwayFromCaster)/끌기(EnemyTowardCaster) + 거리(m).
+        public SkillDisplacementKind DisplacementKind = SkillDisplacementKind.None;
+        public float DisplacementDistance = 0f;
         public float PowerFlat = 0f;
         public float PhysCoeff = 1f;
         public float MagCoeff = 0f;

@@ -201,7 +201,10 @@ public record BattleSkillSpec(
     bool AllowsEliteFocusCap = false,
     string IconId = "",
     string VfxHookId = "",
-    BattleSkillPresentationProfile? PresentationProfile = null)
+    BattleSkillPresentationProfile? PresentationProfile = null,
+    // P3 스킬 강제이동 — 접촉 시 위치를 바꾸는 저작 의도(돌진/넉백/끌기). 소비는 MovementResolver.
+    SkillDisplacementKind DisplacementKind = SkillDisplacementKind.None,
+    float DisplacementDistance = 0f)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 

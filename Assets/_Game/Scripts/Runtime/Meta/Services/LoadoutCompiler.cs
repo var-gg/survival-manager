@@ -14,7 +14,8 @@ namespace SM.Meta.Services;
 
 public sealed class LoadoutCompiler
 {
-    public const string CurrentCompileVersion = "loop-d-telemetry-pruning-readability-balance.v1";
+    // p3-skill-displacement.v1: 스킬 hash 직렬화에 DisplacementKind/Distance 추가(전 스킬 라인 변경).
+    public const string CurrentCompileVersion = "p3-skill-displacement.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -836,7 +837,10 @@ public sealed class LoadoutCompiler
                     .Append(string.Join(",", (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
                         .Select(status => $"{status.StatusId}:{status.DurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)}:{status.Magnitude.ToString("0.###", CultureInfo.InvariantCulture)}:{status.MaxStacks}:{status.RefreshDurationOnReapply}"))).Append(':')
                     .Append(skill.CleanseProfileId ?? string.Empty).Append(':')
-                    .Append(skill.VfxHookId ?? string.Empty)
+                    .Append(skill.VfxHookId ?? string.Empty).Append(':')
+                    // P3 강제이동은 전투 결과를 바꾸는 저작 입력 — hash 포함(replay/audit).
+                    .Append(skill.DisplacementKind).Append(':')
+                    .Append(skill.DisplacementDistance.ToString("0.###", CultureInfo.InvariantCulture))
                     .Append('|');
             }
 
