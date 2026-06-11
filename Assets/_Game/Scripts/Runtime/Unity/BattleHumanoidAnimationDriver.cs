@@ -641,6 +641,13 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _isHoldingTerminalPose = false;
         _oneShotIsMobility = isMobility;
         _isDeathOneShotActive = false;
+        // 핀 상태 청산: 자기 커밋 핀이 살아있는 채로 이 one-shot(특히 death)이 레이어를 차지하면
+        // stale 핀이 하이재킹한다 — Tick은 핀 가드로 전진을 멈추고(서서 정지), EvaluateContactPin은
+        // 핀 만료 순간 StopOneShot으로 플레이어블을 파괴해 마지막 프레임으로 점프시킨다
+        // ("가만히 있다가 갑자기 누움"). 레이어 소유권이 넘어올 때 핀 소유권도 함께 청산한다.
+        _isPinnedCommit = false;
+        _pinActionInstanceId = ActionInstanceId.None;
+        _pinFollowUpClip = null;
         // 피격 리액션 가시화: 리액션 one-shot은 클립 0초(중립 포즈)가 아니라 리코일이 전개된
         // 지점에서 시작할 수 있다. 타겟 hitstop이 시작 시점 포즈를 고정하고(StartHitstop의
         // contactTime = _oneShotElapsed) 다음 액션이 리액션을 수십 ms 안에 교체하는 전장에서,
