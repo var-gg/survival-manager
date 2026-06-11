@@ -105,4 +105,6 @@ public sealed class KillEventPayload
     public bool IsMirroredFromOwnedSummon;
     public bool GrantsOwnerEnergy;
     public bool GrantsOwnerOnKillTriggers;
+    // P2 typed 채널: Dive 의도 유닛의 후열 처치 — 연출/하이라이트가 note 파싱 없이 읽는다(J8).
+    public bool IsBacklineDiveKill;
 }

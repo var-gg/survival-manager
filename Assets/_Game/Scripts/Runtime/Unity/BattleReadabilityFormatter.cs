@@ -29,15 +29,18 @@ public static class BattleReadabilityFormatter
 {
     public static bool TryResolveStepFocus(BattleSimulationStep step, out BattleStepFocus focus)
     {
-        var lastEvent = step.Events.LastOrDefault();
-        if (lastEvent != null)
+        // P2: 마지막 이벤트가 아니라 가장 극적인 이벤트가 포커스를 가진다 — 킬(다이브 킬 최상) >
+        // 강타 > 회복 > 나머지. 같은 점수면 나중 이벤트가 이긴다(종전 "last" 동작 보존). 판정은
+        // typed 필드만 사용(J8 — note 문자열 비파싱).
+        var dramaticEvent = ResolveDramaticEvent(step);
+        if (dramaticEvent != null)
         {
             focus = new BattleStepFocus(
-                lastEvent.ActorId.Value,
-                lastEvent.ActorName,
-                lastEvent.TargetId?.Value,
-                NormalizeTarget(lastEvent.TargetName),
-                ResolveSemantic(lastEvent),
+                dramaticEvent.ActorId.Value,
+                dramaticEvent.ActorName,
+                dramaticEvent.TargetId?.Value,
+                NormalizeTarget(dramaticEvent.TargetName),
+                ResolveSemantic(dramaticEvent),
                 1f,
                 false);
             return true;
@@ -83,6 +86,40 @@ public static class BattleReadabilityFormatter
 
         focus = default;
         return false;
+    }
+
+    private static BattleEvent? ResolveDramaticEvent(BattleSimulationStep step)
+    {
+        BattleEvent? best = null;
+        var bestScore = int.MinValue;
+        foreach (var eventData in step.Events)
+        {
+            var score = ResolveDramaticScore(eventData);
+            if (score >= bestScore)
+            {
+                best = eventData;
+                bestScore = score;
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>P2 극적 점수 — 카메라/상태줄 포커스 우선순위. typed 필드만 사용.</summary>
+    internal static int ResolveDramaticScore(BattleEvent eventData)
+    {
+        if (eventData.EventKind == BattleEventKind.Kill)
+        {
+            return eventData.KillPayload is { IsBacklineDiveKill: true } ? 100 : 90;
+        }
+
+        if (eventData.LogCode == BattleLogCode.ActiveSkillHeal)
+        {
+            return 30;
+        }
+
+        // Heavy 임팩트 기준(HeavyImpactDamageThreshold 16f와 동일 대역) 이상의 강타.
+        return eventData.Value >= 16f ? 50 : 10;
     }
 
     public static BattleActionSemantic ResolveSemantic(BattleEvent eventData)

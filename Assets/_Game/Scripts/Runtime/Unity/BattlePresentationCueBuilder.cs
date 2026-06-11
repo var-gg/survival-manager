@@ -165,7 +165,11 @@ public sealed class BattlePresentationCueBuilder
                     BattlePresentationAnchorId.Center,
                     BattlePresentationAnchorId.Cast,
                     AnimationSemantic: BattleAnimationSemantic.Death,
-                    AnimationIntensity: BattleAnimationIntensity.Heavy));
+                    AnimationIntensity: BattleAnimationIntensity.Heavy,
+                    // P2: 다이브 후열 처치는 typed KillPayload에서 읽는다(J8 — note 비파싱).
+                    ContactAccent: eventData.KillPayload?.IsBacklineDiveKill == true
+                        ? CombatContactAccent.BacklineDiveKill
+                        : CombatContactAccent.None));
             }
         }
 
@@ -403,11 +407,17 @@ public sealed class BattlePresentationCueBuilder
                     actionType,
                     contact.Value,
                     BattlePresentationAnchorId.Head,
-                    BattlePresentationAnchorId.Cast));
+                    BattlePresentationAnchorId.Cast,
+                    ContactAccent: contact.Accent));
                 continue;
             }
 
             var impactAnimation = ResolveImpactAnimation(contact.Outcome, contact.Value);
+            // P2: 후방 타격은 히트스톱/리코일 강도를 Heavy로 승급 — 가장 강한 positional 보너스가
+            // 몸으로도 읽히게. 판정은 typed accent(J8), 문자열 비파싱.
+            var impactIntensity = contact.Accent.HasFlag(CombatContactAccent.Rear)
+                ? BattleAnimationIntensity.Heavy
+                : impactAnimation.Intensity;
             cues.Add(new BattlePresentationCue(
                 BattlePresentationCueType.ImpactDamage,
                 intent.StepIndex,
@@ -420,7 +430,8 @@ public sealed class BattlePresentationCueBuilder
                 string.Empty,
                 impactAnimation.Semantic,
                 impactAnimation.Direction,
-                impactAnimation.Intensity));
+                impactIntensity,
+                ContactAccent: contact.Accent));
 
             TryAddKnockbackTraceForContact(cues, motionsByActor, intent.ActorId.Value, actionType, contact);
         }

@@ -103,4 +103,6 @@ public sealed record BattlePresentationCue(
     BattleAnimationSemantic AnimationSemantic = BattleAnimationSemantic.None,
     BattleAnimationDirection AnimationDirection = BattleAnimationDirection.Any,
     BattleAnimationIntensity AnimationIntensity = BattleAnimationIntensity.Any,
-    BattleCommitSchedule? CommitSchedule = null);
+    BattleCommitSchedule? CommitSchedule = null,
+    // P2 극적 순간 typed 채널(J8) — 측면/후방/차단/구출/후열격파 강조의 유일한 소스.
+    CombatContactAccent ContactAccent = CombatContactAccent.None);

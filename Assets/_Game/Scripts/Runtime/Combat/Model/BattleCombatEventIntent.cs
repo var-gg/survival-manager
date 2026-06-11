@@ -58,6 +58,32 @@ public enum CombatOutcome
 }
 
 /// <summary>
+/// P2 극적 순간 typed 채널 — P0 positional consequence(측면/후방/차단)와 detector(구출)가 한 접촉에
+/// 남긴 사실. <see cref="CombatOutcome"/>처럼 sim이 자기 해석 결과를 self-label한다(J8: presentation은
+/// Note 문자열을 절대 파싱하지 않는다). 연출 강조·카메라 포커스·하이라이트 집계가 소비한다.
+/// </summary>
+[System.Flags]
+public enum CombatContactAccent
+{
+    None = 0,
+
+    /// <summary>측면 공격(시선 대비 ~70° 초과) — 협격 보너스가 들어간 타격.</summary>
+    Flank = 1 << 0,
+
+    /// <summary>후방 공격(시선 대비 ~110° 초과) — 가장 강한 positional 보너스.</summary>
+    Rear = 1 << 1,
+
+    /// <summary>전열 스크린이 피해를 경감한 타격 — 보호가 일한 순간.</summary>
+    Screened = 1 << 2,
+
+    /// <summary>빈사(25% 미만) 아군을 구해낸 회복.</summary>
+    SaveMoment = 1 << 3,
+
+    /// <summary>Dive 의도 유닛의 후열 처치 — DeathStart cue에 붙는다.</summary>
+    BacklineDiveKill = 1 << 4,
+}
+
+/// <summary>
 /// One resolved contact within an action instance. <see cref="ContactIndex"/> is unique per resolved
 /// contact (1:1 with the <see cref="BattleEvent"/> it labels); <see cref="ContactGroupIndex"/> is the
 /// actor-commit dedupe key shared by all contacts of one hit frame, so an AOE swing emits a single
@@ -71,7 +97,8 @@ public sealed record BattleContactIntent(
     EntityId? TargetId,
     CombatOutcome Outcome,
     float Value = 0f,
-    bool IsHeal = false);
+    bool IsHeal = false,
+    CombatContactAccent Accent = CombatContactAccent.None);
 
 /// <summary>
 /// Phase/contact contract for one action instance, emitted by the deterministic sim as a sibling of

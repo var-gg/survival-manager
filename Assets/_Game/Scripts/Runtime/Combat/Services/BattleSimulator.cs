@@ -390,7 +390,8 @@ public sealed class BattleSimulator
                 resolveEvent.TargetId,
                 ResolveOutcome(resolveEvent),
                 resolveEvent.Value,
-                resolveEvent.LogCode == BattleLogCode.ActiveSkillHeal));
+                resolveEvent.LogCode == BattleLogCode.ActiveSkillHeal,
+                ResolveAccent(resolveEvent)));
         }
 
         State.RecordCombatEvent(new BattleCombatEventIntent(
@@ -455,6 +456,35 @@ public sealed class BattleSimulator
         if (note.Contains("block", StringComparison.OrdinalIgnoreCase)) return CombatOutcome.Block;
         if (note.Contains("crit", StringComparison.OrdinalIgnoreCase)) return CombatOutcome.Crit;
         return CombatOutcome.Hit;
+    }
+
+    // P2 극적 순간 self-label — ResolveOutcome과 같은 Stage 1 transitional 패턴: sim이 방금 자기가
+    // 만든 note 토큰(P0 positional consequence/detector)을 typed accent로 승격한다. presentation은
+    // 이 typed 채널만 읽는다(J8). public: FastUnit 골든이 매핑을 고정한다(SM.Combat은 InternalsVisibleTo 없음).
+    public static CombatContactAccent ResolveAccent(BattleEvent resolveEvent)
+    {
+        var note = resolveEvent.Note ?? string.Empty;
+        var accent = CombatContactAccent.None;
+        if (note.Contains("rear", StringComparison.Ordinal))
+        {
+            accent |= CombatContactAccent.Rear;
+        }
+        else if (note.Contains("flank", StringComparison.Ordinal))
+        {
+            accent |= CombatContactAccent.Flank;
+        }
+
+        if (note.Contains("screened", StringComparison.Ordinal))
+        {
+            accent |= CombatContactAccent.Screened;
+        }
+
+        if (note.Contains("save_moment", StringComparison.Ordinal))
+        {
+            accent |= CombatContactAccent.SaveMoment;
+        }
+
+        return accent;
     }
 
     private static float ResolveEvaluatedActionRange(UnitSnapshot actor, EvaluatedAction evaluated)

@@ -32,6 +32,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
+    private readonly BattleHighlightLedger _highlightLedger = new();
     private readonly List<(BattleSimulationStep PreviousStep, BattleSimulationStep CurrentStep)> _consumedTransitions = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private readonly BattleCameraFramingPolicy _cameraFramingPolicy = new();
@@ -194,6 +195,12 @@ public sealed class BattleScreenController : MonoBehaviour
     {
         _totalEventCount += currentStep.Events.Count;
         TrackDecisiveEvents(currentStep);
+        // P2 하이라이트 원장 — typed 채널 집계 + 종료 시 MVP/하이라이트를 decisive timeline에 1회 첨부.
+        _highlightLedger.Record(currentStep);
+        _highlightLedger.TryAppendBattleEndLines(
+            currentStep,
+            _decisiveTimeline,
+            actorId => ResolveBattleEventUnitName(currentStep, actorId, null));
         presentationController.AdvanceStep(previousStep, currentStep);
         RefreshHud(currentStep);
 
@@ -566,6 +573,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _totalEventCount = 0;
         _recentLogs.Clear();
         _decisiveTimeline.Clear();
+        _highlightLedger.Reset();
         _selectedUnitId = string.Empty;
         _unitDetailVisible = false;
         _unitDetailTab = BattleUnitDetailTab.Overview;
@@ -915,6 +923,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _settingsStatusText = string.Empty;
         _recentLogs.Clear();
         _decisiveTimeline.Clear();
+        _highlightLedger.Reset();
 
         BattleLoadoutSnapshot allySnapshot;
         try

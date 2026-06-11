@@ -425,6 +425,7 @@ public static class CombatActionResolver
         if (isBacklineDiveKill)
         {
             state.ActivityTelemetry.RecordBacklineDiveKill();
+            killPayload.IsBacklineDiveKill = true;
         }
 
         actor.GainEnergyFromKill();

@@ -270,11 +270,19 @@ public sealed class BattleActorView : MonoBehaviour
                     ResolveImpactDuration(cue, animationSemantic),
                     ResolveImpactColor(cue, animationSemantic),
                     ResolveImpactLabel(cue, animationSemantic),
-                    ResolveImpactScale(animationSemantic));
+                    ResolveImpactScale(cue, animationSemantic));
                 break;
             }
             case BattlePresentationCueType.ImpactHeal:
-                StartImpactCue(0.24f, new Color(0.38f, 1f, 0.54f, 1f), $"+{Mathf.CeilToInt(cue.Magnitude)}");
+                // P2 구출(SaveMoment): 빈사 아군을 살린 회복은 금빛으로 크게 — "내 힐러가 해냈다"가 읽히게.
+                if (cue.ContactAccent.HasFlag(CombatContactAccent.SaveMoment))
+                {
+                    StartImpactCue(0.34f, new Color(1f, 0.9f, 0.42f, 1f), $"구출! +{Mathf.CeilToInt(cue.Magnitude)}", 1.4f);
+                }
+                else
+                {
+                    StartImpactCue(0.24f, new Color(0.38f, 1f, 0.54f, 1f), $"+{Mathf.CeilToInt(cue.Magnitude)}");
+                }
                 break;
             case BattlePresentationCueType.GuardEnter:
                 _guardCueTimer = 0.32f;
@@ -307,6 +315,11 @@ public sealed class BattleActorView : MonoBehaviour
                 _impactCueTimer = 0.42f;
                 _impactCueDuration = 0.42f;
                 _impactColor = new Color(0.58f, 0.58f, 0.58f, 1f);
+                // P2 다이브 킬: 후열 처치는 1급 슈퍼플레이 — 처치 배너로 박는다(typed KillPayload 채널).
+                if (cue.ContactAccent.HasFlag(CombatContactAccent.BacklineDiveKill))
+                {
+                    StartImpactCue(0.55f, new Color(1f, 0.62f, 0.18f, 1f), "후열 격파!", 1.5f);
+                }
                 break;
             case BattlePresentationCueType.BattleResolved:
                 _accentColor = new Color(0.92f, 0.76f, 0.38f, 1f);
@@ -995,7 +1008,7 @@ public sealed class BattleActorView : MonoBehaviour
     private static string ResolveImpactLabel(BattlePresentationCue cue, BattleAnimationSemantic semantic)
     {
         var amount = Mathf.Max(0, Mathf.CeilToInt(cue.Magnitude));
-        return semantic switch
+        var baseLabel = semantic switch
         {
             BattleAnimationSemantic.Miss => "MISS",
             BattleAnimationSemantic.Dodge => "DODGE",
@@ -1005,17 +1018,46 @@ public sealed class BattleActorView : MonoBehaviour
             BattleAnimationSemantic.Knockdown => $"BREAK! -{amount}",
             _ => $"-{amount}",
         };
+        return $"{baseLabel}{ResolveAccentSuffix(cue.ContactAccent)}";
     }
 
-    private static float ResolveImpactScale(BattleAnimationSemantic semantic)
+    // P2 positional accent — 판정은 sim의 typed 채널(J8), 여기서는 표시만. 후방 > 측면 우선,
+    // 차단은 피해를 "덜 받았다"는 수비측 사실이라 함께 병기 가능.
+    internal static string ResolveAccentSuffix(CombatContactAccent accent)
     {
-        return semantic switch
+        var suffix = string.Empty;
+        if (accent.HasFlag(CombatContactAccent.Rear))
+        {
+            suffix += " 후방!";
+        }
+        else if (accent.HasFlag(CombatContactAccent.Flank))
+        {
+            suffix += " 측면";
+        }
+
+        if (accent.HasFlag(CombatContactAccent.Screened))
+        {
+            suffix += " 차단";
+        }
+
+        return suffix;
+    }
+
+    private static float ResolveImpactScale(BattlePresentationCue cue, BattleAnimationSemantic semantic)
+    {
+        var baseScale = semantic switch
         {
             BattleAnimationSemantic.CriticalImpact or BattleAnimationSemantic.Knockdown => 1.45f,
             BattleAnimationSemantic.HitHeavy => 1.25f,
             BattleAnimationSemantic.Miss or BattleAnimationSemantic.Dodge or BattleAnimationSemantic.BlockImpact => 0.95f,
             _ => 1f,
         };
+        if (cue.ContactAccent.HasFlag(CombatContactAccent.Rear))
+        {
+            return Mathf.Max(baseScale, 1.3f);
+        }
+
+        return cue.ContactAccent.HasFlag(CombatContactAccent.Flank) ? Mathf.Max(baseScale, 1.15f) : baseScale;
     }
 
     private static float ResolveRepositionCueDuration(BattleAnimationSemantic semantic)
