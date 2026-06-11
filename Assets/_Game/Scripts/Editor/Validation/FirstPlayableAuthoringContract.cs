@@ -21,7 +21,9 @@ internal sealed record SupportModifierGateContract(
 internal static class FirstPlayableAuthoringContract
 {
     internal const int LiveSignaturePassiveCap = 8;
-    internal const int LiveFlexActiveCap = 12;
+    // P3 콘텐츠 승격: displacement 스킬 3종(rusthide_charge/cinder_overrun/aegis_linebreaker)을
+    // live flex active로 올리면서 12 → 15. 의도적 scope 확장 — 갭 감사 로드맵 P3-3의 마무리.
+    internal const int LiveFlexActiveCap = 15;
     internal const int LiveFlexPassiveCap = 20;
     internal const int ExpectedEncounterCount = 40;
 

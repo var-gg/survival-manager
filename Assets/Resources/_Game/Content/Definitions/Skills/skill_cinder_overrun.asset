@@ -17,7 +17,7 @@ MonoBehaviour:
   DescriptionKey: content.skill.skill_cinder_overrun.desc
   TemplateType: 4
   Kind: 0
-  SlotKind: 0
+  SlotKind: 1
   DamageType: 0
   Delivery: 1
   TargetRule: 1

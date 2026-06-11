@@ -1003,6 +1003,12 @@ public sealed class BattleScreenController : MonoBehaviour
 
         var currentStep = _timeline.CurrentStep!;
         var result = _simulator.RunToEnd();
+        if (IsSmokeLane && BattleActivityMetricsLog.TryFormatPositionalSummary(result.TelemetryEvents, out var positionalSummary))
+        {
+            // 전투테스트 검증 surface — detector 발동 횟수가 0인지 아닌지를 콘솔에서 즉시 판정한다.
+            Debug.Log($"[CombatSandbox] {positionalSummary}");
+        }
+
         var winner = result.Winner;
         var replay = ReplayAssembler.Assemble(
             _compiledSnapshot,

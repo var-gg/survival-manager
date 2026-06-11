@@ -107,6 +107,8 @@ MonoBehaviour:
   RecruitFlexActivePool:
   - {fileID: 11400000, guid: c9597000b38b85d46964a561713062bb, type: 2}
   - {fileID: 11400000, guid: 9079bacc511ab944f9fc2895fe983736, type: 2}
+  - {fileID: 11400000, guid: 094f55c04b7d23c2b51030dd42a154fb, type: 2}
+  - {fileID: 11400000, guid: 7772b43d8d688eda370dcf61e6c0c7d6, type: 2}
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: 46b032dc7350b0445b83f0258c88a29f, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}

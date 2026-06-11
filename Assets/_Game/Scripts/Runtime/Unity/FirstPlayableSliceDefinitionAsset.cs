@@ -11,7 +11,8 @@ namespace SM.Unity
         public int UnitBlueprintCap = 12;
         public int SignatureActiveCap = 12;
         public int SignaturePassiveCap = 12;
-        public int FlexActiveCap = 12;
+        // 에디터 contract(LiveFlexActiveCap)와 수동 동기 — 신규 asset 기본값이 live cap에 못 미치지 않게 한다.
+        public int FlexActiveCap = 15;
         public int FlexPassiveCap = 20;
         public int AffixCap = 24;
         public int SynergyFamilyCap = 7;

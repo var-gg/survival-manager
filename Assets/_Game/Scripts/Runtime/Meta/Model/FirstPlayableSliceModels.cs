@@ -11,7 +11,9 @@ public sealed class FirstPlayableSliceDefinition
     public int UnitBlueprintCap = 12;
     public int SignatureActiveCap = 12;
     public int SignaturePassiveCap = 12;
-    public int FlexActiveCap = 12;
+    // 에디터 contract(FirstPlayableAuthoringContract.LiveFlexActiveCap)와 수동 동기 — authored asset이 없는
+    // fallback 경로에서 승격 콘텐츠가 잘리지 않도록 기본값도 live cap을 따른다.
+    public int FlexActiveCap = 15;
     public int FlexPassiveCap = 20;
     public int AffixCap = 24;
     public int SynergyFamilyCap = 7;

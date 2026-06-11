@@ -158,6 +158,27 @@ public static class FirstPlayableBootstrap
 
         if (AssetDatabase.LoadMainAssetAtPath(CombatSandboxConfigAssetPath) != null || File.Exists(CombatSandboxConfigAssetPath))
         {
+            // 삭제+재생성 전에 강제 재임포트 1회 — 에디터 기동 직후의 transient 바인딩 실패가
+            // 저작(포즈/타겟 지시/Flex 스킬)을 무음으로 날리는 것을 막는다.
+            AssetDatabase.ImportAsset(
+                CombatSandboxConfigAssetPath,
+                ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+            var reimported = AssetDatabase.LoadAssetAtPath<SM.Unity.Sandbox.CombatSandboxConfig>(CombatSandboxConfigAssetPath);
+            if (reimported != null)
+            {
+                RepairCombatSandboxConfig(reimported);
+                return reimported;
+            }
+
+            if (File.Exists(CombatSandboxConfigAssetPath) &&
+                File.ReadAllText(CombatSandboxConfigAssetPath).Contains("SM.Unity.Sandbox:CombatSandboxConfig"))
+            {
+                Debug.LogWarning(
+                    "[CombatSandbox] active handoff가 일시적으로 바인딩되지 않습니다. 저작 보호를 위해 재생성하지 않습니다.\n" +
+                    $"에디터 안정화 후 다시 시도하세요: {CombatSandboxConfigAssetPath}");
+                return null;
+            }
+
             Debug.Log($"[CombatSandbox] active handoff 타입 해석 불가 — 삭제 후 재생성합니다: {CombatSandboxConfigAssetPath}");
             AssetDatabase.DeleteAsset(CombatSandboxConfigAssetPath);
             if (File.Exists(CombatSandboxConfigAssetPath))

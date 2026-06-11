@@ -15,7 +15,7 @@ MonoBehaviour:
   UnitBlueprintCap: 12
   SignatureActiveCap: 12
   SignaturePassiveCap: 8
-  FlexActiveCap: 12
+  FlexActiveCap: 15
   FlexPassiveCap: 20
   AffixCap: 24
   SynergyFamilyCap: 7
@@ -93,6 +93,9 @@ MonoBehaviour:
   - skill_minor_heal
   - skill_hexer_utility
   - skill_shaman_utility
+  - skill_rusthide_charge
+  - skill_cinder_overrun
+  - skill_aegis_linebreaker
   FlexPassiveIds:
   - skill_vanguard_support_1
   - skill_vanguard_support_2
@@ -202,11 +205,9 @@ MonoBehaviour:
   - pale_executor
   - rift_stalker
   - skill_aegis_intercept
-  - skill_aegis_linebreaker
   - skill_aegis_sentinel_oath
   - skill_ash_step
   - skill_bloodless_form
-  - skill_cinder_overrun
   - skill_echo_archive
   - skill_echo_resonance
   - skill_edge_of_sentence
@@ -228,7 +229,6 @@ MonoBehaviour:
   - skill_quick_kindling
   - skill_refracting_snare
   - skill_riposte_angle
-  - skill_rusthide_charge
   - skill_savant_last_word
   - skill_sentinel_oath
   - skill_shard_memory

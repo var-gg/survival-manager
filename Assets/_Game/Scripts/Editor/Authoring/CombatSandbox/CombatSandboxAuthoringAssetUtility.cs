@@ -638,6 +638,7 @@ public static class CombatSandboxAuthoringAssetUtility
             CharacterId = source.CharacterId,
             Anchor = source.Anchor,
             RoleInstructionId = source.RoleInstructionId,
+            TargetDirectiveId = source.TargetDirectiveId,
             BuildOverride = CloneBuildOverride(source.BuildOverride),
             Notes = source.Notes,
         };

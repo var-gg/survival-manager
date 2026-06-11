@@ -73,6 +73,9 @@ public sealed class CombatSandboxTeamMemberDefinition
     public string CharacterId = string.Empty;
     public DeploymentAnchorId Anchor = DeploymentAnchorId.FrontCenter;
     public string RoleInstructionId = string.Empty;
+    // P1 유닛별 타겟 지시 안정 id ("nearest"/"finish_lowest"/"hunt_backline"/"break_cluster"). 비우면 Default.
+    // 합성팀 레인은 타운 SquadBlueprint를 읽지 않으므로 이 필드가 sandbox의 지시 입력 표면이다.
+    public string TargetDirectiveId = string.Empty;
     public CombatSandboxBuildOverrideData BuildOverride = new();
     [TextArea] public string Notes = string.Empty;
 }

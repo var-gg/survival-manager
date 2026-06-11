@@ -225,6 +225,7 @@ public sealed class CombatSandboxScenarioCompiler
         var itemInstances = new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal);
         var deploymentAssignments = new Dictionary<DeploymentAnchorId, string>();
         var heroRoleIds = new Dictionary<string, string>(StringComparer.Ordinal);
+        var heroTargetDirectives = new Dictionary<string, string>(StringComparer.Ordinal);
         var squadHeroIds = new List<string>();
         var temporaryAugmentIds = context.CurrentTemporaryAugmentIds
             .Where(id => !string.IsNullOrWhiteSpace(id))
@@ -274,6 +275,7 @@ public sealed class CombatSandboxScenarioCompiler
                 continue;
             }
 
+            CollectTargetDirective(member, heroRecord.Id, heroTargetDirectives);
             heroes.Add(heroRecord);
             heroLoadouts[heroRecord.Id] = loadoutState;
             heroProgressions[heroRecord.Id] = progressionState;
@@ -294,7 +296,7 @@ public sealed class CombatSandboxScenarioCompiler
 
         MergeAugments(team, temporaryAugmentIds, permanentAugmentIds);
 
-        var blueprint = BuildBlueprint(team, teamKey, deploymentAssignments, squadHeroIds, heroRoleIds, context.CurrentTeamPosture, context.CurrentTeamTacticId);
+        var blueprint = BuildBlueprint(team, teamKey, deploymentAssignments, squadHeroIds, heroRoleIds, heroTargetDirectives, context.CurrentTeamPosture, context.CurrentTeamTacticId);
         var overlay = BuildOverlay(team, context.CurrentNodeIndex, temporaryAugmentIds);
         var snapshot = FinalizeSnapshot(
             _loadoutCompiler.Compile(
@@ -348,6 +350,7 @@ public sealed class CombatSandboxScenarioCompiler
         var itemInstances = new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal);
         var deploymentAssignments = new Dictionary<DeploymentAnchorId, string>();
         var heroRoleIds = new Dictionary<string, string>(StringComparer.Ordinal);
+        var heroTargetDirectives = new Dictionary<string, string>(StringComparer.Ordinal);
         var squadHeroIds = new List<string>();
         var temporaryAugmentIds = new List<string>();
         var permanentAugmentIds = new List<string>();
@@ -382,6 +385,7 @@ public sealed class CombatSandboxScenarioCompiler
                 continue;
             }
 
+            CollectTargetDirective(member, heroRecord.Id, heroTargetDirectives);
             heroes.Add(heroRecord);
             heroLoadouts[heroRecord.Id] = loadoutState;
             heroProgressions[heroRecord.Id] = progressionState;
@@ -408,7 +412,7 @@ public sealed class CombatSandboxScenarioCompiler
 
         MergeAugments(team, temporaryAugmentIds, permanentAugmentIds);
 
-        var blueprint = BuildBlueprint(team, teamKey, deploymentAssignments, squadHeroIds, heroRoleIds, TeamPostureType.StandardAdvance, string.Empty);
+        var blueprint = BuildBlueprint(team, teamKey, deploymentAssignments, squadHeroIds, heroRoleIds, heroTargetDirectives, TeamPostureType.StandardAdvance, string.Empty);
         var overlay = BuildOverlay(team, context.CurrentNodeIndex, temporaryAugmentIds);
         var snapshot = FinalizeSnapshot(
             _loadoutCompiler.Compile(
@@ -790,6 +794,7 @@ public sealed class CombatSandboxScenarioCompiler
         IReadOnlyDictionary<DeploymentAnchorId, string> deploymentAssignments,
         IReadOnlyList<string> squadHeroIds,
         IReadOnlyDictionary<string, string> heroRoleIds,
+        IReadOnlyDictionary<string, string> heroTargetDirectives,
         TeamPostureType fallbackPosture,
         string fallbackTacticId)
     {
@@ -815,7 +820,31 @@ public sealed class CombatSandboxScenarioCompiler
             tacticId,
             deploymentAssignments,
             squadHeroIds,
-            heroRoleIds);
+            heroRoleIds,
+            heroTargetDirectives.Count > 0 ? heroTargetDirectives : null);
+    }
+
+    /// <summary>
+    /// 멤버 저작의 타겟 지시를 blueprint 사전으로 수집한다. 모르는 id는 Default로 강등되어 무시 —
+    /// LoadoutCompiler가 P1 경로(blueprint.HeroTargetDirectives)로 그대로 소비한다.
+    /// </summary>
+    internal static void CollectTargetDirective(
+        CombatSandboxTeamMemberDefinition member,
+        string heroId,
+        IDictionary<string, string> heroTargetDirectives)
+    {
+        if (string.IsNullOrWhiteSpace(member.TargetDirectiveId))
+        {
+            return;
+        }
+
+        var directive = PlayerTargetDirectiveRules.ParseStableId(member.TargetDirectiveId.Trim());
+        if (directive == PlayerTargetDirective.Default)
+        {
+            return;
+        }
+
+        heroTargetDirectives[heroId] = PlayerTargetDirectiveRules.ToStableId(directive);
     }
 
     private static RunOverlayState BuildOverlay(
@@ -1242,7 +1271,9 @@ public sealed class CombatSandboxScenarioCompiler
         };
     }
 
-    private static CombatSandboxTeamMemberDefinition CloneMember(CombatSandboxTeamMemberDefinition source)
+    // internal: 실제 컴파일 경로(ResolveLeftTeam/ResolveRightTeam → CloneTeam)가 반드시 이 복제를 거치므로
+    // 멤버 필드 누락이 곧 저작 유실이다 — 회귀 테스트가 round-trip을 가드한다.
+    internal static CombatSandboxTeamMemberDefinition CloneMember(CombatSandboxTeamMemberDefinition source)
     {
         return new CombatSandboxTeamMemberDefinition
         {
@@ -1254,6 +1285,7 @@ public sealed class CombatSandboxScenarioCompiler
             CharacterId = source.CharacterId,
             Anchor = source.Anchor,
             RoleInstructionId = source.RoleInstructionId,
+            TargetDirectiveId = source.TargetDirectiveId,
             BuildOverride = CloneBuildOverride(source.BuildOverride),
             Notes = source.Notes,
         };

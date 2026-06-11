@@ -17,19 +17,19 @@ MonoBehaviour:
   DescriptionKey: content.skill.skill_rusthide_charge.desc
   TemplateType: 1
   Kind: 0
-  SlotKind: 0
+  SlotKind: 1
   DamageType: 0
   Delivery: 0
   TargetRule: 2
   Power: 4.3
-  Range: 1.5
+  Range: 4.5
   RangeMin: 0
   RangeMax: -1
   Radius: 0
   Width: 0
   ArcDegrees: 0
   DisplacementKind: 1
-  DisplacementDistance: 2
+  DisplacementDistance: 4.5
   PowerFlat: 4.3
   PhysCoeff: 1
   MagCoeff: 0
@@ -80,7 +80,7 @@ MonoBehaviour:
     MinimumTargetHealthRatio: 0
     MaximumTargetHealthRatio: 1
     MinimumDistance: 0
-    MaximumDistance: 1.5
+    MaximumDistance: 4.5
   AnimationHookId: 
   IconId: skill_icon_rusthide_charge
   VfxHookId: vfx.skill_rusthide_charge
@@ -98,7 +98,7 @@ MonoBehaviour:
     Filters: 69
     ReevaluateIntervalSeconds: 0.25
     MinimumCommitSeconds: 0.75
-    MaxAcquireRange: 0
+    MaxAcquireRange: 4.5
     PreferredMinTargets: 1
     ClusterRadius: 2.5
     LockTargetAtCastStart: 1

@@ -110,6 +110,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dd86a56c52828af40b28489fe94661a4, type: 2}
   - {fileID: 11400000, guid: 69c477993ea28ef468d3e94c76aa4d74, type: 2}
   - {fileID: 11400000, guid: ec4f11bb00a058140aadccc582bab6e2, type: 2}
+  - {fileID: 11400000, guid: d442bb5134f9899b1bcc73d036c01e81, type: 2}
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: c0141da1013d60a4ca6d88111715baef, type: 2}
   - {fileID: 11400000, guid: 79907c95ca267f14f8b4644831834361, type: 2}

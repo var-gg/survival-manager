@@ -34,7 +34,8 @@
 
 ## runtime flex surface
 
-- `FlexActive` live slice는 12 core archetype utility active를 전부 포함한다.
+- `FlexActive` live slice는 12 core archetype utility active 전부와 displacement 강타 3종
+  (`skill_rusthide_charge`/`skill_cinder_overrun`/`skill_aegis_linebreaker`, 합계 15)을 포함한다.
 - `FlexPassive` live slice는 baseline class flex passive 8개와 support modifier 12개를 함께 포함한다.
 - class flex passive는 archetype 기본 package를 설명하고, support modifier는 build lane과 reward routing surface를 소유한다.
 

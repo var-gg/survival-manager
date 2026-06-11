@@ -20,19 +20,22 @@ MonoBehaviour:
   PreviewSettings: {fileID: 11400000, guid: e6fbc78258204b04f9616bc820da559b, type: 2}
   Scenario:
     ScenarioId: opening_default_4unit
-    DisplayName: P09 Default 4v4
+    DisplayName: P09 Showcase 4v4 (P0~P3)
     Tags:
     - starter
     - opening
     - p09
-    Notes: 
-    ExpectedOutcome: Baseline P09 character-vs-character sandbox lane for daily balance
-      and readability checks.
+    Notes: "\uC544\uAD70 CollapseWeakSide(\uB2E4\uC774\uBE0C+\uB3CC\uC9C4) vs \uC801
+      ProtectCarry(\uC2A4\uD06C\uB9B0+\uCE74\uC6B4\uD130 \uB109\uBC31) \u2014 \uD3EC\uBA54\uC774\uC158
+      consequence/\uD0C0\uAC9F \uC9C0\uC2DC/\uAC15\uC81C\uC774\uB3D9 showcase \uBC30\uCE58."
+    ExpectedOutcome: Positional showcase lane - flank/rear/screen/save/dive detectors
+      and displacement skills fire in a default run; battle-end console logs positional
+      counters.
   LeftTeam:
     TeamId: starter.p09_allies
     DisplayName: P09 Starter Allies
     SourceMode: 1
-    TeamPosture: 1
+    TeamPosture: 3
     TeamTacticId: 
     Tags:
     - starter
@@ -47,6 +50,7 @@ MonoBehaviour:
       CharacterId: hero_dawn_priest
       Anchor: 1
       RoleInstructionId: support
+      TargetDirectiveId: 
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -72,6 +76,7 @@ MonoBehaviour:
       CharacterId: hero_pack_raider
       Anchor: 2
       RoleInstructionId: bruiser
+      TargetDirectiveId: 
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -81,7 +86,7 @@ MonoBehaviour:
         PassiveNodeIds: []
         TemporaryAugmentIds: []
         PermanentAugmentIds: []
-        FlexActiveSkillId: 
+        FlexActiveSkillId: skill_rusthide_charge
         FlexPassiveSkillId: 
         PositiveTraitId: 
         NegativeTraitId: 
@@ -97,6 +102,7 @@ MonoBehaviour:
       CharacterId: hero_echo_savant
       Anchor: 3
       RoleInstructionId: carry
+      TargetDirectiveId: hunt_backline
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -106,7 +112,7 @@ MonoBehaviour:
         PassiveNodeIds: []
         TemporaryAugmentIds: []
         PermanentAugmentIds: []
-        FlexActiveSkillId: 
+        FlexActiveSkillId: skill_cinder_overrun
         FlexPassiveSkillId: 
         PositiveTraitId: 
         NegativeTraitId: 
@@ -122,6 +128,7 @@ MonoBehaviour:
       CharacterId: hero_grave_hexer
       Anchor: 5
       RoleInstructionId: support
+      TargetDirectiveId: finish_lowest
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -151,7 +158,7 @@ MonoBehaviour:
     TeamId: starter.observer_smoke
     DisplayName: Observer Smoke
     SourceMode: 1
-    TeamPosture: 1
+    TeamPosture: 2
     TeamTacticId: 
     Tags:
     - starter
@@ -161,10 +168,11 @@ MonoBehaviour:
       SourceKind: 1
       HeroId: 
       DisplayName: "\uD68C\uC870 (\u7070\u722A) / Grey Fang"
-      ArchetypeId: reaver
+      ArchetypeId: guardian
       CharacterId: npc_grey_fang
       Anchor: 0
-      RoleInstructionId: 
+      RoleInstructionId: anchor
+      TargetDirectiveId: 
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -174,14 +182,15 @@ MonoBehaviour:
         PassiveNodeIds: []
         TemporaryAugmentIds: []
         PermanentAugmentIds: []
-        FlexActiveSkillId: 
+        FlexActiveSkillId: skill_aegis_linebreaker
         FlexPassiveSkillId: 
         PositiveTraitId: 
         NegativeTraitId: 
         RoleInstructionIdOverride: 
         RetrainCount: 0
         Notes: 
-      Notes: 
+      Notes: "showcase: reaver -> guardian \uC2A4\uD06C\uB9B0 + linebreaker \uCE74\uC6B4\uD130
+        \uB109\uBC31 (ProtectCarry \uC9DD)"
     - MemberId: enemy_silent_moon
       SourceKind: 1
       HeroId: 
@@ -190,6 +199,7 @@ MonoBehaviour:
       CharacterId: npc_silent_moon
       Anchor: 2
       RoleInstructionId: 
+      TargetDirectiveId: 
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -215,6 +225,7 @@ MonoBehaviour:
       CharacterId: npc_lyra_sternfeld
       Anchor: 3
       RoleInstructionId: 
+      TargetDirectiveId: 
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -240,6 +251,7 @@ MonoBehaviour:
       CharacterId: npc_black_vellum
       Anchor: 5
       RoleInstructionId: 
+      TargetDirectiveId: 
       BuildOverride:
         OverrideId: 
         DisplayName: 
@@ -276,64 +288,12 @@ MonoBehaviour:
     StopOnMismatch: 0
     StopOnReadabilityViolation: 0
     Notes: 
-  AllyPosture: 1
+  AllyPosture: 3
   TeamTacticId: 
-  EnemyPosture: 1
+  EnemyPosture: 2
   EnemyTeamTacticId: 
   Seed: 42
   BatchCount: 1
-  AllySlots:
-  - HeroId: hero-1
-    Anchor: 1
-    RoleInstructionIdOverride: 
-  - HeroId: hero-3
-    Anchor: 2
-    RoleInstructionIdOverride: 
-  - HeroId: hero-5
-    Anchor: 3
-    RoleInstructionIdOverride: 
-  - HeroId: hero-7
-    Anchor: 5
-    RoleInstructionIdOverride: 
-  EnemySlots:
-  - ParticipantId: enemy_grey_fang
-    DisplayName: "\uD68C\uC870 (\u7070\u722A) / Grey Fang"
-    CharacterId: npc_grey_fang
-    ArchetypeIdOverride: reaver
-    Anchor: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RoleInstructionId: 
-    RoleTag: auto
-    TemporaryAugmentIds: []
-  - ParticipantId: enemy_silent_moon
-    DisplayName: "\uCE68\uC6D4 (\u6C89\u6708) / Silent Moon"
-    CharacterId: npc_silent_moon
-    ArchetypeIdOverride: hexer
-    Anchor: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RoleInstructionId: 
-    RoleTag: auto
-    TemporaryAugmentIds: []
-  - ParticipantId: enemy_lyra_sternfeld
-    DisplayName: "\uC120\uC601 (\u5BA3\u82F1) / Lyra Sternfeld"
-    CharacterId: npc_lyra_sternfeld
-    ArchetypeIdOverride: priest
-    Anchor: 3
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RoleInstructionId: 
-    RoleTag: auto
-    TemporaryAugmentIds: []
-  - ParticipantId: enemy_black_vellum
-    DisplayName: "\uD751\uC9C0 (\u9ED1\u7D19) / Black Vellum"
-    CharacterId: npc_black_vellum
-    ArchetypeIdOverride: shaman
-    Anchor: 5
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RoleInstructionId: 
-    RoleTag: auto
-    TemporaryAugmentIds: []
+  AllySlots: []
+  EnemySlots: []
   TemporaryAugmentIds: []

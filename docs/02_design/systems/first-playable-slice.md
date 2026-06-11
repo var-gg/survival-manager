@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-08
+- 최종수정일: 2026-06-11
 - 소스오브트루스: `docs/02_design/systems/first-playable-slice.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -18,7 +18,7 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
 - `UnitBlueprint = 12` (core archetypes, specialist는 parked)
 - `SignatureActive = 12`
 - `SignaturePassive = 8`
-- `FlexActive = 12`
+- `FlexActive = 15` (utility 12 + displacement 강타 3 — P3 콘텐츠 승격, 2026-06-11)
 - `FlexPassive = 20`
 - `Affix = 24`
 - `SynergyFamily = 7` (race 3 + class 4)
@@ -39,7 +39,9 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
 - `PassiveBoardIds`는 `board_vanguard / board_duelist / board_ranger / board_mystic` 4개를 exact set으로 가진다.
 - `ClassLabelMappings`는 canonical class id를 `vanguard / duelist / ranger / mystic`로 유지하고,
   player-facing label은 `vanguard / striker / ranger / mystic`으로 매핑한다.
-- `FlexActiveIds`는 12 core archetype의 utility active를 전부 포함한다.
+- `FlexActiveIds`는 12 core archetype의 utility active 전부에 더해 displacement 강타 3종을 포함한다:
+  `skill_rusthide_charge`(돌진) / `skill_cinder_overrun`(밀치기) / `skill_aegis_linebreaker`(넉백).
+  3종은 vanguard(guardian/warden/bulwark)·ranger(marksman/scout/hunter) recruit flex pool로 노출된다.
 - `FlexPassiveIds`는 `8 class flex passive + 12 support modifier`를 포함한다.
   - class flex passive: `skill_vanguard_support_1/2`, `skill_duelist_support_1/2`,
     `skill_ranger_support_1/2`, `skill_mystic_support_1/2`

@@ -207,6 +207,7 @@ public sealed class CombatSandboxConfigEditor : UnityEditor.Editor
                     DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.CharacterId)), "캐릭터 ID", "Character Id");
                     DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.Anchor)), "배치", "Anchor");
                     DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.RoleInstructionId)), "역할 ID", "Role Id");
+                    DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.TargetDirectiveId)), "타겟 지시", "Target Directive");
                     DrawBuildOverrideProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.BuildOverride)), "빌드 Override", "Build Override");
                     DrawLocalizedProperty(member.FindPropertyRelative(nameof(CombatSandboxTeamMemberDefinition.Notes)), "노트", "Notes");
                 }
