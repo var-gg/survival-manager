@@ -209,6 +209,14 @@ public sealed class GameSessionRoot : MonoBehaviour
         EnsureOfflineLocalSession();
         SessionState.ReloadCombatSandboxConfig();
         SessionState.PrepareCombatSandboxDirect();
+        if (SessionState.QuickBattleConfig == null)
+        {
+            // config 로드 실패를 침묵 폴백(기본 캠페인 전투)으로 흘리지 않는다 — 사용자가
+            // 전투테스트를 요청했는데 다른 판이 도는 것이 가장 혼란스러운 실패 모드다.
+            SetBlockingError("Combat Sandbox config 로드 실패 — Play를 멈추고 SM/전투테스트를 다시 실행하세요.");
+            return;
+        }
+
         var checkpoint = SaveProfile(SessionCheckpointKind.QuickBattleBootstrap);
         if (!checkpoint.IsSuccessful)
         {

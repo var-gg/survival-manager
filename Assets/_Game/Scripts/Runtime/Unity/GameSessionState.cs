@@ -354,7 +354,26 @@ public sealed partial class GameSessionState
     private static CombatSandboxConfig? LoadCombatSandboxConfig()
     {
 #if UNITY_EDITOR
-        return UnityEditor.AssetDatabase.LoadAssetAtPath<CombatSandboxConfig>(CombatSandboxEditorAssetPath);
+        var config = UnityEditor.AssetDatabase.LoadAssetAtPath<CombatSandboxConfig>(CombatSandboxEditorAssetPath);
+        if (config == null)
+        {
+            // 에디터 기동/도메인 리로드 직후의 transient 바인딩 실패 — 강제 재임포트 1회 후 재시도.
+            // 여기서 null을 그대로 흘리면 전투테스트가 기본 캠페인 전투로 "조용히" 폴백해
+            // 사용자가 다른 판을 보게 된다.
+            UnityEditor.AssetDatabase.ImportAsset(
+                CombatSandboxEditorAssetPath,
+                UnityEditor.ImportAssetOptions.ForceSynchronousImport | UnityEditor.ImportAssetOptions.ForceUpdate);
+            config = UnityEditor.AssetDatabase.LoadAssetAtPath<CombatSandboxConfig>(CombatSandboxEditorAssetPath);
+        }
+
+        if (config == null)
+        {
+            UnityEngine.Debug.LogError(
+                "[CombatSandbox] active config 로드 실패 — 전투테스트 시나리오를 컴파일할 수 없습니다: " +
+                CombatSandboxEditorAssetPath);
+        }
+
+        return config;
 #else
         return null;
 #endif
