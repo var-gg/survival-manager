@@ -85,6 +85,27 @@ public sealed class LoadoutCompilerClosureTests
     }
 
     [Test]
+    public void LoadoutCompiler_AreaEffectAuthoringChangesHash()
+    {
+        var compiler = new LoadoutCompiler();
+        var baseline = CompileSquad(compiler, BuildContentSnapshot(), BuildBaselineSpec());
+
+        var variants = new (string Label, Func<BattleSkillSpec, BattleSkillSpec> Mutate)[]
+        {
+            ("area_effect_family", skill => skill with { AreaEffectFamily = BattleAreaEffectFamily.GroundAoe }),
+            ("area_radius", skill => skill with { AreaRadius = 2.5f }),
+            ("punish_cluster", skill => skill with { PunishCluster = true }),
+            ("elite_focus_cap", skill => skill with { AllowsEliteFocusCap = true }),
+        };
+        foreach (var (label, mutate) in variants)
+        {
+            var changed = CompileSquad(compiler, BuildContentSnapshot(mutate), BuildBaselineSpec());
+            Assert.That(changed.CompileHash, Is.Not.EqualTo(baseline.CompileHash),
+                $"AoE 저작 입력({label})은 전투 결과를 바꾸므로 compile hash가 반영해야 replay/audit 무결성이 유지된다");
+        }
+    }
+
+    [Test]
     public void LoadoutCompiler_NormalizesLegacyStatAliasAndSkillSlot()
     {
         var compiler = new LoadoutCompiler();
@@ -368,7 +389,7 @@ public sealed class LoadoutCompilerClosureTests
             });
     }
 
-    private static CombatContentSnapshot BuildContentSnapshot()
+    private static CombatContentSnapshot BuildContentSnapshot(Func<BattleSkillSpec, BattleSkillSpec>? mutateWardenCore = null)
     {
         var attackAlias = ResolveStatKey("attack");
         var baseRules = new[]
@@ -376,9 +397,15 @@ public sealed class LoadoutCompilerClosureTests
             new TacticRule(0, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
         };
 
+        var wardenCore = CreateSkill("skill.warden.core", CompiledSkillSlots.CoreActive, 4.5f);
+        if (mutateWardenCore != null)
+        {
+            wardenCore = mutateWardenCore(wardenCore);
+        }
+
         var wardenSkills = new[]
         {
-            CreateSkill("skill.warden.core", CompiledSkillSlots.CoreActive, 4.5f),
+            wardenCore,
             CreateSkill("skill.warden.utility", CompiledSkillSlots.UtilityActive, 0f, SkillKind.Utility),
             CreateSkill("skill.vanguard.passive", CompiledSkillSlots.Passive, 0f, SkillKind.Buff),
             CreateSkill("skill.vanguard.support", CompiledSkillSlots.Support, 0f, SkillKind.Buff),

@@ -359,6 +359,20 @@ internal sealed class SkillSchemaRule : DefinitionSchemaRule<SkillDefinitionAsse
             ContentValidationIssueFactory.AddError(issues, "skill.shape", "Skill radius/width/arc must stay within non-negative bounds and arc must not exceed 360 degrees.", assetPath);
         }
 
+        ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(skill.AreaEffectFamily, "Skill area effect family", assetPath, issues);
+        if (skill.AreaEffectFamily != AreaEffectFamilyValue.SingleTarget)
+        {
+            if (skill.Radius <= 0f)
+            {
+                ContentValidationIssueFactory.AddError(issues, "skill.area_effect_radius", "Skill AreaEffectFamily requires a positive Radius — the combat AoE gate silently falls back to single target without one.", assetPath);
+            }
+
+            if (skill.Kind is not (SkillKindValue.Strike or SkillKindValue.Debuff))
+            {
+                ContentValidationIssueFactory.AddError(issues, "skill.area_effect_kind", "Skill AreaEffectFamily only resolves on the Strike/Debuff damage path — Heal/Shield/Buff/Utility never reach the AoE gate.", assetPath);
+            }
+        }
+
         if (skill.ResourceCost < -1f || skill.CooldownSeconds < -1f || skill.RecoverySeconds < -1f || skill.PowerBudget < 0f)
         {
             ContentValidationIssueFactory.AddError(issues, "skill.schema_budget", "Skill resource/cooldown/recovery values must be non-negative or use -1 fallback, and PowerBudget must be non-negative.", assetPath);

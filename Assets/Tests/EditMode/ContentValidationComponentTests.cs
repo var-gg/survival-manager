@@ -90,6 +90,42 @@ public sealed class ContentValidationComponentTests
     }
 
     [Test]
+    public void SkillSchemaRule_FlagsAreaEffectAuthoringDrift()
+    {
+        var rule = new SkillSchemaRule();
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_area_probe";
+        skill.Kind = SkillKindValue.Buff;
+        skill.AreaEffectFamily = AreaEffectFamilyValue.GroundAoe;
+        skill.Radius = 0f;
+
+        var issues = new List<ContentValidationIssue>();
+        rule.Validate(new ValidationAssetDescriptor(skill, "Assets/test_skill_area.asset", ValidationAssetSourceKind.Explicit, skill.GetType()), EmptyCatalog(), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.area_effect_radius"),
+            "radius 없는 AoE 가족 저작은 sim 게이트가 조용히 단일 대상으로 떨어뜨린다 — 잠복 결함으로 차단");
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.area_effect_kind"),
+            "Strike/Debuff 외 kind는 AoE 데미지 경로에 도달하지 못한다 — 죽은 저작으로 차단");
+    }
+
+    [Test]
+    public void SkillSchemaRule_AcceptsStrikeAreaEffectAuthoring()
+    {
+        var rule = new SkillSchemaRule();
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_area_valid_probe";
+        skill.Kind = SkillKindValue.Strike;
+        skill.AreaEffectFamily = AreaEffectFamilyValue.CleaveCone;
+        skill.Radius = 2.25f;
+
+        var issues = new List<ContentValidationIssue>();
+        rule.Validate(new ValidationAssetDescriptor(skill, "Assets/test_skill_area_valid.asset", ValidationAssetSourceKind.Explicit, skill.GetType()), EmptyCatalog(), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Does.Not.Contain("skill.area_effect_radius"));
+        Assert.That(issues.Select(issue => issue.Code), Does.Not.Contain("skill.area_effect_kind"));
+    }
+
+    [Test]
     public void SkillCatalogValidator_FlagsMissingStatusReference()
     {
         var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());

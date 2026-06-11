@@ -7,6 +7,8 @@ namespace SM.Core.Content;
 public enum SkillKindValue { Strike = 0, Heal = 1, Shield = 2, Buff = 3, Debuff = 4, Utility = 5 }
 public enum DamageTypeValue { Physical = 0, Magical = 1, Healing = 2, True = 3 }
 public enum SkillDeliveryValue { Melee = 0, Ranged = 1, Projectile = 2, Nova = 3, Aura = 4, Trap = 5, Zone = 6 }
+// SM.Combat.Model.BattleAreaEffectFamily 미러 — SM.Content는 SM.Combat을 참조할 수 없어 값으로 동기 유지.
+public enum AreaEffectFamilyValue { SingleTarget = 0, GroundAoe = 1, PrimarySplash = 2, CleaveCone = 3, Chain = 4, KnockbackWave = 5 }
 public enum SkillTargetRuleValue { NearestEnemy = 0, LowestHpEnemy = 1, MostExposedEnemy = 2, LowestHpAlly = 3, ProtectedAlly = 4, Self = 5, MarkedTarget = 6 }
 public enum SkillSlotKindValue { CoreActive = 0, UtilityActive = 1, Passive = 2, Support = 3 }
 public enum PassiveNodeKindValue { Small = 0, Notable = 1, Keystone = 2 }

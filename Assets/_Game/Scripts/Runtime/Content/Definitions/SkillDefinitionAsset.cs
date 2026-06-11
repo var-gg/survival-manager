@@ -26,6 +26,9 @@ namespace SM.Content.Definitions
         public float Radius = 0f;
         public float Width = 0f;
         public float ArcDegrees = 0f;
+        // AoE 다중히트는 AreaEffectFamily != SingleTarget && Radius > 0일 때만 sim 게이트가 열린다(Strike/Debuff 데미지 경로 한정).
+        public AreaEffectFamilyValue AreaEffectFamily = AreaEffectFamilyValue.SingleTarget;
+        public bool PunishCluster;
         // P3 강제이동 — 돌진(SelfTowardTarget)/넉백(EnemyAwayFromCaster)/끌기(EnemyTowardCaster) + 거리(m).
         public SkillDisplacementKind DisplacementKind = SkillDisplacementKind.None;
         public float DisplacementDistance = 0f;

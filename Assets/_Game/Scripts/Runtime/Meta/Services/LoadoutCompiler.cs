@@ -15,7 +15,7 @@ namespace SM.Meta.Services;
 public sealed class LoadoutCompiler
 {
     // p3-skill-displacement.v1: 스킬 hash 직렬화에 DisplacementKind/Distance 추가(전 스킬 라인 변경).
-    public const string CurrentCompileVersion = "p3-skill-displacement.v1";
+    public const string CurrentCompileVersion = "skill-area-effect.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -840,7 +840,12 @@ public sealed class LoadoutCompiler
                     .Append(skill.VfxHookId ?? string.Empty).Append(':')
                     // P3 강제이동은 전투 결과를 바꾸는 저작 입력 — hash 포함(replay/audit).
                     .Append(skill.DisplacementKind).Append(':')
-                    .Append(skill.DisplacementDistance.ToString("0.###", CultureInfo.InvariantCulture))
+                    .Append(skill.DisplacementDistance.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    // AoE 저작과 포커스 캡도 전투 결과를 바꾸는 컴파일 입력 — hash 포함(replay/audit).
+                    .Append(skill.AreaEffectFamily).Append(':')
+                    .Append(skill.AreaRadius.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
+                    .Append(skill.PunishCluster ? "1" : "0").Append(':')
+                    .Append(skill.AllowsEliteFocusCap ? "1" : "0")
                     .Append('|');
             }
 
