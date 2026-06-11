@@ -17,7 +17,7 @@ MonoBehaviour:
   DescriptionKey: content.item.item_penitent_shield.desc
   IconId: item_icon_shield
   SlotType: 0
-  IdentityKind: 0
+  IdentityKind: 1
   ItemFamilyTag: shield
   WeaponFamilyTag: shield
   RarityTier: 2

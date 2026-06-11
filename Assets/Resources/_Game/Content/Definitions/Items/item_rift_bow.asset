@@ -17,7 +17,7 @@ MonoBehaviour:
   DescriptionKey: content.item.item_rift_bow.desc
   IconId: item_icon_bow
   SlotType: 0
-  IdentityKind: 0
+  IdentityKind: 2
   ItemFamilyTag: bow
   WeaponFamilyTag: bow
   RarityTier: 3
