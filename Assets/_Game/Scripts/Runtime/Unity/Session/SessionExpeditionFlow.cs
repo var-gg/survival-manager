@@ -74,7 +74,7 @@ public sealed partial class GameSessionState
 
         internal void PrepareQuickBattleSmoke()
         {
-            var config = LoadCombatSandboxConfig();
+            var config = LoadCombatSandboxConfig(required: false);
             PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
         }
 
@@ -122,13 +122,14 @@ public sealed partial class GameSessionState
 
         internal void PrepareCombatSandboxDirect()
         {
-            var config = LoadCombatSandboxConfig();
+            // 전투테스트 레인 — config 필수(로드 실패 = 에러 + GameSessionRoot 차단).
+            var config = LoadCombatSandboxConfig(required: true);
             PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.DirectCombatSandbox);
         }
 
         internal void PrepareTownQuickBattleSmoke()
         {
-            var config = LoadCombatSandboxConfig();
+            var config = LoadCombatSandboxConfig(required: false);
             PrepareQuickBattleSmoke(config, CombatSandboxLaneKind.TownIntegrationSmoke);
         }
 
@@ -269,7 +270,9 @@ public sealed partial class GameSessionState
 
         internal void ReloadCombatSandboxConfig()
         {
-            _session.QuickBattleConfig = LoadCombatSandboxConfig();
+            // 현재 레인이 전투테스트(DirectCombatSandbox)면 config 필수 — 재전투(restart)에서도 동일 계약.
+            _session.QuickBattleConfig = LoadCombatSandboxConfig(
+                required: _session.QuickBattleLaneKind == CombatSandboxLaneKind.DirectCombatSandbox);
         }
 
         internal void ReloadQuickBattleConfig()

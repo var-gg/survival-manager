@@ -351,7 +351,7 @@ public sealed partial class GameSessionState
         return true;
     }
 
-    private static CombatSandboxConfig? LoadCombatSandboxConfig()
+    private static CombatSandboxConfig? LoadCombatSandboxConfig(bool required)
     {
 #if UNITY_EDITOR
         var config = UnityEditor.AssetDatabase.LoadAssetAtPath<CombatSandboxConfig>(CombatSandboxEditorAssetPath);
@@ -368,9 +368,20 @@ public sealed partial class GameSessionState
 
         if (config == null)
         {
-            UnityEngine.Debug.LogError(
+            // 레인 분리: config가 필수인 전투테스트(DirectCombatSandbox)만 에러 — GameSessionRoot의
+            // 차단 에러와 짝. config-옵셔널인 smoke 레인(Town/테스트 통합 smoke)은 기본 전투 폴백이
+            // 설계상 허용이므로 워닝으로 남긴다(테스트가 unhandled error log로 죽지 않게).
+            var message =
                 "[CombatSandbox] active config 로드 실패 — 전투테스트 시나리오를 컴파일할 수 없습니다: " +
-                CombatSandboxEditorAssetPath);
+                CombatSandboxEditorAssetPath;
+            if (required)
+            {
+                UnityEngine.Debug.LogError(message);
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning(message + " (smoke 레인 — 기본 전투로 진행)");
+            }
         }
 
         return config;
