@@ -68,4 +68,5 @@ public sealed record BattleSimulationStep(
     bool IsFinished,
     TeamSide? Winner,
     IReadOnlyList<BattleMotionIntent>? Motions = null,
-    IReadOnlyList<BattleCombatEventIntent>? CombatEventIntents = null);
+    IReadOnlyList<BattleCombatEventIntent>? CombatEventIntents = null,
+    IReadOnlyList<CombatBeat>? Beats = null);

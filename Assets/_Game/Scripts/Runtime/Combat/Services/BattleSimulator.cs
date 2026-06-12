@@ -23,12 +23,17 @@ public sealed class BattleSimulator
         State = state;
         _maxSteps = Math.Max(1, maxSteps);
         BattleTelemetryRecorder.RecordBattleStarted(State);
+        // Phase 3: battle-start triggers + synergy activation fire BEFORE the initial read model is
+        // built, so their effects (barrier, statuses) and beats are visible at step 0 — the acceptance
+        // contract "BattleStart effects appear at step 0".
+        CombatTriggerEngine.OnBattleStart(State);
+        SynergyService.EmitActivationBeats(State);
         CurrentStep = BattleReadModelBuilder.BuildStep(
             State,
             Array.Empty<BattleEvent>(),
             isFinished: false,
-            winner: null);
-        CombatTriggerEngine.OnBattleStart(State);
+            winner: null,
+            beats: State.DrainStepBeats());
     }
 
     public BattleState State { get; }
@@ -58,7 +63,7 @@ public sealed class BattleSimulator
         if (CheckForWinner())
         {
             State.AdvanceStep();
-            CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner, State.StepMotions, State.StepCombatEvents);
+            CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner, State.StepMotions, State.StepCombatEvents, State.DrainStepBeats());
             return CurrentStep;
         }
 
@@ -198,6 +203,10 @@ public sealed class BattleSimulator
 
         CombatTriggerEngine.OnPostStep(State);
 
+        // Phase 3 콤보 인식 패스: 이번 step 의 사실(status 적용·피해)을 순서대로 읽어 primer/consume
+        // beat 을 기록한다. 전투 수치는 바꾸지 않는다(순수 인식 레이어).
+        CombatComboService.ProcessStep(State, stepEvents);
+
         MovementResolver.ResolveFormationSpacing(State);
         State.ActivityTelemetry.RecordClusterTradeoff(EffectMembershipSampler.SampleStep(State));
         State.ActivityTelemetry.RecordStep(State);
@@ -213,7 +222,7 @@ public sealed class BattleSimulator
             FinishBattle();
         }
 
-        CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner, State.StepMotions, State.StepCombatEvents);
+        CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner, State.StepMotions, State.StepCombatEvents, State.DrainStepBeats());
         return CurrentStep;
     }
 
@@ -231,7 +240,8 @@ public sealed class BattleSimulator
             _events.ToList(),
             CurrentStep.Units,
             State.TelemetryEvents.ToList(),
-            State.ActivityTelemetry.BuildSnapshot(State));
+            State.ActivityTelemetry.BuildSnapshot(State),
+            State.Beats.ToList());
     }
 
     private bool TryAdvanceSpawn(UnitSnapshot actor)

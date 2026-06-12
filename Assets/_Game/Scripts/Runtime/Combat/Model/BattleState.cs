@@ -68,6 +68,10 @@ public sealed class BattleState
     private readonly List<BattleCombatEventIntent> _stepCombatEvents = new();
     private long _nextActionInstanceId = 1;
 
+    private readonly List<CombatBeat> _stepBeats = new();
+    private readonly List<CombatBeat> _beats = new();
+    private int _beatSequence;
+
     /// <summary>Position transitions recorded during the current tick. Drained per step into the read model (C1 motion-intent channel).</summary>
     public IReadOnlyList<BattleMotionIntent> StepMotions => _stepMotions;
 
@@ -76,6 +80,15 @@ public sealed class BattleState
 
     /// <summary>Monotonic id of the next action instance to allocate. Part of save/replay identity so <see cref="ActionInstanceId"/> is stable and never reused (GPT Pro J23).</summary>
     public long NextActionInstanceIdValue => _nextActionInstanceId;
+
+    /// <summary>현재 tick 처리 중 기록된 beat(아직 drain 전). 시뮬레이터가 step 말미에 <see cref="DrainStepBeats"/> 로 비운다.</summary>
+    public IReadOnlyList<CombatBeat> StepBeats => _stepBeats;
+
+    /// <summary>전투 전체 beat 로그(post-fight 표면). drain 시점에 step 라벨이 재도장된 레코드가 누적된다.</summary>
+    public IReadOnlyList<CombatBeat> Beats => _beats;
+
+    /// <summary>콤보 연쇄 상태(프라이머 윈도우/ICD/ChainId). seed 재시뮬로 재구성 — 직렬화하지 않는다.</summary>
+    public CombatComboLedger ComboLedger { get; } = new();
 
     public IEnumerable<UnitSnapshot> AllUnits => Allies.Concat(Enemies);
     public IEnumerable<UnitSnapshot> LivingAllies => Allies.Where(x => x.IsAlive);
@@ -333,6 +346,56 @@ public sealed class BattleState
             to,
             sourceActorId,
             isDiscrete));
+    }
+
+    public void RecordBeat(
+        CombatBeatType type,
+        TeamSide side,
+        EntityId? sourceId,
+        EntityId? targetId,
+        int chainId,
+        int importance,
+        float value,
+        CombatVector2 position,
+        string tag)
+    {
+        // StepIndex here is the in-progress (pre-AdvanceStep) value; DrainStepBeats re-stamps each beat
+        // to the containing step's final StepIndex (motions와 같은 재도장 계약).
+        _stepBeats.Add(new CombatBeat(
+            StepIndex,
+            _beatSequence++,
+            type,
+            side,
+            sourceId,
+            targetId,
+            chainId,
+            importance,
+            value,
+            position,
+            tag));
+    }
+
+    /// <summary>
+    /// 이번 step 의 beat 을 현재 <see cref="StepIndex"/>(AdvanceStep 이후의 최종 라벨)로 재도장해
+    /// 반환하고, 전투 전체 로그(<see cref="Beats"/>)에 누적한다. step 당 정확히 1회 호출.
+    /// </summary>
+    public IReadOnlyList<CombatBeat> DrainStepBeats()
+    {
+        if (_stepBeats.Count == 0)
+        {
+            return System.Array.Empty<CombatBeat>();
+        }
+
+        var drained = new List<CombatBeat>(_stepBeats.Count);
+        foreach (var beat in _stepBeats)
+        {
+            drained.Add(beat with { StepIndex = StepIndex });
+        }
+
+        _stepBeats.Clear();
+        _beatSequence = 0;
+        _beats.AddRange(drained);
+        return drained;
     }
 
     public void AdvanceStep()

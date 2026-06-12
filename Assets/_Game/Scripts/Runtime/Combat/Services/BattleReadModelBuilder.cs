@@ -12,7 +12,8 @@ public static class BattleReadModelBuilder
         bool isFinished,
         TeamSide? winner,
         IReadOnlyList<BattleMotionIntent>? motions = null,
-        IReadOnlyList<BattleCombatEventIntent>? combatEvents = null)
+        IReadOnlyList<BattleCombatEventIntent>? combatEvents = null,
+        IReadOnlyList<CombatBeat>? beats = null)
     {
         var units = state.AllUnits
             .OrderBy(unit => unit.Side)
@@ -107,6 +108,12 @@ public static class BattleReadModelBuilder
             ? (IReadOnlyList<BattleCombatEventIntent>)System.Array.Empty<BattleCombatEventIntent>()
             : combatEvents.ToList();
 
+        // Beats are drained via BattleState.DrainStepBeats, which already re-stamps StepIndex to the
+        // containing step's final label — so unlike motions they are passed through as-is.
+        var resolvedBeats = beats == null || beats.Count == 0
+            ? (IReadOnlyList<CombatBeat>)System.Array.Empty<CombatBeat>()
+            : beats;
+
         return new BattleSimulationStep(
             state.StepIndex,
             state.ElapsedSeconds,
@@ -115,7 +122,8 @@ public static class BattleReadModelBuilder
             isFinished,
             winner,
             resolvedMotions,
-            resolvedCombatEvents);
+            resolvedCombatEvents,
+            resolvedBeats);
     }
 
     private static string FormatTacticRule(TacticRule rule)

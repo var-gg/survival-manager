@@ -9,4 +9,5 @@ public sealed record BattleResult(
     IReadOnlyList<BattleEvent> Events,
     IReadOnlyList<BattleUnitReadModel> FinalUnits,
     IReadOnlyList<TelemetryEventRecord>? TelemetryEvents = null,
-    BattleActivityTelemetrySnapshot? ActivityTelemetry = null);
+    BattleActivityTelemetrySnapshot? ActivityTelemetry = null,
+    IReadOnlyList<CombatBeat>? Beats = null);
