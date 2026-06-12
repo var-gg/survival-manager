@@ -41,6 +41,44 @@ public sealed class BattlePresentationCueBuilderTests
         Assert.That(cues.Any(cue => cue.CueType == BattlePresentationCueType.ImpactHeal && cue.SubjectActorId == "ally"), Is.True);
     }
 
+    // Epic Toon FX 정식 배선 계약: 스킬 commit cue는 주입된 skillId→presentation 룩업에서
+    // Family/Skin/Gesture를 운반한다(4축 VFX 해상의 실전투 입력). 룩업에 없는 SkillId/기본공격은
+    // Any/None — 기존 cue-type 해상으로 폴백.
+    [Test]
+    public void CommitCue_CarriesSkillPresentation_FromConfiguredLookup()
+    {
+        var profile = new BattleSkillPresentationProfile(
+            SkillPresentationFamily.Projectile,
+            SkillPresentationSkin.Fire,
+            SkillPresentationGesture.Melee,
+            SkillPresentationCueSequence.StrikeImpact);
+        var skill = new BattleSkillSpec("skill_fire_bolt", "Fire Bolt", SkillKind.Strike, 2f, 4f) with
+        {
+            PresentationProfile = profile,
+        };
+        var builder = new BattlePresentationCueBuilder();
+        builder.ConfigureSkillPresentations(new[] { skill });
+
+        var previous = CreateStep();
+        var skillStarted = Started("healer", CombatEventKind.Skill) with { SkillId = "skill_fire_bolt" };
+        var current = CreateStep(combatEvents: new[]
+        {
+            skillStarted,
+            Started("ally", CombatEventKind.BasicAttack),
+        });
+
+        var cues = builder.Build(previous, current);
+
+        var skillCommit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitSkill && cue.SubjectActorId == "healer");
+        Assert.That(skillCommit.PresentationFamily, Is.EqualTo(SkillPresentationFamily.Projectile));
+        Assert.That(skillCommit.PresentationSkin, Is.EqualTo(SkillPresentationSkin.Fire));
+        Assert.That(skillCommit.PresentationGesture, Is.EqualTo(SkillPresentationGesture.Melee));
+
+        var basicCommit = cues.Single(cue => cue.CueType == BattlePresentationCueType.ActionCommitBasic && cue.SubjectActorId == "ally");
+        Assert.That(basicCommit.PresentationFamily, Is.EqualTo(SkillPresentationFamily.Any), "기본공격은 presentation 미지정 — 기존 해상 폴백");
+        Assert.That(basicCommit.PresentationSkin, Is.EqualTo(SkillPresentationSkin.Any));
+    }
+
     [Test]
     public void Build_DetectsTargetSwapGuardAndRepositionTransitions()
     {

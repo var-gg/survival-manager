@@ -105,4 +105,10 @@ public sealed record BattlePresentationCue(
     BattleAnimationIntensity AnimationIntensity = BattleAnimationIntensity.Any,
     BattleCommitSchedule? CommitSchedule = null,
     // P2 극적 순간 typed 채널(J8) — 측면/후방/차단/구출/후열격파 강조의 유일한 소스.
-    CombatContactAccent ContactAccent = CombatContactAccent.None);
+    CombatContactAccent ContactAccent = CombatContactAccent.None,
+    // 스킬 계열별 VFX 해상(4축 카탈로그)을 실전투가 쓰도록 cue가 운반한다. sim intent의 SkillId(opaque)를
+    // presentation 쪽 룩업(BattlePresentationCueBuilder.ConfigureSkillPresentations)으로 해석한 결과 —
+    // seam 단방향 유지. Any/None이면 기존 cue-type 해상으로 폴백.
+    SkillPresentationFamily PresentationFamily = SkillPresentationFamily.Any,
+    SkillPresentationSkin PresentationSkin = SkillPresentationSkin.Any,
+    SkillPresentationGesture PresentationGesture = SkillPresentationGesture.None);

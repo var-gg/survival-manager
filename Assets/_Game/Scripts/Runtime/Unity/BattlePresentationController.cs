@@ -74,6 +74,13 @@ public sealed class BattlePresentationController : MonoBehaviour
         Initialize(initialStep, BattleMapSelectionContext.Empty);
     }
 
+    /// <summary>스킬 계열별 VFX 해상용 skillId→presentation 룩업 주입 — 전투 시작 시 로드아웃의
+    /// 컴파일된 스킬 spec 전수를 cue 빌더에 전달한다(sim intent의 SkillId는 opaque, 해석은 presentation 소유).</summary>
+    public void ConfigureSkillPresentations(IEnumerable<BattleSkillSpec>? skills)
+    {
+        _cueBuilder.ConfigureSkillPresentations(skills);
+    }
+
     public void Initialize(BattleSimulationStep initialStep, BattleMapSelectionContext mapContext)
     {
         ValidateReferences();

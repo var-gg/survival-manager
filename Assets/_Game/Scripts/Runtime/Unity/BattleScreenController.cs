@@ -579,11 +579,21 @@ public sealed class BattleScreenController : MonoBehaviour
         _unitDetailTab = BattleUnitDetailTab.Overview;
         _settingsStatusText = string.Empty;
         presentationController.Initialize(_simulator.CurrentStep, BuildBattleMapSelectionContext(encounter.Context));
+        presentationController.ConfigureSkillPresentations(CollectBattleSkillSpecs());
         presentationController.ApplyOptions(_presentationOptions);
         EnsureSelectedUnit(_simulator.CurrentStep);
         presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);
         RenderCurrentState(_simulator.CurrentStep);
         ApplyBootstrapCameraFrame(_simulator.CurrentStep);
+    }
+
+    /// <summary>스킬 계열별 VFX 해상 룩업 소스 — 현재 sim의 전 유닛 컴파일 스킬 spec.</summary>
+    private IEnumerable<BattleSkillSpec> CollectBattleSkillSpecs()
+    {
+        return _simulator == null
+            ? System.Linq.Enumerable.Empty<BattleSkillSpec>()
+            : _simulator.State.AllUnits
+                .SelectMany(unit => unit.Definition.Skills ?? System.Linq.Enumerable.Empty<BattleSkillSpec>());
     }
 
     private void CycleSelectedUnit()
@@ -979,6 +989,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _timeline.ConfigureStartupHold(BattlePresentationController.StartupHoldSeconds);
 
         presentationController.Initialize(_simulator.CurrentStep, BuildBattleMapSelectionContext(encounter.Context));
+        presentationController.ConfigureSkillPresentations(CollectBattleSkillSpecs());
         presentationController.ApplyOptions(_presentationOptions);
         EnsureSelectedUnit(_simulator.CurrentStep);
         presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);

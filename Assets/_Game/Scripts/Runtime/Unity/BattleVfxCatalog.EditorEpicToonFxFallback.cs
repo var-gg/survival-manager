@@ -18,7 +18,19 @@ public sealed partial class BattleVfxCatalog
 
         var catalog = CreateInstance<BattleVfxCatalog>();
         catalog.hideFlags = HideFlags.DontSave;
+        PopulateEpicToonFxBaseline(catalog);
 
+        _editorEpicToonFxFallbackCatalog = catalog.HasAnyEntry() ? catalog : null;
+        return _editorEpicToonFxFallbackCatalog;
+    }
+
+    /// <summary>
+    /// Epic Toon FX baseline 엔트리 테이블 — 에디터 폴백과 프로덕션 카탈로그 asset 빌더
+    /// (SM.Editor BattleVfxCatalogBuilder)가 같은 테이블을 공유한다(패리티 보장). 벤더 prefab은
+    /// 무수정 참조, 튜닝(scale/lifetime)은 엔트리 값으로만.
+    /// </summary>
+    public static void PopulateEpicToonFxBaseline(BattleVfxCatalog catalog)
+    {
         AddEntry(catalog, BattlePresentationCueType.WindupEnter, "Assets/Epic Toon FX/Prefabs/Combat/Magic/Charge/MagicChargeYellow.prefab", BattleActorSocketId.Telegraph, 1.1f, new Vector3(0f, 0.04f, 0f), Vector3.zero, Vector3.one * 0.58f, false);
         AddEntry(catalog, BattlePresentationCueType.ActionCommitBasic, "Assets/Epic Toon FX/Prefabs/Combat/Sword/Slash/SwordSlashThick/SwordSlashThickWhite.prefab", BattleActorSocketId.ProjectileOrigin, 1.15f, new Vector3(0f, 0.10f, 0.05f), new Vector3(0f, 0f, 0f), Vector3.one * 0.72f, false);
         AddEntry(catalog, BattlePresentationCueType.ActionCommitBasic, "Assets/Epic Toon FX/Prefabs/Combat/Missiles/Sharp/SharpMissileGreen.prefab", BattleActorSocketId.ProjectileOrigin, 1.25f, new Vector3(0f, 0.10f, 0.05f), Vector3.zero, Vector3.one * 0.52f, false, BattleAnimationSemantic.BowShot);
@@ -40,9 +52,6 @@ public sealed partial class BattleVfxCatalog
         AddEntry(catalog, BattlePresentationCueType.GuardEnter, "Assets/Epic Toon FX/Prefabs/Combat/Shield/ShieldSoftBlue.prefab", BattleActorSocketId.Telegraph, 1.1f, new Vector3(0f, 0.08f, 0f), Vector3.zero, Vector3.one * 0.50f, false, BattleAnimationSemantic.GuardPose, SkillPresentationFamily.Shield, SkillPresentationSkin.GuardSteel);
         AddEntry(catalog, BattlePresentationCueType.RepositionStart, "Assets/Epic Toon FX/Prefabs/Environment/Dust/DustDirtyPoofSoft.prefab", BattleActorSocketId.FeetRing, 1.0f, Vector3.zero, Vector3.zero, Vector3.one * 0.48f, false, BattleAnimationSemantic.DashEngage, SkillPresentationFamily.Reposition, SkillPresentationSkin.FrostGlass);
         AddEntry(catalog, BattlePresentationCueType.ActionCommitSkill, "Assets/Epic Toon FX/Prefabs/Combat/Magic/Field/MagicFieldBlue.prefab", BattleActorSocketId.Telegraph, 1.7f, new Vector3(0f, 0.04f, 0f), Vector3.zero, Vector3.one * 0.62f, false, presentationFamily: SkillPresentationFamily.Zone, presentationSkin: SkillPresentationSkin.FrostGlass);
-
-        _editorEpicToonFxFallbackCatalog = catalog.HasAnyEntry() ? catalog : null;
-        return _editorEpicToonFxFallbackCatalog;
     }
 
     private static void AddEntry(

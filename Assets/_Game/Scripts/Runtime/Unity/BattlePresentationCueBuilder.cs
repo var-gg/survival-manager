@@ -10,6 +10,30 @@ public sealed class BattlePresentationCueBuilder
     private const float DisplacementTraceDistanceThreshold = 0.35f;
     private const float MovementCueDistanceThreshold = 0.05f;
 
+    // 스킬 계열별 VFX 해상용 skillId→presentation 룩업. sim intent의 SkillId는 opaque 키이므로
+    // (BattleCombatEventIntent 계약) 해석은 presentation이 소유한다 — 전투 시작 시 로드아웃의
+    // 컴파일된 스킬 spec에서 주입(ConfigureSkillPresentations).
+    private readonly Dictionary<string, BattleSkillPresentationProfile> _presentationBySkillId = new(System.StringComparer.Ordinal);
+
+    public void ConfigureSkillPresentations(IEnumerable<BattleSkillSpec>? skills)
+    {
+        _presentationBySkillId.Clear();
+        if (skills == null)
+        {
+            return;
+        }
+
+        foreach (var skill in skills)
+        {
+            if (skill == null || string.IsNullOrWhiteSpace(skill.Id))
+            {
+                continue;
+            }
+
+            _presentationBySkillId[skill.Id] = skill.EffectivePresentation;
+        }
+    }
+
     public IReadOnlyList<BattlePresentationCue> Build(BattleSimulationStep previousStep, BattleSimulationStep currentStep)
     {
         var cues = new List<BattlePresentationCue>();
@@ -129,7 +153,7 @@ public sealed class BattlePresentationCueBuilder
                 switch (intent.Status)
                 {
                     case CombatEventIntentStatus.Started:
-                        AddCommitCue(cues, currentById, intent);
+                        AddCommitCue(cues, currentById, intent, _presentationBySkillId);
                         break;
                     case CombatEventIntentStatus.Contacted:
                         AddTargetReactionCues(cues, currentById, motionsByActor, intent);
@@ -344,7 +368,8 @@ public sealed class BattlePresentationCueBuilder
     private static void AddCommitCue(
         ICollection<BattlePresentationCue> cues,
         IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
-        BattleCombatEventIntent intent)
+        BattleCombatEventIntent intent,
+        IReadOnlyDictionary<string, BattleSkillPresentationProfile> presentationBySkillId)
     {
         // GPT Pro D2: the actor commit (strike) fires at WindupStartTick carrying the tick schedule, so the
         // driver can pin its authored contact frame onto ContactTick. The commit animation is a function of
@@ -357,6 +382,10 @@ public sealed class BattlePresentationCueBuilder
             ContactGroupIndex: 0, // one scheduled group per action today; future multi-hit keys per hit frame (J22-D2)
             intent.WindupStartTick,
             intent.ContactTick);
+        var presentation = intent.SkillId != null
+                           && presentationBySkillId.TryGetValue(intent.SkillId, out var resolvedPresentation)
+            ? resolvedPresentation
+            : null;
 
         cues.Add(new BattlePresentationCue(
             ResolveCommitCueType(intent.Kind, isHeal: false),
@@ -371,7 +400,10 @@ public sealed class BattlePresentationCueBuilder
             commit.Semantic,
             commit.Direction,
             commit.Intensity,
-            schedule));
+            schedule,
+            PresentationFamily: presentation?.Family ?? SkillPresentationFamily.Any,
+            PresentationSkin: presentation?.Skin ?? SkillPresentationSkin.Any,
+            PresentationGesture: presentation?.Gesture ?? SkillPresentationGesture.None));
     }
 
     private static void AddTargetReactionCues(

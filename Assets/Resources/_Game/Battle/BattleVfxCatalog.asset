@@ -1,0 +1,213 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: BattleVfxCatalog
+  m_EditorClassIdentifier: SM.Unity:SM.Unity:BattleVfxCatalog
+  entries:
+  - cueType: 0
+    prefab: {fileID: 162722, guid: 1fc71432c1bd537489e1be6246b56973, type: 3}
+    socketId: 5
+    lifetimeSeconds: 1.1
+    localOffset: {x: 0, y: 0.04, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.58, y: 0.58, z: 0.58}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 2
+    prefab: {fileID: 1691668335544622, guid: 25f0520c9ecef6641af6ea648e95a88d, type: 3}
+    socketId: 7
+    lifetimeSeconds: 1.15
+    localOffset: {x: 0, y: 0.1, z: 0.05}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.72, y: 0.72, z: 0.72}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 2
+    prefab: {fileID: 1550477657380252, guid: 16cf368e6fc6cb7439e9ba2c820985ed, type: 3}
+    socketId: 7
+    lifetimeSeconds: 1.25
+    localOffset: {x: 0, y: 0.1, z: 0.05}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.52, y: 0.52, z: 0.52}
+    parentToSocket: 0
+    animationSemantic: 12
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 2
+    prefab: {fileID: 151808, guid: 5d6f0dd615584fe4a813ab93edc17b31, type: 3}
+    socketId: 7
+    lifetimeSeconds: 1.35
+    localOffset: {x: 0, y: 0.08, z: 0.05}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.52, y: 0.52, z: 0.52}
+    parentToSocket: 0
+    animationSemantic: 13
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 3
+    prefab: {fileID: 151808, guid: 5d6f0dd615584fe4a813ab93edc17b31, type: 3}
+    socketId: 7
+    lifetimeSeconds: 1.45
+    localOffset: {x: 0, y: 0.08, z: 0.05}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.58, y: 0.58, z: 0.58}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 4
+    prefab: {fileID: 4569046032541823318, guid: 448ffbcf71db27749b98c4ed68e15143, type: 3}
+    socketId: 6
+    lifetimeSeconds: 0.95
+    localOffset: {x: 0, y: 0.08, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.42, y: 0.42, z: 0.42}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 5
+    prefab: {fileID: 1272483159307946, guid: cc0bdc9defd87ef4fba2c3954f1bb0d1, type: 3}
+    socketId: 3
+    lifetimeSeconds: 0.6
+    localOffset: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.3, y: 0.3, z: 0.3}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 6
+    prefab: {fileID: 185744, guid: b88a52d0de3924c4db6011de30ecccd0, type: 3}
+    socketId: 1
+    lifetimeSeconds: 0.95
+    localOffset: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.34, y: 0.34, z: 0.34}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 7
+    prefab: {fileID: 1135644536747142, guid: c105577ec49dfb3408a7a89c3b7730be, type: 3}
+    socketId: 5
+    lifetimeSeconds: 1
+    localOffset: {x: 0, y: 0.08, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.46, y: 0.46, z: 0.46}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 9
+    prefab: {fileID: 165672, guid: 146d2ff25be0f824fa285b16b2915ff3, type: 3}
+    socketId: 4
+    lifetimeSeconds: 1
+    localOffset: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.46, y: 0.46, z: 0.46}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 11
+    prefab: {fileID: 1889919486439536, guid: 35ad08272de78064cbd645a70f31f454, type: 3}
+    socketId: 0
+    lifetimeSeconds: 1.7
+    localOffset: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.62, y: 0.62, z: 0.62}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 0
+    presentationSkin: 0
+  - cueType: 3
+    prefab: {fileID: 1140404083555214, guid: e66bddc96394d4a45b8c8fd1ed37a43d, type: 3}
+    socketId: 7
+    lifetimeSeconds: 1.25
+    localOffset: {x: 0, y: 0.08, z: 0.05}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.58, y: 0.58, z: 0.58}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 1
+    presentationSkin: 8
+  - cueType: 3
+    prefab: {fileID: 1314051614399548, guid: d7c4f1a918ad21244a3ebdacbf454af5, type: 3}
+    socketId: 7
+    lifetimeSeconds: 1.45
+    localOffset: {x: 0, y: 0.08, z: 0.05}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.54, y: 0.54, z: 0.54}
+    parentToSocket: 0
+    animationSemantic: 12
+    presentationFamily: 2
+    presentationSkin: 3
+  - cueType: 3
+    prefab: {fileID: 151808, guid: 5d6f0dd615584fe4a813ab93edc17b31, type: 3}
+    socketId: 7
+    lifetimeSeconds: 1.45
+    localOffset: {x: 0, y: 0.08, z: 0.05}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.58, y: 0.58, z: 0.58}
+    parentToSocket: 0
+    animationSemantic: 13
+    presentationFamily: 10
+    presentationSkin: 10
+  - cueType: 4
+    prefab: {fileID: 4569046032541823318, guid: 448ffbcf71db27749b98c4ed68e15143, type: 3}
+    socketId: 6
+    lifetimeSeconds: 0.95
+    localOffset: {x: 0, y: 0.08, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.42, y: 0.42, z: 0.42}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 8
+    presentationSkin: 7
+  - cueType: 7
+    prefab: {fileID: 1135644536747142, guid: c105577ec49dfb3408a7a89c3b7730be, type: 3}
+    socketId: 5
+    lifetimeSeconds: 1.1
+    localOffset: {x: 0, y: 0.08, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.5, y: 0.5, z: 0.5}
+    parentToSocket: 0
+    animationSemantic: 16
+    presentationFamily: 9
+    presentationSkin: 8
+  - cueType: 9
+    prefab: {fileID: 165672, guid: 146d2ff25be0f824fa285b16b2915ff3, type: 3}
+    socketId: 4
+    lifetimeSeconds: 1
+    localOffset: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.48, y: 0.48, z: 0.48}
+    parentToSocket: 0
+    animationSemantic: 6
+    presentationFamily: 11
+    presentationSkin: 5
+  - cueType: 3
+    prefab: {fileID: 158776, guid: 524b12464dce5b248a893d67a188da05, type: 3}
+    socketId: 5
+    lifetimeSeconds: 1.7
+    localOffset: {x: 0, y: 0.04, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.62, y: 0.62, z: 0.62}
+    parentToSocket: 0
+    animationSemantic: 0
+    presentationFamily: 5
+    presentationSkin: 5

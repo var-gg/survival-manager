@@ -40,7 +40,20 @@ public sealed class BattleActorVfxSurface : MonoBehaviour
 
         var resolvedCatalog = ResolveCatalog();
         BattleVfxCatalogEntry? entry = null;
-        var hasCatalogEntry = resolvedCatalog != null && resolvedCatalog.TryResolve(cue, out entry);
+        // 스킬 계열(Family/Skin/Gesture)을 운반하는 cue는 presentation-aware 4축 해상을 먼저 탄다 —
+        // 종전에는 도감 미리보기만 이 경로를 써서 실전투의 모든 스킬이 cue 종류별 단일 이펙트로 뭉개졌다.
+        // Family=Any(기본공격/비스킬 cue)는 기존 cue-type 해상 그대로.
+        var hasCatalogEntry = resolvedCatalog != null
+                              && (cue.PresentationFamily != SkillPresentationFamily.Any
+                                  ? resolvedCatalog.TryResolve(
+                                      cue,
+                                      new BattleSkillPresentationProfile(
+                                          cue.PresentationFamily,
+                                          cue.PresentationSkin,
+                                          cue.PresentationGesture,
+                                          SkillPresentationCueSequence.None),
+                                      out entry)
+                                  : resolvedCatalog.TryResolve(cue, out entry));
         var socketId = hasCatalogEntry ? entry!.SocketId : BattleActorSocketId.Center;
         if (!hasCatalogEntry && !TryResolveSocket(cue.CueType, out socketId))
         {
