@@ -23,6 +23,10 @@ public readonly record struct CombatVector2(float X, float Y)
         }
     }
 
+    // 합성 ToString(PrintMembers)은 Normalized 같은 public 인스턴스 속성까지 출력하므로
+    // 자기 타입 반환 속성에서 무한 재귀(StackOverflow)한다 — 명시 오버라이드로 차단한다.
+    public override string ToString() => FormattableString.Invariant($"({X:R}, {Y:R})");
+
     public float DistanceTo(CombatVector2 other) => (this - other).Length;
 
     public static CombatVector2 Lerp(CombatVector2 from, CombatVector2 to, float t)
