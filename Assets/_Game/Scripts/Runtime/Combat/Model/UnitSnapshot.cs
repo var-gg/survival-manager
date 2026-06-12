@@ -583,18 +583,14 @@ public sealed class UnitSnapshot
         var changed = EngagementSlot?.TargetId != slot?.TargetId
                       || EngagementSlot?.SlotIndex != slot?.SlotIndex
                       || EngagementSlot?.IsOverflow != slot?.IsOverflow;
-        var moved = !changed
-                    && EngagementSlot != null
-                    && slot != null
-                    && EngagementSlot.Position.DistanceTo(slot.Position) > Math.Max(0.1f, NavigationRadius * 0.2f);
         EngagementSlot = slot;
+        // 순수 슬롯 추종(동일 슬롯 식별자, 타겟이 걸어서 materialized 위치만 이동)은 재평가를 요청하지
+        // 않는다. 슬롯 위치는 매 틱 lease 갱신으로 새로 재질화되고 이동 로직은 슬롯 위치를 읽지 않으므로,
+        // 위치-이동 신호의 유일한 효과는 stable-target 히스테리시스 무력화였다 — 움직이는 타겟 상대로
+        // 매 틱 풀 재타게팅/헤딩 재결정이 일어나 제자리 회전(spin)으로 나타났다.
         if (changed)
         {
             RequestReevaluation(slot == null ? ReevaluationReason.SlotLost : ReevaluationReason.Cadence);
-        }
-        else if (moved)
-        {
-            RequestReevaluation(ReevaluationReason.TargetMoved);
         }
     }
 

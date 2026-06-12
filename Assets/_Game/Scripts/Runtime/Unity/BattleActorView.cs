@@ -100,6 +100,9 @@ public sealed class BattleActorView : MonoBehaviour
     private Quaternion _lastAliveRotation = Quaternion.identity;
     private Vector3 _lastMoveDirection = Vector3.zero;
     private bool _isLocomoting;
+    // 스핀 수정 C3: travel facing은 의도적 이동(지속+속도)에만 — separation 미세 푸시/탈출 펄스가
+    // facing 나침반을 돌리던 제자리 회전 차단.
+    private readonly BattleTravelFacingGate _travelFacingGate = new();
     // 표시 facing 평활 상태 — 킬 후 리타겟/이동↔조준 전환의 1프레임 회전 스냅 방지(시각 전용).
     private Quaternion _displayedFacingRotation = Quaternion.identity;
     private bool _hasDisplayedFacingRotation;
@@ -181,6 +184,7 @@ public sealed class BattleActorView : MonoBehaviour
                                       ?? BattleHumanoidAnimationSet.DefaultRunAuthoredLocomotionSpeed;
         var locomoting = BattleLocomotionCadence.IsLocomoting(worldSpeed) && clampedAlpha < 0.995f;
         _isLocomoting = locomoting;
+        _travelFacingGate.Sample(currentStepIndex, worldSpeed);
         // Phase 0-E (moonwalk fix): remember the actual travel direction so facing can track movement while
         // traveling (the single forward locomotion clip then never plays "backward"). A backward/lateral step
         // now turns the body the way it moves instead of sliding while facing the target = moonwalk.
@@ -370,6 +374,7 @@ public sealed class BattleActorView : MonoBehaviour
         _impactColor = Color.clear;
         _floatingColor = Color.clear;
         _hasDisplayedFacingRotation = false;
+        _travelFacingGate.Reset();
         _animationEventBridge?.ClearTransientState(reason);
         _animationDriver?.ClearTransientState(reason);
         _vfxSurface?.ClearTransientState(reason);
@@ -809,7 +814,10 @@ public sealed class BattleActorView : MonoBehaviour
         // Phase 0-E (moonwalk fix): while traveling, face the movement direction so the forward locomotion
         // clip reads correctly; while fighting / winding up / idle (not locomoting), face the target. A unit
         // mid-windup is not locomoting, so a committed strike still faces its target.
+        // 스핀 수정 C3: travel facing은 게이트(연속 step + 의도적 속도)가 열렸을 때만 — separation
+        // 미세 푸시/단발 탈출 펄스로는 몸이 돌지 않고 타겟 응시를 유지한다(미세 이동 = 보폭 조정).
         if (_isLocomoting
+            && _travelFacingGate.IsActive
             && _currentState.ActionState != CombatActionState.ExecuteAction
             && _lastMoveDirection.sqrMagnitude > 0.001f)
         {

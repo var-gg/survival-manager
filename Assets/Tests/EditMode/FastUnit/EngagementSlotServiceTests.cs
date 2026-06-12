@@ -210,7 +210,7 @@ public sealed class EngagementSlotServiceTests
     }
 
     [Test]
-    public void SlotPositionMoveAndSlotLoss_RecordReplanReasons()
+    public void SlotPositionTracking_DoesNotRequestReevaluation_SlotLossStillDoes()
     {
         var attacker = MakeUnit("attacker", TeamSide.Ally, attackRange: 1.2f);
         var target = MakeUnit("target", TeamSide.Enemy, attackRange: 1.2f);
@@ -223,12 +223,26 @@ public sealed class EngagementSlotServiceTests
         var slot = EngagementSlotService.Resolve(state, attacker, target, band, PositioningIntentKind.Frontline);
         Assert.That(slot, Is.Not.Null);
         attacker.SetEngagementSlot(slot);
+        attacker.ConsumeReevaluation();
+        var replanRevisionAfterAssign = attacker.PositioningIntentRevision;
 
+        // 스핀 수정 C1: 동일 슬롯 식별자에서 타겟이 걸어 materialized 위치만 이동한 갱신은 순수 추종이다 —
+        // 재평가를 요청하면(구 동작: TargetMoved) 움직이는 타겟 상대로 매 틱 stable-target 히스테리시스가
+        // 무력화되어 풀 재타게팅/헤딩 재결정 폭풍 = 제자리 회전이 됐다.
         var shifted = slot! with { Position = slot.Position + new CombatVector2(0.35f, 0f) };
         attacker.SetEngagementSlot(shifted);
-        Assert.That(attacker.PositioningReplanReason, Is.EqualTo(ReevaluationReason.TargetMoved));
+        Assert.That(attacker.NeedsReevaluation, Is.False, "pure slot position tracking must not request reevaluation");
+        Assert.That(attacker.PositioningIntentRevision, Is.EqualTo(replanRevisionAfterAssign), "tracking must not bump the positioning replan revision");
+
+        // 식별자 변경(다른 슬롯 인덱스)은 추종이 아니다 — 여전히 재평가를 요청해야 한다.
+        var reslotted = shifted with { SlotIndex = shifted.SlotIndex + 1 };
+        attacker.SetEngagementSlot(reslotted);
+        Assert.That(attacker.NeedsReevaluation, Is.True, "slot identity change must still request reevaluation");
+        Assert.That(attacker.PositioningReplanReason, Is.EqualTo(ReevaluationReason.Cadence));
+        attacker.ConsumeReevaluation();
 
         attacker.SetEngagementSlot(null);
+        Assert.That(attacker.NeedsReevaluation, Is.True, "slot loss must still request reevaluation");
         Assert.That(attacker.PositioningReplanReason, Is.EqualTo(ReevaluationReason.SlotLost));
 
         var evaluated = TacticEvaluator.Evaluate(state, attacker);
