@@ -55,6 +55,7 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
     private AnimationClip? _pinFollowUpClip;
     private BattleHitstopWindow _hitstopWindow = BattleHitstopWindow.None;
     private double _lastSampleElapsed;
+    private double _pinReactionUnlockSeconds;
     // 속도 분리 계약(러닝머신 수술): _playbackSpeed는 타임라인 배속(Tick/ConsumeCue가 기록),
     // _locomotionCadence는 발-변위 정합 배율(ApplyState가 locomoting일 때만 기록). 단일 필드를
     // SetBlend→TickTransients 두 호출자가 last-write-wins로 다투면서 cadence가 매 프레임
@@ -246,6 +247,22 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
             // 끝나고 쓰러지는 모션은 영영 안 나온다. cue 소비 시점 state는 직전 step의 alive라
             // 상태 게이트는 불가능 — 반드시 이 플래그로 막는다.
             if (cue.CueType == BattlePresentationCueType.ImpactDamage && _isDeathOneShotActive)
+            {
+                return;
+            }
+
+            // 커밋 스윙의 발언권(사망 발언권과 같은 축): 핀 커밋이 contact 를 보여주기 전에 피격
+            // 리액션/플러리시 one-shot 이 레이어를 차지하면 PlayOneShot 이 핀까지 청산해 스윙이
+            // 통째로 사라진다 — 난전의 근접 유닛은 "항상 스윙 중 + 항상 피격 중"이라 평생
+            // 움찔거리기만 하다 죽는 그림(상호 피격 루프)이 된다. sim 의 스윙은 committed 라 반드시
+            // 명중하므로 화면도 반드시 보여줘야 한다. contact 프레임 + full-weight hold 가 지나간
+            // 회수 꼬리부터는 리액션을 허용해 스윙 사이 움찔은 살린다. 그 전의 피격 체감은 hitstop
+            // 포즈 홀드(StartHitstop은 핀-인지) + 임팩트 플래시/텍스트가 담당한다.
+            // 사망(DeathStart)·취소 tombstone(위)·새 커밋(CommitSchedule 보유)만 스윙을 끊는다.
+            if (_isPinnedCommit
+                && cue.CommitSchedule == null
+                && cue.CueType != BattlePresentationCueType.DeathStart
+                && _lastSampleElapsed < _pinReactionUnlockSeconds)
             {
                 return;
             }
@@ -743,6 +760,10 @@ public sealed class BattleHumanoidAnimationDriver : MonoBehaviour
         _oneShotElapsed = 0f;
         _oneShotRemaining = 0f; // pinned lifetime is driven by EvaluateContactPin, not the Tick accumulator.
         _hitstopWindow = BattleHitstopWindow.None;
+        // 스윙 발언권 해제 시점: contact 프레임 + full-weight hold 까지는 스윙이 레이어를 소유하고,
+        // 그 뒤(회수 꼬리)부터 피격 리액션이 스윙을 끊을 수 있다(ConsumeCue 의 핀 가드).
+        _lastSampleElapsed = 0d;
+        _pinReactionUnlockSeconds = _pinPlan.BudgetSeconds + timing.RequiredFullWeightHoldSeconds;
         _oneShotPlayable.SetTime(_pinPlan.ClipLocalTimeAt(0d));
         ApplyBlendWeights(0f);
         CuePlaybackCount++;
