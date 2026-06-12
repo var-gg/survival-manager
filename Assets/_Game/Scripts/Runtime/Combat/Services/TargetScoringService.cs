@@ -63,44 +63,77 @@ public static class TargetScoringService
             return ResolveFallback(state, actor, rule, Array.Empty<UnitSnapshot>());
         }
 
+        var selected = SelectCore(state, actor, rule, candidates, currentTarget, context, includeScreenPenalty: true);
+
+        // P0 차단(우회 유도) 계측: 스크린 페널티 없이 같은 선택을 다시 뽑았을 때 결과가 '스크린된
+        // 후열'로 뒤집히면, 스크린이 이 공격자의 후열행을 실제로 차단한 것이다. 차단의 주 발현은
+        // 피해 흡수가 아니라 이 우회 유도라 흡수만 세면 차단이 잘 작동할수록 0이 된다. 계측 전용 —
+        // 선택 결과 불변, 액터당 1회 dedup은 telemetry 소유.
+        if (selected != null
+            && rule.Domain == TargetDomain.EnemyUnit
+            && !BattleFormationConsequence.IsScreenedBackline(state, selected)
+            && candidates.Any(candidate => candidate.Side != actor.Side
+                                           && BattleFormationConsequence.IsScreenedBackline(state, candidate)))
+        {
+            var unscreened = SelectCore(state, actor, rule, candidates, currentTarget, context, includeScreenPenalty: false);
+            if (unscreened != null
+                && unscreened.Id != selected.Id
+                && BattleFormationConsequence.IsScreenedBackline(state, unscreened))
+            {
+                state.ActivityTelemetry.RecordScreenDeterrence(actor.Id.Value);
+            }
+        }
+
+        return selected;
+    }
+
+    private static UnitSnapshot? SelectCore(
+        BattleState state,
+        UnitSnapshot actor,
+        TargetRule rule,
+        List<UnitSnapshot> candidates,
+        UnitSnapshot? currentTarget,
+        TacticContext context,
+        bool includeScreenPenalty)
+    {
         var selected = rule.PrimarySelector switch
         {
             TargetSelector.NearestReachableEnemy => candidates
-                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetSelector.NearestFrontlineEnemy => candidates
                 .Where(target => target.Behavior.FormationLine == FormationLine.Frontline)
-                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
-                .FirstOrDefault() ?? ResolveFallback(state, actor, CloneRuleWithFallback(rule, TargetFallbackPolicy.NearestReachableEnemy), candidates),
-            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
-            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
-            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
-            TargetSelector.MarkedEnemy => candidates.FirstOrDefault(target => target.HasStatus("marked")) ?? ResolveFallback(state, actor, rule, candidates),
+                .FirstOrDefault() ?? ResolveFallback(state, actor, CloneRuleWithFallback(rule, TargetFallbackPolicy.NearestReachableEnemy), candidates, context, includeScreenPenalty),
+            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.MarkedEnemy => candidates.FirstOrDefault(target => target.HasStatus("marked")) ?? ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty),
             TargetSelector.LargestEnemyCluster => candidates
                 .OrderByDescending(target => CountClusterTargets(candidates, target.Position, Math.Max(0.1f, rule.ClusterRadius)))
-                .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context))
+                .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetSelector.BacklineExposedEnemy => candidates
                 .Where(target => IsBacklineExposedEnemy(state, target))
-                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
-                .FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates),
+                .FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty),
             TargetSelector.LowestCurrentHpAlly => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
             TargetSelector.LowestHpPercentAlly => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
             TargetSelector.LowestEhpAlly => candidates.OrderBy(EstimateEhpAgainstAverageThreat).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
             TargetSelector.NearestInjuredAlly => candidates.Where(target => target.CurrentHealth < target.MaxHealth).OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates),
             TargetSelector.EmptyPointNearSelf => actor,
             TargetSelector.EmptyPointNearTarget => currentTarget,
-            _ => ResolveFallback(state, actor, rule, candidates, context),
+            _ => ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty),
         };
 
         var result = IsValidCandidate(state, actor, selected, rule)
             ? selected
-            : ResolveFallback(state, actor, rule, candidates, context);
+            : ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty);
         return ApplyMeleeNearestEngagementOverride(state, actor, result, rule);
     }
 
@@ -275,7 +308,8 @@ public static class TargetScoringService
         UnitSnapshot actor,
         TargetRule rule,
         IEnumerable<UnitSnapshot> candidates,
-        TacticContext? context = null)
+        TacticContext? context = null,
+        bool includeScreenPenalty = true)
     {
         context ??= state.GetTacticContext(actor.Side);
         return rule.FallbackPolicy switch
@@ -286,13 +320,13 @@ public static class TargetScoringService
                 : null,
             TargetFallbackPolicy.NearestReachableEnemy => candidates
                 .Where(target => target.Side != actor.Side)
-                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context))
+                .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetFallbackPolicy.LowestCurrentHpEnemy => candidates
                 .Where(target => target.Side != actor.Side)
                 .OrderBy(target => target.CurrentHealth)
-                .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context))
+                .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetFallbackPolicy.Self => actor,
@@ -300,7 +334,7 @@ public static class TargetScoringService
         };
     }
 
-    private static float ResolveTacticTargetBias(BattleState state, UnitSnapshot actor, UnitSnapshot target, TacticContext context)
+    private static float ResolveTacticTargetBias(BattleState state, UnitSnapshot actor, UnitSnapshot target, TacticContext context, bool includeScreenPenalty = true)
     {
         if (target.Side == actor.Side)
         {
@@ -320,7 +354,8 @@ public static class TargetScoringService
         var flankBias = MathF.Abs(context.FlankBias) * (target.Behavior.FormationLine == FormationLine.Backline ? -0.08f : 0f);
         // P0 차단: 스크린이 멀쩡한 후열은 일반 타게팅에서 덜 매력적이다(거리 미터 등가 페널티).
         // Dive 의도는 RoleBrain 경로로 이 페널티를 거치지 않는다 — 스크린을 뚫는 건 다이버의 일.
-        var screenPenalty = BattleFormationConsequence.IsScreenedBackline(state, target)
+        // includeScreenPenalty=false는 차단(우회 유도) 계측의 counterfactual 경로 전용.
+        var screenPenalty = includeScreenPenalty && BattleFormationConsequence.IsScreenedBackline(state, target)
             ? BattleFormationConsequence.ScreenedTargetScorePenalty
             : 0f;
         return switchPenalty + focusBias + flankBias + screenPenalty;

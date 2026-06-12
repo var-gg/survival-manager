@@ -322,6 +322,7 @@ public static class BattleTelemetryRecorder
         AddMetric(state, "ClusterTradeoffNetValue", snapshot.ClusterTradeoffNetValue);
         AddMetric(state, "ScreenMitigationContribution", snapshot.ScreenMitigationContribution);
         AddMetric(state, "ScreenAbsorbCount", snapshot.ScreenAbsorbCount);
+        AddMetric(state, "ScreenDeterrenceCount", snapshot.ScreenDeterrenceCount);
         AddMetric(state, "FlankDamageContribution", snapshot.FlankDamageContribution);
         AddMetric(state, "FlankStrikeCount", snapshot.FlankStrikeCount);
         AddMetric(state, "RearStrikeCount", snapshot.RearStrikeCount);

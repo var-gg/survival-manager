@@ -327,6 +327,62 @@ public sealed class RoleBrainTests
         Assert.That(commitUntil, Is.GreaterThan(state.StepIndex));
     }
 
+    // T1 다이브 봉인 해제 + 지속 계약 + 다이브킬 귀속 골든. 전열이 듀얼리스트 하나뿐인 조합:
+    // 자기 자신이 적 전열과 교전 중이면 support proxy가 성립해야 하고(종전엔 "다른 아군 전열" 요구로
+    // 영구 봉인), 다이브는 커밋(1.2s) 만료를 넘어 재점수만으로 지속돼 후열에 도달·처치까지 가야 하며,
+    // 그 킬은 BacklineDiveKillCount로 귀속돼야 한다.
+    [Test]
+    public void Duelist_SoleFrontliner_DivesAndConvertsBacklineKill()
+    {
+        var duelist = CombatTestFactory.CreateUnit("ally_duelist", classId: "duelist", anchor: DeploymentAnchorId.FrontCenter,
+            hp: 80f, attack: 12f, moveSpeed: 2.1f, attackRange: 1.2f, attackWindup: 0.1f, attackCooldown: 0.7f);
+        var enemyVanguard = CombatTestFactory.CreateUnit("enemy_vanguard", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter,
+            hp: 200f, attack: 2f, moveSpeed: 0f, attackRange: 1.2f, attackCooldown: 0.9f);
+        var enemyRanger = CombatTestFactory.CreateUnit("enemy_ranger", race: "undead", classId: "ranger", anchor: DeploymentAnchorId.BackCenter,
+            hp: 40f, attack: 2f, moveSpeed: 0f, attackRange: 5f, attackCooldown: 0.9f);
+
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { duelist }, new[] { enemyVanguard, enemyRanger },
+            allyPosture: TeamPostureType.AllInBackline, enemyPosture: TeamPostureType.StandardAdvance, seed: 7);
+        var d = state.Allies[0];
+        var ev = state.Enemies[0];
+        var er = state.Enemies[1];
+        d.SetPosition(new CombatVector2(0f, 0f));
+        ev.SetPosition(new CombatVector2(1.4f, 0f)); // 자기 자신이 lane-engaged — 유일한 support proxy
+        er.SetPosition(new CombatVector2(4.5f, 0f)); // 노출 후열(보디가드 반경 밖)
+        foreach (var u in state.AllUnits)
+        {
+            u.SetActionState(CombatActionState.AcquireTarget);
+        }
+
+        var sim = new BattleSimulator(state, 120);
+        sim.Step();
+        Assert.That(d.CurrentCombatIntent.Type, Is.EqualTo(CombatIntentType.Dive),
+            "단독 전열 듀얼리스트도 자기 교전으로 support proxy가 성립해 다이브가 열려야 한다");
+        Assert.That(d.CurrentCombatIntent.TargetId, Is.EqualTo(er.Id));
+
+        // 커밋(12 step)을 넘겨도 타겟이 살아있고 점수가 유지되면 다이브는 지속된다.
+        for (var i = 0; i < 14 && er.IsAlive; i++)
+        {
+            sim.Step();
+        }
+
+        if (er.IsAlive)
+        {
+            Assert.That(d.CurrentCombatIntent.Type, Is.EqualTo(CombatIntentType.Dive),
+                "커밋 만료 후에도 재점수 지속 — 다이브가 1.2초 페인트로 끝나면 안 된다");
+        }
+
+        for (var i = 0; i < 90 && er.IsAlive; i++)
+        {
+            sim.Step();
+        }
+
+        Assert.That(er.IsAlive, Is.False, "다이버가 무방비 후열을 처치해야 한다");
+        Assert.That(state.ActivityTelemetry.BacklineDiveKillCount, Is.EqualTo(1),
+            "다이브로 들어간 후열 킬이 BacklineDiveKill로 귀속돼야 한다");
+    }
+
     [Test]
     public void Duelist_Dive_HardInterrupts_WhenDiveTargetDies()
     {

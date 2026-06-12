@@ -34,6 +34,7 @@ public sealed record BattleActivityTelemetrySnapshot(
     float ClusterTradeoffNetValue,
     float ScreenMitigationContribution,
     int ScreenAbsorbCount,
+    int ScreenDeterrenceCount,
     float FlankDamageContribution,
     int FlankStrikeCount,
     int RearStrikeCount,
@@ -56,6 +57,10 @@ public sealed class BattleActivityTelemetryAccumulator
     private readonly Dictionary<string, float> _buffEfficacyBonusByType = new(StringComparer.Ordinal);
     private readonly Dictionary<string, float> _aoeCatchCountHistogram = new(StringComparer.Ordinal);
     private readonly Dictionary<string, float> _handednessLateralResetSideHistogram = new(StringComparer.Ordinal);
+    // 차단(우회 유도) dedup: 같은 공격자가 지속 차단당해도 액터당 1회만 센다 — 카운터가 "순간"을 세게.
+    private readonly HashSet<string> _screenDeterredActors = new(StringComparer.Ordinal);
+    // 구출 episode dedup: 빈사 1회당 1회 — 회복(≥reset 문턱) 후에만 같은 유닛이 다시 카운트된다.
+    private readonly HashSet<string> _saveCreditedTargets = new(StringComparer.Ordinal);
 
     private int _stationaryAttackIntervals;
     private int _totalAttackIntervals;
@@ -81,6 +86,7 @@ public sealed class BattleActivityTelemetryAccumulator
     public float ClusterTradeoffNetValue { get; private set; }
     public float ScreenMitigationContribution { get; private set; }
     public int ScreenAbsorbCount { get; private set; }
+    public int ScreenDeterrenceCount { get; private set; }
     public float FlankDamageContribution { get; private set; }
     public int FlankStrikeCount { get; private set; }
     public int RearStrikeCount { get; private set; }
@@ -89,6 +95,15 @@ public sealed class BattleActivityTelemetryAccumulator
 
     public void RecordStep(BattleState state)
     {
+        // 구출 episode 해제: reset 문턱 이상으로 회복된 유닛은 다음 빈사에서 다시 카운트된다.
+        foreach (var unit in state.AllUnits)
+        {
+            if (unit.IsAlive && unit.HealthRatio >= SaveMomentEpisodeResetRatio)
+            {
+                _saveCreditedTargets.Remove(unit.Id.Value);
+            }
+        }
+
         RecordPairwiseDistance(state, TeamSide.Ally);
         RecordPairwiseDistance(state, TeamSide.Enemy);
         RecordRowYSpread(state, TeamSide.Ally, FormationLine.Frontline);
@@ -179,6 +194,20 @@ public sealed class BattleActivityTelemetryAccumulator
         ScreenAbsorbCount++;
     }
 
+    /// <summary>
+    /// P0 차단(우회 유도): 타게팅이 스크린 페널티 때문에 후열 대신 다른 표적으로 돌아선 순간.
+    /// 차단의 주 발현은 피해 흡수가 아니라 "후열을 노리지 못하게 만드는 것"이라 흡수만 세면 차단이
+    /// 건강하게 작동할수록 0이 된다(T1 sweep 측정 0/24). 같은 공격자는 1회만 — 지속 차단을 틱마다
+    /// 다시 세지 않는다.
+    /// </summary>
+    public void RecordScreenDeterrence(string actorId)
+    {
+        if (_screenDeterredActors.Add(actorId))
+        {
+            ScreenDeterrenceCount++;
+        }
+    }
+
     /// <summary>P0 측면: 측면/후방 공격이 추가한 피해 기여.</summary>
     public void RecordFlankStrike(float contribution, bool isRear)
     {
@@ -196,10 +225,24 @@ public sealed class BattleActivityTelemetryAccumulator
         BacklineDiveKillCount++;
     }
 
-    /// <summary>cinematic detector: 빈사(25% 미만) 아군을 회복으로 구출.</summary>
-    public void RecordSaveMoment()
+    /// <summary>구출 episode 해제 문턱 — 트리거(25%)보다 높게 잡아 경계 진동을 막는다.</summary>
+    private const float SaveMomentEpisodeResetRatio = 0.35f;
+
+    /// <summary>
+    /// cinematic detector: 빈사(25% 미만) 아군을 회복으로 구출. episode 단위 — 같은 빈사 상태에
+    /// 힐이 여러 번 닿아도 1회만 세고, 대상이 reset 문턱(35%) 이상으로 회복된 뒤 다시 빈사가 되면
+    /// 새 episode로 카운트한다. 카운터가 "힐 틱"이 아니라 "구출 순간"을 세게(T1 sweep에서 mean 21
+    /// 인플레이션 측정). true를 반환할 때만 호출자가 구출 note/accent를 발행한다.
+    /// </summary>
+    public bool TryBeginSaveMomentEpisode(string targetId)
     {
+        if (!_saveCreditedTargets.Add(targetId))
+        {
+            return false;
+        }
+
         SaveMomentCount++;
+        return true;
     }
 
     public void RecordHandednessSlotPreference(bool preferenceHit, bool hasPreference)
@@ -304,6 +347,7 @@ public sealed class BattleActivityTelemetryAccumulator
             ClusterTradeoffNetValue,
             ScreenMitigationContribution,
             ScreenAbsorbCount,
+            ScreenDeterrenceCount,
             FlankDamageContribution,
             FlankStrikeCount,
             RearStrikeCount,
@@ -420,6 +464,7 @@ public sealed class BattleActivityTelemetryAccumulator
             .Append(Format(snapshot.ClusterTradeoffNetValue)).Append('|')
             .Append(Format(snapshot.ScreenMitigationContribution)).Append('|')
             .Append(snapshot.ScreenAbsorbCount).Append('|')
+            .Append(snapshot.ScreenDeterrenceCount).Append('|')
             .Append(Format(snapshot.FlankDamageContribution)).Append('|')
             .Append(snapshot.FlankStrikeCount).Append('|')
             .Append(snapshot.RearStrikeCount).Append('|')

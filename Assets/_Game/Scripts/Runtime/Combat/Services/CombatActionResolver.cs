@@ -14,6 +14,10 @@ public static class CombatActionResolver
     /// <summary>SaveMoment detector: 회복 직전 HP 비율이 이 값 미만이면 "구출"로 센다.</summary>
     private const float SaveMomentHealthRatio = 0.25f;
 
+    /// <summary>BacklineDive detector: 다이브 커밋 만료 후에도 이 step 수 안의 후열 킬은 다이브에 귀속.
+    /// 커밋 12 step + grace 38 = 다이브 시작 후 ~5초.</summary>
+    private const int DiveKillAttributionGraceSteps = 38;
+
     public static IReadOnlyList<BattleEvent> Resolve(BattleState state, UnitSnapshot actor)
     {
         var events = new List<BattleEvent>();
@@ -110,13 +114,11 @@ public static class CombatActionResolver
                 {
                     var heal = HitResolutionService.ResolveSupportValue(actor, skill);
                     // cinematic detector(SaveMoment): 빈사 아군을 회복으로 구출한 순간 — 회복 전 HP로 판정.
-                    var isSaveMoment = target.Side == actor.Side && target.HealthRatio < SaveMomentHealthRatio;
+                    // episode 단위(빈사 1회당 1회) — note/accent/카운터가 같은 판정을 공유한다.
+                    var isSaveMoment = target.Side == actor.Side
+                                       && target.HealthRatio < SaveMomentHealthRatio
+                                       && state.ActivityTelemetry.TryBeginSaveMomentEpisode(target.Id.Value);
                     target.Heal(heal);
-                    if (isSaveMoment)
-                    {
-                        state.ActivityTelemetry.RecordSaveMoment();
-                    }
-
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.ActiveSkill, skill, heal);
                     BattleTelemetryRecorder.RecordImpact(
@@ -437,8 +439,11 @@ public static class CombatActionResolver
         var killPayload = BuildKillPayload(actor, target);
 
         // cinematic detector(BacklineDive): Dive 의도로 들어간 유닛이 후열을 처치 — "내가 그린 그림"의 1급 순간.
-        var isBacklineDiveKill = actor.CurrentCombatIntent.Type == CombatIntentType.Dive
-                                 && target.Behavior.FormationLine == FormationLine.Backline;
+        // 귀속 창: 다이브 커밋(1.2s)은 킬보다 먼저 만료되는 게 보통이라(T1 sweep — 의도 발동 24/24인데
+        // 킬 귀속 0), 마지막 다이브 커밋 만료 후 grace 안의 후열 킬은 그 다이브의 결과로 센다.
+        var isBacklineDiveKill = target.Behavior.FormationLine == FormationLine.Backline
+                                 && (actor.CurrentCombatIntent.Type == CombatIntentType.Dive
+                                     || state.StepIndex <= actor.LastDiveCommitUntilStep + DiveKillAttributionGraceSteps);
         if (isBacklineDiveKill)
         {
             state.ActivityTelemetry.RecordBacklineDiveKill();

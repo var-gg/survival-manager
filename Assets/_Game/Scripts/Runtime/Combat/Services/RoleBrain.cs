@@ -46,6 +46,7 @@ public static class RoleBrain
     private const float DiveProtectedRadius = 1.5f;     // reject targets bodyguarded by an enemy frontliner
     private const int DiveCommitSteps = 12;             // 1.2s commit
     private const int DiveScoreThreshold = 70;          // requires a real backline objective
+    private const int DiveContinueScoreThreshold = 50;  // 진행 중 다이브 지속 문턱 — 진입보다 관대(히스테리시스)
     private const int MaxConcurrentDivesPerTeam = 1;    // one diver at a time — no step-1 backline wipe
     private const float DiveSupportRadius = 4.0f;       // "not alone": allied frontliner nearby
     private const float LaneEngagedBuffer = 0.8f;       // "own front engages enemy front" proxy
@@ -171,10 +172,10 @@ public static class RoleBrain
             return true;
         }
 
-        // Dive entry is checked every tick so the window is caught the moment it opens. Not while already diving —
-        // the commit window holds the dive; re-entry happens after it resolves back to Engage.
+        // Dive entry/continuation is checked every tick. Entry catches the window the moment it opens;
+        // continuation(이미 다이빙 중)은 TryBuildDiveIntent의 지속 분기가 재점수만으로 커밋을 갱신한다 —
+        // 종전처럼 다이빙 중을 제외하면 커밋(1.2s)이 후열 도달 전에 만료돼 다이브가 페인트로 끝난다.
         if (actor.Definition.ClassId == "duelist"
-            && actor.CurrentCombatIntent.Type != CombatIntentType.Dive
             && TryBuildDiveIntent(state, actor, out intent))
         {
             return true;
@@ -218,6 +219,28 @@ public static class RoleBrain
     private static bool TryBuildDiveIntent(BattleState state, UnitSnapshot actor, out CombatIntent intent)
     {
         intent = CombatIntent.None;
+
+        // 지속(continuation) 계약: 이미 다이빙 중이면 진입 게이트(support proxy/threat/posture)를 다시 묻지
+        // 않는다 — 진입 게이트를 지속 조건으로 재적용하면 전선을 떠나는 순간 갱신이 끊겨 다이브가 1.2초
+        // 페인트로 끝난다(T1 sweep: 의도 발동 24/24인데 후열 도달 0). 지속 조건은 재점수만: 타겟이 살아있고
+        // ScoreDiveTarget ≥ 지속 문턱이면 커밋을 갱신한다. 적 전열이 후열을 보디가드하러 복귀하면 보호
+        // 페널티(-45)로 점수가 문턱 아래로 떨어져 다이브가 풀린다 — 수비가 응답하면 다이브가 꺾이는 룰.
+        // hard interrupt(HP<0.30, 타겟 사망)는 그대로 우선한다.
+        if (actor.CurrentCombatIntent.Type == CombatIntentType.Dive
+            && actor.CurrentCombatIntent.TargetId is { } diveTargetId
+            && LivingUnit(state, diveTargetId) is { } diveTarget)
+        {
+            var continueScore = ScoreDiveTarget(state, actor, diveTarget);
+            if (continueScore >= DiveContinueScoreThreshold)
+            {
+                intent = new CombatIntent(CombatIntentType.Dive, diveTarget.Id, null,
+                    MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + DiveCommitSteps, continueScore);
+                return true;
+            }
+
+            return false;
+        }
+
         if (!IsDiveEntryEligibleIgnoringSlot(state, actor) || !CanEnterTeamDiveSlot(state, actor))
         {
             return false;
@@ -363,10 +386,13 @@ public static class RoleBrain
         }
 
         // ...or an allied frontliner is lane-engaged with an enemy frontliner (own front occupies enemy front).
+        // 자기 자신도 인정한다(T1 다이브 봉인 해제): 전열이 듀얼리스트 하나뿐인 조합에서는 "다른 아군 전열"
+        // 요구가 Dive를 영구 봉인했다. 듀얼리스트 본인이 적 전열과 교전 중이면 적 전열이 전선에 묶여 있다는
+        // 증명이고, 다이브가 시작되면 그 적 전열이 추격(수비측 Peel)으로 응수하는 게 의도된 드라마 루프다.
         foreach (var enemyFront in state.GetOpponents(actor.Side).Where(e => e.IsAlive && IsFrontlineBody(e)))
         {
             if (state.GetTeam(actor.Side).Any(ally =>
-                    ally.IsAlive && ally.Id != actor.Id && IsFrontlineBody(ally)
+                    ally.IsAlive && IsFrontlineBody(ally)
                     && MovementResolver.ComputeEdgeDistance(ally, enemyFront)
                         <= Math.Max(ally.AttackRange, enemyFront.AttackRange) + LaneEngagedBuffer))
             {

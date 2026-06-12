@@ -683,12 +683,21 @@ public sealed class UnitSnapshot
     }
 
     /// <summary>Phase 1: set the unit's current tactical-brain intent (chosen by RoleBrain). Returns true when
+    /// <summary>다이브킬 귀속용 — 마지막 Dive 의도의 커밋 만료 step(transient, 재시뮬로 재현).
+    /// 다이브 커밋(1.2s)이 킬보다 먼저 만료돼도 직후의 후열 킬은 그 다이브의 결과다.</summary>
+    public int LastDiveCommitUntilStep { get; private set; } = int.MinValue;
+
     /// the intent type changed, so callers can emit an IntentChanged beat for presentation.</summary>
     public bool SetCombatIntent(CombatIntent intent)
     {
         var changed = CurrentCombatIntent.Type != intent.Type
                       || CurrentCombatIntent.TargetId != intent.TargetId;
         CurrentCombatIntent = intent;
+        if (intent.Type == CombatIntentType.Dive)
+        {
+            LastDiveCommitUntilStep = Math.Max(LastDiveCommitUntilStep, intent.CommitUntilStep);
+        }
+
         return changed;
     }
 
