@@ -15,6 +15,8 @@ public sealed class BattleState
     private int _tacticContextStep = -1;
     private TacticContext? _allyTacticContext;
     private TacticContext? _enemyTacticContext;
+    private TeamBlackboard _allyBlackboard = TeamBlackboard.CreateEmpty(TeamSide.Ally);
+    private TeamBlackboard _enemyBlackboard = TeamBlackboard.CreateEmpty(TeamSide.Enemy);
 
     public BattleState(
         IReadOnlyList<UnitSnapshot> allies,
@@ -101,6 +103,53 @@ public sealed class BattleState
 
         _enemyTacticContext ??= TacticContext.Create(TeamSide.Enemy, EnemyTactic, StepIndex);
         return _enemyTacticContext;
+    }
+
+    /// <summary>
+    /// Phase 2 팀 블랙보드(FocusMark/carry/breach/약측). 시뮬레이터가 step 선두에서
+    /// <see cref="RefreshTeamBlackboardsIfDue"/>로 갱신하므로 한 step 안에서는 고정값이다.
+    /// 시뮬레이터 없이 서비스만 직접 호출하는 경로(테스트)에서는 첫 접근이 lazy 계산한다 — 둘 다
+    /// battle truth의 순수 함수라 결정론이 보존된다.
+    /// </summary>
+    public TeamBlackboard GetTeamBlackboard(TeamSide side)
+    {
+        RefreshTeamBlackboardsIfDue();
+        return side == TeamSide.Ally ? _allyBlackboard : _enemyBlackboard;
+    }
+
+    public void RefreshTeamBlackboardsIfDue()
+    {
+        if (_allyBlackboard.HasBeenComputed
+            && StepIndex - _allyBlackboard.ComputedAtStep < Services.TeamBlackboardService.CadenceSteps)
+        {
+            return;
+        }
+
+        var previousAlly = _allyBlackboard;
+        var previousEnemy = _enemyBlackboard;
+        _allyBlackboard = Services.TeamBlackboardService.Compute(this, TeamSide.Ally, previousAlly);
+        _enemyBlackboard = Services.TeamBlackboardService.Compute(this, TeamSide.Enemy, previousEnemy);
+        RecordBlackboardTransitions(previousAlly, _allyBlackboard);
+        RecordBlackboardTransitions(previousEnemy, _enemyBlackboard);
+    }
+
+    private void RecordBlackboardTransitions(TeamBlackboard previous, TeamBlackboard current)
+    {
+        if (previous.HasBeenComputed
+            && previous.FocusMarkId is { } previousMark
+            && current.FocusMarkId is { } nextMark
+            && previousMark != nextMark)
+        {
+            ActivityTelemetry.RecordFocusMarkSwitch();
+        }
+
+        foreach (var breacher in current.FrontlineBreachers)
+        {
+            if (!previous.IsBreacher(breacher))
+            {
+                ActivityTelemetry.RecordFrontlineBreach();
+            }
+        }
     }
 
     public UnitSnapshot? FindUnitById(string? id)

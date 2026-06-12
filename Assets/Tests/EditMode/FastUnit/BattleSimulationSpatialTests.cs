@@ -792,8 +792,6 @@ public sealed class BattleSimulationSpatialTests
             new FloatRange(0.8f, 1.1f),
             CombatActionState.Approach,
             ReevaluationReason.None,
-            false,
-            null,
             null));
 
         Assert.That(actor.Position.DistanceTo(before), Is.GreaterThan(0.05f));

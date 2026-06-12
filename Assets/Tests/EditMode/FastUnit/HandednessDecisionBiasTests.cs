@@ -124,28 +124,24 @@ public sealed class HandednessDecisionBiasTests
     }
 
     [Test]
-    public void MixedHandednessSlotting_RecordsPreferenceTelemetryDeterministically()
+    public void HandednessTelemetry_ReplayHashStaysDeterministic_WithoutSlotChannel()
     {
+        // Phase 2: engagement slot lease 폐지로 handedness의 슬롯 선호 채널(HandednessSlotPreferenceHitRatio)은
+        // 표본이 없다(0). handedness는 pre-impact step(BasicAttackActionProfileResolver)에만 남는다 — 위의
+        // 순수 가중치/부호 테스트들이 그 계약을 계속 고정한다. 여기서는 스냅샷이 결정적으로 재현되는지만 본다.
         var tactic = new TeamTacticProfile("wide", "Wide", TeamPostureType.StandardAdvance, Compactness: 0.1f, Width: 1.25f);
         var state = BattleFactory.Create(
             new[]
             {
                 CreateUnit("right", DominantHand.Right, tactic, classId: "duelist"),
                 CreateUnit("left", DominantHand.Left, tactic, classId: "duelist"),
-                CreateUnit("ambi", DominantHand.Ambidextrous, tactic, classId: "duelist"),
             },
             new[] { CreateUnit("target", DominantHand.Right, tactic, TeamSide.Enemy) },
             seed: 42);
-        var target = state.Enemies[0];
-        foreach (var actor in state.Allies)
-        {
-            actor.SetCurrentTarget(target.Id);
-            EngagementSlotService.Resolve(state, actor, target, actor.PreferredRangeBand, PositioningIntentKind.Frontline);
-        }
 
         var snapshot = state.ActivityTelemetry.BuildSnapshot(state);
 
-        Assert.That(snapshot.HandednessSlotPreferenceHitRatio, Is.GreaterThan(0f));
+        Assert.That(snapshot.HandednessSlotPreferenceHitRatio, Is.EqualTo(0f), "no slot channel — no samples");
         Assert.That(state.ActivityTelemetry.BuildSnapshot(state).ReplayHash, Is.EqualTo(snapshot.ReplayHash));
     }
 

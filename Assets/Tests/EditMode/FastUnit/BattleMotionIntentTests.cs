@@ -39,7 +39,11 @@ public sealed class BattleMotionIntentTests
         Assert.That(motion.IsDiscrete, Is.True);
         Assert.That(motion.From.X, Is.EqualTo(before.X).Within(1e-4f));
         Assert.That(motion.From.Y, Is.EqualTo(before.Y).Within(1e-4f));
-        Assert.That(motion.To, Is.EqualTo(targetUnit.Position));
+        // 과거 SOE 원인: CombatVector2 합성 ToString이 Normalized 속성 때문에 무한 재귀했고
+        // 단정 실패 메시지 포맷 단계에서 터졌다(ToString 오버라이드로 해소, CombatVector2FormattingTests가 고정).
+        // 좌표 자체는 float 오차가 있는 값이라 허용오차 성분 비교를 유지한다.
+        Assert.That(motion.To.X, Is.EqualTo(targetUnit.Position.X).Within(1e-5f));
+        Assert.That(motion.To.Y, Is.EqualTo(targetUnit.Position.Y).Within(1e-5f));
         Assert.That(motion.SequenceInStep, Is.EqualTo(0));
     }
 
@@ -64,8 +68,6 @@ public sealed class BattleMotionIntentTests
             new FloatRange(0.8f, 1.1f),
             CombatActionState.Approach,
             ReevaluationReason.None,
-            false,
-            null,
             null));
 
         Assert.That(actorUnit.Position.X, Is.GreaterThan(before.X), "actor should advance toward target");
@@ -75,7 +77,8 @@ public sealed class BattleMotionIntentTests
         Assert.That(motion.ActorId, Is.EqualTo(actorUnit.Id));
         Assert.That(motion.IsDiscrete, Is.False);
         Assert.That(motion.SourceActorId, Is.Null);
-        Assert.That(motion.To, Is.EqualTo(actorUnit.Position));
+        Assert.That(motion.To.X, Is.EqualTo(actorUnit.Position.X).Within(1e-5f));
+        Assert.That(motion.To.Y, Is.EqualTo(actorUnit.Position.Y).Within(1e-5f));
     }
 
     [TestCase(7)]

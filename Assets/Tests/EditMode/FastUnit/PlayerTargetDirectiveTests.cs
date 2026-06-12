@@ -98,25 +98,19 @@ public sealed class PlayerTargetDirectiveTests
     }
 
     [Test]
-    public void SeparationGolden_SameSquadDifferentDirective_ChangesEngagementDistribution()
+    public void SeparationGolden_SameSquadDifferentDirective_FinishesDyingEnemySooner()
     {
-        var defaultRun = RunSeparationScenario(PlayerTargetDirective.Default);
-        var directedRun = RunSeparationScenario(PlayerTargetDirective.FinishLowestHp);
+        // Phase 2 이후 heat 합산은 지시를 분별하지 못한다 — default 런도 전투 후반에 빈사 적에게 커밋을
+        // 쌓아 합계가 같아진다(측정: 지시는 첫 표적부터 갈리는데 heat는 15=15). "마무리 지시"의 정직한
+        // 계약은 속도다: 같은 스쿼드·같은 시드에서 지시만 바꾸면 빈사 적이 분명히 더 빨리 죽는다.
+        var defaultKillStep = RunSeparationScenario(PlayerTargetDirective.Default);
+        var directedKillStep = RunSeparationScenario(PlayerTargetDirective.FinishLowestHp);
 
-        var defaultWeakHeat = ResolveHeat(defaultRun, "enemy_weak");
-        var directedWeakHeat = ResolveHeat(directedRun, "enemy_weak");
-        Assert.That(directedWeakHeat, Is.GreaterThan(defaultWeakHeat),
-            $"같은 스쿼드·같은 시드에서 지시만 바꾸면 빈사 적에게 교전이 쏠려야 한다 (default={defaultWeakHeat}, directed={directedWeakHeat})");
+        Assert.That(directedKillStep, Is.LessThan(defaultKillStep - 5),
+            $"마무리 지시는 빈사 적의 처치를 의미 있게 앞당겨야 한다 (default={defaultKillStep}, directed={directedKillStep})");
     }
 
-    private static float ResolveHeat(BattleActivityTelemetrySnapshot telemetry, string unitIdPrefix)
-    {
-        return telemetry.FocusHeatPerTarget
-            .Where(pair => pair.Key.Contains(unitIdPrefix, System.StringComparison.Ordinal))
-            .Sum(pair => pair.Value);
-    }
-
-    private static BattleActivityTelemetrySnapshot RunSeparationScenario(PlayerTargetDirective directive)
+    private static int RunSeparationScenario(PlayerTargetDirective directive)
     {
         var allies = new[]
         {
@@ -133,9 +127,27 @@ public sealed class PlayerTargetDirectiveTests
         };
         var state = BattleFactory.Create(allies, enemies, seed: 99);
         // 빈사 상태로 시작 — 마무리 지시가 물 표적.
-        state.Enemies.Single(unit => unit.Definition.Id == "enemy_weak").TakeDamage(20f);
-        var result = new BattleSimulator(state, 120).RunToEnd();
-        return result.ActivityTelemetry!;
+        var weak = state.Enemies.Single(unit => unit.Definition.Id == "enemy_weak");
+        weak.TakeDamage(20f);
+        // Phase 2 FocusMark는 동점이면 빈사 쪽을 지목해 default 런까지 빈사 적으로 끌어당긴다. 팀 마크를
+        // 탱크에 묶어 두면 계약이 더 강해진다: 팀 선호(FocusMark=탱크)를 플레이어 지시(FinishLowestHp)가
+        // 이기고 빈사 적을 먼저 마무리해야 한다.
+        state.Enemies.Single(unit => unit.Definition.Id == "enemy_tank")
+            .ApplyStatus(new StatusApplicationSpec("status.marked", "marked", 60f, 0f));
+
+        var sim = new BattleSimulator(state, 120);
+        var step = 0;
+        while (!sim.IsFinished && step < 120)
+        {
+            sim.Step();
+            step++;
+            if (!weak.IsAlive)
+            {
+                return step;
+            }
+        }
+
+        return int.MaxValue;
     }
 
     private static BattleState CreateRangedPickScenario(PlayerTargetDirective directive, out UnitSnapshot shooter)

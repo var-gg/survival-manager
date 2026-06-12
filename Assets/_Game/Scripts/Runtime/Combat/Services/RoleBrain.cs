@@ -51,6 +51,11 @@ public static class RoleBrain
     private const float DiveSupportRadius = 4.0f;       // "not alone": allied frontliner nearby
     private const float LaneEngagedBuffer = 0.8f;       // "own front engages enemy front" proxy
     private const float DiveLowHpTargetRatio = 0.45f;   // bonus for a low-HP backline target
+    // === Phase 2 블랙보드 소비 (마스터 플랜 기본값 — V1 authority 튜닝 노브) ===
+    private const int DiveFocusMarkScore = 25;          // "+25 target has FocusMark" — 팀 화력과 다이브가 같은 곳을 본다
+    private const float HoldLineDiveLowHpRatio = 0.35f; // HoldLine에서 다이브가 열리는 빈사 문턱
+    private const int PeelBreachScore = 25;             // breach로 식별된 위협(전선 뒤 침투자)이 요격 1순위
+    private const int PeelCarryScore = 15;              // 위협받는 아군이 carry면 우선 보호
 
     // === Vanguard Peel knobs (conservative defaults — owner-tunable) ===
     private const float PeelThreatBuffer = 0.8f;        // an enemy is "threatening" within enemy.AttackRange + this
@@ -247,7 +252,7 @@ public static class RoleBrain
         }
 
         var best = state.GetOpponents(actor.Side)
-            .Where(e => e.IsAlive && IsDiveCandidate(e))
+            .Where(e => e.IsAlive && IsDiveCandidateUnderPosture(state, actor, e))
             .Select(e => new { Target = e, Score = ScoreDiveTarget(state, actor, e) })
             .Where(x => x.Score >= DiveScoreThreshold)
             .OrderByDescending(x => x.Score)
@@ -274,8 +279,13 @@ public static class RoleBrain
             return false;
         }
 
+        // 공격 posture에서는 자유 다이브, HoldLine에서는 절제된 다이브(빈사 표적 또는 팀 FocusMark에만 —
+        // 마스터 플랜 "HoldLine: duelist does not dive unless target HP ≤ 35% or FocusMark"). StandardAdvance/
+        // ProtectCarry 기본 동작은 불변.
         var posture = state.GetPosture(actor.Side);
-        if (posture != TeamPostureType.AllInBackline && posture != TeamPostureType.CollapseWeakSide)
+        if (posture != TeamPostureType.AllInBackline
+            && posture != TeamPostureType.CollapseWeakSide
+            && posture != TeamPostureType.HoldLine)
         {
             return false;
         }
@@ -296,7 +306,7 @@ public static class RoleBrain
         }
 
         return state.GetOpponents(actor.Side)
-            .Any(e => e.IsAlive && IsDiveCandidate(e) && ScoreDiveTarget(state, actor, e) >= DiveScoreThreshold);
+            .Any(e => e.IsAlive && IsDiveCandidateUnderPosture(state, actor, e) && ScoreDiveTarget(state, actor, e) >= DiveScoreThreshold);
     }
 
     // Limit concurrent divers per team deterministically (no actor-order artifact): enter if already diving, or a
@@ -350,6 +360,13 @@ public static class RoleBrain
             score -= 45;
         }
 
+        // Phase 2 FocusMark: 팀 블랙보드가 지목한 표적은 다이브 가치가 오른다 — 팀 화력과 다이버가
+        // 같은 곳을 보면서 집중 사격 + 다이브 마무리가 한 그림으로 읽힌다.
+        if (state.GetTeamBlackboard(actor.Side).FocusMarkId == target.Id)
+        {
+            score += DiveFocusMarkScore;
+        }
+
         if (ForwardDepth(actor, target) > DiveMaxForwardDepth)
         {
             score -= 1000;
@@ -367,6 +384,23 @@ public static class RoleBrain
     {
         return enemy.Behavior.FormationLine == FormationLine.Backline
                && (enemy.Definition.ClassId == "ranger" || enemy.Definition.ClassId == "mystic");
+    }
+
+    // HoldLine posture는 다이브 표적을 제한한다: 빈사(≤35%) 또는 팀 FocusMark만. 그 외 posture는 기본 후보 그대로.
+    private static bool IsDiveCandidateUnderPosture(BattleState state, UnitSnapshot actor, UnitSnapshot enemy)
+    {
+        if (!IsDiveCandidate(enemy))
+        {
+            return false;
+        }
+
+        if (state.GetPosture(actor.Side) != TeamPostureType.HoldLine)
+        {
+            return true;
+        }
+
+        return enemy.HealthRatio <= HoldLineDiveLowHpRatio
+               || state.GetTeamBlackboard(actor.Side).FocusMarkId == enemy.Id;
     }
 
     private static bool IsFrontlineBody(UnitSnapshot unit)
@@ -439,7 +473,7 @@ public static class RoleBrain
             .SelectMany(ally => state.GetOpponents(actor.Side)
                 .Where(e => e.IsAlive && IsThreateningBacklineAlly(e, ally)
                             && actor.Position.DistanceTo(e.Position) <= PeelMaxInterceptDistance)
-                .Select(enemy => new { Ally = ally, Enemy = enemy, Score = ScorePeelThreat(actor, ally, enemy) }))
+                .Select(enemy => new { Ally = ally, Enemy = enemy, Score = ScorePeelThreat(state, actor, ally, enemy) }))
             .OrderByDescending(c => c.Score)
             .ThenBy(c => c.Ally.HealthRatio)
             .ThenBy(c => MovementResolver.ComputeEdgeDistance(c.Enemy, c.Ally))
@@ -469,7 +503,7 @@ public static class RoleBrain
         return MovementResolver.ComputeEdgeDistance(enemy, ally) <= enemy.AttackRange + PeelThreatBuffer;
     }
 
-    private static int ScorePeelThreat(UnitSnapshot vanguard, UnitSnapshot ally, UnitSnapshot enemy)
+    private static int ScorePeelThreat(BattleState state, UnitSnapshot vanguard, UnitSnapshot ally, UnitSnapshot enemy)
     {
         var score = 80;
         var threatMargin = enemy.AttackRange + PeelThreatBuffer - MovementResolver.ComputeEdgeDistance(enemy, ally);
@@ -486,6 +520,19 @@ public static class RoleBrain
         if (enemy.AttackRange <= 1.8f)
         {
             score += 10; // a melee diver on the backline reads clearly
+        }
+
+        // Phase 2 블랙보드: 전선 뒤로 들어온 침투자(breach)가 요격 1순위, 위협받는 아군이 carry면 우선 보호 —
+        // Phase 1의 "즉시 위협" proxy 스캔은 즉각성 때문에 유지하고, 블랙보드 진실이 우선순위를 만든다.
+        var blackboard = state.GetTeamBlackboard(vanguard.Side);
+        if (blackboard.IsBreacher(enemy.Id))
+        {
+            score += PeelBreachScore;
+        }
+
+        if (blackboard.CarryId == ally.Id)
+        {
+            score += PeelCarryScore;
         }
 
         score -= (int)(vanguard.Position.DistanceTo(enemy.Position) * 5.0f);

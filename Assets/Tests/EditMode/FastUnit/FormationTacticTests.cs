@@ -201,42 +201,104 @@ public sealed class FormationTacticTests
     }
 
     [Test]
-    public void EngagementSlots_UseTacticSpread_AndRemainStickyUntilBlocked()
+    public void Phase2Acceptance_HoldLine_ReducesOverextension_VsStandardAdvance()
     {
-        var compact = new TeamTacticProfile(
-            "compact_slots",
-            "Compact Slots",
-            TeamPostureType.StandardAdvance,
-            FrontSpacingBias: 0f,
-            Compactness: 0.9f,
-            Width: 0.55f);
-        var wide = compact with
+        // 마스터 플랜 acceptance: "HoldLine reduces overextension" — 같은 스쿼드·시드에서 posture만 바꾸면
+        // HoldLine 전열의 최대 전진선이 StandardAdvance보다 분명히 뒤에 머문다.
+        var holdFront = RunPostureScenario(TeamPostureType.HoldLine);
+        var standardFront = RunPostureScenario(TeamPostureType.StandardAdvance);
+
+        Assert.That(holdFront, Is.LessThan(standardFront - 0.3f),
+            $"HoldLine must keep the frontline behind StandardAdvance's high-water mark (hold={holdFront:0.00}, standard={standardFront:0.00})");
+    }
+
+    [Test]
+    public void Phase2Acceptance_CollapseWeakSide_ShiftsMultipleUnitsTowardWeakLane()
+    {
+        // 마스터 플랜 acceptance: "CollapseWeakSide shifts at least 2 units toward weak lane after stable
+        // weak-side detection" — 적이 위 레인에 몰린 판에서 1.0s(2회 갱신) 후 아군 2+ 유닛이 아래로 이동한다.
+        var tactic = new TeamTacticProfile("collapse", "Collapse", TeamPostureType.CollapseWeakSide);
+        var allies = new[]
         {
-            Id = "wide_slots",
-            DisplayName = "Wide Slots",
-            FrontSpacingBias = 1f,
-            Compactness = 0f,
-            Width = 1.45f,
-            FlankBias = 0.4f,
+            CreateUnit("ally_van", DeploymentAnchorId.FrontCenter, tactic, classId: "vanguard"),
+            CreateUnit("ally_duelist", DeploymentAnchorId.FrontTop, tactic, classId: "duelist"),
+            CreateUnit("ally_ranger", DeploymentAnchorId.BackCenter, tactic, classId: "ranger"),
+            CreateUnit("ally_mystic", DeploymentAnchorId.BackTop, tactic, classId: "mystic"),
         };
+        var enemyTactic = new TeamTacticProfile("hold_e", "Hold", TeamPostureType.HoldLine);
+        var enemies = new[]
+        {
+            CreateUnit("enemy_van", DeploymentAnchorId.FrontTop, enemyTactic, classId: "vanguard"),
+            CreateUnit("enemy_ranger", DeploymentAnchorId.BackTop, enemyTactic, classId: "ranger"),
+        };
+        var state = BattleFactory.Create(allies, enemies, seed: 23);
+        var startY = state.Allies.ToDictionary(unit => unit.Id.Value, unit => unit.Position.Y);
 
-        var compactState = CreateSlotState(compact);
-        var wideState = CreateSlotState(wide);
-        var compactSlots = ResolveTwoSlots(compactState);
-        var wideSlots = ResolveTwoSlots(wideState);
+        // 적을 위 레인에 고정해 아래가 약측으로 안정되게 한다.
+        state.Enemies[0].SetPosition(new CombatVector2(3.0f, 1.8f));
+        state.Enemies[1].SetPosition(new CombatVector2(4.6f, 1.8f));
 
-        Assert.That(wideSlots[0].Position.DistanceTo(wideSlots[1].Position), Is.GreaterThan(compactSlots[0].Position.DistanceTo(compactSlots[1].Position)));
+        var sim = new BattleSimulator(state, 200);
+        for (var i = 0; i < 20 && !sim.IsFinished; i++)
+        {
+            sim.Step();
+        }
 
-        var stickyActor = wideState.Allies[0];
-        stickyActor.SetEngagementSlot(wideSlots[0]);
-        var sticky = EngagementSlotService.Resolve(
-            wideState,
-            stickyActor,
-            wideState.Enemies[0],
-            new FloatRange(0.6f, 1.2f),
-            PositioningIntentKind.Frontline);
+        Assert.That(state.GetTeamBlackboard(TeamSide.Ally).StableWeakSideLane, Is.EqualTo(-1),
+            "the empty bottom lane must be promoted to the stable weak side");
+        var shifted = state.Allies.Count(unit =>
+            unit.IsAlive && unit.Position.Y < startY[unit.Id.Value] - 0.25f);
+        Assert.That(shifted, Is.GreaterThanOrEqualTo(2),
+            "a stable weak side must pull at least two units toward the weak lane");
+    }
 
-        Assert.That(sticky, Is.EqualTo(wideSlots[0]));
+    private static float RunPostureScenario(TeamPostureType posture)
+    {
+        var tactic = new TeamTacticProfile($"p:{posture}", posture.ToString(), posture);
+        var enemyTactic = new TeamTacticProfile("hold_enemy", "Hold", TeamPostureType.HoldLine);
+        var allies = new[]
+        {
+            CreateUnit("ally_van_a", DeploymentAnchorId.FrontTop, tactic, classId: "vanguard"),
+            CreateUnit("ally_van_b", DeploymentAnchorId.FrontBottom, tactic, classId: "vanguard"),
+            CreateUnit("ally_ranger", DeploymentAnchorId.BackCenter, tactic, classId: "ranger"),
+        };
+        var enemies = new[]
+        {
+            CreateUnit("enemy_van", DeploymentAnchorId.FrontCenter, enemyTactic, classId: "vanguard"),
+            CreateUnit("enemy_ranger", DeploymentAnchorId.BackCenter, enemyTactic, classId: "ranger"),
+        };
+        var state = BattleFactory.Create(allies, enemies, seed: 31);
+        var sim = new BattleSimulator(state, 200);
+        var maxFrontX = float.MinValue;
+        for (var i = 0; i < 60 && !sim.IsFinished; i++)
+        {
+            sim.Step();
+            foreach (var unit in state.Allies.Where(u => u.IsAlive && u.Definition.ClassId == "vanguard"))
+            {
+                maxFrontX = MathF.Max(maxFrontX, unit.Position.X);
+            }
+        }
+
+        return maxFrontX;
+    }
+
+    [Test]
+    public void ApproachOffsets_SeparateMeleeAttackers_AroundSharedTarget()
+    {
+        // Phase 2: 슬롯 lease가 사라지고 결정적 접근 offset(정면/±45°)이 산개를 만든다. 같은 타겟의 두
+        // 근접 공격자는 서로 다른 정지점을 받고, 같은 셋업에서 항상 같은 점이 나온다(상태 없는 순수 함수).
+        var tactic = new TeamTacticProfile("offset_spread", "Offset Spread", TeamPostureType.StandardAdvance);
+        var state = CreateSlotState(tactic);
+        var points = ResolveTwoApproachPoints(state);
+
+        Assert.That(points[0], Is.Not.Null);
+        Assert.That(points[1], Is.Not.Null);
+        Assert.That(points[0]!.Value.DistanceTo(points[1]!.Value), Is.GreaterThan(0.4f),
+            "two melee attackers on the same target must be offered distinct approach points");
+
+        var repeat = ResolveTwoApproachPoints(state);
+        Assert.That(repeat[0]!.Value.DistanceTo(points[0]!.Value), Is.LessThan(1e-4f),
+            "the offset is a pure function of truth — no lease state, same setup, same point");
     }
 
     [Test]
@@ -340,16 +402,15 @@ public sealed class FormationTacticTests
             seed: 23);
     }
 
-    private static EngagementSlotAssignment[] ResolveTwoSlots(BattleState state)
+    private static CombatVector2?[] ResolveTwoApproachPoints(BattleState state)
     {
-        var band = new FloatRange(0.6f, 1.2f);
         foreach (var ally in state.Allies)
         {
             ally.SetCurrentTarget(state.Enemies[0].Id);
         }
 
         return state.Allies
-            .Select(ally => EngagementSlotService.Resolve(state, ally, state.Enemies[0], band, PositioningIntentKind.Frontline)!)
+            .Select(ally => ApproachOffsetService.TryResolveDesiredApproachPoint(state, ally, state.Enemies[0]))
             .ToArray();
     }
 

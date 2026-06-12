@@ -62,6 +62,10 @@ public sealed class BattleSimulator
             return CurrentStep;
         }
 
+        // Phase 2 팀 블랙보드: 유닛 루프 전에 양 팀을 고정 순서(Ally→Enemy)로 갱신해 step 내 모든
+        // 의사결정이 같은 스냅샷을 읽는다(0.5s cadence — TeamBlackboardService.CadenceSteps).
+        State.RefreshTeamBlackboardsIfDue();
+
         var orderedUnits = State.AllUnits
             .Where(unit => unit.IsAlive)
             .OrderByDescending(unit => unit.Speed)
@@ -121,8 +125,6 @@ public sealed class BattleSimulator
             {
                 BattleTelemetryRecorder.RecordPositioningIntent(State, actor, evaluated.Target);
             }
-
-            actor.SetEngagementSlot(evaluated.SlotAssignment);
 
             // Phase 1 tactical brain: choose what the unit is trying to do (its CombatIntent) now that its
             // target is set. The movement executor reads it (e.g. AnchorFire holds the backline anchor); the
@@ -520,8 +522,6 @@ public sealed class BattleSimulator
             new FloatRange(0f, 0f),
             CombatActionState.Reposition,
             ReevaluationReason.None,
-            false,
-            null,
             null));
     }
 

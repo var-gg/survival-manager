@@ -165,6 +165,70 @@ public sealed class RoleBrainTests
     }
 
     [Test]
+    public void HoldLine_Duelist_DivesOnlyOnLowHpTarget_WhenMarkIsElsewhere()
+    {
+        // Phase 2 블랙보드 소비: HoldLine posture의 duelist는 절제된 다이브만 한다 — 표적이 빈사(≤35%)이거나
+        // 팀 FocusMark일 때만(마스터 플랜). FocusMark를 적 전열(marked)에 묶어 두면 풀피 mystic에는 다이브가
+        // 닫혀 있다가, mystic이 빈사가 되는 순간 열린다.
+        var duelist = CombatTestFactory.CreateUnit("ally_duelist", classId: "duelist", anchor: DeploymentAnchorId.FrontCenter, hp: 60f, attackRange: 1.2f);
+        var enemyVanguard = CombatTestFactory.CreateUnit("enemy_van", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter, hp: 200f, attackRange: 1.2f);
+        var enemyMystic = CombatTestFactory.CreateUnit("enemy_mys", race: "undead", classId: "mystic", anchor: DeploymentAnchorId.BackCenter, hp: 20f, attackRange: 2.6f);
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { duelist }, new[] { enemyVanguard, enemyMystic },
+            allyPosture: TeamPostureType.HoldLine, seed: 7);
+
+        var d = state.Allies[0];
+        var v = state.Enemies[0];
+        var m = state.Enemies[1];
+        d.SetPosition(new CombatVector2(1.0f, 0f));
+        v.SetPosition(new CombatVector2(1.6f, 0f));   // duelist와 교전(자기 lane-engaged = 다이브 support 충족)
+        m.SetPosition(new CombatVector2(3.8f, 0f));   // 전열 보호 반경(1.5m) 밖, 다이브 사거리(5.5m) 안
+        v.ApplyStatus(new StatusApplicationSpec("status.marked", "marked", 30f, 0f)); // FocusMark를 전열에 고정
+
+        RoleBrain.ResolveIntent(state, d);
+        Assert.That(state.GetTeamBlackboard(TeamSide.Ally).FocusMarkId, Is.EqualTo(v.Id),
+            "setup: the marked enemy vanguard owns the FocusMark");
+        Assert.That(d.CurrentCombatIntent.Type, Is.Not.EqualTo(CombatIntentType.Dive),
+            "HoldLine forbids diving a healthy, unmarked backline target");
+
+        m.TakeDamage(14f); // 20 → 6 (30%) — 빈사 문턱(35%) 아래
+        RoleBrain.ResolveIntent(state, d);
+        Assert.That(d.CurrentCombatIntent.Type, Is.EqualTo(CombatIntentType.Dive),
+            "a low-HP backline target opens the HoldLine dive window");
+        Assert.That(d.CurrentCombatIntent.TargetId, Is.EqualTo(m.Id));
+    }
+
+    [Test]
+    public void Peel_PrefersBreacherThreat_OverEqualNonBreacherThreat()
+    {
+        // Phase 2 블랙보드 소비: 같은 조건으로 후열을 위협하는 두 적 중, 아군 전선 뒤로 들어온 침투자
+        // (frontline breacher)가 요격 1순위다 — Phase 1의 "즉시 위협" proxy 위에 블랙보드 진실이 우선순위를 얹는다.
+        var vanguard = CombatTestFactory.CreateUnit("ally_van", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter, hp: 200f, attackRange: 1.2f);
+        var ranger = CombatTestFactory.CreateUnit("ally_rng", classId: "ranger", anchor: DeploymentAnchorId.BackCenter, hp: 40f, attackRange: 5f);
+        var breacher = CombatTestFactory.CreateUnit("enemy_diver", race: "undead", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 60f, attackRange: 1.2f);
+        var enemyTank = CombatTestFactory.CreateUnit("enemy_van", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontBottom, hp: 200f, attackRange: 1.2f);
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { vanguard, ranger }, new[] { breacher, enemyTank }, seed: 7);
+
+        var ownVanguard = state.Allies[0];
+        var ownRanger = state.Allies[1];
+        var enemyDiver = state.Enemies[0];
+        var enemyVan = state.Enemies[1];
+        ownVanguard.SetPosition(new CombatVector2(-2f, 0f));
+        ownRanger.SetPosition(new CombatVector2(-5f, 0f));
+        enemyDiver.SetPosition(new CombatVector2(-4.6f, 0.7f));  // 전선(-2) 뒤 + 후열 위협 — breacher
+        enemyVan.SetPosition(new CombatVector2(-4.6f, -0.7f));   // 같은 거리/같은 위협이지만 vanguard 클래스 — breach 아님
+
+        Assert.That(state.GetTeamBlackboard(TeamSide.Ally).IsBreacher(enemyDiver.Id), Is.True, "setup: the diver is a breacher");
+
+        RoleBrain.ResolveIntent(state, ownVanguard);
+
+        Assert.That(ownVanguard.CurrentCombatIntent.Type, Is.EqualTo(CombatIntentType.Peel));
+        Assert.That(ownVanguard.CurrentCombatIntent.TargetId, Is.EqualTo(enemyDiver.Id),
+            "with otherwise equal threats, the frontline breacher must be the peel target");
+    }
+
+    [Test]
     public void Vanguard_HoldLine_HoldsTheLine_DoesNotChaseDistantEnemy_UnderHoldLinePosture()
     {
         var vanguard = CombatTestFactory.CreateUnit(

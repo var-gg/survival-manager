@@ -40,6 +40,8 @@ public sealed record BattleActivityTelemetrySnapshot(
     int RearStrikeCount,
     int BacklineDiveKillCount,
     int SaveMomentCount,
+    int FocusMarkSwitchCount,
+    int FrontlineBreachCount,
     float HandednessSlotPreferenceHitRatio,
     IReadOnlyDictionary<string, float> HandednessLateralResetSideHistogram,
     string ReplayHash);
@@ -92,6 +94,20 @@ public sealed class BattleActivityTelemetryAccumulator
     public int RearStrikeCount { get; private set; }
     public int BacklineDiveKillCount { get; private set; }
     public int SaveMomentCount { get; private set; }
+    public int FocusMarkSwitchCount { get; private set; }
+    public int FrontlineBreachCount { get; private set; }
+
+    /// <summary>Phase 2 블랙보드: 팀 FocusMark가 다른 표적으로 넘어간 횟수(초기 지정은 제외).</summary>
+    public void RecordFocusMarkSwitch()
+    {
+        FocusMarkSwitchCount++;
+    }
+
+    /// <summary>Phase 2 블랙보드: 새 breacher가 아군 전선 뒤 후열 위협 반경에 진입한 횟수.</summary>
+    public void RecordFrontlineBreach()
+    {
+        FrontlineBreachCount++;
+    }
 
     public void RecordStep(BattleState state)
     {
@@ -353,6 +369,8 @@ public sealed class BattleActivityTelemetryAccumulator
             RearStrikeCount,
             BacklineDiveKillCount,
             SaveMomentCount,
+            FocusMarkSwitchCount,
+            FrontlineBreachCount,
             _handednessSlotPreferenceSamples <= 0
                 ? 0f
                 : (float)_handednessSlotPreferenceHits / _handednessSlotPreferenceSamples,
@@ -469,7 +487,9 @@ public sealed class BattleActivityTelemetryAccumulator
             .Append(snapshot.FlankStrikeCount).Append('|')
             .Append(snapshot.RearStrikeCount).Append('|')
             .Append(snapshot.BacklineDiveKillCount).Append('|')
-            .Append(snapshot.SaveMomentCount).Append('|');
+            .Append(snapshot.SaveMomentCount).Append('|')
+            .Append(snapshot.FocusMarkSwitchCount).Append('|')
+            .Append(snapshot.FrontlineBreachCount).Append('|');
         builder.Append(Format(snapshot.HandednessSlotPreferenceHitRatio)).Append('|');
 
         foreach (var pair in snapshot.MeanPairwiseDistanceByTeam.OrderBy(pair => pair.Key))

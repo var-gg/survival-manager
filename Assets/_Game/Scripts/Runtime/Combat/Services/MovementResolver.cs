@@ -89,27 +89,100 @@ public static class MovementResolver
             "home");
     }
 
+    // === Phase 2 진형 앵커 시프트(마스터 플랜 적응) — BALANCE는 V1 authority 튜닝 노브 ===
+    /// <summary>약측이 1.0s(2회 갱신) 안정됐을 때 CollapseWeakSide 앵커가 통째로 옮겨가는 폭(m).</summary>
+    private const float CollapseStableLaneShift = 1.2f;
+    /// <summary>약측 안정 전의 약한 기울임 폭(m) — 종전 동작 보존.</summary>
+    private const float CollapseLeanShift = 0.35f;
+    /// <summary>ProtectCarry에서 vanguard 앵커가 carry 레인 쪽으로 끌리는 최대 폭(m).</summary>
+    private const float ProtectCarryVanguardLaneShift = 0.8f;
+    /// <summary>ProtectCarry에서 mystic 앵커가 carry로부터 벗어날 수 있는 최대 거리(m).</summary>
+    private const float ProtectCarryMysticRadius = 1.8f;
+
     private static CombatVector2 ResolvePostureHomePosition(BattleState state, UnitSnapshot actor, TacticContext context)
     {
         var direction = actor.Side == TeamSide.Ally ? 1f : -1f;
-        var weakLane = ResolveWeakLane(state, actor.Side);
         var posture = context.Posture;
+        var blackboard = state.GetTeamBlackboard(actor.Side);
 
-        var xOffset = posture switch
+        // 라인 깊이 표: posture가 라인(전열/중열/후열)별 전진·후퇴 폭을 명시적으로 벌린다. StandardAdvance
+        // 값은 종전과 동일(기본 동작 보존). HoldLine은 전열이 물러나 과잉전진을 줄이고, AllInBackline은 전
+        // 라인이 앞으로 쏠리고, ProtectCarry는 후열을 당겨 보호 기하를 만든다.
+        var xOffset = ResolvePostureLineDepthOffset(posture, actor.Behavior.FormationLine) * direction;
+
+        // CollapseWeakSide: 약측이 안정(1.0s)되면 한 레인 쪽으로 통째로 시프트(마스터 플랜 "anchors shift
+        // one lane toward it"의 보수 적용), 안정 전에는 종전의 약한 기울임만.
+        var yOffset = 0f;
+        if (posture == TeamPostureType.CollapseWeakSide)
         {
-            TeamPostureType.HoldLine => actor.Anchor.IsFrontRow() ? 0.15f * direction : -0.05f * direction,
-            TeamPostureType.StandardAdvance => actor.Anchor.IsFrontRow() ? 0.45f * direction : 0.15f * direction,
-            TeamPostureType.ProtectCarry => actor.Anchor.IsFrontRow() ? 0.2f * direction : -0.2f * direction,
-            TeamPostureType.CollapseWeakSide => actor.Anchor.IsFrontRow() ? 0.35f * direction : 0.05f * direction,
-            TeamPostureType.AllInBackline => actor.Anchor.IsFrontRow() ? 0.8f * direction : 0.3f * direction,
-            _ => 0f,
+            yOffset = blackboard.StableWeakSideLane != 0
+                ? blackboard.StableWeakSideLane * CollapseStableLaneShift
+                : blackboard.WeakSideLane * CollapseLeanShift;
+        }
+
+        var home = actor.AnchorPosition + new CombatVector2(xOffset, yOffset);
+
+        // ProtectCarry: vanguard 앵커는 carry 레인 쪽으로 최대 0.8m, mystic 앵커는 carry 1.8m 내로 —
+        // "보호한다"가 화면에서 거리로 읽히는 마스터 플랜 기하.
+        if (posture == TeamPostureType.ProtectCarry
+            && blackboard.CarryId is { } carryId
+            && carryId != actor.Id
+            && state.FindUnit(carryId) is { IsAlive: true } carry)
+        {
+            if (actor.Definition.ClassId == "vanguard")
+            {
+                var towardCarry = carry.AnchorPosition.Y - home.Y;
+                home += new CombatVector2(0f, Math.Clamp(towardCarry, -ProtectCarryVanguardLaneShift, ProtectCarryVanguardLaneShift));
+            }
+            else if (actor.Definition.ClassId == "mystic")
+            {
+                var fromCarry = home - carry.AnchorPosition;
+                if (fromCarry.Length > ProtectCarryMysticRadius)
+                {
+                    home = carry.AnchorPosition + (fromCarry.Normalized * ProtectCarryMysticRadius);
+                }
+            }
+        }
+
+        return home;
+    }
+
+    /// <summary>
+    /// posture × 라인 → 배치 앵커 기준 전진(+)/후퇴(−) 폭(m). StandardAdvance 행은 종전 값 그대로이고
+    /// (전열 +0.45 / 후열 +0.15), 나머지 posture가 마스터 플랜의 라인 깊이 표 상대 격차를 가져온다.
+    /// </summary>
+    private static float ResolvePostureLineDepthOffset(TeamPostureType posture, FormationLine line)
+    {
+        return line switch
+        {
+            FormationLine.Frontline => posture switch
+            {
+                TeamPostureType.HoldLine => -0.55f,
+                TeamPostureType.StandardAdvance => 0.45f,
+                TeamPostureType.ProtectCarry => -0.15f,
+                TeamPostureType.CollapseWeakSide => 0.45f,
+                TeamPostureType.AllInBackline => 1.25f,
+                _ => 0f,
+            },
+            FormationLine.Backline => posture switch
+            {
+                TeamPostureType.HoldLine => -0.05f,
+                TeamPostureType.StandardAdvance => 0.15f,
+                TeamPostureType.ProtectCarry => -0.25f,
+                TeamPostureType.CollapseWeakSide => 0.15f,
+                TeamPostureType.AllInBackline => 1.15f,
+                _ => 0f,
+            },
+            _ => posture switch
+            {
+                TeamPostureType.HoldLine => -0.10f,
+                TeamPostureType.StandardAdvance => 0.30f,
+                TeamPostureType.ProtectCarry => 0.10f,
+                TeamPostureType.CollapseWeakSide => 0.30f,
+                TeamPostureType.AllInBackline => 1.50f,
+                _ => 0f,
+            },
         };
-
-        var yOffset = posture == TeamPostureType.CollapseWeakSide
-            ? weakLane * 0.35f
-            : 0f;
-
-        return actor.AnchorPosition + new CombatVector2(xOffset, yOffset);
     }
 
     public static MobilityDecision? BuildMobilityDecision(UnitSnapshot actor, UnitSnapshot target, FloatRange rangeBand)
@@ -575,6 +648,16 @@ public static class MovementResolver
             var home = ResolvePostureHomePosition(state, actor, context);
             var laneOffset = Math.Clamp(home.Y - target.Position.Y, -BacklineMaxLaneOffset, BacklineMaxLaneOffset);
             return new CombatVector2(target.Position.X + (sideDirection * centerDistance), target.Position.Y + laneOffset);
+        }
+
+        // Phase 2 산개: 같은 타겟의 근접 공격자들은 슬롯 lease 없이 결정적 접근 offset(정면/±45°/±80°)으로
+        // 흩어진다. "서고 싶은 자리" 제안일 뿐 공격 게이트가 아니고(사거리 규칙만 유효), 막히면 아래의
+        // 기존 직선 추격으로 폴백한다.
+        if (target.Side != actor.Side
+            && ApproachOffsetService.IsMeleeEngagement(actor, rangeBand)
+            && ApproachOffsetService.TryResolveDesiredApproachPoint(state, actor, target) is { } approachPoint)
+        {
+            return approachPoint;
         }
 
         var directionToTarget = FixedDirection(actor, target, actor.Side == TeamSide.Ally
@@ -1311,18 +1394,6 @@ public static class MovementResolver
         }
     }
 
-    private static int ResolveWeakLane(BattleState state, TeamSide side)
-    {
-        var enemies = state.GetOpponents(side).Where(unit => unit.IsAlive).ToList();
-        var top = enemies.Where(unit => unit.Anchor.LaneIndex() > 0).Sum(unit => unit.CurrentHealth);
-        var bottom = enemies.Where(unit => unit.Anchor.LaneIndex() < 0).Sum(unit => unit.CurrentHealth);
-        if (Math.Abs(top - bottom) < 0.01f)
-        {
-            return 0;
-        }
-
-        return top < bottom ? 1 : -1;
-    }
 }
 
 internal readonly record struct BasicAttackPreImpactStepResult(

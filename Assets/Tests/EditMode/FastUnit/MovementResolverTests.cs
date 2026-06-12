@@ -186,23 +186,21 @@ public sealed class MovementResolverTests
     }
 
     [Test]
-    public void EngagementSlot_MeleeBaselinePlacesAttackerAtReadableContactEdge()
+    public void ApproachOffset_MeleeBaselinePlacesAttackerOnOwnSideAtContactEdge()
     {
+        // Phase 2: 슬롯 lease 폐지 — 결정적 접근 offset이 정지점을 제안한다. 단독 공격자는 정면(index 0),
+        // 자기 진영 쪽에서, edge ≈ +0.15(접촉 간격)에 선다. 공격 적법성은 사거리 규칙만이 가진다.
         var actor = MakeUnit("actor", TeamSide.Ally, classId: "duelist", attackRange: 1.3f);
         var target = MakeUnit("target", TeamSide.Enemy, classId: "vanguard", attackRange: 1.3f);
         var state = MakeState(new[] { actor }, new[] { target });
         actor.SetCurrentTarget(target.Id);
 
-        var slot = EngagementSlotService.Resolve(
-            state,
-            actor,
-            target,
-            actor.PreferredRangeBand,
-            PositioningIntentKind.Frontline);
+        var point = ApproachOffsetService.TryResolveDesiredApproachPoint(state, actor, target);
 
-        Assert.That(slot, Is.Not.Null);
-        var edgeDistance = slot!.Position.DistanceTo(target.Position) - actor.NavigationRadius - target.NavigationRadius;
-        Assert.That(edgeDistance, Is.InRange(0.55f, 0.72f));
+        Assert.That(point, Is.Not.Null);
+        var edgeDistance = point!.Value.DistanceTo(target.Position) - actor.NavigationRadius - target.NavigationRadius;
+        Assert.That(edgeDistance, Is.InRange(0.10f, 0.20f), "stop point sits a contact gap away from the target");
+        Assert.That(point.Value.X, Is.LessThan(target.Position.X), "a lone ally attacker approaches from its own side (direct front)");
     }
 
     // ── IsWithinRangeBand ──
@@ -347,8 +345,6 @@ public sealed class MovementResolverTests
             new FloatRange(0f, 1.5f),
             CombatActionState.Approach,
             ReevaluationReason.None,
-            false,
-            null,
             null);
 
         MovementResolver.MoveForIntent(state, actor, evalAction);
@@ -368,8 +364,6 @@ public sealed class MovementResolverTests
             new FloatRange(0.5f, 1.1f),
             CombatActionState.Approach,
             ReevaluationReason.None,
-            false,
-            null,
             null);
     }
 

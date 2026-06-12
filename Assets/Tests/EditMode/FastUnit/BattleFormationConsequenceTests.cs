@@ -210,7 +210,10 @@ public sealed class BattleFormationConsequenceTests
         DeploymentAnchorId rangerAnchor,
         DeploymentAnchorId mysticAnchor)
     {
-        var holdLine = new TeamTacticProfile("hold", "Hold", TeamPostureType.HoldLine);
+        // Phase 2의 HoldLine은 전열 홈을 1m 가까이 물려 대각 배치의 스크린 붕괴까지 완충해 버린다 —
+        // 이 골든은 "배치"가 결정 변수여야 하므로 아군은 전열이 전진하는 StandardAdvance로 돌린다
+        // (양 시나리오 동일 posture — 계약 불변: 같은 스쿼드·시드, 배치만 바꿔 승패 반전).
+        var holdLine = new TeamTacticProfile("standard", "Standard", TeamPostureType.StandardAdvance);
         // 적은 다이브가 허용되는 자세(CollapseWeakSide)여야 후열 접촉이 실제로 발생한다 —
         // StandardAdvance에서는 RoleBrain이 Dive 진입을 막아 후열이 한 대도 안 맞는 무풍 골든이 된다.
         var collapse = new TeamTacticProfile("collapse", "Collapse", TeamPostureType.CollapseWeakSide);

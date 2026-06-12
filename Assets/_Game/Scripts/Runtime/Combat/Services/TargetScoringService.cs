@@ -358,8 +358,16 @@ public static class TargetScoringService
         var screenPenalty = includeScreenPenalty && BattleFormationConsequence.IsScreenedBackline(state, target)
             ? BattleFormationConsequence.ScreenedTargetScorePenalty
             : 0f;
-        return switchPenalty + focusBias + flankBias + screenPenalty;
+        // Phase 2 FocusMark: 팀 블랙보드가 지목한 표적은 약간 더 매력적(미터 등가 보너스) — 선호일 뿐
+        // 강제가 아니라서 P1 플레이어 지시·marked·Dive/Peel 오버라이드·melee 최근접 가드가 그대로 우선한다.
+        var focusMarkBias = state.GetTeamBlackboard(actor.Side).FocusMarkId == target.Id
+            ? -FocusMarkTargetBias
+            : 0f;
+        return switchPenalty + focusBias + flankBias + screenPenalty + focusMarkBias;
     }
+
+    /// <summary>FocusMark 표적의 타게팅 매력 보너스(미터 등가) — V1 authority 튜닝 노브.</summary>
+    private const float FocusMarkTargetBias = 0.45f;
 
     private static float ResolveAcquireRange(UnitSnapshot actor, TargetRule rule)
     {
