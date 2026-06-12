@@ -1026,7 +1026,9 @@ public sealed class BattleActorView : MonoBehaviour
             BattleAnimationSemantic.Knockdown => $"BREAK! -{amount}",
             _ => $"-{amount}",
         };
-        return $"{baseLabel}{ResolveAccentSuffix(cue.ContactAccent)}";
+        // Phase 4: 콤보 소비 타격은 연쇄의 마침표 — 표식이 글로도 읽히게 한다.
+        var comboSuffix = cue.IsComboEmphasis ? " 콤보!" : string.Empty;
+        return $"{baseLabel}{ResolveAccentSuffix(cue.ContactAccent)}{comboSuffix}";
     }
 
     // P2 positional accent — 판정은 sim의 typed 채널(J8), 여기서는 표시만. 후방 > 측면 우선,
@@ -1060,6 +1062,11 @@ public sealed class BattleActorView : MonoBehaviour
             BattleAnimationSemantic.Miss or BattleAnimationSemantic.Dodge or BattleAnimationSemantic.BlockImpact => 0.95f,
             _ => 1f,
         };
+        if (cue.IsComboEmphasis)
+        {
+            baseScale = Mathf.Max(baseScale, 1.3f);
+        }
+
         if (cue.ContactAccent.HasFlag(CombatContactAccent.Rear))
         {
             return Mathf.Max(baseScale, 1.3f);

@@ -17,6 +17,7 @@ public sealed class BattleCameraFramingPolicy
     private const float BaseZoomHeight = 5.05f;
     private const float MaxBootstrapZoomHeight = 10.8f;
     private const float MaxUnitFocusZoomHeight = 6.4f;
+    private const float MaxCloseShotZoomHeight = 5.6f;
 
     public BattleCameraSuggestedFrame BuildBootstrapFrame(BattleSimulationStep step, string selectedUnitId = "")
     {
@@ -42,6 +43,26 @@ public sealed class BattleCameraFramingPolicy
         AddUnitPoint(step, points, selected.TargetId);
         var frame = BuildFrame(points, isBootstrap: true);
         return new BattleCameraSuggestedFrame(frame.GroundCenter, Mathf.Clamp(frame.ZoomHeight, 5.0f, MaxUnitFocusZoomHeight), true);
+    }
+
+    /// <summary>
+    /// Phase 4 디렉터 강조 프레임 — 사건 당사자(주체/상대) 2점 AABB 로 타이트하게 프레임한다.
+    /// 유닛이 해석 안 되면 beat 발생 지점으로. 항상 비-bootstrap(블렌드 제안)이라 하드 스냅이 없고
+    /// 수동 카메라 우선권(ManualHold)도 기존 SetSuggestedFrame 경로에서 그대로 보존된다.
+    /// </summary>
+    public BattleCameraSuggestedFrame BuildEmphasisFrame(BattleSimulationStep step, SpectacleCameraEmphasis emphasis)
+    {
+        var points = new List<Vector3>(2);
+        AddUnitPoint(step, points, emphasis.SubjectUnitId);
+        AddUnitPoint(step, points, emphasis.RelatedUnitId);
+        if (points.Count == 0)
+        {
+            points.Add(ToWorld(emphasis.FallbackPosition));
+        }
+
+        var frame = BuildFrame(points, isBootstrap: false);
+        var maxZoom = emphasis.ShotKind == SpectacleShotKind.Close ? MaxCloseShotZoomHeight : MaxUnitFocusZoomHeight;
+        return frame with { ZoomHeight = Mathf.Clamp(frame.ZoomHeight, 5.0f, maxZoom) };
     }
 
     private static BattleCameraSuggestedFrame BuildFrame(IReadOnlyList<Vector3> points, bool isBootstrap)

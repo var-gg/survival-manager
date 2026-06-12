@@ -148,6 +148,9 @@ public sealed class BattlePresentationCueBuilder
         // self-describes outcome/value in the typed channel, so presentation never parses event Notes (J8).
         if (currentStep.CombatEventIntents != null)
         {
+            // Phase 4: 같은 step 의 ComboConsumed beat 과 (공격자, 피격자)가 일치하는 contact 는
+            // 콤보 임팩트로 승급(텍스트/스케일/히트스톱) — beat 채널이 유일한 판정 소스다.
+            var comboContacts = CollectComboContacts(currentStep);
             foreach (var intent in currentStep.CombatEventIntents)
             {
                 switch (intent.Status)
@@ -156,7 +159,7 @@ public sealed class BattlePresentationCueBuilder
                         AddCommitCue(cues, currentById, intent, _presentationBySkillId);
                         break;
                     case CombatEventIntentStatus.Contacted:
-                        AddTargetReactionCues(cues, currentById, motionsByActor, intent);
+                        AddTargetReactionCues(cues, currentById, motionsByActor, intent, comboContacts);
                         break;
                     case CombatEventIntentStatus.Canceled:
                         AddCanceledCue(cues, intent);
@@ -406,11 +409,33 @@ public sealed class BattlePresentationCueBuilder
             PresentationGesture: presentation?.Gesture ?? SkillPresentationGesture.None));
     }
 
+    private static HashSet<(string AttackerId, string TargetId)> CollectComboContacts(BattleSimulationStep step)
+    {
+        var pairs = new HashSet<(string, string)>();
+        if (step.Beats == null)
+        {
+            return pairs;
+        }
+
+        foreach (var beat in step.Beats)
+        {
+            if (beat.Type == CombatBeatType.ComboConsumed
+                && beat.SourceId is { } source
+                && beat.TargetId is { } target)
+            {
+                pairs.Add((source.Value, target.Value));
+            }
+        }
+
+        return pairs;
+    }
+
     private static void AddTargetReactionCues(
         ICollection<BattlePresentationCue> cues,
         IReadOnlyDictionary<string, BattleUnitReadModel> currentById,
         Dictionary<string, List<BattleMotionIntent>> motionsByActor,
-        BattleCombatEventIntent intent)
+        BattleCombatEventIntent intent,
+        HashSet<(string AttackerId, string TargetId)> comboContacts)
     {
         var contacts = intent.Contacts;
         if (contacts == null || contacts.Count == 0)
@@ -450,6 +475,15 @@ public sealed class BattlePresentationCueBuilder
             var impactIntensity = contact.Accent.HasFlag(CombatContactAccent.Rear)
                 ? BattleAnimationIntensity.Heavy
                 : impactAnimation.Intensity;
+            // Phase 4: 콤보 소비 타격은 Heavy 로 승급 — 보통 타격의 baseline 이 이미 Medium(90ms)이라,
+            // 마스터 플랜의 "콤보가 기본 타격보다 굵은 펀치"는 한 단계 위(Heavy 140ms)로만 구현된다.
+            // 후방 강타 승급과 같은 급(둘 다 판의 결정적 순간). 강도 대역은 V1 authority 노브.
+            var isComboEmphasis = comboContacts.Contains((intent.ActorId.Value, contact.TargetId.Value.Value));
+            if (isComboEmphasis)
+            {
+                impactIntensity = BattleAnimationIntensity.Heavy;
+            }
+
             cues.Add(new BattlePresentationCue(
                 BattlePresentationCueType.ImpactDamage,
                 intent.StepIndex,
@@ -463,7 +497,8 @@ public sealed class BattlePresentationCueBuilder
                 impactAnimation.Semantic,
                 impactAnimation.Direction,
                 impactIntensity,
-                ContactAccent: contact.Accent));
+                ContactAccent: contact.Accent,
+                IsComboEmphasis: isComboEmphasis));
 
             TryAddKnockbackTraceForContact(cues, motionsByActor, intent.ActorId.Value, actionType, contact);
         }

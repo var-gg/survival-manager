@@ -239,6 +239,37 @@ public static class BattleReadabilityFormatter
         };
     }
 
+    /// <summary>Phase 4 — beat 종류의 플레이어용 표시명(콜아웃/로그 라벨).</summary>
+    public static string BuildBeatLabel(CombatBeatType type, string? localeCode = null)
+    {
+        if (IsKorean(localeCode))
+        {
+            return type switch
+            {
+                CombatBeatType.SynergyActivated => "시너지 발동",
+                CombatBeatType.BattleStartEffect => "개전 효과",
+                CombatBeatType.OnKillEffect => "처치 흡수",
+                CombatBeatType.HpThresholdEffect => "위기 발동",
+                CombatBeatType.AllyDeathEffect => "응전 태세",
+                CombatBeatType.ComboPrimerApplied => "콤보 포석",
+                CombatBeatType.ComboConsumed => "콤보 작렬",
+                _ => "사건",
+            };
+        }
+
+        return type switch
+        {
+            CombatBeatType.SynergyActivated => "Synergy Online",
+            CombatBeatType.BattleStartEffect => "Opening Effect",
+            CombatBeatType.OnKillEffect => "Kill Effect",
+            CombatBeatType.HpThresholdEffect => "Clutch Trigger",
+            CombatBeatType.AllyDeathEffect => "Avenger Trigger",
+            CombatBeatType.ComboPrimerApplied => "Combo Primer",
+            CombatBeatType.ComboConsumed => "Combo Strike",
+            _ => "Event",
+        };
+    }
+
     public static string BuildShortEventVerb(BattleEvent eventData, string? localeCode = null)
     {
         if (IsKorean(localeCode))

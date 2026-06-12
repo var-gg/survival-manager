@@ -1254,6 +1254,7 @@
     bottom: 212px;
     min-height: 72px;
     max-height: 82px;
+    overflow: hidden;
     background-color: rgba(4, 7, 16, 0.95);
 }
 

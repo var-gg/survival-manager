@@ -30,6 +30,10 @@ public sealed class BattleHighlightLedger
     private int _screenAbsorbs;
     private int _saveMoments;
     private int _backlineDiveKills;
+    // Phase 4 — beat 채널(아군 관점) 집계: 시너지 발동 / 콤보 작렬 / 증강 트리거 발동.
+    private int _allySynergyActivations;
+    private int _allyComboConsumes;
+    private int _allyTriggeredEffects;
     private bool _flushed;
 
     public void Reset()
@@ -40,6 +44,9 @@ public sealed class BattleHighlightLedger
         _screenAbsorbs = 0;
         _saveMoments = 0;
         _backlineDiveKills = 0;
+        _allySynergyActivations = 0;
+        _allyComboConsumes = 0;
+        _allyTriggeredEffects = 0;
         _flushed = false;
     }
 
@@ -81,6 +88,8 @@ public sealed class BattleHighlightLedger
                 ResolveTally(eventData.ActorId.Value).Damage += eventData.Value;
             }
         }
+
+        RecordBeats(step);
 
         if (step.CombatEventIntents == null)
         {
@@ -127,6 +136,39 @@ public sealed class BattleHighlightLedger
         }
     }
 
+    // Phase 4 — beat 채널의 아군 관점 집계. 시너지/콤보/증강 발동이 종료 요약에서도 한 줄로 남는다.
+    private void RecordBeats(BattleSimulationStep step)
+    {
+        if (step.Beats == null)
+        {
+            return;
+        }
+
+        foreach (var beat in step.Beats)
+        {
+            if (beat.Side != TeamSide.Ally)
+            {
+                continue;
+            }
+
+            switch (beat.Type)
+            {
+                case CombatBeatType.SynergyActivated:
+                    _allySynergyActivations++;
+                    break;
+                case CombatBeatType.ComboConsumed:
+                    _allyComboConsumes++;
+                    break;
+                case CombatBeatType.BattleStartEffect:
+                case CombatBeatType.OnKillEffect:
+                case CombatBeatType.HpThresholdEffect:
+                case CombatBeatType.AllyDeathEffect:
+                    _allyTriggeredEffects++;
+                    break;
+            }
+        }
+    }
+
     /// <summary>
     /// 전투 종료 시 1회 — MVP 줄과 하이라이트 줄을 timeline에 붙인다(이후 호출은 no-op).
     /// </summary>
@@ -159,6 +201,17 @@ public sealed class BattleHighlightLedger
         if (parts.Count > 0)
         {
             timeline.Add($"하이라이트 | {string.Join(" · ", parts)}");
+            appended = true;
+        }
+
+        // Phase 4 — 시너지/콤보/증강 발현 요약("어떤 콤보가 터졌고 무엇이 발동했나"의 post-fight 답).
+        var beatParts = new List<string>(3);
+        if (_allySynergyActivations > 0) beatParts.Add($"시너지 발동 {_allySynergyActivations}");
+        if (_allyComboConsumes > 0) beatParts.Add($"콤보 작렬 {_allyComboConsumes}");
+        if (_allyTriggeredEffects > 0) beatParts.Add($"증강 발동 {_allyTriggeredEffects}");
+        if (beatParts.Count > 0)
+        {
+            timeline.Add($"발현 | {string.Join(" · ", beatParts)}");
             appended = true;
         }
 

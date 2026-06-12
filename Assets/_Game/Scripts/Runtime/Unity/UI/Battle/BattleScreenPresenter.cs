@@ -110,13 +110,14 @@ public sealed class BattleScreenPresenter
         bool canChangeSpeed = false,
         bool showHelp = false,
         bool isSummaryExpanded = true,
-        BattleSelectedUnitViewState? selectedUnit = null)
+        BattleSelectedUnitViewState? selectedUnit = null,
+        IReadOnlyList<string>? beatCallouts = null)
     {
         var selectedState = selectedUnit ?? BattleSelectedUnitViewState.Hidden;
         return CreateState(
             BuildTeamSummary(step.Units.Where(actor => actor.Side == TeamSide.Ally)),
             BuildTeamSummary(step.Units.Where(actor => actor.Side == TeamSide.Enemy)),
-            BuildLogText(step, recentLogs, decisiveTimeline),
+            BuildLogText(step, recentLogs, decisiveTimeline, beatCallouts),
             BuildResultText(step, totalEventCount),
             BuildPlaybackText(isPaused, playbackSpeed),
             BuildStatus(step, isPaused),
@@ -559,14 +560,24 @@ public sealed class BattleScreenPresenter
     private string BuildLogText(
         BattleSimulationStep step,
         IReadOnlyList<BattleEvent> recentLogs,
-        IReadOnlyList<string> decisiveTimeline)
+        IReadOnlyList<string> decisiveTimeline,
+        IReadOnlyList<string>? beatCallouts = null)
     {
         if (step.IsFinished && decisiveTimeline.Count > 0)
         {
             return string.Join("\n", decisiveTimeline.TakeLast(MaxVisibleDecisive).Select(line => $"* {line}"));
         }
 
-        var feed = recentLogs.TakeLast(MaxVisibleLogs).Select(eventData => BuildLogLine(step, eventData)).ToList();
+        // Phase 4 beat 콜아웃 — 디렉터가 밀도 게이트(1초 1건)를 통과시킨 사건만 도착한다.
+        // 패널 높이 예산(max-height) 안에 머물도록 콜아웃이 피드 줄을 대체한다(총 줄 수 보존).
+        var calloutCount = beatCallouts?.Count ?? 0;
+        var visibleLogs = System.Math.Max(1, MaxVisibleLogs - calloutCount);
+        var feed = recentLogs.TakeLast(visibleLogs).Select(eventData => BuildLogLine(step, eventData)).ToList();
+        if (beatCallouts is { Count: > 0 })
+        {
+            feed.InsertRange(0, beatCallouts.Select(line => $"★ {line}"));
+        }
+
         return feed.Count == 0
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.feed.empty", "Watching for key moments...")
             : string.Join("\n", feed);

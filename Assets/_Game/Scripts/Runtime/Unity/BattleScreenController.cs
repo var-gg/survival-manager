@@ -33,6 +33,17 @@ public sealed class BattleScreenController : MonoBehaviour
     private readonly List<BattleEvent> _recentLogs = new();
     private readonly List<string> _decisiveTimeline = new();
     private readonly BattleHighlightLedger _highlightLedger = new();
+    // Phase 4 spectacle director — beat/킬 강조의 단일 정책(컷 예산·콜아웃 밀도). 순수 클래스라
+    // 컨트롤러는 배선만 한다(god-file 비대화 방지, BattleHighlightLedger 전례).
+    private readonly BattleSpectacleDirector _spectacleDirector = new();
+    private readonly List<BeatCalloutEntry> _beatCallouts = new();
+    private const int MaxBeatCalloutLines = 1;
+    private const double BeatCalloutLifetimeSeconds = 4.0;
+    // 디렉터 시계 — 벽시계 진행이되 일시정지 동안 동결한다(TickTransients 의 pause 동결 계약과 동일 축).
+    // 배속/step 버스트에서 시청자 기준 컷·콜아웃 밀도를 지키면서, 정지 화면에서 컷/만료/시효가 흐르지 않는다.
+    private double _directorClockSeconds;
+
+    private readonly record struct BeatCalloutEntry(string Line, double ExpiresAtSeconds);
     private readonly List<(BattleSimulationStep PreviousStep, BattleSimulationStep CurrentStep)> _consumedTransitions = new();
     private readonly BattlePresentationOptions _presentationOptions = BattlePresentationOptions.CreateDefault();
     private readonly BattleCameraFramingPolicy _cameraFramingPolicy = new();
@@ -180,7 +191,14 @@ public sealed class BattleScreenController : MonoBehaviour
         presentationController.SetBlend(previousStep, currentStep, alpha);
         presentationController.SetFocus(currentStep, _selectedUnitId);
         presentationController.TickTransients(Time.deltaTime, _timeline.PlaybackSpeed, _timeline.IsPaused);
-        ApplyPassiveCameraFrame(currentStep);
+        if (!_timeline.IsPaused)
+        {
+            _directorClockSeconds += Time.unscaledDeltaTime;
+            DrainBeatCallout(currentStep);
+        }
+
+        PruneExpiredBeatCallouts(currentStep);
+        ApplyDirectedCameraFrame(currentStep);
         _view?.SetProgress(_timeline.NormalizedProgress);
 
         HandlePointerSelection(currentStep);
@@ -197,6 +215,8 @@ public sealed class BattleScreenController : MonoBehaviour
         TrackDecisiveEvents(currentStep);
         // P2 하이라이트 원장 — typed 채널 집계 + 종료 시 MVP/하이라이트를 decisive timeline에 1회 첨부.
         _highlightLedger.Record(currentStep);
+        // Phase 4 — beat/킬 강조 후보 적재(pause 동결 디렉터 시계 기준).
+        _spectacleDirector.IngestStep(currentStep, _directorClockSeconds);
         _highlightLedger.TryAppendBattleEndLines(
             currentStep,
             _decisiveTimeline,
@@ -538,6 +558,17 @@ public sealed class BattleScreenController : MonoBehaviour
         }
 
         presentationController.ClearTransients(resetReason);
+        // Phase 4 — 강조 상태도 transient 청산 계약을 따른다: 되감기/시크 후 stale 컷·콜아웃 금지.
+        // 시크 후 재생은 의도적 재발화다(재시청 = 하이라이트를 다시 본다) — dedup 까지 함께 청산.
+        _spectacleDirector.Reset();
+        _beatCallouts.Clear();
+        if (resetReason == BattlePresentationCueType.PlaybackReset)
+        {
+            // 처음부터 재시청 — step 0 의 개전 beat 을 청산된 디렉터에 다시 공급한다
+            // (원장은 리셋되지 않으므로 여기서는 디렉터만).
+            _spectacleDirector.IngestStep(currentStep, _directorClockSeconds);
+        }
+
         presentationController.RenderSnapshot(currentStep);
         presentationController.SetFocus(currentStep, _selectedUnitId);
         _view?.SetProgress(_timeline.NormalizedProgress);
@@ -574,6 +605,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _recentLogs.Clear();
         _decisiveTimeline.Clear();
         _highlightLedger.Reset();
+        _spectacleDirector.Reset();
+        _beatCallouts.Clear();
         _selectedUnitId = string.Empty;
         _unitDetailVisible = false;
         _unitDetailTab = BattleUnitDetailTab.Overview;
@@ -583,6 +616,7 @@ public sealed class BattleScreenController : MonoBehaviour
         presentationController.ApplyOptions(_presentationOptions);
         EnsureSelectedUnit(_simulator.CurrentStep);
         presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);
+        IngestOpeningStep();
         RenderCurrentState(_simulator.CurrentStep);
         ApplyBootstrapCameraFrame(_simulator.CurrentStep);
     }
@@ -772,7 +806,8 @@ public sealed class BattleScreenController : MonoBehaviour
             canChangeSpeed: IsSmokeLane && _timeline != null && _policy.CanControlSpeed(_timeline.IsFinished),
             showHelp: _helpState.IsVisible,
             isSummaryExpanded: _summaryExpanded,
-            selectedUnit: selectedUnitState);
+            selectedUnit: selectedUnitState,
+            beatCallouts: _beatCallouts.Select(entry => entry.Line).ToList());
         _view!.Render(state);
         _view.RenderDebugFoldout(_presenter!.BuildDebugFoldoutState());
         _view.SetScrubberInteractable(IsSmokeLane && _timeline != null && _policy.CanSeek(_timeline.IsFinished));
@@ -907,14 +942,103 @@ public sealed class BattleScreenController : MonoBehaviour
         cameraController.SetSuggestedFrame(_cameraFramingPolicy.BuildBootstrapFrame(step, _selectedUnitId));
     }
 
-    private void ApplyPassiveCameraFrame(BattleSimulationStep step)
+    /// <summary>
+    /// Phase 4 — 디렉터가 강조 샷을 쥐고 있으면 사건 당사자 프레임, 아니면 종전 passive 보드 프레임.
+    /// 어느 쪽이든 비-bootstrap 제안(블렌드)이라 하드 스냅이 없고 수동 카메라 우선권이 유지된다.
+    /// </summary>
+    private void ApplyDirectedCameraFrame(BattleSimulationStep step)
     {
         if (cameraController == null)
         {
             return;
         }
 
+        if (_spectacleDirector.TryGetCameraEmphasis(_directorClockSeconds, out var emphasis))
+        {
+            cameraController.SetSuggestedFrame(_cameraFramingPolicy.BuildEmphasisFrame(step, emphasis));
+            return;
+        }
+
         cameraController.SetSuggestedFrame(_cameraFramingPolicy.BuildPassiveFrame(step, _selectedUnitId));
+    }
+
+    private void DrainBeatCallout(BattleSimulationStep step)
+    {
+        if (!_spectacleDirector.TryDrainCallout(_directorClockSeconds, out var beat))
+        {
+            return;
+        }
+
+        var line = BuildBeatCalloutLine(step, beat);
+        if (string.IsNullOrEmpty(line))
+        {
+            return;
+        }
+
+        _beatCallouts.Add(new BeatCalloutEntry(line, _directorClockSeconds + BeatCalloutLifetimeSeconds));
+        while (_beatCallouts.Count > MaxBeatCalloutLines)
+        {
+            _beatCallouts.RemoveAt(0);
+        }
+
+        RenderCurrentState(step);
+    }
+
+    private void PruneExpiredBeatCallouts(BattleSimulationStep step)
+    {
+        if (_beatCallouts.RemoveAll(entry => entry.ExpiresAtSeconds <= _directorClockSeconds) > 0)
+        {
+            RenderCurrentState(step);
+        }
+    }
+
+    private string BuildBeatCalloutLine(BattleSimulationStep step, CombatBeat beat)
+    {
+        var label = BattleReadabilityFormatter.BuildBeatLabel(beat.Type, LocaleCode);
+        switch (beat.Type)
+        {
+            case CombatBeatType.SynergyActivated:
+            {
+                var sidePrefix = beat.Side == TeamSide.Ally ? string.Empty : "적 ";
+                return $"{sidePrefix}{label} | {ResolveSynergyCalloutName(beat.Tag)}";
+            }
+
+            case CombatBeatType.ComboConsumed:
+            case CombatBeatType.ComboPrimerApplied:
+            {
+                var source = ResolveBattleEventUnitName(step, beat.SourceId?.Value, null);
+                var target = ResolveBattleEventUnitName(step, beat.TargetId?.Value, null);
+                return $"{label} | {source} → {target}";
+            }
+
+            default:
+            {
+                var subject = ResolveBattleEventUnitName(step, beat.TargetId?.Value ?? beat.SourceId?.Value, null);
+                return $"{label} | {subject}";
+            }
+        }
+    }
+
+    // 시너지 식별자 형식: "synergy:{id}:{threshold}"(authored) 또는 "race:/class:{id}:{count}"(V1 폴백).
+    // authored 는 콘텐츠 표시명으로 해석하고, 폴백은 식별자를 사람이 읽게만 다듬는다.
+    private string ResolveSynergyCalloutName(string tag)
+    {
+        if (string.IsNullOrWhiteSpace(tag))
+        {
+            return "-";
+        }
+
+        var parts = tag.Split(':');
+        if (parts.Length >= 2 && string.Equals(parts[0], "synergy", StringComparison.Ordinal))
+        {
+            var resolved = _contentText?.GetSynergyName(parts[1]);
+            if (!string.IsNullOrWhiteSpace(resolved))
+            {
+                return resolved;
+            }
+        }
+
+        return BattleReadabilityFormatter.HumanizeToken(parts.Length >= 2 ? parts[1] : tag);
     }
 
     private void RunBattle()
@@ -934,6 +1058,8 @@ public sealed class BattleScreenController : MonoBehaviour
         _recentLogs.Clear();
         _decisiveTimeline.Clear();
         _highlightLedger.Reset();
+        _spectacleDirector.Reset();
+        _beatCallouts.Clear();
 
         BattleLoadoutSnapshot allySnapshot;
         try
@@ -993,6 +1119,7 @@ public sealed class BattleScreenController : MonoBehaviour
         presentationController.ApplyOptions(_presentationOptions);
         EnsureSelectedUnit(_simulator.CurrentStep);
         presentationController.SetFocus(_simulator.CurrentStep, _selectedUnitId);
+        IngestOpeningStep();
         RenderCurrentState(_simulator.CurrentStep);
         ApplyBootstrapCameraFrame(_simulator.CurrentStep);
 
@@ -1000,6 +1127,22 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             cameraController.SetInputEnabled(true);
         }
+    }
+
+    /// <summary>
+    /// step 0 은 타임라인 전환의 currentStep 이 될 수 없다(전환은 step 1 부터) — 개전 beat
+    /// (시너지 발동/개전 효과)을 디렉터와 원장에 1회 직접 공급한다. 이 호출이 없으면 개전 발현이
+    /// 실전에서 영구 침묵한다(리뷰 확정 결함).
+    /// </summary>
+    private void IngestOpeningStep()
+    {
+        if (_simulator == null)
+        {
+            return;
+        }
+
+        _spectacleDirector.IngestStep(_simulator.CurrentStep, _directorClockSeconds);
+        _highlightLedger.Record(_simulator.CurrentStep);
     }
 
     private void FinishBattle()

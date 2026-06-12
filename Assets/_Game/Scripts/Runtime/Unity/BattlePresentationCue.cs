@@ -111,4 +111,7 @@ public sealed record BattlePresentationCue(
     // seam 단방향 유지. Any/None이면 기존 cue-type 해상으로 폴백.
     SkillPresentationFamily PresentationFamily = SkillPresentationFamily.Any,
     SkillPresentationSkin PresentationSkin = SkillPresentationSkin.Any,
-    SkillPresentationGesture PresentationGesture = SkillPresentationGesture.None);
+    SkillPresentationGesture PresentationGesture = SkillPresentationGesture.None,
+    // Phase 4: 이 contact 가 콤보 연쇄의 소비 타격(ComboConsumed beat 매칭)임 — 임팩트 텍스트/스케일/
+    // 히트스톱 강조의 표시 전용 플래그. sim 의 beat 채널에서 유도되며 gameplay truth 가 아니다.
+    bool IsComboEmphasis = false);
