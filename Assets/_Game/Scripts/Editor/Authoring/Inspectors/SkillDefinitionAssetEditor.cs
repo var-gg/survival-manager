@@ -1,27 +1,225 @@
+using System.Collections.Generic;
 using System.Text;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using UnityEditor;
+using UnityEngine;
 
 namespace SM.Editor.Authoring.Inspectors;
 
 [CustomEditor(typeof(SkillDefinitionAsset))]
 public sealed class SkillDefinitionAssetEditor : UnityEditor.Editor
 {
+    private bool _showMechanics = true;
+    private bool _showEffects = true;
+    private bool _showTargeting = true;
+    private bool _showTagsCompatibility = true;
+    private bool _showBudget = true;
+    private bool _showPresentation = true;
+    private bool _showRawDiagnostics;
+
     public override void OnInspectorGUI()
     {
-        DrawDefaultInspector();
-
+        serializedObject.Update();
         var skill = (SkillDefinitionAsset)target;
-        EditorGUILayout.Space(8);
-        EditorGUILayout.LabelField("Derived Preview", EditorStyles.boldLabel);
 
+        DrawHealthCard(skill);
+        EditorGUILayout.Space(8);
+
+        DrawFoldout(ref _showMechanics, "Mechanics", new[]
+        {
+            nameof(SkillDefinitionAsset.Id),
+            nameof(SkillDefinitionAsset.NameKey),
+            nameof(SkillDefinitionAsset.DescriptionKey),
+            nameof(SkillDefinitionAsset.TemplateType),
+            nameof(SkillDefinitionAsset.Kind),
+            nameof(SkillDefinitionAsset.SlotKind),
+            nameof(SkillDefinitionAsset.LearnSource),
+            nameof(SkillDefinitionAsset.ActivationModel),
+            nameof(SkillDefinitionAsset.Lane),
+            nameof(SkillDefinitionAsset.LockRule),
+            nameof(SkillDefinitionAsset.AuthorityLayer),
+            nameof(SkillDefinitionAsset.AiIntents),
+            nameof(SkillDefinitionAsset.AiScoreHints),
+        });
+        DrawFoldout(ref _showEffects, "Effects", new[]
+        {
+            nameof(SkillDefinitionAsset.Effects),
+            nameof(SkillDefinitionAsset.AppliedStatuses),
+            nameof(SkillDefinitionAsset.CleanseProfileId),
+            nameof(SkillDefinitionAsset.DamageType),
+            nameof(SkillDefinitionAsset.AreaEffectFamily),
+            nameof(SkillDefinitionAsset.DisplacementKind),
+            nameof(SkillDefinitionAsset.DisplacementDistance),
+            nameof(SkillDefinitionAsset.SummonProfile),
+            nameof(SkillDefinitionAsset.Power),
+            nameof(SkillDefinitionAsset.PowerFlat),
+            nameof(SkillDefinitionAsset.PhysCoeff),
+            nameof(SkillDefinitionAsset.MagCoeff),
+            nameof(SkillDefinitionAsset.HealCoeff),
+            nameof(SkillDefinitionAsset.HealthCoeff),
+            nameof(SkillDefinitionAsset.CanCrit),
+        });
+        DrawFoldout(ref _showTargeting, "Targeting", new[]
+        {
+            nameof(SkillDefinitionAsset.Delivery),
+            nameof(SkillDefinitionAsset.TargetRule),
+            nameof(SkillDefinitionAsset.TargetRuleData),
+            nameof(SkillDefinitionAsset.Range),
+            nameof(SkillDefinitionAsset.RangeMin),
+            nameof(SkillDefinitionAsset.RangeMax),
+            nameof(SkillDefinitionAsset.Radius),
+            nameof(SkillDefinitionAsset.Width),
+            nameof(SkillDefinitionAsset.ArcDegrees),
+            nameof(SkillDefinitionAsset.PunishCluster),
+        });
+        DrawFoldout(ref _showTagsCompatibility, "Tags / Compatibility", new[]
+        {
+            nameof(SkillDefinitionAsset.CompileTags),
+            nameof(SkillDefinitionAsset.RuleModifierTags),
+            nameof(SkillDefinitionAsset.SupportAllowedTags),
+            nameof(SkillDefinitionAsset.SupportBlockedTags),
+            nameof(SkillDefinitionAsset.RequiredWeaponTags),
+            nameof(SkillDefinitionAsset.RequiredClassTags),
+            nameof(SkillDefinitionAsset.RecruitNativeTags),
+            nameof(SkillDefinitionAsset.RecruitPlanTags),
+            nameof(SkillDefinitionAsset.RecruitScoutTags),
+            nameof(SkillDefinitionAsset.EffectFamilyId),
+            nameof(SkillDefinitionAsset.MutuallyExclusiveGroupId),
+        });
+        DrawFoldout(ref _showBudget, "Budget", new[]
+        {
+            nameof(SkillDefinitionAsset.BudgetCard),
+            nameof(SkillDefinitionAsset.PowerBudget),
+            nameof(SkillDefinitionAsset.ManaCost),
+            nameof(SkillDefinitionAsset.ResourceCost),
+            nameof(SkillDefinitionAsset.BaseCooldownSeconds),
+            nameof(SkillDefinitionAsset.CooldownSeconds),
+            nameof(SkillDefinitionAsset.CastWindupSeconds),
+            nameof(SkillDefinitionAsset.RecoverySeconds),
+            nameof(SkillDefinitionAsset.InterruptRefundScalar),
+        });
+        DrawFoldout(ref _showPresentation, "Presentation", new[]
+        {
+            nameof(SkillDefinitionAsset.IconId),
+            nameof(SkillDefinitionAsset.AnimationHookId),
+            nameof(SkillDefinitionAsset.VfxHookId),
+            nameof(SkillDefinitionAsset.SfxHookId),
+        });
+
+        EditorGUILayout.Space(8);
+        _showRawDiagnostics = EditorGUILayout.Foldout(_showRawDiagnostics, "Derived Diagnostics", true);
+        if (_showRawDiagnostics)
+        {
+            using (new EditorGUI.DisabledScope(true))
+            {
+                DrawCadenceSummary(skill);
+                DrawScalingSummary(skill);
+                DrawTargetingSummary(skill);
+            }
+        }
+
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void DrawFoldout(ref bool isExpanded, string label, IReadOnlyList<string> propertyNames)
+    {
+        isExpanded = EditorGUILayout.Foldout(isExpanded, label, true);
+        if (!isExpanded)
+        {
+            return;
+        }
+
+        EditorGUI.indentLevel++;
+        foreach (var propertyName in propertyNames)
+        {
+            var property = serializedObject.FindProperty(propertyName);
+            if (property == null)
+            {
+                EditorGUILayout.HelpBox($"Missing serialized property: {propertyName}", MessageType.Warning);
+                continue;
+            }
+
+            EditorGUILayout.PropertyField(property, true);
+        }
+
+        EditorGUI.indentLevel--;
+        EditorGUILayout.Space(4);
+    }
+
+    private static void DrawHealthCard(SkillDefinitionAsset skill)
+    {
+        var snapshot = SkillDefinitionInspectorHealthResolver.Resolve(skill);
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField("Authoring Health", EditorStyles.boldLabel);
+
+        EditorGUILayout.BeginHorizontal();
+        DrawIconPreview(snapshot);
+        EditorGUILayout.BeginVertical();
+        EditorGUILayout.LabelField(snapshot.LocalizedName, EditorStyles.boldLabel);
+        DrawReadOnlyRow("SkillId", skill.Id);
+        DrawReadOnlyRow("Slot / Kind", $"{skill.SlotKind} / {skill.Kind}");
+        DrawReadOnlyRow("Live Slice", snapshot.SliceExposure);
+        DrawReadOnlyRow("Localized Name", snapshot.NameFallbackState);
+        DrawReadOnlyRow("Icon", snapshot.IconState);
+        EditorGUILayout.EndVertical();
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.HelpBox(
+            $"{snapshot.Health}: template={skill.TemplateType}, effects={snapshot.EffectsState}, localization={snapshot.LocalizationState}, tags={snapshot.CompileTagsState}",
+            ToMessageType(snapshot.Health));
+
+        foreach (var finding in snapshot.Findings)
+        {
+            EditorGUILayout.HelpBox($"{finding.Label}: {finding.Detail}", ToMessageType(finding.Level));
+        }
+
+        if (snapshot.Findings.Count == 0)
+        {
+            EditorGUILayout.HelpBox("No red/yellow authoring health findings.", MessageType.Info);
+        }
+
+        DrawReadOnlyRow("Support compatibility", snapshot.SupportCompatibilityState);
+        DrawReadOnlyRow("Required weapons", snapshot.RequiredWeaponTagsState);
+        DrawReadOnlyRow("Required classes", snapshot.RequiredClassTagsState);
+        if (!string.IsNullOrWhiteSpace(snapshot.IconAssetPath))
+        {
+            DrawReadOnlyRow("Icon asset", snapshot.IconAssetPath);
+        }
+
+        EditorGUILayout.EndVertical();
+    }
+
+    private static void DrawIconPreview(SkillDefinitionInspectorHealthSnapshot snapshot)
+    {
+        const float iconSize = 64f;
+        var rect = GUILayoutUtility.GetRect(iconSize, iconSize, GUILayout.Width(iconSize), GUILayout.Height(iconSize));
+        GUI.Box(rect, GUIContent.none);
+        if (snapshot.IconTexture == null)
+        {
+            GUI.Label(rect, "No Icon", EditorStyles.centeredGreyMiniLabel);
+            return;
+        }
+
+        GUI.DrawTexture(rect, snapshot.IconTexture, ScaleMode.ScaleToFit, true);
+    }
+
+    private static void DrawReadOnlyRow(string label, string value)
+    {
         using (new EditorGUI.DisabledScope(true))
         {
-            DrawCadenceSummary(skill);
-            DrawScalingSummary(skill);
-            DrawTargetingSummary(skill);
+            EditorGUILayout.TextField(label, string.IsNullOrWhiteSpace(value) ? "-" : value);
         }
+    }
+
+    private static MessageType ToMessageType(SkillInspectorHealthLevel level)
+    {
+        return level switch
+        {
+            SkillInspectorHealthLevel.Red => MessageType.Error,
+            SkillInspectorHealthLevel.Yellow => MessageType.Warning,
+            _ => MessageType.Info,
+        };
     }
 
     private static void DrawCadenceSummary(SkillDefinitionAsset skill)

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/02_design/combat/skill-authoring-schema.md`
 - 관련문서:
   - `docs/02_design/combat/authority-matrix.md`
@@ -135,6 +135,17 @@ Action = Slot + Template + EffectDescriptors + TargetRule + Presentation Hooks
 - `FlexPassive` modifier 계열은 compatibility tag를 반드시 가진다.
 - `blink / dash / roll` 계열은 movement style이 아니라 `purpose`와 `distance band`를 함께 기록한다.
 - presentation hook이 비어 있어도 compile은 가능하지만, design catalog에는 hook placeholder를 남긴다.
+
+## inspector health surface
+
+`SkillDefinitionAsset` inspector 상단의 authoring health card는 asset을 열었을 때 다음 상태를 즉시 판단하는 read-only surface다.
+
+- top card: icon preview/fallback, localized name fallback, `SkillId`, slot/kind, first playable `Live` / `ParkingLot` / `Other` 상태.
+- red finding: `TemplateType = LegacyDerived`, empty `Effects`, missing `IconId`, missing/invalid localization, support tag mismatch, unsupported weapon/class tag, non-support skill의 missing class gate.
+- yellow finding: icon texture unresolved, empty `CompileTags`, first playable slice asset unavailable.
+- foldout groups: Mechanics, Effects, Targeting, Tags / Compatibility, Budget, Presentation, Derived Diagnostics.
+
+Inspector health는 editor-only 표시이며, `SM.Combat` / `SM.Meta` pure runtime contract에는 새 의존을 추가하지 않는다.
 
 ## non-goal
 
