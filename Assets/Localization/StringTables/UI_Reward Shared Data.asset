@@ -555,6 +555,10 @@ MonoBehaviour:
     m_Key: ui.reward.settlement.commit_value
     m_Metadata:
       m_Items: []
+  - m_Id: 27266949859053568
+    m_Key: ui.reward.summary.political
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

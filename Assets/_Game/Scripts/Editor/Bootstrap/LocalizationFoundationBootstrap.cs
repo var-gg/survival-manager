@@ -784,6 +784,7 @@ public static class LocalizationFoundationBootstrap
             ["ui.reward.summary.awaiting_choice"] = ("보상 한 장을 고른 뒤 돌아가세요.", "Choose one reward before returning.", false),
             ["ui.reward.summary.none"] = ("정산 요약을 불러올 수 없습니다.", "Settlement summary is unavailable.", false),
             ["ui.reward.summary.route_only"] = ("경로: {0} / {1}", "Route: {0} / {1}", true),
+            ["ui.reward.summary.political"] = ("정치: {0} {1} (신뢰 {2})", "Politics: {0} {1} (Trust {2})", true),
             ["ui.reward.build.posture"] = ("태세: {0}", "Posture: {0}", true),
             ["ui.reward.build.equipped_permanent"] = ("장착 영구 증강: {0}", "Equipped Permanent: {0}", true),
             ["ui.reward.build.bench"] = ("벤치 후보: {0}", "Bench Candidates: {0}", true),

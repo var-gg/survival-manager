@@ -605,6 +605,11 @@ MonoBehaviour:
     m_Localized: Recorded
     m_Metadata:
       m_Items: []
+  - m_Id: 27266949859053568
+    m_Localized: 'Politics: {0} {1} (Trust {2})'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
   references:
     version: 2
     RefIds:
@@ -649,3 +654,4 @@ MonoBehaviour:
         - id: 108
         - id: 125
         - id: 126
+        - id: 27266949859053568
