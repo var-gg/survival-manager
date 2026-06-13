@@ -270,14 +270,17 @@ public static class BattleTelemetryRecorder
     }
 
     public static void RecordStatusTick(BattleState state, UnitSnapshot unit, string statusId, float damage)
+        => RecordStatusTick(state, unit, unit, statusId, damage);
+
+    public static void RecordStatusTick(BattleState state, UnitSnapshot actor, UnitSnapshot target, string statusId, float damage)
     {
         state.AddTelemetry(new TelemetryEventRecord
         {
             Domain = TelemetryDomain.Combat,
             EventKind = TelemetryEventKind.DamageApplied,
             TimeSeconds = state.ElapsedSeconds,
-            Actor = BuildEntityRef(unit),
-            Target = BuildEntityRef(unit),
+            Actor = BuildEntityRef(actor),
+            Target = BuildEntityRef(target),
             Explain = new ExplainStamp
             {
                 SourceKind = ExplainedSourceKind.Status,

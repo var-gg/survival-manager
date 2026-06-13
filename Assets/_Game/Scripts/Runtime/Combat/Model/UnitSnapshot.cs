@@ -480,7 +480,11 @@ public sealed class UnitSnapshot
         return Math.Max(0.25f, multiplier);
     }
 
-    public void ApplyStatus(StatusApplicationSpec spec)
+    public void ApplyStatus(
+        StatusApplicationSpec spec,
+        string sourceActorId = "",
+        string sourceSkillId = "",
+        string sourceApplicationId = "")
     {
         var existingIndex = _statuses.FindIndex(status => string.Equals(status.StatusId, spec.StatusId, StringComparison.Ordinal));
         if (existingIndex >= 0)
@@ -490,18 +494,30 @@ public sealed class UnitSnapshot
             var stacks = Math.Min(spec.MaxStacks, existing.Stacks + 1);
             var remaining = spec.RefreshDurationOnReapply ? Math.Max(existing.RemainingTicks, durationTicks) : existing.RemainingTicks;
             var magnitude = Math.Max(existing.Magnitude, spec.Magnitude);
+            var nextApplicationId = string.IsNullOrWhiteSpace(sourceApplicationId) ? spec.Id : sourceApplicationId;
             _statuses[existingIndex] = existing with
             {
                 RemainingTicks = remaining,
                 DurationTicks = Math.Max(existing.DurationTicks, durationTicks),
                 Magnitude = magnitude,
                 Stacks = stacks,
+                SourceActorId = string.IsNullOrWhiteSpace(sourceActorId) ? existing.SourceActorId : sourceActorId,
+                SourceSkillId = string.IsNullOrWhiteSpace(sourceSkillId) ? existing.SourceSkillId : sourceSkillId,
+                SourceApplicationId = string.IsNullOrWhiteSpace(nextApplicationId) ? existing.SourceApplicationId : nextApplicationId,
             };
             return;
         }
 
         var newDurationTicks = BattleTickMath.DurationToTicks(spec.DurationSeconds);
-        _statuses.Add(new AppliedStatusState(spec.StatusId, newDurationTicks, newDurationTicks, spec.Magnitude));
+        _statuses.Add(new AppliedStatusState(
+            spec.StatusId,
+            newDurationTicks,
+            newDurationTicks,
+            spec.Magnitude,
+            1,
+            sourceActorId,
+            sourceSkillId,
+            string.IsNullOrWhiteSpace(sourceApplicationId) ? spec.Id : sourceApplicationId));
     }
 
     public bool RemoveStatus(string statusId)
@@ -797,16 +813,16 @@ public sealed class UnitSnapshot
         return cooldownSeconds / Math.Max(1f, 1f + SkillHaste);
     }
 
-    public List<string> AdvanceStatusTimers()
+    public List<AppliedStatusState> AdvanceStatusTimers()
     {
-        var removed = new List<string>();
+        var removed = new List<AppliedStatusState>();
         for (var index = _statuses.Count - 1; index >= 0; index--)
         {
             var status = _statuses[index];
             var remaining = status.RemainingTicks - 1;
             if (remaining <= 0)
             {
-                removed.Add(status.StatusId);
+                removed.Add(status);
                 _statuses.RemoveAt(index);
                 continue;
             }

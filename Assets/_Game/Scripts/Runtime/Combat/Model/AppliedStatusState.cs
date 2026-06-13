@@ -9,7 +9,10 @@ public sealed record AppliedStatusState(
     int RemainingTicks,
     int DurationTicks,
     float Magnitude,
-    int Stacks = 1)
+    int Stacks = 1,
+    string SourceActorId = "",
+    string SourceSkillId = "",
+    string SourceApplicationId = "")
 {
     public float RemainingSeconds => RemainingTicks * BattleTickMath.TickSeconds;
     public float DurationSeconds => DurationTicks * BattleTickMath.TickSeconds;

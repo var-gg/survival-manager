@@ -80,6 +80,9 @@ public static class BattleStateCanonicalHash
             WriteFloat(buffer, status.RemainingSeconds);
             WriteFloat(buffer, status.Magnitude);
             WriteInt(buffer, status.Stacks);
+            WriteString(buffer, status.SourceActorId);
+            WriteString(buffer, status.SourceSkillId);
+            WriteString(buffer, status.SourceApplicationId);
         }
     }
 

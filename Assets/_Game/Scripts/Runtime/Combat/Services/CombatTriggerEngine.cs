@@ -106,7 +106,10 @@ public static class CombatTriggerEngine
                             effect.DurationSeconds,
                             effect.Magnitude,
                             effect.MaxStacks <= 0 ? 1 : effect.MaxStacks,
-                            RefreshDurationOnReapply: true));
+                            RefreshDurationOnReapply: true),
+                            owner.Id.Value,
+                            string.Empty,
+                            effect.SourceId);
                         applied = true;
                     }
 

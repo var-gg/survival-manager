@@ -13,6 +13,78 @@ namespace SM.Tests.EditMode;
 public sealed class StatusResolutionServiceTests
 {
     [Test]
+    public void ReapplyPolicy_UsesSingleSlotMaxMagnitudeBoundedStacksAndLatestSource()
+    {
+        var weakBurn = new BattleSkillSpec(
+            "skill.burn.weak",
+            "skill.burn.weak",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[] { new StatusApplicationSpec("apply.burn.weak", "burn", 2f, 2f, 3) });
+        var strongBurn = new BattleSkillSpec(
+            "skill.burn.strong",
+            "skill.burn.strong",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[] { new StatusApplicationSpec("apply.burn.strong", "burn", 1f, 5f, 3) });
+        var actorA = CombatTestFactory.CreateUnit("actor_a", classId: "mystic", skills: new[] { weakBurn });
+        var actorB = CombatTestFactory.CreateUnit("actor_b", classId: "mystic", skills: new[] { strongBurn });
+        var targetLoadout = CombatTestFactory.CreateUnit("target");
+        var state = CombatTestFactory.CreateBattleState(new[] { actorA, actorB }, new[] { targetLoadout });
+        var firstActor = state.Allies[0];
+        var secondActor = state.Allies[1];
+        var target = state.Enemies.Single();
+        var events = new List<BattleEvent>();
+
+        StatusResolutionService.ApplySkillStatuses(state, firstActor, target, weakBurn, events);
+        StatusResolutionService.ApplySkillStatuses(state, secondActor, target, strongBurn, events);
+
+        var burn = target.Statuses.Single(status => status.StatusId == "burn");
+        Assert.That(burn.Stacks, Is.EqualTo(2));
+        Assert.That(burn.RemainingSeconds, Is.EqualTo(2f).Within(0.001f));
+        Assert.That(burn.DurationSeconds, Is.EqualTo(2f).Within(0.001f));
+        Assert.That(burn.Magnitude, Is.EqualTo(5f).Within(0.001f));
+        Assert.That(burn.SourceActorId, Is.EqualTo(secondActor.Id.Value));
+        Assert.That(burn.SourceSkillId, Is.EqualTo("skill.burn.strong"));
+        Assert.That(burn.SourceApplicationId, Is.EqualTo("apply.burn.strong"));
+    }
+
+    [Test]
+    public void PeriodicDamageTelemetry_AttributesTickToStatusSource()
+    {
+        var burnSkill = new BattleSkillSpec(
+            "skill.burn",
+            "skill.burn",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[] { new StatusApplicationSpec("apply.burn", "burn", 2f, 3f) });
+        var actorLoadout = CombatTestFactory.CreateUnit("actor", classId: "mystic", skills: new[] { burnSkill });
+        var targetLoadout = CombatTestFactory.CreateUnit("target", hp: 20f);
+        var state = CombatTestFactory.CreateBattleState(new[] { actorLoadout }, new[] { targetLoadout });
+        var actor = state.Allies.Single();
+        var target = state.Enemies.Single();
+        var events = new List<BattleEvent>();
+
+        StatusResolutionService.ApplySkillStatuses(state, actor, target, burnSkill, events);
+        events.Clear();
+        StatusResolutionService.AdvanceStatuses(state, events);
+
+        var tick = events.Single(@event => @event.Note == "status_tick");
+        Assert.That(tick.ActorId, Is.EqualTo(actor.Id));
+        Assert.That(tick.TargetId, Is.EqualTo(target.Id));
+        Assert.That(tick.PayloadId, Is.EqualTo("burn"));
+
+        var telemetry = state.TelemetryEvents.Last(record => record.StringValueA == "status_tick");
+        Assert.That(telemetry.Actor!.UnitInstanceId, Is.EqualTo(actor.Id.Value));
+        Assert.That(telemetry.Target!.UnitInstanceId, Is.EqualTo(target.Id.Value));
+        Assert.That(telemetry.StatusId, Is.EqualTo("burn"));
+        Assert.That(telemetry.Explain!.SourceContentId, Is.EqualTo("burn"));
+    }
+
+    [Test]
     public void HardControl_TenacityAndDrWindow_ReduceReappliedDuration()
     {
         var targetBase = CombatTestFactory.CreateUnit("target");

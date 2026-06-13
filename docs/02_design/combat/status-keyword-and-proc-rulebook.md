@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/02_design/combat/status-keyword-and-proc-rulebook.md`
 - 관련문서:
   - `docs/02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
@@ -76,6 +76,9 @@
   - presentation priority
 - launch floor에서는 `StatusFamilyDefinition`의 default policy와 `StatusApplicationRule`의 override를 같이 사용한다.
 - hard CC는 `1.5초 / 50%` control resist window와 `tenacity` duration reduction을 동시에 받는다.
+- runtime V1은 `StatusId`당 active slot 하나를 사용한다. 재적용은 bounded stack count, max magnitude, optional max-duration refresh만 수행한다.
+- runtime V1 owner는 source actor + source skill/effect + application id다. DoT tick과 expire/remove는 이 owner를 actor로 기록한다.
+- additive duration stacking, additive intensity stacking, independent duplicate status instances는 V1에서 금지한다.
 
 ## proc rulebook
 
@@ -97,6 +100,7 @@
 - DoT tick은 `on-hit`가 아니다.
 - DoT tick은 `on-damage-tick` attribution만 가진다.
 - DoT tick의 crit, block, dodge 재계산은 launch floor에서 금지한다.
+- DoT tick은 status owner를 actor로, status 보유자를 target으로 기록한다.
 
 ### summon / owner credit
 

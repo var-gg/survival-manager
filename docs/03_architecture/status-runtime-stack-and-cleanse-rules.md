@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/03_architecture/status-runtime-stack-and-cleanse-rules.md`
 - 관련문서:
   - `docs/02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
@@ -39,8 +39,32 @@ launch floor에서는 OOP status 계층 대신 typed family + resolver chain을 
 3. 전투 중 `StatusResolutionService.ApplySkillStatuses(...)`가 상태 적용과 정화를 처리한다.
 4. `AdvanceStatuses(...)`가 timer 감소, periodic damage, hard CC 종료 시 resist window 부여를 담당한다.
 
-현재 resolver는 launch floor floor-set만 직접 소비한다.
-새 schema의 stack / ownership 정책은 우선 authoring / validation / report contract로 들어가며, follow-up resolver pass에서 점진적으로 소비한다.
+현재 resolver는 launch floor set과 V1 stack / refresh / ownership / timing 정책을 직접 소비한다.
+
+## V1 stack / refresh 정책
+
+- active status slot은 `StatusId`당 하나다. 같은 `StatusId`를 여러 독립 인스턴스로 보관하지 않는다.
+- 재적용 시 `Stacks = min(spec.MaxStacks, existing.Stacks + 1)`이다.
+- magnitude는 `max(existing.Magnitude, spec.Magnitude)`로 유지한다. additive intensity stacking은 V1에서 열지 않는다.
+- `RefreshDurationOnReapply=true`면 remaining duration은 기존 remaining과 새 duration 중 큰 값을 쓴다.
+- duration cap은 기존 duration과 새 duration 중 큰 값을 보존한다. duration additive stacking은 V1에서 열지 않는다.
+
+## V1 ownership / attribution 정책
+
+- `AppliedStatusState`는 `SourceActorId`, `SourceSkillId`, `SourceApplicationId`를 가진다.
+- skill status 적용은 actor id, skill id, status application id를 status state에 저장한다.
+- triggered effect status는 owner id와 effect source id를 저장한다.
+- 같은 status가 재적용되면 비어 있지 않은 최신 source가 ownership을 갱신한다.
+- periodic tick과 expire/remove event는 저장된 source actor를 actor로, status 보유자를 target으로 기록한다.
+- source actor를 찾을 수 없으면 status 보유자를 fallback actor로 쓴다.
+
+## V1 proc timing 정책
+
+- status tick은 `StatusResolutionService.AdvanceStatuses(...)` 시작부에서 timer 감소 전에 처리한다.
+- timer 감소와 expire/remove event는 tick 이후 같은 pass에서 처리한다.
+- cleanse는 `ApplySkillStatuses(...)` 안에서 새 status application보다 먼저 처리한다.
+- hard CC가 expire/remove되면 같은 pass에서 control resist window를 부여한다.
+- V1 제외: on-hit status proc chain, on-cleanse proc, on-expire proc, additive DoT intensity stacking, independent duplicate status instance.
 
 ## launch floor DR 규칙
 

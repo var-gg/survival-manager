@@ -13,25 +13,24 @@ public static class StatusResolutionService
     {
         foreach (var unit in state.AllUnits.Where(unit => unit.IsAlive))
         {
-            foreach (var statusId in unit.Statuses
-                         .Select(status => status.StatusId)
-                         .Where(state.StatusRules.AppliesPeriodicDamage)
-                         .Distinct(StringComparer.Ordinal)
+            foreach (var status in unit.Statuses
+                         .Where(status => state.StatusRules.AppliesPeriodicDamage(status.StatusId))
                          .ToList())
             {
-                ApplyPeriodicDamage(state, unit, statusId, stepEvents);
+                ApplyPeriodicDamage(state, unit, status, stepEvents);
             }
 
             var removedStatuses = unit.AdvanceStatusTimers();
-            foreach (var statusId in removedStatuses)
+            foreach (var status in removedStatuses)
             {
-                stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.StatusRemoved, statusId));
-                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusRemoved, unit, unit, statusId, 0f);
-                if (state.StatusRules.IsHardControl(statusId))
+                var source = ResolveStatusSourceUnit(state, unit, status.SourceActorId);
+                stepEvents.Add(BuildStatusEvent(state, source, unit, BattleEventKind.StatusRemoved, status.StatusId));
+                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusRemoved, source, unit, status.StatusId, 0f);
+                if (state.StatusRules.IsHardControl(status.StatusId))
                 {
                     var controlRule = state.StatusRules.ControlDiminishing;
                     unit.ApplyControlResistWindow(controlRule.WindowSeconds, controlRule.ControlResistMultiplier);
-                    stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.ControlResistApplied, statusId, controlRule.ControlResistMultiplier));
+                    stepEvents.Add(BuildStatusEvent(state, unit, unit, BattleEventKind.ControlResistApplied, status.StatusId, controlRule.ControlResistMultiplier));
                 }
             }
 
@@ -52,12 +51,12 @@ public static class StatusResolutionService
 
         if (!string.IsNullOrWhiteSpace(skill.CleanseProfileId))
         {
-            ApplyCleanse(state, actor, target, skill.CleanseProfileId, stepEvents);
+            ApplyCleanse(state, actor, target, skill, skill.CleanseProfileId, stepEvents);
         }
 
         foreach (var status in skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
         {
-            ApplyStatus(state, actor, target, status, stepEvents);
+            ApplyStatus(state, actor, target, skill, status, stepEvents);
         }
     }
 
@@ -91,7 +90,7 @@ public static class StatusResolutionService
         return actor.IsAlive && !actor.IsStunned && !actor.IsRooted;
     }
 
-    private static void ApplyStatus(BattleState state, UnitSnapshot actor, UnitSnapshot target, StatusApplicationSpec spec, List<BattleEvent> stepEvents)
+    private static void ApplyStatus(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec skill, StatusApplicationSpec spec, List<BattleEvent> stepEvents)
     {
         if (string.IsNullOrWhiteSpace(spec.StatusId))
         {
@@ -127,10 +126,10 @@ public static class StatusResolutionService
             case "sunder":
             case "marked":
             case "exposed":
-                target.ApplyStatus(adjusted);
+                target.ApplyStatus(adjusted, actor.Id.Value, skill.Id, spec.Id);
                 break;
             default:
-                target.ApplyStatus(adjusted);
+                target.ApplyStatus(adjusted, actor.Id.Value, skill.Id, spec.Id);
                 break;
         }
 
@@ -138,7 +137,7 @@ public static class StatusResolutionService
         BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, spec.StatusId, spec.Magnitude);
     }
 
-    private static void ApplyCleanse(BattleState state, UnitSnapshot actor, UnitSnapshot target, string cleanseProfileId, List<BattleEvent> stepEvents)
+    private static void ApplyCleanse(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec skill, string cleanseProfileId, List<BattleEvent> stepEvents)
     {
         if (!state.StatusRules.TryGetCleanseProfile(cleanseProfileId, out var cleanseRule))
         {
@@ -163,7 +162,10 @@ public static class StatusResolutionService
                 $"status.{cleanseRule.Id}.unstoppable",
                 "unstoppable",
                 Math.Max(0.1f, cleanseRule.GrantedUnstoppableDurationSeconds),
-                0f));
+                0f),
+                actor.Id.Value,
+                skill.Id,
+                cleanseRule.Id);
         }
 
         if (removed > 0 || cleanseRule.GrantsUnstoppable)
@@ -179,30 +181,41 @@ public static class StatusResolutionService
         }
     }
 
-    private static void ApplyPeriodicDamage(BattleState state, UnitSnapshot unit, string statusId, List<BattleEvent> stepEvents)
+    private static void ApplyPeriodicDamage(BattleState state, UnitSnapshot unit, AppliedStatusState status, List<BattleEvent> stepEvents)
     {
-        if (!unit.HasStatus(statusId))
+        if (!unit.HasStatus(status.StatusId))
         {
             return;
         }
 
-        var damage = Math.Max(1f, unit.GetStatusMagnitude(statusId));
+        var source = ResolveStatusSourceUnit(state, unit, status.SourceActorId);
+        var damage = Math.Max(1f, status.Magnitude);
         unit.TakeDamage(damage);
-        BattleTelemetryRecorder.RecordStatusTick(state, unit, statusId, damage);
+        BattleTelemetryRecorder.RecordStatusTick(state, source, unit, status.StatusId, damage);
         stepEvents.Add(new BattleEvent(
             state.StepIndex,
             state.ElapsedSeconds,
-            unit.Id,
-            unit.Definition.Name,
+            source.Id,
+            source.Definition.Name,
             BattleActionType.ActiveSkill,
             BattleLogCode.Generic,
             unit.Id,
             unit.Definition.Name,
             damage,
             BattleEventKind.Action,
-            statusId,
+            status.StatusId,
             0f,
             "status_tick"));
+    }
+
+    private static UnitSnapshot ResolveStatusSourceUnit(BattleState state, UnitSnapshot fallback, string sourceActorId)
+    {
+        if (string.IsNullOrWhiteSpace(sourceActorId))
+        {
+            return fallback;
+        }
+
+        return state.AllUnits.FirstOrDefault(unit => string.Equals(unit.Id.Value, sourceActorId, StringComparison.Ordinal)) ?? fallback;
     }
 
     private static float AdjustDurationForTenacity(BattleState state, UnitSnapshot target, string statusId, float durationSeconds)
