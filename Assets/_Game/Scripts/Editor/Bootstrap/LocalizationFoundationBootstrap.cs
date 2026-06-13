@@ -679,6 +679,7 @@ public static class LocalizationFoundationBootstrap
             ["ui.battle.group.utility"] = ("유틸리티", "Utility", false),
             ["ui.battle.help.body"] = ("요약, 최근 로그, 선택 유닛 패널로 현재 전투를 읽고 종료 후 Continue를 누르세요.", "Read the battle through the summary, recent log, and selected unit panel. Continue unlocks after the battle resolves.", false),
             ["ui.battle.help.body_sandbox"] = ("요약, 최근 로그, 선택 유닛 패널로 현재 전투를 읽으세요. Combat Sandbox는 Reward로 가지 않고, 같은 seed 재생, 새 seed, sandbox 종료만 제공합니다.", "Read the battle through the summary, recent log, and selected unit panel. Combat Sandbox stays inside battle: replay the same seed, roll a new seed, or exit the sandbox.", false),
+            ["ui.battle.action.speed_05"] = ("x0.5", "x0.5", false),
             ["ui.battle.action.speed_1"] = ("x1", "x1", false),
             ["ui.battle.action.speed_2"] = ("x2", "x2", false),
             ["ui.battle.action.speed_4"] = ("x4", "x4", false),

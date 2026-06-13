@@ -575,6 +575,16 @@ public static class FirstPlayableBootstrap
 
     private static void HandlePlayModeStateChanged(PlayModeStateChange state)
     {
+        if (state == PlayModeStateChange.ExitingPlayMode)
+        {
+            // 전투테스트 sticky 요청 플래그 청산. GameSessionRoot는 이 플래그를 플레이 세션 동안
+            // 유지해 도메인 리로드(플레이 중 재컴파일) 후에도 sandbox lane을 복원한다 —
+            // 여기서 실제 Play 종료 시점에만 지워야 다음 일반 Play가 sandbox로 새지 않는다.
+            EditorPrefs.DeleteKey(CombatSandboxRequestedKey);
+            EditorPrefs.DeleteKey(LegacyQuickBattleRequestedKey);
+            return;
+        }
+
         if (state != PlayModeStateChange.EnteredPlayMode)
         {
             return;

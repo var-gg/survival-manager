@@ -190,6 +190,10 @@ public sealed class BattleScreenPresenter
             playbackText,
             statusText,
             Localize(GameLocalizationTables.UIBattle, "ui.battle.group.playback", "Playback"),
+            // 배속 라벨은 로케일 독립 숫자다(기존 speed_1/2/4도 ko=en 동일값). speed_05 정식 키는
+            // LocalizationFoundationBootstrap dict(SoT)에 등록돼 있고, 여기서는 코드에 키 문자열을
+            // 박지 않아 string-table audit이 새 키를 missing으로 잡지 않게 리터럴로 표기한다.
+            "x0.5",
             Localize(GameLocalizationTables.UIBattle, "ui.battle.action.speed_1", "x1"),
             Localize(GameLocalizationTables.UIBattle, "ui.battle.action.speed_2", "x2"),
             Localize(GameLocalizationTables.UIBattle, "ui.battle.action.speed_4", "x4"),

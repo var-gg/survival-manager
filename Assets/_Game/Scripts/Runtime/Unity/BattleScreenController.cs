@@ -244,6 +244,7 @@ public sealed class BattleScreenController : MonoBehaviour
         RenderCurrentState();
     }
 
+    public void SetSpeed05() => SetSpeed(0.5f);
     public void SetSpeed1() => SetSpeed(1f);
     public void SetSpeed2() => SetSpeed(2f);
     public void SetSpeed4() => SetSpeed(4f);
@@ -692,6 +693,7 @@ public sealed class BattleScreenController : MonoBehaviour
             SelectEnglish,
             ToggleHelp,
             DismissHelp,
+            SetSpeed05,
             SetSpeed1,
             SetSpeed2,
             SetSpeed4,

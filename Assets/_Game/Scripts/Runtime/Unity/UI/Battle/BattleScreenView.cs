@@ -12,6 +12,7 @@ public readonly record struct BattleScreenActions(
     Action SelectEnglish,
     Action ToggleHelp,
     Action DismissHelp,
+    Action SetSpeed05,
     Action SetSpeed1,
     Action SetSpeed2,
     Action SetSpeed4,
@@ -80,6 +81,7 @@ public sealed class BattleScreenView
     private readonly Label _statusLabel;
     private readonly VisualElement _playbackActionsGroup;
     private readonly Label _playbackGroupTitleLabel;
+    private readonly Button _speed05Button;
     private readonly Button _speed1Button;
     private readonly Button _speed2Button;
     private readonly Button _speed4Button;
@@ -203,6 +205,7 @@ public sealed class BattleScreenView
         _statusLabel = Require<Label>(root, "StatusLabel");
         _playbackActionsGroup = Require<VisualElement>(root, "PlaybackActionsGroup");
         _playbackGroupTitleLabel = Require<Label>(root, "PlaybackGroupTitleLabel");
+        _speed05Button = Require<Button>(root, "Speed05Button");
         _speed1Button = Require<Button>(root, "Speed1Button");
         _speed2Button = Require<Button>(root, "Speed2Button");
         _speed4Button = Require<Button>(root, "Speed4Button");
@@ -354,6 +357,7 @@ public sealed class BattleScreenView
             _helpButton,
             _helpDismissButton,
             _summaryToggleButton,
+            _speed05Button,
             _speed1Button,
             _speed2Button,
             _speed4Button,
@@ -397,6 +401,7 @@ public sealed class BattleScreenView
         _localeEnButton.clicked += actions.SelectEnglish;
         _helpButton.clicked += actions.ToggleHelp;
         _helpDismissButton.clicked += actions.DismissHelp;
+        _speed05Button.clicked += actions.SetSpeed05;
         _speed1Button.clicked += actions.SetSpeed1;
         _speed2Button.clicked += actions.SetSpeed2;
         _speed4Button.clicked += actions.SetSpeed4;
@@ -456,6 +461,9 @@ public sealed class BattleScreenView
 
         _playbackActionsGroup.style.display = state.ShowPlaybackControls ? DisplayStyle.Flex : DisplayStyle.None;
         _playbackGroupTitleLabel.text = state.PlaybackGroupTitle;
+        _speed05Button.text = state.Speed05Label;
+        _speed05Button.tooltip = state.PauseTooltip;
+        _speed05Button.SetEnabled(state.CanChangeSpeed);
         _speed1Button.text = state.Speed1Label;
         _speed1Button.tooltip = state.PauseTooltip;
         _speed1Button.SetEnabled(state.CanChangeSpeed);

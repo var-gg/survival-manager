@@ -200,7 +200,7 @@ public sealed class GameSessionRoot : MonoBehaviour
     private void BootstrapDirectCombatSandboxIfRequested()
     {
 #if UNITY_EDITOR
-        if (!ConsumeDirectCombatSandboxRequest())
+        if (!ShouldBootstrapDirectCombatSandbox())
         {
             return;
         }
@@ -232,7 +232,7 @@ public sealed class GameSessionRoot : MonoBehaviour
                || EditorPrefs.GetBool(LegacyQuickBattleRequestedKey, false);
     }
 
-    private static bool ConsumeDirectCombatSandboxRequest()
+    private static bool ShouldBootstrapDirectCombatSandbox()
     {
         if (SceneManager.GetActiveScene().name != SceneNames.Battle)
         {
@@ -244,8 +244,11 @@ public sealed class GameSessionRoot : MonoBehaviour
             return false;
         }
 
-        EditorPrefs.DeleteKey(CombatSandboxRequestedKey);
-        EditorPrefs.DeleteKey(LegacyQuickBattleRequestedKey);
+        // 플래그를 여기서 삭제하지 않는다. 플레이 중 스크립트 재컴파일로 도메인이 리로드되면
+        // Awake가 재진입하는데, 그때 플래그가 사라져 있으면 sandbox lane(=리플레이 가능 구성)이
+        // 복원되지 않고 IsQuickBattleSmokeActive=false(InGame)로 떨어진다 — "전투테스트 보다가
+        // 작업하면 스크럽/배속이 사라지는" 회귀의 원인. 플래그는 플레이 세션 sticky로 두고,
+        // FirstPlayableBootstrap이 ExitingPlayMode에서 청산한다(다음 일반 Play가 sandbox로 가지 않게).
         Debug.Log("[GameSessionRoot] Combat Sandbox direct 요청을 소비하고 Battle scene bootstrap을 준비합니다.");
         return true;
     }

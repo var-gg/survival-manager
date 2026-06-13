@@ -84,6 +84,7 @@ public sealed record BattleShellViewState(
     string SpeedText,
     string StatusText,
     string PlaybackGroupTitle,
+    string Speed05Label,
     string Speed1Label,
     string Speed2Label,
     string Speed4Label,

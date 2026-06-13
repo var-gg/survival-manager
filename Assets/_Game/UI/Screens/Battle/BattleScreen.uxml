@@ -157,6 +157,7 @@
             <ui:VisualElement name="PlaybackActionsGroup" class="action-group sm-bs-control-group">
                 <ui:Label name="PlaybackGroupTitleLabel" class="action-group__title sm-bs-control-title" />
                 <ui:VisualElement class="action-row sm-bs-control-row">
+                    <ui:Button name="Speed05Button" class="ui-button sm-bs-control-btn" />
                     <ui:Button name="Speed1Button" class="ui-button sm-bs-control-btn" />
                     <ui:Button name="Speed2Button" class="ui-button sm-bs-control-btn" />
                     <ui:Button name="Speed4Button" class="ui-button sm-bs-control-btn" />
