@@ -80,3 +80,4 @@ repo에 남은 문서를 읽을 때도 "무엇을 만들지"의 창작 기준이
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
 - `ui/town-character-sheet-ui.md`: Town 5-panel character sheet source/view-state contract
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책
+- `ui/handoff/foundation-pack-v0.5/hero-detail-uitk-adaptation.md`: Common.HeroDetail v0.5 → UITK 적응 계약 (named-element 트리 · slot 위계 modifier · view-state read model)
