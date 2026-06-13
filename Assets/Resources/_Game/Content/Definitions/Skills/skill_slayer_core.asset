@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: skill_slayer_core
   NameKey: content.skill.skill_slayer_core.name
   DescriptionKey: content.skill.skill_slayer_core.desc
-  TemplateType: 0
+  TemplateType: 1
   Kind: 0
   SlotKind: 0
   DamageType: 0
@@ -127,7 +127,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 1
+    Capabilities: 6
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
   - {fileID: 11400000, guid: 3086f8cde41918f4189a3562a391a724, type: 2}

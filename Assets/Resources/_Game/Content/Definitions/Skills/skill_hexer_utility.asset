@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: skill_hexer_utility
   NameKey: content.skill.skill_hexer_utility.name
   DescriptionKey: content.skill.skill_hexer_utility.desc
-  TemplateType: 0
+  TemplateType: 12
   Kind: 1
   SlotKind: 1
   DamageType: 2
@@ -129,7 +129,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 4
+    Capabilities: 8
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
   RuleModifierTags: []

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: skill_minor_heal
   NameKey: content.skill.skill_minor_heal.name
   DescriptionKey: content.skill.skill_minor_heal.desc
-  TemplateType: 0
+  TemplateType: 12
   Kind: 1
   SlotKind: 1
   DamageType: 2
@@ -127,7 +127,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 4
+    Capabilities: 8
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
   RuleModifierTags: []

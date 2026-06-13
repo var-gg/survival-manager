@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: skill_raider_utility
   NameKey: content.skill.skill_raider_utility.name
   DescriptionKey: content.skill.skill_raider_utility.desc
-  TemplateType: 0
+  TemplateType: 3
   Kind: 5
   SlotKind: 1
   DamageType: 0
@@ -127,7 +127,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 1
+    Capabilities: 16
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   RuleModifierTags: []

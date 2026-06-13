@@ -251,6 +251,34 @@ public sealed class ContentValidationWorkflowTests
     }
 
     [Test]
+    public void ContentDefinitionValidator_ReportsLiveSkillCatalogTemplateAndEffectClosure()
+    {
+        var report = ContentDefinitionValidator.BuildValidationReport();
+        var slice = AssetDatabase.LoadAssetAtPath<FirstPlayableSliceDefinitionAsset>("Assets/Resources/_Game/Content/Definitions/FirstPlayable/first_playable_slice.asset");
+        Assert.That(slice, Is.Not.Null);
+
+        var liveIds = slice.SignatureActiveIds
+            .Concat(slice.SignaturePassiveIds)
+            .Concat(slice.FlexActiveIds)
+            .Concat(slice.FlexPassiveIds)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.Ordinal);
+        var liveRows = report.SkillCatalogHealth
+            .Where(row => string.Equals(row.SliceExposure, "Live", StringComparison.Ordinal))
+            .ToList();
+        var openRows = liveRows
+            .Where(row =>
+                string.Equals(row.TemplateType, nameof(SkillTemplateTypeValue.LegacyDerived), StringComparison.Ordinal)
+                || string.Equals(row.EffectsState, "empty", StringComparison.Ordinal)
+                || !string.Equals(row.Health, "green", StringComparison.Ordinal))
+            .Select(row => $"{row.SkillId}:{row.TemplateType}/{row.EffectsState}/{row.Health}")
+            .ToList();
+
+        Assert.That(liveRows.Select(row => row.SkillId).ToHashSet(StringComparer.Ordinal), Is.EquivalentTo(liveIds));
+        Assert.That(openRows, Is.Empty);
+    }
+
+    [Test]
     public void ContentDefinitionValidator_FlagsExtraActorRegistryDrift()
     {
         EnsureFolder(TempRoot);

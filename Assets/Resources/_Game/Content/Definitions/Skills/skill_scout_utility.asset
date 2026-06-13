@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: skill_scout_utility
   NameKey: content.skill.skill_scout_utility.name
   DescriptionKey: content.skill.skill_scout_utility.desc
-  TemplateType: 0
+  TemplateType: 10
   Kind: 5
   SlotKind: 1
   DamageType: 0
@@ -127,7 +127,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 0
+    Capabilities: 2
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
   - {fileID: 11400000, guid: 3d08b680c711c40449e3b37cd0d31718, type: 2}

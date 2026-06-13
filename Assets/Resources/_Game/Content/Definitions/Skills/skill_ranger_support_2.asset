@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: skill_ranger_support_2
   NameKey: content.skill.skill_ranger_support_2.name
   DescriptionKey: content.skill.skill_ranger_support_2.desc
-  TemplateType: 0
+  TemplateType: 11
   Kind: 3
   SlotKind: 3
   DamageType: 0
@@ -127,7 +127,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 4
+    Capabilities: 2
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
   RuleModifierTags: []

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: support_lingering
   NameKey: content.skill.support_lingering.name
   DescriptionKey: content.skill.support_lingering.desc
-  TemplateType: 0
+  TemplateType: 11
   Kind: 5
   SlotKind: 3
   DamageType: 0
@@ -127,7 +127,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 0
+    Capabilities: 2
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: 23a43fe9e3d8a514c947f33e62d21c93, type: 2}
   - {fileID: 11400000, guid: 3030e667d0a65bc4ea69fd43caf30ad9, type: 2}

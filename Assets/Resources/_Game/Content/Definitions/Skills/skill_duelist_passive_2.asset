@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: skill_duelist_passive_2
   NameKey: content.skill.skill_duelist_passive_2.name
   DescriptionKey: content.skill.skill_duelist_passive_2.desc
-  TemplateType: 0
+  TemplateType: 15
   Kind: 3
   SlotKind: 2
   DamageType: 0
@@ -119,7 +119,13 @@ MonoBehaviour:
       InheritCritChance: 0
       InheritDodge: 0
       InheritBlock: 0
-  Effects: []
+  Effects:
+  - Layer: 1
+    Scope: 0
+    Capabilities: 2
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
   CompileTags:
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
   RuleModifierTags: []
