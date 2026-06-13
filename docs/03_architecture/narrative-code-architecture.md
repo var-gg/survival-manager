@@ -173,7 +173,7 @@ repository load 단계와 `GameSessionState.BindProfile()`에서 `NarrativeProgr
 
 - `StoryMomentContext.BattleSummary` / `RewardSummary`는 `SM.Core`의 `BattleSummaryRecord?` / `RewardSummaryRecord?` canonical record로 타입이 고정돼 있다.
 - `RewardScreenController`는 보상 화면 진입 시 `RewardOpened`를, 보상 선택 확정(= 보상 정산 완료) 시 `RewardCommitted`를 raise한다. `RewardOpened` context는 chapter/site/node만 담고, `RewardCommitted` context는 `GameSessionState.LastCommittedRewardSummary`(session truth)를 `RewardSummary`로 함께 싣는다. presentation 계층은 summary truth를 생성하지 않고 session이 노출한 record를 얹기만 한다.
-- `BattleSummary`는 V1 현재 어느 moment context에도 채워지지 않는다(deferred). 전투 결과에 분기하는 authored event가 필요해지면 `BattleScreenController`가 `RewardSummary`와 동일 패턴으로 채운다.
-- `StoryPresentationRequest.ContextSnapshot`은 같은 세션의 enqueue->dequeue 동안만 유효한 값이며 save truth가 아니다. `NarrativeProgressRecord.Normalize`는 이를 carry하지 않고 `.Empty`로 리셋한다.
+- `BattleScreenController`는 `BattleResolved` context에 `BattleSummaryRecord`를 채운다. `BattleStarted`에는 아직 결과가 없으므로 summary를 비워 두고, `RewardCommitted`와 동일하게 presentation 계층은 session/controller가 넘긴 record를 소비만 한다.
+- `StoryPresentationRequest.ContextSnapshot`은 같은 세션의 enqueue->dequeue 동안만 유효한 값이며 save truth가 아니다. story director는 enqueue 시 `BattleSummary` / `RewardSummary`를 snapshot으로 싣지만, `NarrativeProgressRecord.Normalize`는 save/load 경계에서 이를 carry하지 않고 `.Empty`로 리셋한다.
 - `StoryPresentationRunner`는 현재 `PresentationKey -> localized story key / dialogue sequence / hero lore` adapter를 내부에 둔다.
 - authored dialogue/human-facing story string asset이 비어 있으면 runner는 localization key 또는 presentation key fallback으로 degrade한다.

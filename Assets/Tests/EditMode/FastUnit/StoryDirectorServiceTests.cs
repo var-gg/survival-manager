@@ -114,6 +114,76 @@ public sealed class StoryDirectorServiceTests
     }
 
     [Test]
+    public void Advance_RewardCommitted_CarriesRewardSummaryIntoPresentationContext()
+    {
+        var rewardSummary = new RewardSummaryRecord(
+            "chapter_glass_forest",
+            "site_ashen_gate",
+            "reward_source_ashen_gate_battle",
+            1,
+            "Gold",
+            "gold_cache",
+            35,
+            0,
+            WasRecoveredSettlement: false);
+        var storyEvent = CreateStoryEvent(
+            "evt.reward.committed.summary",
+            NarrativeMoment.RewardCommitted,
+            100,
+            StoryOncePolicy.Repeatable,
+            Array.Empty<StoryConditionSpec>(),
+            new[]
+            {
+                CreateStoryEffect("fx.reward.toast", StoryEffectKind.EnqueuePresentation, nameof(StoryPresentationKind.ToastBanner)),
+            },
+            "toast.reward.committed");
+        var director = CreateStoryDirector(new[] { storyEvent }, Array.Empty<DialogueSequenceSpec>());
+
+        director.Advance(
+            NarrativeMoment.RewardCommitted,
+            new StoryMomentContext { RewardSummary = rewardSummary });
+
+        Assert.That(director.Progress.PendingPresentations, Has.Length.EqualTo(1));
+        Assert.That(director.Progress.PendingPresentations[0].ContextSnapshot.RewardSummary, Is.EqualTo(rewardSummary));
+        Assert.That(director.Progress.PendingPresentations[0].ContextSnapshot.BattleSummary, Is.Null);
+    }
+
+    [Test]
+    public void Advance_BattleResolved_CarriesBattleSummaryIntoPresentationContext()
+    {
+        var battleSummary = new BattleSummaryRecord(
+            "chapter_glass_forest",
+            "site_ashen_gate",
+            "node_boss_01",
+            3,
+            Victory: true,
+            StepCount: 12,
+            EventCount: 7,
+            "reward_source_boss_01",
+            "ui.expedition.node.boss");
+        var storyEvent = CreateStoryEvent(
+            "evt.battle.resolved.summary",
+            NarrativeMoment.BattleResolved,
+            100,
+            StoryOncePolicy.Repeatable,
+            Array.Empty<StoryConditionSpec>(),
+            new[]
+            {
+                CreateStoryEffect("fx.battle.toast", StoryEffectKind.EnqueuePresentation, nameof(StoryPresentationKind.ToastBanner)),
+            },
+            "toast.battle.resolved");
+        var director = CreateStoryDirector(new[] { storyEvent }, Array.Empty<DialogueSequenceSpec>());
+
+        director.Advance(
+            NarrativeMoment.BattleResolved,
+            new StoryMomentContext { BattleSummary = battleSummary });
+
+        Assert.That(director.Progress.PendingPresentations, Has.Length.EqualTo(1));
+        Assert.That(director.Progress.PendingPresentations[0].ContextSnapshot.BattleSummary, Is.EqualTo(battleSummary));
+        Assert.That(director.Progress.PendingPresentations[0].ContextSnapshot.RewardSummary, Is.Null);
+    }
+
+    [Test]
     public void ResetRunScopedProgress_ReenablesOncePerRun_ButKeepsOncePerProfileLocked()
     {
         var runSequence = CreateDialogueSequence(

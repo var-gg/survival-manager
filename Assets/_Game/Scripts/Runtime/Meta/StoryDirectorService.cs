@@ -152,7 +152,7 @@ public sealed class StoryDirectorService
                             UnlockedStoryHeroIds = ToSortedArray(unlockedHeroIds),
                             PendingPresentations = pending.ToArray(),
                         };
-                        pending.Add(BuildPresentationRequest(definition, effect, snapshot));
+                        pending.Add(BuildPresentationRequest(definition, effect, snapshot, effectiveContext));
                         break;
                     }
 
@@ -283,7 +283,8 @@ public sealed class StoryDirectorService
     private StoryPresentationRequest BuildPresentationRequest(
         StoryEventSpec definition,
         StoryEffectSpec effect,
-        NarrativeProgressRecord workingProgress)
+        NarrativeProgressRecord workingProgress,
+        StoryMomentContext context)
     {
         if (string.IsNullOrWhiteSpace(effect.Payload))
         {
@@ -295,11 +296,15 @@ public sealed class StoryDirectorService
             throw new InvalidOperationException($"Story event '{definition.Id}' is missing PresentationKey.");
         }
 
-        return _dialogueAssemblyService.Assemble(
+        var request = _dialogueAssemblyService.Assemble(
             ParsePresentationKind(effect.Payload),
             definition.PresentationKey,
             definition.Priority,
             workingProgress);
+        return request with
+        {
+            ContextSnapshot = new StoryPresentationContextRecord(context.BattleSummary, context.RewardSummary),
+        };
     }
 
     private static StoryPresentationKind ParsePresentationKind(string payload)

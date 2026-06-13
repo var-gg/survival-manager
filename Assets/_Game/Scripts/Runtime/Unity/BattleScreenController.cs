@@ -58,6 +58,7 @@ public sealed class BattleScreenController : MonoBehaviour
     private BattleLoadoutSnapshot? _compiledSnapshot;
     private IReadOnlyList<BattleUnitLoadout> _enemyLoadouts = Array.Empty<BattleUnitLoadout>();
     private ResolvedEncounterContext? _resolvedEncounterContext;
+    private BattleSummaryRecord? _lastBattleSummaryRecord;
     private string _battleStartedAtUtc = string.Empty;
     private int _totalEventCount;
     private int _boundRootBuildCount = -1;
@@ -603,6 +604,7 @@ public sealed class BattleScreenController : MonoBehaviour
         _timeline.ConfigureStartupHold(BattlePresentationController.StartupHoldSeconds);
         _battleFinishedHandled = false;
         _totalEventCount = 0;
+        _lastBattleSummaryRecord = null;
         _recentLogs.Clear();
         _decisiveTimeline.Clear();
         _highlightLedger.Reset();
@@ -1052,6 +1054,7 @@ public sealed class BattleScreenController : MonoBehaviour
 
         _battleFinishedHandled = false;
         _totalEventCount = 0;
+        _lastBattleSummaryRecord = null;
         _selectedUnitId = string.Empty;
         _settingsVisible = false;
         _unitDetailVisible = false;
@@ -1181,8 +1184,10 @@ public sealed class BattleScreenController : MonoBehaviour
 
         // wave-33-progression: result.FinalUnits를 함께 전달 → ally hero unit별 surviving HP가
         // HeroInstanceRecord에, victory XP가 HeroProgressionRecord에 반영된다.
+        var victory = winner == TeamSide.Ally;
+        _lastBattleSummaryRecord = BuildBattleSummaryRecord(victory, result.StepCount, _totalEventCount);
         _root.SessionState.MarkBattleResolved(
-            winner == TeamSide.Ally,
+            victory,
             result.StepCount,
             _totalEventCount,
             result.FinalUnits);
@@ -1504,7 +1509,24 @@ public sealed class BattleScreenController : MonoBehaviour
             ChapterId = session.SelectedCampaignChapterId,
             SiteId = session.SelectedCampaignSiteId,
             NodeIndex = session.GetSelectedExpeditionNode()?.Index ?? session.CurrentExpeditionNodeIndex,
+            BattleSummary = _lastBattleSummaryRecord,
         };
+    }
+
+    private BattleSummaryRecord BuildBattleSummaryRecord(bool victory, int stepCount, int eventCount)
+    {
+        var session = _root.SessionState;
+        var node = session.GetSelectedExpeditionNode() ?? session.GetCurrentExpeditionNode();
+        return new BattleSummaryRecord(
+            session.SelectedCampaignChapterId,
+            session.SelectedCampaignSiteId,
+            node?.Id ?? string.Empty,
+            node?.Index ?? session.CurrentExpeditionNodeIndex,
+            victory,
+            stepCount,
+            eventCount,
+            session.ActiveRun?.Overlay.RewardSourceId ?? node?.RewardSourceId ?? string.Empty,
+            node?.LabelKey ?? string.Empty);
     }
 
     private BattleMapSelectionContext BuildBattleMapSelectionContext(BattleContextState context)
