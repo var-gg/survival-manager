@@ -420,7 +420,10 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
                     pair.Value.SuppressIfPermanentEquipped,
                     pair.Value.Tags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToArray(),
                     pair.Value.MutualExclusionTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToArray(),
-                    new CombatModifierPackage(pair.Value.Id, ModifierSource.Augment, Array.Empty<StatModifier>())),
+                    new CombatModifierPackage(pair.Value.Id, ModifierSource.Augment, Array.Empty<StatModifier>()),
+                    OfferBucket: pair.Value.OfferBucket.ToString(),
+                    RiskRewardClass: pair.Value.RiskRewardClass.ToString(),
+                    BuildBiasTags: pair.Value.BuildBiasTags.Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToArray()),
                 StringComparer.Ordinal),
             SynergyCatalog: new Dictionary<string, SynergyTierTemplate>(),
             FirstPlayableSlice: firstPlayableSlice);

@@ -25,7 +25,10 @@ public sealed class AugmentOfferServiceTests
         string[]? mutualExclusion = null,
         bool isPermanent = false,
         bool suppressIfPermanent = false,
-        string category = "combat")
+        string category = "combat",
+        string offerBucket = "",
+        string riskRewardClass = "",
+        string[]? buildBiasTags = null)
     {
         return new AugmentCatalogEntry(
             id,
@@ -36,7 +39,10 @@ public sealed class AugmentOfferServiceTests
             suppressIfPermanent,
             tags ?? Array.Empty<string>(),
             mutualExclusion ?? Array.Empty<string>(),
-            new CombatModifierPackage(id, ModifierSource.Augment, Array.Empty<StatModifier>()));
+            new CombatModifierPackage(id, ModifierSource.Augment, Array.Empty<StatModifier>()),
+            OfferBucket: offerBucket,
+            RiskRewardClass: riskRewardClass,
+            BuildBiasTags: buildBiasTags ?? Array.Empty<string>());
     }
 
     private static Dictionary<string, AugmentCatalogEntry> Catalog(params AugmentCatalogEntry[] entries)
@@ -106,5 +112,95 @@ public sealed class AugmentOfferServiceTests
 
         Assert.That(offer.Select(entry => entry.Id), Does.Not.Contain("conflict"), "Mutually-exclusive augment against an active tag must be filtered");
         Assert.That(offer.Select(entry => entry.Id), Does.Contain("safe"));
+    }
+
+    [Test]
+    public void BuildOffer_UsesBucketSeedAndPickIndexDeterministically()
+    {
+        var catalog = Catalog(
+            Aug("hero", "fam_a", 2, offerBucket: "HeroRewrite"),
+            Aug("tactical_a", "fam_b", 2, offerBucket: "TacticalRewrite"),
+            Aug("tactical_b", "fam_c", 2, offerBucket: "TacticalRewrite"),
+            Aug("scaling", "fam_d", 2, offerBucket: "ScalingEngine"));
+        var context = new AugmentOfferContext(
+            "TacticalRewrite",
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Seed: 1234,
+            PickIndex: 0,
+            MaxChoices: 3);
+
+        var first = AugmentOfferService.BuildOffer(catalog, context);
+        var second = AugmentOfferService.BuildOffer(catalog, context);
+
+        Assert.That(first.Select(entry => entry.Id), Is.EqualTo(second.Select(entry => entry.Id)));
+        Assert.That(first.Take(2).Select(entry => entry.OfferBucket), Is.All.EqualTo("TacticalRewrite"));
+    }
+
+    [Test]
+    public void BuildOffer_ExcludesAcquiredTemporaryAugments()
+    {
+        var catalog = Catalog(Aug("owned", "fam_a", 3), Aug("fresh", "fam_b", 2));
+        var context = new AugmentOfferContext(
+            string.Empty,
+            Array.Empty<string>(),
+            new[] { "owned" },
+            Array.Empty<string>(),
+            Seed: 0,
+            PickIndex: 0,
+            MaxChoices: 2);
+
+        var offer = AugmentOfferService.BuildOffer(catalog, context);
+
+        Assert.That(offer.Select(entry => entry.Id), Does.Not.Contain("owned"));
+        Assert.That(offer.Select(entry => entry.Id), Does.Contain("fresh"));
+    }
+
+    [Test]
+    public void BuildOffer_FiltersDeadBoundOffersWithoutBuildMatch()
+    {
+        var catalog = Catalog(
+            Aug("dead_hero", "fam_dead", 3, tags: new[] { "hero_bound", "missing_hero" }),
+            Aug("live_role", "fam_live", 2, tags: new[] { "role_bound", "frontline" }),
+            Aug("general", "fam_general", 1));
+        var context = new AugmentOfferContext(
+            string.Empty,
+            new[] { "frontline" },
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Seed: 7,
+            PickIndex: 0,
+            MaxChoices: 3);
+
+        var offer = AugmentOfferService.BuildOffer(catalog, context);
+
+        Assert.That(offer.Select(entry => entry.Id), Does.Not.Contain("dead_hero"));
+        Assert.That(offer.Select(entry => entry.Id), Does.Contain("live_role"));
+    }
+
+    [Test]
+    public void BuildOffer_CapsStatLightChoicesWithinPick()
+    {
+        var catalog = Catalog(
+            Aug("stat_a", "fam_a", 4, tags: new[] { "stat_light" }),
+            Aug("stat_b", "fam_b", 4, tags: new[] { "stat_light" }),
+            Aug("stat_c", "fam_c", 4, tags: new[] { "stat_light" }),
+            Aug("rule_a", "fam_d", 1),
+            Aug("rule_b", "fam_e", 1));
+        var context = new AugmentOfferContext(
+            string.Empty,
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Seed: 0,
+            PickIndex: 0,
+            MaxChoices: 3,
+            MaxStatLightChoices: 1);
+
+        var offer = AugmentOfferService.BuildOffer(catalog, context);
+
+        Assert.That(offer.Count(entry => entry.Tags.Contains("stat_light")), Is.EqualTo(1));
+        Assert.That(offer.Count, Is.EqualTo(3));
     }
 }

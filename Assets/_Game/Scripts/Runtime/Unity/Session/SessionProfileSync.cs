@@ -348,16 +348,26 @@ public sealed partial class GameSessionState
         }
 
         var canonicalTemporary = new HashSet<string>(_combatContentLookup.GetCanonicalTemporaryAugmentIds(), StringComparer.Ordinal);
-        var temporaryCatalog = catalog
-            .Where(pair => canonicalTemporary.Contains(pair.Key) && pair.Value is { IsPermanent: false })
+        var permanentEquipped = ResolveEquippedPermanentAugmentIds();
+        var offerCatalog = catalog
+            .Where(pair => canonicalTemporary.Contains(pair.Key) || permanentEquipped.Contains(pair.Key))
             .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
-        if (temporaryCatalog.Count == 0)
+        if (offerCatalog.Count == 0)
         {
             return string.Empty;
         }
 
-        var permanentEquipped = (IReadOnlyCollection<string>?)Profile.UnlockedPermanentAugmentIds ?? Array.Empty<string>();
-        var offer = AugmentOfferService.BuildOffer(temporaryCatalog, ResolveActiveBuildTags(), permanentEquipped, DynamicOfferPoolSize);
+        var acquiredAugmentIds = ActiveRun?.Overlay.TemporaryAugmentIds ?? Array.Empty<string>();
+        var offer = AugmentOfferService.BuildOffer(
+            offerCatalog,
+            new AugmentOfferContext(
+                string.Empty,
+                ResolveActiveBuildTags(),
+                acquiredAugmentIds,
+                permanentEquipped,
+                ActiveRun?.Overlay.BattleSeed ?? 0,
+                index,
+                DynamicOfferPoolSize));
         if (offer.Count == 0)
         {
             return string.Empty;
@@ -370,14 +380,35 @@ public sealed partial class GameSessionState
     // 현재 run 에 장착된 temporary augment 의 태그를 build 신호로 노출 → offer 가 빌드와 어울리는 augment 를 더 높게 점수화.
     private IReadOnlyCollection<string> ResolveActiveBuildTags()
     {
+        var tags = new HashSet<string>(StringComparer.Ordinal);
+        tags.Add(SelectedTeamPosture.ToString());
+
+        foreach (var (anchor, heroId) in EnumerateDeploymentAssignments())
+        {
+            if (string.IsNullOrWhiteSpace(heroId))
+            {
+                continue;
+            }
+
+            tags.Add(heroId);
+            if (!TryGetHero(heroId, out var hero))
+            {
+                continue;
+            }
+
+            AddIfNotEmpty(tags, hero.CharacterId);
+            AddIfNotEmpty(tags, hero.ArchetypeId);
+            AddIfNotEmpty(tags, hero.ClassId);
+            AddIfNotEmpty(tags, ResolveRoleTag(hero.ClassId, anchor));
+        }
+
         if (ActiveRun?.Overlay.TemporaryAugmentIds is not { Count: > 0 } activeAugmentIds
             || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             || snapshot.AugmentCatalog is not { Count: > 0 } catalog)
         {
-            return Array.Empty<string>();
+            return tags;
         }
 
-        var tags = new HashSet<string>(StringComparer.Ordinal);
         foreach (var augmentId in activeAugmentIds)
         {
             if (catalog.TryGetValue(augmentId, out var entry))
@@ -390,6 +421,38 @@ public sealed partial class GameSessionState
         }
 
         return tags;
+    }
+
+    private IReadOnlyCollection<string> ResolveEquippedPermanentAugmentIds()
+    {
+        var blueprintId = ActiveRun?.Blueprint.BlueprintId;
+        if (string.IsNullOrWhiteSpace(blueprintId))
+        {
+            blueprintId = string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId)
+                ? "blueprint.default"
+                : Profile.ActiveBlueprintId;
+        }
+
+        var equippedAugmentIds = Profile.PermanentAugmentLoadouts
+            .FirstOrDefault(loadout => string.Equals(loadout.BlueprintId, blueprintId, StringComparison.Ordinal))
+            ?.EquippedAugmentIds;
+        if (equippedAugmentIds == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        return equippedAugmentIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private static void AddIfNotEmpty(ISet<string> tags, string value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            tags.Add(value);
+        }
     }
 
     private string ResolvePendingPermanentUnlockId(string temporaryAugmentId)

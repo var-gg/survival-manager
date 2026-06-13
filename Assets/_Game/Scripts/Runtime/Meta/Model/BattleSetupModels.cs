@@ -111,7 +111,10 @@ public sealed record AugmentCatalogEntry(
     CombatModifierPackage Package,
     CombatRuleModifierPackage? RulePackage = null,
     ContentGovernanceSummary? Governance = null,
-    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null);
+    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null,
+    string OfferBucket = "",
+    string RiskRewardClass = "",
+    IReadOnlyList<string>? BuildBiasTags = null);
 
 public sealed record SynergyTierTemplate(
     string Id,

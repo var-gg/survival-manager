@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Content;
 using SM.Core.Stats;
@@ -11,6 +12,12 @@ public static class EditorFreeCombatContentFixture
 {
     public static FakeCombatContentLookup CreateRunLoopLookup()
     {
+        var augmentCatalog = CreateRunLoopAugmentCatalog();
+        var firstPlayableSlice = new FirstPlayableSliceDefinition
+        {
+            TemporaryAugmentCap = augmentCatalog.Count,
+            TemporaryAugmentIds = augmentCatalog.Keys.OrderBy(id => id, StringComparer.Ordinal).ToArray(),
+        };
         var chapterAlpha = new CampaignChapterTemplate(
             "chapter_alpha",
             "chapter.alpha",
@@ -28,6 +35,7 @@ public static class EditorFreeCombatContentFixture
         var siteBetaWatch = CreateSite("site_beta_watch", "chapter_beta", 0);
 
         var snapshot = CreateSnapshot(
+            firstPlayableSlice: firstPlayableSlice,
             campaignChapters: new Dictionary<string, CampaignChapterTemplate>(StringComparer.Ordinal)
             {
                 [chapterAlpha.Id] = chapterAlpha,
@@ -52,9 +60,10 @@ public static class EditorFreeCombatContentFixture
                     Array.Empty<string>(),
                     Array.Empty<EnemySquadMemberTemplate>()),
             },
+            augmentCatalog: augmentCatalog,
             rewardSources: CreateRewardSources());
 
-        return new FakeCombatContentLookup(snapshot: snapshot);
+        return new FakeCombatContentLookup(snapshot: snapshot, firstPlayableSlice: firstPlayableSlice);
     }
 
     public static FakeCombatContentLookup CreateTownBuildLookup()
@@ -82,20 +91,24 @@ public static class EditorFreeCombatContentFixture
         IReadOnlyDictionary<string, EncounterTemplate>? encounters = null,
         IReadOnlyDictionary<string, EnemySquadTemplate>? enemySquads = null,
         IReadOnlyDictionary<string, BossOverlayTemplate>? bossOverlays = null,
+        IReadOnlyDictionary<string, AugmentCatalogEntry>? augmentCatalog = null,
         IReadOnlyDictionary<string, RewardSourceTemplate>? rewardSources = null)
     {
         var emptyPackages = new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal);
+        var augmentPackages = augmentCatalog?
+            .ToDictionary(pair => pair.Key, pair => pair.Value.Package, StringComparer.Ordinal)
+            ?? new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal);
         return new CombatContentSnapshot(
             Archetypes: new Dictionary<string, CombatArchetypeTemplate>(StringComparer.Ordinal),
             TraitPackages: emptyPackages,
             ItemPackages: new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal),
             AffixPackages: new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal),
-            AugmentPackages: new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal),
+            AugmentPackages: augmentPackages,
             SkillCatalog: new Dictionary<string, BattleSkillSpec>(StringComparer.Ordinal),
             TeamTactics: new Dictionary<string, TeamTacticTemplate>(StringComparer.Ordinal),
             RoleInstructions: new Dictionary<string, RoleInstructionTemplate>(StringComparer.Ordinal),
             PassiveNodes: passiveNodes ?? new Dictionary<string, PassiveNodeTemplate>(StringComparer.Ordinal),
-            AugmentCatalog: new Dictionary<string, AugmentCatalogEntry>(StringComparer.Ordinal),
+            AugmentCatalog: augmentCatalog ?? new Dictionary<string, AugmentCatalogEntry>(StringComparer.Ordinal),
             SynergyCatalog: new Dictionary<string, SynergyTierTemplate>(StringComparer.Ordinal),
             CampaignChapters: campaignChapters,
             ExpeditionSites: expeditionSites,
@@ -104,6 +117,79 @@ public static class EditorFreeCombatContentFixture
             BossOverlays: bossOverlays,
             RewardSources: rewardSources,
             FirstPlayableSlice: firstPlayableSlice);
+    }
+
+    private static IReadOnlyDictionary<string, AugmentCatalogEntry> CreateRunLoopAugmentCatalog()
+    {
+        return new Dictionary<string, AugmentCatalogEntry>(StringComparer.Ordinal)
+        {
+            ["augment_test_tactical_guard"] = CreateAugment(
+                "augment_test_tactical_guard",
+                "family_guard",
+                "TacticalRewrite",
+                2,
+                new[] { "role_bound", "frontline" },
+                new[] { "frontline" }),
+            ["augment_test_tactical_reach"] = CreateAugment(
+                "augment_test_tactical_reach",
+                "family_reach",
+                "TacticalRewrite",
+                2,
+                new[] { "role_bound", "backline" },
+                new[] { "backline" }),
+            ["augment_test_tactical_focus"] = CreateAugment(
+                "augment_test_tactical_focus",
+                "family_focus",
+                "TacticalRewrite",
+                1,
+                new[] { "stat_light" },
+                Array.Empty<string>()),
+            ["augment_test_hero_vanguard"] = CreateAugment(
+                "augment_test_hero_vanguard",
+                "family_vanguard",
+                "HeroRewrite",
+                2,
+                new[] { "hero_bound", "vanguard" },
+                new[] { "vanguard" }),
+            ["augment_test_scaling_engine"] = CreateAugment(
+                "augment_test_scaling_engine",
+                "family_scaling",
+                "ScalingEngine",
+                3,
+                new[] { "volatile_run" },
+                Array.Empty<string>()),
+            ["augment_test_economy_pack"] = CreateAugment(
+                "augment_test_economy_pack",
+                "family_economy",
+                "EconomyAndLoot",
+                1,
+                new[] { "economy_loot" },
+                Array.Empty<string>(),
+                category: "economy_loot"),
+        };
+    }
+
+    private static AugmentCatalogEntry CreateAugment(
+        string id,
+        string familyId,
+        string offerBucket,
+        int tier,
+        IReadOnlyList<string> tags,
+        IReadOnlyList<string> buildBiasTags,
+        string category = "combat")
+    {
+        return new AugmentCatalogEntry(
+            id,
+            category,
+            familyId,
+            tier,
+            IsPermanent: false,
+            SuppressIfPermanentEquipped: false,
+            tags,
+            Array.Empty<string>(),
+            new CombatModifierPackage(id, ModifierSource.Augment, Array.Empty<StatModifier>()),
+            OfferBucket: offerBucket,
+            BuildBiasTags: buildBiasTags);
     }
 
     private static ExpeditionSiteTemplate CreateSite(string siteId, string chapterId, int siteOrder)

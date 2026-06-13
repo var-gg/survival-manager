@@ -550,6 +550,11 @@ public sealed partial class GameSessionState
             };
         }
 
+        if (TryBuildScheduledAugmentChoices(out var scheduledAugmentChoices))
+        {
+            return scheduledAugmentChoices;
+        }
+
         if (TryBuildRewardChoicesFromAuthoredSource(out var authoredChoices))
         {
             return authoredChoices;
@@ -589,6 +594,11 @@ public sealed partial class GameSessionState
     private RewardChoiceViewModel BuildTemporaryAugmentChoice(int index, params string[] preferredFallbackIds)
     {
         var augmentId = ResolveRewardAugmentId(index, preferredFallbackIds);
+        return BuildTemporaryAugmentChoice(augmentId);
+    }
+
+    private RewardChoiceViewModel BuildTemporaryAugmentChoice(string augmentId)
+    {
         return new RewardChoiceViewModel(
             RewardChoiceKind.TemporaryAugment,
             ContentLocalizationTables.BuildAugmentNameKey(augmentId),
@@ -597,6 +607,61 @@ public sealed partial class GameSessionState
             0,
             0,
             augmentId);
+    }
+
+    private bool TryBuildScheduledAugmentChoices(out IReadOnlyList<RewardChoiceViewModel> choices)
+    {
+        choices = Array.Empty<RewardChoiceViewModel>();
+        if (ActiveRun == null
+            || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            || snapshot.AugmentCatalog is not { Count: > 0 } catalog)
+        {
+            return false;
+        }
+
+        var acquiredAugmentIds = ActiveRun.Overlay.TemporaryAugmentIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+        if (!AugmentOfferScheduleService.TryResolvePick(
+                ActiveRun.Overlay.SiteNodeIndex,
+                acquiredAugmentIds.Count,
+                out var schedulePick))
+        {
+            return false;
+        }
+
+        var canonicalTemporary = new HashSet<string>(_combatContentLookup.GetCanonicalTemporaryAugmentIds(), StringComparer.Ordinal);
+        if (canonicalTemporary.Count == 0)
+        {
+            return false;
+        }
+
+        var permanentEquipped = ResolveEquippedPermanentAugmentIds();
+        var offerCatalog = catalog
+            .Where(pair => canonicalTemporary.Contains(pair.Key) || permanentEquipped.Contains(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        if (offerCatalog.Count == 0)
+        {
+            return false;
+        }
+
+        var offer = AugmentOfferService.BuildOffer(
+            offerCatalog,
+            new AugmentOfferContext(
+                schedulePick.PreferredBucket,
+                ResolveActiveBuildTags(),
+                acquiredAugmentIds,
+                permanentEquipped,
+                ActiveRun.Overlay.BattleSeed,
+                schedulePick.PickIndex));
+        if (offer.Count == 0)
+        {
+            return false;
+        }
+
+        choices = offer.Select(entry => BuildTemporaryAugmentChoice(entry.Id)).ToList();
+        return choices.Count > 0;
     }
 
     private SessionTextToken ApplyExpeditionNodeEffect(ExpeditionNodeViewModel node)
@@ -1057,17 +1122,17 @@ public sealed partial class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 5, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                BuildTemporaryAugmentChoice(0, "augment_gold_barrage")
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, $"reward.{sourceId}.echo")
             },
             RewardSourceKindValue.Elite => new[]
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.field_kit.title", "ui.reward.choice.field_kit.desc", 0, 0, 0, ResolveRewardItemId(1)),
-                BuildTemporaryAugmentChoice(1, "augment_gold_pact"),
+                new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.relay_pouch.title", "ui.reward.choice.relay_pouch.desc", 6, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, $"reward.{sourceId}.echo")
             },
             RewardSourceKindValue.Boss => new[]
             {
-                BuildTemporaryAugmentChoice(2, "augment_platinum_catacomb"),
+                new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.war_chest.title", "ui.reward.choice.war_chest.desc", 10, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.sigil_core.title", "ui.reward.choice.sigil_core.desc", 0, 0, 0, ResolveRewardItemId(2)),
                 new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.doctrine_cache.title", "ui.reward.choice.doctrine_cache.desc", 0, 2, 0, $"reward.{sourceId}.echo")
             },
@@ -1081,7 +1146,7 @@ public sealed partial class GameSessionState
             {
                 new RewardChoiceViewModel(RewardChoiceKind.Gold, "ui.reward.choice.gold_cache.title", "ui.reward.choice.gold_cache.desc", 4, 0, 0, $"reward.{sourceId}.gold"),
                 new RewardChoiceViewModel(RewardChoiceKind.Item, "ui.reward.choice.iron_blade.title", "ui.reward.choice.iron_blade.desc", 0, 0, 0, ResolveRewardItemId(0)),
-                BuildTemporaryAugmentChoice(1, "augment_gold_barrage")
+                new RewardChoiceViewModel(RewardChoiceKind.Echo, "ui.reward.choice.tactical_notes.title", "ui.reward.choice.tactical_notes.desc", 0, 1, 0, $"reward.{sourceId}.echo")
             }
         };
         return true;

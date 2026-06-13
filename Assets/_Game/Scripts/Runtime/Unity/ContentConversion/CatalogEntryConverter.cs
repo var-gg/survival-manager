@@ -94,7 +94,10 @@ internal static class CatalogEntryConverter
             ModifierPackageConverter.BuildAugmentPackage(definition),
             BuildRulePackage(definition.Id, ModifierSource.Augment, definition.RuleModifierTags),
             BuildGovernanceSummary(definition.BudgetCard),
-            BuildTriggeredEffects(definition));
+            BuildTriggeredEffects(definition),
+            definition.OfferBucket.ToString(),
+            definition.RiskRewardClass.ToString(),
+            Enumerate(definition.BuildBiasTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
     }
 
     private static IReadOnlyList<CombatTriggeredEffect>? BuildTriggeredEffects(AugmentDefinition definition)
