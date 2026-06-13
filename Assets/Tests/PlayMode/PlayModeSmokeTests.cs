@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Linq;
 using NUnit.Framework;
+using SM.Atlas.Model;
+using SM.Atlas.Services;
 using SM.Combat.Model;
 using SM.Meta.Model;
 using SM.Unity;
@@ -184,6 +186,32 @@ public sealed class PlayModeSmokeTests
             deterministicWitnessHash,
             "No environment recovery was required; PlayMode smoke completed Boot -> Town -> Atlas -> Battle -> Reward -> Town.",
             PlayModeSmokeEvidence.ScreenshotFileNames);
+    }
+
+    [UnityTest]
+    public IEnumerator VerticalSlice_SameSeed_ReplaysStableHashes()
+    {
+        yield return EnterOfflineTownFromBoot();
+
+        var root = GameSessionRoot.Instance!;
+        root.SessionState.AbandonExpeditionRun();
+        root.SessionState.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        ApplyCanonicalAtlasSelection(root.SessionState, region);
+        Assert.That(root.SessionState.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var firstPayload = root.SessionState.RunBattlePayload;
+        AssertRequiredSameSeedPayload(firstPayload);
+        var firstBattleSeed = ResolveBattleSeed(root.SessionState);
+
+        Assert.That(root.SessionState.TryApplyAtlasSelectionToExpedition(region), Is.True);
+        var secondPayload = root.SessionState.RunBattlePayload;
+        AssertRequiredSameSeedPayload(secondPayload);
+        var secondBattleSeed = ResolveBattleSeed(root.SessionState);
+
+        Assert.That(secondPayload!.NodeOverlayHash, Is.EqualTo(firstPayload!.NodeOverlayHash));
+        Assert.That(secondPayload.BattleContextHash, Is.EqualTo(firstPayload.BattleContextHash));
+        Assert.That(secondBattleSeed, Is.EqualTo(firstBattleSeed));
     }
 
     [UnityTest]
@@ -417,6 +445,26 @@ public sealed class PlayModeSmokeTests
         Assert.That(method, Is.Not.Null, "SessionExpeditionFlow.SelectNodeFromAtlas should exist for smoke recovery.");
         var selected = method!.Invoke(flow, new object[] { nodeIndex });
         Assert.That(selected, Is.EqualTo(true), $"PlayMode smoke should select battle node {nodeIndex}.");
+    }
+
+    private static void ApplyCanonicalAtlasSelection(GameSessionState session, AtlasRegionDefinition region)
+    {
+        session.SelectAtlasSigil(region, "sigil_beast_spoils");
+        session.PlaceSelectedAtlasSigil(region, "hex_m1_m1");
+        session.SelectAtlasNode(region, "hex_m2_1");
+    }
+
+    private static void AssertRequiredSameSeedPayload(RunBattlePayload? payload)
+    {
+        Assert.That(payload, Is.Not.Null, "same-seed smoke automation should produce RunBattlePayload.");
+        Assert.That(payload!.NodeOverlayHash, Is.Not.Empty, "same-seed smoke should include NodeOverlayHash.");
+        Assert.That(payload.BattleContextHash, Is.Not.Empty, "same-seed smoke should include BattleContextHash.");
+    }
+
+    private static int ResolveBattleSeed(GameSessionState session)
+    {
+        _ = session.BuildBattleLoadoutSnapshot();
+        return session.ActiveRun?.Overlay.BattleSeed ?? 0;
     }
 
     private static bool ClickUiButtonIfPresent(RuntimePanelHost host, string buttonName)
