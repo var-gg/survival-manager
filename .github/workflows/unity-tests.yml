@@ -6,7 +6,30 @@ on:
   pull_request:
 
 jobs:
+  # 라이선스 게이트 — 컨테이너 없는 가벼운 job. UNITY_LICENSE 시크릿이 없으면 Unity job을
+  # 통째로 skip시켜 무거운 unityci Docker 이미지 pull 자체를 회피한다(pull flaky 제거).
+  # 라이선스를 등록하면 available=true가 되어 아래 job들이 자동으로 다시 실행된다.
+  unity-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.check.outputs.available }}
+    steps:
+      - name: Check Unity license availability
+        id: check
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        shell: bash
+        run: |
+          if [[ -n "${UNITY_LICENSE:-}" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::UNITY_LICENSE secret 미설정 — Unity Docker job 스킵(이미지 pull 회피, flaky 제거). 라이선스 설정 시 자동 재활성화."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
   editmode-tests:
+    needs: unity-gate
+    if: needs.unity-gate.outputs.available == 'true'
     runs-on: ubuntu-latest
     container:
       image: unityci/editor:ubuntu-6000.4.0f1-base-3
@@ -67,6 +90,8 @@ jobs:
           path: test-results/editmode
 
   playmode-smoke:
+    needs: unity-gate
+    if: needs.unity-gate.outputs.available == 'true'
     runs-on: ubuntu-latest
     container:
       image: unityci/editor:ubuntu-6000.4.0f1-base-3
