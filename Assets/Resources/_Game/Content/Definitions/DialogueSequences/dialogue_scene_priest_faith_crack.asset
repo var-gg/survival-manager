@@ -1,0 +1,206 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7322987722532040587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.07
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_faith_crack.7
+  _emote: weary
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4481153577629733734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_faith_crack.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3656308797926378295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.08
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_priest_faith_crack.8
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3509589824135574203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.03
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_faith_crack.3
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-2721702763831718940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.06
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_priest_faith_crack.6
+  _emote: gentle
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-83188174632756517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.02
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_faith_crack.2
+  _emote: weary
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_scene_priest_faith_crack
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_scene_priest_faith_crack
+  _lines:
+  - {fileID: -4481153577629733734}
+  - {fileID: 403753454104457268}
+  - {fileID: -83188174632756517}
+  - {fileID: -3509589824135574203}
+  - {fileID: 9187633130926868604}
+  - {fileID: 5661568889163507246}
+  - {fileID: -2721702763831718940}
+  - {fileID: -7322987722532040587}
+  - {fileID: -3656308797926378295}
+  - {fileID: 5352252621264158109}
+--- !u!114 &403753454104457268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_faith_crack.1
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5352252621264158109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.09
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_faith_crack.9
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5661568889163507246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_priest_faith_crack.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &9187633130926868604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_priest_faith_crack.line.04
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_priest_faith_crack.4
+  _emote: breaking
+  _emotionTextKey: 
+  _autoAdvanceHint: 0

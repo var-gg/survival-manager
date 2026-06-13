@@ -1,0 +1,206 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6270529561598900326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.04
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_bone_orchard_intro.4
+  _emote: warning
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6230855276012279227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.03
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_bone_orchard_intro.3
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3886810279907159328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.06
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_bone_orchard_intro.6
+  _emote: wary
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1643071910811794914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_bone_orchard_intro.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-812467058807426923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_bone_orchard_intro.2
+  _emote: uneasy
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_scene_bone_orchard_intro
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_scene_bone_orchard_intro
+  _lines:
+  - {fileID: -1643071910811794914}
+  - {fileID: 6772293712585696950}
+  - {fileID: -812467058807426923}
+  - {fileID: -6230855276012279227}
+  - {fileID: -6270529561598900326}
+  - {fileID: 4514929232688429605}
+  - {fileID: -3886810279907159328}
+  - {fileID: 2855589133457128014}
+  - {fileID: 3484494857898328558}
+  - {fileID: 1399888757463944163}
+--- !u!114 &1399888757463944163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.09
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_bone_orchard_intro.9
+  _emote: shock
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2855589133457128014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.07
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_bone_orchard_intro.7
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3484494857898328558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.08
+  _speakerId: Narrator
+  _textKey: loc.story.scene_bone_orchard_intro.8
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4514929232688429605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_bone_orchard_intro.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &6772293712585696950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_bone_orchard_intro.line.01
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_bone_orchard_intro.1
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0

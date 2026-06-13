@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6824306672652599450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_tithe_road.line.01
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.overlay_boss_bark_tithe_road.1
+  _emote: sardonic
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_overlay_boss_bark_tithe_road
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_overlay_boss_bark_tithe_road
+  _lines:
+  - {fileID: 1706609930447475425}
+  - {fileID: -6824306672652599450}
+  - {fileID: 4630676577344592920}
+--- !u!114 &1706609930447475425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_tithe_road.line.00
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.overlay_boss_bark_tithe_road.0
+  _emote: defiant
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4630676577344592920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_overlay_boss_bark_tithe_road.line.02
+  _speakerId: Narrator
+  _textKey: loc.story.overlay_boss_bark_tithe_road.2
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0

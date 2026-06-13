@@ -448,6 +448,12 @@ public sealed class StoryPresentationRunner : MonoBehaviour
     private bool TryResolveDialogueSequence(StoryPresentationRequest request, out DialogueSequenceDefinition sequence)
     {
         var sequenceId = request.PresentationKey;
+        if (_dialogueSequencesById != null && _dialogueSequencesById.TryGetValue(sequenceId, out var directSequence))
+        {
+            sequence = directSequence;
+            return true;
+        }
+
         if (sequenceId.StartsWith("dialogue_scene_", StringComparison.Ordinal))
         {
             sequenceId = $"dialogue_seq_{sequenceId["dialogue_scene_".Length..]}";

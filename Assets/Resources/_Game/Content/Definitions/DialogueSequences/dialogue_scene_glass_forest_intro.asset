@@ -1,0 +1,282 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6243851843529999882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.11
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_glass_forest_intro.11
+  _emote: dry
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-5769274248511828651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.08
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_glass_forest_intro.8
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3470344913181275763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_glass_forest_intro.1
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_scene_glass_forest_intro
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_scene_glass_forest_intro
+  _lines:
+  - {fileID: 5843644754553574359}
+  - {fileID: -3470344913181275763}
+  - {fileID: 2186218558994190478}
+  - {fileID: 3500169679559847447}
+  - {fileID: 1326637815396030311}
+  - {fileID: 4621052932057289919}
+  - {fileID: 8865087055821463467}
+  - {fileID: 4978376444932232288}
+  - {fileID: -5769274248511828651}
+  - {fileID: 3884867522954363124}
+  - {fileID: 2328543495049992506}
+  - {fileID: -6243851843529999882}
+  - {fileID: 8131926322011068794}
+  - {fileID: 154740473038130822}
+--- !u!114 &154740473038130822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.13
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_glass_forest_intro.13
+  _emote: resolute
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &1326637815396030311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.04
+  _speakerId: Narrator
+  _textKey: loc.story.scene_glass_forest_intro.4
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2186218558994190478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_glass_forest_intro.2
+  _emote: disturbed
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2328543495049992506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.10
+  _speakerId: Narrator
+  _textKey: loc.story.scene_glass_forest_intro.10
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3500169679559847447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.03
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_glass_forest_intro.3
+  _emote: quiet
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &3884867522954363124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.09
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_glass_forest_intro.9
+  _emote: bitter
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4621052932057289919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_glass_forest_intro.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &4978376444932232288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.07
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_glass_forest_intro.7
+  _emote: flat
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &5843644754553574359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_glass_forest_intro.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8131926322011068794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.12
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_glass_forest_intro.12
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &8865087055821463467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_glass_forest_intro.line.06
+  _speakerId: Narrator
+  _textKey: loc.story.scene_glass_forest_intro.6
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0

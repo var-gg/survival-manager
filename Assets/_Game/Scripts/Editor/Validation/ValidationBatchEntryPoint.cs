@@ -16,6 +16,9 @@ public static class ValidationBatchEntryPoint
         {
             throw new Exception($"Content validation failed with {errorCount} error(s).");
         }
+
+        NarrativeContentValidator.ValidateOrThrow();
+        Debug.Log("[ValidationBatch] Narrative content validation completed.");
     }
 
     public static void RunBalanceSweepSmoke()

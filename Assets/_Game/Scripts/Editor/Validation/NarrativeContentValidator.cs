@@ -20,6 +20,8 @@ public static class NarrativeContentValidator
     private const string ChapterBeatsResourcesPath = "_Game/Content/Definitions/ChapterBeats";
     private const string HeroLoreResourcesPath = "_Game/Content/Definitions/HeroLore";
     private const string StoryTableName = "Content_Story";
+    private const int ExpectedStoryEventAssetCount = 71;
+    private const int ExpectedDialogueSequenceAssetCount = 204;
 
     [MenuItem("SM/내러티브/내러티브 콘텐츠 검증")]
     public static void ValidateOrThrow()
@@ -32,8 +34,8 @@ public static class NarrativeContentValidator
         var chapterBeats = Resources.LoadAll<ChapterBeatDefinition>(ChapterBeatsResourcesPath);
         var heroLore = Resources.LoadAll<HeroLoreDefinition>(HeroLoreResourcesPath);
 
-        ValidateCount("StoryEventDefinition", storyEvents.Length, NarrativeSeedData.ExpectedStoryEventCount, errors);
-        ValidateCount("DialogueSequenceDefinition", dialogueSequences.Length, NarrativeSeedData.ExpectedDialogueSequenceCount, errors);
+        ValidateCount("StoryEventDefinition", storyEvents.Length, ExpectedStoryEventAssetCount, errors);
+        ValidateCount("DialogueSequenceDefinition", dialogueSequences.Length, ExpectedDialogueSequenceAssetCount, errors);
         ValidateCount("ChapterBeatDefinition", chapterBeats.Length, NarrativeSeedData.ExpectedChapterBeatCount, errors);
         ValidateCount("HeroLoreDefinition", heroLore.Length, NarrativeSeedData.ExpectedHeroLoreCount, errors);
 
@@ -76,6 +78,7 @@ public static class NarrativeContentValidator
                 ValidateDialogueTextKeys(dialogueSequences, sharedData, koTable, errors);
                 ValidateHeroLoreTextKeys(heroLore, sharedData, koTable, errors);
                 ValidatePresentationTextKeys(sharedData, koTable, errors);
+                ValidateEventPresentationTextKeys(storyEvents, sharedData, koTable, errors);
             }
         }
 
@@ -211,6 +214,43 @@ public static class NarrativeContentValidator
         }
     }
 
+    private static void ValidateEventPresentationTextKeys(
+        IEnumerable<StoryEventDefinition> storyEvents,
+        SharedTableData sharedData,
+        StringTable koTable,
+        ICollection<string> errors)
+    {
+        foreach (var storyEvent in storyEvents)
+        {
+            foreach (var enqueueEffect in GetEnqueueEffects(storyEvent))
+            {
+                if (!TryParsePresentationKind(storyEvent, enqueueEffect, errors, out var kind))
+                {
+                    continue;
+                }
+
+                if (kind is not (StoryPresentationKind.StoryCard or StoryPresentationKind.ToastBanner))
+                {
+                    continue;
+                }
+
+                var presentationKey = storyEvent.PresentationKey;
+                ValidateRequiredKoEntry(
+                    sharedData,
+                    koTable,
+                    NarrativeSeedData.BuildPresentationTitleKey(presentationKey),
+                    $"story event '{storyEvent.Id}' presentation '{presentationKey}' title",
+                    errors);
+                ValidateRequiredKoEntry(
+                    sharedData,
+                    koTable,
+                    NarrativeSeedData.BuildPresentationBodyKey(presentationKey),
+                    $"story event '{storyEvent.Id}' presentation '{presentationKey}' body",
+                    errors);
+            }
+        }
+    }
+
     private static void ValidateRequiredKoEntry(
         SharedTableData sharedData,
         StringTable koTable,
@@ -275,9 +315,19 @@ public static class NarrativeContentValidator
 
     private static void ValidateStoryFlags(IEnumerable<StoryEventDefinition> storyEvents, ICollection<string> errors)
     {
+        var eventArray = storyEvents.ToArray();
         var validFlags = new HashSet<string>(NarrativeSeedData.StoryFlags, StringComparer.Ordinal);
+        foreach (var flag in BuildAuthoredStoryFlags(eventArray))
+        {
+            validFlags.Add(flag);
+        }
 
-        foreach (var storyEvent in storyEvents)
+        foreach (var flag in BuildExternalStoryFlags())
+        {
+            validFlags.Add(flag);
+        }
+
+        foreach (var storyEvent in eventArray)
         {
             foreach (var condition in storyEvent.Conditions ?? Array.Empty<StoryConditionDefinition>())
             {
@@ -300,12 +350,38 @@ public static class NarrativeContentValidator
                     continue;
                 }
 
-                if ((effect.Kind == StoryEffectKind.SetFlag || effect.Kind == StoryEffectKind.ClearFlag)
+                if (effect.Kind is StoryEffectKind.SetFlag or StoryEffectKind.ClearFlag
+                    && string.IsNullOrWhiteSpace(effect.Payload))
+                {
+                    errors.Add($"[NarrativeValidator] Empty story flag payload referenced by '{storyEvent.Id}'.");
+                }
+
+                if (effect.Kind == StoryEffectKind.ClearFlag
+                    && !string.IsNullOrWhiteSpace(effect.Payload)
                     && !validFlags.Contains(effect.Payload))
                 {
-                    errors.Add($"[NarrativeValidator] Unknown story flag '{effect.Payload}' referenced by '{storyEvent.Id}'.");
+                    errors.Add($"[NarrativeValidator] Unknown story flag '{effect.Payload}' cleared by '{storyEvent.Id}'.");
                 }
             }
+        }
+    }
+
+    private static IEnumerable<string> BuildAuthoredStoryFlags(IEnumerable<StoryEventDefinition> storyEvents)
+    {
+        return storyEvents
+            .SelectMany(storyEvent => storyEvent.Effects ?? Array.Empty<StoryEffectDefinition>())
+            .Where(effect => effect != null && effect.Kind == StoryEffectKind.SetFlag)
+            .Select(effect => effect.Payload)
+            .Where(flag => !string.IsNullOrWhiteSpace(flag));
+    }
+
+    private static IEnumerable<string> BuildExternalStoryFlags()
+    {
+        foreach (var chapterId in NarrativeSeedData.ChapterIds)
+        {
+            yield return $"story_flag_{chapterId}_squad_costly";
+            yield return $"story_flag_{chapterId}_warrant_kept";
+            yield return $"story_flag_{chapterId}_warrant_broken";
         }
     }
 
@@ -365,13 +441,14 @@ public static class NarrativeContentValidator
         ICollection<string> errors)
     {
         var dialogueIds = new HashSet<string>(dialogueSequences.Select(definition => definition.Id), StringComparer.Ordinal);
-        var presentationKeys = new HashSet<string>(NarrativeSeedData.PresentationTexts.Select(seed => seed.PresentationKey), StringComparer.Ordinal);
 
         foreach (var storyEvent in storyEvents)
         {
-            if (storyEvent.Effects == null || storyEvent.Effects.All(effect => effect == null || effect.Kind != StoryEffectKind.EnqueuePresentation))
+            var enqueueEffects = GetEnqueueEffects(storyEvent).ToArray();
+            if (enqueueEffects.Length == 0)
             {
                 errors.Add($"[NarrativeValidator] Story event '{storyEvent.Id}' is missing EnqueuePresentation effect.");
+                continue;
             }
 
             var presentationKey = storyEvent.PresentationKey;
@@ -381,22 +458,77 @@ public static class NarrativeContentValidator
                 continue;
             }
 
-            if (presentationKey.StartsWith("dialogue_", StringComparison.Ordinal))
+            foreach (var enqueueEffect in enqueueEffects)
             {
-                if (!dialogueIds.Contains(presentationKey))
+                if (!TryParsePresentationKind(storyEvent, enqueueEffect, errors, out var kind))
                 {
-                    errors.Add($"[NarrativeValidator] Missing dialogue sequence '{presentationKey}' referenced by story event '{storyEvent.Id}'.");
+                    continue;
                 }
 
-                continue;
-            }
+                if (kind is not (StoryPresentationKind.DialogueScene or StoryPresentationKind.DialogueOverlay))
+                {
+                    continue;
+                }
 
-            if ((presentationKey.StartsWith("toast_", StringComparison.Ordinal)
-                || presentationKey.StartsWith("story_card_", StringComparison.Ordinal))
-                && !presentationKeys.Contains(presentationKey))
-            {
-                errors.Add($"[NarrativeValidator] Missing presentation text seed '{presentationKey}' referenced by story event '{storyEvent.Id}'.");
+                if (!TryResolveDialogueSequenceId(presentationKey, dialogueIds, out var resolvedId))
+                {
+                    errors.Add($"[NarrativeValidator] Missing dialogue sequence '{presentationKey}' referenced by story event '{storyEvent.Id}'.");
+                    continue;
+                }
+
+                if (!dialogueIds.Contains(resolvedId))
+                {
+                    errors.Add($"[NarrativeValidator] Missing dialogue sequence '{resolvedId}' resolved from '{presentationKey}' referenced by story event '{storyEvent.Id}'.");
+                }
             }
         }
+    }
+
+    private static IEnumerable<StoryEffectDefinition> GetEnqueueEffects(StoryEventDefinition storyEvent)
+    {
+        return (storyEvent.Effects ?? Array.Empty<StoryEffectDefinition>())
+            .Where(effect => effect != null && effect.Kind == StoryEffectKind.EnqueuePresentation);
+    }
+
+    private static bool TryParsePresentationKind(
+        StoryEventDefinition storyEvent,
+        StoryEffectDefinition effect,
+        ICollection<string> errors,
+        out StoryPresentationKind kind)
+    {
+        if (!Enum.TryParse(effect.Payload, false, out kind))
+        {
+            errors.Add($"[NarrativeValidator] Unsupported presentation payload '{effect.Payload}' referenced by story event '{storyEvent.Id}'.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryResolveDialogueSequenceId(
+        string presentationKey,
+        HashSet<string> dialogueIds,
+        out string resolvedId)
+    {
+        if (dialogueIds.Contains(presentationKey))
+        {
+            resolvedId = presentationKey;
+            return true;
+        }
+
+        if (presentationKey.StartsWith("dialogue_scene_", StringComparison.Ordinal))
+        {
+            resolvedId = $"dialogue_seq_{presentationKey["dialogue_scene_".Length..]}";
+            return true;
+        }
+
+        if (presentationKey.StartsWith("dialogue_overlay_", StringComparison.Ordinal))
+        {
+            resolvedId = $"dialogue_seq_{presentationKey["dialogue_overlay_".Length..]}";
+            return true;
+        }
+
+        resolvedId = presentationKey;
+        return false;
     }
 }

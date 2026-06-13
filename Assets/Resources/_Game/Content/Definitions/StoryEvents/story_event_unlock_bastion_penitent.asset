@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6630060300419136995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_unlock_bastion_penitent.condition.00
+  _kind: 0
+  _operandA: chapter_sunken_bastion
+  _operandB: 
+--- !u!114 &-2157336666224030414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_unlock_bastion_penitent.effect.01
+  _kind: 1
+  _payload: story_flag_bastion_penitent_joined
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 322218310d13d8a45b3d85a9fb83b805, type: 3}
+  m_Name: story_event_unlock_bastion_penitent
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEventDefinition
+  _id: story_event_unlock_bastion_penitent
+  _moment: 7
+  _priority: 300
+  _oncePolicy: 0
+  _conditions:
+  - {fileID: -6630060300419136995}
+  - {fileID: 5028231182213652695}
+  _effects:
+  - {fileID: 6962470577931265797}
+  - {fileID: -2157336666224030414}
+  - {fileID: 1220234201166574772}
+  _presentationKey: toast_unlock_bastion_penitent
+--- !u!114 &1220234201166574772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_unlock_bastion_penitent.effect.02
+  _kind: 3
+  _payload: ToastBanner
+--- !u!114 &5028231182213652695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d85d7c73f908e4c43b8bc233214208e2, type: 3}
+  m_Name: condition_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
+  _id: story_event_unlock_bastion_penitent.condition.01
+  _kind: 1
+  _operandA: site_sunken_bastion
+  _operandB: 
+--- !u!114 &6962470577931265797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
+  m_Name: effect_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.StoryEffectDefinition
+  _id: story_event_unlock_bastion_penitent.effect.00
+  _kind: 0
+  _payload: hero_bastion_penitent

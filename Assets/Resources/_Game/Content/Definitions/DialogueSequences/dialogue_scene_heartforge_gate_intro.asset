@@ -1,0 +1,282 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9109799406155375693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_00
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.00
+  _speakerId: Narrator
+  _textKey: loc.story.scene_heartforge_gate_intro.0
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-9087041099136744195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_04
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.04
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_heartforge_gate_intro.4
+  _emote: flat
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-7401051312117191239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_09
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.09
+  _speakerId: hero_echo_savant
+  _textKey: loc.story.scene_heartforge_gate_intro.9
+  _emote: flat
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-6112678187862993780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_11
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.11
+  _speakerId: Narrator
+  _textKey: loc.story.scene_heartforge_gate_intro.11
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-4796022433361234494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_08
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.08
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_heartforge_gate_intro.8
+  _emote: casual
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-3161035346935555707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_03
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.03
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_heartforge_gate_intro.3
+  _emote: dry
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-1939161005433208403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_02
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.02
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_heartforge_gate_intro.2
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &-221327708658026025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_01
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.01
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_heartforge_gate_intro.1
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3e7df04990bd1d419b95921a984296d, type: 3}
+  m_Name: dialogue_scene_heartforge_gate_intro
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueSequenceDefinition
+  _id: dialogue_scene_heartforge_gate_intro
+  _lines:
+  - {fileID: -9109799406155375693}
+  - {fileID: -221327708658026025}
+  - {fileID: -1939161005433208403}
+  - {fileID: -3161035346935555707}
+  - {fileID: -9087041099136744195}
+  - {fileID: 9120796473201112547}
+  - {fileID: 2429221178431067727}
+  - {fileID: 2854320782715554121}
+  - {fileID: -4796022433361234494}
+  - {fileID: -7401051312117191239}
+  - {fileID: 1526614192397713677}
+  - {fileID: -6112678187862993780}
+  - {fileID: 2760727843910437353}
+  - {fileID: 7251327644587562258}
+--- !u!114 &1526614192397713677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_10
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.10
+  _speakerId: hero_grave_hexer
+  _textKey: loc.story.scene_heartforge_gate_intro.10
+  _emote: amused
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2429221178431067727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_06
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.06
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_heartforge_gate_intro.6
+  _emote: resolute
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2760727843910437353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_12
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.12
+  _speakerId: hero_dawn_priest
+  _textKey: loc.story.scene_heartforge_gate_intro.12
+  _emote: grim
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &2854320782715554121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_07
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.07
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_heartforge_gate_intro.7
+  _emote: defiant
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &7251327644587562258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_13
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.13
+  _speakerId: hero_pack_raider
+  _textKey: loc.story.scene_heartforge_gate_intro.13
+  _emote: solemn
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
+--- !u!114 &9120796473201112547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c755f6a7a4937914b83bca44eb397048, type: 3}
+  m_Name: line_05
+  m_EditorClassIdentifier: SM.Content::SM.Content.DialogueLineDefinition
+  _id: dialogue_scene_heartforge_gate_intro.line.05
+  _speakerId: Narrator
+  _textKey: loc.story.scene_heartforge_gate_intro.5
+  _emote: 
+  _emotionTextKey: 
+  _autoAdvanceHint: 0
