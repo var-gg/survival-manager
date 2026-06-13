@@ -822,6 +822,10 @@ MonoBehaviour:
     m_Localized: "\uC801 \uC804\uB825"
     m_Metadata:
       m_Items: []
+  - m_Id: 27237344234246144
+    m_Localized: x0.5
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

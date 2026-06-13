@@ -759,6 +759,10 @@ MonoBehaviour:
     m_Key: ui.battle.readout.enemies
     m_Metadata:
       m_Items: []
+  - m_Id: 27237344234246144
+    m_Key: ui.battle.action.speed_05
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

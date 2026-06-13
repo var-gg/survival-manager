@@ -14,6 +14,8 @@ param(
     4. EditMode test class가 class-level execution category를 선언하지 않으면 실패
     5. 스크립트/문서에서 -quit를 -runTests와 같이 사용하면 실패
     6. Pindoc 소스여야 하는 imagegen 입력 Markdown이 repo-local 임시 파일로 생기면 실패
+    7. record(struct/class)가 자기 타입을 반환하는 public 인스턴스 속성을 갖는데 ToString 오버라이드가 없으면 실패
+       (합성 PrintMembers가 그 속성을 출력하며 무한 재귀 → StackOverflow. NUnit 실패 메시지/로그 포맷에서 프로세스가 죽는다)
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -379,6 +381,49 @@ foreach ($file in $forbiddenImagegenMarkdownFiles) {
 
 if (-not $check5Fail -and $exitCode -eq 0) {
     Write-Host "  PASS: No repo-local Pindoc-owned imagegen Markdown prompt spill." -ForegroundColor Green
+}
+
+# ────────────────────────────────────────────────
+# Check 6: record with self-typed public property must override ToString
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 6: record self-typed property without ToString override ==" -ForegroundColor Cyan
+$check6Fail = $false
+
+$recordScanDirs = @('Assets/_Game/Scripts', 'Assets/Tests')
+foreach ($dir in $recordScanDirs) {
+    $fullDir = Join-Path $RepoRoot $dir
+    if (-not (Test-Path $fullDir)) { continue }
+
+    $csFiles = Get-ChildItem $fullDir -Filter '*.cs' -Recurse -ErrorAction SilentlyContinue
+    foreach ($file in $csFiles) {
+        $raw = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
+        if ([string]::IsNullOrEmpty($raw)) { continue }
+        if ($raw -notmatch '\brecord\b') { continue }
+
+        # 모든 타입 선언 위치를 잡아 record 본문 근사 경계로 쓴다(다음 타입 선언 전까지).
+        $typeDecls = [regex]::Matches($raw, '\b(?:record\s+(?:struct\s+|class\s+)?|class\s+|struct\s+|interface\s+|enum\s+)(?<name>\w+)')
+        for ($i = 0; $i -lt $typeDecls.Count; $i++) {
+            if ($typeDecls[$i].Value -notmatch '^record\b') { continue }
+            $name = $typeDecls[$i].Groups['name'].Value
+            $bodyStart = $typeDecls[$i].Index
+            $bodyEnd = if ($i + 1 -lt $typeDecls.Count) { $typeDecls[$i + 1].Index } else { $raw.Length }
+            $body = $raw.Substring($bodyStart, $bodyEnd - $bodyStart)
+
+            # 합성 PrintMembers는 public 인스턴스 속성을 전부 출력한다. 자기 타입을 반환하는
+            # public 인스턴스 속성이 있으면 합성 ToString이 무한 재귀한다(static은 출력 안 되므로 제외).
+            $selfTypedProperty = [regex]::IsMatch($body, "(?m)^\s*public\s+$name\s+\w+\s*(=>|\{|\r?$)")
+            if ($selfTypedProperty -and $body -notmatch 'override\s+string\s+ToString') {
+                $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/').Replace('\', '/')
+                Write-LintError -Check 'Record-selftyped-property-no-ToString' -File $relPath -Detail "record '$name' has a public instance property of its own type — synthesized ToString/PrintMembers recurses infinitely (StackOverflow). Add an explicit ToString() override."
+                $check6Fail = $true
+            }
+        }
+    }
+}
+
+if (-not $check6Fail) {
+    Write-Host "  PASS: No record with a self-typed public property missing a ToString override." -ForegroundColor Green
 }
 
 # ────────────────────────────────────────────────
