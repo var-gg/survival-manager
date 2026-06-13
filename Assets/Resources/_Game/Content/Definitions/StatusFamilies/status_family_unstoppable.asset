@@ -42,7 +42,7 @@ MonoBehaviour:
     KeywordCount: 1
     ConditionClauseCount: 0
     RuleExceptionCount: 0
-    DeclaredThreatPatterns: 
+    DeclaredThreatPatterns: 01000000
     DeclaredCounterTools:
     - Tool: 4
       Strength: 2

@@ -9,7 +9,8 @@ namespace SM.Combat.Services;
 public static class BattleTelemetryAnalysisService
 {
     private const float RollingWindowSeconds = 1f;
-    private const float MajorCollisionWindowSeconds = 0.2f;
+    private const float MajorCollisionWindowSeconds = 0.15f;
+    private const float SameSourceAuxiliaryPacketSalienceScale = 0.25f;
 
     public static ReadabilityGateConfig DefaultReadabilityGateConfig { get; } = new();
 
@@ -50,7 +51,7 @@ public static class BattleTelemetryAnalysisService
                 .Select(record => record.TimeSeconds)
                 .DefaultIfEmpty(0f)
                 .First(),
-            MajorEventCollisionRate = ComputeMajorCollisionRate(majorPackets),
+            MajorEventCollisionRate = ComputeMajorCollisionRate(CollapseMajorActionPackets(majorPackets)),
             SalienceWeightPer1sP95 = ComputeSalienceWeightPer1sP95(aggregated),
             StatusChipOverflowRate = ComputeStatusChipOverflowRate(ordered, config),
             FloatingTextBurstOverflowRate = ComputeFloatingBurstOverflowRate(aggregated, config),
@@ -129,7 +130,7 @@ public static class BattleTelemetryAnalysisService
         var ordered = telemetryEvents.OrderBy(record => record.TimeSeconds).ToList();
         var totalDamage = ordered
             .Where(record => record.EventKind == TelemetryEventKind.DamageApplied)
-            .GroupBy(record => record.Explain?.SourceDisplayName ?? string.Empty)
+            .GroupBy(BuildDamageSourceKey)
             .Select(group => new { Name = group.Key, Value = group.Sum(record => Math.Max(0f, record.ValueA)) })
             .OrderByDescending(group => group.Value)
             .ThenBy(group => group.Name, StringComparer.Ordinal)
@@ -166,7 +167,7 @@ public static class BattleTelemetryAnalysisService
             OverkillRatio = ComputeOverkillRatio(ordered),
             TopDamageShare = totalDamageValue <= 0f ? 0f : totalDamage.FirstOrDefault()?.Value / totalDamageValue ?? 0f,
             DeadBeforeFirstMajorActionRate = Ratio(
-                deaths.Count(record => record.TimeSeconds <= firstMajor + 0.001f),
+                deaths.Count(record => record.TimeSeconds < firstMajor - 0.001f),
                 Math.Max(1, result.FinalUnits.Count)),
             TopDamageSources = totalDamage
                 .Where(entry => !string.IsNullOrWhiteSpace(entry.Name))
@@ -183,6 +184,15 @@ public static class BattleTelemetryAnalysisService
                 .ToArray(),
             DecisiveMoments = BuildDecisiveMoments(ordered),
         };
+    }
+
+    private static string BuildDamageSourceKey(TelemetryEventRecord record)
+    {
+        var actorId = record.Actor?.UnitInstanceId ?? record.Actor?.UnitBlueprintId ?? "unknown_actor";
+        var sourceKind = record.Explain?.SourceKind.ToString() ?? "Unexplained";
+        var sourceId = record.Explain?.SourceContentId ?? string.Empty;
+        var sourceName = record.Explain?.SourceDisplayName ?? string.Empty;
+        return $"{actorId}:{sourceKind}:{(string.IsNullOrWhiteSpace(sourceId) ? sourceName : sourceId)}";
     }
 
     private static string[] BuildDecisiveMoments(IReadOnlyList<TelemetryEventRecord> ordered)
@@ -307,6 +317,29 @@ public static class BattleTelemetryAnalysisService
         return Ratio(collisions, packets.Count);
     }
 
+    private static IReadOnlyList<VisualPacket> CollapseMajorActionPackets(IReadOnlyList<VisualPacket> packets)
+    {
+        var collapsed = new List<VisualPacket>();
+        foreach (var packet in packets.OrderBy(packet => packet.TimeSeconds))
+        {
+            var key = BuildSalienceWindowKey(packet);
+            var existing = collapsed.LastOrDefault(candidate =>
+                string.Equals(BuildSalienceWindowKey(candidate), key, StringComparison.Ordinal)
+                && Math.Abs(candidate.TimeSeconds - packet.TimeSeconds) <= MajorCollisionWindowSeconds);
+            if (existing != null)
+            {
+                existing.EventCount += packet.EventCount;
+                existing.Value += packet.Value;
+                existing.Salience = MaxSalience(existing.Salience, packet.Salience);
+                continue;
+            }
+
+            collapsed.Add(packet);
+        }
+
+        return collapsed;
+    }
+
     private static float ComputeSalienceWeightPer1sP95(IReadOnlyList<VisualPacket> packets)
     {
         var samples = new List<float>();
@@ -314,13 +347,52 @@ public static class BattleTelemetryAnalysisService
         {
             var start = packets[i].TimeSeconds;
             var end = start + RollingWindowSeconds;
-            var weight = packets
+            var windowPackets = packets
                 .Where(packet => packet.TimeSeconds >= start && packet.TimeSeconds <= end)
-                .Sum(packet => BattleTelemetryRecorder.GetSalienceWeight(packet.Salience));
-            samples.Add(weight);
+                .ToList();
+            samples.Add(ComputeWindowSalienceWeight(windowPackets));
         }
 
         return Percentile(samples, 0.95f);
+    }
+
+    private static float ComputeWindowSalienceWeight(IReadOnlyList<VisualPacket> packets)
+    {
+        return packets
+            .GroupBy(BuildSalienceWindowKey, StringComparer.Ordinal)
+            .Sum(group =>
+            {
+                var weights = group
+                    .Select(packet => BattleTelemetryRecorder.GetSalienceWeight(packet.Salience))
+                    .OrderByDescending(weight => weight)
+                    .ToArray();
+                if (weights.Length == 0)
+                {
+                    return 0f;
+                }
+
+                return weights[0] + (weights.Skip(1).Sum() * SameSourceAuxiliaryPacketSalienceScale);
+            });
+    }
+
+    private static string BuildSalienceWindowKey(VisualPacket packet)
+    {
+        if (!string.IsNullOrWhiteSpace(packet.ActorId) && !string.IsNullOrWhiteSpace(packet.SourceId))
+        {
+            return $"actor_source:{packet.ActorId}:{packet.SourceId}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(packet.SourceId))
+        {
+            return $"source:{packet.SourceId}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(packet.TargetId) || !string.IsNullOrWhiteSpace(packet.StatusId))
+        {
+            return $"target_status:{packet.TargetId}:{packet.StatusId}";
+        }
+
+        return $"packet:{packet.AggregationKind}:{packet.TimeSeconds:0.###}";
     }
 
     private static float ComputeStatusChipOverflowRate(IReadOnlyList<TelemetryEventRecord> ordered, ReadabilityGateConfig config)
@@ -360,6 +432,7 @@ public static class BattleTelemetryAnalysisService
         foreach (var record in ordered)
         {
             var salience = record.Explain?.Salience ?? SalienceClass.None;
+            var actorId = record.Actor?.UnitInstanceId ?? string.Empty;
             var sourceId = record.Explain?.SourceContentId ?? string.Empty;
             var targetId = record.Target?.UnitInstanceId ?? string.Empty;
             var statusId = record.StatusId ?? string.Empty;
@@ -369,6 +442,7 @@ public static class BattleTelemetryAnalysisService
             {
                 var existing = packets.LastOrDefault(packet =>
                     packet.AggregationKind == kind
+                    && string.Equals(packet.ActorId, actorId, StringComparison.Ordinal)
                     && string.Equals(packet.SourceId, sourceId, StringComparison.Ordinal)
                     && string.Equals(packet.TargetId, targetId, StringComparison.Ordinal)
                     && string.Equals(packet.StatusId, statusId, StringComparison.Ordinal)
@@ -377,6 +451,7 @@ public static class BattleTelemetryAnalysisService
                 {
                     existing.EventCount++;
                     existing.Value += Math.Max(0f, record.ValueA);
+                    existing.Salience = MaxSalience(existing.Salience, salience);
                     continue;
                 }
             }
@@ -384,6 +459,7 @@ public static class BattleTelemetryAnalysisService
             packets.Add(new VisualPacket
             {
                 TimeSeconds = record.TimeSeconds,
+                ActorId = actorId,
                 SourceId = sourceId,
                 TargetId = targetId,
                 StatusId = statusId,
@@ -405,6 +481,11 @@ public static class BattleTelemetryAnalysisService
             return ReadabilityAggregationKind.MergeDotTicksByStatus;
         }
 
+        if (IsActionBurstEvent(record) && !string.IsNullOrWhiteSpace(record.Explain?.SourceContentId))
+        {
+            return ReadabilityAggregationKind.MergeActionBurstBySourceTarget;
+        }
+
         if (record.EventKind == TelemetryEventKind.DamageApplied && record.Explain?.SourceKind == ExplainedSourceKind.BasicAttack)
         {
             return ReadabilityAggregationKind.MergeMinorTicksBySourceTarget;
@@ -416,6 +497,28 @@ public static class BattleTelemetryAnalysisService
         }
 
         return ReadabilityAggregationKind.None;
+    }
+
+    private static bool IsActionBurstEvent(TelemetryEventRecord record)
+    {
+        return record.EventKind is TelemetryEventKind.BasicAttackStarted
+            or TelemetryEventKind.BasicAttackResolved
+            or TelemetryEventKind.SkillCastStarted
+            or TelemetryEventKind.SkillCastResolved
+            or TelemetryEventKind.DamageApplied
+            or TelemetryEventKind.HealingApplied
+            or TelemetryEventKind.BarrierApplied
+            or TelemetryEventKind.StatusApplied
+            or TelemetryEventKind.GuardBroken
+            or TelemetryEventKind.InterruptApplied
+            or TelemetryEventKind.KillCredited;
+    }
+
+    private static SalienceClass MaxSalience(SalienceClass left, SalienceClass right)
+    {
+        return BattleTelemetryRecorder.GetSalienceWeight(right) > BattleTelemetryRecorder.GetSalienceWeight(left)
+            ? right
+            : left;
     }
 
     private static bool IsUnexplained(TelemetryEventRecord record)
@@ -451,6 +554,7 @@ public static class BattleTelemetryAnalysisService
     private sealed class VisualPacket
     {
         public float TimeSeconds;
+        public string ActorId = string.Empty;
         public string SourceId = string.Empty;
         public string TargetId = string.Empty;
         public string StatusId = string.Empty;

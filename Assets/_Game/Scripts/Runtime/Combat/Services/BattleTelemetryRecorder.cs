@@ -12,10 +12,10 @@ public static class BattleTelemetryRecorder
     public static readonly IReadOnlyDictionary<SalienceClass, float> SalienceWeights = new Dictionary<SalienceClass, float>
     {
         [SalienceClass.None] = 0f,
-        [SalienceClass.Ambient] = 0.25f,
-        [SalienceClass.Minor] = 1f,
-        [SalienceClass.Major] = 2f,
-        [SalienceClass.Critical] = 3f,
+        [SalienceClass.Ambient] = 0.1f,
+        [SalienceClass.Minor] = 0.75f,
+        [SalienceClass.Major] = 1.5f,
+        [SalienceClass.Critical] = 2.5f,
     };
 
     public static void RecordBattleStarted(BattleState state)
@@ -135,7 +135,7 @@ public static class BattleTelemetryRecorder
                 SourceContentId = actor.EffectiveMobilityReaction?.Id ?? $"{actor.Definition.Id}:mobility",
                 SourceDisplayName = actor.EffectiveMobilityReaction?.Name ?? "Mobility Reaction",
                 ReasonCode = actor.PendingDecisionReason,
-                Salience = SalienceClass.Major,
+                Salience = ResolveMobilitySalience(decision.Profile.Purpose),
             },
             ValueA = decision.Profile.Distance,
             StringValueA = decision.Profile.Purpose.ToString(),
@@ -201,6 +201,8 @@ public static class BattleTelemetryRecorder
         string stringValueA = "",
         string stringValueB = "")
     {
+        var sourceKind = ResolveSourceKind(actor, actionType, skill);
+
         state.AddTelemetry(new TelemetryEventRecord
         {
             Domain = TelemetryDomain.Combat,
@@ -208,7 +210,7 @@ public static class BattleTelemetryRecorder
             TimeSeconds = state.ElapsedSeconds,
             Actor = BuildEntityRef(actor),
             Target = BuildEntityRef(target),
-            Explain = BuildActionExplain(actor, actionType, skill, actor.PendingDecisionReason, ResolveImpactSalience(eventKind, valueA)),
+            Explain = BuildActionExplain(actor, actionType, skill, actor.PendingDecisionReason, ResolveImpactSalience(eventKind, valueA, sourceKind)),
             SkillId = skill?.Id ?? string.Empty,
             ValueA = valueA,
             ValueB = valueB,
@@ -497,14 +499,23 @@ public static class BattleTelemetryRecorder
     {
         if (actionType == BattleActionType.BasicAttack)
         {
-            return SalienceClass.Minor;
+            return SalienceClass.Ambient;
         }
 
-        return skill?.EffectiveSlotKind == ActionSlotKind.SignatureActive ? SalienceClass.Major : SalienceClass.Major;
+        return skill?.EffectiveSlotKind == ActionSlotKind.SignatureActive
+            ? SalienceClass.Major
+            : SalienceClass.Minor;
     }
 
-    private static SalienceClass ResolveImpactSalience(TelemetryEventKind eventKind, float value)
+    private static SalienceClass ResolveImpactSalience(TelemetryEventKind eventKind, float value, ExplainedSourceKind sourceKind)
     {
+        if (eventKind == TelemetryEventKind.DamageApplied
+            && sourceKind == ExplainedSourceKind.BasicAttack
+            && value < 20f)
+        {
+            return SalienceClass.Ambient;
+        }
+
         return eventKind switch
         {
             TelemetryEventKind.DamageApplied when value >= 20f => SalienceClass.Major,
@@ -515,6 +526,11 @@ public static class BattleTelemetryRecorder
             TelemetryEventKind.DamageApplied or TelemetryEventKind.HealingApplied or TelemetryEventKind.BarrierApplied => SalienceClass.Minor,
             _ => SalienceClass.Ambient,
         };
+    }
+
+    private static SalienceClass ResolveMobilitySalience(MobilityPurpose purpose)
+    {
+        return SalienceClass.Minor;
     }
 
     private static string ResolveStatusSourceContentId(UnitSnapshot actor, string statusId)

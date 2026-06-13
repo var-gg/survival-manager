@@ -52,15 +52,17 @@ MonoBehaviour:
       Control: 0
       Mobility: 1
       Support: 0
-      CounterCoverage: 0
+      CounterCoverage: 1
       Reliability: 3
       Economy: 0
       DrawbackCredit: 0
     KeywordCount: 3
     ConditionClauseCount: 2
     RuleExceptionCount: 0
-    DeclaredThreatPatterns: 
-    DeclaredCounterTools: []
+    DeclaredThreatPatterns: 07000000
+    DeclaredCounterTools:
+    - Tool: 7
+      Strength: 1
     DeclaredFeatureFlags: 0
   ManaCost: 0
   ResourceCost: -1

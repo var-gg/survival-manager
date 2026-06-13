@@ -245,6 +245,7 @@ public enum ReadabilityAggregationKind
     MergeDotTicksByStatus = 2,
     CollapseRepeatedBarrierTicks = 3,
     SuppressAmbientWhileMajorActive = 4,
+    MergeActionBurstBySourceTarget = 5,
 }
 
 [Serializable]

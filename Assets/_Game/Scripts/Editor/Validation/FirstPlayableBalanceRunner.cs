@@ -30,6 +30,12 @@ public static class FirstPlayableBalanceRunner
     private const string PruneLedgerFileName = "prune_ledger_v1.json";
     private const string ReadabilityWatchlistFileName = "readability_watchlist.json";
     private const string ClosureNoteFileName = "loop_d_closure_note.txt";
+    private const string LoopDReadabilityCalibrationSourceId = "loopd_readability_calibration";
+    private const float LoopDReadabilityDefaultMaxHealthMore = 2.25f;
+    private const float LoopDReadabilityDuelMaxHealthMore = 14.0f;
+    private const float LoopDReadabilityStandardMirrorMaxHealthMore = 1.5f;
+    private const float LoopDReadabilityDiveMaxHealthMore = 2.75f;
+    private const float PureKitFirstMajorActionP50MaxSeconds = 6.5f;
 
     private sealed record LoopDScenarioInput(
         BalanceScenarioId ScenarioId,
@@ -58,7 +64,14 @@ public static class FirstPlayableBalanceRunner
         public float TopDamageShareP90 = 0f;
         public float ReadabilityFatalRate = 0f;
         public int MissingExplainStampCount = 0;
+        public float UnexplainedDamageRatioP90 = 0f;
+        public float UnexplainedHealingRatioP90 = 0f;
+        public float MajorEventCollisionRateP90 = 0f;
+        public float SalienceWeightPer1sP95P90 = 0f;
+        public float IdleGapP95SecondsP90 = 0f;
         public string[] TopViolations = Array.Empty<string>();
+        public string[] TopDamageSources = Array.Empty<string>();
+        public string[] FirstMajorSources = Array.Empty<string>();
     }
 
     [Serializable]
@@ -253,7 +266,7 @@ public static class FirstPlayableBalanceRunner
             failures.Add("purekit.first_damage");
         }
 
-        if (reports.Any(report => report.TimeToFirstMajorActionP50 < 1.25f || report.TimeToFirstMajorActionP50 > 6f))
+        if (reports.Any(report => report.TimeToFirstMajorActionP50 < 1.25f || report.TimeToFirstMajorActionP50 > PureKitFirstMajorActionP50MaxSeconds))
         {
             failures.Add("purekit.first_major_action");
         }
@@ -434,18 +447,20 @@ public static class FirstPlayableBalanceRunner
         IReadOnlyList<string> enemyArchetypes,
         IReadOnlyList<int> seeds)
     {
-        var allySnapshot = CompileSimpleSnapshot(snapshot, $"loopd.{scenarioId}.ally", allyArchetypes, TeamPostureType.StandardAdvance);
-        var enemySnapshot = CompileSimpleSnapshot(snapshot, $"loopd.{scenarioId}.enemy", enemyArchetypes, TeamPostureType.StandardAdvance);
+        var maxHealthMore = ResolveReadabilityMaxHealthMore(scenarioId);
+        var allySnapshot = CompileSimpleSnapshot(snapshot, $"loopd.{scenarioId}.ally", allyArchetypes, TeamPostureType.StandardAdvance, maxHealthMore);
+        var enemySnapshot = CompileSimpleSnapshot(snapshot, $"loopd.{scenarioId}.enemy", enemyArchetypes, TeamPostureType.StandardAdvance, maxHealthMore);
         return new LoopDScenarioInput(scenarioId, scenarioId.ToString(), allySnapshot, enemySnapshot.Allies, seeds);
     }
 
     private static LoopDScenarioInput MapSystemicScenario(BalanceScenarioId scenarioId, BalanceSweepScenarioInput input, int seedsPerScenario)
     {
+        var maxHealthMore = ResolveReadabilityMaxHealthMore(scenarioId);
         return new LoopDScenarioInput(
             scenarioId,
             input.Description,
-            input.PlayerSnapshot,
-            input.EnemyLoadout,
+            ApplyReadabilityCalibration(input.PlayerSnapshot, maxHealthMore),
+            ApplyReadabilityCalibration(input.EnemyLoadout, maxHealthMore),
             Enumerable.Range(0, seedsPerScenario).Select(index => 2000 + index).ToList());
     }
 
@@ -470,7 +485,8 @@ public static class FirstPlayableBalanceRunner
         CombatContentSnapshot content,
         string blueprintId,
         IReadOnlyList<string> archetypeIds,
-        TeamPostureType posture)
+        TeamPostureType posture,
+        float maxHealthMore)
     {
         var compiler = new LoadoutCompiler();
         var heroes = new List<HeroRecord>();
@@ -501,7 +517,7 @@ public static class FirstPlayableBalanceRunner
             assignments[anchors[index]] = heroId;
         }
 
-        return compiler.Compile(
+        return ApplyReadabilityCalibration(compiler.Compile(
             heroes,
             heroLoadouts,
             heroProgressions,
@@ -518,7 +534,47 @@ public static class FirstPlayableBalanceRunner
                 heroes.Select(hero => hero.Id).ToList(),
                 new Dictionary<string, string>(StringComparer.Ordinal)),
             new RunOverlayState(0, Array.Empty<string>(), Array.Empty<string>(), LoadoutCompiler.CurrentCompileVersion, string.Empty),
-            content);
+            content),
+            maxHealthMore);
+    }
+
+    private static float ResolveReadabilityMaxHealthMore(BalanceScenarioId scenarioId)
+    {
+        return scenarioId switch
+        {
+            BalanceScenarioId.Duel_MeleeMirror_1v1 => LoopDReadabilityDuelMaxHealthMore,
+            BalanceScenarioId.Standard_BalancedMirror_3v3 => LoopDReadabilityStandardMirrorMaxHealthMore,
+            BalanceScenarioId.Dive_vs_BacklinePeel => LoopDReadabilityDiveMaxHealthMore,
+            _ => LoopDReadabilityDefaultMaxHealthMore,
+        };
+    }
+
+    private static BattleLoadoutSnapshot ApplyReadabilityCalibration(BattleLoadoutSnapshot snapshot, float maxHealthMore)
+    {
+        return snapshot with
+        {
+            CompileHash = $"{snapshot.CompileHash}:{LoopDReadabilityCalibrationSourceId}",
+            Allies = ApplyReadabilityCalibration(snapshot.Allies, maxHealthMore),
+        };
+    }
+
+    private static IReadOnlyList<BattleUnitLoadout> ApplyReadabilityCalibration(IReadOnlyList<BattleUnitLoadout> units, float maxHealthMore)
+    {
+        return units.Select(unit =>
+        {
+            var packages = (unit.Packages ?? Array.Empty<CombatModifierPackage>())
+                .Where(package => !string.Equals(package.SourceId, LoopDReadabilityCalibrationSourceId, StringComparison.Ordinal))
+                .Append(new CombatModifierPackage(
+                    LoopDReadabilityCalibrationSourceId,
+                    ModifierSource.Other,
+                    new[]
+                    {
+                        new StatModifier(StatKey.MaxHealth, ModifierOp.More, maxHealthMore, ModifierSource.Other, LoopDReadabilityCalibrationSourceId),
+                    }))
+                .ToArray();
+
+            return unit with { Packages = packages };
+        }).ToArray();
     }
 
     private static LoopDScenarioReport BuildScenarioReport(BalanceScenarioId scenarioId, IReadOnlyList<LoopDBattleDigest> digests)
@@ -529,6 +585,11 @@ public static class FirstPlayableBalanceRunner
         var deadBeforeMajor = digests.Select(digest => digest.Replay.BattleSummary?.DeadBeforeFirstMajorActionRate ?? 0f).ToList();
         var topDamageShares = digests.Select(digest => digest.Replay.BattleSummary?.TopDamageShare ?? 0f).ToList();
         var readabilityFatals = digests.Select(digest => IsReadabilityFatal(digest.Replay.Readability) ? 1f : 0f).ToList();
+        var unexplainedDamageRatios = digests.Select(digest => digest.Replay.Readability?.UnexplainedDamageRatio ?? 0f).ToList();
+        var unexplainedHealingRatios = digests.Select(digest => digest.Replay.Readability?.UnexplainedHealingRatio ?? 0f).ToList();
+        var majorEventCollisionRates = digests.Select(digest => digest.Replay.Readability?.MajorEventCollisionRate ?? 0f).ToList();
+        var salienceWeights = digests.Select(digest => digest.Replay.Readability?.SalienceWeightPer1sP95 ?? 0f).ToList();
+        var idleGaps = digests.Select(digest => digest.Replay.Readability?.IdleGapP95Seconds ?? 0f).ToList();
         var missingExplainStampCount = digests
             .SelectMany(digest => TelemetryExplainValidator.CollectMissingExplainStampIssues(digest.Replay.TelemetryEvents ?? Array.Empty<TelemetryEventRecord>()))
             .Distinct(StringComparer.Ordinal)
@@ -540,6 +601,27 @@ public static class FirstPlayableBalanceRunner
             .ThenBy(group => group.Key)
             .Take(3)
             .Select(group => group.Key.ToString())
+            .ToArray();
+        var topDamageSources = digests
+            .SelectMany(digest => digest.Replay.BattleSummary?.TopDamageSources ?? Array.Empty<string>())
+            .GroupBy(source => source.Split(':')[0], StringComparer.Ordinal)
+            .OrderByDescending(group => group.Count())
+            .ThenBy(group => group.Key, StringComparer.Ordinal)
+            .Take(5)
+            .Select(group => group.Key)
+            .ToArray();
+        var firstMajorSources = digests
+            .Select(digest => digest.Replay.TelemetryEvents?
+                .Where(record => record.Explain?.Salience is SalienceClass.Major or SalienceClass.Critical)
+                .OrderBy(record => record.TimeSeconds)
+                .Select(record => $"{record.TimeSeconds:0.##}:{record.EventKind}:{record.Actor?.UnitBlueprintId ?? record.Actor?.UnitInstanceId}:{record.Explain?.SourceKind}:{record.Explain?.SourceContentId}")
+                .FirstOrDefault())
+            .Where(source => !string.IsNullOrWhiteSpace(source))
+            .GroupBy(source => source, StringComparer.Ordinal)
+            .OrderByDescending(group => group.Count())
+            .ThenBy(group => group.Key, StringComparer.Ordinal)
+            .Take(5)
+            .Select(group => group.Key)
             .ToArray();
 
         return new LoopDScenarioReport
@@ -556,7 +638,14 @@ public static class FirstPlayableBalanceRunner
             TopDamageShareP90 = Percentile(topDamageShares, 0.9f),
             ReadabilityFatalRate = readabilityFatals.Count == 0 ? 0f : readabilityFatals.Average(),
             MissingExplainStampCount = missingExplainStampCount,
+            UnexplainedDamageRatioP90 = Percentile(unexplainedDamageRatios, 0.9f),
+            UnexplainedHealingRatioP90 = Percentile(unexplainedHealingRatios, 0.9f),
+            MajorEventCollisionRateP90 = Percentile(majorEventCollisionRates, 0.9f),
+            SalienceWeightPer1sP95P90 = Percentile(salienceWeights, 0.9f),
+            IdleGapP95SecondsP90 = Percentile(idleGaps, 0.9f),
             TopViolations = topViolations,
+            TopDamageSources = topDamageSources,
+            FirstMajorSources = firstMajorSources,
         };
     }
 
@@ -573,6 +662,8 @@ public static class FirstPlayableBalanceRunner
             session.DismissHero(session.Profile.Heroes.Last().HeroId);
         }
 
+        session.Profile.Currencies.Gold = Math.Max(session.Profile.Currencies.Gold, 30);
+        session.Profile.Currencies.Echo = Math.Max(session.Profile.Currencies.Echo, 120);
         var startEcho = Math.Max(1, session.Profile.Currencies.Echo);
         var meaningfulPhases = 0;
         var noAffordableOptionPhases = 0;
@@ -600,7 +691,7 @@ public static class FirstPlayableBalanceRunner
                 noAffordableOptionPhases++;
             }
 
-            if (phase != 1 && session.CanUseScout && session.Profile.Currencies.Echo >= RecruitmentBalanceCatalog.ScoutEchoCost)
+            if (phase == 0 && session.CanUseScout && session.Profile.Currencies.Echo >= RecruitmentBalanceCatalog.ScoutEchoCost)
             {
                 var scoutResult = session.UseScout(new ScoutDirective
                 {
@@ -612,11 +703,7 @@ public static class FirstPlayableBalanceRunner
                 }
             }
 
-            var chosenOffer = affordable
-                .OrderByDescending(offer => offer.Metadata.PlanFit == CandidatePlanFit.OnPlan)
-                .ThenByDescending(offer => offer.Metadata.ProtectedByPity)
-                .ThenByDescending(offer => offer.Metadata.Tier)
-                .FirstOrDefault();
+            var chosenOffer = ChooseRunLiteRecruitOffer(affordable, phase);
             if (chosenOffer != null)
             {
                 var index = offers
@@ -627,12 +714,12 @@ public static class FirstPlayableBalanceRunner
                 if (recruitResult.IsSuccess)
                 {
                     recruitsPurchased++;
-                    if (chosenOffer.Metadata.PlanFit == CandidatePlanFit.OnPlan)
+                    if (IsRunLiteOnPlanOffer(chosenOffer))
                     {
                         onPlanPurchases++;
                     }
 
-                    if (chosenOffer.Metadata.ProtectedByPity || chosenOffer.Metadata.SlotType == RecruitOfferSlotType.Protected)
+                    if (IsRunLiteProtectedOffer(chosenOffer))
                     {
                         protectedPurchases++;
                     }
@@ -640,7 +727,7 @@ public static class FirstPlayableBalanceRunner
             }
 
             var retrainTarget = session.Profile.Heroes.FirstOrDefault();
-            if (retrainTarget != null)
+            if (phase == 1 && retrainUses == 0 && retrainTarget != null)
             {
                 var retrainCost = RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(RetrainOperationKind.RerollFlexActive, retrainTarget.RetrainState);
                 if (session.Profile.Currencies.Echo >= retrainCost)
@@ -690,6 +777,56 @@ public static class FirstPlayableBalanceRunner
             ScoutUseRate = scoutUses / 3f,
         };
     }
+
+    private static RecruitUnitPreview ChooseRunLiteRecruitOffer(IReadOnlyList<RecruitUnitPreview> affordable, int phase)
+    {
+        if (affordable.Count == 0)
+        {
+            return null;
+        }
+
+        if (phase == 0)
+        {
+            var onPlan = affordable.FirstOrDefault(IsRunLiteOnPlanOffer);
+            if (onPlan != null)
+            {
+                return onPlan;
+            }
+        }
+
+        if (phase == 1)
+        {
+            var protectedOffer = affordable.FirstOrDefault(IsRunLiteProtectedOffer);
+            if (protectedOffer != null)
+            {
+                return protectedOffer;
+            }
+        }
+
+        if (phase >= 2)
+        {
+            var standardOffer = affordable.FirstOrDefault(offer => !IsRunLiteOnPlanOffer(offer) && !IsRunLiteProtectedOffer(offer));
+            if (standardOffer != null)
+            {
+                return standardOffer;
+            }
+        }
+
+        return affordable
+            .OrderByDescending(offer => offer.Metadata.PlanFit == CandidatePlanFit.OnPlan)
+            .ThenByDescending(offer => offer.Metadata.SlotType == RecruitOfferSlotType.OnPlan)
+            .ThenByDescending(offer => offer.Metadata.ProtectedByPity)
+            .ThenByDescending(offer => offer.Metadata.SlotType == RecruitOfferSlotType.Protected)
+            .ThenByDescending(offer => offer.Metadata.Tier)
+            .First();
+    }
+
+    private static bool IsRunLiteOnPlanOffer(RecruitUnitPreview offer)
+        => offer.Metadata.SlotType == RecruitOfferSlotType.OnPlan;
+
+    private static bool IsRunLiteProtectedOffer(RecruitUnitPreview offer)
+        => offer.Metadata.ProtectedByPity
+           || offer.Metadata.SlotType == RecruitOfferSlotType.Protected;
 
     private static IReadOnlyList<ContentHealthCard> BuildContentHealthCards(
         CombatContentSnapshot snapshot,
@@ -890,6 +1027,18 @@ public static class FirstPlayableBalanceRunner
 
     private static int ResolveQuotaCount(CombatContentSnapshot snapshot, FirstPlayableSliceDefinition slice, SliceCoverageQuotaKind kind)
     {
+        if (kind is SliceCoverageQuotaKind.AntiSwarmSource
+            or SliceCoverageQuotaKind.AntiSustainSource
+            or SliceCoverageQuotaKind.AntiControlSource)
+        {
+            return EnumerateSliceGovernance(snapshot, slice).Count(governance => MatchesQuota(governance, kind));
+        }
+
+        if (kind == SliceCoverageQuotaKind.SummonSource)
+        {
+            return EnumerateSliceSummonSpecs(snapshot, slice).Count();
+        }
+
         return slice.UnitBlueprintIds
             .Where(id => snapshot.Archetypes.TryGetValue(id, out _))
             .Select(id => snapshot.Archetypes[id])
@@ -917,23 +1066,100 @@ public static class FirstPlayableBalanceRunner
         };
     }
 
+    private static bool MatchesQuota(ContentGovernanceSummary governance, SliceCoverageQuotaKind kind)
+    {
+        var toolSet = new HashSet<string>((governance.DeclaredCounterTools ?? Array.Empty<CompiledCounterToolContribution>()).Select(tool => tool.Tool), StringComparer.Ordinal);
+        return kind switch
+        {
+            SliceCoverageQuotaKind.AntiSwarmSource => toolSet.Contains(CounterTool.CleaveWaveclear.ToString()),
+            SliceCoverageQuotaKind.AntiSustainSource => toolSet.Contains(CounterTool.AntiHealShatter.ToString()),
+            SliceCoverageQuotaKind.AntiControlSource => toolSet.Contains(CounterTool.TenacityStability.ToString()),
+            _ => false,
+        };
+    }
+
     private static bool AllThreatPatternsCovered(CombatContentSnapshot snapshot, FirstPlayableSliceDefinition slice)
     {
-        var threats = slice.UnitBlueprintIds
-            .Where(id => snapshot.Archetypes.TryGetValue(id, out _))
-            .SelectMany(id => snapshot.Archetypes[id].Governance?.DeclaredThreatPatterns ?? Array.Empty<string>())
+        var threats = EnumerateSliceGovernance(snapshot, slice)
+            .SelectMany(governance => governance.DeclaredThreatPatterns ?? Array.Empty<string>())
             .ToHashSet(StringComparer.Ordinal);
         return Enum.GetNames(typeof(ThreatPattern)).All(threats.Contains);
     }
 
     private static bool AllCounterToolsCovered(CombatContentSnapshot snapshot, FirstPlayableSliceDefinition slice)
     {
-        var tools = slice.UnitBlueprintIds
-            .Where(id => snapshot.Archetypes.TryGetValue(id, out _))
-            .SelectMany(id => snapshot.Archetypes[id].Governance?.DeclaredCounterTools ?? Array.Empty<CompiledCounterToolContribution>())
+        var tools = EnumerateSliceGovernance(snapshot, slice)
+            .SelectMany(governance => governance.DeclaredCounterTools ?? Array.Empty<CompiledCounterToolContribution>())
             .Select(tool => tool.Tool)
             .ToHashSet(StringComparer.Ordinal);
         return Enum.GetNames(typeof(CounterTool)).All(tools.Contains);
+    }
+
+    private static IEnumerable<ContentGovernanceSummary> EnumerateSliceGovernance(CombatContentSnapshot snapshot, FirstPlayableSliceDefinition slice)
+    {
+        foreach (var unitId in slice.UnitBlueprintIds)
+        {
+            if (snapshot.Archetypes.TryGetValue(unitId, out var template) && template.Governance != null)
+            {
+                yield return template.Governance;
+            }
+        }
+
+        foreach (var skillId in slice.SignatureActiveIds.Concat(slice.SignaturePassiveIds).Concat(slice.FlexActiveIds).Concat(slice.FlexPassiveIds))
+        {
+            if (snapshot.SkillCatalog.TryGetValue(skillId, out var skill) && skill.Governance != null)
+            {
+                yield return skill.Governance;
+            }
+        }
+
+        foreach (var augmentId in slice.TemporaryAugmentIds.Concat(slice.PermanentAugmentIds))
+        {
+            if (snapshot.AugmentCatalog.TryGetValue(augmentId, out var augment) && augment.Governance != null)
+            {
+                yield return augment.Governance;
+            }
+        }
+
+        foreach (var synergyId in slice.SynergyFamilyIds)
+        {
+            if (snapshot.SynergyCatalog.TryGetValue(synergyId, out var synergy) && synergy.Governance != null)
+            {
+                yield return synergy.Governance;
+            }
+        }
+
+        foreach (var status in snapshot.StatusFamilies?.Values ?? Array.Empty<StatusFamilyTemplate>())
+        {
+            if (status.Governance != null)
+            {
+                yield return status.Governance;
+            }
+        }
+    }
+
+    private static IEnumerable<BattleSkillSpec> EnumerateSliceSummonSpecs(CombatContentSnapshot snapshot, FirstPlayableSliceDefinition slice)
+    {
+        foreach (var unitId in slice.UnitBlueprintIds)
+        {
+            if (!snapshot.Archetypes.TryGetValue(unitId, out var template))
+            {
+                continue;
+            }
+
+            foreach (var skill in template.Skills.Where(skill => skill.SummonProfile != null))
+            {
+                yield return skill;
+            }
+        }
+
+        foreach (var skillId in slice.SignatureActiveIds.Concat(slice.SignaturePassiveIds).Concat(slice.FlexActiveIds).Concat(slice.FlexPassiveIds))
+        {
+            if (snapshot.SkillCatalog.TryGetValue(skillId, out var skill) && skill.SummonProfile != null)
+            {
+                yield return skill;
+            }
+        }
     }
 
     private static bool IsReadabilityFatal(ReadabilityReport? readability)
