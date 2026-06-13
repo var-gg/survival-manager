@@ -4,6 +4,21 @@
     color: var(--sm-ink-1);
 }
 
+/*
+ * The templated TacticalWorkshop modal uses `position: absolute; top/bottom: 0`,
+ * so it fills its containing block. Inside the sandbox the template is wrapped in
+ * a TemplateContainer that otherwise collapses to 0 height (the modal is out of
+ * flow), which centered the frame on a zero-height box and clipped it off-screen.
+ * Stretch the wrapper to the full sandbox surface so the modal centers correctly.
+ */
+.sm-tw-sandbox > TemplateContainer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
 .sm-tw-sandbox__backdrop {
     position: absolute;
     left: 0;
