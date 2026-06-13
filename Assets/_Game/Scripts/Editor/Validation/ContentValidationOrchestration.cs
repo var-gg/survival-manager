@@ -19,6 +19,7 @@ internal sealed class ValidationReportBuilder
     internal IReadOnlyList<string> FloorGaps { get; set; } = Array.Empty<string>();
     internal IReadOnlyList<string> SafeTargetGaps { get; set; } = Array.Empty<string>();
     internal IReadOnlyList<PassiveBoardShapeReport> PassiveBoards { get; set; } = Array.Empty<PassiveBoardShapeReport>();
+    internal IReadOnlyList<SkillCatalogHealthEntry> SkillCatalogHealth { get; set; } = Array.Empty<SkillCatalogHealthEntry>();
     internal LoopCValidationSummary LoopC { get; set; } = new();
 
     internal void RegisterCanonicalId(string kind, string id, string assetPath)
@@ -96,6 +97,7 @@ internal sealed class ValidationReportAssembler
             FloorGaps = builder.FloorGaps,
             SafeTargetGaps = builder.SafeTargetGaps,
             PassiveBoards = builder.PassiveBoards,
+            SkillCatalogHealth = builder.SkillCatalogHealth,
             LoopC = builder.LoopC,
             Issues = builder.Issues
                 .OrderByDescending(issue => issue.Severity)
@@ -206,6 +208,21 @@ internal sealed class CatalogConsistencyValidationPass : IValidationPass
     public void Execute(ValidationAssetCatalog catalog, ValidationReportBuilder builder)
     {
         _registry.Validate(catalog, builder.Issues);
+    }
+}
+
+internal sealed class SkillCatalogHealthValidationPass : IValidationPass
+{
+    private readonly SkillCatalogHealthReportBuilder _reportBuilder;
+
+    public SkillCatalogHealthValidationPass(SkillCatalogHealthReportBuilder reportBuilder)
+    {
+        _reportBuilder = reportBuilder;
+    }
+
+    public void Execute(ValidationAssetCatalog catalog, ValidationReportBuilder builder)
+    {
+        builder.SkillCatalogHealth = _reportBuilder.Build(catalog);
     }
 }
 
@@ -360,6 +377,7 @@ internal static class ContentValidationRuntimeFactory
             new PassiveBoardShapeValidationPass(),
             new LaunchScopeValidationPass(),
             new CatalogConsistencyValidationPass(catalogRegistry),
+            new SkillCatalogHealthValidationPass(new SkillCatalogHealthReportBuilder(new UnityLocalizationEntryLookup())),
             new LoopCGovernanceValidationPass(loopCGovernance),
         });
 

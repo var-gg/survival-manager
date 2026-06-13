@@ -213,6 +213,22 @@ internal sealed class MarkdownValidationSummaryRenderer : IValidationArtifactRen
         }
 
         builder.AppendLine();
+        builder.AppendLine("## Skill Catalog Health");
+        builder.AppendLine();
+        var redCount = report.SkillCatalogHealth.Count(entry => string.Equals(entry.Health, "red", StringComparison.Ordinal));
+        var yellowCount = report.SkillCatalogHealth.Count(entry => string.Equals(entry.Health, "yellow", StringComparison.Ordinal));
+        var greenCount = report.SkillCatalogHealth.Count(entry => string.Equals(entry.Health, "green", StringComparison.Ordinal));
+        builder.AppendLine($"- rows: `{report.SkillCatalogHealth.Count}`");
+        builder.AppendLine($"- health: red `{redCount}`, yellow `{yellowCount}`, green `{greenCount}`");
+        builder.AppendLine();
+        builder.AppendLine("| Skill | Slot | Kind | Delivery | Target | Template | Slice | Effects | Loc | Tags | Support | Weapon | Class | Health |");
+        builder.AppendLine("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
+        foreach (var entry in report.SkillCatalogHealth)
+        {
+            builder.AppendLine($"| `{entry.SkillId}` | `{entry.SlotKind}` | `{entry.Kind}` | `{entry.Delivery}` | `{entry.TargetRule}` | `{entry.TemplateType}` | `{entry.SliceExposure}` | `{entry.EffectsState}` | `{entry.LocalizationState}` | `{entry.CompileTagsState}` | `{entry.SupportCompatibilityState}` | `{entry.RequiredWeaponTagsState}` | `{entry.RequiredClassTagsState}` | `{entry.Health}` |");
+        }
+
+        builder.AppendLine();
         builder.AppendLine("## Issues");
         builder.AppendLine();
         if (report.Issues.Count == 0)

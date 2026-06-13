@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
 using SM.Unity;
@@ -184,6 +185,69 @@ public sealed class ContentValidationWorkflowTests
         Assert.That(codes, Contains.Item("first_playable.flex_active_count"));
         Assert.That(codes, Contains.Item("first_playable.flex_passive_cap"));
         Assert.That(codes, Contains.Item("first_playable.flex_passive_count"));
+    }
+
+    [Test]
+    public void ContentDefinitionValidator_ReportsSkillCatalogHealthRows()
+    {
+        EnsureFolder(TempRoot);
+        var vanguardTag = CreateTempAsset<StableTagDefinition>("tag_vanguard_health.asset", asset =>
+        {
+            asset.Id = "vanguard";
+            asset.NameKey = "content.tag.vanguard.name";
+        });
+        var liveSkill = CreateTempAsset<SkillDefinitionAsset>("skill_health_live.asset", asset =>
+        {
+            asset.Id = "skill_health_live";
+            asset.NameKey = "content.skill.health_live.name";
+            asset.DescriptionKey = "content.skill.health_live.desc";
+            asset.TemplateType = SkillTemplateTypeValue.SingleTargetStrike;
+            asset.Kind = SkillKindValue.Strike;
+            asset.SlotKind = SkillSlotKindValue.CoreActive;
+            asset.Delivery = SkillDeliveryValue.Melee;
+            asset.TargetRule = SkillTargetRuleValue.NearestEnemy;
+            asset.RequiredClassTags.Add(vanguardTag);
+            asset.CompileTags.Add(vanguardTag);
+            asset.Effects.Add(new EffectDescriptor
+            {
+                Layer = AuthorityLayer.Skill,
+                Scope = EffectScope.CurrentTarget,
+                Capabilities = EffectCapability.DealDamage,
+            });
+        });
+        var parkingSkill = CreateTempAsset<SkillDefinitionAsset>("skill_health_parking.asset", asset =>
+        {
+            asset.Id = "skill_health_parking";
+            asset.NameKey = string.Empty;
+            asset.DescriptionKey = "content.skill.health_parking.desc";
+            asset.TemplateType = SkillTemplateTypeValue.LegacyDerived;
+            asset.Kind = SkillKindValue.Buff;
+            asset.SlotKind = SkillSlotKindValue.Support;
+            asset.Delivery = SkillDeliveryValue.Aura;
+            asset.TargetRule = SkillTargetRuleValue.ProtectedAlly;
+        });
+        var slice = CreateTempAsset<FirstPlayableSliceDefinitionAsset>("first_playable_health.asset", asset =>
+        {
+            asset.SignatureActiveIds.Add(liveSkill.Id);
+            asset.ParkingLotContentIds.Add(parkingSkill.Id);
+        });
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+
+        var report = ContentDefinitionValidator.BuildValidationReport(new ScriptableObject[] { vanguardTag, liveSkill, parkingSkill, slice });
+        var writtenReport = ContentDefinitionValidator.WriteValidationReport(report);
+        var liveRow = report.SkillCatalogHealth.Single(row => row.SkillId == liveSkill.Id);
+        var parkingRow = report.SkillCatalogHealth.Single(row => row.SkillId == parkingSkill.Id);
+
+        Assert.That(liveRow.SliceExposure, Is.EqualTo("Live"));
+        Assert.That(liveRow.TemplateType, Is.EqualTo(nameof(SkillTemplateTypeValue.SingleTargetStrike)));
+        Assert.That(liveRow.EffectsState, Is.EqualTo("ok:1"));
+        Assert.That(parkingRow.SliceExposure, Is.EqualTo("ParkingLot"));
+        Assert.That(parkingRow.Health, Is.EqualTo("red"));
+        Assert.That(parkingRow.EffectsState, Is.EqualTo("empty"));
+        Assert.That(parkingRow.LocalizationState, Does.Contain("name:missing-key"));
+        Assert.That(File.ReadAllText(writtenReport.MarkdownSummaryPath), Does.Contain("## Skill Catalog Health"));
     }
 
     [Test]

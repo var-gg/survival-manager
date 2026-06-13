@@ -28,6 +28,23 @@ public sealed record PassiveBoardShapeReport
     public int KeystoneCount { get; init; }
 }
 
+public sealed record SkillCatalogHealthEntry(
+    string SkillId,
+    string SlotKind,
+    string Kind,
+    string Delivery,
+    string TargetRule,
+    string TemplateType,
+    string SliceExposure,
+    string EffectsState,
+    string LocalizationState,
+    string CompileTagsState,
+    string SupportCompatibilityState,
+    string RequiredWeaponTagsState,
+    string RequiredClassTagsState,
+    string Health,
+    string AssetPath);
+
 public sealed record ContentValidationReport
 {
     public string GeneratedAtUtc { get; init; } = DateTime.UtcNow.ToString("O");
@@ -36,6 +53,7 @@ public sealed record ContentValidationReport
     public IReadOnlyList<string> FloorGaps { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> SafeTargetGaps { get; init; } = Array.Empty<string>();
     public IReadOnlyList<PassiveBoardShapeReport> PassiveBoards { get; init; } = Array.Empty<PassiveBoardShapeReport>();
+    public IReadOnlyList<SkillCatalogHealthEntry> SkillCatalogHealth { get; init; } = Array.Empty<SkillCatalogHealthEntry>();
     public IReadOnlyList<ContentValidationIssue> Issues { get; init; } = Array.Empty<ContentValidationIssue>();
     public LoopCValidationSummary LoopC { get; init; } = new();
     public string JsonReportPath { get; init; } = string.Empty;
