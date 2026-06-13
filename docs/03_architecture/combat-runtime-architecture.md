@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-07
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/03_architecture/combat-runtime-architecture.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -69,9 +69,10 @@
 
 - movement는 custom `CombatVector2` 기반이다.
 - same-team spacing은 약한 분리 보정만 사용한다.
-- 적 roster와 encounter는 아직 stub 비중이 높고, `BattleSetupBuilder` 경로는 migration-only다.
+- normal expedition lane의 적 roster와 encounter는 authored catalog -> `EncounterResolutionService` -> `BattleSetupBuilder` -> `BattleUnitLoadout` 경로를 사용한다.
+- `BattleSetupBuilder`는 authored enemy participant spec과 debug smoke participant spec을 pure loadout으로 바꾸는 adapter이며, authored object나 scene truth를 직접 읽지 않는다.
 - prototype의 live battle definition 일부는 content asset 대신 runtime hero record에서 조립된다.
-- follow-up TODO: encounter asset authoring을 닫으면 enemy build도 authored catalog 기준으로 옮긴다.
+- `QuickBattle`/combat sandbox는 debug smoke lane으로 유지되며 normal expedition source-of-truth가 아니다.
 
 ## 주요 상수 및 API 가시성 (2026-04-04)
 

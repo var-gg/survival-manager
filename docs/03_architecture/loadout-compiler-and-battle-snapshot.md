@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
 - 관련문서:
   - `docs/03_architecture/data-model.md`
@@ -26,9 +26,9 @@
 
 - combat는 profile/save 모델을 직접 읽지 않는다.
 - Unity는 compile 입력을 직접 조립하지 않는다.
-- `BattleSetupBuilder`는 migration 동안만 호환 래퍼로 유지한다.
-- encounter authoring이 닫히기 전까지 enemy setup smoke는 `BattleSetupBuilder` 경유를 허용한다.
-- 이 경로를 새 source-of-truth로 승격하지 않는다.
+- `LoadoutCompiler`는 ally/hero build의 source-of-truth다.
+- `EncounterResolutionService`는 authored enemy squad를 `BattleParticipantSpec`으로 조립하고, `BattleSetupBuilder`는 해당 participant spec을 `BattleUnitLoadout`으로 컴파일하는 enemy build adapter다.
+- `BattleSetupBuilder`는 Unity authored object나 `Resources.Load*`를 읽지 않으며, sandbox/debug smoke fallback도 동일한 pure participant spec 형태로만 소비한다.
 
 ## compile 계약
 

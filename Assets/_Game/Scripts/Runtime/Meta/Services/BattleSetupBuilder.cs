@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 using SM.Meta.Model;
 
 namespace SM.Meta.Services;
@@ -69,6 +71,8 @@ public static class BattleSetupBuilder
                 ? archetype.RoleTag
                 : participant.RoleTag;
 
+        var rulePackages = BuildRulePackages(participant, archetype);
+
         definition = new BattleUnitLoadout(
             participant.ParticipantId,
             participant.DisplayName,
@@ -95,7 +99,7 @@ public static class BattleSetupBuilder
             archetype.PreferredDistance,
             archetype.ProtectRadius,
             archetype.Mana,
-            archetype.RulePackages,
+            rulePackages,
             null,
             archetype.BasicAttack,
             archetype.SignatureActive,
@@ -114,6 +118,29 @@ public static class BattleSetupBuilder
             ResolveDominantHand(participant, content, archetype));
         error = string.Empty;
         return true;
+    }
+
+    private static IReadOnlyList<CombatRuleModifierPackage>? BuildRulePackages(
+        BattleParticipantSpec participant,
+        CombatArchetypeTemplate archetype)
+    {
+        var participantTags = (participant.RuleModifierTags ?? Array.Empty<string>())
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .Select(tag => tag.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(tag => tag, StringComparer.Ordinal)
+            .ToList();
+        if (participantTags.Count == 0)
+        {
+            return archetype.RulePackages;
+        }
+
+        var rulePackages = (archetype.RulePackages ?? Array.Empty<CombatRuleModifierPackage>()).ToList();
+        rulePackages.Add(new CombatRuleModifierPackage(
+            $"participant:{participant.ParticipantId}",
+            ModifierSource.Other,
+            participantTags.Select(tag => new RuleModifier(RuleModifierKind.BehaviorTag, tag)).ToList()));
+        return rulePackages;
     }
 
     private static DominantHand ResolveDominantHand(

@@ -25,7 +25,8 @@ public sealed record BattleParticipantSpec(
     string OpeningIntent = "opening:standard",
     string CharacterId = "",
     string RoleInstructionId = "",
-    DominantHand DominantHand = DominantHand.Right);
+    DominantHand DominantHand = DominantHand.Right,
+    IReadOnlyList<string>? RuleModifierTags = null);
 
 public sealed record BattleEncounterPlan(
     IReadOnlyList<BattleParticipantSpec> EnemyParticipants,

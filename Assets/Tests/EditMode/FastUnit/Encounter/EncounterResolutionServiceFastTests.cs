@@ -39,6 +39,35 @@ public sealed class EncounterResolutionServiceFastTests
     }
 
     [Test]
+    public void TryResolveEncounter_CompilesEnemySquadMemberRuleModifierTags()
+    {
+        var snapshot = CreateSnapshot(new[] { "threat:flanker", "threat:ambusher" });
+        var resolver = new EncounterResolutionService(snapshot);
+        var context = new BattleContextState(
+            "chapter_test",
+            "site_test",
+            0,
+            "encounter_test",
+            123,
+            "hash:test",
+            "reward_source_test",
+            1,
+            false,
+            "faction_wolfpine",
+            string.Empty);
+
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+
+        var enemy = resolved.Enemies.Single();
+        var participantPackage = enemy.RulePackages?.Single(package => package.SourceId == "participant:enemy_grey_fang");
+        Assert.That(participantPackage, Is.Not.Null);
+        Assert.That(participantPackage!.Source, Is.EqualTo(ModifierSource.Other));
+        Assert.That(
+            participantPackage.Modifiers.Select(modifier => $"{modifier.Kind}:{modifier.Value}"),
+            Is.EquivalentTo(new[] { "BehaviorTag:threat:flanker", "BehaviorTag:threat:ambusher" }));
+    }
+
+    [Test]
     public void BuildBattleContextFromPayload_AuthoredEncounter_PreservesIdentityAndHash()
     {
         var snapshot = CreateSnapshot();
@@ -204,7 +233,7 @@ public sealed class EncounterResolutionServiceFastTests
             IsQuickBattle: false);
     }
 
-    private static CombatContentSnapshot CreateSnapshot()
+    private static CombatContentSnapshot CreateSnapshot(IReadOnlyList<string>? memberRuleModifierTags = null)
     {
         return new CombatContentSnapshot(
             Archetypes: new Dictionary<string, CombatArchetypeTemplate>(StringComparer.Ordinal)
@@ -283,7 +312,7 @@ public sealed class EncounterResolutionServiceFastTests
                             string.Empty,
                             string.Empty,
                             EnemySquadMemberRoleValue.Captain,
-                            Array.Empty<string>()),
+                            memberRuleModifierTags ?? Array.Empty<string>()),
                     }),
             },
             RewardSources: new Dictionary<string, RewardSourceTemplate>(StringComparer.Ordinal)

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-03-31
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/03_architecture/encounter-authoring-and-runtime-resolution.md`
 - 관련문서:
   - `docs/02_design/combat/encounter-catalog-and-scaling.md`
@@ -59,9 +59,10 @@ canonical content root는 아래 경로를 사용한다.
 1. `RuntimeCombatContentLookup`가 authored content snapshot을 로드한다.
 2. `EncounterResolutionService`가 chapter/site/node context에서 `BattleContextState`를 만든다.
 3. 같은 service가 `EncounterDefinition`과 `EnemySquadTemplateDefinition`을 읽어 enemy participant spec을 조립한다.
-4. `BattleSetupBuilder.Build(...)`는 조립된 authored encounter spec만 소비한다.
-5. boss encounter면 `BossOverlayDefinition`을 bootstrap에 추가한다.
-6. `BattleScreenController`는 resolved context만 받아 battle simulation을 연다.
+4. `EnemySquadMemberDefinition.RuleModifierTags`는 `EnemySquadMemberTemplate` -> `BattleParticipantSpec.RuleModifierTags` -> `BattleSetupBuilder`를 거쳐 `CombatRuleModifierPackage`로 컴파일된다.
+5. `BattleSetupBuilder.Build(...)`는 조립된 authored encounter spec만 소비한다.
+6. boss encounter면 `BossOverlayDefinition`을 bootstrap에 추가한다.
+7. `BattleScreenController`는 resolved context만 받아 battle simulation을 연다.
 
 ## deterministic seed 규칙
 
@@ -84,6 +85,7 @@ canonical content root는 아래 경로를 사용한다.
 - `BattleEncounterPlans.CreateObserverSmokePlan()`
 
 이 경로는 `quick_smoke` / `debug_smoke_observer` context에서만 사용한다.
+normal expedition lane은 `GameSessionState.TryResolveCurrentEncounter()`가 `EncounterResolutionService.TryResolveEncounter()`를 먼저 호출하고, 실패할 때만 debug fallback으로 내려간다.
 
 ## validator / test oracle
 
@@ -97,3 +99,4 @@ canonical content root는 아래 경로를 사용한다.
   - same node context => same encounter + same seed
   - all story sites cleared => endless unlock
   - normal runtime path does not resolve `debug_smoke_observer`
+  - authored enemy squad member `RuleModifierTags` reach enemy `BattleUnitLoadout.RulePackages`
