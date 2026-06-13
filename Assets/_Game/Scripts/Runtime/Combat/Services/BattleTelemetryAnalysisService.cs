@@ -147,6 +147,7 @@ public static class BattleTelemetryAnalysisService
             .DefaultIfEmpty(result.DurationSeconds)
             .First();
         var deaths = ordered.Where(record => record.EventKind == TelemetryEventKind.KillCredited || record.EventKind == TelemetryEventKind.UnitDied).ToList();
+        var cinematicMoments = CinematicMomentDetector.Detect(ordered).ToArray();
 
         return new BattleSummaryReport
         {
@@ -183,6 +184,7 @@ public static class BattleTelemetryAnalysisService
                 .Select(group => $"{group.Key}:{group.Count()}")
                 .ToArray(),
             DecisiveMoments = BuildDecisiveMoments(ordered),
+            CinematicMoments = cinematicMoments,
         };
     }
 

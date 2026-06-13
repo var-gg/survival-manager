@@ -189,6 +189,34 @@ public static class BattleTelemetryRecorder
         });
     }
 
+    public static void RecordCinematicMoment(BattleState state, CinematicMomentRecord moment)
+    {
+        if (state == null || moment == null)
+        {
+            return;
+        }
+
+        state.AddTelemetry(new TelemetryEventRecord
+        {
+            Domain = TelemetryDomain.Combat,
+            EventKind = TelemetryEventKind.CinematicMomentDetected,
+            TimeSeconds = moment.TimeSeconds,
+            SkillId = moment.SkillId,
+            StatusId = moment.StatusId,
+            ValueA = moment.Score,
+            StringValueA = moment.Id.ToString(),
+            StringValueB = moment.Evidence,
+            Explain = new ExplainStamp
+            {
+                SourceKind = ExplainedSourceKind.SystemRule,
+                SourceContentId = "cinematic_moment_detector_v1",
+                SourceDisplayName = "Cinematic Moment Detector V1",
+                ReasonCode = DecisionReasonCode.DefaultCadence,
+                Salience = SalienceClass.Major,
+            },
+        });
+    }
+
     public static void RecordImpact(
         BattleState state,
         TelemetryEventKind eventKind,

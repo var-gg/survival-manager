@@ -360,7 +360,8 @@ public static class TargetScoringService
             : 0f;
         // Phase 2 FocusMark: 팀 블랙보드가 지목한 표적은 약간 더 매력적(미터 등가 보너스) — 선호일 뿐
         // 강제가 아니라서 P1 플레이어 지시·marked·Dive/Peel 오버라이드·melee 최근접 가드가 그대로 우선한다.
-        var focusMarkBias = state.GetTeamBlackboard(actor.Side).FocusMarkId == target.Id
+        var blackboard = AiPerceptionBlackboardService.Build(state, actor);
+        var focusMarkBias = blackboard.FocusMarkId == target.Id
             ? -FocusMarkTargetBias
             : 0f;
         return switchPenalty + focusBias + flankBias + screenPenalty + focusMarkBias;

@@ -61,6 +61,9 @@ public enum TelemetryEventKind
     PositioningIntentUpdated = 41,
     ActivityMetricRecorded = 42,
     PostAttackRepositioned = 43,
+    CinematicMomentDetected = 44,
+    AiPerceptionBlackboardUpdated = 45,
+    TacticReadEvaluated = 46,
 }
 
 public enum ExplainedSourceKind
@@ -196,6 +199,7 @@ public sealed class BattleSummaryReport
     public string[] TopDamageSources = Array.Empty<string>();
     public string[] TopDecisionReasons = Array.Empty<string>();
     public string[] DecisiveMoments = Array.Empty<string>();
+    public CinematicMomentRecord[] CinematicMoments = Array.Empty<CinematicMomentRecord>();
 }
 
 [Serializable]

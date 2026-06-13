@@ -23,6 +23,9 @@ public static class TacticEvaluator
     private const float SupportMaxRangeFloor = 1.4f;
     private const float SupportRangeShrink = 0.8f;
 
+    public static AiPerceptionBlackboard BuildPerceptionBlackboard(BattleState state, UnitSnapshot actor)
+        => AiPerceptionBlackboardService.Build(state, actor);
+
     public static EvaluatedAction Evaluate(BattleState state, UnitSnapshot actor)
     {
         var reevaluationReason = actor.PendingReevaluationReason != ReevaluationReason.None
