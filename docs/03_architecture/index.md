@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-08
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -90,6 +90,7 @@
 - `combat-content-mapping.md`: spatial combat authored data와 runtime 매핑
 - `sfx-hook-id-contract.md`: skill/status/common combat cue SFX hook id와 생성 주문서 규칙
 - `sfx-sound-style-bible.md`: SFX 음색 규칙, MOSS caption-first 프롬프트 계약, layered 합성 워크플로우
+- `presentation-cue-hook-coverage.md`: visual/audio cue hook 6축 inventory, 4-state(에셋없음/placeholder/필수누락/debug-only) 정책, normal-lane witness + seek/reset·배속 smoke 기준
 - `encounter-authoring-and-runtime-resolution.md`: chapter/site/encounter resolve와 debug fallback 경계
 - `recruit-offer-schema.md`: recruit preview, pack metadata, pity/scout state schema
 - `unit-economy-schema.md`: wallet, retrain state, duplicate conversion, dismiss footprint schema
@@ -104,9 +105,11 @@
 - `telemetry-contract.md`: runtime telemetry taxonomy와 ExplainStamp source-of-truth
 - `readability-gate-contract.md`: readability threshold, aggregation, fail semantics
 - `first-playable-balance-targets.md`: PureKit / SystemicSlice / RunLite deterministic suite
+- `balance-scenario-coverage-matrix.md`: balance smoke, threat topology, Loop D scenario coverage matrix
 - `pruning-playbook.md`: content health grade, prune rule, move-out-of-v1 기준
 - `status-runtime-stack-and-cleanse-rules.md`: status stack / refresh / ownership runtime 규칙
 - `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
+- `combat-sandbox-inspector-surface-inventory.md`: Combat Sandbox inspector/window/HUD 검증 표면 inventory
 - `town-character-sheet-contract.md`: Town readonly character sheet source/view-state contract
 - `character-axis-and-localized-battle-metadata.md`: `CharacterDefinition`, localized inspector, battle metadata 흐름
 - `loadout-compiler-and-battle-snapshot.md`: build -> compile -> battle snapshot 경계

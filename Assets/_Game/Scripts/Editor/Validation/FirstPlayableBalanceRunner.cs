@@ -281,6 +281,11 @@ public static class FirstPlayableBalanceRunner
             failures.Add("purekit.top_damage_share");
         }
 
+        if (reports.Any(report => report.ReadabilityFatalRate > 0f))
+        {
+            failures.Add("purekit.readability_fatal");
+        }
+
         return new LoopDSuiteReport
         {
             SuiteId = BalanceSuiteId.PureKit.ToString(),
@@ -584,7 +589,9 @@ public static class FirstPlayableBalanceRunner
         var timeToFirstMajor = digests.Select(digest => digest.Replay.BattleSummary?.TimeToFirstMajorActionSeconds ?? digest.Result.DurationSeconds).ToList();
         var deadBeforeMajor = digests.Select(digest => digest.Replay.BattleSummary?.DeadBeforeFirstMajorActionRate ?? 0f).ToList();
         var topDamageShares = digests.Select(digest => digest.Replay.BattleSummary?.TopDamageShare ?? 0f).ToList();
-        var readabilityFatals = digests.Select(digest => IsReadabilityFatal(digest.Replay.Readability) ? 1f : 0f).ToList();
+        var readabilityFatals = digests
+            .Select(digest => BattleTelemetryAnalysisService.HasReadabilityFatal(digest.Replay.Readability, ResolveCombatantCount(digest)) ? 1f : 0f)
+            .ToList();
         var unexplainedDamageRatios = digests.Select(digest => digest.Replay.Readability?.UnexplainedDamageRatio ?? 0f).ToList();
         var unexplainedHealingRatios = digests.Select(digest => digest.Replay.Readability?.UnexplainedHealingRatio ?? 0f).ToList();
         var majorEventCollisionRates = digests.Select(digest => digest.Replay.Readability?.MajorEventCollisionRate ?? 0f).ToList();
@@ -1162,13 +1169,10 @@ public static class FirstPlayableBalanceRunner
         }
     }
 
-    private static bool IsReadabilityFatal(ReadabilityReport? readability)
+    private static int ResolveCombatantCount(LoopDBattleDigest digest)
     {
-        return readability != null
-               && (readability.UnexplainedDamageRatio > 0.10f
-                   || readability.UnexplainedHealingRatio > 0.10f
-                   || readability.MajorEventCollisionRate > 0.30f
-                   || readability.SalienceWeightPer1sP95 > 12f);
+        var input = digest.Replay.Input;
+        return (input.Allies?.Count ?? 0) + (input.Enemies?.Count ?? 0);
     }
 
     private static string BuildContentHealthCsv(IReadOnlyList<ContentHealthCard> cards)

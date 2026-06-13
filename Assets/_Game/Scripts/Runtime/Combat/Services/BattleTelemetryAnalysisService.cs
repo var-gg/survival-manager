@@ -99,12 +99,12 @@ public static class BattleTelemetryAnalysisService
             violations.Add(ReadabilityViolationKind.SalienceOverload);
         }
 
-        if (report.StatusChipOverflowRate > 0.05f)
+        if (report.StatusChipOverflowRate > config.StatusChipOverflowRateMax)
         {
             violations.Add(ReadabilityViolationKind.StatusChipOverflow);
         }
 
-        if (report.FloatingTextBurstOverflowRate > 0.05f)
+        if (report.FloatingTextBurstOverflowRate > config.FloatingTextBurstOverflowRateMax)
         {
             violations.Add(ReadabilityViolationKind.FloatingTextBurstOverflow);
         }
@@ -119,6 +119,51 @@ public static class BattleTelemetryAnalysisService
 
         report.Violations = violations.Distinct().ToArray();
         return report;
+    }
+
+    public static ReadabilityGateSeverity ResolveReadabilityGateSeverity(
+        ReadabilityViolationKind violation,
+        ReadabilityReport report,
+        int combatantCount,
+        ReadabilityGateConfig? config = null)
+    {
+        config ??= DefaultReadabilityGateConfig;
+        return violation switch
+        {
+            ReadabilityViolationKind.UnexplainedDamage => report.UnexplainedDamageRatio > config.UnexplainedRatioFatal
+                ? ReadabilityGateSeverity.Fatal
+                : ReadabilityGateSeverity.Error,
+            ReadabilityViolationKind.UnexplainedHealing => report.UnexplainedHealingRatio > config.UnexplainedRatioFatal
+                ? ReadabilityGateSeverity.Fatal
+                : ReadabilityGateSeverity.Error,
+            ReadabilityViolationKind.ProcChainOpacity => ReadabilityGateSeverity.Error,
+            ReadabilityViolationKind.SalienceOverload => report.SalienceWeightPer1sP95 > config.ResolveScaledSalienceBudget(combatantCount) + config.SalienceWeightFatalMargin
+                ? ReadabilityGateSeverity.Fatal
+                : ReadabilityGateSeverity.Error,
+            ReadabilityViolationKind.MajorEventCollision => report.MajorEventCollisionRate > config.MajorEventCollisionRateFatal
+                ? ReadabilityGateSeverity.Fatal
+                : ReadabilityGateSeverity.Error,
+            ReadabilityViolationKind.TargetThrash => ReadabilityGateSeverity.Warning,
+            ReadabilityViolationKind.IdleGapTooLong => ReadabilityGateSeverity.Warning,
+            ReadabilityViolationKind.OffscreenMajorEvent => ReadabilityGateSeverity.Warning,
+            ReadabilityViolationKind.StatusChipOverflow => ReadabilityGateSeverity.Info,
+            ReadabilityViolationKind.FloatingTextBurstOverflow => ReadabilityGateSeverity.Info,
+            _ => ReadabilityGateSeverity.Warning,
+        };
+    }
+
+    public static bool HasReadabilityFatal(
+        ReadabilityReport? report,
+        int combatantCount,
+        ReadabilityGateConfig? config = null)
+    {
+        if (report == null)
+        {
+            return false;
+        }
+
+        return (report.Violations ?? Array.Empty<ReadabilityViolationKind>())
+            .Any(violation => ResolveReadabilityGateSeverity(violation, report, combatantCount, config) == ReadabilityGateSeverity.Fatal);
     }
 
     public static BattleSummaryReport BuildBattleSummary(

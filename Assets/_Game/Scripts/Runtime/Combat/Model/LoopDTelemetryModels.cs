@@ -237,9 +237,10 @@ public enum ReadabilityViolationKind
 
 public enum ReadabilityGateSeverity
 {
-    Warning = 0,
-    Error = 1,
-    Fatal = 2,
+    Info = 0,
+    Warning = 1,
+    Error = 2,
+    Fatal = 3,
 }
 
 public enum ReadabilityAggregationKind
@@ -263,7 +264,12 @@ public sealed class ReadabilityGateConfig
     public float TimeToFirstMajorActionP50Max = 6.0f;
     public float TimeToFirstMajorActionP50Min = 1.25f;
     public float MajorEventCollisionRateMax = 0.20f;
+    public float UnexplainedRatioFatal = 0.10f;
+    public float MajorEventCollisionRateFatal = 0.30f;
+    public float SalienceWeightFatalMargin = 3.0f;
     public float SalienceWeightPer1sP95Max6Combat = 9.0f;
+    public float StatusChipOverflowRateMax = 0.05f;
+    public float FloatingTextBurstOverflowRateMax = 0.05f;
     public int MaxStatusChipsPerUnit = 3;
     public int MaxFloatingTextBurstsPerTargetPerSec = 4;
     public int MinorAggregationWindowMs = 330;

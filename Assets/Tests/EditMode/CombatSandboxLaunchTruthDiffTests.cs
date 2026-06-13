@@ -179,6 +179,40 @@ public sealed class CombatSandboxLaunchTruthDiffTests
         }
     }
 
+    [Test]
+    public void CombatSandboxExecutionSummaries_SurfaceReadabilitySeverityAndCinematicMoments()
+    {
+        var readabilitySummary = CombatSandboxExecutionService.BuildReadabilitySummary(
+            new ReadabilityReport
+            {
+                UnexplainedDamageRatio = 0.12f,
+                TargetSwitchesPer10sP95 = 7f,
+                SalienceWeightPer1sP95 = 4f,
+                Violations = new[]
+                {
+                    ReadabilityViolationKind.UnexplainedDamage,
+                    ReadabilityViolationKind.TargetThrash,
+                },
+            },
+            combatantCount: 6);
+        var explanationSummary = CombatSandboxExecutionService.BuildExplanationSummary(
+            new BattleSummaryReport
+            {
+                TopDamageSources = new[] { "hero_a:SignatureActive:skill_a:12" },
+                TopDecisionReasons = new[] { "BreakGuard:2" },
+                DecisiveMoments = new[] { "first_death:2.5:enemy_a" },
+                CinematicMoments = new[]
+                {
+                    new CinematicMomentRecord(CinematicMomentId.SaveMoment, 3.5f, "ally_a", "ally_b", "skill_guard", string.Empty, "barrier"),
+                },
+            });
+
+        Assert.That(readabilitySummary, Does.Contain("severity fatal=1 error=0 warning=1 info=0"));
+        Assert.That(readabilitySummary, Does.Contain("violations=[UnexplainedDamage, TargetThrash]"));
+        Assert.That(explanationSummary, Does.Contain("decisive=[first_death:2.5:enemy_a]"));
+        Assert.That(explanationSummary, Does.Contain("cinematic=[SaveMoment]"));
+    }
+
     private static SkillDefinitionAsset CreateSkillAsset(string id)
     {
         var skill = ScriptableObject.CreateInstance<SkillDefinitionAsset>();

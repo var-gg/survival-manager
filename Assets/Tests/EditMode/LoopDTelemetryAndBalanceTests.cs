@@ -218,6 +218,49 @@ public sealed class LoopDTelemetryAndBalanceTests
     }
 
     [Test]
+    public void ReadabilityGateSeverity_MapsDecisionContract()
+    {
+        var report = new ReadabilityReport
+        {
+            UnexplainedDamageRatio = 0.06f,
+            UnexplainedHealingRatio = 0.12f,
+            MajorEventCollisionRate = 0.31f,
+            SalienceWeightPer1sP95 = 13f,
+            TargetSwitchesPer10sP95 = 7f,
+            StatusChipOverflowRate = 0.10f,
+            Violations = new[]
+            {
+                ReadabilityViolationKind.UnexplainedDamage,
+                ReadabilityViolationKind.UnexplainedHealing,
+                ReadabilityViolationKind.MajorEventCollision,
+                ReadabilityViolationKind.SalienceOverload,
+                ReadabilityViolationKind.TargetThrash,
+                ReadabilityViolationKind.StatusChipOverflow,
+            },
+        };
+
+        Assert.That(
+            BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity(ReadabilityViolationKind.UnexplainedDamage, report, combatantCount: 6),
+            Is.EqualTo(ReadabilityGateSeverity.Error));
+        Assert.That(
+            BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity(ReadabilityViolationKind.UnexplainedHealing, report, combatantCount: 6),
+            Is.EqualTo(ReadabilityGateSeverity.Fatal));
+        Assert.That(
+            BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity(ReadabilityViolationKind.MajorEventCollision, report, combatantCount: 6),
+            Is.EqualTo(ReadabilityGateSeverity.Fatal));
+        Assert.That(
+            BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity(ReadabilityViolationKind.SalienceOverload, report, combatantCount: 6),
+            Is.EqualTo(ReadabilityGateSeverity.Fatal));
+        Assert.That(
+            BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity(ReadabilityViolationKind.TargetThrash, report, combatantCount: 6),
+            Is.EqualTo(ReadabilityGateSeverity.Warning));
+        Assert.That(
+            BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity(ReadabilityViolationKind.StatusChipOverflow, report, combatantCount: 6),
+            Is.EqualTo(ReadabilityGateSeverity.Info));
+        Assert.That(BattleTelemetryAnalysisService.HasReadabilityFatal(report, combatantCount: 6), Is.True);
+    }
+
+    [Test]
     public void FirstPlayableSliceGenerator_BuildsSliceWithinCapsAndWritesArtifact()
     {
         var result = FirstPlayableSliceGenerator.GenerateAndWriteArtifacts();

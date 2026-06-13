@@ -64,18 +64,24 @@ public static class CombatSandboxExecutionService
         return builder.ToString().TrimEnd();
     }
 
-    public static string BuildReadabilitySummary(ReadabilityReport? report)
+    public static string BuildReadabilitySummary(ReadabilityReport? report, int combatantCount = 6)
     {
         if (report == null)
         {
             return "Readability report unavailable.";
         }
 
+        var violations = report.Violations ?? Array.Empty<ReadabilityViolationKind>();
+        var severityCounts = violations
+            .Select(violation => BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity(violation, report, combatantCount))
+            .GroupBy(severity => severity)
+            .ToDictionary(group => group.Key, group => group.Count());
         var builder = new StringBuilder();
         builder.AppendLine($"salience_p95={report.SalienceWeightPer1sP95:0.###}");
         builder.AppendLine($"unexplained_damage={report.UnexplainedDamageRatio:0.###}");
         builder.AppendLine($"target_switch_p95={report.TargetSwitchesPer10sP95:0.###}");
-        builder.AppendLine($"violations=[{string.Join(", ", report.Violations ?? Array.Empty<ReadabilityViolationKind>())}]");
+        builder.AppendLine($"severity fatal={CountSeverity(severityCounts, ReadabilityGateSeverity.Fatal)} error={CountSeverity(severityCounts, ReadabilityGateSeverity.Error)} warning={CountSeverity(severityCounts, ReadabilityGateSeverity.Warning)} info={CountSeverity(severityCounts, ReadabilityGateSeverity.Info)}");
+        builder.AppendLine($"violations=[{string.Join(", ", violations)}]");
         return builder.ToString().TrimEnd();
     }
 
@@ -90,6 +96,7 @@ public static class CombatSandboxExecutionService
         builder.AppendLine($"top_damage=[{string.Join(", ", report.TopDamageSources ?? Array.Empty<string>())}]");
         builder.AppendLine($"top_reasons=[{string.Join(", ", report.TopDecisionReasons ?? Array.Empty<string>())}]");
         builder.AppendLine($"decisive=[{string.Join(", ", report.DecisiveMoments ?? Array.Empty<string>())}]");
+        builder.AppendLine($"cinematic=[{string.Join(", ", (report.CinematicMoments ?? Array.Empty<CinematicMomentRecord>()).Select(moment => moment.Id.ToString()))}]");
         return builder.ToString().TrimEnd();
     }
 
@@ -126,6 +133,11 @@ public static class CombatSandboxExecutionService
         }
 
         return builder.ToString().TrimEnd();
+    }
+
+    private static int CountSeverity(System.Collections.Generic.IReadOnlyDictionary<ReadabilityGateSeverity, int> counts, ReadabilityGateSeverity severity)
+    {
+        return counts.TryGetValue(severity, out var count) ? count : 0;
     }
 
     private static void AppendCoverage(StringBuilder builder, TeamCounterCoverageReport? report)

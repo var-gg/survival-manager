@@ -22,6 +22,18 @@ public sealed record BalanceSweepScenarioInput(
     IReadOnlyList<BattleUnitLoadout> EnemyLoadout,
     IReadOnlyList<int> Seeds);
 
+public sealed record BalanceScenarioCoverageMatrixRow(
+    string ScenarioId,
+    string SourceLane,
+    string CharacterArchetypes,
+    string EncounterFamily,
+    string BuildLane,
+    string SynergyAxis,
+    string StatusFamily,
+    string ReadabilityAsk,
+    string KpiCoverage,
+    string GapDisposition);
+
 public static class BalanceSweepScenarioFactory
 {
     private sealed record SweepItemSpec(
@@ -368,6 +380,52 @@ public static class BalanceSweepScenarioFactory
             .ToList();
     }
 
+    public static IReadOnlyList<BalanceScenarioCoverageMatrixRow> BuildCoverageMatrixRows()
+    {
+        var rows = new List<BalanceScenarioCoverageMatrixRow>();
+        rows.AddRange(SmokeScenarios.Select(spec => new BalanceScenarioCoverageMatrixRow(
+            spec.ScenarioId,
+            "balance-sweep-smoke",
+            FormatArchetypes(spec.Heroes),
+            "observer_smoke",
+            spec.TeamTacticId,
+            FormatSynergyAxis(spec.TemporaryAugmentIds, spec.PermanentAugmentIds),
+            "baseline/direct-damage",
+            "determinism/cadence/duration",
+            "compile_hash, final_state_hash, average_battle_duration, first_signature_cast",
+            "covered")));
+
+        rows.AddRange(ThreatScenarios.Select(spec => new BalanceScenarioCoverageMatrixRow(
+            spec.ScenarioId,
+            "balance-sweep-threat-topology",
+            FormatArchetypes(spec.Heroes),
+            string.IsNullOrWhiteSpace(spec.EncounterId) ? spec.ThreatPattern.ToString() : spec.EncounterId,
+            spec.TeamTacticId,
+            FormatSynergyAxis(spec.TemporaryAugmentIds, spec.PermanentAugmentIds),
+            ResolveStatusFamily(spec.ThreatPattern),
+            ResolveReadabilityAsk(spec.ThreatPattern),
+            "counter_coverage, validation_error_count, validation_warning_count",
+            spec.ThreatPattern == ThreatPattern.SwarmFlood ? "debug-only enemy synthesis" : "covered")));
+
+        rows.AddRange(BuildLoopDScenarioRows());
+        rows.Add(new BalanceScenarioCoverageMatrixRow(
+            "RunLite_EconomyChoice",
+            "loopd-runlite",
+            "first_playable_roster",
+            "mini_run_progression",
+            "recruit/retrain/scout/duplicate",
+            "purchase_plan",
+            "n/a",
+            "economy choice readability",
+            "dead_offer_ratio, no_affordable_option_rate, echo_spend_ratio, protected_purchase_share, on_plan_purchase_share",
+            "covered"));
+
+        return rows
+            .OrderBy(row => row.SourceLane, StringComparer.Ordinal)
+            .ThenBy(row => row.ScenarioId, StringComparer.Ordinal)
+            .ToList();
+    }
+
     private static BalanceSweepScenarioInput BuildScenario(
         SweepScenarioSpec spec,
         CombatContentSnapshot content,
@@ -558,6 +616,144 @@ public static class BalanceSweepScenarioFactory
             "team_tactic_collapse_weak_side" => TeamPostureType.CollapseWeakSide,
             "team_tactic_all_in_backline" => TeamPostureType.AllInBackline,
             _ => TeamPostureType.StandardAdvance,
+        };
+    }
+
+    private static IEnumerable<BalanceScenarioCoverageMatrixRow> BuildLoopDScenarioRows()
+    {
+        foreach (BalanceScenarioId scenarioId in Enum.GetValues(typeof(BalanceScenarioId)))
+        {
+            var sourceLane = scenarioId is BalanceScenarioId.Standard_BalancedMirror_3v3
+                or BalanceScenarioId.Dive_vs_BacklinePeel
+                or BalanceScenarioId.SustainBall_vs_BurstSpike
+                or BalanceScenarioId.SwarmFlood_vs_Cleave
+                or BalanceScenarioId.ArmorFrontline_vs_ArmorShred
+                or BalanceScenarioId.ResistanceShell_vs_Exposure
+                or BalanceScenarioId.GuardBulwark_vs_MultiHitBreak
+                or BalanceScenarioId.MixedDraft_4v4
+                    ? "loopd-purekit/systemic"
+                    : "loopd-purekit";
+            yield return new BalanceScenarioCoverageMatrixRow(
+                scenarioId.ToString(),
+                sourceLane,
+                ResolveLoopDArchetypes(scenarioId),
+                ResolveLoopDEncounterFamily(scenarioId),
+                ResolveLoopDBuildLane(scenarioId),
+                ResolveLoopDSynergyAxis(scenarioId),
+                ResolveLoopDStatusFamily(scenarioId),
+                "readability fatal/watchlist",
+                ResolveLoopDKpiCoverage(scenarioId),
+                scenarioId == BalanceScenarioId.MixedDraft_4v4 ? "ManualLoopD mirror/draw policy deferred" : "covered");
+        }
+    }
+
+    private static string FormatArchetypes(IEnumerable<SweepHeroSpec> heroes)
+    {
+        return string.Join("/", heroes.Select(hero => hero.ArchetypeId).Distinct(StringComparer.Ordinal).OrderBy(id => id, StringComparer.Ordinal));
+    }
+
+    private static string FormatSynergyAxis(IReadOnlyList<string> temporaryAugments, IReadOnlyList<string> permanentAugments)
+    {
+        var parts = temporaryAugments.Concat(permanentAugments).Where(id => !string.IsNullOrWhiteSpace(id)).ToArray();
+        return parts.Length == 0 ? "none" : string.Join("/", parts);
+    }
+
+    private static string ResolveStatusFamily(ThreatPattern threatPattern)
+    {
+        return threatPattern switch
+        {
+            ThreatPattern.ControlChain => "control/tenacity",
+            ThreatPattern.SustainBall => "heal/barrier",
+            ThreatPattern.GuardBulwark => "guardbreak/barrier",
+            ThreatPattern.ResistanceShell => "exposure/resistance",
+            ThreatPattern.SwarmFlood => "summon/swarm",
+            _ => "direct-damage",
+        };
+    }
+
+    private static string ResolveReadabilityAsk(ThreatPattern threatPattern)
+    {
+        return threatPattern switch
+        {
+            ThreatPattern.DiveBackline => "backline access and peel clarity",
+            ThreatPattern.SwarmFlood => "salience overload and cleave readability",
+            ThreatPattern.ControlChain => "control chain clarity",
+            ThreatPattern.SustainBall => "sustain source explainability",
+            _ => "counter topology readability",
+        };
+    }
+
+    private static string ResolveLoopDArchetypes(BalanceScenarioId scenarioId)
+    {
+        return scenarioId switch
+        {
+            BalanceScenarioId.Duel_MeleeMirror_1v1 => "slayer",
+            BalanceScenarioId.Standard_BalancedMirror_3v3 => "marksman/priest/warden",
+            BalanceScenarioId.MeleeCollapse_vs_RangerHold => "raider/reaver/slayer vs marksman/priest/warden",
+            BalanceScenarioId.Dive_vs_BacklinePeel => "raider/reaver/scout vs bulwark/priest/warden",
+            BalanceScenarioId.SustainBall_vs_BurstSpike => "priest/shaman/warden vs hexer/hunter/slayer",
+            BalanceScenarioId.SwarmFlood_vs_Cleave => "hunter/scout/shaman vs marksman/priest/warden",
+            BalanceScenarioId.ControlChain_vs_Tenacity => "hexer/shaman/warden vs priest/raider/warden",
+            BalanceScenarioId.ArmorFrontline_vs_ArmorShred => "bulwark/guardian/priest vs marksman/raider/slayer",
+            BalanceScenarioId.ResistanceShell_vs_Exposure => "hexer/priest/shaman vs hexer/scout/shaman",
+            BalanceScenarioId.GuardBulwark_vs_MultiHitBreak => "bulwark/guardian/marksman vs priest/raider/scout",
+            BalanceScenarioId.EvasiveSkirmish_vs_TrackingArea => "hunter/marksman/scout vs priest/shaman/warden",
+            BalanceScenarioId.MixedDraft_4v4 => "marksman/priest/raider/warden vs bulwark/reaver/scout/shaman",
+            _ => "unknown",
+        };
+    }
+
+    private static string ResolveLoopDEncounterFamily(BalanceScenarioId scenarioId)
+    {
+        return scenarioId switch
+        {
+            BalanceScenarioId.Standard_BalancedMirror_3v3 or BalanceScenarioId.Duel_MeleeMirror_1v1 => "mirror",
+            BalanceScenarioId.MixedDraft_4v4 => "mixed_draft",
+            _ => scenarioId.ToString(),
+        };
+    }
+
+    private static string ResolveLoopDBuildLane(BalanceScenarioId scenarioId)
+    {
+        return scenarioId switch
+        {
+            BalanceScenarioId.Dive_vs_BacklinePeel => "dive/peel",
+            BalanceScenarioId.SustainBall_vs_BurstSpike => "sustain/burst",
+            BalanceScenarioId.SwarmFlood_vs_Cleave => "swarm/cleave",
+            BalanceScenarioId.ControlChain_vs_Tenacity => "control/tenacity",
+            BalanceScenarioId.MixedDraft_4v4 => "mixed 4v4",
+            _ => "combat topology",
+        };
+    }
+
+    private static string ResolveLoopDSynergyAxis(BalanceScenarioId scenarioId)
+    {
+        return scenarioId == BalanceScenarioId.MixedDraft_4v4
+            ? "2/4 + 2/3 grammar observation"
+            : "first playable unit synergy";
+    }
+
+    private static string ResolveLoopDStatusFamily(BalanceScenarioId scenarioId)
+    {
+        return scenarioId switch
+        {
+            BalanceScenarioId.ControlChain_vs_Tenacity => "control/cleanse/tenacity",
+            BalanceScenarioId.SustainBall_vs_BurstSpike => "heal/barrier/anti-heal",
+            BalanceScenarioId.GuardBulwark_vs_MultiHitBreak => "guardbreak/barrier",
+            BalanceScenarioId.ResistanceShell_vs_Exposure => "exposure/resistance",
+            BalanceScenarioId.SwarmFlood_vs_Cleave => "summon/swarm",
+            _ => "damage/targeting",
+        };
+    }
+
+    private static string ResolveLoopDKpiCoverage(BalanceScenarioId scenarioId)
+    {
+        return scenarioId switch
+        {
+            BalanceScenarioId.Standard_BalancedMirror_3v3 => "average_battle_duration, first_signature_cast, readability_fatal",
+            BalanceScenarioId.MixedDraft_4v4 => "timeout_rate, draw_policy_observation, readability_fatal",
+            BalanceScenarioId.SustainBall_vs_BurstSpike => "average_battle_duration, first_signature_cast, synergy_uplift, readability_fatal",
+            _ => "average_battle_duration, first_signature_cast, top_damage_share, readability_fatal, missing_explain_stamp",
         };
     }
 }

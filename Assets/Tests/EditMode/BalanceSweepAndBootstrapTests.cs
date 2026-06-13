@@ -49,6 +49,20 @@ public sealed class BalanceSweepAndBootstrapTests
     }
 
     [Test]
+    public void BalanceSweepScenarioFactory_ReportsCoverageMatrixAxes()
+    {
+        var rows = SM.Editor.Validation.BalanceSweepScenarioFactory.BuildCoverageMatrixRows();
+
+        Assert.That(rows.Count(row => row.SourceLane == "balance-sweep-smoke"), Is.EqualTo(2));
+        Assert.That(rows.Count(row => row.SourceLane == "balance-sweep-threat-topology"), Is.EqualTo(8));
+        Assert.That(rows.Count(row => row.SourceLane.StartsWith("loopd-purekit")), Is.EqualTo(12));
+        Assert.That(rows.Select(row => row.ScenarioId), Contains.Item("RunLite_EconomyChoice"));
+        Assert.That(rows.Single(row => row.ScenarioId == "SustainBall_vs_BurstSpike").KpiCoverage, Does.Contain("synergy_uplift"));
+        Assert.That(rows.Single(row => row.ScenarioId == "RunLite_EconomyChoice").KpiCoverage, Does.Contain("dead_offer_ratio"));
+        Assert.That(rows.Single(row => row.ScenarioId == "MixedDraft_4v4").GapDisposition, Does.Contain("ManualLoopD"));
+    }
+
+    [Test]
     public void RequireSampleContentReady_DoesNotRewriteCommittedFloorContent()
     {
         const string contentPath = "Assets/Resources/_Game/Content/Definitions/Archetypes/archetype_bulwark.asset";

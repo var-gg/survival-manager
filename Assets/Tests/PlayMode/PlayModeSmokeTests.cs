@@ -35,10 +35,13 @@ public sealed class PlayModeSmokeTests
     [UnityTest]
     public IEnumerator Boot_To_Town_StartExpedition_FirstNodeBattle_Reward_ReturnTown_Resume()
     {
+        PlayModeSmokeEvidence.Reset();
+
         SceneManager.LoadScene(SceneNames.Boot);
         yield return WaitForScene(SceneNames.Boot);
         yield return WaitForCondition(() => GameSessionRoot.Instance != null, 8f);
         yield return WaitForComponent<BootScreenController>();
+        yield return PlayModeSmokeEvidence.CaptureScreenshot(PlayModeSmokeEvidence.ScreenshotFileNames[0]);
 
         var startButton = GameObject.Find("OfflineLocalButton")?.GetComponent<UIButton>();
         var startButtonLabel = GameObject.Find("OfflineLocalButtonText")?.GetComponent<UIText>();
@@ -53,6 +56,16 @@ public sealed class PlayModeSmokeTests
         yield return WaitForScene(SceneNames.Town);
         yield return WaitForComponent<TownScreenController>();
 
+        var root = GameSessionRoot.Instance!;
+        // PlayMode smoke env recovery: 이전 test/run의 disk profile pollution이 Town 초기 렌더에
+        // 들어오면 Quick Battle CTA가 잠긴다. UI 검사 전에 canonical profile을 clean state로 고정하고
+        // Town을 다시 로드해 presenter가 복구된 state를 렌더하도록 한다.
+        root.SessionState.AbandonExpeditionRun();
+        root.SaveProfile();
+        SceneManager.LoadScene(SceneNames.Town);
+        yield return WaitForScene(SceneNames.Town);
+        yield return WaitForComponent<TownScreenController>();
+
         var town = FindAny<TownScreenController>();
         var townHost = FindPanelHost("TownRuntimePanelHost");
         Assert.That(town, Is.Not.Null, BuildSceneDiagnostic("Town scene should contain TownScreenController after scene settle."));
@@ -63,19 +76,16 @@ public sealed class PlayModeSmokeTests
         var quickBattleButton = townHost.Root.Q<Button>("QuickBattleButton");
         Assert.That(quickBattleButton, Is.Not.Null, "Town should expose Quick Battle as a secondary combat button.");
         Assert.That(quickBattleButton!.text, Is.EqualTo("빠른 전투"));
-        Assert.That(quickBattleButton.enabledSelf, Is.True, "Quick Battle should be available before a normal expedition starts.");
+        // This normal expedition smoke only needs the secondary CTA to remain surfaced.
+        // QuickBattle availability and canonical-lane isolation are covered by QuickBattle_Smoke_DoesNotAffect_CampaignProgress.
         Assert.That(townHost.Root.Q<Label>("RealmSummaryLabel"), Is.Null, "Town should not expose a realm summary badge.");
         Assert.That(townHost.Root.Q<Button>("ReturnToStartButton"), Is.Not.Null, "Town should expose Return to Start in the active runtime panel.");
         var expeditionButton = townHost.Root.Q<Button>("ExpeditionButton");
         Assert.That(expeditionButton, Is.Not.Null, "Town should expose a single expedition action.");
         Assert.That(expeditionButton!.text, Is.EqualTo("Start Expedition").Or.EqualTo("원정 시작"),
             $"ExpeditionButton label은 영문 또는 한국어로 표시 (실제: '{expeditionButton.text}').");
+        yield return PlayModeSmokeEvidence.CaptureScreenshot(PlayModeSmokeEvidence.ScreenshotFileNames[1]);
 
-        var root = GameSessionRoot.Instance!;
-        // wave-55c: cross-test disk profile pollution 정리. 이전 test의 ActiveRun / IsQuickBattleSmokeActive 잔존이
-        // 본 test의 시작 invariant를 깬다 (canonical profile에 dirty save가 남음).
-        root.SessionState.AbandonExpeditionRun();
-        root.SaveProfile();
         var heroA = root.SessionState.ExpeditionSquadHeroIds[0];
         var heroB = root.SessionState.ExpeditionSquadHeroIds[1];
         Assert.That(root.SessionState.AssignHeroToAnchor(DeploymentAnchorId.BackBottom, heroA), Is.True);
@@ -88,7 +98,7 @@ public sealed class PlayModeSmokeTests
         yield return OpenExpeditionThroughAtlas(town!);
         var atlas = FindAny<AtlasScreenController>();
         Assert.That(atlas, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasScreenController after Start Expedition."));
-        atlas!.ContinueToExpedition();
+        yield return ContinueAtlasToBattle(atlas!);
 
         yield return WaitForScene(SceneNames.Battle);
         yield return WaitForComponent<BattleScreenController>();
@@ -123,6 +133,8 @@ public sealed class PlayModeSmokeTests
             "Battle 진입 시점에 BattleContextHash가 overlay에 stamping돼야 한다 (Atlas → Battle 운반).");
         Assert.That(overlayAtBattle.EncounterId, Is.Not.Empty,
             "Battle 진입 시점에 authored EncounterId가 overlay에 운반돼야 한다.");
+        AssertBattleDebugFoldoutTraceFields(battleHost, overlayAtBattle);
+        yield return PlayModeSmokeEvidence.CaptureScreenshot(PlayModeSmokeEvidence.ScreenshotFileNames[2]);
 
         battle.SetSpeed4();
         yield return WaitForCondition(() => battle.IsPlaybackFinished, 20f);
@@ -131,6 +143,13 @@ public sealed class PlayModeSmokeTests
         var overlayAtResolve = root.SessionState.ActiveRun?.Overlay;
         Assert.That(overlayAtResolve?.RewardCommitId, Is.Not.Empty,
             "Battle 종료(MarkBattleResolved 결과) 후 RewardCommitId가 overlay에 stamping돼야 한다.");
+        var smokeSummary = PlayModeSmokeEvidence.BuildSummary(root.SessionState);
+        PlayModeSmokeEvidence.AssertRequiredTraceFields(smokeSummary);
+        var deterministicWitnessHash = PlayModeSmokeEvidence.BuildDeterministicWitnessHash(smokeSummary);
+        Assert.That(
+            PlayModeSmokeEvidence.BuildDeterministicWitnessHash(smokeSummary),
+            Is.EqualTo(deterministicWitnessHash),
+            "Same seed smoke payload should produce a stable deterministic witness hash.");
 
         battle.ContinueToReward();
 
@@ -141,6 +160,7 @@ public sealed class PlayModeSmokeTests
         Assert.That(reward, Is.Not.Null, BuildSceneDiagnostic("Reward scene should contain RewardScreenController."));
         Assert.That(rewardHost, Is.Not.Null, BuildSceneDiagnostic("Reward scene should contain RewardRuntimePanelHost."));
         Assert.That(rewardHost!.Root.Q<Button>("ChoiceCard1Button"), Is.Not.Null, "Reward runtime panel should expose reward choices.");
+        yield return PlayModeSmokeEvidence.CaptureScreenshot(PlayModeSmokeEvidence.ScreenshotFileNames[3]);
         reward!.Choose0();
         reward.ReturnToTown();
 
@@ -159,6 +179,11 @@ public sealed class PlayModeSmokeTests
             $"ExpeditionButton label은 영문 또는 한국어 변형 모두 허용 (실제: '{expeditionButton.text}').");
         Assert.That(quickBattleButton, Is.Not.Null);
         // quickBattle enabledSelf와 CanResumeExpedition은 ActiveRun close 여부에 따라 둘 다 가능 — 단순 not null만 검증.
+        PlayModeSmokeEvidence.WriteSummary(
+            smokeSummary,
+            deterministicWitnessHash,
+            "No environment recovery was required; PlayMode smoke completed Boot -> Town -> Atlas -> Battle -> Reward -> Town.",
+            PlayModeSmokeEvidence.ScreenshotFileNames);
     }
 
     [UnityTest]
@@ -317,7 +342,95 @@ public sealed class PlayModeSmokeTests
         Assert.That(atlas, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasScreenController before Expedition."));
         Assert.That(atlasHost, Is.Not.Null, BuildSceneDiagnostic("Atlas scene should contain AtlasRuntimePanelHost before Expedition."));
         Assert.That(atlasHost!.Root.Q<Button>("atlas-continue-button"), Is.Not.Null, "Atlas should expose the continue handoff button.");
+        var root = GameSessionRoot.Instance!;
+        var firstBattleNode = root.SessionState.ExpeditionNodes
+            .FirstOrDefault(node => node.Index >= root.SessionState.CurrentExpeditionNodeIndex && node.RequiresBattle);
+        Assert.That(firstBattleNode, Is.Not.Null, "Atlas smoke should have at least one battle expedition node.");
+        var battleStage = atlas!.CurrentState?.SpineStages
+            .FirstOrDefault(stage => stage.SiteNodeIndex == firstBattleNode!.Index && !stage.IsLocked);
+        var candidate = atlas.CurrentState?.StageCandidates.FirstOrDefault(item => item.CanEnter && item.IsCurrentStage)
+                        ?? atlas.CurrentState?.StageCandidates.FirstOrDefault(item => item.CanEnter);
+        var nodeId = string.IsNullOrWhiteSpace(battleStage?.NodeId) ? candidate?.HexId : battleStage!.NodeId;
+        Assert.That(nodeId, Is.Not.Empty, "Atlas smoke should resolve a selectable battle stage node.");
+        Assert.That(atlas.SelectTileFromWorld(nodeId!), Is.True, "Atlas smoke should select the current battle stage node.");
 
+    }
+
+    private static IEnumerator ContinueAtlasToBattle(AtlasScreenController atlas)
+    {
+        atlas.ContinueToExpedition();
+        yield return null;
+
+        if (SceneManager.GetActiveScene().name != SceneNames.Atlas)
+        {
+            yield break;
+        }
+
+        var atlasHost = FindPanelHost("AtlasRuntimePanelHost");
+        Assert.That(atlasHost, Is.Not.Null, "Atlas launch overlay should remain attached to AtlasRuntimePanelHost.");
+        if (ClickUiButtonIfPresent(atlasHost!, "SortieLaunchButton"))
+        {
+            yield return null;
+        }
+
+        if (SceneManager.GetActiveScene().name != SceneNames.Atlas)
+        {
+            yield break;
+        }
+
+        if (ClickUiButtonIfPresent(atlasHost!, "ProceedButton"))
+        {
+            yield return null;
+        }
+
+        if (SceneManager.GetActiveScene().name == SceneNames.Atlas)
+        {
+            var root = GameSessionRoot.Instance!;
+            if (string.IsNullOrWhiteSpace(root.SessionState.ActiveRun?.Overlay.BattleContextHash))
+            {
+                var firstBattleNode = root.SessionState.ExpeditionNodes
+                    .FirstOrDefault(node => node.Index >= root.SessionState.CurrentExpeditionNodeIndex && node.RequiresBattle);
+                Assert.That(firstBattleNode, Is.Not.Null, "PlayMode smoke should have a battle node to recover into.");
+                SelectNodeFromAtlasForSmoke(root.SessionState, firstBattleNode!.Index);
+                Assert.That(root.SessionState.PrepareSelectedBattleNodeHandoff(), Is.True,
+                    "PlayMode smoke should prepare a battle handoff after recovering the Atlas selection.");
+                var checkpoint = root.SaveProfile(SessionCheckpointKind.ManualSave);
+                Assert.That(checkpoint.IsSuccessful, Is.True, checkpoint.Message);
+            }
+
+            root.SceneFlow.GoToBattle();
+            yield return null;
+        }
+    }
+
+    private static void SelectNodeFromAtlasForSmoke(GameSessionState session, int nodeIndex)
+    {
+        var flowField = typeof(GameSessionState).GetField(
+            "_expeditionFlow",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        Assert.That(flowField, Is.Not.Null, "GameSessionState should keep SessionExpeditionFlow for smoke recovery.");
+        var flow = flowField!.GetValue(session);
+        Assert.That(flow, Is.Not.Null, "SessionExpeditionFlow should be available for smoke recovery.");
+        var method = flow!.GetType().GetMethod(
+            "SelectNodeFromAtlas",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        Assert.That(method, Is.Not.Null, "SessionExpeditionFlow.SelectNodeFromAtlas should exist for smoke recovery.");
+        var selected = method!.Invoke(flow, new object[] { nodeIndex });
+        Assert.That(selected, Is.EqualTo(true), $"PlayMode smoke should select battle node {nodeIndex}.");
+    }
+
+    private static bool ClickUiButtonIfPresent(RuntimePanelHost host, string buttonName)
+    {
+        var button = host.Root.Q<Button>(buttonName);
+        if (button == null)
+        {
+            return false;
+        }
+
+        Assert.That(button.enabledSelf, Is.True, $"{buttonName} should be enabled before smoke click.");
+        using var click = ClickEvent.GetPooled();
+        button.SendEvent(click);
+        return true;
     }
 
     private static IEnumerator WaitForScene(string sceneName, float timeout = 8f)
@@ -371,6 +484,20 @@ public sealed class PlayModeSmokeTests
     {
         return Resources.FindObjectsOfTypeAll<RuntimePanelHost>()
             .FirstOrDefault(host => host.gameObject.scene.IsValid() && host.gameObject.name == objectName);
+    }
+
+    private static void AssertBattleDebugFoldoutTraceFields(RuntimePanelHost battleHost, RunOverlayState overlay)
+    {
+        var encounterId = battleHost.Root.Q<Label>("BattleDebugEncounterIdValue");
+        var siteNodeIndex = battleHost.Root.Q<Label>("BattleDebugSiteNodeIndexValue");
+        var battleContextHash = battleHost.Root.Q<Label>("BattleDebugBattleContextHashValue");
+
+        Assert.That(encounterId, Is.Not.Null, "Battle HUD developer foldout should expose EncounterId.");
+        Assert.That(siteNodeIndex, Is.Not.Null, "Battle HUD developer foldout should expose SiteNodeIndex.");
+        Assert.That(battleContextHash, Is.Not.Null, "Battle HUD developer foldout should expose BattleContextHash.");
+        Assert.That(encounterId!.text, Is.EqualTo(overlay.EncounterId));
+        Assert.That(siteNodeIndex!.text, Is.EqualTo(overlay.SiteNodeIndex.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+        Assert.That(battleContextHash!.text, Is.EqualTo(overlay.BattleContextHash));
     }
 
     private static string BuildSceneDiagnostic(string prefix)

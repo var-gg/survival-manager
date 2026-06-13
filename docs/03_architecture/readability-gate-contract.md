@@ -2,12 +2,13 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/03_architecture/readability-gate-contract.md`
 - 관련문서:
   - `docs/03_architecture/telemetry-contract.md`
   - `docs/03_architecture/combat-harness-and-debug-contract.md`
   - `docs/02_design/combat/battle-presentation-contract.md`
+  - `pindoc://decision-loopd-readability-gate-운영계약`
 
 ## 목적
 
@@ -63,11 +64,38 @@ combatant 수가 6을 넘으면 salience budget은 아래를 사용한다.
 - `OffscreenMajorEvent`
 - `ProcChainOpacity`
 
+## severity mapping
+
+readability gate는 `Info / Warning / Error / Fatal` 4단계로 운영한다.
+`BattleTelemetryAnalysisService.ResolveReadabilityGateSeverity`와 `ReadabilityGateConfig`가 코드 쪽 source-of-truth다.
+
+| violation | 기본 severity | fatal 승격 |
+| --- | --- | --- |
+| `UnexplainedDamage` | `Error` | ratio `> 0.10` |
+| `UnexplainedHealing` | `Error` | ratio `> 0.10` |
+| `ProcChainOpacity` | `Error` | 없음 |
+| `SalienceOverload` | `Error` | scaled salience budget `+ 3.0` 초과 |
+| `MajorEventCollision` | `Error` | rate `> 0.30` |
+| `TargetThrash` | `Warning` | 없음 |
+| `IdleGapTooLong` | `Warning` | 없음 |
+| `OffscreenMajorEvent` | `Warning` | 없음 |
+| `StatusChipOverflow` | `Info` | 없음 |
+| `FloatingTextBurstOverflow` | `Info` | 없음 |
+
 ## failure semantics
 
-- readability fatal은 `Broken` content와 동일하게 취급한다.
-- readability error는 최소 `Watch`다.
+- readability `Fatal`은 Loop D shard 안에서 fail이다.
+- readability `Error`는 fail이 아니라 `readability_watchlist.json`에 남기는 watchlist다.
+- readability `Warning`/`Info`는 trend와 UI 표현 debt로 기록하지만 단독 fail이 아니다.
+- `MissingExplainStamp`는 readability severity가 아니라 telemetry 무결성 결함이므로 항상 fail이다.
 - readability debt가 높은 content에 rarity/budget 상향을 먼저 걸지 않는다.
+
+## command lane
+
+- `loopd-slice`: slice 산출 전용. readability를 평가하지 않고 산출물을 만든다.
+- `loopd-purekit`, `loopd-systemic`, `loopd-runlite`: shard 내부에서 fatal 1건 이상이면 fail로 본다. purekit도 fatal fail에 포함한다.
+- `loopd-smoke`, `loopd-full`: shard 집합 명령이며 같은 fatal=fail 규칙을 상속한다.
+- `test-batch-fast`와 기본 EditMode lane은 Loop D long-running 관측을 재흡수하지 않는다. severity mapping 같은 계약 테스트만 focused BatchOnly로 둔다.
 
 ## dev overlay minimum
 
