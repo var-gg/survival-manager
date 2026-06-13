@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-20
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/02_design/meta/index.md`
 - 관련문서:
   - `docs/02_design/index.md`
@@ -30,9 +30,9 @@ Town/expedition loop, 경제, 모집, 장비, augment, synergy, PVP, 캠페인 �
 - `equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계
 - `item-passive-augment-budget.md`: 출시 기준 item/passive/augment 예산 허브와 passive/permanent V1 cap
 - `passive-board-node-catalog.md`: launch floor passive board node 카탈로그
-- `augment-system.md`: augment 문법
-- `augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준
-- `augment-catalog-v1.md`: augment catalog와 live subset
+- `augment-system.md`: augment 문법, V1 5 bucket, internal tag schema, E0/E4/E8/E16/E20 schedule
+- `augment-synergy-operating-model.md`: augment offer와 synergy 운영 기준, dead offer filter와 `stat_light` cap
+- `augment-catalog-v1.md`: V1 temporary 24 authored catalog와 live subset 검증 좌표
 - `permanent-augment-progression.md`: `unlock many, equip one` permanent progression
 - `pvp-boundary.md`: PVP 경계
 - `pvp-ruleset-and-arena-loop.md`: async arena ruleset과 season cadence

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-08
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/02_design/meta/augment-catalog-v1.md`
 - 관련문서:
   - `docs/02_design/meta/augment-system.md`
@@ -21,6 +21,8 @@
 - first playable live subset: temporary `24` + permanent equip slot `1`
 
 ## first playable temporary augments (24)
+
+이 목록은 2026-06-14 기준 repo authored truth다. Pindoc `wiki-combat-augment-prototype-pool`의 서술형 24개 draft는 reader 평가 surface이고, 현재 Unity asset ID는 아래 live subset을 기준으로 검증한다.
 
 ### HeroRewrite (5) — live
 
@@ -90,3 +92,11 @@ V1 prototype current scope에는 temporary reserve를 두지 않는다. 다음 e
 - `SynergyPact`는 build bias tag를 반드시 가진다.
 - `EconomyAndLoot`가 전부 빠지면 recovery lever가 사라지므로 금지한다.
 - permanent augment는 live equip slot 1 기준을 유지하고, authored candidate 확장은 live slice 승격과 분리한다.
+
+## validation surface
+
+- authored catalog guard: `ContentValidationWorkflowTests.AugmentAssets_ExposeV1BucketDistribution`
+- internal tag schema guard: `ContentValidationWorkflowTests.StableTagAssets_ExposeV1AugmentInternalTagSchema`
+- offer algorithm guard: `AugmentOfferServiceTests`
+- schedule guard: `AugmentOfferScheduleServiceTests`
+- content report gate: `pwsh -File tools/unity-bridge.ps1 content-validate`

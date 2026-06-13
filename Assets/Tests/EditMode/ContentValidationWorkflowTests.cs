@@ -18,6 +18,47 @@ namespace SM.Tests.EditMode;
 public sealed class ContentValidationWorkflowTests
 {
     private const string TempRoot = "Assets/Resources/_Game/Content/Definitions/__TestValidationTemp";
+    private static readonly string[] V1TemporaryAugmentIds =
+    {
+        "augment_gold_barrage",
+        "augment_platinum_hinterland",
+        "augment_platinum_reckoning",
+        "augment_silver_hunt",
+        "augment_silver_ward",
+        "augment_gold_bastion",
+        "augment_gold_haste",
+        "augment_gold_ward",
+        "augment_platinum_tenacity",
+        "augment_silver_guard",
+        "augment_silver_reach",
+        "augment_silver_stride",
+        "augment_gold_fury",
+        "augment_platinum_overrun",
+        "augment_platinum_surge",
+        "augment_platinum_wall",
+        "augment_gold_mending",
+        "augment_gold_pack",
+        "augment_platinum_clarity",
+        "augment_silver_clarity",
+        "augment_silver_focus",
+        "augment_gold_pact",
+        "augment_platinum_catacomb",
+        "augment_silver_hex",
+    };
+
+    private static readonly string[] V1InternalAugmentTagIds =
+    {
+        "stat_light",
+        "hero_bound",
+        "role_bound",
+        "class_bound",
+        "synergy_bound",
+        "combat_finisher",
+        "economy_loot",
+        "volatile_run",
+        "permanent_unlock",
+        "wildcard_risk",
+    };
 
     [SetUp]
     public void SetUp()
@@ -499,6 +540,8 @@ public sealed class ContentValidationWorkflowTests
             .ToList();
 
         Assert.That(augments, Has.Count.EqualTo(24));
+        Assert.That(augments.Select(augment => augment.Id).OrderBy(id => id, StringComparer.Ordinal),
+            Is.EqualTo(V1TemporaryAugmentIds.OrderBy(id => id, StringComparer.Ordinal)));
         Assert.That(augments.All(augment => augment.OfferBucket != AugmentOfferBucketValue.LegacyDerived), Is.True);
         Assert.That(augments.Count(augment => augment.OfferBucket == AugmentOfferBucketValue.HeroRewrite), Is.EqualTo(5));
         Assert.That(augments.Count(augment => augment.OfferBucket == AugmentOfferBucketValue.TacticalRewrite), Is.EqualTo(7));
@@ -508,6 +551,19 @@ public sealed class ContentValidationWorkflowTests
         Assert.That(augments.Where(augment => augment.OfferBucket == AugmentOfferBucketValue.SynergyPact)
             .All(augment => augment.BuildBiasTags.Count > 0), Is.True);
         Assert.That(augments.All(augment => augment.Tags.Any(tag => tag != null && tag.Id == "volatile_run")), Is.True);
+    }
+
+    [Test]
+    public void StableTagAssets_ExposeV1AugmentInternalTagSchema()
+    {
+        const string root = "Assets/Resources/_Game/Content/Definitions/StableTags";
+        var tags = Directory.EnumerateFiles(root, "tag_*.asset", SearchOption.TopDirectoryOnly)
+            .Select(AssetDatabase.LoadAssetAtPath<StableTagDefinition>)
+            .Where(tag => tag != null)
+            .Select(tag => tag.Id)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.That(V1InternalAugmentTagIds.All(tags.Contains), Is.True);
     }
 
     [Test]

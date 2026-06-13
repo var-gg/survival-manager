@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-08
+- 최종수정일: 2026-06-14
 - 소스오브트루스: `docs/02_design/meta/augment-system.md`
 - 관련문서:
   - `docs/02_design/meta/synergy-and-augment-taxonomy.md`
@@ -77,6 +77,37 @@ augment는 아래 두 방향을 모두 허용한다.
 - `SynergyPact`
 
 작은 stat buff만 가진 augment를 양산하지 않는다.
+
+### internal tag schema
+
+V1 prototype augment offer와 guardrail은 다음 internal tag를 canonical schema로 사용한다.
+
+- `stat_light`
+- `hero_bound`
+- `role_bound`
+- `class_bound`
+- `synergy_bound`
+- `combat_finisher`
+- `economy_loot`
+- `volatile_run`
+- `permanent_unlock`
+- `wildcard_risk`
+
+이 tag들은 `Assets/Resources/_Game/Content/Definitions/StableTags/tag_*.asset`으로 authored되며, content validation test에서 존재를 고정한다.
+
+### offer schedule
+
+run 중 temporary augment offer는 5회 schedule을 따른다.
+
+| pick | encounter | preferred bucket |
+| --- | --- | --- |
+| 0 | E0 | `TacticalRewrite` |
+| 1 | E4 | `HeroRewrite` |
+| 2 | E8 | `SynergyPact` |
+| 3 | E16 | `ScalingEngine` |
+| 4 | E20 | `EconomyAndLoot` |
+
+`AugmentOfferService`는 acquired temporary/permanent 중복, permanent family suppression, dead bound offer, mutual exclusion, `stat_light` cap을 적용한다.
 
 ## first playable 구현 범위
 

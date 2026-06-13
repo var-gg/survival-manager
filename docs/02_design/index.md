@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-16
+- 최종수정일: 2026-06-14
 - 소스오브트루스: Pindoc Wiki for product/design planning; `docs/02_design/index.md` for remaining repo contract inventory
 - 관련문서:
   - `docs/index.md`
