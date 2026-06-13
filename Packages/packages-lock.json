@@ -219,13 +219,13 @@
       }
     },
     "com.youngwoocho02.unity-cli-connector": {
-      "version": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.19",
+      "version": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.22",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       },
-      "hash": "a9d7a5897d63f440aabddae2001a5a26529d24a5"
+      "hash": "149896faeb3b5165a3af4739342c637ed66d94b6"
     },
     "jp.lilxyzw.liltoon": {
       "version": "file:jp.lilxyzw.liltoon",
@@ -268,7 +268,7 @@
     },
     "com.unity.modules.imageconversion": {
       "version": "1.0.0",
-      "depth": 2,
+      "depth": 1,
       "source": "builtin",
       "dependencies": {}
     },
@@ -295,6 +295,20 @@
       "depth": 2,
       "source": "builtin",
       "dependencies": {}
+    },
+    "com.unity.modules.physics2d": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.screencapture": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.imageconversion": "1.0.0"
+      }
     },
     "com.unity.modules.terrain": {
       "version": "1.0.0",

@@ -11,7 +11,7 @@ Unity Editor와 외부 AI 클라이언트를 로컬 MCP로 연결해,
 - sandbox/tooling 브랜치 사용
 - working tree clean
 - repo에 비밀값/개인 설정 커밋 금지
-- repo embedded CoplayDev MCP package 기준 버전은 `9.6.8`
+- repo embedded CoplayDev MCP package 기준 버전은 `9.7.1`
 
 ## 권장 연결 순서
 
@@ -41,7 +41,7 @@ New-Item -ItemType Directory -Path Logs/MCP -Force | Out-Null
 Start-Process `
   -FilePath "$env:USERPROFILE\.local\bin\uvx.exe" `
   -ArgumentList @(
-    "--from", "mcpforunityserver==9.6.8",
+    "--from", "mcpforunityserver==9.7.1",
     "mcp-for-unity",
     "--transport", "http",
     "--http-url", "http://127.0.0.1:43157",

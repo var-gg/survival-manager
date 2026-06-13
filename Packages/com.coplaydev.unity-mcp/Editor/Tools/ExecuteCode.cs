@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using MCPForUnity.Editor.Helpers;
+using MCPForUnity.Runtime.Helpers;
 using Microsoft.CSharp;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -360,7 +361,7 @@ namespace MCPForUnity.Editor.Tools
         {
             var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in UnityAssembliesCompat.GetLoadedAssemblies())
             {
                 try
                 {
@@ -671,7 +672,13 @@ namespace MCPForUnity.Editor.Tools
             }
             catch (Exception e)
             {
-                errors.Add($"Roslyn compilation error: {e.Message}");
+                // Walk to the deepest cause: TargetInvocationException (and friends) wrap the real
+                // failure inside .InnerException, and reporting only e.Message hides everything
+                // useful (e.g. a missing transitive dep manifests as the generic "Exception has been
+                // thrown by the target of an invocation.").
+                Exception root = e;
+                while (root.InnerException != null) root = root.InnerException;
+                errors.Add($"Roslyn compilation error: {root.GetType().Name}: {root.Message}");
                 return null;
             }
         }

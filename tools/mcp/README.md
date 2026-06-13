@@ -22,7 +22,7 @@
 - `coplay-connection-runbook.md`: CoplayDev Unity MCP 연결과 Codex 복구 절차
 - `check-unity-mcp.ps1`: MCP health endpoint 점검 스크립트
 
-현재 repo의 CoplayDev MCP embedded package는 `9.6.8`이며, 기본 HTTP Local base URL은 `http://127.0.0.1:43157`로 맞춘다.
+현재 repo의 CoplayDev MCP embedded package는 `9.7.1`이며, 기본 HTTP Local base URL은 `http://127.0.0.1:43157`로 맞춘다.
 
 ## 여기에 두면 안 되는 것
 
