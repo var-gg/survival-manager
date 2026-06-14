@@ -20,7 +20,7 @@ MonoBehaviour:
   TraitPool: {fileID: 11400000, guid: f960e4513d153a644a406ec80869f2f1, type: 2}
   Skills:
   - {fileID: 11400000, guid: 2d2fdece3a6f451469b0c0cc4f60baaf, type: 2}
-  - {fileID: 11400000, guid: 4dd611eacab313b4ba0cdde8577a54c2, type: 2}
+  - {fileID: 11400000, guid: 7772b43d8d688eda370dcf61e6c0c7d6, type: 2}
   - {fileID: 11400000, guid: e0d0d4149e2ccc843b00109bfde153ea, type: 2}
   - {fileID: 11400000, guid: 3f09216fe0af34448a6a556b915e1ddf, type: 2}
   TacticPreset:
@@ -146,7 +146,7 @@ MonoBehaviour:
         AllowsPersistentSummonChain: 0
         LoadoutTopologyDelta: 0
     SignatureActive: {fileID: 11400000, guid: 2d2fdece3a6f451469b0c0cc4f60baaf, type: 2}
-    FlexActive: {fileID: 11400000, guid: c9597000b38b85d46964a561713062bb, type: 2}
+    FlexActive: {fileID: 11400000, guid: 7772b43d8d688eda370dcf61e6c0c7d6, type: 2}
     SignaturePassive:
       Id: 
       NameKey: 
