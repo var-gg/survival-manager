@@ -15,7 +15,6 @@
     <ui:Template name="RosterTemplate" src="../../Panels/TownRosterGrid/TownRosterGrid.uxml" />
     <ui:Template name="CharacterSheetTemplate" src="../../Panels/TownCharacterSheet/TownCharacterSheet.uxml" />
     <ui:Template name="CompendiumTemplate" src="../../Panels/SkillCompendium/SkillCompendium.uxml" />
-    <ui:Template name="HeroDetailTemplate" src="../../Panels/HeroDetail/HeroDetailPanel.uxml" />
     <ui:VisualElement name="TownScreenRoot" class="screen town-hub town-hub--v3">
         <ui:VisualElement name="TownBackdrop" class="town-hub__backdrop sm-backdrop" picking-mode="Ignore" />
         <ui:VisualElement name="TownBackdropDim" class="town-hub__backdrop-dim sm-backdrop-dim" picking-mode="Ignore" />
@@ -252,9 +251,6 @@
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="CompendiumTemplate" picking-mode="Ignore" />
-        </ui:VisualElement>
-        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
-            <ui:Instance template="HeroDetailTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
