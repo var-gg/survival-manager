@@ -195,6 +195,7 @@ public sealed class SquadBuilderPresenter
         RenderRoster(session, loadout, anchorByHeroId);
         var selectedRow = RenderSelectedDetail(session, loadout, heroById, anchorByHeroId);
         RenderTacticalDecisionRows(session, anchorByHeroId.Count, selectedRow);
+        RenderSynergyChips(anchorByHeroId, heroById);
         _statusLabel.text = $"{_statusText} · 현재 팀 태세: {LocalizePosture(selected)}";
 
         // wave-58 mockup chip strip update — 배치 X/6, 태세, 위험 점수 (heuristic).
@@ -436,6 +437,8 @@ public sealed class SquadBuilderPresenter
         _selectedHeroMeta.text = row.MetaLabel;
         _selectedHeroLoadout.text = row.LoadoutLabel;
         AddDetailTag(row.DeploymentLabel);
+        AddDetailTag(row.FormationLabel);
+        AddDetailTag(row.BiasLabel);
         AddDetailTag(row.RarityLabel);
         AddDetailTag($"팀 태세 {LocalizePosture(session.SelectedTeamPosture)}");
         return row;
@@ -444,7 +447,6 @@ public sealed class SquadBuilderPresenter
     private void RenderTacticalDecisionRows(GameSessionState session, int deployedCount, SquadBuilderHeroRow? selectedRow)
     {
         _operationRows.Clear();
-        _synergyChips.Clear();
 
         AddOperationRow("전열", selectedRow?.DeploymentLabel ?? LocalizeAnchor(_selectedAnchor));
         AddOperationRow("역할", selectedRow?.RoleLabel ?? "선택 없음");
@@ -458,18 +460,75 @@ public sealed class SquadBuilderPresenter
 
         _responseSummaryLabel.text =
             $"{LocalizePosture(session.SelectedTeamPosture)} 기준. 확정 전투 예측이 아니라 현재 편성/콘텐츠 read model의 대응 힌트입니다.";
+    }
 
-        AddDetailChip(_synergyChips, LocalizePosture(session.SelectedTeamPosture));
-        if (selectedRow == null)
+    // 배치된 분대의 활성 시너지를 표면화 — 전투/밸런스가 쓰는 content.SynergyCatalog 와 동일 SoT.
+    // (이전엔 이 자리 SquadBuilderSynergyChips 에 posture/역할 chip 이 들어가 이름과 내용이 어긋났음.
+    //  per-hero formation/bias 는 선택 영웅 디테일 태그로 이동.)
+    private void RenderSynergyChips(
+        IReadOnlyDictionary<string, DeploymentAnchorId> anchorByHeroId,
+        IReadOnlyDictionary<string, HeroInstanceRecord> heroById)
+    {
+        _synergyChips.Clear();
+
+        if (anchorByHeroId.Count == 0)
         {
-            AddDetailChip(_synergyChips, "선택 없음");
-            AddDetailChip(_synergyChips, "가짜 수치 없음");
+            AddSynergyChip("배치하면 시너지가 표시됩니다", active: false, muted: true);
             return;
         }
 
-        AddDetailChip(_synergyChips, selectedRow.RoleLabel);
-        AddDetailChip(_synergyChips, selectedRow.FormationLabel);
-        AddDetailChip(_synergyChips, selectedRow.BiasLabel);
+        if (!_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        {
+            AddSynergyChip("시너지 데이터를 불러오지 못했습니다", active: false, muted: true);
+            return;
+        }
+
+        var deployedTags = new List<IReadOnlyList<string>>(anchorByHeroId.Count);
+        foreach (var heroId in anchorByHeroId.Keys)
+        {
+            if (!heroById.TryGetValue(heroId, out var hero))
+            {
+                continue;
+            }
+
+            var tags = new List<string> { hero.RaceId, hero.ClassId };
+            if (!string.IsNullOrWhiteSpace(hero.ArchetypeId)
+                && snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var template)
+                && template.RecruitPlanTags != null)
+            {
+                tags.AddRange(template.RecruitPlanTags);
+            }
+
+            deployedTags.Add(tags);
+        }
+
+        var surfaces = SquadSynergyPreview.Evaluate(deployedTags, snapshot.SynergyCatalog)
+            .Where(surface => surface.CurrentCount > 0)
+            .ToList();
+
+        if (surfaces.Count == 0)
+        {
+            AddSynergyChip("활성 시너지 없음 · 같은 세력/직업 2명 이상 배치", active: false, muted: true);
+            return;
+        }
+
+        foreach (var surface in surfaces)
+        {
+            var name = _contentText.GetSynergyName(surface.SynergyId);
+            var bound = surface.IsActive
+                ? surface.ActiveThreshold
+                : (surface.NextThreshold > 0 ? surface.NextThreshold : surface.ActiveThreshold);
+            AddSynergyChip($"{name} {surface.CurrentCount}/{bound}", active: surface.IsActive, muted: !surface.IsActive);
+        }
+    }
+
+    private void AddSynergyChip(string text, bool active, bool muted)
+    {
+        var chip = new Label(text);
+        chip.AddToClassList("sm-sqb-modal__synergy-chip");
+        chip.EnableInClassList("sm-sqb-modal__synergy-chip--active", active);
+        chip.EnableInClassList("sm-sqb-modal__synergy-chip--muted", muted);
+        _synergyChips.Add(chip);
     }
 
     private void AddOperationRow(string key, string value)
