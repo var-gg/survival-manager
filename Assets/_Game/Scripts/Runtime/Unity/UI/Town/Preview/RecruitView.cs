@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Core.Contracts;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -36,7 +37,19 @@ public sealed class RecruitView
     private readonly Label? _walletGoldLabel;
     private readonly Label? _walletEchoLabel;
     private readonly Button? _scoutButton;
+    private readonly VisualElement? _scoutDirectiveRow;
     private readonly Button? _refreshButton;
+
+    // 6-kind 중 하위 선택이 없는 5종을 노출(SynergyTag 는 시너지 하위선택 필요 → 후속). 라벨은 이 파일의
+    // 기존 하드코딩 한국어 스타일을 따른다(presenter.DescribeScoutDirective 와 일치).
+    private static readonly (ScoutDirectiveKind Kind, string Label)[] ScoutDirectiveOptions =
+    {
+        (ScoutDirectiveKind.Frontline, "전열"),
+        (ScoutDirectiveKind.Backline, "후열"),
+        (ScoutDirectiveKind.Physical, "물리"),
+        (ScoutDirectiveKind.Magical, "마법"),
+        (ScoutDirectiveKind.Support, "지원"),
+    };
     private readonly Button? _detailRecruitButton;
     private readonly Button? _closeButton;
     private int _detailRecruitSlotIndex = -1;
@@ -72,6 +85,7 @@ public sealed class RecruitView
         _refreshButton = root.Q<Button>(className: "rcp-actions__refresh");
         _detailRecruitButton = root.Q<Button>("SelectedCandidateRecruitButton");
         _closeButton = root.Q<Button>(className: "rcp-header__close");
+        _scoutDirectiveRow = BuildScoutDirectivePicker();
     }
 
     public void Bind(IRecruitActions actions)
@@ -522,16 +536,59 @@ public sealed class RecruitView
         }
     }
 
+    // 액션바 위에 directive 피커 행을 만들어 끼운다. 기본 접힘(display None) — scout 버튼 클릭이 토글한다.
+    private VisualElement? BuildScoutDirectivePicker()
+    {
+        var actionBar = _scoutButton?.parent;
+        var container = actionBar?.parent;
+        if (actionBar == null || container == null)
+        {
+            return null;
+        }
+
+        var row = new VisualElement();
+        row.AddToClassList("rcp-scout-picker");
+        row.style.display = DisplayStyle.None;
+
+        var caption = new Label("정찰 방향");
+        caption.AddToClassList("rcp-scout-picker__caption");
+        row.Add(caption);
+
+        foreach (var option in ScoutDirectiveOptions)
+        {
+            var kind = option.Kind;
+            var button = new Button(() => _actions?.OnScoutDirectiveSelected(kind)) { text = option.Label };
+            button.AddToClassList("rcp-scout-picker__option");
+            button.AddToClassList("sm-cta");
+            button.AddToClassList("sm-cta--inline");
+            button.AddToClassList("sm-cta--secondary");
+            row.Add(button);
+        }
+
+        container.Insert(container.IndexOf(actionBar), row);
+        return row;
+    }
+
     private void RenderActionBar(RecruitActionBarViewState bar)
     {
-        // 정찰 방향 지정 UI(6-kind ScoutDirective)는 Sprint 3 — OnScoutClicked가 아직 no-op이라
-        // 버튼이 활성+'-35 잔향' 비용을 약속하면 누를 때 잔향만 빠진 듯한 dead-click(무피드백)이 된다.
-        // directive picker가 붙기 전까지는 비활성 + '준비 중'으로 비용 약속을 거둔다.
-        _scoutButton?.SetEnabled(false);
+        // scout 버튼은 directive 피커 토글. 이번 phase에 쓸 수 있고(미사용) 잔향이 충분할 때만 활성.
+        var scoutAvailable = bar.CanUseScout && bar.CanAffordScout;
+        _scoutButton?.SetEnabled(scoutAvailable);
         if (_scoutLabel != null)
         {
-            _scoutLabel.text = "정찰 (준비 중) — 방향 지정 기능 준비 중";
+            _scoutLabel.text = !bar.CanUseScout
+                ? $"정찰 사용됨 · {bar.ScoutDirectiveLabel} (다음 갱신 반영)"
+                : !bar.CanAffordScout
+                    ? $"정찰 (-{bar.ScoutEchoCost} 잔향) · 잔향 부족"
+                    : $"정찰 (-{bar.ScoutEchoCost} 잔향) · 방향 선택";
         }
+
+        // 렌더마다 피커는 접힌 상태로 리셋(사용/갱신 후 잔상 방지) — scout 버튼 클릭이 다시 연다.
+        if (_scoutDirectiveRow != null)
+        {
+            _scoutDirectiveRow.style.display = DisplayStyle.None;
+        }
+
         if (_refreshLabel != null)
         {
             _refreshLabel.text = bar.FreeRefreshesRemaining > 0
@@ -540,7 +597,17 @@ public sealed class RecruitView
         }
     }
 
-    private void HandleScoutClicked() => _actions?.OnScoutClicked();
+    // scout 버튼은 directive 피커 행을 토글한다(방향 선택 → OnScoutDirectiveSelected 가 실제 실행).
+    private void HandleScoutClicked()
+    {
+        if (_scoutDirectiveRow == null)
+        {
+            return;
+        }
+
+        _scoutDirectiveRow.style.display =
+            _scoutDirectiveRow.style.display == DisplayStyle.None ? DisplayStyle.Flex : DisplayStyle.None;
+    }
     private void HandleRefreshClicked() => _actions?.OnRefreshClicked();
     private void HandleDetailRecruitClicked()
     {
@@ -613,6 +680,6 @@ public interface IRecruitActions
 {
     void OnCandidateSelected(int slotIndex);
     void OnRecruitConfirmed(int slotIndex);
-    void OnScoutClicked();
+    void OnScoutDirectiveSelected(ScoutDirectiveKind kind);
     void OnRefreshClicked();
 }

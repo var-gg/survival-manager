@@ -56,6 +56,7 @@ public sealed record RecruitSkillPipViewState(
 public sealed record RecruitActionBarViewState(
     int ScoutEchoCost,                      // 35 — RecruitmentBalanceCatalog.ScoutEchoCost
     bool CanUseScout,                       // phase당 1회 — !RecruitPhaseState.ScoutUsedThisPhase
+    bool CanAffordScout,                    // Echo >= ScoutEchoCost — 부족하면 directive 피커 비활성
     string ScoutDirectiveLabel,             // RecruitPhaseState.PendingScoutDirective.Kind 표시명 (None="미지정")
     int FreeRefreshesRemaining,             // 0 또는 1
     int CurrentPaidRefreshCost              // 2 / 4 / 6 — paid escalation

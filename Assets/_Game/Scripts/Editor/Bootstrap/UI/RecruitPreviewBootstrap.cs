@@ -138,6 +138,7 @@ public sealed class RecruitPreviewBootstrap : EditorWindow
         var actionBar = new RecruitActionBarViewState(
             ScoutEchoCost: 35,
             CanUseScout: true,
+            CanAffordScout: true,         // 미리보기 — 잔향 충분 가정(directive 피커 활성)
             ScoutDirectiveLabel: "후열",   // PendingScoutDirective.Kind = Backline 예시
             FreeRefreshesRemaining: 0,    // 이미 free 사용
             CurrentPaidRefreshCost: 4);    // 2→4→6 cap의 2회차

@@ -81,11 +81,13 @@ public sealed class RecruitPresenter : IRecruitActions
         Refresh();
     }
 
-    void IRecruitActions.OnScoutClicked()
+    void IRecruitActions.OnScoutDirectiveSelected(ScoutDirectiveKind kind)
     {
-        // TODO Sprint 3: scout = 6-kind ScoutDirective (Frontline/Backline/Physical/Magical/Support/SynergyTag).
-        // 실 surface는 directive 선택 UI가 필요 — preview는 PendingScoutDirective 표시만.
-        // TownScreenPresenter.ResolveScoutDirective 패턴 참고.
+        // 정찰 방향을 골라 UseScout 실행 — 35 잔향 차감 + PendingScoutDirective 설정. directive 는 다음 pack
+        // 생성(갱신)에서 적용·소비된다(즉시 재생성하지 않음 = 기존 메커닉/계약 유지). 실패해도 Refresh 로
+        // 현재 상태 재표시(버튼은 CanUseScout && CanAffordScout 일 때만 활성이라 통상 성공).
+        _root.SessionState.UseScout(new ScoutDirective { Kind = kind });
+        Refresh();
     }
 
     void IRecruitActions.OnRefreshClicked()
@@ -102,6 +104,7 @@ public sealed class RecruitPresenter : IRecruitActions
         var actionBar = new RecruitActionBarViewState(
             ScoutEchoCost: ScoutEchoCostV1,
             CanUseScout: session.CanUseScout,
+            CanAffordScout: session.Profile.Currencies.Echo >= ScoutEchoCostV1,
             ScoutDirectiveLabel: DescribeScoutDirective(
                 scout?.Kind ?? ScoutDirectiveKind.None,
                 scout?.SynergyTagId ?? string.Empty),
