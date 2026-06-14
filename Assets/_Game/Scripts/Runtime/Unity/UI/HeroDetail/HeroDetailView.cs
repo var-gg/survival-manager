@@ -68,11 +68,34 @@ public sealed class HeroDetailView
     public void Open()
     {
         _root.style.display = DisplayStyle.Flex;
+        var overlay = FindModalOverlay();
+        if (overlay != null)
+        {
+            overlay.style.display = DisplayStyle.Flex;
+        }
     }
 
     public void Close()
     {
         _root.style.display = DisplayStyle.None;
+        var overlay = FindModalOverlay();
+        if (overlay != null)
+        {
+            overlay.style.display = DisplayStyle.None;
+        }
+    }
+
+    private VisualElement? FindModalOverlay()
+    {
+        for (var current = _root.parent; current != null; current = current.parent)
+        {
+            if (current.ClassListContains("town-hub__modal-overlay"))
+            {
+                return current;
+            }
+        }
+
+        return null;
     }
 
     public void Render(HeroDetailViewState state)

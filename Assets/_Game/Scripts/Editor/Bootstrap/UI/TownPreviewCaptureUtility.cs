@@ -51,6 +51,10 @@ public static class TownPreviewCaptureUtility
     private static readonly (Action<VisualElement> Build, string FileName) HeroDetailSingleTarget =
         (r => Make<HeroDetailPreviewBootstrap>(b => b.BuildInto(r)), "hero_detail");
 
+    // HeroDetail v0.5를 실 TownScreen UIDocument 컨텍스트에서 캡처 — :root 토큰이 해상되는 production 경로.
+    private static readonly (Action<VisualElement> Build, string FileName) HeroDetailInTownTarget =
+        (r => BuildHeroDetailInTown(r), "hero_detail_town");
+
     private static readonly (Action<VisualElement> Build, string FileName)[] AllTargets =
     {
         (r => Make<TownRosterGridPreviewBootstrap>(b => b.BuildInto(r)),   "roster_grid"),
@@ -126,6 +130,48 @@ public static class TownPreviewCaptureUtility
         }
     }
 
+    /// <summary>실 TownScreen.uxml을 clone하고 HeroDetail 모달을 첫 hero로 열어 캡처한다.
+    /// EditorWindow와 달리 TownScreen UIDocument는 :root 토큰을 해상하므로 색/배경이 정상 렌더된다.</summary>
+    private static void BuildHeroDetailInTown(VisualElement root)
+    {
+        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(TownScreenUxmlPath);
+        if (visualTree == null)
+        {
+            root.Add(new UnityEngine.UIElements.Label($"TownScreen.uxml 못 찾음: {TownScreenUxmlPath}"));
+            return;
+        }
+
+        var tokens = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.StyleSheet>(ThemeTokensPath);
+        var theme = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.StyleSheet>(RuntimePanelThemePath);
+        var townUss = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.StyleSheet>(TownScreenUssPath);
+        if (tokens != null) root.styleSheets.Add(tokens);
+        if (theme != null) root.styleSheets.Add(theme);
+        if (townUss != null) root.styleSheets.Add(townUss);
+        visualTree.CloneTree(root);
+
+        try
+        {
+            var sessionRoot = PreviewSessionContext.EnsureSession();
+            var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
+            var hdView = new SM.Unity.UI.HeroDetail.HeroDetailView(root);
+            var hdFormatter = new SM.Unity.UI.HeroDetail.HeroDetailViewStateFormatter(contentText, sessionRoot.CombatContentLookup);
+            SM.Persistence.Abstractions.Models.HeroInstanceRecord hero = null;
+            foreach (var candidate in sessionRoot.SessionState.Profile.Heroes)
+            {
+                hero = candidate;
+                break;
+            }
+
+            hdView.Render(hdFormatter.Build(sessionRoot.SessionState, hero));
+            hdView.Open();
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[PreviewCapture] hero detail in town 실패: {e.Message}");
+            root.Add(new UnityEngine.UIElements.Label("hd-in-town fail: " + e.Message));
+        }
+    }
+
     private const string OutputDir = "Screenshots/mockups";
     private const int CaptureWidth = 1600;
     private const int CaptureHeight = 900;
@@ -190,6 +236,12 @@ public static class TownPreviewCaptureUtility
     public static void CaptureHeroDetail()
     {
         StartCapture(new[] { HeroDetailSingleTarget });
+    }
+
+    [MenuItem("SM/Town/Capture Hero Detail In Town", false, 12)]
+    public static void CaptureHeroDetailInTown()
+    {
+        StartCapture(new[] { HeroDetailInTownTarget });
     }
 
     [MenuItem("SM/Town/▶ Preview 도감 PlayMode 캡쳐", false, 6)]

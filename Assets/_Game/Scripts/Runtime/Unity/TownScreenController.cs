@@ -29,6 +29,8 @@ public sealed class TownScreenController : MonoBehaviour
     private TownCharacterSheetPresenter? _characterSheetPresenter;
     private RosterGridView? _rosterModalView;
     private RosterGridPresenter? _rosterGridPresenter;
+    private SM.Unity.UI.HeroDetail.HeroDetailView? _heroDetailView;
+    private SM.Unity.UI.HeroDetail.HeroDetailViewStateFormatter? _heroDetailFormatter;
     // jjjj hub V3 NPC mapping (pindoc://decision-town-hub-v3-ashglen-face-cluster):
     //   달목 → Recruit / 쇠매 → EquipmentRefit / 갈마 → PassiveBoard / 솔길 → Inventory.
 
@@ -116,8 +118,54 @@ public sealed class TownScreenController : MonoBehaviour
         corePanelReadyCount += TryWireCharacterSheet(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireTacticalSetup(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireRoster(panelHost.Root, view) ? 1 : 0;
+        TryWireHeroDetail(panelHost.Root);
         _presenter.SetCorePanelReadiness(corePanelReadyCount, 9);
         return true;
+    }
+
+    // HeroDetail v0.5 병렬 모달 — 기존 TownCharacterSheet를 대체하지 않고 별개 surface로 mount.
+    private bool TryWireHeroDetail(UnityEngine.UIElements.VisualElement root)
+    {
+        try
+        {
+            _heroDetailView = new SM.Unity.UI.HeroDetail.HeroDetailView(root);
+            _heroDetailView.BindClose(() => _heroDetailView?.Close());
+            _heroDetailFormatter = new SM.Unity.UI.HeroDetail.HeroDetailViewStateFormatter(_contentText, _root.CombatContentLookup);
+            _heroDetailView.Close();
+            return true;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"[TownScreenController] HeroDetail wire 실패: {e.Message}");
+            _heroDetailView = null;
+            _heroDetailFormatter = null;
+            return false;
+        }
+    }
+
+    /// <summary>HeroDetail v0.5 surface를 지정 hero(없으면 첫 hero)로 열어 렌더한다.</summary>
+    public void OpenHeroDetail(string heroId)
+    {
+        EnsureRuntimeControls();
+        if (_heroDetailView == null || _heroDetailFormatter == null)
+        {
+            return;
+        }
+
+        var session = _root.SessionState;
+        SM.Persistence.Abstractions.Models.HeroInstanceRecord? hero = null;
+        foreach (var candidate in session.Profile.Heroes)
+        {
+            hero ??= candidate;
+            if (string.Equals(candidate.HeroId, heroId, System.StringComparison.Ordinal))
+            {
+                hero = candidate;
+                break;
+            }
+        }
+
+        _heroDetailView.Render(_heroDetailFormatter.Build(session, hero));
+        _heroDetailView.Open();
     }
 
     private bool TryWireRecruit(UnityEngine.UIElements.VisualElement root, TownScreenView view)
