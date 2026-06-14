@@ -195,6 +195,7 @@ public sealed class SquadBuilderPresenter
         RenderRoster(session, loadout, anchorByHeroId);
         var selectedRow = RenderSelectedDetail(session, loadout, heroById, anchorByHeroId);
         RenderTacticalDecisionRows(session, anchorByHeroId.Count, selectedRow);
+        RenderResponseSummary(session, anchorByHeroId, heroById);
         RenderSynergyChips(anchorByHeroId, heroById);
         _statusLabel.text = $"{_statusText} · 현재 팀 태세: {LocalizePosture(selected)}";
 
@@ -457,9 +458,6 @@ public sealed class SquadBuilderPresenter
         }
         AddOperationRow("거리", selectedRow?.RangeLabel ?? "기본 교전 거리");
         AddOperationRow("편성", $"배치 {deployedCount}/6 · 원정 {session.ExpeditionSquadHeroIds.Count}/4");
-
-        _responseSummaryLabel.text =
-            $"{LocalizePosture(session.SelectedTeamPosture)} 기준. 확정 전투 예측이 아니라 현재 편성/콘텐츠 read model의 대응 힌트입니다.";
     }
 
     // 배치된 분대의 활성 시너지를 표면화 — 전투/밸런스가 쓰는 content.SynergyCatalog 와 동일 SoT.
@@ -530,6 +528,75 @@ public sealed class SquadBuilderPresenter
         chip.EnableInClassList("sm-sqb-modal__synergy-chip--muted", muted);
         _synergyChips.Add(chip);
     }
+
+    // 응답("대응") 요약 — posture 기준 + 배치 분대의 카운터 커버리지(강함/취약)를 한 줄로 표면화.
+    // 위협 그리드 UI 가 프로덕션 SquadBuilder 엔 없으므로 신규 UXML 없이 기존 요약 라벨에 텍스트로 surface.
+    private void RenderResponseSummary(
+        GameSessionState session,
+        IReadOnlyDictionary<string, DeploymentAnchorId> anchorByHeroId,
+        IReadOnlyDictionary<string, HeroInstanceRecord> heroById)
+    {
+        var posture = LocalizePosture(session.SelectedTeamPosture);
+        var coverageLine = BuildCoverageLine(anchorByHeroId, heroById);
+        var disclaimer = "확정 전투 예측이 아니라 현재 편성 read model의 대응 힌트입니다.";
+        _responseSummaryLabel.text = string.IsNullOrEmpty(coverageLine)
+            ? $"{posture} 기준. {disclaimer}"
+            : $"{posture} 기준 · {coverageLine}\n{disclaimer}";
+    }
+
+    // 배치 분대 → 아키타입 governance → 팀 카운터 커버리지. 전투/거버넌스와 동일 SoT(CounterCoverageAggregationService).
+    private string BuildCoverageLine(
+        IReadOnlyDictionary<string, DeploymentAnchorId> anchorByHeroId,
+        IReadOnlyDictionary<string, HeroInstanceRecord> heroById)
+    {
+        if (anchorByHeroId.Count == 0
+            || !_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        {
+            return string.Empty;
+        }
+
+        var templates = new List<SM.Meta.Model.CombatArchetypeTemplate>(anchorByHeroId.Count);
+        foreach (var heroId in anchorByHeroId.Keys)
+        {
+            if (heroById.TryGetValue(heroId, out var hero)
+                && !string.IsNullOrWhiteSpace(hero.ArchetypeId)
+                && snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var template))
+            {
+                templates.Add(template);
+            }
+        }
+
+        if (templates.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var (strong, gaps) = SquadCounterCoveragePreview.Classify(SquadCounterCoveragePreview.Evaluate(templates));
+        var parts = new List<string>();
+        if (strong.Count > 0)
+        {
+            parts.Add($"대응 강함: {string.Join("·", strong.Select(LocalizeCounterTool))}");
+        }
+        if (gaps.Count > 0)
+        {
+            parts.Add($"취약: {string.Join("·", gaps.Select(LocalizeCounterTool))}");
+        }
+
+        return parts.Count > 0 ? string.Join(" · ", parts) : "대응 도구 없음 — 보강 필요";
+    }
+
+    private static string LocalizeCounterTool(string tool) => tool switch
+    {
+        "ArmorShred" => "방어 관통",
+        "Exposure" => "약점 노출",
+        "GuardBreakMultiHit" => "가드 브레이크",
+        "TrackingArea" => "광역 추적",
+        "TenacityStability" => "강인·안정",
+        "AntiHealShatter" => "치유 차단",
+        "InterceptPeel" => "차단·견제",
+        "CleaveWaveclear" => "다수 정리",
+        _ => tool,
+    };
 
     private void AddOperationRow(string key, string value)
     {
