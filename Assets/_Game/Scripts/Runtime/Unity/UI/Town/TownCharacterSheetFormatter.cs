@@ -304,12 +304,14 @@ public sealed class TownCharacterSheetFormatter
                 IsFilled: false);
         }
 
-        var meta = $"{item.AffixIds?.Count ?? 0} affixes";
+        var meta = LocalizeTown("ui.town.sheet.affix_count", "{0} affixes", item.AffixIds?.Count ?? 0);
         var iconKey = item.ItemBaseId;
         if (_lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDefinition))
         {
             iconKey = string.IsNullOrWhiteSpace(itemDefinition.IconId) ? item.ItemBaseId : itemDefinition.IconId;
-            meta = $"{itemDefinition.RarityTier} / {ResolveItemFamilyLabel(itemDefinition)} / {meta}";
+            // 등급은 한국어로, raw family 태그(weapon_sword 등)는 플레이어 비노출 식별자라 슬롯 라벨(무기/방어구/장신구)이
+            // 이미 같은 정보를 주므로 meta 에서 제외한다. family 태그 전체 한국어화는 별도 패스.
+            meta = $"{LocalizeItemRarity(itemDefinition.RarityTier)} · {meta}";
         }
 
         return new TownCharacterSheetEquipmentSlotViewState(
@@ -624,19 +626,16 @@ public sealed class TownCharacterSheetFormatter
         return $"{sign}{FormatStatValue(Math.Abs(delta))}";
     }
 
-    private static string ResolveItemFamilyLabel(ItemBaseDefinition item)
+    private string LocalizeItemRarity(ItemRarityTierValue rarity)
     {
-        if (!string.IsNullOrWhiteSpace(item.WeaponFamilyTag))
+        return rarity switch
         {
-            return item.WeaponFamilyTag;
-        }
-
-        if (!string.IsNullOrWhiteSpace(item.ItemFamilyTag))
-        {
-            return item.ItemFamilyTag;
-        }
-
-        return item.SlotType.ToString();
+            ItemRarityTierValue.Magic => LocalizeTown("ui.town.sheet.rarity.magic", "Magic"),
+            ItemRarityTierValue.Rare => LocalizeTown("ui.town.sheet.rarity.rare", "Rare"),
+            ItemRarityTierValue.Epic => LocalizeTown("ui.town.sheet.rarity.epic", "Epic"),
+            ItemRarityTierValue.Legendary => LocalizeTown("ui.town.sheet.rarity.legendary", "Legendary"),
+            _ => LocalizeTown("ui.town.sheet.rarity.common", "Common"),
+        };
     }
 
     private static string FirstNonEmpty(params string?[] values)

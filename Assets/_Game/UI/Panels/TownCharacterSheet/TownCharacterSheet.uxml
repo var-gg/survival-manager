@@ -29,13 +29,6 @@
                         <ui:VisualElement class="tcs-portrait-vignette" picking-mode="Ignore" />
                         <ui:Label name="TcsPortraitGlyphLabel" class="tcs-portrait-glyph" text="✦" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="tcs-portrait-pips" picking-mode="Ignore">
-                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
-                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
-                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
-                        <ui:VisualElement class="tcs-pip tcs-pip--on" />
-                        <ui:VisualElement class="tcs-pip" />
-                    </ui:VisualElement>
                 </ui:VisualElement>
 
                 <ui:VisualElement class="tcs-column tcs-column--primary">

@@ -331,36 +331,6 @@
     border-bottom-color: var(--sm-gold-100);
 }
 
-.tcs-portrait-pips {
-    height: 28px;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.tcs-pip {
-    width: 9px;
-    height: 9px;
-    margin-left: 5px;
-    margin-right: 5px;
-    background-color: rgba(30, 37, 68, 0.76);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: var(--sm-gold-300-a18);
-    border-right-color: var(--sm-gold-300-a18);
-    border-top-color: var(--sm-gold-300-a18);
-    border-bottom-color: var(--sm-gold-300-a18);
-    rotate: 45deg;
-}
-
-.tcs-pip--on {
-    background-color: rgb(86, 150, 226);
-    border-left-color: var(--sm-gold-100);
-    border-right-color: var(--sm-gold-100);
-    border-top-color: var(--sm-gold-100);
-    border-bottom-color: var(--sm-gold-100);
-}
 
 .tcs-column {
     flex-grow: 1;

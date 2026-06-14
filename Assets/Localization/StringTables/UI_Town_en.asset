@@ -1403,6 +1403,31 @@ MonoBehaviour:
     m_Localized: "\u2756  Squad Builder"
     m_Metadata:
       m_Items: []
+  - m_Id: 27687845509795840
+    m_Localized: '{0} affixes'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 27687845539155968
+    m_Localized: Common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155969
+    m_Localized: Magic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155970
+    m_Localized: Rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155971
+    m_Localized: Epic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155972
+    m_Localized: Legendary
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -1449,3 +1474,4 @@ MonoBehaviour:
         - id: 132
         - id: 133
         - id: 17841341873852419
+        - id: 27687845509795840

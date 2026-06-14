@@ -1359,6 +1359,30 @@ MonoBehaviour:
     m_Key: ui.town.entry.squad_builder
     m_Metadata:
       m_Items: []
+  - m_Id: 27687845509795840
+    m_Key: ui.town.sheet.affix_count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155968
+    m_Key: ui.town.sheet.rarity.common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155969
+    m_Key: ui.town.sheet.rarity.magic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155970
+    m_Key: ui.town.sheet.rarity.rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155971
+    m_Key: ui.town.sheet.rarity.epic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27687845539155972
+    m_Key: ui.town.sheet.rarity.legendary
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
