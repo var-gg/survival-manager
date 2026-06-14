@@ -5,6 +5,7 @@ using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -89,7 +90,7 @@ public sealed class TownCharacterSheetFormatter
             FamilyKey: hero.ClassId,
             PortraitSprite: null,
             HeroRail: BuildHeroRail(session, hero.HeroId),
-            Stats: BuildStatGrid(archetype),
+            Stats: BuildStatGrid(session, hero, archetype),
             Skills: BuildSkillCards(hero, baseline),
             Equipment: BuildEquipmentSlots(session, hero),
             ProgressionNodes: BuildProgressionNodes(loadout, progression),
@@ -130,7 +131,48 @@ public sealed class TownCharacterSheetFormatter
             .ToList();
     }
 
-    private static IReadOnlyList<TownCharacterSheetStatViewState> BuildStatGrid(UnitArchetypeDefinition? archetype)
+    // 마을 시트 스탯 8열 — StatKey(전투 SoT) ↔ 표시 키/라벨/톤. 전투 BaseStats 딕셔너리와 같은 canonical 키를 쓴다.
+    private static readonly (StatKey StatKey, string Key, string Label, string Tone)[] TownSheetStatColumns =
+    {
+        (StatKey.MaxHealth, "hp", "HP", "vital"),
+        (StatKey.Armor, "armor", "ARM", "guard"),
+        (StatKey.Resist, "resist", "RES", "guard"),
+        (StatKey.PhysPower, "phys", "PWR", "attack"),
+        (StatKey.MagPower, "magic", "MAG", "magic"),
+        (StatKey.AttackSpeed, "speed", "SPD", "tempo"),
+        (StatKey.AttackRange, "range", "RNG", "tempo"),
+        (StatKey.SkillHaste, "haste", "HST", "magic"),
+    };
+
+    private static readonly IReadOnlyList<StatKey> TownSheetStatKeys =
+        TownSheetStatColumns.Select(column => column.StatKey).ToList();
+
+    // 선택 영웅의 effective 전투 스탯(장비/특성/패시브/영구 augment 반영) + base 대비 delta.
+    // 전투 spawn(UnitSnapshot)과 동일 SoT로 컴파일하므로 시트 수치 = 전장 수치. 컴파일 불가 시 archetype base 폴백.
+    private static IReadOnlyList<TownCharacterSheetStatViewState> BuildStatGrid(
+        GameSessionState session,
+        HeroInstanceRecord hero,
+        UnitArchetypeDefinition? archetype)
+    {
+        var preview = session.TryBuildHeroStatPreview(hero.HeroId);
+        var entries = HeroEffectiveStatPreview.Resolve(preview, TownSheetStatKeys);
+        if (entries.Count == TownSheetStatColumns.Length)
+        {
+            return TownSheetStatColumns
+                .Select((column, index) => new TownCharacterSheetStatViewState(
+                    column.Key,
+                    column.Label,
+                    FormatStatValue(entries[index].EffectiveValue),
+                    FormatDelta(entries[index].Delta),
+                    column.Tone))
+                .ToList();
+        }
+
+        return BuildBaseStatGrid(archetype);
+    }
+
+    // 폴백 — effective 컴파일이 불가할 때 archetype base 스탯만(델타 없음) 표시.
+    private static IReadOnlyList<TownCharacterSheetStatViewState> BuildBaseStatGrid(UnitArchetypeDefinition? archetype)
     {
         if (archetype == null)
         {
@@ -568,6 +610,18 @@ public sealed class TownCharacterSheetFormatter
         return Math.Abs(value % 1f) < 0.001f
             ? value.ToString("0")
             : value.ToString("0.#");
+    }
+
+    // base 대비 증감 — 의미 있는 차이(0.05 이상)만 부호와 함께 표시, 미미하면 빈 문자열(델타 행 숨김).
+    private static string FormatDelta(float delta)
+    {
+        if (Math.Abs(delta) < 0.05f)
+        {
+            return string.Empty;
+        }
+
+        var sign = delta > 0f ? "+" : "-";
+        return $"{sign}{FormatStatValue(Math.Abs(delta))}";
     }
 
     private static string ResolveItemFamilyLabel(ItemBaseDefinition item)

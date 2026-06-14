@@ -254,6 +254,12 @@ public sealed class TownCharacterSheetView
             {
                 var delta = new Label(stat.DeltaLabel);
                 delta.AddToClassList("tcs-stat__delta");
+                // 감소(음의 특성 등)는 빨강으로 — 증감 방향을 색으로 구분한다.
+                if (stat.DeltaLabel[0] == '-')
+                {
+                    delta.AddToClassList("tcs-stat__delta--down");
+                }
+
                 cell.Add(delta);
             }
 
