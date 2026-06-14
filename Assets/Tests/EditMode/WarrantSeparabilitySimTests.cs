@@ -24,6 +24,15 @@ public sealed class WarrantSeparabilitySimTests
     private const int SeedCount = 40;
     private const int MaxTicks = 300;
 
+    // 후열 분류 프로필 — BattleFormationConsequenceTests.CleanBackline과 동일. CreateLoopAUnit는
+    // behavior 인자를 생략하면 classId 무관하게 FormationLine.Frontline 기본값을 채우고(CombatTestFactory:171),
+    // ResolveBehavior는 authored 비-null이면 classId 분기를 안 타므로 classId만으로는 절대 Backline이 안 된다.
+    // 후열 유닛은 이 프로필을 명시해야 IsScreenedBackline/ScreenMitigation/ScreenedTargetScorePenalty가 발동한다.
+    private static readonly BehaviorProfile BacklineProfile = new(
+        0.25f, 0.2f, 0f, 0f, 0.5f, 0.5f,
+        DodgeChance: 0f, BlockChance: 0f, BlockMitigation: 0f, Stability: 0.5f,
+        FormationLine: FormationLine.Backline);
+
     [Test]
     public void SwiftVsIntact_AcrossEnemyTiers_DistributionsAreMeasured()
     {
@@ -222,6 +231,12 @@ public sealed class WarrantSeparabilitySimTests
         public int ProtecteeSurvivedOnWin;  // 승리한 전투 중
         public readonly List<int> WinSteps = new();
         public readonly List<int> SquadDeaths = new();  // 보호대상 제외
+        // 진단: posture별로 스크린 메커니즘이 실제로 발동하는지 — 발동하는데도 못 살리면 튜닝(보호력 약함),
+        // 안 발동하면 배치/interpose 결함. BacklineDive=적이 후열 carry를 뚫고 처치한 횟수.
+        public int ScreenAbsorb;
+        public int ScreenDeterrence;
+        public int BacklineDiveKills;
+        public float ScreenMitigation;
     }
 
     private static ProtectCell RunProtect(string label, TeamPostureType posture, System.Func<IReadOnlyList<BattleUnitLoadout>> enemyFactory)
@@ -238,6 +253,12 @@ public sealed class WarrantSeparabilitySimTests
 
             cell.SquadDeaths.Add(battle.FinalUnits.Count(u => u.Side == TeamSide.Ally && u.Id != "protectee" && !u.IsAlive));
 
+            var tel = state.ActivityTelemetry;
+            cell.ScreenAbsorb += tel.ScreenAbsorbCount;
+            cell.ScreenDeterrence += tel.ScreenDeterrenceCount;
+            cell.BacklineDiveKills += tel.BacklineDiveKillCount;
+            cell.ScreenMitigation += tel.ScreenMitigationContribution;
+
             if (battle.Winner == TeamSide.Ally)
             {
                 cell.Wins++;
@@ -249,7 +270,11 @@ public sealed class WarrantSeparabilitySimTests
         return cell;
     }
 
-    // 전투 유닛 4 + 보호대상 1(fragile, 후방, 약공격) — "지켜야 할 사람".
+    // 전열 가드 3(vanguard 2 + duelist 1) + 후열 2(support ranger + carry).
+    // protectee = ProtectCarry가 지키도록 설계된 그 carry다: fragile(저hp/방0)이지만 팀 최고 DPS(physPower 12)라
+    // TeamBlackboardService.ResolveCarry가 carry로 지목하고(원거리 5.0 > 1.8 임계 + max(Phys,Mag) 최대), 후열에
+    // 머물러 전열 스크린을 받는다. 직전 하네스는 protectee가 Frontline 오분류 + physPower 2라 carry도 아니어서
+    // ProtectCarry 보호 기하·스크린이 한 번도 발동 안 했다(생존율 전 posture 0%의 원인). guard_ranged도 후열로 명시.
     private static IReadOnlyList<BattleUnitLoadout> BuildProtectSquad()
     {
         return new[]
@@ -257,8 +282,8 @@ public sealed class WarrantSeparabilitySimTests
             CombatTestFactory.CreateLoopAUnit("guard_front_a", classId: "vanguard", hp: 110f, physPower: 7f, armor: 4f, attackSpeed: 3f, moveSpeed: 1.7f, anchor: DeploymentAnchorId.FrontTop),
             CombatTestFactory.CreateLoopAUnit("guard_front_b", classId: "vanguard", hp: 105f, physPower: 7f, armor: 4f, attackSpeed: 3f, moveSpeed: 1.7f, anchor: DeploymentAnchorId.FrontBottom),
             CombatTestFactory.CreateLoopAUnit("guard_dps", classId: "duelist", hp: 80f, physPower: 9f, armor: 2f, attackSpeed: 4.5f, moveSpeed: 1.9f, anchor: DeploymentAnchorId.FrontCenter),
-            CombatTestFactory.CreateLoopAUnit("guard_ranged", classId: "ranger", hp: 70f, physPower: 7f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.8f, attackRange: 5.6f, anchor: DeploymentAnchorId.BackTop),
-            CombatTestFactory.CreateLoopAUnit("protectee", classId: "mystic", hp: 35f, physPower: 2f, armor: 0f, attackSpeed: 2f, moveSpeed: 1.6f, attackRange: 2.0f, anchor: DeploymentAnchorId.BackCenter),
+            CombatTestFactory.CreateLoopAUnit("guard_ranged", classId: "ranger", hp: 70f, physPower: 6f, armor: 2f, attackSpeed: 4f, moveSpeed: 1.8f, attackRange: 5.6f, anchor: DeploymentAnchorId.BackTop, behavior: BacklineProfile),
+            CombatTestFactory.CreateLoopAUnit("protectee", classId: "mystic", hp: 40f, physPower: 12f, armor: 0f, attackSpeed: 3f, moveSpeed: 1.6f, attackRange: 5.0f, anchor: DeploymentAnchorId.BackCenter, behavior: BacklineProfile),
         };
     }
 
@@ -287,6 +312,15 @@ public sealed class WarrantSeparabilitySimTests
             var survOnWin = r.Wins > 0 ? 100.0 * r.ProtecteeSurvivedOnWin / r.Wins : 0;
             sb.AppendLine($"{r.Posture,-22}{100.0 * r.Wins / SeedCount,-7:0}{survPct,-17:0}{survOnWin,-12:0}{Median(r.WinSteps),-14:0.0}{Mean(r.SquadDeaths):0.00}");
         }
+        sb.AppendLine();
+        sb.AppendLine("--- 스크린 발동 진단 (battle당 평균) ---");
+        sb.AppendLine($"{"posture",-22}{"scrAbsorb/b",-13}{"scrDeter/b",-12}{"diveKill/b",-12}{"mitig/b",-10}");
+        foreach (var r in rows)
+        {
+            sb.AppendLine($"{r.Posture,-22}{(double)r.ScreenAbsorb / SeedCount,-13:0.00}{(double)r.ScreenDeterrence / SeedCount,-12:0.00}{(double)r.BacklineDiveKills / SeedCount,-12:0.00}{(double)r.ScreenMitigation / SeedCount,-10:0.0}");
+        }
+        sb.AppendLine("판독: guard에서 scrAbsorb/scrDeter가 neutral/aggressive보다 높으면 스크린은 발동 중(=보호력 부족, 튜닝 입력).");
+        sb.AppendLine("      guard도 ~0이면 interpose/배치가 protectee를 안 덮음(배치 결함). diveKill 높으면 적이 후열 carry 관통 처치.");
         sb.AppendLine();
         sb.AppendLine("분리: guard(ProtectCarry) protectee 생존% > aggressive(AllInBackline) → protect는 posture로 통제되는 진짜 선택.");
         sb.AppendLine("미분리: 생존%가 posture 무관(항상 살/죽) → 단순 fragile ally론 부족, 적 targeting priority 등 combat 메커니즘 필요(설계 입력).");
