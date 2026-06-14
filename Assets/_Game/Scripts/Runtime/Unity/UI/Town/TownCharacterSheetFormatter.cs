@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
@@ -43,9 +42,13 @@ public sealed class TownCharacterSheetFormatter
         var titles = BuildPanelTitles();
         if (hero == null)
         {
-            var emptyBody = LocalizeTown(
-                "ui.town.sheet.empty",
-                "Select a hero to inspect town loadout, passives, synergy, and progression.");
+            // 모든 패널이 같은 note row 리스트(동일 인스턴스)를 공유 — empty-state 일관성 보장.
+            IReadOnlyList<TownCharacterSheetPanelRowViewState> emptyRows = new[]
+            {
+                Note(LocalizeTown(
+                    "ui.town.sheet.empty",
+                    "Select a hero to inspect town loadout, passives, synergy, and progression.")),
+            };
             return new TownCharacterSheetViewState(
                 HeroId: string.Empty,
                 DisplayName: "No hero selected",
@@ -58,11 +61,11 @@ public sealed class TownCharacterSheetFormatter
                 Skills: Array.Empty<TownCharacterSheetSkillCardViewState>(),
                 Equipment: Array.Empty<TownCharacterSheetEquipmentSlotViewState>(),
                 ProgressionNodes: Array.Empty<TownCharacterSheetProgressionNodeViewState>(),
-                Overview: new TownCharacterSheetPanelViewState(titles.Overview, emptyBody),
-                Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, emptyBody),
-                Passives: new TownCharacterSheetPanelViewState(titles.Passives, emptyBody),
-                Synergy: new TownCharacterSheetPanelViewState(titles.Synergy, emptyBody),
-                Progression: new TownCharacterSheetPanelViewState(titles.Progression, emptyBody));
+                Overview: new TownCharacterSheetPanelViewState(titles.Overview, emptyRows),
+                Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, emptyRows),
+                Passives: new TownCharacterSheetPanelViewState(titles.Passives, emptyRows),
+                Synergy: new TownCharacterSheetPanelViewState(titles.Synergy, emptyRows),
+                Progression: new TownCharacterSheetPanelViewState(titles.Progression, emptyRows));
         }
 
         var loadout = session.Profile.HeroLoadouts.FirstOrDefault(record =>
@@ -270,65 +273,60 @@ public sealed class TownCharacterSheetFormatter
             IsFilled: true);
     }
 
-    private string BuildOverviewBody(
+    private IReadOnlyList<TownCharacterSheetPanelRowViewState> BuildOverviewBody(
         GameSessionState session,
         HeroInstanceRecord hero,
         UnitArchetypeDefinition? archetype)
     {
-        var builder = new StringBuilder();
         var characterName = _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
         var archetypeName = _contentText.GetArchetypeName(hero.ArchetypeId);
-
-        builder.AppendLine($"{characterName} ({archetypeName})");
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.race_class",
-            "Race / Class",
-            $"{_contentText.GetRaceName(hero.RaceId)} / {_contentText.GetClassName(hero.ClassId)}");
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.role",
-            "Role",
-            _contentText.GetRoleName(string.Empty, archetype?.RoleTag ?? string.Empty));
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.role_family",
-            "Role Family",
-            _contentText.GetRoleFamilyName(hero.ClassId));
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.traits",
-            "Traits",
-            $"+{FormatTraitName(hero.ArchetypeId, hero.PositiveTraitId)} / -{FormatTraitName(hero.ArchetypeId, hero.NegativeTraitId)}");
-        AppendLabeledLine(builder, "ui.town.sheet.posture", "Posture", LocalizePosture(session.SelectedTeamPosture));
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.tactic",
-            "Tactic",
-            _contentText.GetTeamTacticName(ResolveCurrentTeamTacticId(session)));
-        return builder.ToString().TrimEnd();
+        return new[]
+        {
+            Note($"{characterName} ({archetypeName})"),
+            Row(
+                "ui.town.sheet.race_class",
+                "Race / Class",
+                $"{_contentText.GetRaceName(hero.RaceId)} / {_contentText.GetClassName(hero.ClassId)}"),
+            Row(
+                "ui.town.sheet.role",
+                "Role",
+                _contentText.GetRoleName(string.Empty, archetype?.RoleTag ?? string.Empty)),
+            Row(
+                "ui.town.sheet.role_family",
+                "Role Family",
+                _contentText.GetRoleFamilyName(hero.ClassId)),
+            Row(
+                "ui.town.sheet.traits",
+                "Traits",
+                $"+{FormatTraitName(hero.ArchetypeId, hero.PositiveTraitId)} / -{FormatTraitName(hero.ArchetypeId, hero.NegativeTraitId)}"),
+            Row("ui.town.sheet.posture", "Posture", LocalizePosture(session.SelectedTeamPosture)),
+            Row(
+                "ui.town.sheet.tactic",
+                "Tactic",
+                _contentText.GetTeamTacticName(ResolveCurrentTeamTacticId(session))),
+        };
     }
 
-    private string BuildLoadoutBody(
+    private IReadOnlyList<TownCharacterSheetPanelRowViewState> BuildLoadoutBody(
         GameSessionState session,
         HeroInstanceRecord hero,
         LaunchCoreUnitBaseline? baseline)
     {
-        var builder = new StringBuilder();
         var equippedItems = GetEquippedItems(session, hero);
-
-        AppendLabeledLine(builder, "ui.town.sheet.weapon", "Weapon", FormatItemBySlot(equippedItems, ItemSlotType.Weapon));
-        AppendLabeledLine(builder, "ui.town.sheet.armor", "Armor", FormatItemBySlot(equippedItems, ItemSlotType.Armor));
-        AppendLabeledLine(builder, "ui.town.sheet.accessory", "Accessory", FormatItemBySlot(equippedItems, ItemSlotType.Accessory));
-        AppendLabeledLine(builder, "ui.town.sheet.basic_attack", "Basic Attack", ResolveBasicAttackName());
-        AppendLabeledLine(builder, "ui.town.sheet.signature_active", "Signature Active", ResolveSkillName(baseline?.SignatureActiveId ?? string.Empty));
-        AppendLabeledLine(builder, "ui.town.sheet.signature_passive", "Signature Passive", ResolveSkillName(baseline?.SignaturePassiveId ?? string.Empty));
-        AppendLabeledLine(builder, "ui.town.sheet.flex_active", "Flex Active", ResolveSkillName(hero.FlexActiveId));
-        AppendLabeledLine(builder, "ui.town.sheet.flex_passive", "Flex Passive", ResolveSkillName(hero.FlexPassiveId));
-        return builder.ToString().TrimEnd();
+        return new[]
+        {
+            Row("ui.town.sheet.weapon", "Weapon", FormatItemBySlot(equippedItems, ItemSlotType.Weapon)),
+            Row("ui.town.sheet.armor", "Armor", FormatItemBySlot(equippedItems, ItemSlotType.Armor)),
+            Row("ui.town.sheet.accessory", "Accessory", FormatItemBySlot(equippedItems, ItemSlotType.Accessory)),
+            Row("ui.town.sheet.basic_attack", "Basic Attack", ResolveBasicAttackName()),
+            Row("ui.town.sheet.signature_active", "Signature Active", ResolveSkillName(baseline?.SignatureActiveId ?? string.Empty)),
+            Row("ui.town.sheet.signature_passive", "Signature Passive", ResolveSkillName(baseline?.SignaturePassiveId ?? string.Empty)),
+            Row("ui.town.sheet.flex_active", "Flex Active", ResolveSkillName(hero.FlexActiveId)),
+            Row("ui.town.sheet.flex_passive", "Flex Passive", ResolveSkillName(hero.FlexPassiveId)),
+        };
     }
 
-    private string BuildPassivesBody(
+    private IReadOnlyList<TownCharacterSheetPanelRowViewState> BuildPassivesBody(
         HeroLoadoutRecord? loadout,
         PassiveBoardDefinition? board,
         PassiveNodeDefinition? selectedNode)
@@ -336,54 +334,52 @@ public sealed class TownCharacterSheetFormatter
         IReadOnlyList<string> selectedNodeIds = loadout == null
             ? Array.Empty<string>()
             : loadout.SelectedPassiveNodeIds;
-        var builder = new StringBuilder();
-
-        AppendLabeledLine(builder, "ui.town.sheet.board", "Board", FormatPassiveBoardName(board?.Id ?? string.Empty));
-        AppendLabeledLine(builder, "ui.town.sheet.active_nodes", "Active Nodes", FormatNodeList(selectedNodeIds));
-        AppendLabeledLine(builder, "ui.town.sheet.highlighted_node", "Highlighted Node", FormatPassiveNodeName(selectedNode?.Id ?? string.Empty));
-        AppendLabeledLine(builder, "ui.town.sheet.node_count", "Node Count", $"{selectedNodeIds.Count}/{PassiveBoardSelectionValidator.MaxActiveNodeCount}");
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.keystone",
-            "Keystone",
-            selectedNodeIds.Any(id => id.Contains("_keystone_", StringComparison.Ordinal))
-                ? LocalizeTown("ui.town.sheet.state.active", "Active")
-                : LocalizeTown("ui.town.sheet.state.inactive", "Inactive"));
-        return builder.ToString().TrimEnd();
+        return new[]
+        {
+            Row("ui.town.sheet.board", "Board", FormatPassiveBoardName(board?.Id ?? string.Empty)),
+            Row("ui.town.sheet.active_nodes", "Active Nodes", FormatNodeList(selectedNodeIds)),
+            Row("ui.town.sheet.highlighted_node", "Highlighted Node", FormatPassiveNodeName(selectedNode?.Id ?? string.Empty)),
+            Row("ui.town.sheet.node_count", "Node Count", $"{selectedNodeIds.Count}/{PassiveBoardSelectionValidator.MaxActiveNodeCount}"),
+            Row(
+                "ui.town.sheet.keystone",
+                "Keystone",
+                selectedNodeIds.Any(id => id.Contains("_keystone_", StringComparison.Ordinal))
+                    ? LocalizeTown("ui.town.sheet.state.active", "Active")
+                    : LocalizeTown("ui.town.sheet.state.inactive", "Inactive")),
+        };
     }
 
-    private string BuildSynergyBody(
+    private IReadOnlyList<TownCharacterSheetPanelRowViewState> BuildSynergyBody(
         GameSessionState session,
         HeroInstanceRecord hero,
         UnitArchetypeDefinition? archetype,
         LaunchCoreUnitBaseline? baseline)
     {
-        var builder = new StringBuilder();
         var squadHeroes = session.Profile.Heroes
             .Where(candidate => session.ExpeditionSquadHeroIds.Contains(candidate.HeroId, StringComparer.Ordinal))
             .ToList();
+        var rows = new List<TownCharacterSheetPanelRowViewState>
+        {
+            Row(
+                "ui.town.sheet.squad",
+                "Squad",
+                squadHeroes.Count == 0
+                    ? LocalizeTown("ui.town.sheet.state.empty", "Empty")
+                    : $"{squadHeroes.Count} {LocalizeTown("ui.town.sheet.members", "members")}"),
+        };
 
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.squad",
-            "Squad",
-            squadHeroes.Count == 0
-                ? LocalizeTown("ui.town.sheet.state.empty", "Empty")
-                : $"{squadHeroes.Count} {LocalizeTown("ui.town.sheet.members", "members")}");
-
-        AppendSynergyLine(builder, squadHeroes, BuildSynergyId(hero.RaceId), hero.RaceId, isClassFamily: false);
-        AppendSynergyLine(builder, squadHeroes, BuildSynergyId(hero.ClassId), hero.ClassId, isClassFamily: true);
-        AppendLabeledLine(
-            builder,
+        AddSynergyRow(rows, squadHeroes, BuildSynergyId(hero.RaceId), hero.RaceId, isClassFamily: false);
+        AddSynergyRow(rows, squadHeroes, BuildSynergyId(hero.ClassId), hero.ClassId, isClassFamily: true);
+        rows.Add(Row(
             "ui.town.sheet.expected_families",
             "Expected Families",
-            string.Join(", ", ResolveExpectedSynergies(hero, baseline)));
-        AppendLabeledLine(builder, "ui.town.sheet.counter_hints", "Counter Hints", FormatCounterTools(archetype));
-        AppendLabeledLine(builder, "ui.town.sheet.soft_weakness", "Soft Weakness", FormatWeakness(hero.ClassId));
-        return builder.ToString().TrimEnd();
+            string.Join(", ", ResolveExpectedSynergies(hero, baseline))));
+        rows.Add(Row("ui.town.sheet.counter_hints", "Counter Hints", FormatCounterTools(archetype)));
+        rows.Add(Row("ui.town.sheet.soft_weakness", "Soft Weakness", FormatWeakness(hero.ClassId)));
+        return rows;
     }
 
-    private string BuildProgressionBody(
+    private IReadOnlyList<TownCharacterSheetPanelRowViewState> BuildProgressionBody(
         GameSessionState session,
         HeroInstanceRecord hero,
         HeroLoadoutRecord? loadout,
@@ -394,42 +390,38 @@ public sealed class TownCharacterSheetFormatter
         int fullRetrainCost,
         DismissRefundResult dismissRefund)
     {
-        var builder = new StringBuilder();
-
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.recruit",
-            "Recruit",
-            $"{LocalizeRecruitTier(hero.RecruitTier)} / {LocalizeRecruitSource(hero.RecruitSource)}");
-        AppendLabeledLine(builder, "ui.town.sheet.retrain_state", "Retrain State", FormatRetrainState(hero.RetrainState));
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.retrain_costs",
-            "Retrain Costs",
-            $"{LocalizeTown("ui.town.sheet.cost.active", "active")} {retrainActiveCost}, " +
-            $"{LocalizeTown("ui.town.sheet.cost.passive", "passive")} {retrainPassiveCost}, " +
-            $"{LocalizeTown("ui.town.sheet.cost.full", "full")} {fullRetrainCost} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")}");
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.dismiss_refund",
-            "Dismiss Refund",
-            $"+{dismissRefund.GoldRefund} {LocalizeTown("ui.town.sheet.currency.gold", "Gold")} / " +
-            $"+{dismissRefund.EchoRefund} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")}");
-        AppendLabeledLine(
-            builder,
-            "ui.town.sheet.refit_preview",
-            "Refit Preview",
-            selectedItem == null
-                ? CommonNone()
-                : $"{MetaBalanceDefaults.RefitEchoCost} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")} / {FormatItem(selectedItem)}");
-        AppendLabeledLine(builder, "ui.town.sheet.blueprint_permanent", "Blueprint Permanent", FormatAugmentName(GetEquippedPermanentAugmentId(session)));
-        AppendLabeledLine(builder, "ui.town.sheet.unlocked_permanents", "Unlocked Permanents", FormatAugmentList(session.Profile.UnlockedPermanentAugmentIds));
-        AppendLabeledLine(builder, "ui.town.sheet.passive_progress", "Passive Progress", FormatPassiveProgress(loadout, progression));
-        return builder.ToString().TrimEnd();
+        return new[]
+        {
+            Row(
+                "ui.town.sheet.recruit",
+                "Recruit",
+                $"{LocalizeRecruitTier(hero.RecruitTier)} / {LocalizeRecruitSource(hero.RecruitSource)}"),
+            Row("ui.town.sheet.retrain_state", "Retrain State", FormatRetrainState(hero.RetrainState)),
+            Row(
+                "ui.town.sheet.retrain_costs",
+                "Retrain Costs",
+                $"{LocalizeTown("ui.town.sheet.cost.active", "active")} {retrainActiveCost}, " +
+                $"{LocalizeTown("ui.town.sheet.cost.passive", "passive")} {retrainPassiveCost}, " +
+                $"{LocalizeTown("ui.town.sheet.cost.full", "full")} {fullRetrainCost} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")}"),
+            Row(
+                "ui.town.sheet.dismiss_refund",
+                "Dismiss Refund",
+                $"+{dismissRefund.GoldRefund} {LocalizeTown("ui.town.sheet.currency.gold", "Gold")} / " +
+                $"+{dismissRefund.EchoRefund} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")}"),
+            Row(
+                "ui.town.sheet.refit_preview",
+                "Refit Preview",
+                selectedItem == null
+                    ? CommonNone()
+                    : $"{MetaBalanceDefaults.RefitEchoCost} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")} / {FormatItem(selectedItem)}"),
+            Row("ui.town.sheet.blueprint_permanent", "Blueprint Permanent", FormatAugmentName(GetEquippedPermanentAugmentId(session))),
+            Row("ui.town.sheet.unlocked_permanents", "Unlocked Permanents", FormatAugmentList(session.Profile.UnlockedPermanentAugmentIds)),
+            Row("ui.town.sheet.passive_progress", "Passive Progress", FormatPassiveProgress(loadout, progression)),
+        };
     }
 
-    private void AppendSynergyLine(
-        StringBuilder builder,
+    private void AddSynergyRow(
+        List<TownCharacterSheetPanelRowViewState> rows,
         IReadOnlyList<HeroInstanceRecord> squadHeroes,
         string synergyId,
         string countedId,
@@ -448,7 +440,9 @@ public sealed class TownCharacterSheetFormatter
             : count >= minor
                 ? $"{minor} {LocalizeTown("ui.town.sheet.reached", "reached")}, {LocalizeTown("ui.town.sheet.next", "next")} {major}"
                 : $"{LocalizeTown("ui.town.sheet.next", "next")} {minor}";
-        builder.AppendLine($"{_contentText.GetSynergyName(synergyId)}: {count} {LocalizeTown("ui.town.sheet.units", "units")} ({minor}/{major}) {reachedText}");
+        rows.Add(new TownCharacterSheetPanelRowViewState(
+            _contentText.GetSynergyName(synergyId),
+            $"{count} {LocalizeTown("ui.town.sheet.units", "units")} ({minor}/{major}) {reachedText}"));
     }
 
     private IReadOnlyList<string> ResolveExpectedSynergies(HeroInstanceRecord hero, LaunchCoreUnitBaseline? baseline)
@@ -744,9 +738,14 @@ public sealed class TownCharacterSheetFormatter
         };
     }
 
-    private void AppendLabeledLine(StringBuilder builder, string key, string fallbackLabel, string value)
+    private TownCharacterSheetPanelRowViewState Row(string key, string fallbackLabel, string value, string tone = "")
     {
-        builder.AppendLine($"{LocalizeTown(key, fallbackLabel)}: {value}");
+        return new TownCharacterSheetPanelRowViewState(LocalizeTown(key, fallbackLabel), value, tone);
+    }
+
+    private static TownCharacterSheetPanelRowViewState Note(string value)
+    {
+        return new TownCharacterSheetPanelRowViewState(string.Empty, value, string.Empty);
     }
 
     private string LocalizeTown(string key, string fallback, params object[] args)

@@ -787,13 +787,52 @@
     overflow: hidden;
 }
 
+/* P0: body가 단일 텍스트 Label에서 row 컨테이너로 전환됨. 텍스트 prop 제거,
+   overflow:hidden 제거(무음 클리핑 방지). 행 스타일은 .tcs-row 패밀리가 담당. */
 .tcs-panel__body {
-    color: rgb(235, 226, 199);
-    font-size: var(--sm-fs-eb);
-    line-height: 14px;
-    white-space: normal;
-    overflow: hidden;
+    flex-direction: column;
 }
+
+/* 구조화 정의 행 — label:value. gap 미지원이라 label 고정폭 + margin으로 정렬.
+   house idiom(.sm-hd-stat) 미러 + 이 시트 기존 stat 팔레트(cool label / vellum value) 유지. */
+.tcs-row {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 2px;
+}
+
+.tcs-row__label {
+    flex-shrink: 0;
+    width: 112px;
+    margin-right: var(--sm-s-2);
+    color: rgba(160, 187, 227, 0.86);
+    font-size: var(--sm-fs-eb);
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.tcs-row__value {
+    flex-grow: 1;
+    flex-shrink: 1;
+    color: rgb(235, 226, 199);
+    font-size: var(--sm-fs-s);
+    white-space: normal;
+}
+
+/* note row(overview 헤딩 / empty-state 안내): label 없이 value full-width 강조 */
+.tcs-row--note {
+    margin-bottom: 6px;
+}
+
+.tcs-row__value--note {
+    color: var(--sm-gold-100);
+    font-size: var(--sm-fs-s);
+    -unity-font-style: bold;
+}
+
+.tcs-row__value--tone-safe { color: rgb(164, 226, 185); }
+.tcs-row__value--tone-danger { color: rgb(245, 162, 132); }
+.tcs-row__value--tone-info { color: rgb(151, 221, 239); }
 
 .tcs-panel--equipment .tcs-panel__body {
     display: none;

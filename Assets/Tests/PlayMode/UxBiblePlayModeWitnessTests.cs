@@ -294,9 +294,9 @@ public sealed class UxBiblePlayModeWitnessTests
         AssertVisible(root, "TownCharacterSheetRoot");
         AssertNonEmptyText<Label>(root, "TcsHeroNameLabel");
         AssertNonEmptyText<Label>(root, "TcsHeroMetaLabel");
-        AssertNonEmptyText<Label>(root, "TcsOverviewBody");
-        AssertNonEmptyText<Label>(root, "TcsLoadoutBody");
-        AssertNonEmptyText<Label>(root, "TcsProgressionBody");
+        Assert.That(Require<VisualElement>(root, "TcsOverviewBody").childCount, Is.GreaterThan(0));
+        Assert.That(Require<VisualElement>(root, "TcsLoadoutBody").childCount, Is.GreaterThan(0));
+        Assert.That(Require<VisualElement>(root, "TcsProgressionBody").childCount, Is.GreaterThan(0));
         Assert.That(Require<VisualElement>(root, "TcsHeroRail").childCount, Is.GreaterThan(0));
         Assert.That(Require<VisualElement>(root, "TcsStatGrid").childCount, Is.GreaterThan(0));
         Assert.That(Require<VisualElement>(root, "TcsProgressionTrack").childCount, Is.GreaterThan(0));

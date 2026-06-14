@@ -42,17 +42,17 @@
                     <ui:VisualElement class="tcs-panel tcs-panel--overview sm-chrome-l2">
                         <ui:Label name="TcsOverviewTitle" class="tcs-panel__title" />
                         <ui:VisualElement name="TcsStatGrid" class="tcs-stat-grid" picking-mode="Ignore" />
-                        <ui:Label name="TcsOverviewBody" class="tcs-panel__body" />
+                        <ui:VisualElement name="TcsOverviewBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--progression sm-chrome-l2">
                         <ui:Label name="TcsProgressionTitle" class="tcs-panel__title" />
                         <ui:VisualElement name="TcsProgressionTrack" class="tcs-progression-track" picking-mode="Ignore" />
-                        <ui:Label name="TcsProgressionBody" class="tcs-panel__body" />
+                        <ui:VisualElement name="TcsProgressionBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--equipment sm-chrome-l2">
                         <ui:Label name="TcsLoadoutTitle" class="tcs-panel__title" />
                         <ui:VisualElement name="TcsEquipmentRow" class="tcs-equipment-row" picking-mode="Ignore" />
-                        <ui:Label name="TcsLoadoutBody" class="tcs-panel__body" />
+                        <ui:VisualElement name="TcsLoadoutBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
@@ -62,11 +62,11 @@
                     <ui:VisualElement class="tcs-panel tcs-panel--skill-list sm-chrome-l2">
                         <ui:Label name="TcsPassivesTitle" class="tcs-panel__title" />
                         <ui:VisualElement name="TcsSkillList" class="tcs-skill-list" picking-mode="Ignore" />
-                        <ui:Label name="TcsPassivesBody" class="tcs-panel__body" />
+                        <ui:VisualElement name="TcsPassivesBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--skill-detail sm-chrome-l2">
                         <ui:Label name="TcsSynergyTitle" class="tcs-panel__title" />
-                        <ui:Label name="TcsSynergyBody" class="tcs-panel__body" />
+                        <ui:VisualElement name="TcsSynergyBody" class="tcs-panel__body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

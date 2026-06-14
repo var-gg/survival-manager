@@ -39,15 +39,15 @@ public sealed class TownCharacterSheetView
     private readonly Label _heroMetaLabel;
     private readonly Label _roleLabel;
     private readonly Label _overviewTitleLabel;
-    private readonly Label _overviewBodyLabel;
+    private readonly VisualElement _overviewBody;
     private readonly Label _loadoutTitleLabel;
-    private readonly Label _loadoutBodyLabel;
+    private readonly VisualElement _loadoutBody;
     private readonly Label _passivesTitleLabel;
-    private readonly Label _passivesBodyLabel;
+    private readonly VisualElement _passivesBody;
     private readonly Label _synergyTitleLabel;
-    private readonly Label _synergyBodyLabel;
+    private readonly VisualElement _synergyBody;
     private readonly Label _progressionTitleLabel;
-    private readonly Label _progressionBodyLabel;
+    private readonly VisualElement _progressionBody;
     private readonly Button _closeButton;
     // wave-50 P2 action bar — 미존재 UXML(이전 build)에서도 panel 부팅이 깨지지 않게 nullable.
     private readonly Button? _dismissButton;
@@ -71,15 +71,15 @@ public sealed class TownCharacterSheetView
         _heroMetaLabel = Require<Label>(root, "TcsHeroMetaLabel");
         _roleLabel = Require<Label>(root, "TcsRoleLabel");
         _overviewTitleLabel = Require<Label>(root, "TcsOverviewTitle");
-        _overviewBodyLabel = Require<Label>(root, "TcsOverviewBody");
+        _overviewBody = Require<VisualElement>(root, "TcsOverviewBody");
         _loadoutTitleLabel = Require<Label>(root, "TcsLoadoutTitle");
-        _loadoutBodyLabel = Require<Label>(root, "TcsLoadoutBody");
+        _loadoutBody = Require<VisualElement>(root, "TcsLoadoutBody");
         _passivesTitleLabel = Require<Label>(root, "TcsPassivesTitle");
-        _passivesBodyLabel = Require<Label>(root, "TcsPassivesBody");
+        _passivesBody = Require<VisualElement>(root, "TcsPassivesBody");
         _synergyTitleLabel = Require<Label>(root, "TcsSynergyTitle");
-        _synergyBodyLabel = Require<Label>(root, "TcsSynergyBody");
+        _synergyBody = Require<VisualElement>(root, "TcsSynergyBody");
         _progressionTitleLabel = Require<Label>(root, "TcsProgressionTitle");
-        _progressionBodyLabel = Require<Label>(root, "TcsProgressionBody");
+        _progressionBody = Require<VisualElement>(root, "TcsProgressionBody");
         _closeButton = Require<Button>(root, "TownCharacterSheetCloseButton");
         _dismissButton = root.Q<Button>("TcsDismissButton");
         _retrainButton = root.Q<Button>("TcsRetrainButton");
@@ -154,11 +154,11 @@ public sealed class TownCharacterSheetView
         RenderEquipment(state.Equipment);
         RenderProgressionTrack(state.ProgressionNodes);
 
-        RenderPanel(state.Overview, _overviewTitleLabel, _overviewBodyLabel);
-        RenderPanel(state.Loadout, _loadoutTitleLabel, _loadoutBodyLabel);
-        RenderPanel(state.Passives, _passivesTitleLabel, _passivesBodyLabel);
-        RenderPanel(state.Synergy, _synergyTitleLabel, _synergyBodyLabel);
-        RenderPanel(state.Progression, _progressionTitleLabel, _progressionBodyLabel);
+        RenderPanel(state.Overview, _overviewTitleLabel, _overviewBody);
+        RenderPanel(state.Loadout, _loadoutTitleLabel, _loadoutBody);
+        RenderPanel(state.Passives, _passivesTitleLabel, _passivesBody);
+        RenderPanel(state.Synergy, _synergyTitleLabel, _synergyBody);
+        RenderPanel(state.Progression, _progressionTitleLabel, _progressionBody);
     }
 
     private void RenderPortrait(Texture2D? portraitSprite)
@@ -377,11 +377,46 @@ public sealed class TownCharacterSheetView
         return string.IsNullOrWhiteSpace(trimmed) ? "✦" : trimmed[..1];
     }
 
-    private static void RenderPanel(TownCharacterSheetPanelViewState panel, Label title, Label body)
+    private static void RenderPanel(TownCharacterSheetPanelViewState panel, Label title, VisualElement body)
     {
         title.text = panel.Title;
-        body.text = panel.Body;
-        body.tooltip = panel.Body;
+        body.Clear();
+        foreach (var row in panel.Rows)
+        {
+            body.Add(BuildRow(row));
+        }
+    }
+
+    private static VisualElement BuildRow(TownCharacterSheetPanelRowViewState row)
+    {
+        var element = new VisualElement();
+        element.AddToClassList("tcs-row");
+
+        // Label이 비면 full-width note row(예: empty-state 안내, overview 헤딩).
+        if (string.IsNullOrWhiteSpace(row.Label))
+        {
+            element.AddToClassList("tcs-row--note");
+            var note = new Label(row.Value);
+            note.AddToClassList("tcs-row__value");
+            note.AddToClassList("tcs-row__value--note");
+            element.Add(note);
+            element.tooltip = row.Value;
+            return element;
+        }
+
+        var label = new Label(row.Label);
+        label.AddToClassList("tcs-row__label");
+        element.Add(label);
+
+        var value = new Label(row.Value);
+        value.AddToClassList("tcs-row__value");
+        if (!string.IsNullOrWhiteSpace(row.Tone))
+        {
+            value.AddToClassList($"tcs-row__value--tone-{row.Tone.Trim().ToLowerInvariant()}");
+        }
+        element.Add(value);
+        element.tooltip = $"{row.Label}: {row.Value}";
+        return element;
     }
 
     private static void AddClassVariant(VisualElement element, string prefix, string key)

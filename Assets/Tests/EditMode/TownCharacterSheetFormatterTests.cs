@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SM.Combat.Model;
@@ -39,21 +40,21 @@ public sealed class TownCharacterSheetFormatterTests
             var sheet = formatter.Build(session, selectedHero, selectedItem, selectedNode, 40, 30, 60, dismissRefund);
 
             Assert.That(sheet.Overview.Title, Is.EqualTo("Overview"));
-            Assert.That(sheet.Overview.Body, Does.Contain("Warden Hero (Iron Warden)"));
-            Assert.That(sheet.Overview.Body, Does.Contain("Tactic: Hold Line"));
+            AssertNote(sheet.Overview.Rows, "Warden Hero (Iron Warden)");
+            AssertRow(sheet.Overview.Rows, "Tactic", "Hold Line");
 
-            Assert.That(sheet.Loadout.Body, Does.Contain("Weapon: Guardian Shield"));
-            Assert.That(sheet.Loadout.Body, Does.Contain("Signature Active: Power Strike"));
-            Assert.That(sheet.Loadout.Body, Does.Contain("Flex Passive: Anchored"));
+            AssertRow(sheet.Loadout.Rows, "Weapon", "Guardian Shield");
+            AssertRow(sheet.Loadout.Rows, "Signature Active", "Power Strike");
+            AssertRow(sheet.Loadout.Rows, "Flex Passive", "Anchored");
 
-            Assert.That(sheet.Passives.Body, Does.Contain("Board: Vanguard Board"));
-            Assert.That(sheet.Passives.Body, Does.Contain("Node Count: 1/5"));
+            AssertRow(sheet.Passives.Rows, "Board", "Vanguard Board");
+            AssertRow(sheet.Passives.Rows, "Node Count", "1/5");
 
-            Assert.That(sheet.Synergy.Body, Does.Contain("Human Bond: 2 units (2/4) 2 reached, next 4"));
-            Assert.That(sheet.Synergy.Body, Does.Contain("Vanguard Oath: 2 units (2/3) 2 reached, next 3"));
+            AssertRow(sheet.Synergy.Rows, "Human Bond", "2 units (2/4) 2 reached, next 4");
+            AssertRow(sheet.Synergy.Rows, "Vanguard Oath", "2 units (2/3) 2 reached, next 3");
 
-            Assert.That(sheet.Progression.Body, Does.Contain("Blueprint Permanent: Legacy Oath"));
-            Assert.That(sheet.Progression.Body, Does.Contain("Passive Progress: 1 active / 5 max / 2 unlocked"));
+            AssertRow(sheet.Progression.Rows, "Blueprint Permanent", "Legacy Oath");
+            AssertRow(sheet.Progression.Rows, "Passive Progress", "1 active / 5 max / 2 unlocked");
         }
         finally
         {
@@ -76,16 +77,42 @@ public sealed class TownCharacterSheetFormatterTests
 
             var sheet = formatter.Build(session, null, null, null, 0, 0, 0, new DismissRefundResult(0, 0));
 
-            Assert.That(sheet.Overview.Body, Is.EqualTo(sheet.Loadout.Body));
-            Assert.That(sheet.Overview.Body, Is.EqualTo(sheet.Passives.Body));
-            Assert.That(sheet.Overview.Body, Is.EqualTo(sheet.Synergy.Body));
-            Assert.That(sheet.Overview.Body, Is.EqualTo(sheet.Progression.Body));
+            Assert.That(sheet.Overview.Rows, Is.EqualTo(sheet.Loadout.Rows));
+            Assert.That(sheet.Overview.Rows, Is.EqualTo(sheet.Passives.Rows));
+            Assert.That(sheet.Overview.Rows, Is.EqualTo(sheet.Synergy.Rows));
+            Assert.That(sheet.Overview.Rows, Is.EqualTo(sheet.Progression.Rows));
         }
         finally
         {
             fixture.Dispose();
             Object.DestroyImmediate(go);
         }
+    }
+
+    private static void AssertRow(
+        IReadOnlyList<TownCharacterSheetPanelRowViewState> rows,
+        string label,
+        string valueSubstring)
+    {
+        Assert.That(
+            rows.Any(row => row.Label == label && row.Value.Contains(valueSubstring)),
+            Is.True,
+            $"Expected row '{label}' containing '{valueSubstring}'. Got: {FormatRows(rows)}");
+    }
+
+    private static void AssertNote(
+        IReadOnlyList<TownCharacterSheetPanelRowViewState> rows,
+        string valueSubstring)
+    {
+        Assert.That(
+            rows.Any(row => string.IsNullOrEmpty(row.Label) && row.Value.Contains(valueSubstring)),
+            Is.True,
+            $"Expected note row containing '{valueSubstring}'. Got: {FormatRows(rows)}");
+    }
+
+    private static string FormatRows(IReadOnlyList<TownCharacterSheetPanelRowViewState> rows)
+    {
+        return string.Join(" | ", rows.Select(row => $"{row.Label}={row.Value}"));
     }
 
     private static GameSessionState CreateSession(ICombatContentLookup lookup)

@@ -3,9 +3,14 @@ using UnityEngine;
 
 namespace SM.Unity.UI.Town;
 
+public sealed record TownCharacterSheetPanelRowViewState(
+    string Label,
+    string Value,
+    string Tone = "");
+
 public sealed record TownCharacterSheetPanelViewState(
     string Title,
-    string Body);
+    IReadOnlyList<TownCharacterSheetPanelRowViewState> Rows);
 
 public sealed record TownCharacterSheetHeroRailEntryViewState(
     string HeroId,
