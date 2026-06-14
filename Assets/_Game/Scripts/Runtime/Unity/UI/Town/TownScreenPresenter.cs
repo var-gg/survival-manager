@@ -384,8 +384,14 @@ public sealed class TownScreenPresenter
             return Localize(GameLocalizationTables.UIReward, "ui.reward.action.open", "Open Reward");
         }
 
-        return session.CanResumeExpedition
-            ? Localize(GameLocalizationTables.UITown, "ui.town.action.resume_expedition", "Resume Expedition")
+        if (session.CanResumeExpedition)
+        {
+            return Localize(GameLocalizationTables.UITown, "ui.town.action.resume_expedition", "Resume Expedition");
+        }
+
+        // 신규 플레이어(첫 원정 루프 전)에게는 막연한 "원정 시작" 대신 "첫 원정 시작"으로 다음 행동을 명확히 가리킨다.
+        return FirstRunStatusResolver.IsFirstRunActive(session.Profile.CampaignProgress)
+            ? Localize(GameLocalizationTables.UITown, "ui.town.action.start_first_expedition", "첫 원정 시작")
             : Localize(GameLocalizationTables.UITown, "ui.town.action.start_expedition", "원정으로");
     }
 
@@ -397,9 +403,15 @@ public sealed class TownScreenPresenter
                 "Open Reward to settle the previous node before continuing.");
         }
 
-        return session.CanResumeExpedition
-            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_resume",
-                "Resume the authored expedition from the currently selected route.")
+        if (session.CanResumeExpedition)
+        {
+            return Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_resume",
+                "Resume the authored expedition from the currently selected route.");
+        }
+
+        return FirstRunStatusResolver.IsFirstRunActive(session.Profile.CampaignProgress)
+            ? Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_first_run",
+                "동료가 준비됐습니다. 첫 원정을 시작해 전투 → 보상 → 성장 루프를 경험하세요.")
             : Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_start",
                 "Begin the authored expedition loop with the current preparation.");
     }

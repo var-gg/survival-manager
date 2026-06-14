@@ -1428,6 +1428,15 @@ MonoBehaviour:
     m_Localized: Legendary
     m_Metadata:
       m_Items: []
+  - m_Id: 27695866126340096
+    m_Localized: Start First Expedition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27695866164088832
+    m_Localized: Your companions are ready. Start your first expedition to experience
+      the battle, reward, and growth loop.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

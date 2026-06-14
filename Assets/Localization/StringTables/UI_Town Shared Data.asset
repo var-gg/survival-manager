@@ -1383,6 +1383,14 @@ MonoBehaviour:
     m_Key: ui.town.sheet.rarity.legendary
     m_Metadata:
       m_Items: []
+  - m_Id: 27695866126340096
+    m_Key: ui.town.action.start_first_expedition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27695866164088832
+    m_Key: ui.town.tooltip.expedition_first_run
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
