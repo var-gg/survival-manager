@@ -47,6 +47,10 @@ public static class TownPreviewCaptureUtility
     private static readonly (Action<VisualElement> Build, string FileName) RecruitSingleTarget =
         (r => Make<RecruitPreviewBootstrap>(b => b.BuildInto(r)), "recruit");
 
+    // HeroDetail v0.5 단독 캡처 — 비파괴 시각 QA (대표 데이터).
+    private static readonly (Action<VisualElement> Build, string FileName) HeroDetailSingleTarget =
+        (r => Make<HeroDetailPreviewBootstrap>(b => b.BuildInto(r)), "hero_detail");
+
     private static readonly (Action<VisualElement> Build, string FileName)[] AllTargets =
     {
         (r => Make<TownRosterGridPreviewBootstrap>(b => b.BuildInto(r)),   "roster_grid"),
@@ -180,6 +184,12 @@ public static class TownPreviewCaptureUtility
     public static void CaptureRecruit()
     {
         StartCapture(new[] { RecruitSingleTarget });
+    }
+
+    [MenuItem("SM/Town/Capture Hero Detail", false, 11)]
+    public static void CaptureHeroDetail()
+    {
+        StartCapture(new[] { HeroDetailSingleTarget });
     }
 
     [MenuItem("SM/Town/▶ Preview 도감 PlayMode 캡쳐", false, 6)]
