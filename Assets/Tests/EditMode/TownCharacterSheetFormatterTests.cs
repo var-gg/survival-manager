@@ -40,7 +40,7 @@ public sealed class TownCharacterSheetFormatterTests
             var sheet = formatter.Build(session, selectedHero, selectedItem, selectedNode, 40, 30, 60, dismissRefund);
 
             Assert.That(sheet.Overview.Title, Is.EqualTo("Overview"));
-            AssertNote(sheet.Overview.Rows, "Warden Hero (Iron Warden)");
+            AssertRow(sheet.Overview.Rows, "Race / Class", "Human");
             AssertRow(sheet.Overview.Rows, "Tactic", "Hold Line");
 
             AssertRow(sheet.Loadout.Rows, "Weapon", "Guardian Shield");
@@ -98,16 +98,6 @@ public sealed class TownCharacterSheetFormatterTests
             rows.Any(row => row.Label == label && row.Value.Contains(valueSubstring)),
             Is.True,
             $"Expected row '{label}' containing '{valueSubstring}'. Got: {FormatRows(rows)}");
-    }
-
-    private static void AssertNote(
-        IReadOnlyList<TownCharacterSheetPanelRowViewState> rows,
-        string valueSubstring)
-    {
-        Assert.That(
-            rows.Any(row => string.IsNullOrEmpty(row.Label) && row.Value.Contains(valueSubstring)),
-            Is.True,
-            $"Expected note row containing '{valueSubstring}'. Got: {FormatRows(rows)}");
     }
 
     private static string FormatRows(IReadOnlyList<TownCharacterSheetPanelRowViewState> rows)

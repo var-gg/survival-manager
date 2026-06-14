@@ -46,6 +46,14 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="tcs-panel tcs-panel--progression sm-chrome-l2">
                         <ui:Label name="TcsProgressionTitle" class="tcs-panel__title" />
+                        <ui:VisualElement name="TcsXpRow" class="tcs-xp" picking-mode="Ignore">
+                            <ui:Label name="TcsLevelLabel" class="tcs-xp__level" />
+                            <ui:VisualElement class="tcs-xp__track">
+                                <ui:VisualElement name="TcsXpFill" class="tcs-xp__fill" />
+                            </ui:VisualElement>
+                            <ui:Label name="TcsXpLabel" class="tcs-xp__value" />
+                        </ui:VisualElement>
+                        <ui:Label name="TcsPassiveCaption" class="tcs-track-caption" picking-mode="Ignore" />
                         <ui:VisualElement name="TcsProgressionTrack" class="tcs-progression-track" picking-mode="Ignore" />
                         <ui:VisualElement name="TcsProgressionBody" class="tcs-panel__body" />
                     </ui:VisualElement>

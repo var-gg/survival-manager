@@ -51,6 +51,12 @@ public sealed class TownCharacterSheetViewBindingTests
         Assert.IsTrue(labelRow[1].ClassListContains("tcs-row__value"), "value class");
         Assert.AreEqual("전술", ((Label)labelRow[0]).text);
         Assert.AreEqual("표준 전선", ((Label)labelRow[1]).text);
+
+        // Lv·XP 바 + 패시브 캡션이 바인딩·렌더되는지 (성장 패널이 실제 성장을 표시).
+        Assert.AreEqual("Lv. 1", root.Q<Label>("TcsLevelLabel").text);
+        Assert.AreEqual("0 / 150", root.Q<Label>("TcsXpLabel").text);
+        Assert.AreEqual("패시브 노드: 5", root.Q<Label>("TcsPassiveCaption").text);
+        Assert.IsNotNull(root.Q<VisualElement>("TcsXpFill"), "XP fill element bound");
     }
 
     [Test]
@@ -91,6 +97,8 @@ public sealed class TownCharacterSheetViewBindingTests
             Skills: new List<TownCharacterSheetSkillCardViewState>(),
             Equipment: new List<TownCharacterSheetEquipmentSlotViewState>(),
             ProgressionNodes: new List<TownCharacterSheetProgressionNodeViewState>(),
+            LevelProgress: new TownCharacterSheetLevelProgressViewState("Lv. 1", "0 / 150", 0f),
+            PassiveTrackCaption: "패시브 노드: 5",
             Overview: new TownCharacterSheetPanelViewState("개요", overviewRows),
             Loadout: emptyPanel,
             Passives: emptyPanel,

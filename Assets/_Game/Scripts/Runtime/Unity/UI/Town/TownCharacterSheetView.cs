@@ -34,6 +34,10 @@ public sealed class TownCharacterSheetView
     private readonly VisualElement _skillList;
     private readonly VisualElement _equipmentRow;
     private readonly VisualElement _progressionTrack;
+    private readonly Label _levelLabel;
+    private readonly VisualElement _xpFill;
+    private readonly Label _xpLabel;
+    private readonly Label _passiveCaption;
     private readonly Label _portraitGlyphLabel;
     private readonly Label _heroNameLabel;
     private readonly Label _heroMetaLabel;
@@ -66,6 +70,10 @@ public sealed class TownCharacterSheetView
         _skillList = Require<VisualElement>(root, "TcsSkillList");
         _equipmentRow = Require<VisualElement>(root, "TcsEquipmentRow");
         _progressionTrack = Require<VisualElement>(root, "TcsProgressionTrack");
+        _levelLabel = Require<Label>(root, "TcsLevelLabel");
+        _xpFill = Require<VisualElement>(root, "TcsXpFill");
+        _xpLabel = Require<Label>(root, "TcsXpLabel");
+        _passiveCaption = Require<Label>(root, "TcsPassiveCaption");
         _portraitGlyphLabel = Require<Label>(root, "TcsPortraitGlyphLabel");
         _heroNameLabel = Require<Label>(root, "TcsHeroNameLabel");
         _heroMetaLabel = Require<Label>(root, "TcsHeroMetaLabel");
@@ -153,6 +161,8 @@ public sealed class TownCharacterSheetView
         RenderSkills(state.Skills);
         RenderEquipment(state.Equipment);
         RenderProgressionTrack(state.ProgressionNodes);
+        RenderLevelProgress(state.LevelProgress);
+        _passiveCaption.text = state.PassiveTrackCaption;
 
         RenderPanel(state.Overview, _overviewTitleLabel, _overviewBody);
         RenderPanel(state.Loadout, _loadoutTitleLabel, _loadoutBody);
@@ -341,6 +351,13 @@ public sealed class TownCharacterSheetView
             element.Add(label);
             _progressionTrack.Add(element);
         }
+    }
+
+    private void RenderLevelProgress(TownCharacterSheetLevelProgressViewState progress)
+    {
+        _levelLabel.text = progress.LevelLabel;
+        _xpLabel.text = progress.XpLabel;
+        _xpFill.style.width = Length.Percent(Mathf.Clamp01(progress.XpFraction) * 100f);
     }
 
     private void ApplyRoleFamilyClass(string familyKey)

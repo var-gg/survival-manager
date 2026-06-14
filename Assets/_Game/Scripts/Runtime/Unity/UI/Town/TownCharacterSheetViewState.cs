@@ -49,6 +49,11 @@ public sealed record TownCharacterSheetProgressionNodeViewState(
     string Label,
     string State);
 
+public sealed record TownCharacterSheetLevelProgressViewState(
+    string LevelLabel,
+    string XpLabel,
+    float XpFraction);
+
 public sealed record TownCharacterSheetViewState(
     string HeroId,
     string DisplayName,
@@ -61,6 +66,8 @@ public sealed record TownCharacterSheetViewState(
     IReadOnlyList<TownCharacterSheetSkillCardViewState> Skills,
     IReadOnlyList<TownCharacterSheetEquipmentSlotViewState> Equipment,
     IReadOnlyList<TownCharacterSheetProgressionNodeViewState> ProgressionNodes,
+    TownCharacterSheetLevelProgressViewState LevelProgress,
+    string PassiveTrackCaption,
     TownCharacterSheetPanelViewState Overview,
     TownCharacterSheetPanelViewState Loadout,
     TownCharacterSheetPanelViewState Passives,

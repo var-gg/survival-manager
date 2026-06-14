@@ -61,6 +61,8 @@ public sealed class TownCharacterSheetFormatter
                 Skills: Array.Empty<TownCharacterSheetSkillCardViewState>(),
                 Equipment: Array.Empty<TownCharacterSheetEquipmentSlotViewState>(),
                 ProgressionNodes: Array.Empty<TownCharacterSheetProgressionNodeViewState>(),
+                LevelProgress: new TownCharacterSheetLevelProgressViewState("Lv. —", string.Empty, 0f),
+                PassiveTrackCaption: BuildPassiveTrackCaption(),
                 Overview: new TownCharacterSheetPanelViewState(titles.Overview, emptyRows),
                 Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, emptyRows),
                 Passives: new TownCharacterSheetPanelViewState(titles.Passives, emptyRows),
@@ -91,6 +93,8 @@ public sealed class TownCharacterSheetFormatter
             Skills: BuildSkillCards(hero, baseline),
             Equipment: BuildEquipmentSlots(session, hero),
             ProgressionNodes: BuildProgressionNodes(loadout, progression),
+            LevelProgress: BuildLevelProgress(progression),
+            PassiveTrackCaption: BuildPassiveTrackCaption(),
             Overview: new TownCharacterSheetPanelViewState(titles.Overview, BuildOverviewBody(session, hero, archetype)),
             Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, BuildLoadoutBody(session, hero, baseline)),
             Passives: new TownCharacterSheetPanelViewState(titles.Passives, BuildPassivesBody(loadout, board, selectedNode)),
@@ -167,9 +171,9 @@ public sealed class TownCharacterSheetFormatter
         var equippedItems = GetEquippedItems(session, hero);
         return new[]
         {
-            BuildEquipmentSlot(equippedItems, ItemSlotType.Weapon, "Weapon", "weapon"),
-            BuildEquipmentSlot(equippedItems, ItemSlotType.Armor, "Armor", "armor"),
-            BuildEquipmentSlot(equippedItems, ItemSlotType.Accessory, "Accessory", "accessory"),
+            BuildEquipmentSlot(equippedItems, ItemSlotType.Weapon, LocalizeTown("ui.town.sheet.weapon", "Weapon"), "weapon"),
+            BuildEquipmentSlot(equippedItems, ItemSlotType.Armor, LocalizeTown("ui.town.sheet.armor", "Armor"), "armor"),
+            BuildEquipmentSlot(equippedItems, ItemSlotType.Accessory, LocalizeTown("ui.town.sheet.accessory", "Accessory"), "accessory"),
         };
     }
 
@@ -184,8 +188,10 @@ public sealed class TownCharacterSheetFormatter
             ? progression.UnlockedPassiveNodeIds
             : Array.Empty<string>();
         var nodes = new List<TownCharacterSheetProgressionNodeViewState>();
+        // 트랙 슬롯 수는 패시브 보드 최대 활성 노드 수와 일치시킨다(하드코딩 6 → 5 정합).
+        var slotCount = PassiveBoardSelectionValidator.MaxActiveNodeCount;
 
-        foreach (var nodeId in selectedIds.Where(id => !string.IsNullOrWhiteSpace(id)).Take(6))
+        foreach (var nodeId in selectedIds.Where(id => !string.IsNullOrWhiteSpace(id)).Take(slotCount))
         {
             nodes.Add(new TownCharacterSheetProgressionNodeViewState(FormatPassiveNodeName(nodeId), "active"));
         }
@@ -193,14 +199,15 @@ public sealed class TownCharacterSheetFormatter
         foreach (var nodeId in unlockedIds
                      .Where(id => !string.IsNullOrWhiteSpace(id))
                      .Where(id => !selectedIds.Contains(id, StringComparer.Ordinal))
-                     .Take(Math.Max(0, 6 - nodes.Count)))
+                     .Take(Math.Max(0, slotCount - nodes.Count)))
         {
             nodes.Add(new TownCharacterSheetProgressionNodeViewState(FormatPassiveNodeName(nodeId), "unlocked"));
         }
 
-        while (nodes.Count < 6)
+        // 빈 잠금 슬롯은 숫자(level/step으로 오해)가 아니라 중립 글리프로 — 미해금 패시브 슬롯임을 표시.
+        while (nodes.Count < slotCount)
         {
-            nodes.Add(new TownCharacterSheetProgressionNodeViewState($"{nodes.Count + 1}", "locked"));
+            nodes.Add(new TownCharacterSheetProgressionNodeViewState("·", "locked"));
         }
 
         return nodes;
@@ -249,7 +256,7 @@ public sealed class TownCharacterSheetFormatter
                 SlotKey: fallbackIconKey,
                 SlotLabel: slotLabel,
                 ItemLabel: CommonNone(),
-                MetaLabel: "Empty slot",
+                MetaLabel: LocalizeTown("ui.town.recruit.empty", "Empty Slot"),
                 IconKey: fallbackIconKey,
                 IconSprite: null,
                 IsFilled: false);
@@ -278,11 +285,9 @@ public sealed class TownCharacterSheetFormatter
         HeroInstanceRecord hero,
         UnitArchetypeDefinition? archetype)
     {
-        var characterName = _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
-        var archetypeName = _contentText.GetArchetypeName(hero.ArchetypeId);
+        // 이름은 상단 타이틀에 이미 있으므로 개요 본문의 중복 헤딩 행은 제거.
         return new[]
         {
-            Note($"{characterName} ({archetypeName})"),
             Row(
                 "ui.town.sheet.race_class",
                 "Race / Class",
@@ -746,6 +751,24 @@ public sealed class TownCharacterSheetFormatter
     private static TownCharacterSheetPanelRowViewState Note(string value)
     {
         return new TownCharacterSheetPanelRowViewState(string.Empty, value, string.Empty);
+    }
+
+    private static TownCharacterSheetLevelProgressViewState BuildLevelProgress(HeroProgressionRecord? progression)
+    {
+        var level = progression?.Level ?? 1;
+        var exp = progression?.Experience ?? 0;
+        var next = HeroProgressionCurve.ExperienceToNextLevel(level);
+        var fraction = next > 0 ? (float)exp / next : 0f;
+        fraction = fraction < 0f ? 0f : (fraction > 1f ? 1f : fraction);
+        return new TownCharacterSheetLevelProgressViewState($"Lv. {level}", $"{exp} / {next}", fraction);
+    }
+
+    private string BuildPassiveTrackCaption()
+    {
+        return LocalizeTown(
+            "ui.town.selected_hero.passive_nodes",
+            "Passive Nodes: {0}",
+            PassiveBoardSelectionValidator.MaxActiveNodeCount);
     }
 
     private string LocalizeTown(string key, string fallback, params object[] args)

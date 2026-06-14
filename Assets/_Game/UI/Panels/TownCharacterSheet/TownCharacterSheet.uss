@@ -798,15 +798,17 @@
 .tcs-row {
     flex-direction: row;
     align-items: flex-start;
-    margin-bottom: 2px;
+    margin-bottom: var(--sm-s-1);
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .tcs-row__label {
     flex-shrink: 0;
-    width: 112px;
+    width: 116px;
     margin-right: var(--sm-s-2);
-    color: rgba(160, 187, 227, 0.86);
-    font-size: var(--sm-fs-eb);
+    color: rgba(160, 187, 227, 0.92);
+    font-size: var(--sm-fs-s);
     -unity-font-style: bold;
     white-space: normal;
 }
@@ -814,8 +816,8 @@
 .tcs-row__value {
     flex-grow: 1;
     flex-shrink: 1;
-    color: rgb(235, 226, 199);
-    font-size: var(--sm-fs-s);
+    color: rgb(238, 230, 205);
+    font-size: var(--sm-fs-m);
     white-space: normal;
 }
 
@@ -833,6 +835,48 @@
 .tcs-row__value--tone-safe { color: rgb(164, 226, 185); }
 .tcs-row__value--tone-danger { color: rgb(245, 162, 132); }
 .tcs-row__value--tone-info { color: rgb(151, 221, 239); }
+
+/* P1 성장: Lv·XP 진행 바 — 배틀 HP바 패턴(track + fill, fill width는 런타임에 %로 설정) 재사용. */
+.tcs-xp {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.tcs-xp__level {
+    flex-shrink: 0;
+    margin-right: var(--sm-s-2);
+    color: var(--sm-gold-100);
+    font-size: var(--sm-fs-m);
+    -unity-font-style: bold;
+}
+
+.tcs-xp__track {
+    flex-grow: 1;
+    height: 10px;
+    background-color: var(--sm-vellum-a10);
+}
+
+.tcs-xp__fill {
+    height: 100%;
+    width: 0;
+    background-color: var(--sm-gold-300-a78);
+}
+
+.tcs-xp__value {
+    flex-shrink: 0;
+    margin-left: var(--sm-s-2);
+    color: rgba(160, 187, 227, 0.86);
+    font-size: var(--sm-fs-eb);
+}
+
+/* 패시브 트랙 캡션 — 다이아 트랙이 레벨/단계로 오해되지 않도록 "패시브 노드" 라벨. */
+.tcs-track-caption {
+    margin-bottom: var(--sm-s-1);
+    color: rgba(160, 187, 227, 0.86);
+    font-size: var(--sm-fs-eb);
+    -unity-font-style: bold;
+}
 
 .tcs-panel--equipment .tcs-panel__body {
     display: none;
@@ -1010,4 +1054,18 @@
 .tcs-skill-card__description {
     font-size: 10px;
     line-height: 12px;
+}
+
+/* P0 개요 겹침 fix: 8 stat 타일을 한 줄에 flex로 균등 배치. wrap 2번째 줄이 grid 박스를
+   벗어나 본문(.tcs-panel__body)과 겹치던 버그 근절. 파일 끝이라 위 .tcs-stat 정의를 override. */
+.tcs-stat-grid {
+    flex-wrap: nowrap;
+}
+
+.tcs-stat {
+    flex-grow: 1;
+    flex-basis: 0;
+    width: auto;
+    min-width: 0;
+    margin-right: var(--sm-s-1);
 }
