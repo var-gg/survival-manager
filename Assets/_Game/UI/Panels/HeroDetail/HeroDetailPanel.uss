@@ -1,12 +1,9 @@
 /* Common.HeroDetail v0.5 → UITK (scoped). ornate CSS는 buildable subset으로 적응:
-   pseudo-element/grid/box-shadow/filter/gradient-text 미사용, 토큰 + flex + custom property accent. */
+   pseudo-element/grid/box-shadow/filter/gradient-text/gap 미사용(이 Unity UITK는 gap 미지원 →
+   child margin으로 간격), 토큰 + flex + custom property accent. */
 
 .sm-hd-root {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    flex-grow: 1;
     align-items: center;
     justify-content: center;
 }
@@ -34,7 +31,6 @@
 .sm-hd-top {
     flex-direction: row;
     align-items: center;
-    gap: var(--sm-s-3);
     padding-bottom: var(--sm-s-3);
     margin-bottom: var(--sm-s-4);
     border-bottom-width: 1px;
@@ -42,6 +38,7 @@
 }
 
 .sm-hd-eyebrow {
+    margin-right: var(--sm-s-3);
     color: var(--sm-gold-300);
     font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
@@ -57,14 +54,13 @@
 /* BODY: 3-rail */
 .sm-hd-body {
     flex-direction: row;
-    gap: var(--sm-s-4);
 }
 
 .sm-hd-left {
     --hd-accent: var(--sm-gold-300);
     width: 264px;
     flex-shrink: 0;
-    gap: var(--sm-s-3);
+    margin-right: var(--sm-s-4);
 }
 
 .sm-hd-left--vanguard { --hd-accent: var(--sm-fam-vanguard); }
@@ -75,18 +71,37 @@
 
 .sm-hd-center {
     flex-grow: 1;
-    gap: var(--sm-s-4);
+    margin-right: var(--sm-s-4);
 }
 
 .sm-hd-right {
     width: 240px;
     flex-shrink: 0;
-    gap: var(--sm-s-3);
+}
+
+/* SECTION shell — rail 안에서 세로로 쌓이므로 margin-bottom */
+.sm-hd-section {
+    margin-bottom: var(--sm-s-3);
+    padding: var(--sm-s-3);
+    background-color: var(--sm-vellum-a06);
+    border-width: 1px;
+    border-color: var(--sm-gold-300-a24);
+}
+
+.sm-hd-section__cap {
+    color: var(--sm-gold-200);
+    font-size: var(--sm-fs-eb);
+    -unity-font-style: bold;
+    padding-bottom: var(--sm-s-1);
+    margin-bottom: var(--sm-s-2);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-line-2);
 }
 
 /* PORTRAIT + NAMEPLATE */
 .sm-hd-portrait {
     height: 200px;
+    margin-bottom: var(--sm-s-3);
     align-items: center;
     justify-content: center;
     background-color: var(--sm-bg-portrait-a82);
@@ -101,7 +116,7 @@
 }
 
 .sm-hd-nameplate {
-    gap: var(--sm-s-1);
+    margin-bottom: var(--sm-s-3);
 }
 
 .sm-hd-name {
@@ -114,11 +129,12 @@
 .sm-hd-chip-row {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--sm-s-1);
-    margin-top: 2px;
+    margin-top: var(--sm-s-1);
 }
 
 .sm-hd-chip {
+    margin-right: var(--sm-s-1);
+    margin-top: 2px;
     padding-left: var(--sm-chip-px);
     padding-right: var(--sm-chip-px);
     padding-top: var(--sm-chip-py);
@@ -136,28 +152,10 @@
 .sm-hd-chip--role { color: var(--hd-accent); border-color: var(--hd-accent); }
 
 .sm-hd-archetype {
-    margin-top: 2px;
+    margin-top: var(--sm-s-1);
     color: var(--sm-ink-2);
     font-size: var(--sm-fs-s);
     white-space: normal;
-}
-
-/* SECTION shell */
-.sm-hd-section {
-    padding: var(--sm-s-3);
-    background-color: var(--sm-vellum-a06);
-    border-width: 1px;
-    border-color: var(--sm-gold-300-a24);
-}
-
-.sm-hd-section__cap {
-    color: var(--sm-gold-200);
-    font-size: var(--sm-fs-eb);
-    -unity-font-style: bold;
-    padding-bottom: var(--sm-s-1);
-    margin-bottom: var(--sm-s-2);
-    border-bottom-width: 1px;
-    border-bottom-color: var(--sm-line-2);
 }
 
 /* STATS — 2 column flex wrap */
@@ -196,7 +194,6 @@
 /* SKILL GRID — 4 slot with hierarchy modifier */
 .sm-hd-skills {
     flex-direction: row;
-    gap: var(--sm-s-2);
 }
 
 .sm-hd-skill-legend {
@@ -210,6 +207,7 @@
     --slot-accent: var(--sm-gold-300);
     flex-grow: 1;
     flex-basis: 0;
+    margin-right: var(--sm-s-2);
     align-items: center;
     padding: var(--sm-s-2);
     background-color: var(--sm-bg-2-a78);
@@ -272,12 +270,9 @@
     font-size: var(--sm-fs-xs);
 }
 
-/* EQUIPMENT */
-.sm-hd-equip {
-    gap: var(--sm-s-2);
-}
-
+/* EQUIPMENT — 세로 스택, child margin-bottom */
 .sm-hd-equip-slot {
+    margin-bottom: var(--sm-s-2);
     padding: var(--sm-s-2);
     background-color: var(--sm-bg-2-a78);
     border-width: 1px;
@@ -307,13 +302,10 @@
     font-size: var(--sm-fs-xs);
 }
 
-/* TRAITS */
-.sm-hd-traits {
-    gap: var(--sm-s-1);
-}
-
+/* TRAITS — 세로 스택, child margin-bottom */
 .sm-hd-trait {
     --trait-accent: var(--sm-gold-300);
+    margin-bottom: var(--sm-s-1);
     padding: var(--sm-s-2);
     background-color: var(--sm-bg-2-a78);
     border-left-width: 3px;

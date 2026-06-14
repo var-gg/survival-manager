@@ -38,8 +38,12 @@ public sealed class HeroDetailPreviewBootstrap : EditorWindow
 
         var tokens = AssetDatabase.LoadAssetAtPath<StyleSheet>(ThemeTokensPath);
         var theme = AssetDatabase.LoadAssetAtPath<StyleSheet>(RuntimePanelThemePath);
+        var commonDetail = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/_Game/UI/Foundation/USS/common_detail.uss");
+        var heroDetailUss = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/_Game/UI/Panels/HeroDetail/HeroDetailPanel.uss");
         if (tokens != null) root.styleSheets.Add(tokens);
         if (theme != null) root.styleSheets.Add(theme);
+        if (commonDetail != null) root.styleSheets.Add(commonDetail);
+        if (heroDetailUss != null) root.styleSheets.Add(heroDetailUss);
 
         var container = visualTree.Instantiate();
         container.style.flexGrow = 1f;
