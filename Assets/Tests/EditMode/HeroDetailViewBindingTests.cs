@@ -10,6 +10,7 @@ namespace SM.Tests.EditMode;
 /// HeroDetailPanel.uxml ↔ HeroDetailView 계약 회귀: named element 전수 바인딩 + 모든 상태 렌더 +
 /// 4-slot 위계 modifier 부착을 AssetDatabase 로드로 검증(PlayMode 불필요).
 /// </summary>
+[Category("BatchOnly")]
 public sealed class HeroDetailViewBindingTests
 {
     private const string UxmlPath = "Assets/_Game/UI/Panels/HeroDetail/HeroDetailPanel.uxml";

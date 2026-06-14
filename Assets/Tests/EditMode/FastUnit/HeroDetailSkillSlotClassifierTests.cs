@@ -7,6 +7,7 @@ namespace SM.Tests.EditMode.FastUnit;
 /// <summary>
 /// HeroDetail 4-slot 위계 도출 규칙 회귀. 런타임에 단일 권위 필드가 없으므로 도출 규칙 자체가 계약.
 /// </summary>
+[Category("FastUnit")]
 public sealed class HeroDetailSkillSlotClassifierTests
 {
     [Test]
