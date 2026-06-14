@@ -1186,11 +1186,15 @@ public sealed class BattleScreenController : MonoBehaviour
         // HeroInstanceRecord에, victory XP가 HeroProgressionRecord에 반영된다.
         var victory = winner == TeamSide.Ally;
         _lastBattleSummaryRecord = BuildBattleSummaryRecord(victory, result.StepCount, _totalEventCount);
+        // 게임의 중심 카타르시스 — 원장이 집계한 "내 진형이 만든 그림"을 보상 화면으로 운반(전투 피드와 동일 소스).
+        var formationPayoff = _highlightLedger.BuildFormationPayoff(
+            actorId => ResolveBattleEventUnitName(currentStep, actorId, null));
         _root.SessionState.MarkBattleResolved(
             victory,
             result.StepCount,
             _totalEventCount,
-            result.FinalUnits);
+            result.FinalUnits,
+            formationPayoff);
         var checkpoint = _root.SaveProfile(SessionCheckpointKind.BattleResolved);
         if (checkpoint.Status == SessionCheckpointStatus.Failed)
         {

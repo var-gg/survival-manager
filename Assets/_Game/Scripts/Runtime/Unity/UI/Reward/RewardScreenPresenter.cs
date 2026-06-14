@@ -273,6 +273,11 @@ public sealed class RewardScreenPresenter
             .Select(LocalizeProgressionRow)
             .ToList();
 
+        // 게임의 중심 카타르시스 — "내 진형이 만든 그림"(MVP·진형 전과·발현)을 전투 직후 빌드를 고르는
+        // 이 dwell 화면으로 운반한다. 전투 피드의 transient 3줄과 달리 여기선 다음 빌드 결정과 나란히 읽힌다.
+        // 전투 피드와 동일한 한국어 어휘라 LocalizeProgressionRow 우회(정치/영구해금 행과 동일).
+        rows.AddRange(BuildFormationPayoffRows(session));
+
         // 첫 임시 증강 픽으로 곧 영구 후보가 해금될 예정임을 픽 직후 정산 화면에서 확인시킨다.
         // 선택 카드의 preview("첫 임시 픽으로 X 영구 해금")는 픽 후 카드가 사라지면 같이 사라지므로, 정산 ledger에 확인 행을 남긴다.
         // 이미 한국어 표시형이라 LocalizeProgressionRow를 통과시키지 않는다(정치 행과 동일).
@@ -312,6 +317,43 @@ public sealed class RewardScreenPresenter
         return string.IsNullOrWhiteSpace(pendingUnlockId)
             ? Array.Empty<RewardProgressionRowViewState>()
             : new[] { new RewardProgressionRowViewState(labelText, valueText, "permanent-unlock") };
+    }
+
+    // 직전 전투의 진형 페이오프 carrier(session.LastBattleFormationPayoff)를 보상 ledger 행으로.
+    private IReadOnlyList<RewardProgressionRowViewState> BuildFormationPayoffRows(GameSessionState session)
+    {
+        return BuildFormationPayoffRowsCore(session.LastBattleFormationPayoff);
+    }
+
+    // 순수 변환 — payoff carrier 만 받아 보상 row 로. 값이 빈 섹션은 행을 만들지 않는다(평시 무잡음). 테스트는 이 코어를 직접 친다.
+    internal static IReadOnlyList<RewardProgressionRowViewState> BuildFormationPayoffRowsCore(BattleFormationPayoffSummary payoff)
+    {
+        if (payoff == null || !payoff.HasData)
+        {
+            return Array.Empty<RewardProgressionRowViewState>();
+        }
+
+        var rows = new List<RewardProgressionRowViewState>(3);
+
+        var mvp = BattleFormationPayoffFormatter.BuildMvpValue(payoff);
+        if (!string.IsNullOrEmpty(mvp))
+        {
+            rows.Add(new RewardProgressionRowViewState("MVP", mvp, "formation-mvp"));
+        }
+
+        var highlight = BattleFormationPayoffFormatter.BuildHighlightValue(payoff);
+        if (!string.IsNullOrEmpty(highlight))
+        {
+            rows.Add(new RewardProgressionRowViewState("진형 전과", highlight, "formation-highlight"));
+        }
+
+        var manifest = BattleFormationPayoffFormatter.BuildManifestValue(payoff);
+        if (!string.IsNullOrEmpty(manifest))
+        {
+            rows.Add(new RewardProgressionRowViewState("발현", manifest, "formation-manifest"));
+        }
+
+        return rows;
     }
 
     private IReadOnlyList<RewardProgressionRowViewState> BuildPoliticalRows(GameSessionState session)

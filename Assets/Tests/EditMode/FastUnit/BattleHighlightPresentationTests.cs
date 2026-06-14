@@ -125,6 +125,47 @@ public sealed class BattleHighlightPresentationTests
         Assert.That(ledger.TryAppendBattleEndLines(finishedStep, timeline, id => id), Is.False, "종료 요약은 1회만");
     }
 
+    [Test]
+    public void HighlightLedger_BuildFormationPayoff_ProjectsAccumulatedCounts()
+    {
+        var ledger = new BattleHighlightLedger();
+        ledger.Record(Step(
+            events: new[]
+            {
+                DamageEvent("ally", "enemy", 30f),
+                HealEvent("healer", "ally", 10f),
+                DamageEvent("enemy", "ally", 50f), // 적측 — 집계 제외
+                KillEvent("ally", "enemy", isBacklineDiveKill: true),
+            },
+            combatEvents: new[]
+            {
+                Contacted("ally", Contact("enemy", CombatOutcome.Hit, 30f, accent: CombatContactAccent.Rear)),
+                Contacted("healer", Contact("ally", CombatOutcome.Hit, 10f, isHeal: true, accent: CombatContactAccent.SaveMoment)),
+            }));
+
+        var payoff = ledger.BuildFormationPayoff(id => id);
+
+        Assert.That(payoff.HasData, Is.True);
+        Assert.That(payoff.MvpUnitName, Is.EqualTo("ally"), "피해+처치 가중이 회복만 한 healer보다 높다");
+        Assert.That(payoff.MvpDamage, Is.EqualTo(30f));
+        Assert.That(payoff.MvpHealing, Is.EqualTo(0f));
+        Assert.That(payoff.MvpKills, Is.EqualTo(1));
+        Assert.That(payoff.RearStrikes, Is.EqualTo(1));
+        Assert.That(payoff.SaveMoments, Is.EqualTo(1));
+        Assert.That(payoff.BacklineDiveKills, Is.EqualTo(1));
+        Assert.That(payoff.FlankStrikes, Is.EqualTo(0));
+        Assert.That(payoff.ScreenAbsorbs, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void HighlightLedger_BuildFormationPayoff_EmptyBattle_HasNoData()
+    {
+        var payoff = new BattleHighlightLedger().BuildFormationPayoff(id => id);
+
+        Assert.That(payoff.HasData, Is.False);
+        Assert.That(payoff.MvpUnitName, Is.Empty);
+    }
+
     private static BattleEvent DamageEvent(string actorId, string targetId, float value, string note = "")
     {
         return new BattleEvent(

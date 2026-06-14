@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
+using SM.Meta;
 
 namespace SM.Unity;
 
@@ -181,10 +182,7 @@ public sealed class BattleHighlightLedger
 
         _flushed = true;
         var appended = false;
-        var mvp = _allyTallies
-            .OrderByDescending(pair => ResolveMvpScore(pair.Value))
-            .ThenBy(pair => pair.Key, StringComparer.Ordinal)
-            .FirstOrDefault();
+        var mvp = ResolveTopAlly();
         if (mvp.Value != null && ResolveMvpScore(mvp.Value) > 0f)
         {
             timeline.Add(
@@ -218,9 +216,48 @@ public sealed class BattleHighlightLedger
         return appended;
     }
 
+    /// <summary>
+    /// 전투 종료 후 보상 화면용 구조화 요약을 1회 산출 — 누적 집계(MVP/진형 전과/발현)를 carrier 로
+    /// 투영만 한다. 표시 포맷은 SM.Meta(BattleFormationPayoffFormatter)가 소유하므로 여기선 수치/이름만
+    /// 채운다. 전투 피드(<see cref="TryAppendBattleEndLines"/>)와 동일 소스라 두 surface 의 숫자가 일치한다.
+    /// </summary>
+    public BattleFormationPayoffSummary BuildFormationPayoff(Func<string, string> resolveName)
+    {
+        var mvp = ResolveTopAlly();
+        var hasMvp = mvp.Value != null && ResolveMvpScore(mvp.Value) > 0f;
+        var hasData = hasMvp
+            || _flankStrikes > 0 || _rearStrikes > 0 || _screenAbsorbs > 0
+            || _saveMoments > 0 || _backlineDiveKills > 0
+            || _allySynergyActivations > 0 || _allyComboConsumes > 0 || _allyTriggeredEffects > 0;
+
+        return new BattleFormationPayoffSummary(
+            HasData: hasData,
+            MvpUnitName: hasMvp ? resolveName(mvp.Key) : "",
+            MvpDamage: hasMvp ? mvp.Value.Damage : 0f,
+            MvpHealing: hasMvp ? mvp.Value.Healing : 0f,
+            MvpKills: hasMvp ? mvp.Value.Kills : 0,
+            FlankStrikes: _flankStrikes,
+            RearStrikes: _rearStrikes,
+            ScreenAbsorbs: _screenAbsorbs,
+            SaveMoments: _saveMoments,
+            BacklineDiveKills: _backlineDiveKills,
+            SynergyActivations: _allySynergyActivations,
+            ComboConsumes: _allyComboConsumes,
+            TriggeredEffects: _allyTriggeredEffects);
+    }
+
     private static float ResolveMvpScore(ActorTally tally)
     {
         return tally.Damage + (tally.Healing * HealingMvpWeight) + (tally.Kills * KillMvpWeight);
+    }
+
+    // MVP 후보 정렬(피해+회복가중+처치가중 내림차순, id 안정) — 종료 라인과 carrier 산출이 공유.
+    private KeyValuePair<string, ActorTally> ResolveTopAlly()
+    {
+        return _allyTallies
+            .OrderByDescending(pair => ResolveMvpScore(pair.Value))
+            .ThenBy(pair => pair.Key, StringComparer.Ordinal)
+            .FirstOrDefault();
     }
 
     private ActorTally ResolveTally(string actorId)

@@ -351,6 +351,22 @@
     background-color: rgba(40, 32, 12, 0.85);
 }
 
+/* 진형 페이오프 — "내가 그린 그림"의 확인. MVP(밝은 금)/진형 전과(금)/발현(신비 보라)으로 묶어 ledger 에서 구분. */
+.reward-screen .reward-progression-row--formation-mvp {
+    border-left-color: var(--sm-gold-100);
+    background-color: rgba(36, 30, 14, 0.80);
+}
+
+.reward-screen .reward-progression-row--formation-highlight {
+    border-left-color: var(--sm-gold-200);
+    background-color: rgba(36, 30, 14, 0.72);
+}
+
+.reward-screen .reward-progression-row--formation-manifest {
+    border-left-color: var(--sm-fam-mystic);
+    background-color: rgba(28, 22, 36, 0.78);
+}
+
 .reward-screen .reward-progression-row__key {
     /* wave-28-continue GPT Pro patch: key width 98→120, font 11→12. */
     width: 120px;

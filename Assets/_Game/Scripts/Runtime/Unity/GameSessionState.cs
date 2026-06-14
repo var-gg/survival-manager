@@ -90,6 +90,9 @@ public sealed partial class GameSessionState
     public RewardSummaryRecord? LastCommittedRewardSummary { get; private set; }
     // ADR-0028 #1 가독성: 직전 출격 정치 정산(이행/거스름/거절 사유 + 신뢰 delta). reward 화면이 player-readable로 노출.
     public PoliticalSettlementReport LastPoliticalSettlement { get; private set; } = PoliticalSettlementReport.Empty;
+    // 게임의 중심 카타르시스 — 직전 전투의 진형 페이오프(MVP·진형 전과·발현). 전투 피드의 transient 요약과
+    // 같은 데이터를 빌드를 고르는 보상 화면으로 운반한다(런타임 전용, save truth 비오염).
+    public BattleFormationPayoffSummary LastBattleFormationPayoff { get; private set; } = BattleFormationPayoffSummary.Empty;
     // ADR-0028 #provenance: 이번 전투에 적용된 정치 조건(후원/경계 + 출처 세력·채널·사유). 전투 HUD가 관전 중 노출 —
     // compile/snapshot hash가 *효과*는 포착하나 "어느 세력 mandate에서 왔나"는 숨던 것을 player-visible로(GPT Pro 잔여 20%).
     public IReadOnlyList<PoliticalCombatCondition> ActiveBattlePoliticalConditions { get; private set; } = Array.Empty<PoliticalCombatCondition>();
@@ -217,6 +220,7 @@ public sealed partial class GameSessionState
             LastPermanentUnlockSummary = SessionTextToken.Empty;
             LastCommittedRewardSummary = null;
             LastPoliticalSettlement = PoliticalSettlementReport.Empty;
+            LastBattleFormationPayoff = BattleFormationPayoffSummary.Empty;
             ActiveBattlePoliticalConditions = Array.Empty<PoliticalCombatCondition>();
             _lastAutomaticLootBundle = null;
             _hasPendingRewardSettlement = false;
@@ -1325,8 +1329,12 @@ public sealed partial class GameSessionState
         bool victory,
         int stepCount,
         int eventCount,
-        IReadOnlyList<BattleUnitReadModel>? finalUnits = null) =>
+        IReadOnlyList<BattleUnitReadModel>? finalUnits = null,
+        BattleFormationPayoffSummary? formationPayoff = null)
+    {
+        LastBattleFormationPayoff = formationPayoff ?? BattleFormationPayoffSummary.Empty;
         _rewardSettlementFlow.MarkBattleResolved(victory, stepCount, eventCount, finalUnits);
+    }
 
     public bool ApplyRewardChoice(int index) => _rewardSettlementFlow.ApplyRewardChoice(index);
 
