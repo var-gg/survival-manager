@@ -28,12 +28,8 @@
                 </ui:VisualElement>
                 <ui:Button name="SquadBuilderCloseButton" class="ui-button sm-cta sm-cta--inline sm-cta--secondary sm-sqb-modal__close" text="✕" />
             </ui:VisualElement>
-            <ui:VisualElement name="TacticalSetupSectionTabs" class="sm-sqb-modal__section-tabs">
-                <ui:Label name="TacticalSetupFormationTab" class="sm-sqb-modal__section-tab sm-sqb-modal__section-tab--active" text="전열" />
-                <ui:Label name="TacticalSetupPostureTab" class="sm-sqb-modal__section-tab" text="팀 태세" />
-                <ui:Label name="TacticalSetupOperationTab" class="sm-sqb-modal__section-tab" text="운용" />
-                <ui:Label name="TacticalSetupResponseTab" class="sm-sqb-modal__section-tab" text="대응" />
-            </ui:VisualElement>
+            <!-- 탭 4개(전열/팀 태세/운용/대응) 제거: Label이라 핸들러 0 + 스크립트 미참조였던 false affordance.
+                 body가 3-zone을 동시 표시해 탭이 가르는 게 없었음. 실제 탭 전환이 생기면 Button + data-driven으로 재도입. -->
             <ui:VisualElement class="sm-ornament-divider sm-sqb-modal__divider" picking-mode="Ignore" />
 
             <ui:VisualElement name="SquadBuilderThreeZoneLayout" class="sm-sqb-modal__body">
