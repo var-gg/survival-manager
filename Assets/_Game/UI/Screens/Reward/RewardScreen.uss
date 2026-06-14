@@ -346,6 +346,11 @@
     background-color: rgba(34, 18, 16, 0.80);
 }
 
+.reward-screen .reward-progression-row--permanent-unlock {
+    border-left-color: var(--sm-gold-200);
+    background-color: rgba(40, 32, 12, 0.85);
+}
+
 .reward-screen .reward-progression-row__key {
     /* wave-28-continue GPT Pro patch: key width 98→120, font 11→12. */
     width: 120px;

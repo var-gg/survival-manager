@@ -559,6 +559,14 @@ MonoBehaviour:
     m_Key: ui.reward.summary.political
     m_Metadata:
       m_Items: []
+  - m_Id: 27674493622489088
+    m_Key: ui.reward.progression.permanent_unlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27674493656043520
+    m_Key: ui.reward.progression.permanent_unlock_pending
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

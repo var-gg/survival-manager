@@ -474,13 +474,14 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 98
-    m_Localized: Immediate fixed temporary augment for the current build.
+    m_Localized: ' / Permanent unlock already fixed for this run'
     m_Metadata:
       m_Items: []
   - m_Id: 99
-    m_Localized: Temporary augment that previews a permanent unlock path.
+    m_Localized: ' / First temp pick unlocks {0}'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 162163771961769992
   - m_Id: 100
     m_Localized: 'Build hook: temporary augment pressure line.'
     m_Metadata:
@@ -610,6 +611,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
+  - m_Id: 27674493622489088
+    m_Localized: Permanent Unlock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27674493656043520
+    m_Localized: "{0} \xB7 permanent candidate locks on return"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
   references:
     version: 2
     RefIds:
@@ -655,3 +665,5 @@ MonoBehaviour:
         - id: 125
         - id: 126
         - id: 27266949859053568
+        - id: 27674493656043520
+        - id: 99

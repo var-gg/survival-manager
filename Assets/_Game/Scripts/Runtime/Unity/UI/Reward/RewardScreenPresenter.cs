@@ -273,10 +273,45 @@ public sealed class RewardScreenPresenter
             .Select(LocalizeProgressionRow)
             .ToList();
 
+        // 첫 임시 증강 픽으로 곧 영구 후보가 해금될 예정임을 픽 직후 정산 화면에서 확인시킨다.
+        // 선택 카드의 preview("첫 임시 픽으로 X 영구 해금")는 픽 후 카드가 사라지면 같이 사라지므로, 정산 ledger에 확인 행을 남긴다.
+        // 이미 한국어 표시형이라 LocalizeProgressionRow를 통과시키지 않는다(정치 행과 동일).
+        rows.AddRange(BuildPermanentUnlockRows(session));
+
         // ADR-0028 #1 가독성: 정치 정산 행을 progression ledger에 이어붙인다 — 전투→정치 인과를 같은 화면에서 읽게.
         // 이미 한국어 표시형이라 LocalizeProgressionRow를 통과시키지 않는다(영문 remap 대상 아님).
         rows.AddRange(BuildPoliticalRows(session));
         return rows;
+    }
+
+    // 픽 직후 pending 영구 해금을 정산 ledger에 surfacing. PendingPermanentUnlockId 는 ApplyRewardChoice 시 세팅돼
+    // 이 화면(귀환 전)에 존재하며, 귀환 시 ConsumePendingPermanentUnlock 으로 실제 해금된다.
+    private IReadOnlyList<RewardProgressionRowViewState> BuildPermanentUnlockRows(GameSessionState session)
+    {
+        var pendingUnlockId = session.ActiveRun?.Overlay.PendingPermanentUnlockId ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(pendingUnlockId))
+        {
+            return Array.Empty<RewardProgressionRowViewState>();
+        }
+
+        var label = Localize(GameLocalizationTables.UIReward, "ui.reward.progression.permanent_unlock", "Permanent Unlock");
+        var value = Localize(
+            GameLocalizationTables.UIReward,
+            "ui.reward.progression.permanent_unlock_pending",
+            "{0} · permanent candidate locks on return",
+            _contentText.GetAugmentName(pendingUnlockId));
+        return BuildPermanentUnlockRowsCore(pendingUnlockId, label, value);
+    }
+
+    // 순수 변환 — pending unlock id + 표시 라벨/값을 받아 정산 row로. 테스트는 이 코어를 직접 친다(세션 불요).
+    internal static IReadOnlyList<RewardProgressionRowViewState> BuildPermanentUnlockRowsCore(
+        string pendingUnlockId,
+        string labelText,
+        string valueText)
+    {
+        return string.IsNullOrWhiteSpace(pendingUnlockId)
+            ? Array.Empty<RewardProgressionRowViewState>()
+            : new[] { new RewardProgressionRowViewState(labelText, valueText, "permanent-unlock") };
     }
 
     private IReadOnlyList<RewardProgressionRowViewState> BuildPoliticalRows(GameSessionState session)
