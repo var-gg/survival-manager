@@ -287,10 +287,19 @@ public sealed class TownScreenController : MonoBehaviour
         {
             _rosterModalView = new RosterGridView(root, heroCardTemplate: null, portraitLoader: _contentIconResolver.ResolveCharacterPortrait);
             _rosterGridPresenter = new RosterGridPresenter(
-                _root,
+                _root.SessionState,
+                _root.CombatContentLookup,
                 _rosterModalView,
-                _contentText,
-                heroId =>
+                _contentText.GetClassName,
+                _contentText.GetRaceName,
+                _contentText.GetCharacterName,
+                quickBattle: () =>
+                {
+                    _root.BeginTransientTownSmoke();
+                    _root.SessionState.PrepareTownQuickBattleSmoke();
+                    _root.SceneFlow.GoToBattle();
+                },
+                heroSelected: heroId =>
                 {
                     _inventoryPresenter?.SetTargetHero(heroId);
                     _characterSheetPresenter?.Open(heroId);

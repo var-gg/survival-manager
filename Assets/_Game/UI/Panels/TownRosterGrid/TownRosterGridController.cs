@@ -62,7 +62,19 @@ public sealed class TownRosterGridController : MonoBehaviour
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
         _view = new RosterGridView(document.rootVisualElement, heroCardTemplate: null);
         _view.BindClose(Close);
-        _presenter = new RosterGridPresenter(root, _view, contentText);
+        _presenter = new RosterGridPresenter(
+            root.SessionState,
+            root.CombatContentLookup,
+            _view,
+            contentText.GetClassName,
+            contentText.GetRaceName,
+            contentText.GetCharacterName,
+            quickBattle: () =>
+            {
+                root.BeginTransientTownSmoke();
+                root.SessionState.PrepareTownQuickBattleSmoke();
+                root.SceneFlow.GoToBattle();
+            });
         _presenter.Initialize();
     }
 }

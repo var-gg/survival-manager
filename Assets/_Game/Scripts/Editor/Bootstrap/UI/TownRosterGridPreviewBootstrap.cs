@@ -65,7 +65,19 @@ public sealed class TownRosterGridPreviewBootstrap : EditorWindow
         {
             var sessionRoot = PreviewSessionContext.EnsureSession();
             var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
-            _presenter = new RosterGridPresenter(sessionRoot, view, contentText);
+            _presenter = new RosterGridPresenter(
+                sessionRoot.SessionState,
+                sessionRoot.CombatContentLookup,
+                view,
+                contentText.GetClassName,
+                contentText.GetRaceName,
+                contentText.GetCharacterName,
+                quickBattle: () =>
+                {
+                    sessionRoot.BeginTransientTownSmoke();
+                    sessionRoot.SessionState.PrepareTownQuickBattleSmoke();
+                    sessionRoot.SceneFlow.GoToBattle();
+                });
             _presenter.Initialize();
             return true;
         }

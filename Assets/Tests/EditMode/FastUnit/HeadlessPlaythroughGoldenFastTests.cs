@@ -7,6 +7,7 @@ using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
 using SM.Unity.UI.Atlas;
+using SM.Unity.UI.Town.Preview;
 
 namespace SM.Tests.EditMode;
 
@@ -50,6 +51,22 @@ public sealed class HeadlessPlaythroughGoldenFastTests
             ("hero-2", DeploymentAnchorId.BackTop),
             ("hero-3", DeploymentAnchorId.FrontCenter),
             ("hero-4", DeploymentAnchorId.BackCenter));
+
+        // --- Town 로스터 패널(RosterGridPresenter)을 렌더 없이 읽는다 — AI가 "보유 동료 명부"를 본다 ---
+        // 콘크리트 RosterGridView(VisualElement) 대신 fake view, ContentTextResolver 대신 identity resolver로
+        // BuildState를 구동(Phase 2 Stage 2 presenter decoupling). 화면 데이터가 세션 진실(바인딩한 4인)과 일치.
+        var roster = new RosterGridPresenter(
+            session,
+            lookup,
+            new RecordingRosterGridView(),
+            classId => classId,
+            raceId => raceId,
+            (characterId, archetypeId) => string.IsNullOrEmpty(characterId) ? archetypeId : characterId);
+        var rosterState = roster.BuildState();
+        Assert.That(rosterState.Heroes.Count, Is.EqualTo(4), "편성 화면에서 보유 4인이 명부 카드로 보인다.");
+        Assert.That(rosterState.Filters, Is.Not.Null);
+        Assert.That(rosterState.Filters!.Any(chip => chip.Key == "all" && chip.Count == 4), Is.True,
+            "전체 필터가 보유 4인을 센다 — data-driven 필터 칩이 세션 로스터를 반영.");
 
         // --- 출격 확인 화면(SortieConfirm presenter)을 렌더 없이 읽는다 — AI가 "보낼 진형"을 본다 ---
         var catalog = new LaunchCoreRosterBaselineCatalog(lookup);

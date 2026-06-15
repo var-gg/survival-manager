@@ -10,7 +10,7 @@ namespace SM.Unity.UI.Town.Preview;
 /// UXML container: GridContainer / HeroCount / FilterStrip. HeroPortraitCard atom template은 ctor inject.
 /// 본 View는 atom 자체를 건드리지 않고 RosterGrid 전용 overlay layer만 추가 (다른 consumer 보호).
 /// </summary>
-public sealed class RosterGridView
+public sealed class RosterGridView : IRosterGridView
 {
     private readonly VisualElement _gridContainer;
     private readonly Label? _heroCountLabel;
@@ -347,4 +347,15 @@ public interface IRosterGridActions
     void OnHeroSelected(string heroId);
     void OnFilterSelected(string filterKey);
     void OnQuickBattleClicked();
+}
+
+/// <summary>
+/// RosterGrid View 계약 — presenter가 의존하는 표면(bind/render)만. 콘크리트 RosterGridView는 VisualElement에
+/// 묶이지만 presenter는 이 인터페이스만 알면 되어 headless 테스트에서 fake view로 BuildState/command를 구동한다.
+/// (Open/Close/BindClose는 modal opener controller가 콘크리트 view에 직접 호출 — presenter 표면 아님.)
+/// </summary>
+public interface IRosterGridView
+{
+    void Bind(IRosterGridActions actions);
+    void Render(RosterGridViewState state);
 }
