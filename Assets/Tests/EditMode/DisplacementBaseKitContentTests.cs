@@ -20,7 +20,8 @@ namespace SM.Tests.EditMode;
 public sealed class DisplacementBaseKitContentTests
 {
     // base flex active가 displacement로 배선됐다고 기대하는 archetype.
-    private static readonly string[] DisplacementBaseKitArchetypes = { "guardian", "bulwark" };
+    // guardian/bulwark = 전열 넉백(aegis_linebreaker), hunter/scout = 원거리 넉백(cinder_overrun).
+    private static readonly string[] DisplacementBaseKitArchetypes = { "guardian", "bulwark", "hunter", "scout" };
 
     [Test]
     public void DisplacementSkills_AreWiredIntoBaseKits_ForBothPlayerAndEnemyPaths()
