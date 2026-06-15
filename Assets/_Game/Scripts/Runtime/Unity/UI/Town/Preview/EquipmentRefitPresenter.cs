@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -23,9 +24,15 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     /// <summary>refit 고정 비용 (item-and-affix-system.md V1).</summary>
     public const int RefitEchoCost = 15;
 
-    private readonly GameSessionRoot _root;
-    private readonly EquipmentRefitView _view;
-    private readonly ContentTextResolver _contentText;
+    // headless conformance(Phase 2 Stage 2): GameSessionRoot(MonoBehaviour) 대신 순수 GameSessionState +
+    // ICombatContentLookup, 콘크리트 EquipmentRefitView 대신 IEquipmentRefitView, ContentTextResolver
+    // (→GameLocalizationController MonoBehaviour) 대신 이름 resolver delegate를 받아 씬·엔진 없이 구동.
+    private readonly GameSessionState _session;
+    private readonly ICombatContentLookup _lookup;
+    private readonly IEquipmentRefitView _view;
+    private readonly Func<string, string> _itemName;
+    private readonly Func<string, string> _affixName;
+    private readonly Func<string, string, string> _characterName;
     private readonly SpriteLoader _itemIconSprite;
     private readonly SpriteLoader _affixIconSprite;
     private readonly SpriteLoader _currencySprite;
@@ -34,17 +41,23 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     private string _selectedItemInstanceId = string.Empty;
 
     public EquipmentRefitPresenter(
-        GameSessionRoot root,
-        EquipmentRefitView view,
-        ContentTextResolver contentText,
+        GameSessionState session,
+        ICombatContentLookup lookup,
+        IEquipmentRefitView view,
+        Func<string, string> itemName,
+        Func<string, string> affixName,
+        Func<string, string, string> characterName,
         SpriteLoader? itemIconSprite = null,
         SpriteLoader? currencySprite = null,
         SpriteLoader? portraitLoader = null,
         SpriteLoader? affixIconSprite = null)
     {
-        _root = root ?? throw new ArgumentNullException(nameof(root));
+        _session = session ?? throw new ArgumentNullException(nameof(session));
+        _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
         _view = view ?? throw new ArgumentNullException(nameof(view));
-        _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
+        _itemName = itemName ?? throw new ArgumentNullException(nameof(itemName));
+        _affixName = affixName ?? throw new ArgumentNullException(nameof(affixName));
+        _characterName = characterName ?? throw new ArgumentNullException(nameof(characterName));
         _itemIconSprite = itemIconSprite ?? (_ => null);
         _affixIconSprite = affixIconSprite ?? itemIconSprite ?? (_ => null);
         _currencySprite = currencySprite ?? (_ => null);
@@ -96,13 +109,13 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     {
         if (string.IsNullOrEmpty(_selectedItemInstanceId) || _selectedAffixIndex < 0)
             return;
-        _root.SessionState.RefitItem(_selectedItemInstanceId, _selectedAffixIndex);
+        _session.RefitItem(_selectedItemInstanceId, _selectedAffixIndex);
         Refresh();
     }
 
     private SM.Persistence.Abstractions.Models.InventoryItemRecord? ResolveSelectedItem()
     {
-        var inventory = _root.SessionState.Profile.Inventory;
+        var inventory = _session.Profile.Inventory;
         if (!string.IsNullOrEmpty(_selectedItemInstanceId))
         {
             var match = inventory.FirstOrDefault(i =>
@@ -116,11 +129,11 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             .FirstOrDefault();
     }
 
-    private EquipmentRefitViewState BuildState()
+    public EquipmentRefitViewState BuildState()
     {
-        var session = _root.SessionState;
+        var session = _session;
         var inventory = session.Profile.Inventory;
-        var lookup = _root.CombatContentLookup;
+        var lookup = _lookup;
         var selectedItem = ResolveSelectedItem();
         if (selectedItem != null && string.IsNullOrEmpty(_selectedItemInstanceId))
         {
@@ -149,7 +162,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 }
                 return new EquipmentRefitPoolRowViewState(
                     ItemInstanceId: item.ItemInstanceId,
-                    Name: _contentText.GetItemName(item.ItemBaseId),
+                    Name: _itemName(item.ItemBaseId),
                     SlotKey: presentation.SlotKey,
                     SlotLabel: presentation.SlotLabel,
                     FamilyKey: presentation.FamilyKey,
@@ -187,7 +200,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                     AffixId: affixId,
                     GroupKey: group,
                     CategoryKey: category,
-                    Name: _contentText.GetAffixName(affixId),
+                    Name: _affixName(affixId),
                     ValueRange: valueRange,
                     IconSprite: _affixIconSprite(affixId),
                     IsSelectedForReroll: i == _selectedAffixIndex));
@@ -208,7 +221,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         Texture2D? equippedHeroPortrait = null;
         if (selectedItem != null)
         {
-            selectedItemName = _contentText.GetItemName(selectedItem.ItemBaseId);
+            selectedItemName = _itemName(selectedItem.ItemBaseId);
             if (lookup.TryGetItemDefinition(selectedItem.ItemBaseId, out var baseDef))
             {
                 var presentation = EquipmentPresentationPolicy.Build(
@@ -233,7 +246,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 // hero.Name은 SessionProfileSync가 raw archetype.Id ("warden") 박아둠.
                 // ContentTextResolver로 character → archetype localized 표시명 fallback chain 사용.
                 var heroName = hero != null
-                    ? _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId)
+                    ? _characterName(hero.CharacterId, hero.ArchetypeId)
                     : selectedItem.EquippedHeroId;
                 equippedHeroLabel = $"장착: {heroName}";
                 // uxqa1: EquippedHeroId는 save instance id(hero-1/GUID)라 포트레잇 해석 불가 —

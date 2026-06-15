@@ -10,7 +10,7 @@ namespace SM.Unity.UI.Town.Preview;
 /// UXML container: StandeePortrait / SelectedItemName / EquippedHeroLabel / EchoIcon / AffixList /
 /// InventoryPool / RefitCostLabel. affix row는 이름 + 값 범위 (instance 확정 roll 미저장 → 범위 표기).
 /// </summary>
-public sealed class EquipmentRefitView
+public sealed class EquipmentRefitView : IEquipmentRefitView
 {
     private readonly VisualElement _standeePortrait;
     private readonly Label? _selectedItemName;
@@ -246,4 +246,17 @@ public interface IEquipmentRefitActions
     void OnAffixSelected(string affixId);
     void OnPoolItemSelected(string itemInstanceId);
     void OnRefitConfirmed();
+}
+
+/// <summary>
+/// EquipmentRefit View 계약 — presenter가 의존하는 표면(bind/modal/render)만. 콘크리트 EquipmentRefitView는
+/// VisualElement에 묶이지만 presenter는 이 인터페이스만 알면 되어 headless 테스트에서 fake view로 구동한다.
+/// </summary>
+public interface IEquipmentRefitView
+{
+    void Bind(IEquipmentRefitActions actions);
+    void BindClose(Action close);
+    void Open();
+    void Close();
+    void Render(EquipmentRefitViewState state);
 }

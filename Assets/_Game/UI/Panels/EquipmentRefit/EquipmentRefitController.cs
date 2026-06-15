@@ -64,9 +64,12 @@ public sealed class EquipmentRefitController : MonoBehaviour
         var iconResolver = new ContentIconResolver(root.CombatContentLookup);
         var view = new EquipmentRefitView(document.rootVisualElement);
         _presenter = new EquipmentRefitPresenter(
-            root,
+            root.SessionState,
+            root.CombatContentLookup,
             view,
-            contentText,
+            contentText.GetItemName,
+            contentText.GetAffixName,
+            contentText.GetCharacterName,
             itemIconSprite: iconResolver.ResolveItem,
             currencySprite: iconResolver.ResolveAny,
             portraitLoader: iconResolver.ResolveAny,

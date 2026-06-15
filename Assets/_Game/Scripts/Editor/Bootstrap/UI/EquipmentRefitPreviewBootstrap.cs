@@ -67,9 +67,12 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
             var sessionRoot = PreviewSessionContext.EnsureSession();
             var contentText = PreviewSessionContext.CreateContentText(sessionRoot);
             _presenter = new EquipmentRefitPresenter(
-                sessionRoot,
+                sessionRoot.SessionState,
+                sessionRoot.CombatContentLookup,
                 view,
-                contentText,
+                contentText.GetItemName,
+                contentText.GetAffixName,
+                contentText.GetCharacterName,
                 itemIconSprite: PreviewSessionContext.LoadItemSprite,
                 currencySprite: PreviewSessionContext.LoadCurrencySprite,
                 portraitLoader: PreviewSessionContext.LoadHeroPortrait,

@@ -145,9 +145,12 @@ public sealed class TownScreenController : MonoBehaviour
         {
             var equipmentRefitView = new EquipmentRefitView(root);
             _equipmentRefitPresenter = new EquipmentRefitPresenter(
-                _root,
+                _root.SessionState,
+                _root.CombatContentLookup,
                 equipmentRefitView,
-                _contentText,
+                _contentText.GetItemName,
+                _contentText.GetAffixName,
+                _contentText.GetCharacterName,
                 itemIconSprite: _contentIconResolver.ResolveItem,
                 currencySprite: _contentIconResolver.ResolveAny,
                 portraitLoader: _contentIconResolver.ResolveAny,
