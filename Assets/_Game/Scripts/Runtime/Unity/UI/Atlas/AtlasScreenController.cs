@@ -375,9 +375,10 @@ public sealed class AtlasScreenController : MonoBehaviour
             return;
         }
 
-        // narrative SiteEntered — Atlas 확정 시점에 발화 (이전엔 ExpeditionScreenController.Start에서 처리).
+        // 발화는 세션: GameSessionState.BeginNewExpedition이 SiteEntered를 발화한다.
+        // 여기선 세션이 큐잉한 연출만 화면에 present한다(발화원 통합 → 헤드리스+실게임 동일).
         EnsureStoryBridgeReady();
-        _storyBridge?.Advance(NarrativeMoment.SiteEntered, BuildStoryMomentContext());
+        _storyBridge?.PresentPending();
 
         // ExpeditionScreenPresenter.NextBattleOrAdvance 분기를 in-Atlas inline.
         var session = _root.SessionState;
@@ -597,17 +598,6 @@ public sealed class AtlasScreenController : MonoBehaviour
         }
 
         return _storyBridge != null;
-    }
-
-    private StoryMomentContext BuildStoryMomentContext()
-    {
-        var session = _root!.SessionState;
-        return new StoryMomentContext
-        {
-            ChapterId = session.SelectedCampaignChapterId,
-            SiteId = session.SelectedCampaignSiteId,
-            NodeIndex = session.CurrentExpeditionNodeIndex,
-        };
     }
 
     private void OnDestroy()

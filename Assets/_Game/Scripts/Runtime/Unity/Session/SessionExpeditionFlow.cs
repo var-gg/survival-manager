@@ -36,6 +36,10 @@ public sealed partial class GameSessionState
             StartExpeditionRun();
             _session.SyncActiveRunRecord();
             _session.SyncExpeditionState();
+
+            // 발화는 세션: 원정 시작(=사이트 진입) moment를 여기서 발화한다 — 씬 AtlasScreenController가 아니라
+            // 세션이 단일 소스라 헤드리스 드라이버와 실게임이 같은 발화를 공유(표시는 씬이 bridge.PresentPending으로).
+            _session.AdvanceNarrative(NarrativeMoment.SiteEntered, NarrativeMomentResolver.BuildNodeContext(_session));
         }
 
         private void ResetExpeditionRunState()
