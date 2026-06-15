@@ -64,7 +64,8 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
         {
             var sessionRoot = PreviewSessionContext.EnsureSession();
             _presenter = new InventoryPresenter(
-                sessionRoot,
+                sessionRoot.SessionState,
+                sessionRoot.CombatContentLookup,
                 view,
                 currencySprite: PreviewSessionContext.LoadCurrencySprite,
                 itemIconSprite: PreviewSessionContext.LoadItemSprite,

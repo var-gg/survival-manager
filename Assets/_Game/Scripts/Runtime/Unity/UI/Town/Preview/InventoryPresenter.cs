@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Results;
 using SM.Persistence.Abstractions.Models;
 using UnityEngine;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace SM.Unity.UI.Town.Preview;
 
 /// <summary>
-/// Inventory V1 Presenter — `GameSessionRoot.SessionState.Profile` → InventoryViewState 변환.
+/// Inventory V1 Presenter — `GameSessionState.Profile` → InventoryViewState 변환.
 ///
 /// Sprint 1 scaffold. Profile.Inventory + Profile.Currencies read는 wire. equip/sell/compare 액션은
 /// Sprint 2에서 SessionState API 보강 후 wire.
@@ -20,8 +21,12 @@ public sealed class InventoryPresenter : IInventoryActions
 {
     public delegate Texture2D? SpriteLoader(string spriteKey);
 
-    private readonly GameSessionRoot _root;
-    private readonly InventoryView _view;
+    // headless conformance(Phase 2 Stage 2): GameSessionRoot(MonoBehaviour) 대신 순수 GameSessionState +
+    // ICombatContentLookup, 콘크리트 InventoryView 대신 IInventoryView를 받아 씬·엔진 없이 BuildState 구동.
+    // ContentTextResolver는 이미 nullable(없으면 item id fallback)이라 그대로 둔다.
+    private readonly GameSessionState _session;
+    private readonly ICombatContentLookup _lookup;
+    private readonly IInventoryView _view;
     private readonly SpriteLoader _currencySprite;
     private readonly SpriteLoader _itemIconSprite;
     private readonly SpriteLoader _affixIconSprite;
@@ -32,14 +37,16 @@ public sealed class InventoryPresenter : IInventoryActions
     private string _lastEquipStatus = string.Empty;
 
     public InventoryPresenter(
-        GameSessionRoot root,
-        InventoryView view,
+        GameSessionState session,
+        ICombatContentLookup lookup,
+        IInventoryView view,
         SpriteLoader? currencySprite = null,
         SpriteLoader? itemIconSprite = null,
         ContentTextResolver? contentText = null,
         SpriteLoader? affixIconSprite = null)
     {
-        _root = root ?? throw new ArgumentNullException(nameof(root));
+        _session = session ?? throw new ArgumentNullException(nameof(session));
+        _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
         _view = view ?? throw new ArgumentNullException(nameof(view));
         _currencySprite = currencySprite ?? (_ => null);
         _itemIconSprite = itemIconSprite ?? (_ => null);
@@ -98,7 +105,7 @@ public sealed class InventoryPresenter : IInventoryActions
             return;
         }
 
-        var result = _root.SessionState.EquipItem(_targetHeroId, itemInstanceId);
+        var result = _session.EquipItem(_targetHeroId, itemInstanceId);
         _lastEquipStatus = result.IsSuccess
             ? "장착 완료"
             : result.Error ?? "장착 실패";
@@ -113,9 +120,9 @@ public sealed class InventoryPresenter : IInventoryActions
         Refresh();
     }
 
-    private InventoryViewState BuildState()
+    public InventoryViewState BuildState()
     {
-        var session = _root.SessionState;
+        var session = _session;
         var gold = session.Profile.Currencies.Gold;
         var echo = session.Profile.Currencies.Echo;
 
@@ -123,7 +130,7 @@ public sealed class InventoryPresenter : IInventoryActions
             session.Profile.Heroes.SelectMany(h => h.EquippedItemIds ?? Enumerable.Empty<string>())
                                   .Where(id => !string.IsNullOrEmpty(id)),
             StringComparer.Ordinal);
-        var lookup = _root.CombatContentLookup;
+        var lookup = _lookup;
 
         var entries = session.Profile.Inventory
             .Select(item =>
@@ -231,7 +238,7 @@ public sealed class InventoryPresenter : IInventoryActions
             return null;
         }
 
-        var session = _root.SessionState;
+        var session = _session;
         var targetHero = session.Profile.Heroes.FirstOrDefault(hero =>
             string.Equals(hero.HeroId, _targetHeroId, StringComparison.Ordinal));
         var selectedSummary = BuildCompareItemSummary(selectedItem);
@@ -330,7 +337,7 @@ public sealed class InventoryPresenter : IInventoryActions
         var isLaunchSupportedRarity = true;
         var setBonusTier = string.Empty;
         var crossLinks = new List<string>();
-        if (_root.CombatContentLookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
+        if (_lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
         {
             name = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
             if (string.IsNullOrWhiteSpace(name))
@@ -373,7 +380,7 @@ public sealed class InventoryPresenter : IInventoryActions
             {
                 var group = "prefix";
                 var valueRange = "—";
-                if (_root.CombatContentLookup.TryGetAffixDefinition(affixId, out var affixDef))
+                if (_lookup.TryGetAffixDefinition(affixId, out var affixDef))
                 {
                     group = affixDef.Tier.ToString().ToLowerInvariant();
                     valueRange = $"{affixDef.ValueMin:0.#} ~ {affixDef.ValueMax:0.#}";
@@ -529,7 +536,7 @@ public sealed class InventoryPresenter : IInventoryActions
         var budgetKey = "unknown";
         var budgetLabel = "세트 보너스 추적 중";
         var refitKey = "refit";
-        if (_root.CombatContentLookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
+        if (_lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
         {
             name = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
             if (string.IsNullOrWhiteSpace(name))
@@ -580,7 +587,7 @@ public sealed class InventoryPresenter : IInventoryActions
             return "미장착";
         }
 
-        var owner = _root.SessionState.Profile.Heroes.FirstOrDefault(hero =>
+        var owner = _session.Profile.Heroes.FirstOrDefault(hero =>
             string.Equals(hero.HeroId, item.EquippedHeroId, StringComparison.Ordinal));
         return owner != null ? ResolveHeroName(owner) : item.EquippedHeroId;
     }

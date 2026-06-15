@@ -180,7 +180,8 @@ public sealed class TownScreenController : MonoBehaviour
         {
             var inventoryView = new InventoryView(root);
             _inventoryPresenter = new InventoryPresenter(
-                _root,
+                _root.SessionState,
+                _root.CombatContentLookup,
                 inventoryView,
                 currencySprite: _contentIconResolver.ResolveAny,
                 itemIconSprite: _contentIconResolver.ResolveItem,

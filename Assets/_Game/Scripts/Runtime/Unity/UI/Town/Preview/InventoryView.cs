@@ -9,7 +9,7 @@ namespace SM.Unity.UI.Town.Preview;
 /// container: GoldIcon / EchoIcon / CategorySidebar / ItemGrid / DetailIcon / DetailAffixes.
 /// sprite 로드 안 함 — caller가 Texture2D pre-resolve.
 /// </summary>
-public sealed class InventoryView
+public sealed class InventoryView : IInventoryView
 {
     private readonly VisualElement _goldIcon;
     private readonly VisualElement _echoIcon;
@@ -562,4 +562,17 @@ public interface IInventoryActions
     void OnItemSelected(string itemInstanceId);
     void OnEquipItem(string itemInstanceId);
     void OnCompareItem(string itemInstanceId);
+}
+
+/// <summary>
+/// Inventory View 계약 — presenter가 의존하는 표면(bind/modal/render)만. 콘크리트 InventoryView는
+/// VisualElement에 묶이지만 presenter는 이 인터페이스만 알면 되어 headless 테스트에서 fake view로 구동한다.
+/// </summary>
+public interface IInventoryView
+{
+    void Bind(IInventoryActions actions);
+    void BindClose(Action close);
+    void Open();
+    void Close();
+    void Render(InventoryViewState state);
 }
