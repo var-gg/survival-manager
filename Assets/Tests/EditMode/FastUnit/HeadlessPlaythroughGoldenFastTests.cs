@@ -60,8 +60,15 @@ public sealed class HeadlessPlaythroughGoldenFastTests
         Assert.That(sortie.CanLaunch, Is.True, "1인 이상 배치 → 출격 가능.");
         Assert.That(sortie.SynergyChips.Any(chip => chip.IsActive), Is.True, "활성 시너지가 화면에 노출된다.");
 
-        // --- 출발: expedition 시작 + 첫 전투 노드 핸드오프 ---
+        // --- 화면 전환은 순수 ExpeditionFlowResolver가 결정하고 RecordingNavSink가 씬 없이 기록 ---
+        var nav = new RecordingNavSink();
+
+        // Town '원정' → Atlas (보상 정산 없음 · 원정 시작)
+        nav.Go(ExpeditionFlowResolver.ResolveExpeditionEntry(session));
         session.BeginNewExpedition();
+
+        // Atlas '계속' → 선택 노드가 전투라 Battle
+        nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(session));
         Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True, "첫 노드는 전투 — 핸드오프 준비.");
         session.BuildBattleLoadoutSnapshot();
 
@@ -86,6 +93,9 @@ public sealed class HeadlessPlaythroughGoldenFastTests
         Assert.That(dossier, Is.Not.Null, "전투 판정이 Dossier에 기록된다.");
         Assert.That(dossier!.WarrantOutcome, Is.EqualTo("kept"), "전원 생존 → Intact 서약 이행(kept).");
 
+        // 전투 종료 → 보상 정산
+        nav.Go(ExpeditionFlowResolver.AfterBattleResolved);
+
         // --- 보상 정산: 카드가 제시되고 하나를 고른다 ---
         Assert.That(session.HasPendingRewardSettlement, Is.True, "전투 후 보상 정산 대기.");
         Assert.That(session.PendingRewardChoices, Has.Count.EqualTo(3), "보상 3안 제시.");
@@ -98,6 +108,13 @@ public sealed class HeadlessPlaythroughGoldenFastTests
             session.Profile.RewardLedger.Any(entry => entry.SourceKind.EndsWith(":reward_choice", System.StringComparison.Ordinal)),
             Is.True,
             "확정한 보상이 영구 ledger에 커밋됐다 — Town inventory/equipment refresh의 source.");
+
+        // 보상 정산 종료 → Town 복귀
+        nav.Go(ExpeditionFlowResolver.AfterRewardSettled);
+
+        // --- 전 흐름 전이 시퀀스가 씬·VisualElement 없이 순수 resolver로 재현된다 ---
+        Assert.That(nav.Targets, Is.EqualTo(new[] { NavTarget.Atlas, NavTarget.Battle, NavTarget.Reward, NavTarget.Town }),
+            "Town→Atlas→Battle→Reward→Town 전이가 씬 로드 없이 검증된다 — AI가 화면을 옮겨다니며 게임을 진행.");
     }
 
     private static void DeployExactly(GameSessionState session, params (string HeroId, DeploymentAnchorId Anchor)[] placements)

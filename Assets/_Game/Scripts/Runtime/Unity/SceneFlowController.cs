@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace SM.Unity;
 
-public sealed class SceneFlowController
+public sealed class SceneFlowController : INavSink
 {
     private readonly MonoBehaviour _host;
     private readonly GameSessionState _sessionState;
@@ -23,6 +23,19 @@ public sealed class SceneFlowController
     public void GoToBattle() => Load(SceneNames.Battle);
     public void GoToReward() => Load(SceneNames.Reward);
     public void ReturnToTown() => Load(SceneNames.Town);
+
+    /// <summary>INavSink — NavTarget 결정을 실제 씬 로드로 운반(GoToX 매핑). 결정 자체는 ExpeditionFlowResolver 소유.</summary>
+    public void Go(NavTarget target)
+    {
+        switch (target)
+        {
+            case NavTarget.Boot: GoToBoot(); break;
+            case NavTarget.Town: GoToTown(); break;
+            case NavTarget.Atlas: GoToAtlas(); break;
+            case NavTarget.Battle: GoToBattle(); break;
+            case NavTarget.Reward: GoToReward(); break;
+        }
+    }
 
     public void Load(string sceneName)
     {
