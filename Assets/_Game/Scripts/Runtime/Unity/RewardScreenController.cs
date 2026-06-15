@@ -143,7 +143,9 @@ public sealed class RewardScreenController : MonoBehaviour
             return;
         }
 
-        _storyBridge.Advance(NarrativeMoment.RewardCommitted, BuildStoryMomentContext(withRewardSummary: true));
+        // 발화는 세션: GameSessionState.ApplyRewardChoice가 RewardCommitted를 발화한다.
+        // 여기선 세션이 큐잉한 연출만 화면에 present한다(발화원 통합 → 헤드리스+실게임 동일).
+        _storyBridge.PresentPending();
     }
 
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)

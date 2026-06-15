@@ -57,6 +57,21 @@ public sealed class StorySceneFlowBridge : MonoBehaviour
         TryPumpQueue();
     }
 
+    /// <summary>
+    /// 세션이 이미 발화·큐잉한 연출을 화면에 present한다(추가 moment 발화 없음). "발화는 세션, 표시는 씬" —
+    /// controller가 moment를 직접 Advance하는 대신 이 메서드로 큐를 흘린다(헤드리스는 세션 발화로 직접 drain).
+    /// </summary>
+    public void PresentPending()
+    {
+        if (!EnsureReady())
+        {
+            return;
+        }
+
+        EnsureBacklogBatchTracked();
+        TryPumpQueue();
+    }
+
     public void ClearPending()
     {
         _pendingAdvanceBatches.Clear();

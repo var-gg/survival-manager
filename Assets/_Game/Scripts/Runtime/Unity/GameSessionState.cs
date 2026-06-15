@@ -13,6 +13,7 @@ using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity.Narrative;
 using SM.Unity.Sandbox;
 using Unity.Profiling;
 
@@ -1344,7 +1345,22 @@ public sealed partial class GameSessionState
         _rewardSettlementFlow.MarkBattleResolved(victory, stepCount, eventCount, finalUnits);
     }
 
-    public bool ApplyRewardChoice(int index) => _rewardSettlementFlow.ApplyRewardChoice(index);
+    public bool ApplyRewardChoice(int index)
+    {
+        var committed = _rewardSettlementFlow.ApplyRewardChoice(index);
+
+        // 발화는 세션: 보상 확정(commit) moment를 여기서 발화한다 — 씬 controller가 아니라 세션이 단일 소스라
+        // 헤드리스 드라이버와 실게임 RewardScreen이 같은 발화를 공유한다(표시는 씬이 bridge.PresentPending으로).
+        // 빈/비해당 director는 no-op, smoke 레인은 narrative 제외(BattleStarted 가드와 동일).
+        if (committed && !IsQuickBattleSmokeActive)
+        {
+            AdvanceNarrative(
+                NarrativeMoment.RewardCommitted,
+                NarrativeMomentResolver.BuildNodeContext(this, withRewardSummary: true));
+        }
+
+        return committed;
+    }
 
     public string PreviewPermanentUnlockFromTemporaryAugment(string augmentId) =>
         _rewardSettlementFlow.PreviewPermanentUnlockFromTemporaryAugment(augmentId);

@@ -37,4 +37,20 @@ public static class NarrativeMomentResolver
             SiteId = session.SelectedCampaignSiteId,
         };
     }
+
+    /// <summary>
+    /// 전투/보상 등 노드-스코프 moment에 넘길 컨텍스트 — 사이트 좌표 + 현재 노드 인덱스 + (옵션) 보상 요약.
+    /// 씬 controller의 BuildStoryMomentContext와 동일 필드를 세션 진실에서 조립해, 발화원을 세션으로 통합해도
+    /// 동일 컨텍스트가 director에 전달되게 한다.
+    /// </summary>
+    public static StoryMomentContext BuildNodeContext(GameSessionState session, bool withRewardSummary = false)
+    {
+        return new StoryMomentContext
+        {
+            ChapterId = session.SelectedCampaignChapterId,
+            SiteId = session.SelectedCampaignSiteId,
+            NodeIndex = session.CurrentExpeditionNodeIndex,
+            RewardSummary = withRewardSummary ? session.LastCommittedRewardSummary : null,
+        };
+    }
 }
