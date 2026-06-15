@@ -266,6 +266,14 @@ public sealed partial class GameSessionState
     public bool TryDequeueNarrativePresentation(out StoryPresentationRequest? request) =>
         _profileSync.TryDequeueNarrativePresentation(out request);
 
+    /// <summary>
+    /// headless/테스트 드라이버가 seed된 narrative director를 주입한다 — BindProfile 이후 호출해야
+    /// RebindNarrativeServices(BindProfile 끝)의 클로버를 피한다. 프로덕션 흐름은 ctor/BindProfile에서
+    /// bootstrap director를 쓰므로 미호출 시 영향 0(StorySceneFlowBridge.OverridePresentationSink와 동형 seam).
+    /// </summary>
+    internal void OverrideStoryDirector(StoryDirectorService director)
+        => StoryDirector = director ?? throw new ArgumentNullException(nameof(director));
+
     public void ResetNarrativeRunScopedProgress() => _profileSync.ResetNarrativeRunScopedProgress();
 
     public void BeginNewExpedition() => _expeditionFlow.BeginNewExpedition();

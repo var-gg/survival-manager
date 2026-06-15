@@ -12,6 +12,7 @@ using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity.Narrative;
 using SM.Unity.Sandbox;
 using Unity.Profiling;
 
@@ -1371,5 +1372,12 @@ public sealed partial class GameSessionState
             };
             SyncActiveRunRecord();
         }
+
+        // Stage 1.5b: 진행 truth를 모두 커밋한 뒤 extract 정산을 narrative director에 발화한다.
+        // ExtractCommitted에 걸린 전 이벤트(사이트별 영웅 해금·midpoint reveal·캠페인 엔딩·endless 등)를 점화 —
+        // 지금까지 이 moment를 발화하는 프로덕션 호출처가 없어 해당 narrative 계층 전체가 dead였다.
+        // director가 조건(ChapterIs/SiteIs/FlagIs)으로 게이트 + OncePerProfile로 dedup하므로 비해당 extract는
+        // 무발화로 통과하고, 빈 director(테스트 baseline)는 큐 0건. 게이트가 chapter/site라 flag set 순서와 무관.
+        AdvanceNarrative(NarrativeMoment.ExtractCommitted, NarrativeMomentResolver.BuildExtractContext(this));
     }
 }
