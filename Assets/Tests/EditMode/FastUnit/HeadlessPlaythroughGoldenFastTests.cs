@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Core;
 using SM.Meta;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
@@ -45,6 +46,12 @@ public sealed class HeadlessPlaythroughGoldenFastTests
         });
         session.SetCurrentScene(SceneNames.Town);
 
+        // --- narrative seam: 각 전환에서 narrative moment를 발화하고 연출 큐를 RecordingNarrativeSink로
+        // 씬·입력 없이 drain한다. baseline은 seed 콘텐츠가 없어 큐가 비지만, narrative가 전 루프에 끼어들어도
+        // self-completing(무한대기 없음)함을 고정한다 — 엔딩 컷씬 메커니즘은 CampaignEndingGateFastTests가 별도 증명.
+        var narration = new RecordingNarrativeSink();
+        DriveNarrative(session, narration, NarrativeMoment.TownEntered);
+
         // --- 편성: 플레이어가 4인을 anchor에 배치 (진형 셋업) ---
         DeployExactly(session,
             ("hero-1", DeploymentAnchorId.FrontTop),
@@ -83,11 +90,13 @@ public sealed class HeadlessPlaythroughGoldenFastTests
         // Town '원정' → Atlas (보상 정산 없음 · 원정 시작)
         nav.Go(ExpeditionFlowResolver.ResolveExpeditionEntry(session));
         session.BeginNewExpedition();
+        DriveNarrative(session, narration, NarrativeMoment.SiteEntered);
 
         // Atlas '계속' → 선택 노드가 전투라 Battle
         nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(session));
         Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True, "첫 노드는 전투 — 핸드오프 준비.");
         session.BuildBattleLoadoutSnapshot();
+        DriveNarrative(session, narration, NarrativeMoment.BattleStarted);
 
         // --- 서약 화면(WarrantSelection presenter)을 렌더 없이 읽고 선택한다 (presenter command 경로) ---
         var warrant = new WarrantSelectionPresenter(standingLookup: _ => 0, factionName: id => id, warrantName: id => id);
@@ -109,6 +118,7 @@ public sealed class HeadlessPlaythroughGoldenFastTests
         var dossier = session.Profile.Dossier.LastOrDefault();
         Assert.That(dossier, Is.Not.Null, "전투 판정이 Dossier에 기록된다.");
         Assert.That(dossier!.WarrantOutcome, Is.EqualTo("kept"), "전원 생존 → Intact 서약 이행(kept).");
+        DriveNarrative(session, narration, NarrativeMoment.BattleResolved);
 
         // 전투 종료 → 보상 정산
         nav.Go(ExpeditionFlowResolver.AfterBattleResolved);
@@ -116,7 +126,9 @@ public sealed class HeadlessPlaythroughGoldenFastTests
         // --- 보상 정산: 카드가 제시되고 하나를 고른다 ---
         Assert.That(session.HasPendingRewardSettlement, Is.True, "전투 후 보상 정산 대기.");
         Assert.That(session.PendingRewardChoices, Has.Count.EqualTo(3), "보상 3안 제시.");
+        DriveNarrative(session, narration, NarrativeMoment.RewardOpened);
         Assert.That(session.ApplyRewardChoice(0), Is.True, "보상 1안 확정.");
+        DriveNarrative(session, narration, NarrativeMoment.RewardCommitted);
 
         // --- Town 복귀: 루프가 닫히고 보상이 영구 ledger에 커밋된다 ---
         session.ReturnToTownAfterReward();
@@ -132,6 +144,21 @@ public sealed class HeadlessPlaythroughGoldenFastTests
         // --- 전 흐름 전이 시퀀스가 씬·VisualElement 없이 순수 resolver로 재현된다 ---
         Assert.That(nav.Targets, Is.EqualTo(new[] { NavTarget.Atlas, NavTarget.Battle, NavTarget.Reward, NavTarget.Town }),
             "Town→Atlas→Battle→Reward→Town 전이가 씬 로드 없이 검증된다 — AI가 화면을 옮겨다니며 게임을 진행.");
+
+        // --- narrative가 전 루프(6 moment)에 끼어들었으나 씬·입력 없이 self-completing했다 ---
+        Assert.That(narration.Presented, Is.Empty,
+            "seed 콘텐츠 없는 baseline에선 어떤 moment도 연출 큐를 채우지 않는다 — drain seam이 빈 큐를 무한대기 없이 통과.");
+    }
+
+    // bridge.TryPumpQueue + sink.Present의 순수 등가 — narrative moment를 발화하고 큐를 sink로 drain한다.
+    // 즉시-ack sink라 입력 대기 0; baseline director(seed 없음)에선 큐가 비어 즉시 종료한다.
+    private static void DriveNarrative(GameSessionState session, RecordingNarrativeSink sink, NarrativeMoment moment)
+    {
+        session.AdvanceNarrative(moment, StoryMomentContext.Empty);
+        while (session.TryDequeueNarrativePresentation(out var request) && request != null)
+        {
+            sink.Present(request, () => { });
+        }
     }
 
     private static void DeployExactly(GameSessionState session, params (string HeroId, DeploymentAnchorId Anchor)[] placements)

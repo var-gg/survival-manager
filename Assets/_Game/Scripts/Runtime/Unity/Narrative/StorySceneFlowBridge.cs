@@ -18,6 +18,10 @@ public sealed class StorySceneFlowBridge : MonoBehaviour
     private GameSessionRoot _root = null!;
     private bool _isDispatchingRequest;
 
+    // headless conformance(narrative seam): null이면 기존 StoryPresentationRunner 경로(프로덕션 불변).
+    // 캡쳐/headless 드라이버가 OverridePresentationSink로 즉시-ack sink를 꽂아 컷씬 무한대기를 우회한다.
+    private INarrativePresentationSink? _presentationSink;
+
     public bool IsBusy => _isDispatchingRequest
                           || _pendingAdvanceBatches.Count > 0
                           || (_runner != null && _runner.IsBusy);
@@ -118,8 +122,18 @@ public sealed class StorySceneFlowBridge : MonoBehaviour
         }
 
         _isDispatchingRequest = true;
-        _runner.Enqueue(new[] { request }, HandleDispatchedRequestCompleted);
+        if (_presentationSink != null)
+        {
+            _presentationSink.Present(request, HandleDispatchedRequestCompleted);
+        }
+        else
+        {
+            _runner.Enqueue(new[] { request }, HandleDispatchedRequestCompleted);
+        }
     }
+
+    /// <summary>headless/캡쳐 드라이버가 연출 dispatch를 가로채도록 sink를 주입(미호출 시 프로덕션 runner 경로 유지).</summary>
+    internal void OverridePresentationSink(INarrativePresentationSink sink) => _presentationSink = sink;
 
     private void HandleDispatchedRequestCompleted()
     {
