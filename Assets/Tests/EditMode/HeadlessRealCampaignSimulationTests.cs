@@ -41,6 +41,10 @@ public sealed class HeadlessRealCampaignSimulationTests
         session.BindProfile(new SaveProfile { ProfileId = "headless_real_campaign" }); // 기본 분대 시드
         session.SetCurrentScene(SceneNames.Town);
 
+        // 관측: 헤드리스 캠페인의 실 분대 구성(첫 N canonical archetype의 base class). 밸런스 작업의 telemetry.
+        var squadDump = string.Join(" | ", session.Profile.Heroes.Select(hero =>
+            $"{hero.HeroId}:{hero.ClassId}/{hero.ArchetypeId}"));
+
         var runner = new CampaignPlaythroughRunner(
             session,
             new ScriptedPlaythroughPolicy(rewardIndex: 0),
@@ -68,5 +72,8 @@ public sealed class HeadlessRealCampaignSimulationTests
             $"victories={outcomes.Count(outcome => outcome.Victory)} " +
             $"defeatedSite={result.DefeatedSiteId ?? "(none)"} " +
             $"steps[min={outcomes.Min(o => o.StepCount)},max={outcomes.Max(o => o.StepCount)}]");
+        TestContext.WriteLine($"[Squad] {squadDump}");
+        TestContext.WriteLine($"[Battles] " + string.Join(" | ", outcomes.Select(o =>
+            $"{o.NodeId}={(o.Victory ? "W" : "L")}({o.StepCount})")));
     }
 }
