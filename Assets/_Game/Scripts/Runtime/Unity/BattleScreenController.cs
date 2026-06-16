@@ -1066,10 +1066,20 @@ public sealed class BattleScreenController : MonoBehaviour
         _spectacleDirector.Reset();
         _beatCallouts.Clear();
 
+        // 전투 구성은 세션 단일 소스(TryBuildSelectedBattleState)에 위임 — 헤드리스 sim
+        // (TryResolveSelectedBattleNodeViaSimulation)과 동일 합성(BattleFactory + 인카운터 bootstrap)을 공유한다.
+        // 씬은 그 결과(state/encounter/allySnapshot)를 재생·HUD·replay 조립에 소비한다("구성은 세션, 재생은 소비자").
+        BattleState simulationState;
+        ResolvedEncounterContext encounter;
         BattleLoadoutSnapshot allySnapshot;
+        string buildError;
         try
         {
-            allySnapshot = _root.SessionState.BuildBattleLoadoutSnapshot();
+            if (!_root.SessionState.TryBuildSelectedBattleState(out simulationState, out encounter, out allySnapshot, out buildError))
+            {
+                RenderErrorState(buildError);
+                return;
+            }
         }
         catch (Exception ex)
         {
@@ -1077,38 +1087,10 @@ public sealed class BattleScreenController : MonoBehaviour
             return;
         }
 
-        if (allySnapshot.Allies.Count == 0)
-        {
-            RenderErrorState(Localize(GameLocalizationTables.UIBattle, "ui.battle.error.no_allies", "No allied unit is ready for battle."));
-            return;
-        }
-
-        if (!_root.CombatContentLookup.TryGetCombatSnapshot(out var snapshot, out var lookupError))
-        {
-            RenderErrorState(lookupError);
-            return;
-        }
-
-        if (!_root.SessionState.TryResolveCurrentEncounter(out var encounter, out var encounterError))
-        {
-            RenderErrorState(encounterError);
-            return;
-        }
-
         _compiledSnapshot = allySnapshot;
         _resolvedEncounterContext = encounter;
         _enemyLoadouts = encounter.Enemies;
         _battleStartedAtUtc = DateTime.UtcNow.ToString("O");
-
-        var simulationState = BattleFactory.Create(
-            allySnapshot.Allies,
-            encounter.Enemies,
-            allySnapshot.TeamTactic.Posture,
-            encounter.EnemyPosture,
-            BattleSimulator.DefaultFixedStepSeconds,
-            seed: encounter.Context.BattleSeed,
-            statusRules: allySnapshot.StatusRules ?? CombatStatusRuleCompiler.Compile(snapshot));
-        new EncounterResolutionService(snapshot).ApplyBattleBootstrap(simulationState, encounter);
 
         _simulator = new BattleSimulator(simulationState, MaxBattleSteps);
         _policy = new BattlePlaybackPolicy(
