@@ -1343,6 +1343,16 @@ public sealed partial class GameSessionState
     {
         LastBattleFormationPayoff = formationPayoff ?? BattleFormationPayoffSummary.Empty;
         _rewardSettlementFlow.MarkBattleResolved(victory, stepCount, eventCount, finalUnits);
+
+        // 발화는 세션: 전투 해소 moment를 여기서 발화한다 — 씬 FinishBattle과 헤드리스 sim
+        // (TryResolveSelectedBattleNodeViaSimulation)이 모두 이 1곳을 경유하므로 같은 발화를 공유한다
+        // (표시+continuation은 씬이 bridge.PresentPending(GoToReward)으로). smoke 레인은 narrative 제외.
+        if (!IsQuickBattleSmokeActive)
+        {
+            AdvanceNarrative(
+                NarrativeMoment.BattleResolved,
+                NarrativeMomentResolver.BuildNodeContext(this));
+        }
     }
 
     public bool ApplyRewardChoice(int index)

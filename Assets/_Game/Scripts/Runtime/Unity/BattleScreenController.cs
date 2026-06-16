@@ -409,7 +409,8 @@ public sealed class BattleScreenController : MonoBehaviour
 
         if (EnsureStoryBridgeReady())
         {
-            _storyBridge.Advance(NarrativeMoment.BattleResolved, BuildStoryMomentContext(), _root.SceneFlow.GoToReward);
+            // 발화는 세션(MarkBattleResolved가 BattleResolved 발화) — 씬은 큐를 present하고 완료 후 보상으로.
+            _storyBridge.PresentPending(_root.SceneFlow.GoToReward);
             return;
         }
 

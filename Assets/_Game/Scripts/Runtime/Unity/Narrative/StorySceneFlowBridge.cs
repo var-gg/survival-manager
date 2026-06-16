@@ -72,6 +72,32 @@ public sealed class StorySceneFlowBridge : MonoBehaviour
         TryPumpQueue();
     }
 
+    /// <summary>
+    /// PresentPending + continuation — 세션이 이미 발화·큐잉한 연출을 present하고, 큐가 전부 drain되면
+    /// onCompleted를 실행한다. 콜백 게이트 moment용("발화는 세션, 표시+continuation은 씬"):
+    /// BattleResolved→GoToReward, BattleStarted→RunBattle. 표시할 연출이 없으면 onCompleted를 즉시 실행한다.
+    /// </summary>
+    public void PresentPending(Action onCompleted)
+    {
+        if (!EnsureReady())
+        {
+            onCompleted?.Invoke();
+            return;
+        }
+
+        EnsureBacklogBatchTracked();
+        if (_pendingAdvanceBatches.Count == 0 && !_isDispatchingRequest && !_runner.IsBusy)
+        {
+            // 표시할 연출이 없음 → continuation 즉시(유실 방지).
+            onCompleted?.Invoke();
+            return;
+        }
+
+        // 앞선 모든 연출이 끝나면 continuation을 실행하도록 큐 끝에 단다.
+        _pendingAdvanceBatches.Enqueue(PendingAdvanceBatch.ForContinuation(onCompleted));
+        TryPumpQueue();
+    }
+
     public void ClearPending()
     {
         _pendingAdvanceBatches.Clear();
@@ -161,12 +187,13 @@ public sealed class StorySceneFlowBridge : MonoBehaviour
         while (_pendingAdvanceBatches.Count > 0 && _pendingAdvanceBatches.Peek().RemainingCount <= 0)
         {
             var completedBatch = _pendingAdvanceBatches.Dequeue();
-            if (!completedBatch.HasMoment)
+            if (completedBatch.HasMoment)
             {
-                continue;
+                AdvanceCompleted?.Invoke(completedBatch.Moment);
             }
 
-            AdvanceCompleted?.Invoke(completedBatch.Moment);
+            // moment 배치(Advance)·continuation 배치(PresentPending(onCompleted)) 모두 콜백 실행.
+            // backlog 배치(ForBacklog)는 onCompleted=null이라 무해.
             completedBatch.OnCompleted?.Invoke();
         }
 
@@ -222,5 +249,9 @@ public sealed class StorySceneFlowBridge : MonoBehaviour
 
         public static PendingAdvanceBatch ForBacklog(int remainingCount)
             => new(default, remainingCount, null, hasMoment: false);
+
+        // continuation-only 배치 — 앞선 연출이 모두 drain된 직후(RemainingCount 0) onCompleted를 실행한다.
+        public static PendingAdvanceBatch ForContinuation(Action? onCompleted)
+            => new(default, 0, onCompleted, hasMoment: false);
     }
 }
