@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
 using SM.Unity;
 
 namespace SM.Tests.EditMode.Playthrough;
@@ -23,12 +25,18 @@ public sealed class CampaignPlaythroughRunner
     private readonly GameSessionState _session;
     private readonly IPlaythroughDecisionPolicy _policy;
     private readonly INavSink _nav;
+    private readonly PlaythroughBattleResolution _battleResolution;
 
-    public CampaignPlaythroughRunner(GameSessionState session, IPlaythroughDecisionPolicy policy, INavSink nav)
+    public CampaignPlaythroughRunner(
+        GameSessionState session,
+        IPlaythroughDecisionPolicy policy,
+        INavSink nav,
+        PlaythroughBattleResolution battleResolution = PlaythroughBattleResolution.AutoResolve)
     {
         _session = session;
         _policy = policy;
         _nav = nav;
+        _battleResolution = battleResolution;
     }
 
     /// <summary>캠페인을 엔딩(StoryCleared)까지 구동하고 관찰값을 반환한다.</summary>
@@ -41,6 +49,7 @@ public sealed class CampaignPlaythroughRunner
         var clearedSites = new List<string>();
         var siteObservations = new List<SitePlaythroughObservation>();
         var totalBattleNodes = 0;
+        string? defeatedSiteId = null;
 
         // 2) 캠페인 그래프를 StoryCleared 켜질 때까지 사이트 단위로 순회.
         while (!_session.Profile.CampaignProgress.StoryCleared && clearedSites.Count < safety)
@@ -52,16 +61,53 @@ public sealed class CampaignPlaythroughRunner
             _nav.Go(ExpeditionFlowResolver.ResolveExpeditionEntry(_session));
             _session.BeginNewExpedition();
 
-            // 2a) 전투 노드 전부 자동 정산(승패는 결정 아님 — fixture 자동 승리).
+            // 2a) 전투 노드 순회. AutoResolve = fixture 메타루프 증명(sim 0, 자동 승리 단축).
+            //     Simulate = 실 BattleSimulator 완주 → 헤드리스가 진짜로 싸운다. 승리만 노드 전진,
+            //     패배는 사이트 미클리어로 원정 중단(골든은 승리 전제이므로 패배가 표면화됨).
             var battleNodeIds = new List<string>();
+            var battleOutcomes = new List<PlaythroughBattleOutcome>();
+            var defeatedHere = false;
             while (_session.GetSelectedExpeditionNode()?.RequiresBattle == true)
             {
                 var node = _session.GetSelectedExpeditionNode()!;
                 battleNodeIds.Add(node.Id);
                 _nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(_session)); // → Battle
-                _session.ResolveSelectedExpeditionNode();
+
+                if (_battleResolution == PlaythroughBattleResolution.Simulate)
+                {
+                    if (!_session.TryResolveSelectedBattleNodeViaSimulation(out var battleResult, out var error))
+                    {
+                        throw new InvalidOperationException($"전투 sim 실패({node.Id}): {error}");
+                    }
+
+                    var victory = battleResult.Winner == TeamSide.Ally;
+                    battleOutcomes.Add(new PlaythroughBattleOutcome(node.Id, victory, battleResult.StepCount));
+                    if (!victory)
+                    {
+                        // 패배 — 원정 중단, 사이트 미클리어. 캠페인 루프도 종료.
+                        defeatedHere = true;
+                        _session.AbandonExpeditionRun();
+                        break;
+                    }
+                }
+
+                _session.ResolveSelectedExpeditionNode(); // 노드 커서 전진 + 노드 효과(전리품).
             }
             totalBattleNodes += battleNodeIds.Count;
+
+            if (defeatedHere)
+            {
+                defeatedSiteId = siteId;
+                siteObservations.Add(new SitePlaythroughObservation(
+                    ChapterId: chapterId,
+                    SiteId: siteId,
+                    BattleNodeIds: battleNodeIds,
+                    BattleOutcomes: battleOutcomes,
+                    ExtractNodeId: string.Empty,
+                    RewardOptionCount: 0,
+                    ChosenRewardIndex: -1));
+                break;
+            }
 
             // 2b) extract 노드 정산 → 보상 제시 → policy 결정 → 복귀.
             var extractNode = _session.GetSelectedExpeditionNode();
@@ -79,6 +125,7 @@ public sealed class CampaignPlaythroughRunner
                 ChapterId: chapterId,
                 SiteId: siteId,
                 BattleNodeIds: battleNodeIds,
+                BattleOutcomes: battleOutcomes,
                 ExtractNodeId: extractNode?.Id ?? string.Empty,
                 RewardOptionCount: rewardView.Options.Count,
                 ChosenRewardIndex: chosenRewardIndex));
@@ -91,7 +138,8 @@ public sealed class CampaignPlaythroughRunner
             ClearedSiteIds: clearedSites,
             ClearedChapterIds: progress.ClearedChapterIds.ToList(),
             SiteObservations: siteObservations,
-            TotalBattleNodes: totalBattleNodes);
+            TotalBattleNodes: totalBattleNodes,
+            DefeatedSiteId: defeatedSiteId);
     }
 
     private void ApplyDeployment()
@@ -148,6 +196,18 @@ public sealed class CampaignPlaythroughRunner
     }
 }
 
+/// <summary>
+/// 전투 노드 해석 방식 — 같은 runner를 두 소비자가 공유하는 seam.
+/// </summary>
+public enum PlaythroughBattleResolution
+{
+    /// <summary>auto-resolve 단축. fixture(실 전투 콘텐츠 없음)로 메타루프 완주만 증명 — sim 0, 자동 승리.</summary>
+    AutoResolve,
+
+    /// <summary>실 BattleSimulator 완주. 헤드리스가 진짜로 싸운다(RuntimeCombatContentLookup 등 실 콘텐츠 필요).</summary>
+    Simulate,
+}
+
 /// <summary>플레이스루 종착 관찰값 — 골든이 단언하고 리포트 하네스가 읽는 결과 묶음.</summary>
 public sealed record CampaignPlaythroughResult(
     bool StoryCleared,
@@ -155,13 +215,21 @@ public sealed record CampaignPlaythroughResult(
     IReadOnlyList<string> ClearedSiteIds,
     IReadOnlyList<string> ClearedChapterIds,
     IReadOnlyList<SitePlaythroughObservation> SiteObservations,
-    int TotalBattleNodes);
+    int TotalBattleNodes,
+    string? DefeatedSiteId = null);
 
-/// <summary>사이트 한 곳을 거치며 관찰한 내역.</summary>
+/// <summary>사이트 한 곳을 거치며 관찰한 내역. Simulate 모드에서만 BattleOutcomes가 채워진다.</summary>
 public sealed record SitePlaythroughObservation(
     string ChapterId,
     string SiteId,
     IReadOnlyList<string> BattleNodeIds,
     string ExtractNodeId,
     int RewardOptionCount,
-    int ChosenRewardIndex);
+    int ChosenRewardIndex,
+    IReadOnlyList<PlaythroughBattleOutcome>? BattleOutcomes = null);
+
+/// <summary>실 sim으로 정산한 전투 노드 결과 — 헤드리스가 실제로 tick을 돌렸음을 증명하는 관찰값.</summary>
+public sealed record PlaythroughBattleOutcome(
+    string NodeId,
+    bool Victory,
+    int StepCount);
