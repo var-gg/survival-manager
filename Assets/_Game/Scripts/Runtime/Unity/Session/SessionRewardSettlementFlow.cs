@@ -234,6 +234,21 @@ public sealed partial class GameSessionState
         // 진짜 XP 차등(보스/일반, K/D 가중)은 별도 balance sprint — 본 turn은 baseline.
         private const int BattleXpGainPerVictory = 50;
 
+        // BattleFactory가 ally unit EntityId를 "ally_{index}_{heroId}"로 만든다(BattleFactory.cs:31 — 접두사는
+        // telemetry/replay에서 ally/enemy 구분 + 인덱스 유일성용). settlement은 roster hero id로 매핑해야 하므로
+        // 그 접두사를 벗겨 원본 hero id를 복원한다. 이게 빠져 있어 finalUnits→hero 매핑이 항상 실패,
+        // 전투 후 HP/EXP가 한 번도 반영되지 않았다(씬·헤드리스 공통). 접두사가 없으면 id를 그대로 반환.
+        private static string ResolveRosterHeroId(string unitId)
+        {
+            if (string.IsNullOrEmpty(unitId) || !unitId.StartsWith("ally_", StringComparison.Ordinal))
+            {
+                return unitId;
+            }
+
+            var parts = unitId.Split('_', 3);
+            return parts.Length == 3 ? parts[2] : unitId;
+        }
+
         private void ApplyHeroBattleAftermath(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory)
         {
             var heroById = _session.Profile.Heroes
@@ -247,7 +262,7 @@ public sealed partial class GameSessionState
             {
                 if (unit.Side != TeamSide.Ally) continue;
                 if (unit.EntityKind != CombatEntityKind.RosterUnit) continue;
-                if (!heroById.TryGetValue(unit.Id, out var hero)) continue;
+                if (!heroById.TryGetValue(ResolveRosterHeroId(unit.Id), out var hero)) continue;
 
                 hero.MaxHp = (int)Math.Max(1, Math.Round(unit.MaxHealth));
                 hero.CurrentHp = (int)Math.Max(0, Math.Round(unit.CurrentHealth));

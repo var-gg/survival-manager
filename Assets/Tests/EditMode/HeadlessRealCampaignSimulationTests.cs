@@ -84,11 +84,12 @@ public sealed class HeadlessRealCampaignSimulationTests
             "전투마다 dossier entry 1건 — WriteDossierEntry 정산 후처리가 모든 전투에 흘렀다.");
         Assert.That(session.Profile.Dossier.All(entry => !entry.NodeId.Contains("debug_smoke")), Is.True,
             "싸운 노드가 전부 authored — 무음 디버그 스모크 강등이 끼지 않았다(감사 #4와 짝).");
-        // NOTE(follow-up): HP/EXP 정산 반영(ApplyHeroBattleAftermath)을 여기서 단언하려 했으나, 이 게이트가
-        // *실제로* 발견한 결함 — 헤드리스 실 sim에서 4승 후에도 영웅 진척(Level/Experience)이 0이다.
-        // finalUnits→hero 매핑(unit.Id vs HeroProgressionRecord.HeroId) 또는 EntityKind 게이트가 헤드리스
-        // 경로에서 어긋나 wave-33-progression이 반영되지 않는 것으로 보인다(기존 테스트로 한 번도 커버 안 됨).
-        // 별도 조사·수정 과제로 분리하고, 이 게이트는 그 결함과 무관한 불변식만 잠근다(dossier 정산은 흘렀음을 위에서 확인).
+        // 승리가 있으므로(위 단언) 영웅 진척에 반영됐다. 이 게이트가 처음 포착했던 P0 결함 — finalUnits.Id가
+        // "ally_{index}_{heroId}" 접두사라 ApplyHeroBattleAftermath 매핑이 항상 실패해 HP/EXP가 한 번도 반영
+        // 안 되던 것 — 을 감사 follow-up에서 수정(ResolveRosterHeroId). 그 회귀를 여기서 end-to-end로 잠근다.
+        // XP 잔여가 레벨로 정확히 환산되면 Experience가 0일 수 있어 Level 또는 Experience 진척으로 본다.
+        Assert.That(session.Profile.HeroProgressions.Any(progression => progression.Level > 1 || progression.Experience > 0), Is.True,
+            "승리가 영웅 진척(EXP/레벨)에 반영 — HP/EXP 0 반영 회귀 차단(ally_ 접두사 매핑 수정, HeroBattleAftermathMappingFastTests와 짝).");
 
         // (4) formation payoff가 헤드리스에서도 채워졌다(감사 #5) — presentation-only라 영구 Empty이던 이격을 닫음.
         Assert.That(session.LastBattleFormationPayoff.HasData, Is.True,
