@@ -103,7 +103,7 @@ public sealed class StatV2AndSandboxTests
     }
 
     [Test]
-    [Ignore("CombatSandbox authoring asset이 main에 m_Script: 0 (null ScriptableObject ref) 상태로 commit되어 있어 OnEnable의 EnsureStarterLibrary가 NRE. Recovery menu + Unity 재시작 + 폴더 통째 삭제 시도해도 EnsureStarterLibrary가 또 broken state로 재생성. cache/Unity bug 의심 — V1 sandbox authority 영역의 별개 task로 분리.")]
+    [Ignore("CombatSandbox authoring asset이 main에 m_Script: 0 (null ScriptableObject ref) 상태로 commit되어 있어 OnEnable의 EnsureStarterLibrary가 NRE. Recovery menu + Unity 재시작 + 폴더 통째 삭제 시도해도 EnsureStarterLibrary가 또 broken state로 재생성. cache/Unity bug 의심 — V1 sandbox authority 영역의 별개 task로 분리. [추적: pindoc analysis-engineering-audit-headless-divergence-fallback-deadcode-2026-06 부록 — sandbox는 exec CreateAsset 패턴으로 fixture 재생성해 복원]")]
     public void CombatSandboxWindow_BindsAndBuildsRunRequest_WithoutPlayMode()
     {
         SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(CombatSandboxWindow_BindsAndBuildsRunRequest_WithoutPlayMode));

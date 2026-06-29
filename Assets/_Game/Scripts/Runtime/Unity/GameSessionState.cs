@@ -1250,10 +1250,10 @@ public sealed partial class GameSessionState
         }
 
         var run = ActiveRun ?? RunStateService.StartRun(IsQuickBattleSmokeActive ? "quick-battle" : GetExpeditionRunId(), CaptureBlueprintState(), IsQuickBattleSmokeActive);
+        var encounterResolver = new EncounterResolutionService(snapshot);
         if (TryBuildBattleContext(snapshot, run, out var battleContext, out _))
         {
-            var resolver = new EncounterResolutionService(snapshot);
-            if (resolver.TryResolveEncounter(battleContext, out context, out error))
+            if (encounterResolver.TryResolveEncounter(battleContext, out context, out error))
             {
                 // ADR-0028 slice 3 — 거스른 세력 적대가 누적되면 적이 경계 상태로 출현(EnemyAlertness 통로).
                 // 정치 충돌이 다음 전장에 닿는 지점. 적 package는 EnemySnapshotHash가 포착(live 결정적).
@@ -1261,6 +1261,17 @@ public sealed partial class GameSessionState
                 ActiveRun = RunStateService.SetBattleContext(run, battleContext);
                 SyncActiveRunRecord();
                 return true;
+            }
+
+            // 무음 강등 차단: authored 카탈로그가 있는데 인카운터 해석이 실패하면(오타·미시드 squad/encounter)
+            // 디버그 4인 스모크로 조용히 바꿔치기하지 않고 실패를 표면화한다(fail-closed). 콘텐츠 validator가
+            // 빌드타임에 이 ref를 막지만, validation이 스킵된 환경에서 깨진 authored 전투가 placeholder로
+            // 둔갑하는 걸 차단한다. 디버그 스모크 fallback은 authored 카탈로그가 아예 없는 부트스트랩에만 허용.
+            if (encounterResolver.HasAuthoredCatalog)
+            {
+                error = string.IsNullOrWhiteSpace(error) ? "Authored encounter resolution failed." : error;
+                UnityEngine.Debug.LogError($"[Encounter] authored 인카운터 해석 실패 — 디버그 스모크 강등 거부: {error}");
+                return false;
             }
         }
 
@@ -1272,7 +1283,7 @@ public sealed partial class GameSessionState
             return false;
         }
 
-        var debugContext = new EncounterResolutionService(snapshot).BuildDebugSmokeContext(run, CurrentExpeditionNodeIndex);
+        var debugContext = encounterResolver.BuildDebugSmokeContext(run, CurrentExpeditionNodeIndex);
         ActiveRun = RunStateService.SetBattleContext(run, debugContext);
         SyncActiveRunRecord();
         context = new ResolvedEncounterContext(debugContext, debugPlan.EnemyPosture, buildResult.Enemies);

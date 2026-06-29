@@ -479,7 +479,7 @@ public sealed class BattleSimulationSpatialTests
     }
 
     [Test]
-    [Ignore("micro-knockback이 KiteBackward와 합쳐져 closure 자체가 0에 수렴 — 새 design에서 ranger 거리 회복 검증은 별도 setup으로 재작성 필요")]
+    [Ignore("micro-knockback이 KiteBackward와 합쳐져 closure 자체가 0에 수렴 — 새 design에서 ranger 거리 회복 검증은 별도 setup으로 재작성 필요. [추적: pindoc analysis-engineering-audit-headless-divergence-fallback-deadcode-2026-06 부록]")]
     public void Ranged_RecoversDistance_WhenPressed()
     {
         var rangerMobility = new MobilityActionProfile(MobilityStyle.Roll, MobilityPurpose.MaintainRange, 1.6f, 2.5f, 0f, 0.2f, 0f, 1.5f, 0.5f);

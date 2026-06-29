@@ -83,6 +83,49 @@ public static class EditorFreeCombatContentFixture
         return new FakeCombatContentLookup(snapshot: snapshot, firstPlayableSlice: firstPlayableSlice);
     }
 
+    /// <summary>
+    /// authored 카탈로그(chapters/sites/encounters/enemySquads 모두 non-empty → HasAuthoredCatalog=true)이되
+    /// encounter가 가리키는 squad("enemy_squad_missing")가 enemySquads에 없는 의도적 broken fixture.
+    /// 런타임 TryResolveEncounter가 실패하는 상황을 만들어 "무음 디버그 스모크 강등 거부"(fail-closed) 가드를 검증한다.
+    /// (validator는 이 dangling ref를 빌드타임에 막으므로, 이 fixture는 validation이 스킵된 환경의 런타임 방어선만 노린다.)
+    /// </summary>
+    public static FakeCombatContentLookup CreateAuthoredLookupWithDanglingEncounterSquad()
+    {
+        var firstPlayableSlice = new FirstPlayableSliceDefinition();
+        var chapter = new CampaignChapterTemplate(
+            "chapter_alpha",
+            "chapter.alpha",
+            0,
+            new[] { "site_alpha_gate" },
+            true);
+        var site = CreateSite("site_alpha_gate", "chapter_alpha", 0);
+        var snapshot = CreateSnapshot(
+            firstPlayableSlice: firstPlayableSlice,
+            campaignChapters: new Dictionary<string, CampaignChapterTemplate>(StringComparer.Ordinal)
+            {
+                [chapter.Id] = chapter,
+            },
+            expeditionSites: new Dictionary<string, ExpeditionSiteTemplate>(StringComparer.Ordinal)
+            {
+                [site.Id] = site,
+            },
+            encounters: BuildEncounterTemplates("enemy_squad_missing", site),
+            enemySquads: new Dictionary<string, EnemySquadTemplate>(StringComparer.Ordinal)
+            {
+                ["enemy_squad_debug"] = new(
+                    "enemy_squad_debug",
+                    "Debug Squad",
+                    "faction_debug",
+                    TeamPostureType.StandardAdvance,
+                    1,
+                    1,
+                    Array.Empty<string>(),
+                    Array.Empty<EnemySquadMemberTemplate>()),
+            },
+            rewardSources: CreateRewardSources());
+        return new FakeCombatContentLookup(snapshot: snapshot, firstPlayableSlice: firstPlayableSlice);
+    }
+
     public static CombatContentSnapshot CreateSnapshot(
         FirstPlayableSliceDefinition? firstPlayableSlice = null,
         IReadOnlyDictionary<string, PassiveNodeTemplate>? passiveNodes = null,
@@ -222,6 +265,9 @@ public static class EditorFreeCombatContentFixture
     }
 
     private static IReadOnlyDictionary<string, EncounterTemplate> BuildEncounterTemplates(params ExpeditionSiteTemplate[] sites)
+        => BuildEncounterTemplates("enemy_squad_debug", sites);
+
+    private static IReadOnlyDictionary<string, EncounterTemplate> BuildEncounterTemplates(string enemySquadId, params ExpeditionSiteTemplate[] sites)
     {
         var templates = new Dictionary<string, EncounterTemplate>(StringComparer.Ordinal);
         foreach (var site in sites)
@@ -246,7 +292,7 @@ public static class EditorFreeCombatContentFixture
                     encounterId,
                     encounterId,
                     site.Id,
-                    "enemy_squad_debug",
+                    enemySquadId,
                     string.Empty,
                     rewardSourceId,
                     site.FactionId,

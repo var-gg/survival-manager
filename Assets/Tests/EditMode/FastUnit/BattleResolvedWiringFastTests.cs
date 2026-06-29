@@ -13,8 +13,14 @@ namespace SM.Tests.EditMode;
 /// <summary>
 /// 발화 세션 통합 — BattleResolved (콜백 게이트 moment). "발화는 세션, 표시+continuation은 씬":
 /// 전투 해소 moment를 씬 BattleScreenController(Continue)가 아니라 **세션 GameSessionState.MarkBattleResolved**가 발화한다.
-/// 씬 FinishBattle과 헤드리스 sim(TryResolveSelectedBattleNodeViaSimulation)이 모두 MarkBattleResolved를 경유하므로
-/// 같은 한 소스에서 BattleResolved를 받는다(연결). 씬 표시는 bridge.PresentPending(GoToReward) — PlayMode 책임.
+///
+/// 검증 범위(정직하게): 이 테스트는 **MarkBattleResolved 자체의 발화 계약**만 직접 검증한다 — 즉
+/// MarkBattleResolved를 호출하면 SiteIs 컨텍스트로 BattleResolved가 자동 발화되는지. 씬 FinishBattle과
+/// 헤드리스 sim(TryResolveSelectedBattleNodeViaSimulation)이 *그 단일 소스를 경유한다*는 것은 두 호출부의
+/// 코드 불변식이다(씬: BattleScreenController.FinishBattle → MarkBattleResolved, 헤드리스:
+/// GameSessionState.BattleResolution.cs TryResolveSelectedBattleNodeViaSimulation → MarkBattleResolved).
+/// 이 테스트가 FinishBattle 본체나 sim 본체를 직접 타지는 않는다(씬 FinishBattle은 MonoBehaviour라 PlayMode 책임).
+/// 씬 표시는 bridge.PresentPending(GoToReward) — PlayMode 책임.
 ///
 /// BindProfile/BeginNewExpedition으로 site_alpha_gate 컨텍스트를 세운 뒤 MarkBattleResolved 호출 →
 /// 프로덕션이 BattleResolved를 **자동 발화**(수동 Advance 없이)하고 SiteIs 게이트가 정확히 충족됨을 단언.
