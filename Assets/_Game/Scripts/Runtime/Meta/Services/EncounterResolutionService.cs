@@ -126,7 +126,7 @@ public sealed class EncounterResolutionService
         var clampedIndex = Math.Max(0, Math.Min(nodeIndex, Math.Max(0, encounterIds.Count - 1)));
         var encounterId = encounterIds[clampedIndex];
         var encounter = _content.Encounters![encounterId];
-        var contextHash = ComputeContextHash(run.RunId, chapterId, siteId, clampedIndex, encounterId, encounter.RewardSourceId);
+        var contextHash = ComputeContextHash(chapterId, siteId, clampedIndex, encounterId, encounter.RewardSourceId);
 
         return new BattleContextState(
             chapterId,
@@ -199,7 +199,7 @@ public sealed class EncounterResolutionService
 
     public BattleContextState BuildDebugSmokeContext(ActiveRunState run, int nodeIndex)
     {
-        var contextHash = ComputeContextHash(run.RunId, "debug", "quick_smoke", nodeIndex, "debug_smoke_observer", "reward_source_debug_smoke");
+        var contextHash = ComputeContextHash("debug", "quick_smoke", nodeIndex, "debug_smoke_observer", "reward_source_debug_smoke");
         return new BattleContextState(
             "debug",
             "quick_smoke",
@@ -396,8 +396,10 @@ public sealed class EncounterResolutionService
         return results;
     }
 
+    // BattleSeed 결정성: context hash는 run 인스턴스(per-run GUID)를 섞지 않고 콘텐츠 좌표로만 구성한다.
+    // 같은 site/node/encounter = 같은 hash = 같은 seed → fresh run마다 승패가 변하지 않는다.
+    // (AtlasContextHasher.BuildBattleContextHash와 동일 원칙. run 식별자는 telemetry/persistence에만 쓴다.)
     private static string ComputeContextHash(
-        string runId,
         string chapterId,
         string siteId,
         int nodeIndex,
@@ -405,7 +407,7 @@ public sealed class EncounterResolutionService
         string rewardSourceId)
     {
         using var sha = SHA256.Create();
-        var input = $"{runId}|{chapterId}|{siteId}|{nodeIndex}|{encounterId}|{rewardSourceId}";
+        var input = $"{chapterId}|{siteId}|{nodeIndex}|{encounterId}|{rewardSourceId}";
         var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
         var builder = new StringBuilder(bytes.Length * 2);
         foreach (var value in bytes)

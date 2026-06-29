@@ -149,9 +149,9 @@ public sealed class AtlasSigilGrayboxTests
         Assert.That(AtlasContextHasher.SortedSigilIds(new[] { b, a }), Is.EqualTo(new[] { "sigil_a", "sigil_b" }));
 
         var pathHash = AtlasContextHasher.BuildStageCandidatePathHash(new[] { "hex_a", "hex_b" });
-        var battle1 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", pathHash, hash1, "squad");
-        var battle2 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", pathHash, hash2, "squad");
-        var battle3 = AtlasContextHasher.BuildBattleContextHash("run", "chapter", "site", 2, "encounter", pathHash, hash2, "other_squad");
+        var battle1 = AtlasContextHasher.BuildBattleContextHash("chapter", "site", 2, "encounter", pathHash, hash1, "squad");
+        var battle2 = AtlasContextHasher.BuildBattleContextHash("chapter", "site", 2, "encounter", pathHash, hash2, "squad");
+        var battle3 = AtlasContextHasher.BuildBattleContextHash("chapter", "site", 2, "encounter", pathHash, hash2, "other_squad");
         Assert.That(battle1, Is.EqualTo(battle2));
         Assert.That(battle1, Is.Not.EqualTo(battle3));
     }

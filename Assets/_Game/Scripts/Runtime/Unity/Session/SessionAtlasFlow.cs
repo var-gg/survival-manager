@@ -174,7 +174,6 @@ public sealed partial class GameSessionState
             var stageCandidatePathHash = AtlasContextHasher.BuildStageCandidatePathHash(stageCandidatePath);
             var nodeOverlayHash = AtlasContextHasher.BuildNodeOverlayHash(region.RegionId, node, state.Identity.CycleSalt, stack);
             var battleContextHash = AtlasContextHasher.BuildBattleContextHash(
-                state.Identity.RunId,
                 state.Identity.ChapterId,
                 state.Identity.SiteId,
                 node.SiteNodeIndex,

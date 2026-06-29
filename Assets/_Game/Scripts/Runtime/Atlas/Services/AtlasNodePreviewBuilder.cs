@@ -14,7 +14,6 @@ public sealed class AtlasNodePreviewBuilder
         AtlasRegionNode node,
         AtlasNodeModifierStack stack,
         string stageCandidatePathHash,
-        string runId,
         string chapterId,
         string siteId,
         string encounterId,
@@ -23,7 +22,6 @@ public sealed class AtlasNodePreviewBuilder
     {
         var nodeOverlayHash = AtlasContextHasher.BuildNodeOverlayHash(region.RegionId, node, cycleSalt, stack);
         var battleContextHash = AtlasContextHasher.BuildBattleContextHash(
-            runId,
             chapterId,
             siteId,
             node.SiteNodeIndex >= 0 ? node.SiteNodeIndex : 0,

@@ -80,7 +80,6 @@ public sealed class AtlasScreenPresenter
             sessionResolution.SelectedNode,
             sessionResolution.SelectedStack,
             sessionResolution.StageCandidatePathHash,
-            sessionResolution.State.Identity.RunId,
             sessionResolution.State.Identity.ChapterId,
             sessionResolution.State.Identity.SiteId,
             sessionResolution.State.Identity.EncounterId,

@@ -117,8 +117,11 @@ public static class AtlasContextHasher
         return ComputeHash(builder.ToString());
     }
 
+    // BattleSeed 결정성: battle context hash는 run 인스턴스(per-run GUID)가 아니라
+    // 콘텐츠 좌표(chapter/site/node/encounter) + atlas 상태(path/overlay) + 분대(squad)로만 구성한다.
+    // 같은 콘텐츠·분대 = 같은 hash = 같은 seed → fresh run마다 승패가 변하지 않고 replay·회귀가 결정적.
+    // (run 식별자는 telemetry/persistence 용도로 ActiveRun에 그대로 남되 seed에는 섞지 않는다.)
     public static string BuildBattleContextHash(
-        string runId,
         string chapterId,
         string siteId,
         int nodeIndex,
@@ -130,7 +133,6 @@ public static class AtlasContextHasher
         var input = string.Join(
             "|",
             "atlas-battle-context",
-            runId,
             chapterId,
             siteId,
             nodeIndex.ToString(System.Globalization.CultureInfo.InvariantCulture),
