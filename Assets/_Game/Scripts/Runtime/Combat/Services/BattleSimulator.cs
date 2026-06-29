@@ -226,11 +226,14 @@ public sealed class BattleSimulator
         return CurrentStep;
     }
 
-    public BattleResult RunToEnd()
+    // onStep: 매 스텝을 관전자에게 흘려보낸다(헤드리스가 BattleHighlightLedger로 formation payoff를 집계하는 통로).
+    // 순수 관찰 — 반환 BattleResult는 onStep 유무와 무관하게 동일하다.
+    public BattleResult RunToEnd(Action<BattleSimulationStep>? onStep = null)
     {
         while (!IsFinished)
         {
-            Step();
+            var step = Step();
+            onStep?.Invoke(step);
         }
 
         return new BattleResult(

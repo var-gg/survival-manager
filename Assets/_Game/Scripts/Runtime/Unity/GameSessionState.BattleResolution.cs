@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Meta.Model;
@@ -70,10 +71,14 @@ public sealed partial class GameSessionState
             return false;
         }
 
-        result = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
+        // formation payoff를 헤드리스에서도 채운다 — 씬은 타임라인 재생 중 ledger.Record를 누적하지만,
+        // 헤드리스는 sim 스텝 스트림을 onStep 콜백으로 같은 ledger에 흘려 1회 집계한다(씬과 동일 소스, 동일 집계).
+        // 결과(BattleResult)는 콜백 유무와 무관하게 동일하다(순수 관찰). 이로써 보상 화면 payoff readout이
+        // 헤드리스 게이트에서도 관측 가능해져 "presentation에만 살아 헤드리스 영구 Empty"이던 이격을 닫는다.
+        var highlightLedger = new BattleHighlightLedger();
+        result = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps, highlightLedger.Record);
 
-        // 매치 감사 + 진행(HP/EXP/dossier) 정산 — 씬 경로(BattleScreenController.cs:1172-1197)와 동일하되
-        // 재생 원장(formationPayoff)은 헤드리스라 없으므로 생략(보상 화면 표시용 artifact, 게임플레이 truth 아님).
+        // 매치 감사 + 진행(HP/EXP/dossier) 정산 — 씬 경로(BattleScreenController.FinishBattle)와 동일.
         var replay = ReplayAssembler.Assemble(
             allySnapshot,
             encounter.Enemies,
@@ -82,7 +87,11 @@ public sealed partial class GameSessionState
             startedAtUtc,
             DateTime.UtcNow.ToString("O"));
         RecordBattleAudit(replay);
-        MarkBattleResolved(result.Winner == TeamSide.Ally, result.StepCount, result.Events.Count, result.FinalUnits);
+        // out 파라미터(result)는 람다에서 못 쓰므로(CS1628) FinalUnits를 지역 변수로 캡쳐 후 이름 해석에 사용.
+        var finalUnits = result.FinalUnits;
+        var formationPayoff = highlightLedger.BuildFormationPayoff(
+            actorId => finalUnits.FirstOrDefault(unit => string.Equals(unit.Id, actorId, StringComparison.Ordinal))?.Name ?? actorId);
+        MarkBattleResolved(result.Winner == TeamSide.Ally, result.StepCount, result.Events.Count, finalUnits, formationPayoff);
         return true;
     }
 }

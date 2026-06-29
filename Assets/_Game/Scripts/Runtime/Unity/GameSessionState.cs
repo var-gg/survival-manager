@@ -1266,8 +1266,12 @@ public sealed partial class GameSessionState
             // 무음 강등 차단: authored 카탈로그가 있는데 인카운터 해석이 실패하면(오타·미시드 squad/encounter)
             // 디버그 4인 스모크로 조용히 바꿔치기하지 않고 실패를 표면화한다(fail-closed). 콘텐츠 validator가
             // 빌드타임에 이 ref를 막지만, validation이 스킵된 환경에서 깨진 authored 전투가 placeholder로
-            // 둔갑하는 걸 차단한다. 디버그 스모크 fallback은 authored 카탈로그가 아예 없는 부트스트랩에만 허용.
-            if (encounterResolver.HasAuthoredCatalog)
+            // 둔갑하는 걸 차단한다.
+            // 단 quick-battle smoke 레인은 authored 콘텐츠가 로드돼 있어도 debug_smoke_observer 컨텍스트를
+            // *의도적으로* 쓰므로(밸런스 smoke·Town 통합 smoke) fail-closed 대상이 아니다 — 이 레인에서는
+            // 아래 BuildQuickBattleEncounterPlan 디버그 스모크가 정상 경로다. authored 부트스트랩 부재
+            // (!HasAuthoredCatalog)도 동일하게 디버그 스모크 허용.
+            if (encounterResolver.HasAuthoredCatalog && !IsQuickBattleSmokeActive)
             {
                 error = string.IsNullOrWhiteSpace(error) ? "Authored encounter resolution failed." : error;
                 UnityEngine.Debug.LogError($"[Encounter] authored 인카운터 해석 실패 — 디버그 스모크 강등 거부: {error}");
