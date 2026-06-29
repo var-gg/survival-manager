@@ -365,9 +365,21 @@ public sealed partial class GameSessionState
 
             _session.EnsureCampaignSelection();
             _session.EnsureActiveRunNodeState(selected);
-            _session.MarkNodeResolved(selected);
-            _session.LastExpeditionEffectMessage = _session.ApplyExpeditionNodeEffect(selected);
-            _session.UpdateCampaignProgressForResolvedNode(selected);
+
+            // 멱등 가드: 헤드리스 sim 경로(TryResolveSelectedBattleNodeViaSimulation → MarkBattleResolved)는
+            // 전투 노드 victory 시 이미 노드 정산(MarkNodeResolved + ApplyExpeditionNodeEffect +
+            // UpdateCampaignProgress)을 마친 뒤 곧바로 이 메서드를 호출한다. 이미 정산된 노드를 여기서 다시
+            // 정산하면 Gold/Echo 효과가 이중 적용되어 헤드리스 정산이 씬(MarkBattleResolved만 경유)과 갈라진다.
+            // 이미 정산된 노드면 효과 재적용 없이 커서만 전진해 "헤드리스=씬, 노드당 1회" 계약을 보장한다.
+            var alreadyResolved = !string.IsNullOrWhiteSpace(selected.Id)
+                && _session._resolvedExpeditionNodeIds.Contains(selected.Id);
+            if (!alreadyResolved)
+            {
+                _session.MarkNodeResolved(selected);
+                _session.LastExpeditionEffectMessage = _session.ApplyExpeditionNodeEffect(selected);
+                _session.UpdateCampaignProgressForResolvedNode(selected);
+            }
+
             _session.CurrentExpeditionNodeIndex = _session.ResolveNextActiveNodeIndex(selected.Index);
             if (_session.ActiveRun != null)
             {
