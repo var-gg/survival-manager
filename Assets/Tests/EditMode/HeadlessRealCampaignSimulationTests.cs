@@ -73,9 +73,11 @@ public sealed class HeadlessRealCampaignSimulationTests
             "모든 전투 노드가 실제 BattleSimulator tick을 돌렸다.");
 
         // (2) winnability 불변식 — 기본 분대는 실 전투를 최소 한 번은 이긴다('아무 것도 못 이김' 회귀 차단).
-        //     NOTE: 시드는 결정적이지만(감사 #2 · SeedDeterminismFastTests) 전투 *결과*는 런 간 변동한다 —
-        //     비-시드 entropy(기본 분대 archetype 시딩 또는 sim 컬렉션 순회 순서)가 남아 정확한 W/L 수는 잠그지 않는다.
-        //     잔여 outcome 결정성은 별도 follow-up. 이 게이트는 그 변동에 무관한 불변식만 단언한다.
+        //     전투 결과는 이제 프로세스 간 결정적이다: 한때 BuildStableSeed가 HashCode.Combine(프로세스마다
+        //     Marvin 시드 randomize)으로 데모 아이템 어픽스를 굴려 별개 프로세스에서 분대 스탯·W/L이 갈렸으나
+        //     (신규발견 (a)), FNV 시드로 교체해 결정화했다 — BuildStableSeedDeterminismFastTests가 그 시드를,
+        //     HeadlessCampaignDeterminismTests가 런간 W/L 동일성을 잠근다. 이 테스트는 "실제로 싸웠는가"가
+        //     책임이라 정확한 W/L 수(밸런스 의존) 대신 robust 불변식만 단언한다.
         Assert.That(outcomes.Count(outcome => outcome.Victory), Is.GreaterThan(0),
             "기본 분대가 실 전투를 최소 한 번 승리.");
 

@@ -389,9 +389,24 @@ public sealed partial class GameSessionState
         return hero != null;
     }
 
-    private static int BuildStableSeed(string value, int salt)
+    // 프로세스 안정 시드. HashCode.Combine은 .NET/Mono에서 프로세스마다 Marvin 시드가 randomize되어
+    // 같은 입력도 프로세스마다 다른 값을 낸다 — 이름과 달리 "Stable"이 아니다. 데모/영입 아이템 어픽스 선택
+    // (SessionInventoryItemBuilder.BuildGeneratedAffixIds의 new Random(seed))과 영입 풀 생성이 이 시드를 쓰므로,
+    // 프로세스마다 분대 스탯이 달라져 같은 시드·분대인데도 전투 결과가 갈렸다(헤드리스 캠페인 런간 W/L 변동).
+    // 코드베이스 공용 FNV 패턴(StableHash: hash*31+ch)으로 유도해 프로세스 간 결정성을 복원한다.
+    internal static int BuildStableSeed(string value, int salt)
     {
-        return Math.Abs(HashCode.Combine(value, salt));
+        unchecked
+        {
+            var hash = 17;
+            foreach (var ch in value ?? string.Empty)
+            {
+                hash = (hash * 31) + ch;
+            }
+
+            hash = (hash * 31) + salt;
+            return hash & int.MaxValue;
+        }
     }
 
     public void ClearRuntimeTelemetry() => _profileSync.ClearRuntimeTelemetry();
