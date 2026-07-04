@@ -77,17 +77,24 @@ public sealed class WarrantSeparabilitySimTests
             ("neutral", TeamPostureType.StandardAdvance),
             ("aggressive", TeamPostureType.AllInBackline),
         };
-        var enemyKinds = new (string Name, System.Func<IReadOnlyList<BattleUnitLoadout>> F)[]
+        // 적 posture 주의: 기본 StandardAdvance에서는 RoleBrain이 적 다이브 진입을 posture 게이트로 막아
+        // 후열 위협 자체가 발생하지 않는다(전 posture 생존 100% 무풍 셀 — 스크린/protect 분리 측정 불가.
+        // BattleFormationConsequenceTests 배치 골든이 적을 CollapseWeakSide로 두는 이유와 동일).
+        // dive 셀이 실게임 elite/boss(비대칭 포즈)의 후열 위협 대역을 잰다.
+        var enemyKinds = new (string Name, System.Func<IReadOnlyList<BattleUnitLoadout>> F, TeamPostureType EnemyPosture)[]
         {
-            ("mixed", () => BuildEnemies(1f, 1f, 1f)),
-            ("melee", BuildMeleeEnemies),
+            ("mixed", () => BuildEnemies(1f, 1f, 1f), TeamPostureType.StandardAdvance),
+            ("melee", BuildMeleeEnemies, TeamPostureType.StandardAdvance),
+            ("mixed_hard", () => BuildEnemies(1.2f, 1.7f, 1.3f), TeamPostureType.StandardAdvance),
+            ("melee_dive", BuildMeleeEnemies, TeamPostureType.CollapseWeakSide),
+            ("hard_dive", () => BuildEnemies(1.2f, 1.7f, 1.3f), TeamPostureType.CollapseWeakSide),
         };
         var rows = new List<ProtectCell>();
         foreach (var ek in enemyKinds)
         {
             foreach (var p in postures)
             {
-                rows.Add(RunProtect($"{ek.Name}/{p.Name}", p.P, ek.F));
+                rows.Add(RunProtect($"{ek.Name}/{p.Name}", p.P, ek.F, ek.EnemyPosture));
             }
         }
 
@@ -239,19 +246,29 @@ public sealed class WarrantSeparabilitySimTests
         public float ScreenMitigation;
     }
 
-    private static ProtectCell RunProtect(string label, TeamPostureType posture, System.Func<IReadOnlyList<BattleUnitLoadout>> enemyFactory)
+    private static ProtectCell RunProtect(
+        string label,
+        TeamPostureType posture,
+        System.Func<IReadOnlyList<BattleUnitLoadout>> enemyFactory,
+        TeamPostureType enemyPosture = TeamPostureType.StandardAdvance)
     {
         var cell = new ProtectCell { Posture = label };
         for (var seed = 1; seed <= SeedCount; seed++)
         {
-            var state = CombatTestFactory.CreateBattleState(BuildProtectSquad(), enemyFactory(), allyPosture: posture, seed: seed);
+            var state = CombatTestFactory.CreateBattleState(BuildProtectSquad(), enemyFactory(), allyPosture: posture, enemyPosture: enemyPosture, seed: seed);
             var battle = BattleResolver.Run(state, MaxTicks);
 
-            var protectee = battle.FinalUnits.FirstOrDefault(u => u.Id == "protectee");
+            // FinalUnits.Id는 BattleFactory 포맷 "ally_{index}_{loadoutId}" — 원본 id("protectee") 직접 비교는
+            // 영원히 미스라 생존율이 항상 0%로 찍혔다(P0 HP/EXP ally_ 접두사 결함과 동일 계열의 하네스 버그.
+            // eb2e4557의 "전 posture 생존 0%" 관측은 이 측정 허구였다). 접미사 매칭으로 교정.
+            var protectee = battle.FinalUnits.FirstOrDefault(u => u.Id.EndsWith("_protectee", System.StringComparison.Ordinal));
             var protecteeAlive = protectee != null && protectee.IsAlive;
             if (protecteeAlive) cell.ProtecteeSurvived++;
 
-            cell.SquadDeaths.Add(battle.FinalUnits.Count(u => u.Side == TeamSide.Ally && u.Id != "protectee" && !u.IsAlive));
+            cell.SquadDeaths.Add(battle.FinalUnits.Count(u =>
+                u.Side == TeamSide.Ally
+                && !u.Id.EndsWith("_protectee", System.StringComparison.Ordinal)
+                && !u.IsAlive));
 
             var tel = state.ActivityTelemetry;
             cell.ScreenAbsorb += tel.ScreenAbsorbCount;

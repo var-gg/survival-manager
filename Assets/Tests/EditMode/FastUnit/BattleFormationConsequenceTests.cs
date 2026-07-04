@@ -49,6 +49,59 @@ public sealed class BattleFormationConsequenceTests
     }
 
     [Test]
+    public void InterposedGuard_KeepsScreen_EvenWhenAdvancedBeyondRadius()
+    {
+        // 가드는 carry에서 4.02m — 가드 반경(3m) 밖으로 "전진 교전"한 배치. 종전 radius 규칙만으론
+        // 스크린 영구 붕괴였던 동적 결손(eb2e4557: 전 posture 스크린 발동 0)의 회귀 잠금.
+        var state = CreateInterposeScenario(out var attacker, out var carry, attackerPosition: new CombatVector2(2f, 0f));
+
+        Assert.That(BattleFormationConsequence.IsScreenedBackline(state, carry), Is.False,
+            "공격자-무관(근접 성분만) 판정은 보수적으로 노출로 본다 — 팀 지각용 근사 계약");
+        Assert.That(BattleFormationConsequence.IsScreenedBacklineFrom(state, attacker, carry), Is.True,
+            "가드가 공격자→후열 사선의 사이 대역(interpose)에 서 있으면 전진 교전 중에도 스크린이 유지된다");
+
+        var hit = HitResolutionService.ResolveBasicAttack(state, attacker, carry);
+        Assert.That(hit.Note, Does.Contain("screened"), "interpose 스크린도 피해 경감으로 이어진다");
+        Assert.That(state.ActivityTelemetry.ScreenAbsorbCount, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void InterposedGuard_DoesNotScreen_FlankAxis()
+    {
+        // 같은 배치에서 공격자만 측면으로 — 가드가 그 축의 "사이"에 없으니 스크린이 안 선다(우회·다이브 상성 보존).
+        var state = CreateInterposeScenario(out var attacker, out var carry, attackerPosition: new CombatVector2(-4f, 4f));
+
+        Assert.That(BattleFormationConsequence.IsScreenedBacklineFrom(state, attacker, carry), Is.False,
+            "측면으로 도는 공격 축엔 interpose가 성립하지 않는다");
+
+        var hit = HitResolutionService.ResolveBasicAttack(state, attacker, carry);
+        Assert.That(hit.Note, Does.Not.Contain("screened"));
+        Assert.That(state.ActivityTelemetry.ScreenAbsorbCount, Is.Zero);
+    }
+
+    private static BattleState CreateInterposeScenario(
+        out UnitSnapshot attacker,
+        out UnitSnapshot carry,
+        CombatVector2 attackerPosition)
+    {
+        var state = BattleFactory.Create(
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("guard", behavior: CleanFrontline),
+                CombatTestFactory.CreateLoopAUnit("carry", classId: "ranger", behavior: CleanBackline),
+            },
+            new[] { CombatTestFactory.CreateLoopAUnit("attacker", physPower: 8f) },
+            seed: 11);
+        carry = state.Allies.Single(unit => unit.Definition.Id == "carry");
+        var guard = state.Allies.Single(unit => unit.Definition.Id == "guard");
+        attacker = state.Enemies.Single();
+        carry.SetPosition(new CombatVector2(-4f, 0f));
+        guard.SetPosition(new CombatVector2(0f, 0.4f)); // carry에서 4.02m — 반경 밖, 그러나 (2,0) 공격 축의 사이
+        attacker.SetPosition(attackerPosition);
+        return state;
+    }
+
+    [Test]
     public void RearAttack_DealsMoreDamage_ThanFrontalAttack()
     {
         var rearState = CreateFlankScenario(out var rearAttacker, out var rearDefender, attackerPosition: new CombatVector2(2f, 0f));

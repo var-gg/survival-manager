@@ -71,14 +71,14 @@ public static class TargetScoringService
         // 선택 결과 불변, 액터당 1회 dedup은 telemetry 소유.
         if (selected != null
             && rule.Domain == TargetDomain.EnemyUnit
-            && !BattleFormationConsequence.IsScreenedBackline(state, selected)
+            && !BattleFormationConsequence.IsScreenedBacklineFrom(state, actor, selected)
             && candidates.Any(candidate => candidate.Side != actor.Side
-                                           && BattleFormationConsequence.IsScreenedBackline(state, candidate)))
+                                           && BattleFormationConsequence.IsScreenedBacklineFrom(state, actor, candidate)))
         {
             var unscreened = SelectCore(state, actor, rule, candidates, currentTarget, context, includeScreenPenalty: false);
             if (unscreened != null
                 && unscreened.Id != selected.Id
-                && BattleFormationConsequence.IsScreenedBackline(state, unscreened))
+                && BattleFormationConsequence.IsScreenedBacklineFrom(state, actor, unscreened))
             {
                 state.ActivityTelemetry.RecordScreenDeterrence(actor.Id.Value);
             }
@@ -107,9 +107,13 @@ public static class TargetScoringService
                 .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault() ?? ResolveFallback(state, actor, CloneRuleWithFallback(rule, TargetFallbackPolicy.NearestReachableEnemy), candidates, context, includeScreenPenalty),
-            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
-            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
-            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            // LowestHp/Ehp 계열: screened 후열은 정렬 후순위(선차단) — 이 셀렉터들의 1순위 키(HP)가 tie 없이
+            // 갈리므로 bias(2순위, 미터 등가 페널티)로는 스크린이 선택을 영원히 못 뒤집는다. "최저 HP 사냥꾼도
+            // 벽 뒤의 표적은 못 노린다"를 정렬 앞단에 둬야 스크린이 실제 차단으로 작동한다(eb2e4557 동적 0의 2결함).
+            // Dive는 RoleBrain 오버라이드 경로라 이 정렬을 안 탄다 — 스크린을 뚫는 건 다이버의 일(상성 보존).
+            TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => ScreenedSortKey(state, actor, target, includeScreenPenalty)).ThenBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => ScreenedSortKey(state, actor, target, includeScreenPenalty)).ThenBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
+            TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => ScreenedSortKey(state, actor, target, includeScreenPenalty)).ThenBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
             TargetSelector.MarkedEnemy => candidates.FirstOrDefault(target => target.HasStatus("marked")) ?? ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty),
             TargetSelector.LargestEnemyCluster => candidates
                 .OrderByDescending(target => CountClusterTargets(candidates, target.Position, Math.Max(0.1f, rule.ClusterRadius)))
@@ -118,7 +122,7 @@ public static class TargetScoringService
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
             TargetSelector.BacklineExposedEnemy => candidates
-                .Where(target => IsBacklineExposedEnemy(state, target))
+                .Where(target => IsBacklineExposedEnemy(state, actor, target))
                 .OrderBy(target => MovementResolver.ComputeEdgeDistance(actor, target) + ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault() ?? ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty),
@@ -286,7 +290,7 @@ public static class TargetScoringService
             return false;
         }
 
-        if (rule.Filters.HasFlag(TargetFilterFlags.RequireBacklineExposed) && !IsBacklineExposedEnemy(state, target))
+        if (rule.Filters.HasFlag(TargetFilterFlags.RequireBacklineExposed) && !IsBacklineExposedEnemy(state, actor, target))
         {
             return false;
         }
@@ -325,7 +329,8 @@ public static class TargetScoringService
                 .FirstOrDefault(),
             TargetFallbackPolicy.LowestCurrentHpEnemy => candidates
                 .Where(target => target.Side != actor.Side)
-                .OrderBy(target => target.CurrentHealth)
+                .OrderBy(target => ScreenedSortKey(state, actor, target, includeScreenPenalty))
+                .ThenBy(target => target.CurrentHealth)
                 .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
                 .ThenBy(target => target.Id.Value, StringComparer.Ordinal)
                 .FirstOrDefault(),
@@ -355,7 +360,7 @@ public static class TargetScoringService
         // P0 차단: 스크린이 멀쩡한 후열은 일반 타게팅에서 덜 매력적이다(거리 미터 등가 페널티).
         // Dive 의도는 RoleBrain 경로로 이 페널티를 거치지 않는다 — 스크린을 뚫는 건 다이버의 일.
         // includeScreenPenalty=false는 차단(우회 유도) 계측의 counterfactual 경로 전용.
-        var screenPenalty = includeScreenPenalty && BattleFormationConsequence.IsScreenedBackline(state, target)
+        var screenPenalty = includeScreenPenalty && BattleFormationConsequence.IsScreenedBacklineFrom(state, actor, target)
             ? BattleFormationConsequence.ScreenedTargetScorePenalty
             : 0f;
         // Phase 2 FocusMark: 팀 블랙보드가 지목한 표적은 약간 더 매력적(미터 등가 보너스) — 선호일 뿐
@@ -401,9 +406,17 @@ public static class TargetScoringService
         return candidates.Count(target => target.Position.DistanceTo(center) <= radius);
     }
 
-    private static bool IsBacklineExposedEnemy(BattleState state, UnitSnapshot target)
+    // LowestHp/Ehp 계열의 선차단 정렬 키 — screened 후열(1)은 unscreened 후보(0)가 남아있는 한 뽑히지 않는다.
+    // includeScreenPenalty=false(차단 계측 counterfactual)에서는 0으로 무력화되어 deterrence 계측이 그대로 작동.
+    private static int ScreenedSortKey(BattleState state, UnitSnapshot actor, UnitSnapshot target, bool includeScreenPenalty)
+    {
+        return includeScreenPenalty && BattleFormationConsequence.IsScreenedBacklineFrom(state, actor, target) ? 1 : 0;
+    }
+
+    private static bool IsBacklineExposedEnemy(BattleState state, UnitSnapshot actor, UnitSnapshot target)
     {
         // 노출 술어의 단일 진실은 BattleFormationConsequence — 타게팅과 피해 경감이 같은 판정을 공유한다.
-        return BattleFormationConsequence.IsBacklineExposed(state, target);
+        // 공격자-상대적(interpose 포함): 이 actor의 공격 축에 가드가 끼어 있으면 노출로 치지 않는다.
+        return BattleFormationConsequence.IsBacklineExposedFrom(state, actor, target);
     }
 }
