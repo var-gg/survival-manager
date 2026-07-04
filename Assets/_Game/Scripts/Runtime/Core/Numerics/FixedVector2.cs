@@ -75,7 +75,17 @@ namespace SM.Core.Numerics
 
         public bool Equals(FixedVector2 other) => X == other.X && Y == other.Y;
         public override bool Equals(object? obj) => obj is FixedVector2 other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(X.Raw, Y.Raw);
+
+        // 프로세스 안정 해시(코드베이스 공용 FNV 패턴). HashCode.Combine은 프로세스마다 Marvin 시드가
+        // randomize되어, 이 struct를 Dictionary/HashSet 키로 쓰는 순간 순회 순서가 프로세스 가변이 된다 —
+        // BuildStableSeed와 같은 부류의 지뢰(감사 신규발견 (a), commit f17e2f07)를 휴면 상태에서 미리 제거.
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (((17 * 31) + X.Raw) * 31) + Y.Raw;
+            }
+        }
         public override string ToString() => $"({X.ToString()}, {Y.ToString()})";
     }
 }

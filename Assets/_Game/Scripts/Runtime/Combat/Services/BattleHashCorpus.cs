@@ -32,21 +32,32 @@ public static class BattleHashCorpus
         var builder = new StringBuilder();
         builder.Append("# CanonicalStateHashV1 corpus schema=")
             .Append(BattleStateCanonicalHash.SchemaVersion)
-            .Append(" fixture=melee1v1 interval=")
+            .Append(" interval=")
             .Append(interval)
             .Append('\n');
 
+        // fixture 2종: melee1v1(최소 궤적) + squad4v4(멀티유닛/멀티레인/원거리/시너지 패키지 merge).
+        // squad는 1v1이 못 여는 표면 — 다수 후보 타깃 enumeration, >2 addend float 집계,
+        // BattleFactory.ResolveTeamPackages(GroupBy dedup)+SynergyService 폴백 — 을 해시에 노출한다
+        // (엔지니어링 감사 신규발견 (a) follow-up: 1v1-only 코퍼스가 squad 스케일 엔트로피를 못 잡던 갭).
+        builder.Append("fixture=melee1v1\n");
         foreach (var seed in seedList)
         {
-            AppendRun(builder, seed, interval);
+            AppendRun(builder, BuildMelee1v1(seed), seed, interval);
+        }
+
+        builder.Append("fixture=squad4v4\n");
+        foreach (var seed in seedList)
+        {
+            AppendRun(builder, BuildSquad4v4(seed), seed, interval);
         }
 
         return builder.ToString();
     }
 
-    private static void AppendRun(StringBuilder builder, int seed, int interval)
+    private static void AppendRun(StringBuilder builder, BattleState state, int seed, int interval)
     {
-        var simulator = new BattleSimulator(BuildMelee1v1(seed), DefaultMaxSteps);
+        var simulator = new BattleSimulator(state, DefaultMaxSteps);
         builder.Append("seed=").Append(seed).Append('\n');
 
         // step 0 (초기 상태)
@@ -84,21 +95,59 @@ public static class BattleHashCorpus
             seed);
     }
 
-    private static BattleUnitLoadout BuildUnit(string id, string race, DeploymentAnchorId anchor, float hp, float moveSpeed)
+    // squad 스케일 fixture — 전열 vanguard×2(class synergy 2/3 발화) + 후열 원거리/보조, 팀 전원 같은 race
+    // (race synergy 4/4 발화). BattleFactory.ResolveTeamPackages → SynergyService.BuildForTeam 폴백 →
+    // MergePackages 경로가 실제로 돌아 팀 패키지 dedup/merge 표면이 해시 스트림에 접힌다.
+    private static BattleState BuildSquad4v4(int seed)
+    {
+        var allies = new[]
+        {
+            BuildUnit("ally_van_top", "human", DeploymentAnchorId.FrontTop, hp: 70f, moveSpeed: 1.9f),
+            BuildUnit("ally_van_bot", "human", DeploymentAnchorId.FrontBottom, hp: 70f, moveSpeed: 1.9f),
+            BuildUnit("ally_ranger", "human", DeploymentAnchorId.BackTop, hp: 45f, moveSpeed: 2.1f, classId: "ranger", phys: 8f, attackRange: 2.8f),
+            BuildUnit("ally_mystic", "human", DeploymentAnchorId.BackBottom, hp: 40f, moveSpeed: 2.0f, classId: "mystic", phys: 5f, attackRange: 2.4f, heal: 6f),
+        };
+        var enemies = new[]
+        {
+            BuildUnit("enemy_van_top", "undead", DeploymentAnchorId.FrontTop, hp: 70f, moveSpeed: 1.8f),
+            BuildUnit("enemy_van_bot", "undead", DeploymentAnchorId.FrontBottom, hp: 70f, moveSpeed: 1.8f),
+            BuildUnit("enemy_ranger", "undead", DeploymentAnchorId.BackTop, hp: 45f, moveSpeed: 2.0f, classId: "ranger", phys: 8f, attackRange: 2.8f),
+            BuildUnit("enemy_mystic", "undead", DeploymentAnchorId.BackBottom, hp: 40f, moveSpeed: 1.9f, classId: "mystic", phys: 5f, attackRange: 2.4f, heal: 6f),
+        };
+        return BattleFactory.Create(
+            allies,
+            enemies,
+            TeamPostureType.StandardAdvance,
+            TeamPostureType.StandardAdvance,
+            BattleSimulator.DefaultFixedStepSeconds,
+            seed);
+    }
+
+    private static BattleUnitLoadout BuildUnit(
+        string id,
+        string race,
+        DeploymentAnchorId anchor,
+        float hp,
+        float moveSpeed,
+        string classId = "vanguard",
+        float phys = 6f,
+        float attackRange = 1.2f,
+        float heal = 0f)
     {
         return new BattleUnitLoadout(
             id,
             id,
             race,
-            "vanguard",
+            classId,
             anchor,
             new Dictionary<StatKey, float>
             {
                 [StatKey.MaxHealth] = hp,
-                [StatKey.PhysPower] = 6f,
+                [StatKey.PhysPower] = phys,
+                [StatKey.HealPower] = heal,
                 [StatKey.Armor] = 2f,
                 [StatKey.MoveSpeed] = moveSpeed,
-                [StatKey.AttackRange] = 1.2f,
+                [StatKey.AttackRange] = attackRange,
                 [StatKey.AggroRadius] = 8f,
                 [StatKey.AttackWindup] = 0.1f,
                 [StatKey.AttackCooldown] = 0.5f,

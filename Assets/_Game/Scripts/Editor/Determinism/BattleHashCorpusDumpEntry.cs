@@ -52,6 +52,40 @@ namespace SM.Editor.Determinism
             }
         }
 
+        // BattleHashCorpusGoldenTests가 비교하는 체크인 골든 경로(테스트 쪽과 동일 문자열 유지).
+        private const string GoldenRelativePath = "Tests/EditMode/FastUnit/Golden/battle-hash-corpus.golden.txt";
+
+        /// <summary>
+        /// 체크인 골든 코퍼스 재생성 진입점 — cross-process 결정성 게이트(BattleHashCorpusGoldenTests)의
+        /// 기준선을 쓴다. <b>의도적으로 sim 게임플레이를 바꾼 커밋에서만</b> 실행해 골든을 갱신·같이 커밋한다:
+        /// <code>
+        /// Unity -batchmode -nographics -projectPath . \
+        ///   -executeMethod SM.Editor.Determinism.BattleHashCorpusDumpEntry.WriteGolden -logFile ...
+        /// </code>
+        /// </summary>
+        public static void WriteGolden()
+        {
+            try
+            {
+                var goldenPath = Path.Combine(Application.dataPath, GoldenRelativePath);
+                var directory = Path.GetDirectoryName(goldenPath);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                var corpus = BattleHashCorpus.Generate();
+                File.WriteAllText(goldenPath, corpus);
+                Debug.Log($"[BattleHashCorpusDump] golden written: {goldenPath} ({corpus.Length} chars)");
+                Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[BattleHashCorpusDump] WriteGolden failed: {ex}");
+                Exit(1);
+            }
+        }
+
         private static string ResolveOutPath()
         {
             var args = Environment.GetCommandLineArgs();
