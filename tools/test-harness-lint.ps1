@@ -16,6 +16,10 @@ param(
     6. Pindoc 소스여야 하는 imagegen 입력 Markdown이 repo-local 임시 파일로 생기면 실패
     7. record(struct/class)가 자기 타입을 반환하는 public 인스턴스 속성을 갖는데 ToString 오버라이드가 없으면 실패
        (합성 PrintMembers가 그 속성을 출력하며 무한 재귀 → StackOverflow. NUnit 실패 메시지/로그 포맷에서 프로세스가 죽는다)
+    8. FinalUnits 요소의 Id를 원본 loadout id 리터럴과 직접 동등 비교하면 실패
+       (BattleFactory가 EntityId를 "ally_{index}_{id}" / "enemy_{index}_{id}"로 접두사화하므로 원본 id 직접 비교는
+        항상 false — 정산/측정이 조용히 허구를 생산한다. 실제 3회 발생: P0 HP/EXP 미반영, dossier fallenAllyIds,
+        WarrantSeparability protect 생존율 0% 오진. EndsWith("_{id}") 또는 접두사 포함 리터럴을 쓸 것)
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -424,6 +428,45 @@ foreach ($dir in $recordScanDirs) {
 
 if (-not $check6Fail) {
     Write-Host "  PASS: No record with a self-typed public property missing a ToString override." -ForegroundColor Green
+}
+
+# ────────────────────────────────────────────────
+# Check 7: FinalUnits Id direct comparison against raw loadout id literal
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 7: FinalUnits Id raw-literal comparison (ally_/enemy_ prefix fiction) ==" -ForegroundColor Cyan
+$check7Fail = $false
+
+$finalUnitsScanDirs = @('Assets/_Game/Scripts', 'Assets/Tests')
+foreach ($dir in $finalUnitsScanDirs) {
+    $fullDir = Join-Path $RepoRoot $dir
+    if (-not (Test-Path $fullDir)) { continue }
+
+    $csFiles = Get-ChildItem $fullDir -Filter '*.cs' -Recurse -ErrorAction SilentlyContinue
+    foreach ($file in $csFiles) {
+        $lines = Get-Content $file.FullName -ErrorAction SilentlyContinue
+        if ($null -eq $lines) { continue }
+
+        $codeContent = ($lines | Where-Object {
+            $trimmed = $_.TrimStart()
+            -not $trimmed.StartsWith('//') -and -not $trimmed.StartsWith('*') -and -not $trimmed.StartsWith('///') -and -not $trimmed.StartsWith('/*')
+        }) -join [Environment]::NewLine
+
+        if ($codeContent -notmatch 'FinalUnits') { continue }
+
+        # FinalUnits가 등장하는 문장 안에서 .Id ==/!= "리터럴" 직접 비교를 잡는다.
+        # BattleFactory 접두사("ally_"/"enemy_")로 시작하는 리터럴은 접두사를 인지한 비교라 허용.
+        $fictionPattern = '(?s)FinalUnits[^;{]{0,240}?\.Id\s*[!=]=\s*"(?!ally_|enemy_)'
+        if ([regex]::IsMatch($codeContent, $fictionPattern)) {
+            $relPath = $file.FullName.Substring($RepoRoot.Length).TrimStart('\', '/').Replace('\', '/')
+            Write-LintError -Check 'FinalUnits-raw-id-comparison' -File $relPath -Detail 'FinalUnits element Id compared to a raw loadout id literal — BattleFactory prefixes ids as "ally_{index}_{id}"/"enemy_{index}_{id}", so this comparison is always false and silently fabricates results. Use EndsWith("_{id}") or a prefixed literal.'
+            $check7Fail = $true
+        }
+    }
+}
+
+if (-not $check7Fail) {
+    Write-Host "  PASS: No FinalUnits raw-loadout-id comparisons." -ForegroundColor Green
 }
 
 # ────────────────────────────────────────────────
