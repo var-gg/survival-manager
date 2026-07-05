@@ -31,15 +31,36 @@ public sealed partial class GameSessionState
 
         internal void BeginNewExpedition()
         {
-            ResetExpeditionRunState();
-            PrepareExpeditionTrack();
-            StartExpeditionRun();
-            _session.SyncActiveRunRecord();
-            _session.SyncExpeditionState();
+            BeginExpeditionCore(endlessCycleIndex: 0);
 
             // 발화는 세션: 원정 시작(=사이트 진입) moment를 여기서 발화한다 — 씬 AtlasScreenController가 아니라
             // 세션이 단일 소스라 헤드리스 드라이버와 실게임이 같은 발화를 공유(표시는 씬이 bridge.PresentPending으로).
             _session.AdvanceNarrative(NarrativeMoment.SiteEntered, NarrativeMomentResolver.BuildNodeContext(_session));
+        }
+
+        /// <summary>
+        /// 무한 순환 원정 시작 — 사이클 truth 전이(director Progress가 단일 owner, 저장은 Advance가 미러)
+        /// 후 기존 원정 기계를 그대로 재사용하고 run에 사이클을 스탬프한다. 시드/보상 dedup/Atlas traversal은
+        /// ActiveRun.EndlessCycleIndex로 분기. 발화 순서: 사이클 시작 → 사이트 진입.
+        /// </summary>
+        internal void BeginEndlessExpedition()
+        {
+            var nextCycle = EndlessCycleService.BeginNextCycle(_session.StoryDirector.Progress.EndlessCycle);
+            _session.StoryDirector.SetEndlessCycle(nextCycle);
+
+            BeginExpeditionCore(nextCycle.CycleIndex);
+
+            _session.AdvanceNarrative(NarrativeMoment.EndlessCycleStarted, NarrativeMomentResolver.BuildNodeContext(_session));
+            _session.AdvanceNarrative(NarrativeMoment.SiteEntered, NarrativeMomentResolver.BuildNodeContext(_session));
+        }
+
+        private void BeginExpeditionCore(int endlessCycleIndex)
+        {
+            ResetExpeditionRunState();
+            PrepareExpeditionTrack();
+            StartExpeditionRun(endlessCycleIndex);
+            _session.SyncActiveRunRecord();
+            _session.SyncExpeditionState();
         }
 
         private void ResetExpeditionRunState()
@@ -72,9 +93,17 @@ public sealed partial class GameSessionState
             _session.EnsureRewardChoices(reset: true);
         }
 
-        private void StartExpeditionRun()
+        private void StartExpeditionRun(int endlessCycleIndex)
         {
-            _session.ActiveRun = RunStateService.StartRun(_session.GetExpeditionRunId(), _session.CaptureBlueprintState(), false);
+            var runId = _session.GetExpeditionRunId();
+            if (endlessCycleIndex > 0)
+            {
+                // 사이클별 run identity 분리 — ledger/telemetry가 회차 간 충돌하지 않게 한다.
+                runId = $"{runId}#c{endlessCycleIndex}";
+            }
+
+            _session.ActiveRun = RunStateService.StartRun(runId, _session.CaptureBlueprintState(), false)
+                with { EndlessCycleIndex = endlessCycleIndex };
         }
 
         internal void PrepareQuickBattleSmoke()
@@ -530,7 +559,7 @@ public sealed partial class GameSessionState
 
         foreach (var choice in BuildRewardChoicesForCurrentContext())
         {
-            _pendingRewardChoices.Add(choice);
+            _pendingRewardChoices.Add(ScaleRewardChoiceForEndlessHeat(choice));
         }
 
         if (_pendingRewardChoices.Count > 0)
@@ -543,6 +572,45 @@ public sealed partial class GameSessionState
                 Profile.Currencies.Echo));
             AppendRuntimeTelemetry(BuildEconomySnapshot("reward_options_presented"));
         }
+    }
+
+    /// <summary>
+    /// 무한 순환 원정 시작 — 엔딩(EndlessUnlocked) 이후, 재개할 run/정산 대기가 없는 신규-원정 상황에서만.
+    /// 전제 미충족이면 스토리 원정 시작으로 안전 강하한다(Town CTA는 EndlessEntryResolver로 같은 판정을 읽음).
+    /// 회차/Heat 읽기는 별도 facade 없이 ActiveRun.EndlessCycleIndex / StoryDirector.Progress.EndlessCycle로.
+    /// (GameSessionState.cs가 아닌 이 파일에 두는 이유: facade 예산 가드 + 원정 flow의 collaborator 파일 응집.)
+    /// </summary>
+    public void BeginEndlessExpedition()
+    {
+        var canBeginEndlessCycle = Profile.CampaignProgress.EndlessUnlocked
+            && !CanResumeExpedition
+            && !HasPendingRewardSettlement
+            && !IsQuickBattleSmokeActive;
+        if (!canBeginEndlessCycle)
+        {
+            _expeditionFlow.BeginNewExpedition();
+            return;
+        }
+
+        _expeditionFlow.BeginEndlessExpedition();
+    }
+
+    /// <summary>
+    /// 무한 순환 Heat 보상 스케일 — 잔향(Echo) 카드만 증액. 카드 생성 단일 chokepoint에서 적용하므로
+    /// 표기(presenter의 "Echo +{n}")와 실지급(ApplyLedgerBackedReward)이 같은 필드를 읽어 자동 일치한다.
+    /// 스토리 run(cycle 0)은 원값 그대로.
+    /// </summary>
+    private RewardChoiceViewModel ScaleRewardChoiceForEndlessHeat(RewardChoiceViewModel choice)
+    {
+        if ((ActiveRun?.EndlessCycleIndex ?? 0) <= 0 || choice.EchoAmount <= 0)
+        {
+            return choice;
+        }
+
+        return choice with
+        {
+            EchoAmount = EndlessCycleService.ScaleEchoAmount(choice.EchoAmount, StoryDirector.Progress.EndlessCycle.Heat),
+        };
     }
 
     private IEnumerable<RewardChoiceViewModel> BuildRewardChoicesForCurrentContext()

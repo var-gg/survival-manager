@@ -55,80 +55,22 @@ public sealed class CampaignPlaythroughRunner
         while (!_session.Profile.CampaignProgress.StoryCleared && clearedSites.Count < safety)
         {
             AdvanceToNextUnclearedSite();
-            var chapterId = _session.SelectedCampaignChapterId;
-            var siteId = _session.SelectedCampaignSiteId;
 
             _nav.Go(ExpeditionFlowResolver.ResolveExpeditionEntry(_session));
             _session.BeginNewExpedition();
+            var observation = PlaySelectedSiteToSettlement();
 
-            // 2a) 전투 노드 순회. AutoResolve = fixture 메타루프 증명(sim 0, 자동 승리 단축).
-            //     Simulate = 실 BattleSimulator 완주 → 헤드리스가 진짜로 싸운다. 승리만 노드 전진,
-            //     패배는 사이트 미클리어로 원정 중단(골든은 승리 전제이므로 패배가 표면화됨).
-            var battleNodeIds = new List<string>();
-            var battleOutcomes = new List<PlaythroughBattleOutcome>();
-            var defeatedHere = false;
-            while (_session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            totalBattleNodes += observation.BattleNodeIds.Count;
+            siteObservations.Add(observation);
+
+            if (observation.ChosenRewardIndex < 0)
             {
-                var node = _session.GetSelectedExpeditionNode()!;
-                battleNodeIds.Add(node.Id);
-                _nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(_session)); // → Battle
-
-                if (_battleResolution == PlaythroughBattleResolution.Simulate)
-                {
-                    if (!_session.TryResolveSelectedBattleNodeViaSimulation(out var battleResult, out var error))
-                    {
-                        throw new InvalidOperationException($"전투 sim 실패({node.Id}): {error}");
-                    }
-
-                    var victory = battleResult.Winner == TeamSide.Ally;
-                    battleOutcomes.Add(new PlaythroughBattleOutcome(node.Id, victory, battleResult.StepCount));
-                    if (!victory)
-                    {
-                        // 패배 — 원정 중단, 사이트 미클리어. 캠페인 루프도 종료.
-                        defeatedHere = true;
-                        _session.AbandonExpeditionRun();
-                        break;
-                    }
-                }
-
-                _session.ResolveSelectedExpeditionNode(); // 노드 커서 전진 + 노드 효과(전리품).
-            }
-            totalBattleNodes += battleNodeIds.Count;
-
-            if (defeatedHere)
-            {
-                defeatedSiteId = siteId;
-                siteObservations.Add(new SitePlaythroughObservation(
-                    ChapterId: chapterId,
-                    SiteId: siteId,
-                    BattleNodeIds: battleNodeIds,
-                    BattleOutcomes: battleOutcomes,
-                    ExtractNodeId: string.Empty,
-                    RewardOptionCount: 0,
-                    ChosenRewardIndex: -1));
+                // 패배 — 원정 중단, 사이트 미클리어. 캠페인 루프도 종료.
+                defeatedSiteId = observation.SiteId;
                 break;
             }
 
-            // 2b) extract 노드 정산 → 보상 제시 → policy 결정 → 복귀.
-            var extractNode = _session.GetSelectedExpeditionNode();
-            _nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(_session)); // extract → Reward
-            _session.ResolveSelectedNodeToRewardSettlement();
-
-            var rewardView = BuildRewardView(chapterId, siteId);
-            var chosenRewardIndex = _policy.DecideReward(rewardView);
-            _session.ApplyRewardChoice(chosenRewardIndex);
-            _session.ReturnToTownAfterReward();
-            _nav.Go(ExpeditionFlowResolver.AfterRewardSettled); // → Town
-
-            clearedSites.Add(siteId);
-            siteObservations.Add(new SitePlaythroughObservation(
-                ChapterId: chapterId,
-                SiteId: siteId,
-                BattleNodeIds: battleNodeIds,
-                BattleOutcomes: battleOutcomes,
-                ExtractNodeId: extractNode?.Id ?? string.Empty,
-                RewardOptionCount: rewardView.Options.Count,
-                ChosenRewardIndex: chosenRewardIndex));
+            clearedSites.Add(observation.SiteId);
         }
 
         var progress = _session.Profile.CampaignProgress;
@@ -140,6 +82,139 @@ public sealed class CampaignPlaythroughRunner
             SiteObservations: siteObservations,
             TotalBattleNodes: totalBattleNodes,
             DefeatedSiteId: defeatedSiteId);
+    }
+
+    /// <summary>
+    /// 엔딩 후 무한 순환을 <paramref name="cycles"/>회 구동한다 — 실게임과 같은 세션 API
+    /// (BeginEndlessExpedition)를 타므로 사이클 truth 전이·발화·시드 분화가 골든과 프로덕션에서 동일하다.
+    /// V1 라우팅: 캠페인 종료 시점의 선택 사이트를 회차마다 재주행(사이트 로테이션은 후속).
+    /// 전제: Run()이 StoryCleared/EndlessUnlocked까지 완주한 뒤 호출.
+    /// </summary>
+    public EndlessPlaythroughResult RunEndlessCycles(int cycles)
+    {
+        if (!_session.Profile.CampaignProgress.EndlessUnlocked)
+        {
+            throw new InvalidOperationException("무한 순환은 EndlessUnlocked 이후에만 구동할 수 있다.");
+        }
+
+        var cycleObservations = new List<EndlessCycleObservation>();
+        for (var i = 0; i < cycles; i++)
+        {
+            _nav.Go(ExpeditionFlowResolver.ResolveExpeditionEntry(_session));
+            _session.BeginEndlessExpedition();
+
+            var cycleIndex = _session.ActiveRun?.EndlessCycleIndex ?? 0;
+            var heat = _session.Profile.Narrative.EndlessCycle.Heat;
+            // RunId는 StartRun이 생성하는 GUID(회차 무관 항상 유일) — 회차 identity는 ExpeditionId 접미(#cN)가 운반.
+            var expeditionId = _session.ActiveRun?.ExpeditionId ?? string.Empty;
+            var echoBefore = _session.Profile.Currencies.Echo;
+            var goldBefore = _session.Profile.Currencies.Gold;
+
+            var observation = PlaySelectedSiteToSettlement();
+
+            // 회차별 분화 증거: 정산이 남긴 reward_choice ledger의 CommitId(= cycle-salt 들어간 contextHash 파생).
+            var lastCommitId = _session.Profile.RewardLedger
+                .LastOrDefault(entry => entry.SourceKind.EndsWith(":reward_choice", StringComparison.Ordinal))
+                ?.CommitId ?? string.Empty;
+
+            cycleObservations.Add(new EndlessCycleObservation(
+                CycleIndex: cycleIndex,
+                Heat: heat,
+                ExpeditionId: expeditionId,
+                RewardCommitId: lastCommitId,
+                Site: observation,
+                EchoDelta: _session.Profile.Currencies.Echo - echoBefore,
+                GoldDelta: _session.Profile.Currencies.Gold - goldBefore));
+
+            if (observation.ChosenRewardIndex < 0)
+            {
+                break; // 패배 — 순환 중단(관찰값은 남긴다).
+            }
+        }
+
+        var narrative = _session.Profile.Narrative.EndlessCycle;
+        return new EndlessPlaythroughResult(
+            PersistedCycleIndex: narrative.CycleIndex,
+            PersistedHeat: narrative.Heat,
+            Cycles: cycleObservations);
+    }
+
+    /// <summary>
+    /// 현재 선택 사이트를 전투 노드 전부 → extract 정산 → 보상 선택 → Town 복귀까지 플레이한다.
+    /// 패배 시 ChosenRewardIndex = -1 관찰값을 반환(run은 Abandon 처리).
+    /// Run()과 RunEndlessCycles()가 공유하는 사이트 1회 몸통 — 캠페인 골든이 검증한 경로 그대로.
+    /// </summary>
+    private SitePlaythroughObservation PlaySelectedSiteToSettlement()
+    {
+        var chapterId = _session.SelectedCampaignChapterId;
+        var siteId = _session.SelectedCampaignSiteId;
+
+        // 전투 노드 순회. AutoResolve = fixture 메타루프 증명(sim 0, 자동 승리 단축).
+        // Simulate = 실 BattleSimulator 완주 → 헤드리스가 진짜로 싸운다. 승리만 노드 전진,
+        // 패배는 사이트 미클리어로 원정 중단(골든은 승리 전제이므로 패배가 표면화됨).
+        var battleNodeIds = new List<string>();
+        var battleOutcomes = new List<PlaythroughBattleOutcome>();
+        while (_session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+        {
+            var node = _session.GetSelectedExpeditionNode()!;
+            battleNodeIds.Add(node.Id);
+            _nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(_session)); // → Battle
+
+            if (_battleResolution == PlaythroughBattleResolution.Simulate)
+            {
+                if (!_session.TryResolveSelectedBattleNodeViaSimulation(out var battleResult, out var error))
+                {
+                    throw new InvalidOperationException($"전투 sim 실패({node.Id}): {error}");
+                }
+
+                var victory = battleResult.Winner == TeamSide.Ally;
+                battleOutcomes.Add(new PlaythroughBattleOutcome(node.Id, victory, battleResult.StepCount));
+                if (!victory)
+                {
+                    _session.AbandonExpeditionRun();
+                    return new SitePlaythroughObservation(
+                        ChapterId: chapterId,
+                        SiteId: siteId,
+                        BattleNodeIds: battleNodeIds,
+                        BattleOutcomes: battleOutcomes,
+                        ExtractNodeId: string.Empty,
+                        RewardOptionCount: 0,
+                        ChosenRewardIndex: -1);
+                }
+            }
+
+            _session.ResolveSelectedExpeditionNode(); // 노드 커서 전진 + 노드 효과(전리품).
+        }
+
+        // extract 노드 정산 → 보상 제시 → policy 결정 → 복귀.
+        var extractNode = _session.GetSelectedExpeditionNode();
+        _nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(_session)); // extract → Reward
+        _session.ResolveSelectedNodeToRewardSettlement();
+
+        var rewardView = BuildRewardView(chapterId, siteId);
+        var chosenRewardIndex = _policy.DecideReward(rewardView);
+        // 정산 직전 run 상태 관찰 — 무한 골든이 dedup 분기 입력(사이클 스탬프·CommitId)을 단언한다.
+        var cycleAtSettlement = _session.ActiveRun?.EndlessCycleIndex ?? 0;
+        var commitIdAtSettlement = _session.ActiveRun?.Overlay.RewardCommitId ?? string.Empty;
+        var ledgerBeforeChoice = _session.Profile.RewardLedger.Count;
+        var chosenKind = rewardView.Options[chosenRewardIndex].Kind.ToString();
+        _session.ApplyRewardChoice(chosenRewardIndex);
+        var ledgerDelta = _session.Profile.RewardLedger.Count - ledgerBeforeChoice;
+        _session.ReturnToTownAfterReward();
+        _nav.Go(ExpeditionFlowResolver.AfterRewardSettled); // → Town
+
+        return new SitePlaythroughObservation(
+            ChapterId: chapterId,
+            SiteId: siteId,
+            BattleNodeIds: battleNodeIds,
+            BattleOutcomes: battleOutcomes,
+            ExtractNodeId: extractNode?.Id ?? string.Empty,
+            RewardOptionCount: rewardView.Options.Count,
+            ChosenRewardIndex: chosenRewardIndex,
+            EndlessCycleIndexAtSettlement: cycleAtSettlement,
+            RewardCommitIdAtSettlement: commitIdAtSettlement,
+            ChosenRewardKind: chosenKind,
+            RewardLedgerDelta: ledgerDelta);
     }
 
     private void ApplyDeployment()
@@ -226,10 +301,30 @@ public sealed record SitePlaythroughObservation(
     string ExtractNodeId,
     int RewardOptionCount,
     int ChosenRewardIndex,
-    IReadOnlyList<PlaythroughBattleOutcome>? BattleOutcomes = null);
+    IReadOnlyList<PlaythroughBattleOutcome>? BattleOutcomes = null,
+    int EndlessCycleIndexAtSettlement = 0,
+    string RewardCommitIdAtSettlement = "",
+    string ChosenRewardKind = "",
+    int RewardLedgerDelta = 0);
 
 /// <summary>실 sim으로 정산한 전투 노드 결과 — 헤드리스가 실제로 tick을 돌렸음을 증명하는 관찰값.</summary>
 public sealed record PlaythroughBattleOutcome(
     string NodeId,
     bool Victory,
     int StepCount);
+
+/// <summary>무한 순환 구동 종착 관찰값 — 영속된 사이클 truth와 회차별 내역.</summary>
+public sealed record EndlessPlaythroughResult(
+    int PersistedCycleIndex,
+    int PersistedHeat,
+    IReadOnlyList<EndlessCycleObservation> Cycles);
+
+/// <summary>무한 순환 1회차 관찰값 — 원정 identity/CommitId/보상 증감이 회차별로 분화됨을 골든이 단언한다.</summary>
+public sealed record EndlessCycleObservation(
+    int CycleIndex,
+    int Heat,
+    string ExpeditionId,
+    string RewardCommitId,
+    SitePlaythroughObservation Site,
+    int EchoDelta,
+    int GoldDelta);

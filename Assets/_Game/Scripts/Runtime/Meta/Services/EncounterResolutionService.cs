@@ -126,7 +126,9 @@ public sealed class EncounterResolutionService
         var clampedIndex = Math.Max(0, Math.Min(nodeIndex, Math.Max(0, encounterIds.Count - 1)));
         var encounterId = encounterIds[clampedIndex];
         var encounter = _content.Encounters![encounterId];
-        var contextHash = ComputeContextHash(chapterId, siteId, clampedIndex, encounterId, encounter.RewardSourceId);
+        var contextHash = ComputeContextHash(
+            chapterId, siteId, clampedIndex, encounterId, encounter.RewardSourceId,
+            endlessCycleIndex: run?.EndlessCycleIndex ?? 0);
 
         return new BattleContextState(
             chapterId,
@@ -404,10 +406,17 @@ public sealed class EncounterResolutionService
         string siteId,
         int nodeIndex,
         string encounterId,
-        string rewardSourceId)
+        string rewardSourceId,
+        int endlessCycleIndex = 0)
     {
         using var sha = SHA256.Create();
         var input = $"{chapterId}|{siteId}|{nodeIndex}|{encounterId}|{rewardSourceId}";
+        if (endlessCycleIndex > 0)
+        {
+            // 무한 순환 회차별 시드/CommitId 분화. cycle 0(스토리)은 입력 문자열이 종전과 byte-identical —
+            // 기존 골든/세이브의 BattleSeed·BattleContextHash·RewardCommitId를 전부 보존한다.
+            input = $"{input}|cycle:{endlessCycleIndex}";
+        }
         var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
         var builder = new StringBuilder(bytes.Length * 2);
         foreach (var value in bytes)

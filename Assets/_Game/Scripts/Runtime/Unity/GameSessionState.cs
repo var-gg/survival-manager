@@ -279,6 +279,9 @@ public sealed partial class GameSessionState
 
     public void BeginNewExpedition() => _expeditionFlow.BeginNewExpedition();
 
+    // 무한 순환 진입 facade(BeginEndlessExpedition)는 SessionExpeditionFlow.cs(같은 partial)에 있다 —
+    // 이 파일의 facade 예산(BuildBoundaryGuard)을 지키고 원정 flow 코드를 collaborator 파일에 모은다.
+
     public void PrepareQuickBattleSmoke() => _expeditionFlow.PrepareQuickBattleSmoke();
 
     public void PrepareCombatSandboxDirect() => _expeditionFlow.PrepareCombatSandboxDirect();
@@ -1211,6 +1214,23 @@ public sealed partial class GameSessionState
             : context with { Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(context.Enemies, enemyPackages) };
     }
 
+    /// <summary>
+    /// 무한 순환 Heat 스케일 — 정치 조건과 같은 채널(CombatModifierPackage)로 적 loadout에 접힌다.
+    /// 스토리 run(EndlessCycleIndex 0)은 빈 package라 byte-identical 보존.
+    /// </summary>
+    private ResolvedEncounterContext ApplyEndlessHeatScaling(ResolvedEncounterContext context, ActiveRunState run)
+    {
+        if (run.EndlessCycleIndex <= 0)
+        {
+            return context;
+        }
+
+        var heatPackages = EndlessCycleService.BuildEnemyHeatPackages(StoryDirector.Progress.EndlessCycle.Heat);
+        return heatPackages.Count == 0
+            ? context
+            : context with { Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(context.Enemies, heatPackages) };
+    }
+
     public bool TryResolveCurrentEncounter(out ResolvedEncounterContext context, out string error) =>
         _expeditionFlow.TryResolveCurrentEncounter(out context, out error);
 
@@ -1258,6 +1278,7 @@ public sealed partial class GameSessionState
                 // ADR-0028 slice 3 — 거스른 세력 적대가 누적되면 적이 경계 상태로 출현(EnemyAlertness 통로).
                 // 정치 충돌이 다음 전장에 닿는 지점. 적 package는 EnemySnapshotHash가 포착(live 결정적).
                 context = ApplyEnemyPoliticalConditions(context, run);
+                context = ApplyEndlessHeatScaling(context, run);
                 ActiveRun = RunStateService.SetBattleContext(run, battleContext);
                 SyncActiveRunRecord();
                 return true;

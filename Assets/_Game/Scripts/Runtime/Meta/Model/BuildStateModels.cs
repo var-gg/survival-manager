@@ -83,7 +83,9 @@ public sealed record ActiveRunState(
     string? LastBattleMatchId = null,
     bool LastSettlementWasVictory = false,
     bool StoryCleared = false,
-    bool EndlessUnlocked = false);
+    bool EndlessUnlocked = false,
+    // 0 = 스토리 원정, 1+ = 무한 순환 N회차 run. 시드/보상 dedup/Atlas traversal이 이 값으로 분기한다.
+    int EndlessCycleIndex = 0);
 
 public sealed record InventoryLedgerEntry(
     string EntryId,

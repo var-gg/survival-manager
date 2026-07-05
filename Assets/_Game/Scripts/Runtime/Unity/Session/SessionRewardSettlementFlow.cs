@@ -439,7 +439,10 @@ public sealed partial class GameSessionState
             // RewardCommitId 기반 검사를 추가해 reload-after-commit non-regression을 강화한다.
             // 같은 site에서 다른 outcome으로 두 번 도달하는 경우(예: defeat 후 retry)에 대해서도
             // commitId가 다르면 정상 처리되고, 같은 commitId면 두 번째 호출은 mutation 없이 통과.
-            if (_session.HasRecordedRewardSettlement(rewardSourceId)
+            // 무한 순환(EndlessCycleIndex>0)에서는 SourceId 절을 건너뛴다 — RewardSourceId는 콘텐츠 고정값이라
+            // 회차 재방문을 전부 '기지급'으로 오판한다. 사이클 dedup은 cycle-salt가 들어간 CommitId가 담당.
+            var isEndlessCycleRun = (_session.ActiveRun?.EndlessCycleIndex ?? 0) > 0;
+            if ((!isEndlessCycleRun && _session.HasRecordedRewardSettlement(rewardSourceId))
                 || _session.HasRecordedRewardSettlementByCommitId(rewardCommitId))
             {
                 _session._pendingRewardChoices.Clear();

@@ -39,4 +39,7 @@ public sealed class ActiveRunRecord
     public string PendingPermanentUnlockId = string.Empty;
     public bool StoryCleared;
     public bool EndlessUnlocked;
+
+    /// <summary>0 = 스토리 원정, 1+ = 무한 순환 N회차 run.</summary>
+    public int EndlessCycleIndex;
 }

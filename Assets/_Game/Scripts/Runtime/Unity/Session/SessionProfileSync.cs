@@ -748,7 +748,8 @@ public sealed partial class GameSessionState
             string.IsNullOrWhiteSpace(Profile.ActiveRun.LastBattleMatchId) ? null : Profile.ActiveRun.LastBattleMatchId,
             Profile.ActiveRun.LastSettlementWasVictory,
             Profile.ActiveRun.StoryCleared,
-            Profile.ActiveRun.EndlessUnlocked);
+            Profile.ActiveRun.EndlessUnlocked,
+            Profile.ActiveRun.EndlessCycleIndex);
         LastBattleVictory = ActiveRun.LastSettlementWasVictory;
         IsQuickBattleSmokeActive = ActiveRun.IsQuickBattle;
         QuickBattleLaneKind = ActiveRun.IsQuickBattle
@@ -901,6 +902,7 @@ public sealed partial class GameSessionState
             PendingPermanentUnlockId = ActiveRun.Overlay.PendingPermanentUnlockId,
             StoryCleared = ActiveRun.StoryCleared,
             EndlessUnlocked = ActiveRun.EndlessUnlocked,
+            EndlessCycleIndex = ActiveRun.EndlessCycleIndex,
         };
     }
 

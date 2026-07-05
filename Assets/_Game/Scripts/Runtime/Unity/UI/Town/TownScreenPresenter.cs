@@ -121,7 +121,17 @@ public sealed class TownScreenPresenter
             return;
         }
 
-        _root.SessionState.BeginNewExpedition();
+        // 엔딩 후 신규-런 분기는 무한 순환으로 라우팅 — CTA 라벨과 같은 판정(EndlessEntryResolver)을 읽고,
+        // 세션 게이트(run/정산 대기)는 BeginEndlessExpedition 내부가 한 번 더 지킨다.
+        if (EndlessEntryResolver.IsEndlessEntryActive(_root.SessionState.Profile.CampaignProgress))
+        {
+            _root.SessionState.BeginEndlessExpedition();
+        }
+        else
+        {
+            _root.SessionState.BeginNewExpedition();
+        }
+
         var newRunCheckpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
         if (!newRunCheckpoint.IsSuccessful) { Refresh(newRunCheckpoint.Message); return; }
         _root.SceneFlow.GoToAtlas();
@@ -390,6 +400,12 @@ public sealed class TownScreenPresenter
             return Localize(GameLocalizationTables.UITown, "ui.town.action.resume_expedition", "Resume Expedition");
         }
 
+        // 엔딩 후에는 원정 CTA가 무한 순환 진입으로 전환된다 — 버튼은 하나, 라벨/라우팅만 바뀐다(죽은 affordance 방지).
+        if (EndlessEntryResolver.IsEndlessEntryActive(session.Profile.CampaignProgress))
+        {
+            return Localize(GameLocalizationTables.UITown, "ui.town.action.start_endless_cycle", "무한 순환 시작");
+        }
+
         // 신규 플레이어(첫 원정 루프 전)에게는 막연한 "원정 시작" 대신 "첫 원정 시작"으로 다음 행동을 명확히 가리킨다.
         return FirstRunStatusResolver.IsFirstRunActive(session.Profile.CampaignProgress)
             ? Localize(GameLocalizationTables.UITown, "ui.town.action.start_first_expedition", "첫 원정 시작")
@@ -408,6 +424,16 @@ public sealed class TownScreenPresenter
         {
             return Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_resume",
                 "Resume the authored expedition from the currently selected route.");
+        }
+
+        if (EndlessEntryResolver.IsEndlessEntryActive(session.Profile.CampaignProgress))
+        {
+            var cycle = session.StoryDirector.Progress.EndlessCycle;
+            return string.Format(
+                Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_endless",
+                    "무한 순환 {0}회차 — 순환마다 적이 강해지고(열기 {1}) 잔향 보상이 커집니다."),
+                cycle.CycleIndex + 1,
+                cycle.Heat + 1);
         }
 
         return FirstRunStatusResolver.IsFirstRunActive(session.Profile.CampaignProgress)

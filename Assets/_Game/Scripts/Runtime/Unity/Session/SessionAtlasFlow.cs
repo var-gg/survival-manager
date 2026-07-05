@@ -275,6 +275,13 @@ public sealed partial class GameSessionState
                 return requested.Value;
             }
 
+            // 무한 순환 run이 활성이면 EndlessRegion — sigil cap 3·endless 질량 상수가 이 분기로 살아난다.
+            // fresh 세션/스토리 run은 종전 판정 그대로(StoryFirstClear/StoryRevisit) 보존.
+            if ((_session.ActiveRun?.EndlessCycleIndex ?? 0) > 0)
+            {
+                return AtlasTraversalMode.EndlessRegion;
+            }
+
             var selectedSiteId = _session.Profile.CampaignProgress.SelectedSiteId;
             return !string.IsNullOrWhiteSpace(selectedSiteId)
                    && _session.Profile.CampaignProgress.ClearedSiteIds.Contains(selectedSiteId, StringComparer.Ordinal)
@@ -286,12 +293,16 @@ public sealed partial class GameSessionState
         {
             var cleared = !string.IsNullOrWhiteSpace(siteId)
                           && _session.Profile.CampaignProgress.ClearedSiteIds.Contains(siteId, StringComparer.Ordinal);
-            return string.Join(
+            var salt = string.Join(
                 ":",
                 "campaign",
                 string.IsNullOrWhiteSpace(siteId) ? "site_unknown" : siteId,
                 cleared ? "revisit" : "story",
                 _session.Profile.CampaignProgress.EndlessUnlocked ? "endless_unlocked" : "endless_locked");
+
+            // 무한 순환 회차 토큰 — NodeOverlayHash/프리뷰 시드가 회차별로 분화된다. cycle 0은 종전 salt 그대로.
+            var cycleIndex = _session.ActiveRun?.EndlessCycleIndex ?? 0;
+            return cycleIndex > 0 ? $"{salt}:cycle_{cycleIndex}" : salt;
         }
 
         private string BuildSquadSnapshotId()

@@ -133,6 +133,8 @@ public static class LocalizationFoundationBootstrap
             ["ui.town.action.reroll"] = ("리롤", "Reroll", false),
             ["ui.town.action.start_expedition"] = ("원정 시작", "Start Expedition", false),
             ["ui.town.action.start_first_expedition"] = ("첫 원정 시작", "Start First Expedition", false),
+            ["ui.town.action.start_endless_cycle"] = ("무한 순환 시작", "Start Endless Cycle", false),
+            ["ui.town.tooltip.expedition_endless"] = ("무한 순환 {0}회차 — 순환마다 적이 강해지고(열기 {1}) 잔향 보상이 커집니다.", "Endless cycle {0} — enemies grow stronger each cycle (heat {1}) and Echo rewards scale up.", true),
             ["ui.town.action.quick_battle"] = ("Quick Battle", "Quick Battle", false),
             ["ui.town.action.resume_expedition"] = ("원정 재개", "Resume Expedition", false),
         ["ui.expedition.title"] = ("원정 운영 화면", "Expedition Operator UI", false),

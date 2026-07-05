@@ -1437,6 +1437,16 @@ MonoBehaviour:
       the battle, reward, and growth loop.
     m_Metadata:
       m_Items: []
+  - m_Id: 35325321304936448
+    m_Localized: Start Endless Cycle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35325321342685184
+    m_Localized: "Endless cycle {0} \u2014 enemies grow stronger each cycle (heat
+      {1}) and Echo rewards scale up."
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
   references:
     version: 2
     RefIds:
@@ -1484,3 +1494,4 @@ MonoBehaviour:
         - id: 133
         - id: 17841341873852419
         - id: 27687845509795840
+        - id: 35325321342685184
