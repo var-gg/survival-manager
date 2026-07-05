@@ -86,13 +86,21 @@ public sealed class UxBiblePlayModeWitnessTests
         ClickButton(townHost.Root, "SquadBuilderCloseButton");
         yield return WaitForHidden(townHost.Root, "SquadBuilderRoot");
 
-        // TacticalWorkshop wire cycle (2026-07): 전술 공방 진입 → posture 5카드 + 위협 8lane 실렌더 → 닫기.
+        // TacticalWorkshop wire cycle (2026-07): 전술 공방 진입 → posture 5카드 + 위협 8lane 실렌더
+        // → posture 카드 실클릭으로 세션 태세 변경 → 닫기.
         ClickButton(townHost.Root, "TacticalWorkshopButton");
         yield return WaitForVisible(townHost.Root, "TwpRoot");
         yield return new WaitForSecondsRealtime(0.35f);
         VerifyTacticalWorkshop(townHost.Root);
         AssertNoRedText(Require<VisualElement>(townHost.Root, "TwpRoot"), "Tactical Workshop");
         yield return Capture("tactical_workshop");
+        // posture 카드는 Button — HoldLine 카드 클릭이 세션 truth 실제 쓰기인지 검증.
+        ClickButton(townHost.Root, "TwpPosture_HoldLine");
+        yield return WaitFrames(2);
+        Assert.That(root.SessionState.SelectedTeamPosture, Is.EqualTo(TeamPostureType.HoldLine),
+            "posture 카드 클릭은 세션 SelectedTeamPosture를 갱신한다.");
+        Assert.That(Require<VisualElement>(townHost.Root, "TwpPosture_HoldLine").ClassListContains("twp-posture-card--selected"),
+            Is.True, "재렌더된 HoldLine 카드가 선택 상태로 표시된다.");
         ClickButton(townHost.Root, "TwpCloseButton");
         yield return WaitForHidden(townHost.Root, "TwpRoot");
 
@@ -211,7 +219,14 @@ public sealed class UxBiblePlayModeWitnessTests
         yield return Capture("atlas_enemy_intel");
 
         atlas.ContinueToExpedition();
-        // ADR-0028 P2b/#b: 출격 전 warrant 선택 overlay가 ContinueToExpedition을 가로채 Atlas panel 위에 뜬다.
+        // 출격 편성 확인 게이트(54072eda)가 warrant보다 먼저 Atlas panel을 가로챈다 —
+        // 게이트 surface가 실제로 뜨는지 witness하고 출격 버튼으로 통과한다.
+        // (witness는 e993ab8d에서 warrant overlay만 알았고 이 게이트 도입 후 미갱신 → 5s 타임아웃으로 깨져 있었다.)
+        yield return WaitForCondition(() => atlasHost.Root.Q<Button>("SortieLaunchButton") != null, 5f);
+        yield return Capture("sortie_confirm_gate");
+        ClickButton(atlasHost.Root, "SortieLaunchButton");
+
+        // ADR-0028 P2b/#b: 출격 확인 뒤 warrant 선택 overlay가 뜬다.
         // 정치 선택 surface(카드)가 PlayMode에서 실제로 뜨는지 witness하고, ProceedButton(스킵)으로 통과해 Battle로 간다.
         yield return WaitForCondition(() =>
         {

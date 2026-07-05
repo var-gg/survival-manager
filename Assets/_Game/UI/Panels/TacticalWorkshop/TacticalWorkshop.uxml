@@ -41,7 +41,8 @@
                     <ui:Label class="twp-zone-label twp-zone-label--front" text="전열" />
                     <ui:Label class="twp-zone-label twp-zone-label--back" text="후열" />
                     <ui:VisualElement class="twp-anchor-pad">
-                        <!-- 6 standee는 View가 RenderAnchors에서 동적 생성. 기존 .twp-standee--{position} class 보존. -->
+                        <!-- 6 standee는 View가 RenderAnchors에서 동적 생성. 기존 twp-standee position 변형 class 보존.
+                             주의: XML 주석 안에 이중 하이픈(class modifier 표기) 금지. template 인스턴스가 통째로 비는 import 결함. -->
                     </ui:VisualElement>
                     <ui:Label class="twp-anchor-pad__readonly-hint" text="배치 변경은 전술 설정에서" />
                     <ui:Label class="twp-section-eyebrow twp-tactics-eyebrow" text="유닛 전술" />

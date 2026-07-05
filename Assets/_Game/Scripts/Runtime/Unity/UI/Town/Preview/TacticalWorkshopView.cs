@@ -164,7 +164,9 @@ public sealed class TacticalWorkshopView : ITacticalWorkshopView
         _postureRow.Clear();
         foreach (var p in postures)
         {
-            var card = new VisualElement { name = $"TwpPosture_{p.PostureId}" };
+            // 인터랙티브 요소는 Button — SquadBuilder posture 버튼과 같은 grammar.
+            // (VisualElement + ClickEvent 콜백은 witness의 합성 클릭 디스패치가 닿지 않는다.)
+            var card = new Button { name = $"TwpPosture_{p.PostureId}", text = string.Empty };
             card.AddToClassList("twp-posture-card");
             card.AddToClassList($"twp-posture-card--art-{p.SpriteKey}");
             card.AddToClassList("sm-hover-raise");   // 콘솔급 motion — hover 시 raise
@@ -177,7 +179,8 @@ public sealed class TacticalWorkshopView : ITacticalWorkshopView
             card.Add(label);
 
             card.tooltip = $"{p.PostureId} — {p.KoLabel}";
-            card.RegisterCallback<ClickEvent>(_ => _actions?.OnPostureSelected(p.PostureId));
+            var postureId = p.PostureId;
+            card.clicked += () => _actions?.OnPostureSelected(postureId);
             _postureRow.Add(card);
         }
     }

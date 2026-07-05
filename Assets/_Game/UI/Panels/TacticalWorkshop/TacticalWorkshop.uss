@@ -268,6 +268,14 @@
 .twp-posture-card {
     flex-grow: 1;
     flex-basis: 0;
+    /* Button 승격 — unity-button 기본 margin/padding 중화 */
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
     margin-right: var(--sm-s-2);
     background-color: var(--sm-bg-2);
     border-left-width: 1px;
