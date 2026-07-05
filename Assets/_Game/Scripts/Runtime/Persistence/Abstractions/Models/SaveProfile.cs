@@ -35,5 +35,7 @@ public sealed class SaveProfile
     public List<ArenaMatchRecordRecord> ArenaMatchRecords = new();
     public List<ArenaSeasonStateRecord> ArenaSeasons = new();
     public List<ArenaRewardLedgerEntryRecord> ArenaRewardLedger = new();
-    public NarrativeProgressRecord Narrative = NarrativeProgressRecord.Empty;
+    // 공유 static(NarrativeProgressRecord.Empty) 참조 금지 — populate형 역직렬화가 필드의 기존
+    // 인스턴스를 재사용하면 전역 Empty가 오염된다. 프로필마다 독립 인스턴스를 가진다.
+    public NarrativeProgressRecord Narrative = new();
 }

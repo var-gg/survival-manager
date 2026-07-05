@@ -13,6 +13,15 @@ namespace SM.Persistence.Json;
 public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnostics
 {
     private static readonly UTF8Encoding Utf8NoBom = new(false);
+
+    // CRITICAL: Replace 필수. 기본값(Auto)은 필드 초기값으로 이미 인스턴스가 있으면 그 안으로
+    // populate하는데, SaveProfile 계열 초기값이 공유 record(NarrativeProgressRecord.Empty 등)를
+    // 참조하면 로드 한 번이 프로세스 전역 Empty를 오염시킨다(새 프로필에 로드된 스토리 진행이 새어 듦).
+    private static readonly JsonSerializerSettings LoadSettings = new()
+    {
+        ObjectCreationHandling = ObjectCreationHandling.Replace,
+    };
+
     private readonly string _rootDirectory;
     private readonly string _quarantineDirectory;
 
@@ -383,7 +392,7 @@ public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnos
         try
         {
             var manifestJson = File.ReadAllText(manifestPath, Encoding.UTF8);
-            var manifest = JsonConvert.DeserializeObject<SaveManifestRecord>(manifestJson);
+            var manifest = JsonConvert.DeserializeObject<SaveManifestRecord>(manifestJson, LoadSettings);
             if (manifest == null)
             {
                 return ProfileReadAttempt.Invalid("manifest_deserialize_failed");
@@ -401,7 +410,7 @@ public sealed class JsonSaveRepository : ISaveRepository, ISaveRepositoryDiagnos
                 return ProfileReadAttempt.Invalid(verificationFailure);
             }
 
-            var profile = JsonConvert.DeserializeObject<SaveProfile>(Encoding.UTF8.GetString(verifiedPayloadBytes));
+            var profile = JsonConvert.DeserializeObject<SaveProfile>(Encoding.UTF8.GetString(verifiedPayloadBytes), LoadSettings);
             if (profile == null)
             {
                 return ProfileReadAttempt.Invalid("profile_deserialize_failed");

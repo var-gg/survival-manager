@@ -47,9 +47,9 @@ public sealed class AtlasReadabilityTests
         Assert.That(state.Tiles.SelectMany(tile => tile.ModifierChips).Select(chip => chip.Label), Has.None.Contains("RewardBias"));
         Assert.That(state.Tiles.SelectMany(tile => tile.ModifierChips).Select(chip => chip.Label), Has.None.Contains("ThreatPressure"));
         Assert.That(state.Tiles.Count(tile => tile.AuraCategories.Count > 1), Is.GreaterThan(0));
-        Assert.That(state.Preview.DebugHashLine, Does.Contain("NodeOverlayHash="));
-        Assert.That(state.Preview.DebugHashLine, Does.Contain("BattleContextHash="));
-        Assert.That(state.Preview.DebugHashLine, Does.Contain("stageCandidatePathHash="));
+        // d9b0bbf4(UX Bible 게이트): 디버그 해시 줄은 플레이어 대면 preview에서 제거 — 디버그 해시
+        // 노출 계약은 BattleScreen 디버그 폴드아웃(BattleScreenDebugFoldoutFastTests)이 소유한다.
+        Assert.That(state.Preview.DebugHashLine, Is.Empty);
     }
 
     [Test]

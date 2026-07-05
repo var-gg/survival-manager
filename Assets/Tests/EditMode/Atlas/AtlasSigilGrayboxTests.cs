@@ -171,8 +171,9 @@ public sealed class AtlasSigilGrayboxTests
 
         Assert.That(state.PlacementSummary, Does.Contain("/2"));
         Assert.That(modifierTooltips, Has.Some.Contains("위험 연동 cap"));
-        Assert.That(state.Preview.DebugHashLine, Does.Contain("NodeOverlayHash="));
-        Assert.That(state.Preview.DebugHashLine, Does.Contain("input=runId>chapterId>siteId>nodeIndex>encounterId>stageCandidatePathHash>NodeOverlayHash>squadSnapshotId"));
+        // d9b0bbf4(UX Bible 게이트): 디버그 해시 줄은 플레이어 대면 preview에서 제거 — 디버그 해시
+        // 노출 계약은 BattleScreen 디버그 폴드아웃(BattleScreenDebugFoldoutFastTests)이 소유한다.
+        Assert.That(state.Preview.DebugHashLine, Is.Empty);
     }
 
     [Test]
