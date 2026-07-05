@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-09
+- 최종수정일: 2026-07-05
 - 소스오브트루스: `docs/06_production/pre-art-release-floor.md`
 - 관련문서:
   - `README.md`
@@ -63,6 +63,36 @@ automated floor는 같은 SHA에서 아래 순서로 green이어야 한다.
 runtime smoke는 `test-play`, manual newcomer witness, manual normal loop가 맡는다.
 batchmode lane은 stale `TestResults-Batch.xml`이나 stale validator log를 success evidence로 재사용하지 않는다.
 
+## clean clone automated witness lane
+
+```powershell
+pwsh -File tools/clean-clone-witness.ps1
+```
+
+커밋된 트리(fresh clone, Library 제로) + machine-only 에셋 복사(아래) 상태에서
+import + compile + content-validate + balance-sweep-smoke + EditMode 테스트를 통과하는지 검증한다.
+manual newcomer witness의 배치 가능 부분을 자동화한 lane이며, 미커밋 파일·로컬 캐시 의존을 잡는다.
+클론은 별도 Library/lock을 쓰므로 메인 에디터가 열려 있어도 실행 가능하다.
+실패 시 클론(`../.sm-clean-clone-witness`)과 `Logs/witness/**`가 보존된다.
+이 lane은 in-editor Boot playable 확인(manual sign-off의 newcomer witness)을 대체하지 않는다.
+
+**machine-only 에셋 계층 (2026-07-05 witness 첫 실행이 확정)**: 저장소 커밋 트리는 자기충족적이지
+않다. `.gitignore`가 유료 에셋팩 7종(Allsky / Epic Toon FX / Kevin Iglesias / TriForge /
+P09_Modular_Humanoid / Quibli / MagicaCloth2)과 승격 아트(`Assets/Resources/_Game/Art/`)를
+제외하므로 이들은 이 머신에만 존재한다(메인 Assets 31,306 파일 vs 커밋 트리 5,187 파일).
+신규 머신 셋업은 clone + 유료팩 Asset Store 임포트 + 승격 아트 복원이 필수다.
+witness는 기본값으로 이 디렉터리들을 원본 저장소에서 클론에 복사해 그 절차를 등가 재현하고,
+`-NoMachineOnlyAssetCopy`(strict)면 복사 없이 돌린다 — 이때 자산 의존 테스트 10건 실패가 예상 동작이다.
+
+## CI 게이트 상태
+
+`.github/workflows/{unity-tests,content-validation}.yml`의 `unity-gate`는 `UNITY_LICENSE`
+시크릿이 없으면 Unity job을 skip한다. 2026-07-05부터 skip은 warning annotation + step summary로
+유음화되어 "초록이지만 Unity 검증 없음" 상태가 런 화면에 드러난다.
+라이선스 등록 절차는 `unity-license-request` 워크플로(workflow_dispatch) 주석에 있다 —
+CI 컨테이너 환경에서 .alf를 만들어 .ulf로 교환해야 하며 로컬 Windows 라이선스는 재사용할 수 없다.
+시크릿 등록 전까지 원격 검증 공백은 clean clone witness lane이 보완한다.
+
 ## RC wrapper
 
 자동 floor 기본 진입점은 아래 wrapper다.
@@ -109,6 +139,7 @@ generated artifact는 `Logs/*`와 CI artifact로 보관하고, durable sign-off�
 아래 항목은 자동화로 대체하지 않는다.
 
 - clean clone newcomer witness: Unity `6000.4.7f1`만으로 `SM/전체테스트 -> Boot -> Start Local Run`
+  (배치 가능 부분은 `tools/clean-clone-witness.ps1`가 선행 자동 검증 — in-editor playable 확인만 manual로 남는다)
 - normal loop smoke: first reward return, selector lock, `Resume Expedition`, boss extract `Reward -> Town(close)`
 - Quick Battle smoke: campaign progression 비오염 확인
 - localization: `ko` / `en` overlay 전환, `ui.battle.*` missing key 0
