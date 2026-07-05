@@ -146,13 +146,25 @@
     {
       "id": "town.tactical_workshop",
       "displayNameKo": "전술 공방",
-      "state": "legacy-preview",
+      "state": "active-production",
       "productionUxml": "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uxml",
-      "routeOwner": "PreviewOnly",
+      "routeOwner": "TownScreenController.TacticalWorkshopButton",
       "legacyAliases": [
         "TacticalWorkshop",
         "TacticalWorkshopPresenter",
         "TacticalWorkshopPreview"
+      ],
+      "visualReference": "Screenshots/mockups/ui_ux_bible_squad_workshop_v1.png"
+    },
+    {
+      "id": "town.tactical_workshop_sandbox",
+      "displayNameKo": "전술 공방 샌드박스 (Codex legacy)",
+      "state": "legacy-preview",
+      "productionUxml": "Assets/_Game/UI/TacticalWorkshop/TacticalWorkshop.uxml",
+      "routeOwner": "PreviewOnly",
+      "legacyAliases": [
+        "TacticalWorkshopSandbox",
+        "TacticalWorkshopSandboxController"
       ],
       "visualReference": ""
     },

@@ -30,10 +30,12 @@ public sealed class UiArtBibleConformanceFastTests
         var registry = File.ReadAllText(RegistryPath);
         var exceptions = File.ReadAllText(ExceptionsPath);
 
-        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss").Count, Is.GreaterThanOrEqualTo(9));
+        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss").Count, Is.GreaterThanOrEqualTo(10));
         Assert.That(registry, Does.Contain("\"legacyPreviewPanelUss\""));
-        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss"), Does.Not.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
-        Assert.That(ReadStringArray(registry, "legacyPreviewPanelUss"), Does.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
+        // TacticalWorkshop wire cycle (2026-07): 전술 공방 USS는 프로덕션 enforced로 승격,
+        // legacy-preview 목록에는 Codex legacy 샌드박스 USS만 남는다.
+        Assert.That(ReadStringArray(registry, "enforcedProductionPanelUss"), Does.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
+        Assert.That(ReadStringArray(registry, "legacyPreviewPanelUss"), Does.Contain("Assets/_Game/UI/TacticalWorkshop/TacticalWorkshop.uss"));
         Assert.That(registry, Does.Contain("\"monitoredProductionPanelUss\""));
         Assert.That(registry, Does.Contain("\"button.cta.primary\""));
         Assert.That(registry, Does.Contain("\"button.cta.secondary\""));

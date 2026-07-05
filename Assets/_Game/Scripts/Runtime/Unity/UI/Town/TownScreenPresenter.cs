@@ -296,6 +296,7 @@ public sealed class TownScreenPresenter
             RosterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.roster", "◈  동료 명부"),
             CompendiumEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.compendium", "도감"),
             TacticalSetupEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.tactical_setup", "❖  전술 설정"),
+            TacticalWorkshopEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.tactical_workshop", "전술 공방"),
             PermanentAugmentEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.permanent_augment", "✦  영구 강화"),
             TheaterEntryLabel: Localize(GameLocalizationTables.UITown, "ui.town.entry.theater", "▶  극장"),
             ShowTheater: _theaterOpener != null,

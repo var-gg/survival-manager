@@ -53,23 +53,28 @@ public sealed class GamePanelSotRegistryFastTests
     }
 
     [Test]
-    public void TacticalWorkshop_Is_LegacyPreview_And_Not_In_Town_Production_Route()
+    public void TacticalWorkshop_Is_Active_Production_Town_Route()
     {
+        // TacticalWorkshop wire cycle (2026-07): 전술 공방 승격. Codex legacy 샌드박스 표면은
+        // town.tactical_workshop_sandbox로 legacy-preview에 잔류(씬·에디터 부트스트랩 참조라 삭제 금지).
         var surfaces = ReadSurfaces(File.ReadAllText(RegistryPath));
         Assert.That(surfaces, Does.ContainKey("town.tactical_workshop"));
-        Assert.That(surfaces["town.tactical_workshop"].State, Is.EqualTo("legacy-preview"));
-        Assert.That(surfaces["town.tactical_workshop"].RouteOwner, Is.EqualTo("PreviewOnly"));
+        Assert.That(surfaces["town.tactical_workshop"].State, Is.EqualTo("active-production"));
+        Assert.That(surfaces["town.tactical_workshop"].RouteOwner, Is.EqualTo("TownScreenController.TacticalWorkshopButton"));
+        Assert.That(surfaces, Does.ContainKey("town.tactical_workshop_sandbox"));
+        Assert.That(surfaces["town.tactical_workshop_sandbox"].State, Is.EqualTo("legacy-preview"));
+        Assert.That(surfaces["town.tactical_workshop_sandbox"].RouteOwner, Is.EqualTo("PreviewOnly"));
 
         var townUxml = File.ReadAllText(TownUxmlPath);
         var townController = File.ReadAllText(TownControllerPath);
         Assert.That(townUxml, Does.Contain("TacticalSetupButton"));
         Assert.That(townUxml, Does.Contain("TacticalSetupTemplate"));
-        Assert.That(townUxml, Does.Not.Contain("TacticalWorkshopButton"));
-        Assert.That(townUxml, Does.Not.Contain("TacticalWorkshopTemplate"));
-        Assert.That(townUxml, Does.Not.Contain("../../Panels/TacticalWorkshop/TacticalWorkshop.uxml"));
+        Assert.That(townUxml, Does.Contain("TacticalWorkshopButton"));
+        Assert.That(townUxml, Does.Contain("TacticalWorkshopTemplate"));
+        Assert.That(townUxml, Does.Contain("../../Panels/TacticalWorkshop/TacticalWorkshop.uxml"));
         Assert.That(townController, Does.Contain("TryWireTacticalSetup"));
-        Assert.That(townController, Does.Not.Contain("TryWireTacticalWorkshop"));
-        Assert.That(townController, Does.Not.Contain("BindTacticalWorkshopOpen"));
+        Assert.That(townController, Does.Contain("TryWireTacticalWorkshop"));
+        Assert.That(townController, Does.Contain("BindTacticalWorkshopOpen"));
     }
 
     [Test]
@@ -80,8 +85,9 @@ public sealed class GamePanelSotRegistryFastTests
         var legacyPreview = ReadStringArray(json, "legacyPreviewPanelUss");
 
         Assert.That(enforced, Does.Contain("Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uss"));
-        Assert.That(enforced, Does.Not.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
-        Assert.That(legacyPreview, Does.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
+        Assert.That(enforced, Does.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
+        Assert.That(legacyPreview, Does.Not.Contain("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss"));
+        Assert.That(legacyPreview, Does.Contain("Assets/_Game/UI/TacticalWorkshop/TacticalWorkshop.uss"));
     }
 
     private static IReadOnlyDictionary<string, PanelSurface> ReadSurfaces(string json)

@@ -7,6 +7,7 @@
     -->
     <Style src="../../Foundation/Components/HeroFaceCard.uss" />
     <ui:Template name="TacticalSetupTemplate" src="../../Panels/TownSquadBuilder/TownSquadBuilder.uxml" />
+    <ui:Template name="TacticalWorkshopTemplate" src="../../Panels/TacticalWorkshop/TacticalWorkshop.uxml" />
     <ui:Template name="RecruitTemplate" src="../../Panels/RecruitPack/RecruitPack.uxml" />
     <ui:Template name="EquipmentRefitTemplate" src="../../Panels/EquipmentRefit/EquipmentRefit.uxml" />
     <ui:Template name="PassiveBoardTemplate" src="../../Panels/PassiveBoard/PassiveBoard.uxml" />
@@ -165,6 +166,20 @@
                     </ui:VisualElement>
                     <ui:Label name="TacticalSetupButtonArrowLabel" class="town-hub__utility-arrow" text="›" picking-mode="Ignore" />
                 </ui:Button>
+                <ui:Button name="TacticalWorkshopButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry town-hub__utility-entry--workshop">
+                    <ui:Label name="TacticalWorkshopButtonIconLabel" class="town-hub__utility-icon" text="♜" picking-mode="Ignore" />
+                    <ui:VisualElement class="town-hub__utility-copy" picking-mode="Ignore">
+                        <ui:Label name="TacticalWorkshopEntryLabel" class="town-hub__utility-name" text="전술 공방" />
+                        <ui:VisualElement class="town-hub__pip-row town-hub__pip-row--gold">
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip town-hub__pip--on" />
+                            <ui:VisualElement class="town-hub__pip" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="TacticalWorkshopButtonArrowLabel" class="town-hub__utility-arrow" text="›" picking-mode="Ignore" />
+                </ui:Button>
                 <ui:Button name="PermanentAugmentButton" class="ui-button sm-cta sm-cta--md sm-cta--secondary town-hub__utility-entry town-hub__utility-entry--augment">
                     <ui:Label name="PermanentAugmentButtonIconLabel" class="town-hub__utility-icon" text="✦" picking-mode="Ignore" />
                     <ui:VisualElement class="town-hub__utility-copy" picking-mode="Ignore">
@@ -227,6 +242,9 @@
         <!-- Modal layer overlays — TemplateContainer height 0 우회 + inline display:none 강제 default closed. -->
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="TacticalSetupTemplate" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
+            <ui:Instance template="TacticalWorkshopTemplate" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="town-hub__modal-overlay" picking-mode="Ignore" style="display: none;">
             <ui:Instance template="RecruitTemplate" picking-mode="Ignore" />

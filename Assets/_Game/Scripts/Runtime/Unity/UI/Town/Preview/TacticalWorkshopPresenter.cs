@@ -4,22 +4,23 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Contracts;
-using SM.Meta.Model;
+using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
 
 /// <summary>
-/// Tactical Workshop V1 Presenter — `GameSessionRoot.SessionState` (Profile) → TacticalWorkshopViewState 변환.
+/// Tactical Workshop(전술 공방) 프로덕션 presenter — GameSessionState → TacticalWorkshopViewState 변환.
 ///
-/// Sprint 1 (현재): 패턴 scaffold. posture + anchor 기본 binding은 wire. 나머지 column
-/// (synergy active, threat coverage, per-unit RuleSet runtime fetch)은 Sprint 2에서 wire.
+/// 책임 경계 (audit §2.2 / panel-responsibility-matrix §2):
+/// - 편집 가능: 팀 태세(posture 5카드) + per-unit 타겟 지시(P1 directive cycle) + 전술 초기화.
+/// - read-only: anchor pad(배치 편집은 SquadBuilder=전술 설정 책임), role/behavior 요약, 시너지/위협 답수.
+/// - 시너지는 SquadBuilder와 동일 SoT(SquadSynergyPreview + snapshot.SynergyCatalog),
+///   위협 lane은 SquadCounterCoveragePreview.Dimensions에서 파생 — 정적 사본 어휘를 두지 않는다.
 ///
-/// 본 Presenter는 sprite 로드를 직접 안 함 — caller가 `SpriteLoader` delegate를 ctor로 inject.
-/// Runtime: Resources/Addressables 기반. Editor Bootstrap: AssetDatabase 기반.
-///
-/// 워크플로우: posture 카드 클릭 → CycleTeamPosture / SetTeamPosture → profile mutation → BattleTest 즉시 반영.
+/// 순수성: MonoBehaviour/Resources 접근 없음. sprite 로드는 SpriteLoader delegate 주입(모두 optional —
+/// 런타임은 USS art class로 배경을 입히므로 null 허용), 이름 해석은 Func 주입(FastUnit은 identity 람다).
 ///
 /// Codex legacy `SM.Unity.UI.TacticalWorkshop.TacticalWorkshopPresenter`와 별개 — V1 redesign 자리.
 /// </summary>
@@ -27,144 +28,281 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
 {
     public delegate Texture2D? SpriteLoader(string spriteKey);
 
-    private readonly GameSessionRoot _root;
-    private readonly TacticalWorkshopView _view;
-    private readonly SpriteLoader _postureSprite;
-    private readonly SpriteLoader _threatSprite;
-    private readonly SpriteLoader _classSprite;
-    private readonly ContentTextResolver _contentText;
+    private readonly GameSessionState _session;
+    private readonly ICombatContentLookup _contentLookup;
+    private readonly ITacticalWorkshopView _view;
+    private readonly Func<string, string, string> _characterName;   // (characterId, fallbackArchetypeId)
+    private readonly Func<string, string, string> _roleName;        // (roleInstructionId, fallbackRoleTag)
+    private readonly Func<string, string> _synergyName;
+    private readonly SpriteLoader? _postureSprite;
+    private readonly SpriteLoader? _threatSprite;
+    private readonly SpriteLoader? _classSprite;
 
     public TacticalWorkshopPresenter(
-        GameSessionRoot root,
-        TacticalWorkshopView view,
-        SpriteLoader postureSprite,
-        SpriteLoader threatSprite,
-        SpriteLoader classSprite,
-        ContentTextResolver? contentText = null)
+        GameSessionState session,
+        ICombatContentLookup contentLookup,
+        ITacticalWorkshopView view,
+        Func<string, string, string> characterName,
+        Func<string, string, string> roleName,
+        Func<string, string> synergyName,
+        SpriteLoader? postureSprite = null,
+        SpriteLoader? threatSprite = null,
+        SpriteLoader? classSprite = null)
     {
-        _root = root ?? throw new ArgumentNullException(nameof(root));
+        _session = session ?? throw new ArgumentNullException(nameof(session));
+        _contentLookup = contentLookup ?? throw new ArgumentNullException(nameof(contentLookup));
         _view = view ?? throw new ArgumentNullException(nameof(view));
-        _postureSprite = postureSprite ?? throw new ArgumentNullException(nameof(postureSprite));
-        _threatSprite = threatSprite ?? throw new ArgumentNullException(nameof(threatSprite));
-        _classSprite = classSprite ?? throw new ArgumentNullException(nameof(classSprite));
-        _contentText = contentText ?? new ContentTextResolver(root.Localization, root.CombatContentLookup);
+        _characterName = characterName ?? throw new ArgumentNullException(nameof(characterName));
+        _roleName = roleName ?? throw new ArgumentNullException(nameof(roleName));
+        _synergyName = synergyName ?? throw new ArgumentNullException(nameof(synergyName));
+        _postureSprite = postureSprite;
+        _threatSprite = threatSprite;
+        _classSprite = classSprite;
     }
 
     public void Initialize()
     {
         _view.Bind(this);
+        _view.BindClose(Close);
         Refresh();
     }
 
-    public void Refresh()
+    public void Open()
     {
-        _view.Render(BuildState());
+        _view.Open();
+        Refresh();
     }
+
+    public void Close() => _view.Close();
+
+    public void Refresh() => _view.Render(BuildState());
 
     // === ITacticalWorkshopActions ===
 
     void ITacticalWorkshopActions.OnPostureSelected(string postureId)
     {
-        // Sprint 2: GameSessionState.SetTeamPosture(TeamPostureType) named-set 사용.
-        // 워크플로우: 카드 클릭 → enum parse → SetTeamPosture → profile mutation → BattleTest 즉시 반영.
+        // 카드 클릭 → enum parse → SetTeamPosture → blueprint capture → 전투 구성에 즉시 반영.
         if (Enum.TryParse<TeamPostureType>(postureId, out var posture))
         {
-            _root.SessionState.SetTeamPosture(posture);
+            _session.SetTeamPosture(posture);
+        }
+        Refresh();
+    }
+
+    void ITacticalWorkshopActions.OnTacticDirectiveCycled(string heroId)
+    {
+        if (!string.IsNullOrWhiteSpace(heroId))
+        {
+            _session.CycleHeroTargetDirective(heroId);
+        }
+        Refresh();
+    }
+
+    void ITacticalWorkshopActions.OnTacticsReset()
+    {
+        // 전술만 초기화 — 배치(anchor)는 SquadBuilder 소유라 건드리지 않는다.
+        // 지시는 배치 여부와 무관하게 전 로스터를 비운다 — 벤치 유닛에 남은 지시가
+        // 나중에 배치될 때 조용히 되살아나는 함정 방지.
+        _session.SetTeamPosture(TeamPostureType.StandardAdvance);
+        foreach (var hero in _session.Profile.Heroes)
+        {
+            _session.SetHeroTargetDirective(hero.HeroId, PlayerTargetDirective.Default);
         }
         Refresh();
     }
 
     // anchor pad는 read-only reference — anchor 편집은 SquadBuilder 책임 (audit §2.2).
-    // OnAnchorClicked 액션 제거: CycleDeploymentAssignment edit는 SquadBuilder surface로 이관.
+    // OnAnchorClicked 액션 없음: CycleDeploymentAssignment edit는 SquadBuilder surface 소유.
 
     // === ViewState builder ===
 
-    private TacticalWorkshopViewState BuildState()
+    public TacticalWorkshopViewState BuildState()
     {
-        var session = _root.SessionState;
+        var assignments = BuildAssignments();
+        var deployedHeroes = assignments
+            .Where(entry => entry.Hero != null)
+            .Select(entry => entry.Hero!)
+            .ToList();
+        var snapshotAvailable = _contentLookup.TryGetCombatSnapshot(out var snapshot, out _);
+
+        var threats = BuildThreats(deployedHeroes, snapshotAvailable, snapshot);
+        var (synergyChips, synergyEmptyText) = BuildSynergyChips(deployedHeroes, snapshotAvailable, snapshot);
+        var evaluated = threats.Any(t => !string.IsNullOrEmpty(t.AnswerState));
+        var answeredCount = threats.Count(t => t.AnswerState is "answered" or "partial");
+        var selected = _session.SelectedTeamPosture;
+
         return new TacticalWorkshopViewState(
-            BuildAnchors(session),
-            BuildPostures(session),
-            session.SelectedTeamPosture.ToString(),
-            BuildSynergyChips(session),
-            BuildThreats(session),
-            BuildTactics(session)
-        );
+            Anchors: BuildAnchors(assignments),
+            Postures: BuildPostures(selected),
+            SelectedPostureId: selected.ToString(),
+            SynergyChips: synergyChips,
+            SynergyEmptyText: synergyEmptyText,
+            Threats: threats,
+            Tactics: BuildTactics(assignments),
+            DeployChipLabel: $"배치 {deployedHeroes.Count}/{assignments.Count}",
+            PostureChipLabel: $"태세 · {TacticsLexicon.Posture(selected)}",
+            AnswerChipLabel: evaluated ? $"위협 답수 {answeredCount}/{threats.Count}" : "위협 답수 —",
+            AnswerChipWarn: threats.Any(t => t.AnswerState == "unanswered"));
     }
 
-    private IReadOnlyList<TacticalWorkshopAnchorViewState> BuildAnchors(GameSessionState session)
+    private IReadOnlyList<(DeploymentAnchorId Anchor, HeroInstanceRecord? Hero)> BuildAssignments()
     {
-        // Sprint 2: ProfileQueries.GetLoadoutView → anchor → heroId 매핑 + Profile.Heroes → ClassId → class sprite.
-        // 워크플로우: SquadBuilder가 anchor 편집 → BattleTest에 즉시 반영. TW는 read-only 시각화.
-        var loadout = _root.ProfileQueries.GetLoadoutView(_root.ActiveProfileId);
-        var heroById = session.Profile.Heroes.ToDictionary(h => h.HeroId, StringComparer.Ordinal);
-
-        var anchors = new List<TacticalWorkshopAnchorViewState>(6);
-        foreach (var anchor in AnchorOrder)
+        var heroById = _session.Profile.Heroes.ToDictionary(h => h.HeroId, StringComparer.Ordinal);
+        var rows = new List<(DeploymentAnchorId, HeroInstanceRecord?)>(6);
+        foreach (var anchor in _session.DeploymentAnchors)
         {
-            var deployment = loadout?.Deployments.FirstOrDefault(d => d.Anchor == anchor);
-            var heroId = deployment?.HeroId ?? string.Empty;
-            var hero = !string.IsNullOrEmpty(heroId) && heroById.TryGetValue(heroId, out var h) ? h : null;
-            var classKey = hero?.ClassId ?? string.Empty;
-            anchors.Add(new TacticalWorkshopAnchorViewState(
-                AnchorId: anchor.ToString(),
-                AssignedHeroId: heroId,
-                AssignedFigure: string.IsNullOrEmpty(classKey) ? null : _classSprite(classKey)));
+            var heroId = _session.GetAssignedHeroId(anchor);
+            var hero = !string.IsNullOrEmpty(heroId) && heroById.TryGetValue(heroId!, out var found) ? found : null;
+            rows.Add((anchor, hero));
         }
-        return anchors;
+
+        return rows;
     }
 
-    private IReadOnlyList<TacticalWorkshopPostureViewState> BuildPostures(GameSessionState session)
+    private IReadOnlyList<TacticalWorkshopAnchorViewState> BuildAnchors(
+        IReadOnlyList<(DeploymentAnchorId Anchor, HeroInstanceRecord? Hero)> assignments)
     {
-        var selected = session.SelectedTeamPosture;
+        // SquadBuilder가 anchor 편집 → 세션 truth에 즉시 반영. TW는 read-only 시각화.
+        return assignments
+            .Select(entry =>
+            {
+                var classKey = entry.Hero?.ClassId ?? string.Empty;
+                return new TacticalWorkshopAnchorViewState(
+                    AnchorId: entry.Anchor.ToString(),
+                    AssignedHeroId: entry.Hero?.HeroId ?? string.Empty,
+                    AssignedFigure: string.IsNullOrEmpty(classKey) ? null : _classSprite?.Invoke(classKey));
+            })
+            .ToList();
+    }
+
+    private IReadOnlyList<TacticalWorkshopPostureViewState> BuildPostures(TeamPostureType selected)
+    {
         return PostureCatalog
             .Select(p => new TacticalWorkshopPostureViewState(
                 PostureId: p.Id,
-                Sprite: _postureSprite(p.SpriteKey),
+                SpriteKey: p.SpriteKey,
+                Sprite: _postureSprite?.Invoke(p.SpriteKey),
                 KoLabel: p.KoLabel,
                 IsSelected: string.Equals(p.Id, selected.ToString(), StringComparison.Ordinal)))
             .ToList();
     }
 
-    private IReadOnlyList<TacticalWorkshopSynergyChipViewState> BuildSynergyChips(GameSessionState session)
+    private (IReadOnlyList<TacticalWorkshopSynergyChipViewState> Chips, string EmptyText) BuildSynergyChips(
+        IReadOnlyList<HeroInstanceRecord> deployedHeroes,
+        bool snapshotAvailable,
+        SM.Meta.Model.CombatContentSnapshot? snapshot)
     {
-        // Sprint 1: 7 family 정적 list. active state는 Sprint 2.
-        // TODO Sprint 2: SynergyService.BuildForTeam(deployedHeroes)로 breakpoint + active count.
-        return SynergyCatalog
-            .Select(s => new TacticalWorkshopSynergyChipViewState(
-                SynergyId: s.Id,
-                Group: s.Group,
-                Sprite: s.Group == "class" ? _classSprite(s.SpriteKey) : null,
-                KoLabel: s.KoLabel))
+        var none = (IReadOnlyList<TacticalWorkshopSynergyChipViewState>)Array.Empty<TacticalWorkshopSynergyChipViewState>();
+        if (deployedHeroes.Count == 0)
+        {
+            return (none, "배치하면 발동 시너지가 표시됩니다.");
+        }
+
+        if (!snapshotAvailable || snapshot == null)
+        {
+            return (none, "시너지 데이터를 불러오지 못했습니다.");
+        }
+
+        // 배치 분대 태그 집계 — SquadBuilder RenderSynergyChips와 동일 규칙(같은 SoT, 두 화면 동일 판정).
+        var deployedTags = new List<IReadOnlyList<string>>(deployedHeroes.Count);
+        foreach (var hero in deployedHeroes)
+        {
+            var tags = new List<string> { hero.RaceId, hero.ClassId };
+            if (!string.IsNullOrWhiteSpace(hero.ArchetypeId)
+                && snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var template)
+                && template.RecruitPlanTags != null)
+            {
+                tags.AddRange(template.RecruitPlanTags);
+            }
+
+            deployedTags.Add(tags);
+        }
+
+        var surfaces = SquadSynergyPreview.Evaluate(deployedTags, snapshot.SynergyCatalog)
+            .Where(surface => surface.CurrentCount > 0)
+            .ToList();
+
+        if (surfaces.Count == 0)
+        {
+            return (none, "활성 시너지 없음 · 같은 세력/직업 2명 이상 배치");
+        }
+
+        var chips = surfaces
+            .Select(surface =>
+            {
+                var bound = surface.IsActive
+                    ? surface.ActiveThreshold
+                    : (surface.NextThreshold > 0 ? surface.NextThreshold : surface.ActiveThreshold);
+                return new TacticalWorkshopSynergyChipViewState(
+                    SynergyId: surface.SynergyId,
+                    KoLabel: _synergyName(surface.SynergyId),
+                    CountLabel: $"{surface.CurrentCount}/{bound}",
+                    IsActive: surface.IsActive);
+            })
+            .ToList();
+        return (chips, string.Empty);
+    }
+
+    private IReadOnlyList<TacticalWorkshopThreatViewState> BuildThreats(
+        IReadOnlyList<HeroInstanceRecord> deployedHeroes,
+        bool snapshotAvailable,
+        SM.Meta.Model.CombatContentSnapshot? snapshot)
+    {
+        // 배치 분대 → 아키타입 governance → 팀 카운터 커버리지. SquadBuilder 대응 요약과 동일 SoT.
+        var templates = new List<SM.Meta.Model.CombatArchetypeTemplate>(deployedHeroes.Count);
+        if (snapshotAvailable && snapshot != null)
+        {
+            foreach (var hero in deployedHeroes)
+            {
+                if (!string.IsNullOrWhiteSpace(hero.ArchetypeId)
+                    && snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var template))
+                {
+                    templates.Add(template);
+                }
+            }
+        }
+
+        var strongSet = new HashSet<string>(StringComparer.Ordinal);
+        var gapSet = new HashSet<string>(StringComparer.Ordinal);
+        var evaluated = templates.Count > 0;
+        if (evaluated)
+        {
+            var (strong, gaps) = SquadCounterCoveragePreview.Classify(SquadCounterCoveragePreview.Evaluate(templates));
+            strongSet.UnionWith(strong);
+            gapSet.UnionWith(gaps);
+        }
+
+        // lane id는 SquadCounterCoveragePreview.Dimensions에서 파생 — 정적 사본 목록을 두지 않는다.
+        return SquadCounterCoveragePreview.Dimensions
+            .Select(dimension =>
+            {
+                var answerState = !evaluated
+                    ? string.Empty
+                    : strongSet.Contains(dimension) ? "answered"
+                    : gapSet.Contains(dimension) ? "unanswered"
+                    : "partial";
+                var spriteKey = ThreatSpriteKey(dimension);
+                return new TacticalWorkshopThreatViewState(
+                    LaneId: dimension,
+                    SpriteKey: spriteKey,
+                    Sprite: _threatSprite?.Invoke(spriteKey),
+                    KoLabel: TacticsLexicon.CounterTool(dimension),
+                    AnswerState: answerState);
+            })
             .ToList();
     }
 
-    private IReadOnlyList<TacticalWorkshopThreatViewState> BuildThreats(GameSessionState session)
+    private IReadOnlyList<TacticalWorkshopHeroTacticViewState> BuildTactics(
+        IReadOnlyList<(DeploymentAnchorId Anchor, HeroInstanceRecord? Hero)> assignments)
     {
-        // Sprint 1: 8 lane 정적 list. AnswerState는 Sprint 2 (TeamCounterCoverage).
-        return ThreatCatalog
-            .Select(t => new TacticalWorkshopThreatViewState(
-                LaneId: t.Id,
-                Sprite: _threatSprite(t.SpriteKey),
-                KoLabel: t.KoLabel,
-                AnswerState: string.Empty))
-            .ToList();
-    }
-
-    private IReadOnlyList<TacticalWorkshopHeroTacticViewState> BuildTactics(GameSessionState session)
-    {
-        // deployed hero × role instruction + behavior profile 요약.
+        // deployed hero × role instruction + behavior profile + P1 타겟 지시 요약.
         // condition→action→target rule chain은 runtime 모델에 없으므로 가짜 RuleSet을 만들지 않는다.
-        var loadout = _root.ProfileQueries.GetLoadoutView(_root.ActiveProfileId);
-        var heroById = session.Profile.Heroes.ToDictionary(h => h.HeroId, StringComparer.Ordinal);
-        var activeBlueprint = ResolveActiveBlueprint(session);
+        var activeBlueprint = ResolveActiveBlueprint();
         var rows = new List<TacticalWorkshopHeroTacticViewState>();
 
-        foreach (var anchor in AnchorOrder)
+        foreach (var (anchor, hero) in assignments)
         {
-            var deployment = loadout?.Deployments.FirstOrDefault(d => d.Anchor == anchor);
-            var heroId = deployment?.HeroId ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(heroId) || !heroById.TryGetValue(heroId, out var hero))
+            if (hero == null)
             {
                 continue;
             }
@@ -173,7 +311,7 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
             var fallbackRoleTag = ResolveDefaultRoleTag(hero.ClassId, anchor);
             RoleInstructionDefinition? roleInstruction = null;
             if (!string.IsNullOrWhiteSpace(roleInstructionId)
-                && _root.CombatContentLookup.TryGetRoleInstructionDefinition(roleInstructionId, out var resolvedRole))
+                && _contentLookup.TryGetRoleInstructionDefinition(roleInstructionId, out var resolvedRole))
             {
                 roleInstruction = resolvedRole;
             }
@@ -182,32 +320,33 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
             rows.Add(new TacticalWorkshopHeroTacticViewState(
                 HeroId: hero.HeroId,
                 DisplayName: ResolveHeroDisplayName(hero),
-                AnchorLabel: LocalizeAnchor(anchor),
-                RoleLabel: _contentText.GetRoleName(roleInstructionId, roleInstruction?.RoleTag ?? fallbackRoleTag),
-                FormationLabel: LocalizeFormation(behaviorProfile?.FormationLine),
-                RangeLabel: LocalizeRange(behaviorProfile?.RangeDiscipline),
+                AnchorLabel: TacticsLexicon.Anchor(anchor),
+                RoleLabel: _roleName(roleInstructionId, roleInstruction?.RoleTag ?? fallbackRoleTag),
+                FormationLabel: TacticsLexicon.Formation(behaviorProfile?.FormationLine),
+                RangeLabel: TacticsLexicon.Range(behaviorProfile?.RangeDiscipline),
+                DirectiveLabel: TacticsLexicon.Directive(_session.GetHeroTargetDirective(hero.HeroId)),
                 Biases: BuildBiases(roleInstruction)));
         }
 
         return rows;
     }
 
-    private SquadBlueprintRecord? ResolveActiveBlueprint(GameSessionState session)
+    private SquadBlueprintRecord? ResolveActiveBlueprint()
     {
-        return session.Profile.SquadBlueprints.FirstOrDefault(record =>
-                   string.Equals(record.BlueprintId, session.Profile.ActiveBlueprintId, StringComparison.Ordinal))
-               ?? session.Profile.SquadBlueprints.FirstOrDefault();
+        return _session.Profile.SquadBlueprints.FirstOrDefault(record =>
+                   string.Equals(record.BlueprintId, _session.Profile.ActiveBlueprintId, StringComparison.Ordinal))
+               ?? _session.Profile.SquadBlueprints.FirstOrDefault();
     }
 
     private string ResolveHeroDisplayName(HeroInstanceRecord hero)
     {
         // hero.Name은 SessionProfileSync가 archetype.Id ("warden") 같은 raw id를 박아두므로
-        // ContentTextResolver 없이 직접 사용하면 UI에 raw id가 노출된다. Character → archetype
-        // fallback chain을 가진 GetCharacterName으로 일관 처리한다 (CharacterId가 비면 NormalizeCharacterId가
+        // 직접 사용하면 UI에 raw id가 노출된다. Character → archetype fallback chain을 가진
+        // characterName resolver로 일관 처리한다 (CharacterId가 비면 NormalizeCharacterId가
         // ArchetypeId로 채워두므로 결과가 자연스럽다).
         if (!string.IsNullOrWhiteSpace(hero.CharacterId) || !string.IsNullOrWhiteSpace(hero.ArchetypeId))
         {
-            return _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
+            return _characterName(hero.CharacterId, hero.ArchetypeId);
         }
 
         return string.IsNullOrWhiteSpace(hero.Name) ? hero.HeroId : hero.Name;
@@ -228,13 +367,13 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
     private BehaviorProfileDefinition? ResolveBehaviorProfile(HeroInstanceRecord hero)
     {
         if (!string.IsNullOrWhiteSpace(hero.ArchetypeId)
-            && _root.CombatContentLookup.TryGetArchetype(hero.ArchetypeId, out var archetype))
+            && _contentLookup.TryGetArchetype(hero.ArchetypeId, out var archetype))
         {
             return archetype.BehaviorProfile;
         }
 
         if (!string.IsNullOrWhiteSpace(hero.HeroId)
-            && _root.CombatContentLookup.TryGetArchetype(hero.HeroId, out var heroArchetype))
+            && _contentLookup.TryGetArchetype(hero.HeroId, out var heroArchetype))
         {
             return heroArchetype.BehaviorProfile;
         }
@@ -267,48 +406,9 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
         };
     }
 
-    private static string LocalizeAnchor(DeploymentAnchorId anchor) => anchor switch
-    {
-        DeploymentAnchorId.FrontTop => "전열 상",
-        DeploymentAnchorId.FrontCenter => "전열 중",
-        DeploymentAnchorId.FrontBottom => "전열 하",
-        DeploymentAnchorId.BackTop => "후열 상",
-        DeploymentAnchorId.BackCenter => "후열 중",
-        DeploymentAnchorId.BackBottom => "후열 하",
-        _ => anchor.ToString(),
-    };
-
-    private static string LocalizeFormation(FormationLine? formation) => formation switch
-    {
-        FormationLine.Frontline => "전열",
-        FormationLine.Midline => "중열",
-        FormationLine.Backline => "후열",
-        _ => "배치 기준",
-    };
-
-    private static string LocalizeRange(RangeDiscipline? range) => range switch
-    {
-        RangeDiscipline.Collapse => "압박 접근",
-        RangeDiscipline.HoldBand => "거리 유지",
-        RangeDiscipline.KiteBackward => "후퇴 카이팅",
-        RangeDiscipline.SideStepHold => "측면 유지",
-        RangeDiscipline.AnchorNearFrontline => "전열 근접",
-        _ => "기본 교전 거리",
-    };
-
     private static float Clamp01(float value) => Mathf.Clamp01(value);
 
     // === Static catalog (pindoc V1 wiki SoT 한국어 표시명) ===
-
-    private static readonly DeploymentAnchorId[] AnchorOrder =
-    {
-        DeploymentAnchorId.FrontTop,
-        DeploymentAnchorId.FrontCenter,
-        DeploymentAnchorId.FrontBottom,
-        DeploymentAnchorId.BackTop,
-        DeploymentAnchorId.BackCenter,
-        DeploymentAnchorId.BackBottom,
-    };
 
     private readonly record struct PostureCatalogEntry(string Id, string SpriteKey, string KoLabel);
 
@@ -321,37 +421,25 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
         new("AllInBackline",    "all_in_backline",    "후열 깊이 침투"),
     };
 
-    private readonly record struct SynergyCatalogEntry(string Id, string Group, string SpriteKey, string KoLabel);
-
-    private static readonly SynergyCatalogEntry[] SynergyCatalog =
+    /// <summary>counter-coverage 차원 → 위협 glyph sprite 키 (Sprites/Threat/threat_{key}.png).</summary>
+    private static string ThreatSpriteKey(string dimension) => dimension switch
     {
-        new("synergy_human",    "race",  "",          "솔라룸"),
-        new("synergy_beastkin", "race",  "",          "이리솔 부족"),
-        new("synergy_undead",   "race",  "",          "회상 결사"),
-        new("synergy_vanguard", "class", "vanguard",  "전위"),
-        new("synergy_duelist",  "class", "duelist",   "결투가"),
-        new("synergy_ranger",   "class", "ranger",    "궁수"),
-        new("synergy_mystic",   "class", "mystic",    "신비"),
-    };
-
-    private readonly record struct ThreatCatalogEntry(string Id, string SpriteKey, string KoLabel);
-
-    private static readonly ThreatCatalogEntry[] ThreatCatalog =
-    {
-        new("ArmorFrontline",  "pierce",  "방어 전열"),
-        new("ResistanceShell", "sustain", "저항 외피"),
-        new("GuardBulwark",    "burst",   "가드 보루"),
-        new("EvasiveSkirmish", "dive",    "회피형 산개"),
-        new("ControlChain",    "control", "제어 사슬"),
-        new("SustainBall",     "heal",    "지속력 덩어리"),
-        new("DiveBackline",    "swarm",   "후열 침투"),
-        new("SwarmFlood",      "summon",  "군중 범람"),
+        "ArmorShred" => "pierce",
+        "Exposure" => "burst",
+        "GuardBreakMultiHit" => "dive",
+        "TrackingArea" => "swarm",
+        "TenacityStability" => "sustain",
+        "AntiHealShatter" => "heal",
+        "InterceptPeel" => "control",
+        "CleaveWaveclear" => "summon",
+        _ => "pierce",
     };
 
     public static IReadOnlyList<(string Id, string SpriteKey, string KoLabel)> Postures
         => PostureCatalog.Select(p => (p.Id, p.SpriteKey, p.KoLabel)).ToList();
-    public static IReadOnlyList<(string Id, string Group, string SpriteKey, string KoLabel)> Synergies
-        => SynergyCatalog.Select(s => (s.Id, s.Group, s.SpriteKey, s.KoLabel)).ToList();
+
     public static IReadOnlyList<(string Id, string SpriteKey, string KoLabel)> Threats
-        => ThreatCatalog.Select(t => (t.Id, t.SpriteKey, t.KoLabel)).ToList();
+        => SquadCounterCoveragePreview.Dimensions
+            .Select(d => (d, ThreatSpriteKey(d), TacticsLexicon.CounterTool(d)))
+            .ToList();
 }

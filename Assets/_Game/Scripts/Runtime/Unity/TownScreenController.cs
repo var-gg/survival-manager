@@ -20,6 +20,7 @@ public sealed class TownScreenController : MonoBehaviour
     private ContentIconResolver _contentIconResolver = null!;
     private TownScreenPresenter? _presenter;
     private SquadBuilderPresenter? _squadBuilderPresenter;
+    private TacticalWorkshopPresenter? _tacticalWorkshopPresenter;
     private RecruitPresenter? _recruitPresenter;
     private EquipmentRefitPresenter? _equipmentRefitPresenter;
     private PassiveBoardPresenter? _passiveBoardPresenter;
@@ -115,8 +116,9 @@ public sealed class TownScreenController : MonoBehaviour
         corePanelReadyCount += TryWireCompendium(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireCharacterSheet(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireTacticalSetup(panelHost.Root, view) ? 1 : 0;
+        corePanelReadyCount += TryWireTacticalWorkshop(panelHost.Root, view) ? 1 : 0;
         corePanelReadyCount += TryWireRoster(panelHost.Root, view) ? 1 : 0;
-        _presenter.SetCorePanelReadiness(corePanelReadyCount, 9);
+        _presenter.SetCorePanelReadiness(corePanelReadyCount, 10);
         return true;
     }
 
@@ -243,6 +245,29 @@ public sealed class TownScreenController : MonoBehaviour
             return true;
         }
         catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] TacticalSetup wire 실패: {e.Message}"); return false; }
+    }
+
+    private bool TryWireTacticalWorkshop(UnityEngine.UIElements.VisualElement root, TownScreenView view)
+    {
+        try
+        {
+            var workshopView = new TacticalWorkshopView(root);
+            _tacticalWorkshopPresenter = new TacticalWorkshopPresenter(
+                _root.SessionState,
+                _root.CombatContentLookup,
+                workshopView,
+                _contentText.GetCharacterName,
+                _contentText.GetRoleName,
+                _contentText.GetSynergyName,
+                postureSprite: _contentIconResolver.ResolveAny,
+                threatSprite: _contentIconResolver.ResolveAny,
+                classSprite: _contentIconResolver.ResolveAny);
+            _tacticalWorkshopPresenter.Initialize();
+            _tacticalWorkshopPresenter.Close();
+            view.BindTacticalWorkshopOpen(_tacticalWorkshopPresenter.Open);
+            return true;
+        }
+        catch (System.Exception e) { Debug.LogWarning($"[TownScreenController] TacticalWorkshop wire 실패: {e.Message}"); return false; }
     }
 
     private bool TryWireCharacterSheet(UnityEngine.UIElements.VisualElement root, TownScreenView view)

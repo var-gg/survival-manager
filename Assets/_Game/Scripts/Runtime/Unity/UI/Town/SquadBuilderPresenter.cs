@@ -585,18 +585,7 @@ public sealed class SquadBuilderPresenter
         return parts.Count > 0 ? string.Join(" · ", parts) : "대응 도구 없음 — 보강 필요";
     }
 
-    private static string LocalizeCounterTool(string tool) => tool switch
-    {
-        "ArmorShred" => "방어 관통",
-        "Exposure" => "약점 노출",
-        "GuardBreakMultiHit" => "가드 브레이크",
-        "TrackingArea" => "광역 추적",
-        "TenacityStability" => "강인·안정",
-        "AntiHealShatter" => "치유 차단",
-        "InterceptPeel" => "차단·견제",
-        "CleaveWaveclear" => "다수 정리",
-        _ => tool,
-    };
+    private static string LocalizeCounterTool(string tool) => TacticsLexicon.CounterTool(tool);
 
     private void AddOperationRow(string key, string value)
     {
@@ -637,14 +626,7 @@ public sealed class SquadBuilderPresenter
         _operationRows.Add(row);
     }
 
-    private static string LocalizeDirective(PlayerTargetDirective directive) => directive switch
-    {
-        PlayerTargetDirective.NearestEnemy => "최근접 교전",
-        PlayerTargetDirective.FinishLowestHp => "마무리 우선",
-        PlayerTargetDirective.HuntExposedBackline => "후열 사냥",
-        PlayerTargetDirective.BreakLargestCluster => "밀집 격파",
-        _ => "기본(자동)",
-    };
+    private static string LocalizeDirective(PlayerTargetDirective directive) => TacticsLexicon.Directive(directive);
 
     private SquadBuilderHeroRow BuildHeroRow(
         GameSessionState session,
@@ -878,44 +860,14 @@ public sealed class SquadBuilderPresenter
         evt.StopPropagation();
     }
 
-    private static string LocalizeAnchor(DeploymentAnchorId anchor) => anchor switch
-    {
-        DeploymentAnchorId.FrontTop => "전열 상",
-        DeploymentAnchorId.FrontCenter => "전열 중",
-        DeploymentAnchorId.FrontBottom => "전열 하",
-        DeploymentAnchorId.BackTop => "후열 상",
-        DeploymentAnchorId.BackCenter => "후열 중",
-        DeploymentAnchorId.BackBottom => "후열 하",
-        _ => anchor.ToString(),
-    };
+    // 전술 어휘 표시명은 TacticsLexicon 단일 소스 — 전술 공방(TacticalWorkshop)과 라벨 드리프트 방지.
+    private static string LocalizeAnchor(DeploymentAnchorId anchor) => TacticsLexicon.Anchor(anchor);
 
-    private static string LocalizePosture(TeamPostureType posture) => posture switch
-    {
-        TeamPostureType.HoldLine => "전열 사수",
-        TeamPostureType.StandardAdvance => "표준 전진",
-        TeamPostureType.ProtectCarry => "캐리 보호",
-        TeamPostureType.CollapseWeakSide => "약측 무너뜨리기",
-        TeamPostureType.AllInBackline => "후열 깊이 침투",
-        _ => posture.ToString(),
-    };
+    private static string LocalizePosture(TeamPostureType posture) => TacticsLexicon.Posture(posture);
 
-    private static string LocalizeFormation(FormationLine? formation) => formation switch
-    {
-        FormationLine.Frontline => "전열",
-        FormationLine.Midline => "중열",
-        FormationLine.Backline => "후열",
-        _ => "배치 기준",
-    };
+    private static string LocalizeFormation(FormationLine? formation) => TacticsLexicon.Formation(formation);
 
-    private static string LocalizeRange(RangeDiscipline? range) => range switch
-    {
-        RangeDiscipline.Collapse => "압박 접근",
-        RangeDiscipline.HoldBand => "거리 유지",
-        RangeDiscipline.KiteBackward => "후퇴 카이팅",
-        RangeDiscipline.SideStepHold => "측면 유지",
-        RangeDiscipline.AnchorNearFrontline => "전열 근접",
-        _ => "기본 교전 거리",
-    };
+    private static string LocalizeRange(RangeDiscipline? range) => TacticsLexicon.Range(range);
 
     private sealed record SquadBuilderHeroRow(
         string HeroId,

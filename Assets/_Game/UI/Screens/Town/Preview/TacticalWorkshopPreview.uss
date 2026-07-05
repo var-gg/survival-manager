@@ -258,12 +258,13 @@
     flex-direction: column;
 }
 
-/* Hero block — header + behavior + bias bars */
+/* Hero row — 1줄: name + anchor·role + formation·range + 지시 cycle 버튼
+   (production TacticalWorkshop.uss와 같은 schema — bias는 행 tooltip) */
 .twp-tactic-hero {
-    flex-direction: column;
-    margin-bottom: var(--sm-s-2);
-    padding-top: var(--sm-s-1);
-    padding-bottom: 6px;
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    margin-bottom: var(--sm-s-1);
     padding-left: 6px;
     padding-right: 6px;
     background-color: var(--sm-chip-category-border);
@@ -274,81 +275,49 @@
     border-top-color: rgba(138, 100, 24, 0.28);
     border-bottom-color: rgba(138, 100, 24, 0.28);
 }
-.twp-tactic-hero--readonly {
-    opacity: 0.92;
-}
-
-.twp-tactic-hero__header {
-    flex-direction: row;
-    align-items: center;
-    padding-top: var(--sm-s-1);
-    padding-bottom: 2px;
-    padding-left: var(--sm-s-1);
-}
-.twp-tactic-hero__portrait {
-    width: 22px;
-    height: 22px;
-    background-color: rgba(20, 26, 53, 0.62);
-    border-top-left-radius: 11px;
-    border-top-right-radius: 11px;
-    border-bottom-left-radius: 11px;
-    border-bottom-right-radius: 11px;
-    margin-right: var(--sm-s-2);
-}
 .twp-tactic-hero__name {
+    width: 96px;
     color: rgba(61, 47, 18, 1);
     font-size: var(--sm-fs-s);
     -unity-font-style: bold;
-    margin-right: 10px;
+    overflow: hidden;
 }
 /* anchor · role — RoleInstruction (배치 위치 + 역할) */
 .twp-tactic-hero__role {
+    width: 118px;
     color: rgba(107, 93, 63, 1);
     font-size: 10px;
     -unity-font-style: bold;
+    overflow: hidden;
 }
 /* formation · range — BehaviorProfile 요약 */
 .twp-tactic-hero__behavior {
+    flex-grow: 1;
     color: rgba(138, 100, 24, 1);
     font-size: var(--sm-fs-xs);
     letter-spacing: 1px;
-    padding-left: var(--sm-s-1);
-    padding-bottom: var(--sm-s-1);
+    overflow: hidden;
 }
-
-/* bias bars — RoleInstruction bias 3 float (캐리 보호 / 후열 압박 / 후퇴) */
-.twp-tactic-hero__biases {
-    flex-direction: column;
-    padding-left: var(--sm-s-2);
-    padding-top: 2px;
-}
-.twp-tactic-bias {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 2px;
-}
-.twp-tactic-bias__label {
-    width: 56px;
+/* P1 타겟 지시 cycle 버튼 */
+.twp-tactic-hero__directive {
+    height: 22px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: var(--sm-fs-xs);
     color: rgba(61, 47, 18, 1);
-    font-size: var(--sm-fs-xs);
-}
-.twp-tactic-bias__bar {
-    flex-grow: 1;
-    height: 6px;
-    background-color: rgba(107, 93, 63, 0.28);
-    margin-left: var(--sm-s-1);
-    margin-right: var(--sm-s-1);
-}
-.twp-tactic-bias__fill {
-    height: 6px;
-    background-color: rgba(200, 147, 42, 0.85);
-}
-.twp-tactic-bias__value {
-    width: 22px;
-    color: rgba(138, 100, 24, 1);
-    font-size: var(--sm-fs-xs);
-    -unity-font-style: bold;
-    -unity-text-align: middle-right;
+    background-color: rgba(200, 147, 42, 0.30);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(138, 100, 24, 0.55);
+    border-right-color: rgba(138, 100, 24, 0.55);
+    border-top-color: rgba(138, 100, 24, 0.55);
+    border-bottom-color: rgba(138, 100, 24, 0.55);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 /* --- Live Preview --- */
@@ -371,19 +340,22 @@
     -unity-background-scale-mode: scale-and-crop;
 }
 
-/* --- Synergy chips (7 family = race 3 + class 4) ---
-   synergy-family-catalog.md baseline. race chip은 sprite 미아직이라 color block.
-   class chip은 기존 4 class sprite 재사용. divider로 race/class 그룹 분리. */
+/* --- Synergy chips — content SoT(snapshot.SynergyCatalog) 텍스트 칩 (이름 N/경계) --- */
 .twp-synergy-row {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     margin-bottom: var(--sm-s-3);
 }
 .twp-synergy-chip {
-    width: 32px;
-    height: 32px;
+    height: 22px;
+    padding-left: 10px;
+    padding-right: 10px;
     margin-right: var(--sm-s-1);
-    -unity-background-scale-mode: scale-to-fit;
+    margin-bottom: 2px;
+    font-size: var(--sm-fs-xs);
+    -unity-text-align: middle-center;
+    color: var(--sm-vellum);
     background-color: rgba(28, 34, 67, 0.62);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -393,24 +365,26 @@
     border-right-color: rgba(230, 183, 81, 0.55);
     border-top-color: rgba(230, 183, 81, 0.55);
     border-bottom-color: rgba(230, 183, 81, 0.55);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
-/* Race family — color block placeholder (sprite 미발행) */
-.twp-synergy-chip--human    { background-color: rgba(245, 234, 208, 0.62); }
-.twp-synergy-chip--beastkin { background-color: rgba(122, 138, 82, 0.78); }
-.twp-synergy-chip--undead   { background-color: rgba(82, 74, 104, 0.85); }
-/* Class family — sprite */
-.twp-synergy-chip--vanguard { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png"); }
-.twp-synergy-chip--duelist  { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png"); }
-.twp-synergy-chip--ranger   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png"); }
-.twp-synergy-chip--mystic   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png"); }
-
-.twp-synergy-divider {
-    width: 1px;
-    height: 24px;
-    background-color: rgba(230, 183, 81, 0.55);
-    margin-left: 6px;
-    margin-right: 6px;
-    align-self: center;
+.twp-synergy-chip--active {
+    color: rgba(245, 234, 208, 1);
+    background-color: rgba(200, 147, 42, 0.35);
+    border-left-color: rgba(245, 214, 138, 0.85);
+    border-right-color: rgba(245, 214, 138, 0.85);
+    border-top-color: rgba(245, 214, 138, 0.85);
+    border-bottom-color: rgba(245, 214, 138, 0.85);
+}
+.twp-synergy-chip--muted {
+    opacity: 0.62;
+}
+.twp-synergy-empty {
+    font-size: var(--sm-fs-xs);
+    color: rgba(230, 183, 81, 0.75);
+    -unity-text-align: middle-left;
 }
 
 /* --- Threat grid (8 lane = counter-system-topology.md) ---
@@ -463,6 +437,13 @@
     border-right-color: rgba(226, 85, 72, 0.85);
     border-top-color: rgba(226, 85, 72, 0.85);
     border-bottom-color: rgba(226, 85, 72, 0.85);
+}
+.twp-threat-chip--partial {
+    background-color: rgba(232, 169, 59, 0.26);
+    border-left-color: rgba(232, 169, 59, 0.80);
+    border-right-color: rgba(232, 169, 59, 0.80);
+    border-top-color: rgba(232, 169, 59, 0.80);
+    border-bottom-color: rgba(232, 169, 59, 0.80);
 }
 
 /* --- Bottom action row (abstract chips placeholder) --- */

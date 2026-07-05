@@ -67,6 +67,7 @@ public sealed record TownScreenViewState(
     string RosterEntryLabel,
     string CompendiumEntryLabel,
     string TacticalSetupEntryLabel,
+    string TacticalWorkshopEntryLabel,
     string PermanentAugmentEntryLabel,
     string TheaterEntryLabel,
     bool ShowTheater,

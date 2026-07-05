@@ -49,9 +49,11 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("TacticalSetupButton"));
         Assert.That(uxml, Does.Contain("TacticalSetupEntryLabel"));
         Assert.That(uxml, Does.Not.Contain("SquadBuilderButton"));
-        Assert.That(uxml, Does.Not.Contain("TacticalWorkshopButton"));
+        // TacticalWorkshop wire cycle (2026-07): 전술 공방은 프로덕션 hub entry로 승격됨.
+        Assert.That(uxml, Does.Contain("TacticalWorkshopButton"));
+        Assert.That(uxml, Does.Contain("TacticalWorkshopEntryLabel"));
+        Assert.That(uxml, Does.Contain("전술 공방"));
         Assert.That(uxml, Does.Not.Contain("전열 편성"));
-        Assert.That(uxml, Does.Not.Contain("전술 공방"));
         Assert.That(uxml, Does.Contain("PermanentAugmentButton"));
         Assert.That(uxml, Does.Contain("TheaterButton"));
         // CTA
@@ -68,14 +70,14 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("RosterTemplate"));
         Assert.That(uxml, Does.Contain("CharacterSheetTemplate"));
         Assert.That(uxml, Does.Contain("CompendiumTemplate"));
-        Assert.That(uxml, Does.Not.Contain("TacticalWorkshopTemplate"));
+        Assert.That(uxml, Does.Contain("TacticalWorkshopTemplate"));
         Assert.That(uxml, Does.Contain("../../Panels/TownSquadBuilder/TownSquadBuilder.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/RecruitPack/RecruitPack.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/EquipmentRefit/EquipmentRefit.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/InventoryTab/InventoryTab.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/TownCharacterSheet/TownCharacterSheet.uxml"));
         Assert.That(uxml, Does.Contain("../../Panels/SkillCompendium/SkillCompendium.uxml"));
-        Assert.That(uxml, Does.Not.Contain("../../Panels/TacticalWorkshop/TacticalWorkshop.uxml"));
+        Assert.That(uxml, Does.Contain("../../Panels/TacticalWorkshop/TacticalWorkshop.uxml"));
         var characterSheetUxml = File.ReadAllText("Assets/_Game/UI/Panels/TownCharacterSheet/TownCharacterSheet.uxml");
         Assert.That(characterSheetUxml, Does.Contain("TownCharacterSheetRoot"));
         Assert.That(characterSheetUxml, Does.Contain("TcsHeroNameLabel"));
@@ -95,12 +97,12 @@ public sealed class TownScreenUxmlHubLayoutTests
         var townController = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs");
         Assert.That(townController, Does.Contain("TryWireCharacterSheet"));
         Assert.That(townController, Does.Contain("TryWireTacticalSetup"));
-        Assert.That(townController, Does.Not.Contain("TryWireTacticalWorkshop"));
+        Assert.That(townController, Does.Contain("TryWireTacticalWorkshop"));
         Assert.That(townController, Does.Contain("RosterGridPresenter"));
         Assert.That(townController, Does.Contain("BindRosterOpen"));
         var townView = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownScreenView.cs");
         Assert.That(townView, Does.Contain("BindTacticalSetupOpen"));
-        Assert.That(townView, Does.Not.Contain("BindTacticalWorkshopOpen"));
+        Assert.That(townView, Does.Contain("BindTacticalWorkshopOpen"));
         var compendiumUxml = File.ReadAllText("Assets/_Game/UI/Panels/SkillCompendium/SkillCompendium.uxml");
         Assert.That(compendiumUxml, Does.Contain("CompendiumSearchField"));
         Assert.That(compendiumUxml, Does.Contain("CompendiumClassFilter"));
@@ -201,7 +203,8 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(presenter, Does.Contain("RenderTacticalDecisionRows"));
         Assert.That(presenter, Does.Contain("ResolveRoleInstructionId"));
         Assert.That(presenter, Does.Contain("ResolveBehaviorProfile"));
-        Assert.That(presenter, Does.Contain("가짜 수치 없음"));
+        // "가짜 수치 없음" 문자열 마커는 c58d64a4(시너지 실연결)에서 소스가 사라져 stale — 실배선 마커로 교체.
+        Assert.That(presenter, Does.Contain("SquadSynergyPreview.Evaluate"));
         Assert.That(presenter, Does.Contain("sm-sqb-modal__roster-icon"));
         Assert.That(presenter, Does.Contain("ResolveRosterPipCount"));
         Assert.That(presenter, Does.Contain("팀 태세 갱신"));
@@ -214,30 +217,42 @@ public sealed class TownScreenUxmlHubLayoutTests
     }
 
     [Test]
-    public void TacticalWorkshopUxml_Remains_LegacyPreview_Only()
+    public void TacticalWorkshopUxml_Is_Production_Tactics_Surface()
     {
+        // TacticalWorkshop wire cycle (2026-07): legacy-preview → 프로덕션 전술 표면 승격.
+        // 배치 편집은 전술 설정(SquadBuilder), 태세·유닛 지시는 전술 공방 — panel-responsibility-matrix §2.
         var townUxml = File.ReadAllText("Assets/_Game/UI/Screens/Town/TownScreen.uxml");
         var townController = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs");
-        Assert.That(townUxml, Does.Not.Contain("TacticalWorkshopTemplate"));
-        Assert.That(townUxml, Does.Not.Contain("TacticalWorkshopButton"));
-        Assert.That(townController, Does.Not.Contain("TacticalWorkshopPresenter"));
-        Assert.That(townController, Does.Not.Contain("TacticalWorkshopView"));
+        Assert.That(townUxml, Does.Contain("TacticalWorkshopTemplate"));
+        Assert.That(townUxml, Does.Contain("TacticalWorkshopButton"));
+        Assert.That(townController, Does.Contain("TryWireTacticalWorkshop"));
+        Assert.That(townController, Does.Contain("TacticalWorkshopPresenter"));
+        Assert.That(townController, Does.Contain("TacticalWorkshopView"));
 
         var uxml = File.ReadAllText("Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uxml");
-        // wave-38 Phase 4 refactor: legacy "TEAM POSTURE — 팀 태세" eyebrow 폐기.
-        // 새 marker = 책임 매트릭스 §2 zone labels (전술 편성 / 팀 태세 / 발동 시너지 / 위협 답수).
-        Assert.That(uxml, Does.Contain("전술 편성"));
+        // zone labels = 책임 매트릭스 §2 (팀 태세 / 발동 시너지 / 위협 답수 / 유닛 전술) + 헤더 "전술 공방".
+        Assert.That(uxml, Does.Contain("전술 공방"));
         Assert.That(uxml, Does.Contain("팀 태세"));
         Assert.That(uxml, Does.Contain("발동 시너지"));
         Assert.That(uxml, Does.Contain("위협 답수"));
+        Assert.That(uxml, Does.Contain("유닛 전술"));
         Assert.That(uxml, Does.Not.Contain("팀 자세"));
         Assert.That(uxml, Does.Contain("PostureCardRow"));
         Assert.That(uxml, Does.Contain("TacticPresetRows"));
+        // 유닛 전술 strip은 가시 컨테이너 — hidden shim 금지, command chip은 동적 렌더(정적 수치 금지).
+        Assert.That(uxml, Does.Not.Contain("twp-tactic-rows-hidden"));
+        Assert.That(uxml, Does.Contain("TwpDeployChip"));
+        Assert.That(uxml, Does.Contain("TwpCloseButton"));
+        Assert.That(uxml, Does.Not.Contain("배치 4 / 6 슬롯"));
 
         var presenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/TacticalWorkshopPresenter.cs");
         Assert.That(presenter, Does.Not.Contain("Array.Empty<TacticalWorkshopHeroTacticViewState>()"));
         Assert.That(presenter, Does.Contain("new TacticalWorkshopHeroTacticViewState"));
         Assert.That(presenter, Does.Contain("ResolveDefaultRoleInstructionId"));
+        // 시너지/위협은 SquadBuilder와 같은 SoT — 정적 사본 catalog 재도입 금지.
+        Assert.That(presenter, Does.Contain("SquadSynergyPreview.Evaluate"));
+        Assert.That(presenter, Does.Contain("SquadCounterCoveragePreview.Dimensions"));
+        Assert.That(presenter, Does.Not.Contain("SynergyCatalogEntry"));
     }
 
     [Test]
@@ -296,6 +311,7 @@ public sealed class TownScreenUxmlHubLayoutTests
             "Assets/_Game/UI/Panels/TownCharacterSheet/TownCharacterSheet.uss",
             "Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uss",
             "Assets/_Game/UI/Panels/TownRosterGrid/TownRosterGrid.uss",
+            "Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss",
         };
 
         foreach (var path in panelPaths)

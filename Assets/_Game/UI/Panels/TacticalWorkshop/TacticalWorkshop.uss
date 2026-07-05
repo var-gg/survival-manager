@@ -296,6 +296,13 @@
     border-bottom-width: 2px;
     background-color: var(--sm-bg-3);
 }
+/* posture 카드 일러 — presenter SpriteKey → posture_{key}.png (런타임 texture 미주입 시 USS가 배경 공급) */
+.twp-posture-card--art-hold_line          { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Posture/posture_hold_line.png"); }
+.twp-posture-card--art-standard_advance   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Posture/posture_standard_advance.png"); }
+.twp-posture-card--art-protect_carry      { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Posture/posture_protect_carry.png"); }
+.twp-posture-card--art-collapse_weak_side { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Posture/posture_collapse_weak_side.png"); }
+.twp-posture-card--art-all_in_backline    { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Posture/posture_all_in_backline.png"); }
+
 .twp-posture-card__label {
     -unity-text-align: middle-center;
     color: var(--sm-ink-0);
@@ -308,17 +315,22 @@
     white-space: normal;
 }
 
-/* --- Synergy strip (7 family chip = race 3 + class 4) --- */
+/* --- Synergy strip — content SoT(snapshot.SynergyCatalog) 기반 텍스트 칩 (이름 N/경계) --- */
 .twp-synergy-row {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     flex-grow: 1;
 }
 .twp-synergy-chip {
-    width: 40px;
-    height: 40px;
+    height: var(--sm-chip-h);
+    padding-left: 10px;
+    padding-right: 10px;
     margin-right: 6px;
-    -unity-background-scale-mode: scale-to-fit;
+    margin-bottom: 2px;
+    font-size: var(--sm-fs-xs);
+    -unity-text-align: middle-center;
+    color: var(--sm-ink-1);
     background-color: var(--sm-bg-2);
     border-left-width: 1px;
     border-right-width: 1px;
@@ -328,28 +340,27 @@
     border-right-color: var(--sm-gold-300-a32);
     border-top-color: var(--sm-gold-300-a32);
     border-bottom-color: var(--sm-gold-300-a32);
-    border-top-left-radius: var(--radius-l);
-    border-top-right-radius: var(--radius-l);
-    border-bottom-left-radius: var(--radius-l);
-    border-bottom-right-radius: var(--radius-l);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
-/* Race chip — color block placeholder (sprite 미발행) */
-.twp-synergy-chip--human    { background-color: var(--sm-chip-category-border); }
-.twp-synergy-chip--beastkin { background-color: rgba(122, 138, 82, 0.62); }
-.twp-synergy-chip--undead   { background-color: rgba(82, 74, 104, 0.72); }
-/* Class chip — sprite */
-.twp-synergy-chip--vanguard { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png"); }
-.twp-synergy-chip--duelist  { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png"); }
-.twp-synergy-chip--ranger   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png"); }
-.twp-synergy-chip--mystic   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png"); }
-
-.twp-synergy-divider {
-    width: 1px;
-    height: 32px;
-    background-color: var(--sm-gold-300-a32);
-    margin-left: 6px;
-    margin-right: 10px;
-    align-self: center;
+.twp-synergy-chip--active {
+    color: var(--sm-gold-100);
+    background-color: var(--sm-gold-300-a18);
+    border-left-color: var(--sm-gold-200);
+    border-right-color: var(--sm-gold-200);
+    border-top-color: var(--sm-gold-200);
+    border-bottom-color: var(--sm-gold-200);
+}
+.twp-synergy-chip--muted {
+    color: var(--sm-ink-3);
+    background-color: var(--sm-bg-1);
+}
+.twp-synergy-empty {
+    font-size: var(--sm-fs-xs);
+    color: var(--sm-ink-3);
+    -unity-text-align: middle-left;
 }
 
 /* --- Threat grid (8 lane = 4 col × 2 row) --- */
@@ -404,13 +415,29 @@
     border-bottom-color: var(--sm-state-danger);
     background-color: rgba(226, 85, 72, 0.18);
 }
+.twp-threat-chip--partial {
+    border-left-color: var(--sm-state-warn-a56);
+    border-right-color: var(--sm-state-warn-a56);
+    border-top-color: var(--sm-state-warn-a56);
+    border-bottom-color: var(--sm-state-warn-a56);
+    background-color: rgba(232, 169, 59, 0.14);
+}
+/* lane glyph art — presenter SpriteKey → threat_{key}.png (런타임 texture 미주입 시 USS가 배경 공급) */
+.twp-threat-chip--art-pierce  { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_pierce.png"); }
+.twp-threat-chip--art-burst   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_burst.png"); }
+.twp-threat-chip--art-dive    { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_dive.png"); }
+.twp-threat-chip--art-swarm   { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_swarm.png"); }
+.twp-threat-chip--art-sustain { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_sustain.png"); }
+.twp-threat-chip--art-heal    { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_heal.png"); }
+.twp-threat-chip--art-control { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_control.png"); }
+.twp-threat-chip--art-summon  { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Threat/threat_summon.png"); }
 
-/* --- Action bar (80) — 초기화 secondary + 저장 primary --- */
+/* --- Action bar (64) — 전술 초기화만 (태세·지시는 즉시 적용, 저장 CTA 없음) --- */
 .twp-action-bar {
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: flex-end;
     align-items: center;
-    height: 80px;
+    height: 64px;
     padding-left: 56px;
     padding-right: 56px;
     border-top-width: 1px;
@@ -432,28 +459,73 @@
     font-size: var(--sm-fs-m);
     -unity-font-style: bold;
 }
-.twp-action-bar__save {
-    width: 280px;
-    height: 44px;
-    background-color: var(--sm-cta-primary-bg);
-    color: var(--sm-cta-primary-text);
+/* --- 유닛 전술 strip (좌측 컬럼, anchor pad 아래) --- */
+.twp-tactics-eyebrow {
+    margin-top: var(--sm-s-2);
+    margin-bottom: var(--sm-s-1);
+}
+.twp-tactic-rows {
+    flex-direction: column;
+}
+.twp-tactic-hero {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    background-color: var(--sm-bg-0);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-left-color: var(--sm-cta-primary-border);
-    border-right-color: var(--sm-cta-primary-border);
-    border-top-color: var(--sm-cta-primary-border);
-    border-bottom-color: var(--sm-cta-primary-border);
-    font-size: var(--sm-fs-m);
+    border-left-color: var(--sm-gold-300-a20);
+    border-right-color: var(--sm-gold-300-a20);
+    border-top-color: var(--sm-gold-300-a20);
+    border-bottom-color: var(--sm-gold-300-a20);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    padding-top: var(--sm-s-1);
+    padding-bottom: var(--sm-s-1);
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
+    margin-bottom: var(--sm-s-1);
+}
+.twp-tactic-hero__name {
+    width: 96px;
+    font-size: var(--sm-fs-s);
+    color: var(--sm-ink-0);
     -unity-font-style: bold;
+    overflow: hidden;
 }
-
-/* --- Hidden tactic display (View binding 보존용) --- */
-.twp-tactic-rows-hidden {
-    display: none;
+.twp-tactic-hero__role {
+    width: 118px;
+    font-size: var(--sm-fs-xs);
+    color: var(--sm-gold-200);
+    overflow: hidden;
 }
-
-/* === Legacy class shims (View가 dynamic으로 생성하는 element들) === */
-/* tactic hero block은 hidden container 안이라 styling 불필요. legacy 클래스만 silent. */
-.twp-tactic-hero, .twp-tactic-bias { display: none; }
+.twp-tactic-hero__behavior {
+    flex-grow: 1;
+    font-size: var(--sm-fs-xs);
+    color: var(--sm-ink-2);
+    overflow: hidden;
+}
+.twp-tactic-hero__directive {
+    height: 22px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: var(--sm-fs-xs);
+    color: var(--sm-gold-100);
+    background-color: var(--sm-gold-300-a12);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}

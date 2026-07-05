@@ -1,10 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <!--
-      Tactical Workshop V1 (= Squad Workshop) preview surface
+      Tactical Workshop(전술 공방) — Town 프로덕션 전술 표면
       visual SoT: pindoc://analysis-squad-workshop-mockup-brief-v1 (Screenshots/mockups/ui_ux_bible_squad_workshop_v1.png)
-      책임 SoT:   pindoc://analysis-panel-responsibility-matrix-v1 §2
-      layout: header + command strip + 2-area main (anchor pad LEFT 520 | right stack 836 = posture + synergy + threat) + action bar
+      책임 SoT:   pindoc://analysis-panel-responsibility-matrix-v1 §2 — 배치 편집은 전술 설정(SquadBuilder), 태세·지시는 여기.
+      layout: header + command strip + 2-area main (anchor pad + 유닛 전술 LEFT 520 | right stack 836 = posture + synergy + threat) + action bar
       chrome budget: 3 layer (outer frame + inner section + cards) — NO corner caps, NO ornaments
+      command chip 3개는 View가 세션 상태로 채운다(정적 수치 금지).
     -->
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
@@ -16,33 +17,35 @@
 
         <ui:VisualElement name="ModalFrame" class="twp-frame sm-modal-anim">
 
-            <!-- Header (56px) — 전술 편성 + close -->
+            <!-- Header (56px) — 전술 공방 + close -->
             <ui:VisualElement class="twp-header">
-                <ui:Label class="twp-header__title" text="전술 편성" />
-                <ui:Button class="twp-header__close" text="X" />
+                <ui:Label class="twp-header__title" text="전술 공방" />
+                <ui:Button name="TwpCloseButton" class="twp-header__close" text="X" />
             </ui:VisualElement>
 
-            <!-- Command strip (36px) — eyebrow + state chips -->
+            <!-- Command strip (36px) — eyebrow + state chips (View가 세션 상태로 렌더) -->
             <ui:VisualElement class="twp-command-strip">
                 <ui:Label class="twp-command-strip__eyebrow" text="팀 전술 설정" />
                 <ui:VisualElement class="twp-command-strip__chips">
-                    <ui:Label class="twp-command-chip" text="배치 4 / 6 슬롯" />
-                    <ui:Label class="twp-command-chip" text="태세 · 표준 진격" />
-                    <ui:Label class="twp-command-chip twp-command-chip--warn" text="위협 답수 7 / 8" />
+                    <ui:Label name="TwpDeployChip" class="twp-command-chip" text="배치 —" />
+                    <ui:Label name="TwpPostureChip" class="twp-command-chip" text="태세 —" />
+                    <ui:Label name="TwpAnswerChip" class="twp-command-chip" text="위협 답수 —" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <!-- Main 2-area split: left anchor pad 520 + right stack 836 -->
+            <!-- Main 2-area split: left anchor pad + 유닛 전술 520 + right stack 836 -->
             <ui:VisualElement class="twp-main">
 
-                <!-- LEFT: Anchor Pad (520) — read-only, 6 slot (전열 3 + 후열 3) -->
+                <!-- LEFT: Anchor Pad (read-only, 6 slot) + 유닛 전술 strip -->
                 <ui:VisualElement class="twp-left-anchor">
                     <ui:Label class="twp-zone-label twp-zone-label--front" text="전열" />
                     <ui:Label class="twp-zone-label twp-zone-label--back" text="후열" />
                     <ui:VisualElement class="twp-anchor-pad">
                         <!-- 6 standee는 View가 RenderAnchors에서 동적 생성. 기존 .twp-standee--{position} class 보존. -->
                     </ui:VisualElement>
-                    <ui:Label class="twp-anchor-pad__readonly-hint" text="수정은 분대 편성에서" />
+                    <ui:Label class="twp-anchor-pad__readonly-hint" text="배치 변경은 전술 설정에서" />
+                    <ui:Label class="twp-section-eyebrow twp-tactics-eyebrow" text="유닛 전술" />
+                    <ui:VisualElement name="TacticPresetRows" class="twp-tactic-rows" />
                 </ui:VisualElement>
 
                 <!-- RIGHT: stacked 3 sections (posture / synergy / threat) -->
@@ -70,15 +73,11 @@
 
             </ui:VisualElement>
 
-            <!-- Action bar (80) — 초기화 secondary + 저장 primary -->
+            <!-- Action bar (64) — 전술 초기화만. 태세·지시는 즉시 적용이라 별도 저장 CTA 없음
+                 (죽은 SaveButton affordance 제거 — 저장은 마을 Save/원정 출발 시점). -->
             <ui:VisualElement class="twp-action-bar">
-                <ui:Button name="ResetButton" class="twp-action-bar__reset" text="초기화" />
-                <ui:Button name="SaveButton" class="twp-action-bar__save" text="저장 · 출정 준비" />
+                <ui:Button name="TwpResetButton" class="twp-action-bar__reset" text="전술 초기화" />
             </ui:VisualElement>
-
-            <!-- Per-unit tactic display — MAY only per matrix §2. Sprint 2 후 노출.
-                 ViewState binding 보존 위해 element는 hidden 상태로 유지 -->
-            <ui:VisualElement name="TacticPresetRows" class="twp-tactic-rows-hidden" />
 
         </ui:VisualElement>
     </ui:VisualElement>

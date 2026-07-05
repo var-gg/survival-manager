@@ -86,6 +86,16 @@ public sealed class UxBiblePlayModeWitnessTests
         ClickButton(townHost.Root, "SquadBuilderCloseButton");
         yield return WaitForHidden(townHost.Root, "SquadBuilderRoot");
 
+        // TacticalWorkshop wire cycle (2026-07): 전술 공방 진입 → posture 5카드 + 위협 8lane 실렌더 → 닫기.
+        ClickButton(townHost.Root, "TacticalWorkshopButton");
+        yield return WaitForVisible(townHost.Root, "TwpRoot");
+        yield return new WaitForSecondsRealtime(0.35f);
+        VerifyTacticalWorkshop(townHost.Root);
+        AssertNoRedText(Require<VisualElement>(townHost.Root, "TwpRoot"), "Tactical Workshop");
+        yield return Capture("tactical_workshop");
+        ClickButton(townHost.Root, "TwpCloseButton");
+        yield return WaitForHidden(townHost.Root, "TwpRoot");
+
         ClickButton(townHost.Root, $"FaceCard_{heroId}");
         yield return WaitForVisible(townHost.Root, "TownCharacterSheetRoot");
         ClickButton(townHost.Root, "TownCharacterSheetCloseButton");
@@ -285,7 +295,8 @@ public sealed class UxBiblePlayModeWitnessTests
         AssertNonEmptyText<Label>(root, "ServiceAvailabilityLabel");
         Assert.That(Require<VisualElement>(root, "DeployRow").childCount, Is.GreaterThan(0));
         Assert.That(root.Q<Button>("TacticalSetupButton"), Is.Not.Null);
-        Assert.That(root.Q<Button>("TacticalWorkshopButton"), Is.Null);
+        // TacticalWorkshop wire cycle (2026-07): 전술 공방은 프로덕션 hub entry.
+        Assert.That(root.Q<Button>("TacticalWorkshopButton"), Is.Not.Null);
         Assert.That(Require<Button>(root, "ExpeditionButton").text, Is.Not.Empty);
     }
 
@@ -322,6 +333,25 @@ public sealed class UxBiblePlayModeWitnessTests
         Assert.That(Require<VisualElement>(root, "SquadBuilderSynergyChips").childCount, Is.GreaterThan(0));
         Assert.That(Require<Button>(root, "SquadBuilderAnchor_FrontCenter").text, Is.Not.Empty);
         Assert.That(Require<Button>(root, "SquadBuilderPosture_StandardAdvance"), Is.Not.Null);
+    }
+
+    private static void VerifyTacticalWorkshop(VisualElement root)
+    {
+        // TacticalWorkshop wire cycle (2026-07): posture 5카드 + 위협 8lane(SquadCounterCoveragePreview.Dimensions)
+        // + command chip 동적 렌더 + 배치 유닛 전술 strip. 시너지 row는 칩 또는 빈 안내 라벨 중 하나가 반드시 존재.
+        AssertVisible(root, "TwpRoot");
+        Assert.That(Require<VisualElement>(root, "PostureCardRow").childCount, Is.EqualTo(5),
+            "팀 태세 카드는 항상 5장이다.");
+        Assert.That(Require<VisualElement>(root, "ThreatGrid").childCount, Is.EqualTo(8),
+            "위협 답수 lane은 counter-coverage 8차원 전부를 노출한다.");
+        AssertNonEmptyText<Label>(root, "TwpDeployChip");
+        AssertNonEmptyText<Label>(root, "TwpPostureChip");
+        AssertNonEmptyText<Label>(root, "TwpAnswerChip");
+        Assert.That(Require<Label>(root, "TwpDeployChip").text, Does.Not.Contain("—"),
+            "배치 chip은 세션 상태로 렌더된다(정적 placeholder 금지).");
+        Assert.That(Require<VisualElement>(root, "TacticPresetRows").childCount, Is.GreaterThan(0),
+            "배치된 유닛이 있으면 유닛 전술 행이 나온다.");
+        Assert.That(Require<Button>(root, "TwpResetButton"), Is.Not.Null);
     }
 
     private static void VerifyInventoryCompare(VisualElement root)

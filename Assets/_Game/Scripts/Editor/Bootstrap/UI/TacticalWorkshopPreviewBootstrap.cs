@@ -68,12 +68,17 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
         try
         {
             var sessionRoot = PreviewSessionContext.EnsureSession();
+            var contentText = new SM.Unity.ContentTextResolver(sessionRoot.Localization, sessionRoot.CombatContentLookup);
             _presenter = new TacticalWorkshopPresenter(
-                sessionRoot,
+                sessionRoot.SessionState,
+                sessionRoot.CombatContentLookup,
                 view,
-                PreviewSessionContext.LoadPostureSprite,
-                PreviewSessionContext.LoadThreatSprite,
-                PreviewSessionContext.LoadClassSprite);
+                contentText.GetCharacterName,
+                contentText.GetRoleName,
+                contentText.GetSynergyName,
+                postureSprite: PreviewSessionContext.LoadPostureSprite,
+                threatSprite: PreviewSessionContext.LoadThreatSprite,
+                classSprite: PreviewSessionContext.LoadClassSprite);
             _presenter.Initialize();
             return true;
         }
@@ -92,8 +97,13 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
             Postures: BuildMockPostures(),
             SelectedPostureId: "StandardAdvance",
             SynergyChips: BuildMockSynergyChips(),
+            SynergyEmptyText: string.Empty,
             Threats: BuildMockThreats(),
-            Tactics: BuildMockTactics());
+            Tactics: BuildMockTactics(),
+            DeployChipLabel: "배치 4/6",
+            PostureChipLabel: "태세 · 표준 전진",
+            AnswerChipLabel: "위협 답수 6/8",
+            AnswerChipWarn: true);
     }
 
     private IReadOnlyList<TacticalWorkshopAnchorViewState> BuildMockAnchors()
@@ -117,6 +127,7 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
         return TacticalWorkshopPresenter.Postures
             .Select(p => new TacticalWorkshopPostureViewState(
                 PostureId: p.Id,
+                SpriteKey: p.SpriteKey,
                 Sprite: LoadPostureSprite(p.SpriteKey),
                 KoLabel: p.KoLabel,
                 IsSelected: p.Id == "StandardAdvance"))
@@ -125,23 +136,24 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
 
     private IReadOnlyList<TacticalWorkshopSynergyChipViewState> BuildMockSynergyChips()
     {
-        return TacticalWorkshopPresenter.Synergies
-            .Select(s => new TacticalWorkshopSynergyChipViewState(
-                SynergyId: s.Id,
-                Group: s.Group,
-                Sprite: s.Group == "class" ? LoadClassSprite(s.SpriteKey) : null,
-                KoLabel: s.KoLabel))
-            .ToList();
+        // mock — 활성/비활성 텍스트 칩 시각 분기 확인용 (프로덕션은 SquadSynergyPreview 결과).
+        return new[]
+        {
+            new TacticalWorkshopSynergyChipViewState("synergy_solarum", "솔라룸", "2/2", IsActive: true),
+            new TacticalWorkshopSynergyChipViewState("synergy_vanguard", "전위", "2/2", IsActive: true),
+            new TacticalWorkshopSynergyChipViewState("synergy_ranger", "궁수", "1/2", IsActive: false),
+        };
     }
 
     private IReadOnlyList<TacticalWorkshopThreatViewState> BuildMockThreats()
     {
-        // mock answered/unanswered demo — 시각 분기 확인용.
-        var states = new[] { "answered", "answered", "unanswered", "answered", string.Empty, "answered", string.Empty, "unanswered" };
+        // mock answered/partial/unanswered demo — 시각 분기 확인용.
+        var states = new[] { "answered", "answered", "unanswered", "answered", "partial", "answered", "partial", "unanswered" };
         var i = 0;
         return TacticalWorkshopPresenter.Threats
             .Select(t => new TacticalWorkshopThreatViewState(
                 LaneId: t.Id,
+                SpriteKey: t.SpriteKey,
                 Sprite: LoadThreatSprite(t.SpriteKey),
                 KoLabel: t.KoLabel,
                 AnswerState: states[i++]))
@@ -158,6 +170,7 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
                 HeroId: "warden", DisplayName: "Iron Warden",
                 AnchorLabel: "전열 상단", RoleLabel: "전열 수호",
                 FormationLabel: "전열", RangeLabel: "근접 고수",
+                DirectiveLabel: "기본(자동)",
                 Biases: new[]
                 {
                     new TacticalWorkshopBiasViewState("캐리 보호", 0.72f),
@@ -168,6 +181,7 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
                 HeroId: "slayer", DisplayName: "Oath Slayer",
                 AnchorLabel: "전열 중앙", RoleLabel: "결투 돌격",
                 FormationLabel: "전열", RangeLabel: "거리 좁히기",
+                DirectiveLabel: "기본(자동)",
                 Biases: new[]
                 {
                     new TacticalWorkshopBiasViewState("캐리 보호", 0.18f),
@@ -178,6 +192,7 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
                 HeroId: "hunter", DisplayName: "Longshot Hunter",
                 AnchorLabel: "후열 중앙", RoleLabel: "원거리 사격",
                 FormationLabel: "후열", RangeLabel: "밴드 유지",
+                DirectiveLabel: "기본(자동)",
                 Biases: new[]
                 {
                     new TacticalWorkshopBiasViewState("캐리 보호", 0.30f),
@@ -188,6 +203,7 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
                 HeroId: "priest", DisplayName: "Dawn Priest",
                 AnchorLabel: "후열 하단", RoleLabel: "치유 지원",
                 FormationLabel: "후열", RangeLabel: "밴드 유지",
+                DirectiveLabel: "기본(자동)",
                 Biases: new[]
                 {
                     new TacticalWorkshopBiasViewState("캐리 보호", 0.86f),
