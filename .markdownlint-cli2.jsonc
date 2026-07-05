@@ -7,10 +7,14 @@
     "MD032": false,
     "MD041": false
   },
+  // git이 무시하는 파일은 lint도 무시한다 — tools/raw-wiki(pindoc 재생성 덤프),
+  // .claude/.codex/.agents(SSOT junction·워크트리 사본) 등 외부 소유/재생성 영역 일괄 제외.
+  "gitignore": true,
   "ignores": [
     "PINDOC.md",
     ".gptprosubmit/payload/**",
     "Packages/**",
-    "Assets/ThirdParty/**"
+    "Assets/ThirdParty/**",
+    "**/node_modules/**"
   ]
 }

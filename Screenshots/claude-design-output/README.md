@@ -5,7 +5,7 @@
 ## 산출 1줄 요약
 
 | panel | file | size | USS-safe | 한국어 typography | mockup IA 정합 |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Roster Grid | `roster-grid.html` | 26 KB / 1600×900 | ✅ 100% | ✅ `word-break: keep-all` + Pretendard | △ 12 hero grid + filter chip 갖춤 |
 | Character Sheet | `character-sheet.html` | 79 KB / 1664×936 | ✅ 100% | ✅ belt-and-suspenders nowrap | ✅ stat rail + 4 CTA action bar + breadcrumb |
 | Squad Workshop | `squad-workshop.html` | 31 KB / 1664×936 | ✅ 100% | ✅ | △ 배치/태세/위험 chip strip + footer CTA |
@@ -53,7 +53,7 @@ Battle HUD가 1920×1080을 잡은 건 self-evident하지만 (full-screen HUD), 
 
 claude.ai/design은 prototype 단위로 동작하므로 "Design System" prototype 한 개 + "Panel Preview" prototype 9개를 묶어 cross-import하는 방식이 atomic 통합의 정공법이다. 본 batch에서는 그 워크플로우를 못 잡고 10 panel 각각을 독립 prototype으로 돌렸다.
 
-**Round 2 권고 — atomic 통합 재생성**
+### Round 2 권고 — atomic 통합 재생성
 
 다음 round에서는 prototype 구성을 두 단계로 분리한다:
 
@@ -71,7 +71,7 @@ claude.ai/design은 prototype 단위로 동작하므로 "Design System" prototyp
 
 ## 파일 인덱스
 
-```
+```text
 Screenshots/claude-design-output/
 ├── README.md                   ← 본 문서
 ├── atlas.html                  ← 원정 지도 (출정/정찰 dual CTA + 마을 복귀)

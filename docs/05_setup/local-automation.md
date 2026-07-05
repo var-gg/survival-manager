@@ -54,6 +54,11 @@ repo-root `.markdownlint-cli2.jsonc` 설정을 사용해 markdownlint와
 markdown-link-check를 수행한다. 기본은 repo-wide이지만, 현재 운영 gate는
 touched markdown만 `-Paths`로 lint하는 쪽을 우선한다.
 `Assets/ThirdParty/**` 같은 upstream/vendor 문서는 lint 대상에서 제외한다.
+또한 `.markdownlint-cli2.jsonc`의 `gitignore: true` 설정으로 git이 무시하는
+파일은 lint에서도 자동 제외한다. `tools/raw-wiki/**`(pindoc 재생성 덤프),
+`.claude/`·`.codex/`·`.agents/`(SSOT junction·워크트리 사본), `node_modules`가
+여기에 해당한다. 이 영역은 외부에서 재생성/소유되므로 repo lint 기준을
+적용하지 않는다.
 
 ## Unity 테스트
 
