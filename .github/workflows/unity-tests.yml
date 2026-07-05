@@ -23,7 +23,16 @@ jobs:
           if [[ -n "${UNITY_LICENSE:-}" ]]; then
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::UNITY_LICENSE secret 미설정 — Unity Docker job 스킵(이미지 pull 회피, flaky 제거). 라이선스 설정 시 자동 재활성화."
+            echo "::warning::UNITY_LICENSE secret 미등록 — Unity 테스트 job 전체 skip. 이 런의 success는 Unity 컴파일/테스트를 포함하지 않는다."
+            {
+              echo "## ⚠️ Unity 테스트 게이트 SKIP — 이 초록은 Unity 검증 없음"
+              echo ""
+              echo '`UNITY_LICENSE` 시크릿이 없어 Unity 배치 job이 전부 건너뛰어졌다.'
+              echo "로컬 보완 게이트: \`pwsh -File tools/clean-clone-witness.ps1\` (라이선스 머신에서 fresh clone 전체 검증)."
+              echo ""
+              echo "등록 절차: Actions에서 \`unity-license-request\` 워크플로 실행 → .alf 아티팩트 다운로드 →"
+              echo "https://license.unity3d.com/manual 에서 .ulf 교환 → \`gh secret set UNITY_LICENSE < Unity_v*.ulf\`"
+            } >> "$GITHUB_STEP_SUMMARY"
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -32,7 +41,7 @@ jobs:
     if: needs.unity-gate.outputs.available == 'true'
     runs-on: ubuntu-latest
     container:
-      image: unityci/editor:ubuntu-6000.4.0f1-base-3
+      image: unityci/editor:ubuntu-6000.4.7f1-base-3
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
     steps:
@@ -67,7 +76,7 @@ jobs:
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run EditMode scene integrity + domain tests (Unity 6000.4.0f1)
+      - name: Run EditMode scene integrity + domain tests (Unity 6000.4.7f1)
         if: steps.unity-license.outputs.available == 'true'
         shell: bash
         run: |
@@ -94,7 +103,7 @@ jobs:
     if: needs.unity-gate.outputs.available == 'true'
     runs-on: ubuntu-latest
     container:
-      image: unityci/editor:ubuntu-6000.4.0f1-base-3
+      image: unityci/editor:ubuntu-6000.4.7f1-base-3
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
     steps:
@@ -129,7 +138,7 @@ jobs:
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run PlayMode bootstrap + loop smoke tests (Unity 6000.4.0f1)
+      - name: Run PlayMode bootstrap + loop smoke tests (Unity 6000.4.7f1)
         if: steps.unity-license.outputs.available == 'true'
         shell: bash
         run: |

@@ -1,0 +1,51 @@
+name: unity-license-request
+
+# 수동 전용 — Unity 개인 라이선스 수동 활성화 파일(.alf)을 CI 러너 환경에서 생성한다.
+# .ulf는 머신 환경에 묶이므로 로컬(Windows)에서 만든 라이선스는 CI 컨테이너에서 못 쓴다.
+# 반드시 이 워크플로(동일 unityci 이미지)에서 .alf를 만들어 교환해야 한다.
+#
+# 오너 1회 절차:
+#   1) Actions 탭 → unity-license-request → Run workflow
+#   2) 완료 후 아티팩트 unity-activation-file(.alf) 다운로드
+#   3) https://license.unity3d.com/manual 에 .alf 업로드 → Personal 선택 → .ulf 다운로드
+#   4) 로컬에서: gh secret set UNITY_LICENSE < Unity_v6000.x.ulf
+#   5) 다음 push부터 unity-gate가 available=true — content-validation/unity-tests 실검증 재개
+on:
+  workflow_dispatch:
+
+jobs:
+  request-activation-file:
+    runs-on: ubuntu-latest
+    container:
+      image: unityci/editor:ubuntu-6000.4.7f1-base-3
+    steps:
+      - name: Create manual activation file (.alf)
+        shell: bash
+        run: |
+          # 라이선스가 없는 상태라 Unity가 nonzero로 끝나는 게 정상 — .alf 생성 여부가 진짜 게이트.
+          /opt/unity/Editor/Unity \
+            -batchmode \
+            -nographics \
+            -quit \
+            -createManualActivationFile \
+            -logFile activation.log || true
+          ls -la ./*.alf
+
+      - name: Upload activation file artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: unity-activation-file
+          path: "*.alf"
+          if-no-files-found: error
+
+      - name: Write follow-up instructions
+        shell: bash
+        run: |
+          {
+            echo "## Unity 라이선스 등록 — 남은 절차"
+            echo ""
+            echo "1. 이 런의 아티팩트 \`unity-activation-file\`(.alf)을 다운로드"
+            echo "2. https://license.unity3d.com/manual 에 업로드 → Personal 라이선스 선택 → .ulf 다운로드"
+            echo "3. 로컬 터미널에서: \`gh secret set UNITY_LICENSE < Unity_v6000.x.ulf\`"
+            echo "4. 다음 push부터 unity-gate가 열려 content-validation / unity-tests가 실제로 돈다"
+          } >> "$GITHUB_STEP_SUMMARY"
