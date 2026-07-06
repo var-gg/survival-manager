@@ -12,18 +12,20 @@ namespace SM.Tests.EditMode;
 /// <summary>
 /// 무한 순환 골든 — 캠페인 엔딩(StoryCleared/EndlessUnlocked) 이후 **무한 순환 2회차를 씬 없이 완주**한다.
 /// CampaignPlaythroughPolicyGoldenFastTests의 연장: 같은 runner/policy로 엔딩까지 간 뒤
-/// RunEndlessCycles가 실게임과 같은 세션 API(BeginEndlessExpedition)를 타므로,
-/// 사이클 truth 전이·run identity 분리·보상 재지급(dedup 우회)·CommitId 회차 분화가 전부 골든으로 잠긴다.
+/// RunEndlessCycles가 실게임과 같은 세션 API(BeginEndlessExpedition)를 타며 메타루프를 완주한다.
 ///
-/// 잠그는 계약:
+/// 잠그는 계약(메타루프 레벨):
 /// - 사이클 영속: Profile.Narrative.EndlessCycle.CycleIndex/Heat가 2회 후 2/2.
 /// - 원정 identity: 회차별 ExpeditionId 접미(#c1/#c2)로 ledger/telemetry 충돌 없음.
-/// - 보상 재지급: RewardSourceId 프로필-수명 dedup이 사이클 재방문을 차단하지 않는다
-///   — 수술 전에는 2회차 지급이 'Recovered'로 강등돼 통화 델타 0이었다.
+/// - 사이클 스탬프 보존: 정산 직전까지 ActiveRun.EndlessCycleIndex가 유지된다.
+/// - 정산 발생: 회차마다 RewardLedger에 신규 항목이 기록된다(무한이 정상 진행).
+/// - 엔딩 재점화 없음(재클리어 멱등).
 ///
-/// 이 fixture(AutoResolve) 레인은 전투 진입 없이 노드를 자동 정산하므로 Overlay.BattleContextHash가
-/// 스탬프되지 않아 RewardCommitId 레일이 비어 있다 — CommitId의 cycle-salt 분화는
-/// EncounterResolutionService 순수 해시 테스트(EndlessCycleServiceFastTests)가 별도로 잠근다.
+/// 범위 주의(적대 리뷰 2026-07-06): 이 골든은 AutoResolve 레인이라 reward-choice 정산이 extract
+/// 노드(빈 RewardSourceId)에서만 일어나 SessionRewardSettlementFlow의 SourceId dedup **스킵 가드는
+/// 여기서 트리거되지 않는다** — 그 가드의 회귀 잠금은 non-empty SourceId를 전투 노드에서 정산하는
+/// EndlessRewardDedupFastTests가 소유한다. CommitId cycle-salt 분화도 순수 해시 테스트
+/// (EndlessCycleServiceFastTests)가 별도로 잠근다.
 /// </summary>
 [Category("FastUnit")]
 public sealed class EndlessCyclePlaythroughGoldenFastTests
