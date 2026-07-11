@@ -204,7 +204,10 @@ public record BattleSkillSpec(
     BattleSkillPresentationProfile? PresentationProfile = null,
     // P3 스킬 강제이동 — 접촉 시 위치를 바꾸는 저작 의도(돌진/넉백/끌기). 소비는 MovementResolver.
     SkillDisplacementKind DisplacementKind = SkillDisplacementKind.None,
-    float DisplacementDistance = 0f)
+    float DisplacementDistance = 0f,
+    // 발동형 효과 — 실행 슬롯과 무관하게 컴파일이 유닛 TriggeredEffects로 합류시켜
+    // CombatTriggerEngine이 소비한다. 패시브/서포트 슬롯 스킬의 실전투 통로(증강과 동일 계약).
+    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 

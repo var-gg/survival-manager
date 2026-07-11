@@ -145,4 +145,13 @@ MonoBehaviour:
     OwnershipPolicy: 0
     Effects: []
   CleanseProfileId: 
+  TriggeredEffects:
+  - Trigger: 2
+    Op: 0
+    Scope: 1
+    Magnitude: 1
+    ThresholdRatio: 0.35
+    StatusId: silence
+    DurationSeconds: 1.4
+    MaxStacks: 1
   legacyDisplayName: 

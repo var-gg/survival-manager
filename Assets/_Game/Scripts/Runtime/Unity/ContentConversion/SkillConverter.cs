@@ -108,7 +108,30 @@ internal static class SkillConverter
             VfxHookId: string.IsNullOrWhiteSpace(skill.VfxHookId) ? $"vfx.{skill.Id}" : skill.VfxHookId,
             PresentationProfile: presentationProfile,
             DisplacementKind: skill.DisplacementKind,
-            DisplacementDistance: Mathf.Max(0f, skill.DisplacementDistance));
+            DisplacementDistance: Mathf.Max(0f, skill.DisplacementDistance),
+            TriggeredEffects: BuildTriggeredEffects(skill));
+    }
+
+    private static IReadOnlyList<CombatTriggeredEffect>? BuildTriggeredEffects(SkillDefinitionAsset skill)
+    {
+        if (skill.TriggeredEffects == null || skill.TriggeredEffects.Count == 0)
+        {
+            return null;
+        }
+
+        return skill.TriggeredEffects
+            .Where(spec => spec != null)
+            .Select(spec => new CombatTriggeredEffect(
+                skill.Id,
+                spec.Trigger,
+                spec.Op,
+                spec.Scope,
+                spec.Magnitude,
+                spec.ThresholdRatio,
+                spec.StatusId ?? string.Empty,
+                spec.DurationSeconds,
+                spec.MaxStacks <= 0 ? 1 : spec.MaxStacks))
+            .ToList();
     }
 
     internal static BattleBasicAttackSpec BuildBasicAttackSpec(UnitArchetypeDefinition definition)

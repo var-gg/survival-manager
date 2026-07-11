@@ -92,6 +92,37 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void PassiveSkillTriggeredEffect_ReachesUnit_AndChangesSimOutcome()
+    {
+        var withTrigger = CompileSingleHero(
+            affixIds: Array.Empty<string>(),
+            mutatePassive: skill => skill with
+            {
+                TriggeredEffects = new[]
+                {
+                    new CombatTriggeredEffect(skill.Id, CombatTriggerKind.BattleStart, TriggeredEffectOp.Barrier, EffectScope.Self, Magnitude: 60f),
+                },
+            });
+        var without = CompileSingleHero(affixIds: Array.Empty<string>());
+
+        Assert.That(
+            withTrigger.Allies.Single().EffectiveTriggeredEffects
+                .Any(effect => effect.SourceId == "skill.vanguard.passive" && effect.Op == TriggeredEffectOp.Barrier),
+            Is.True,
+            "패시브 슬롯 스킬의 TriggeredEffects는 유닛 트리거 채널로 합류해야 한다(증강과 동일 계약)");
+        Assert.That(
+            without.Allies.Single().EffectiveTriggeredEffects
+                .Any(effect => effect.SourceId == "skill.vanguard.passive"),
+            Is.False,
+            "음성 대조군: 발동 효과가 없는 패시브는 트리거 채널에 아무 것도 남기지 않아야 한다");
+
+        var withRun = RunCompiledAllyVersusRaider(withTrigger);
+        var withoutRun = RunCompiledAllyVersusRaider(without);
+        Assert.That(withRun.AllySurvivedSteps, Is.GreaterThan(withoutRun.AllySurvivedSteps),
+            "BattleStart Barrier(60)를 발동한 유닛은 실 sim에서 뚜렷하게 오래 생존해야 한다 — 패시브 슬롯 실전투 효과의 1차 가드");
+    }
+
+    [Test]
     public void AffixTemplateCompile_SameScenarioTwice_StableHash()
     {
         var first = CompileSingleHero(affixIds: new[] { "affix.tempo", "affix.cond_met", "affix.cond_unmet" });
@@ -142,9 +173,11 @@ public sealed class ContentEffectDifferentialTests
         return new SimRun(sb.ToString(), allySurvivedSteps);
     }
 
-    private static BattleLoadoutSnapshot CompileSingleHero(IReadOnlyList<string> affixIds)
+    private static BattleLoadoutSnapshot CompileSingleHero(
+        IReadOnlyList<string> affixIds,
+        Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null)
     {
-        var content = BuildContentSnapshot();
+        var content = BuildContentSnapshot(mutatePassive);
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
         {
@@ -190,17 +223,23 @@ public sealed class ContentEffectDifferentialTests
             content);
     }
 
-    private static CombatContentSnapshot BuildContentSnapshot()
+    private static CombatContentSnapshot BuildContentSnapshot(Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null)
     {
         var baseRules = new[]
         {
             new TacticRule(0, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
         };
+        var passiveSkill = CreateSkill("skill.vanguard.passive", CompiledSkillSlots.Passive, 0f, SkillKind.Buff);
+        if (mutatePassive != null)
+        {
+            passiveSkill = mutatePassive(passiveSkill);
+        }
+
         var wardenSkills = new[]
         {
             CreateSkill("skill.warden.core", CompiledSkillSlots.CoreActive, 4.5f),
             CreateSkill("skill.warden.utility", CompiledSkillSlots.UtilityActive, 0f, SkillKind.Utility),
-            CreateSkill("skill.vanguard.passive", CompiledSkillSlots.Passive, 0f, SkillKind.Buff),
+            passiveSkill,
             CreateSkill("skill.vanguard.support", CompiledSkillSlots.Support, 0f, SkillKind.Buff),
         };
 

@@ -17,7 +17,9 @@ public sealed class LoadoutCompiler
     // p3-skill-displacement.v1: 스킬 hash 직렬화에 DisplacementKind/Distance 추가(전 스킬 라인 변경).
     // affix-template.v1: affix의 CompileTags/RuleModifierTags 유닛 전파 + RequiredTags/ExcludedTags
     //   조건 게이트 신설(과거엔 조건 무시로 수치 무조건 적용) — affix 장착 라인의 hash 변경.
-    public const string CurrentCompileVersion = "affix-template.v1";
+    // skill-triggered-effects.v1: 스킬 TriggeredEffects가 유닛 트리거 채널로 합류(패시브/서포트
+    //   슬롯의 실전투 통로) — 해당 스킬 장착 유닛의 trig 라인 hash 변경.
+    public const string CurrentCompileVersion = "skill-triggered-effects.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -220,6 +222,19 @@ public sealed class LoadoutCompiler
                         ModifierSource.Skill,
                         skill.RuleModifierTags.Select(tag => new RuleModifier(RuleModifierKind.BehaviorTag, tag)).ToList()));
                     artifacts.Provenance.Add(new CompileProvenanceEntry(hero.Id, ModifierSource.Skill, skill.Id, "skill_rule", skill.RuleModifierTags.ToList()));
+                }
+
+                // 스킬 발동형 효과 → 유닛 TriggeredEffects 합류(증강과 동일 채널, CombatTriggerEngine 소비).
+                // 패시브/서포트 슬롯 스킬이 실행 루프 밖에서도 실전투 효과를 내는 정식 통로.
+                if (skill.TriggeredEffects is { Count: > 0 })
+                {
+                    artifacts.TriggeredEffects.AddRange(skill.TriggeredEffects);
+                    artifacts.Provenance.Add(new CompileProvenanceEntry(
+                        hero.Id,
+                        ModifierSource.Skill,
+                        skill.Id,
+                        "skill_triggered_effect",
+                        skill.TriggeredEffects.Select(effect => $"{effect.Trigger}:{effect.Op}:{effect.StatusId}").ToList()));
                 }
             }
 
