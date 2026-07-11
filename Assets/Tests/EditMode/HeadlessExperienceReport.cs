@@ -146,6 +146,11 @@ public sealed class HeadlessExperienceReport
         Assert.That(clearedSites, Is.Not.Empty, "최소 1사이트 관통.");
         Assert.That(session.Profile.CampaignProgress.StoryCleared, Is.True,
             "AutoResolve walkthrough가 캠페인을 엔딩까지 관통했다(전체 스토리 아크 도달).");
+        // 회귀 게이트: 보스전 서사가 실제로 발화됐는지 — NodeIs off-by-one(4→3) 재발 시 이 단언이 깨진다.
+        Assert.That(beats.Any(b => b.key.Contains("boss_bark", StringComparison.Ordinal)), Is.True,
+            "보스전 진입(boss_bark)이 발화됐다 — NodeIs off-by-one 회귀 차단.");
+        Assert.That(beats.Any(b => b.key.Contains("boss_defeat", StringComparison.Ordinal)), Is.True,
+            "보스 처치(boss_defeat)가 발화됐다 — NodeIs off-by-one 회귀 차단.");
     }
 
     [Test]
