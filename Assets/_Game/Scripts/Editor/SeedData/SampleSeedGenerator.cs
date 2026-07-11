@@ -2491,12 +2491,69 @@ public static class SampleSeedGenerator
                 asset.RequiredClassTags = ResolveTags(tags, definition.Classes);
                 asset.AppliedStatuses = new List<StatusApplicationRule>();
                 asset.CleanseProfileId = string.Empty;
+                asset.SupportModifier = BuildSupportModifierSpec(definition.Id);
                 asset.IconId = ResolveSkillIconId(asset.Id);
                 asset.VfxHookId = ResolveSkillVfxHookId(asset.Id);
                 UpsertStringEntry(ContentLocalizationTables.Skills, asset.NameKey, definition.KoName, definition.EnName);
                 UpsertStringEntry(ContentLocalizationTables.Skills, asset.DescriptionKey, $"{definition.KoName} modifier", $"{definition.EnName} modifier");
             });
         }
+    }
+
+    /// <summary>
+    /// 서포트 젬 12종의 페어-변조 효과(V1 후보치 — 오너 sweep 재료). 이름 의도 기준:
+    /// 잔혹=위력, 신속=쿨다운, 관통=sunder, 메아리=잦은 시전(재시전 메커니즘은 백로그),
+    /// 잔향=지속, 정화=cleanse, 수호=guarded, 처형=치명타, 장사정=사거리, 흡수=흡혈,
+    /// 고정=강인함, 사냥 표식=marked.
+    /// </summary>
+    private static SupportModifierSpec BuildSupportModifierSpec(string id)
+    {
+        return id switch
+        {
+            "support_brutal" => new SupportModifierSpec { PowerMultiplier = 1.25f },
+            "support_swift" => new SupportModifierSpec { CooldownMultiplier = 0.8f, CastWindupMultiplier = 0.85f },
+            "support_piercing" => new SupportModifierSpec
+            {
+                AddedStatuses = new List<StatusApplicationRule>
+                {
+                    new() { Id = "support_piercing:sunder", StatusId = "sunder", DurationSeconds = 2f, Magnitude = 1f, MaxStacks = 1 },
+                },
+            },
+            "support_echo" => new SupportModifierSpec { CooldownMultiplier = 0.85f },
+            "support_lingering" => new SupportModifierSpec { StatusDurationMultiplier = 1.35f },
+            "support_purifying" => new SupportModifierSpec { GrantCleanseProfileId = "cleanse_basic", StatusDurationMultiplier = 1.2f },
+            "support_guarded" => new SupportModifierSpec
+            {
+                AddedStatuses = new List<StatusApplicationRule>
+                {
+                    new() { Id = "support_guarded:guarded", StatusId = "guarded", DurationSeconds = 1.5f, Magnitude = 1f, MaxStacks = 1 },
+                },
+            },
+            "support_executioner" => new SupportModifierSpec { ForceCanCrit = true, PowerMultiplier = 1.1f },
+            "support_longshot" => new SupportModifierSpec { RangeBonus = 0.6f },
+            "support_siphon" => new SupportModifierSpec
+            {
+                OwnerModifiers = new List<SerializableStatModifier>
+                {
+                    new() { StatId = "lifesteal", Op = SM.Core.Stats.ModifierOp.Flat, Value = 0.08f },
+                },
+            },
+            "support_anchored" => new SupportModifierSpec
+            {
+                OwnerModifiers = new List<SerializableStatModifier>
+                {
+                    new() { StatId = "tenacity", Op = SM.Core.Stats.ModifierOp.Flat, Value = 0.15f },
+                },
+            },
+            "support_hunter_mark" => new SupportModifierSpec
+            {
+                AddedStatuses = new List<StatusApplicationRule>
+                {
+                    new() { Id = "support_hunter_mark:marked", StatusId = "marked", DurationSeconds = 3f, Magnitude = 1f, MaxStacks = 1 },
+                },
+            },
+            _ => new SupportModifierSpec(),
+        };
     }
 
     private static void PatchLaunchFloorItemsAndSkills(IReadOnlyDictionary<string, StableTagDefinition> tags)

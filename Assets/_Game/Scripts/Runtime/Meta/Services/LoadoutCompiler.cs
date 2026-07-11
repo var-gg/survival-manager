@@ -19,7 +19,9 @@ public sealed class LoadoutCompiler
     //   조건 게이트 신설(과거엔 조건 무시로 수치 무조건 적용) — affix 장착 라인의 hash 변경.
     // skill-triggered-effects.v1: 스킬 TriggeredEffects가 유닛 트리거 채널로 합류(패시브/서포트
     //   슬롯의 실전투 통로) — 해당 스킬 장착 유닛의 trig 라인 hash 변경.
-    public const string CurrentCompileVersion = "skill-triggered-effects.v1";
+    // support-modifier.v1: 서포트 젬 페어-변조(SupportModifier) 신설 — 젬 장착 유닛의
+    //   매칭 액티브 수치/상태/cleanse와 owner 스탯이 컴파일 타임에 변환된다.
+    public const string CurrentCompileVersion = "support-modifier.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -193,7 +195,10 @@ public sealed class LoadoutCompiler
                 }
             }
 
-            var resolvedSkills = ResolveSkills(hero, archetype, loadout, itemInstances, skillInstances, content);
+            var resolvedSkills = ApplySupportModifiers(
+                ResolveSkills(hero, archetype, loadout, itemInstances, skillInstances, content),
+                artifacts,
+                hero.Id);
             foreach (var selection in resolvedSkills)
             {
                 var skill = selection.Skill;
@@ -398,6 +403,113 @@ public sealed class LoadoutCompiler
 
         artifacts.NumericPackages.Add(package);
         artifacts.Provenance.Add(new CompileProvenanceEntry(subjectId, package.Source, package.SourceId, artifactKind, BuildModifierDetails(package.Modifiers)));
+    }
+
+    /// <summary>
+    /// 서포트 젬 페어-변조 — SupportModifier를 가진 스킬(젬)이 같은 유닛의 액티브(코어/유틸리티) 중
+    /// SupportAllowedTags/BlockedTags 매칭을 통과한 스킬을 컴파일 타임에 변환한다.
+    /// 젬 id 오름차순으로 순차 적용(결정성), 젬이 젬을 변조하지 않는다.
+    /// 무기 태그 게이트(RequiredWeaponTags)는 weapon family 태그가 아직 유닛에 전파되지 않아 미적용(후속).
+    /// </summary>
+    private static IReadOnlyList<ResolvedSkillSelection> ApplySupportModifiers(
+        IReadOnlyList<ResolvedSkillSelection> resolved,
+        CompiledArtifacts artifacts,
+        string heroId)
+    {
+        var gems = resolved
+            .Where(selection => selection.Skill.SupportModifier != null)
+            .OrderBy(selection => selection.Skill.Id, StringComparer.Ordinal)
+            .ToList();
+        if (gems.Count == 0)
+        {
+            return resolved;
+        }
+
+        var transformed = resolved.ToList();
+        foreach (var gem in gems)
+        {
+            var modifier = gem.Skill.SupportModifier!;
+            if (gem.Skill.RequiredClassTags is { Count: > 0 }
+                && !gem.Skill.RequiredClassTags.Any(artifacts.CompileTags.Contains))
+            {
+                artifacts.Provenance.Add(new CompileProvenanceEntry(
+                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_modifier_class_gate", gem.Skill.RequiredClassTags.ToList()));
+                continue;
+            }
+
+            if (modifier.OwnerModifiers is { Count: > 0 })
+            {
+                var package = new CombatModifierPackage($"support:{gem.Skill.Id}", ModifierSource.Skill, modifier.OwnerModifiers.ToList());
+                artifacts.NumericPackages.Add(package);
+                artifacts.Provenance.Add(new CompileProvenanceEntry(
+                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_owner_numeric", BuildModifierDetails(package.Modifiers)));
+            }
+
+            for (var i = 0; i < transformed.Count; i++)
+            {
+                var selection = transformed[i];
+                if (selection.Skill.SupportModifier != null || !IsSupportTarget(gem.Skill, selection.Skill))
+                {
+                    continue;
+                }
+
+                transformed[i] = selection with { Skill = TransformSupportedSkill(selection.Skill, modifier) };
+                artifacts.Provenance.Add(new CompileProvenanceEntry(
+                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_modifier", new[] { $"target:{selection.Skill.Id}" }));
+            }
+        }
+
+        return transformed;
+    }
+
+    private static bool IsSupportTarget(BattleSkillSpec gem, BattleSkillSpec candidate)
+    {
+        // 변조 대상은 액티브 슬롯(코어/유틸리티)만 — 패시브·서포트·젬은 제외.
+        if (!string.Equals(candidate.SlotKind, CompiledSkillSlots.CoreActive, StringComparison.Ordinal)
+            && !string.Equals(candidate.SlotKind, CompiledSkillSlots.UtilityActive, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var candidateTags = candidate.CompileTags ?? Array.Empty<string>();
+        var allowed = gem.SupportAllowedTags ?? Array.Empty<string>();
+        if (allowed.Count == 0 || !allowed.Any(tag => candidateTags.Contains(tag, StringComparer.Ordinal)))
+        {
+            return false;
+        }
+
+        var blocked = gem.SupportBlockedTags ?? Array.Empty<string>();
+        return !blocked.Any(tag => candidateTags.Contains(tag, StringComparer.Ordinal));
+    }
+
+    private static BattleSkillSpec TransformSupportedSkill(BattleSkillSpec skill, BattleSupportModifierSpec modifier)
+    {
+        var statuses = (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>()).ToList();
+        if (Math.Abs(modifier.StatusDurationMultiplier - 1f) > 0.0001f)
+        {
+            statuses = statuses
+                .Select(status => status with { DurationSeconds = status.DurationSeconds * modifier.StatusDurationMultiplier })
+                .ToList();
+        }
+
+        if (modifier.AddedStatuses is { Count: > 0 })
+        {
+            statuses.AddRange(modifier.AddedStatuses);
+        }
+
+        return skill with
+        {
+            Power = skill.Power * modifier.PowerMultiplier,
+            PowerFlat = skill.PowerFlat * modifier.PowerMultiplier,
+            BaseCooldownSeconds = skill.BaseCooldownSeconds * modifier.CooldownMultiplier,
+            CastWindupSeconds = skill.CastWindupSeconds * modifier.CastWindupMultiplier,
+            Range = skill.Range + modifier.RangeBonus,
+            CanCrit = skill.CanCrit || modifier.ForceCanCrit,
+            AppliedStatuses = statuses.Count > 0 ? statuses : skill.AppliedStatuses,
+            CleanseProfileId = string.IsNullOrWhiteSpace(skill.CleanseProfileId) && !string.IsNullOrWhiteSpace(modifier.GrantCleanseProfileId)
+                ? modifier.GrantCleanseProfileId
+                : skill.CleanseProfileId,
+        };
     }
 
     private static AffixTemplate? ResolveAffixTemplate(CombatContentSnapshot content, string affixId)

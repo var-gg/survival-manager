@@ -154,4 +154,26 @@ MonoBehaviour:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AppliedStatuses: []
   CleanseProfileId: 
+  SupportModifier:
+    PowerMultiplier: 1
+    CooldownMultiplier: 1
+    CastWindupMultiplier: 1
+    RangeBonus: 0
+    StatusDurationMultiplier: 1
+    ForceCanCrit: 0
+    AddedStatuses:
+    - Id: support_hunter_mark:marked
+      StatusId: marked
+      DurationSeconds: 3
+      Magnitude: 1
+      MaxStacks: 1
+      RefreshDurationOnReapply: 1
+      StackCap: 0
+      StackPolicy: 0
+      RefreshPolicy: 0
+      ProcAttributionPolicy: 0
+      OwnershipPolicy: 0
+      Effects: []
+    GrantCleanseProfileId: 
+    OwnerModifiers: []
   legacyDisplayName: 

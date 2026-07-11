@@ -207,7 +207,9 @@ public record BattleSkillSpec(
     float DisplacementDistance = 0f,
     // 발동형 효과 — 실행 슬롯과 무관하게 컴파일이 유닛 TriggeredEffects로 합류시켜
     // CombatTriggerEngine이 소비한다. 패시브/서포트 슬롯 스킬의 실전투 통로(증강과 동일 계약).
-    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null)
+    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null,
+    // 서포트 젬 페어-변조 계약 — null이면 일반 스킬. 소비는 LoadoutCompiler(컴파일 타임 변환).
+    BattleSupportModifierSpec? SupportModifier = null)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 
@@ -226,6 +228,22 @@ public sealed record StatusApplicationSpec(
     float Magnitude,
     int MaxStacks = 1,
     bool RefreshDurationOnReapply = true);
+
+/// <summary>
+/// 서포트 젬의 페어-변조 계약(컴파일 입력) — LoadoutCompiler가 SupportAllowedTags/BlockedTags
+/// 매칭을 통과한 같은 유닛의 액티브 BattleSkillSpec을 이 배수/가산/부여로 변환한다.
+/// 전투 코어는 변환 결과만 소비(컴파일 타임 한정 → sim 무변경·결정성 안전).
+/// </summary>
+public sealed record BattleSupportModifierSpec(
+    float PowerMultiplier = 1f,
+    float CooldownMultiplier = 1f,
+    float CastWindupMultiplier = 1f,
+    float RangeBonus = 0f,
+    float StatusDurationMultiplier = 1f,
+    bool ForceCanCrit = false,
+    IReadOnlyList<StatusApplicationSpec>? AddedStatuses = null,
+    string GrantCleanseProfileId = "",
+    IReadOnlyList<SM.Core.Stats.StatModifier>? OwnerModifiers = null);
 
 [System.Obsolete("Use BattleSkillSpec for compiled battle inputs.")]
 public sealed record SkillDefinition(

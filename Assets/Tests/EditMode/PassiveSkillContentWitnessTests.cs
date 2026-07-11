@@ -87,6 +87,29 @@ public sealed class PassiveSkillContentWitnessTests
             "장착된 서포트 스킬의 발동형 효과가 유닛 트리거 채널(CombatTriggerEngine 소비)에 도달해야 한다");
     }
 
+    [Test]
+    public void RealCompile_SupportGem_TransformsMatchedActive_AndOwnerModifiersLand()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+
+        // baseline: 변조 없는 서포트(line_anchor는 TriggeredEffects만 보유) — 코어 원값 확보.
+        var baseline = CompileWardenWithSupportSkill(snapshot, "support_line_anchor");
+        var baselineCore = baseline.Allies.Single().Skills.Single(skill => skill.Id == "skill_power_strike");
+
+        // support_brutal(Include: strike/burst, Power ×1.25) — 실 warden 코어(strike 태그)와 매칭.
+        var brutal = CompileWardenWithSupportSkill(snapshot, "support_brutal");
+        var brutalCore = brutal.Allies.Single().Skills.Single(skill => skill.Id == "skill_power_strike");
+        Assert.That(brutalCore.Power, Is.EqualTo(baselineCore.Power * 1.25f).Within(0.001f),
+            "실 support_brutal 젬이 실 warden 코어(strike)의 위력을 ×1.25 변조해야 한다");
+
+        // support_anchored(Classes: vanguard, OwnerModifiers: tenacity) — warden(vanguard) 게이트 통과.
+        var anchored = CompileWardenWithSupportSkill(snapshot, "support_anchored");
+        Assert.That(
+            anchored.Allies.Single().NumericPackages.Any(package => package.SourceId == "support:support_anchored"),
+            Is.True,
+            "실 support_anchored 젬의 OwnerModifiers(tenacity)가 유닛 numeric package로 합류해야 한다");
+    }
+
     private static BattleLoadoutSnapshot CompileWardenWithSupportSkill(CombatContentSnapshot content, string skillId)
     {
         var archetype = content.Archetypes["warden"];

@@ -153,4 +153,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AppliedStatuses: []
   CleanseProfileId: 
+  SupportModifier:
+    PowerMultiplier: 1
+    CooldownMultiplier: 1
+    CastWindupMultiplier: 1
+    RangeBonus: 0.6
+    StatusDurationMultiplier: 1
+    ForceCanCrit: 0
+    AddedStatuses: []
+    GrantCleanseProfileId: 
+    OwnerModifiers: []
   legacyDisplayName: 

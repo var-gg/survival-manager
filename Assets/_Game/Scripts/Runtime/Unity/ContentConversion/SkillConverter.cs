@@ -109,7 +109,56 @@ internal static class SkillConverter
             PresentationProfile: presentationProfile,
             DisplacementKind: skill.DisplacementKind,
             DisplacementDistance: Mathf.Max(0f, skill.DisplacementDistance),
-            TriggeredEffects: BuildTriggeredEffects(skill));
+            TriggeredEffects: BuildTriggeredEffects(skill),
+            SupportModifier: BuildSupportModifier(skill));
+    }
+
+    private static BattleSupportModifierSpec? BuildSupportModifier(SkillDefinitionAsset skill)
+    {
+        var spec = skill.SupportModifier;
+        if (spec == null)
+        {
+            return null;
+        }
+
+        var addedStatuses = Enumerate(spec.AddedStatuses)
+            .Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.StatusId))
+            .Select(rule => new StatusApplicationSpec(
+                string.IsNullOrWhiteSpace(rule.Id) ? $"{skill.Id}:{rule.StatusId}" : rule.Id,
+                rule.StatusId,
+                rule.DurationSeconds,
+                rule.Magnitude,
+                Math.Max(1, rule.MaxStacks),
+                rule.RefreshDurationOnReapply))
+            .ToList();
+        var ownerModifiers = Enumerate(spec.OwnerModifiers)
+            .Where(modifier => modifier != null)
+            .Select(modifier => BuildStatModifier(modifier, ModifierSource.Skill, skill.Id))
+            .ToList();
+        var isIdentity = Mathf.Approximately(spec.PowerMultiplier, 1f)
+            && Mathf.Approximately(spec.CooldownMultiplier, 1f)
+            && Mathf.Approximately(spec.CastWindupMultiplier, 1f)
+            && Mathf.Approximately(spec.RangeBonus, 0f)
+            && Mathf.Approximately(spec.StatusDurationMultiplier, 1f)
+            && !spec.ForceCanCrit
+            && addedStatuses.Count == 0
+            && string.IsNullOrWhiteSpace(spec.GrantCleanseProfileId)
+            && ownerModifiers.Count == 0;
+        if (isIdentity)
+        {
+            return null;
+        }
+
+        return new BattleSupportModifierSpec(
+            spec.PowerMultiplier,
+            spec.CooldownMultiplier,
+            spec.CastWindupMultiplier,
+            spec.RangeBonus,
+            spec.StatusDurationMultiplier,
+            spec.ForceCanCrit,
+            addedStatuses.Count > 0 ? addedStatuses : null,
+            spec.GrantCleanseProfileId ?? string.Empty,
+            ownerModifiers.Count > 0 ? ownerModifiers : null);
     }
 
     private static IReadOnlyList<CombatTriggeredEffect>? BuildTriggeredEffects(SkillDefinitionAsset skill)

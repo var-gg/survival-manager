@@ -78,6 +78,9 @@ namespace SM.Content.Definitions
         [Tooltip("발동형 효과 — 실행 슬롯과 무관하게 유닛 레벨 트리거(전투시작/처치/체력임계/아군사망)로 발화. 패시브/서포트 슬롯 스킬이 실전투 효과를 내는 정식 통로(증강 TriggeredEffects와 동일 계약).")]
         public List<TriggeredEffectSpec> TriggeredEffects = new();
 
+        [Tooltip("서포트 젬 페어-변조 — SupportAllowedTags/BlockedTags 매칭을 통과한 같은 유닛의 액티브를 컴파일 타임에 변조. identity(기본값)면 무효과.")]
+        public SupportModifierSpec SupportModifier = new();
+
         [FormerlySerializedAs("DisplayName")]
         [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;
 

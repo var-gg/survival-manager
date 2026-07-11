@@ -123,6 +123,88 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void SupportGem_TransformsMatchedActive_InCompile()
+    {
+        BattleSkillSpec MutateCore(BattleSkillSpec skill) => skill with { CompileTags = new[] { "strike" } };
+
+        // 매칭: allowed(strike)가 코어와 교집합 → Power ×2 + marked 부여, 비매칭 유틸리티는 무변.
+        var matched = CompileSingleHero(
+            Array.Empty<string>(),
+            mutateCore: MutateCore,
+            mutateSupport: skill => skill with
+            {
+                SupportAllowedTags = new[] { "strike" },
+                SupportModifier = new BattleSupportModifierSpec(
+                    PowerMultiplier: 2f,
+                    AddedStatuses: new[] { new StatusApplicationSpec("gem:marked", "marked", 3f, 1f) }),
+            });
+        var matchedCore = matched.Allies.Single().Skills.Single(skill => skill.Id == "skill.warden.core");
+        Assert.That(matchedCore.Power, Is.EqualTo(9f).Within(0.0001f),
+            "매칭된 서포트 젬은 페어 액티브의 위력을 변조해야 한다 (4.5 × 2)");
+        Assert.That(
+            (matchedCore.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>()).Any(status => status.StatusId == "marked"),
+            Is.True,
+            "젬의 AddedStatuses가 매칭 액티브에 부여돼야 한다");
+        var matchedUtility = matched.Allies.Single().Skills.Single(skill => skill.Id == "skill.warden.utility");
+        Assert.That(matchedUtility.Power, Is.EqualTo(0f).Within(0.0001f), "비매칭(태그 없음) 액티브는 무변");
+
+        // 비매칭: allowed(projectile)가 어느 액티브와도 교집합 없음 → 전부 무변.
+        var unmatched = CompileSingleHero(
+            Array.Empty<string>(),
+            mutateCore: MutateCore,
+            mutateSupport: skill => skill with
+            {
+                SupportAllowedTags = new[] { "projectile" },
+                SupportModifier = new BattleSupportModifierSpec(PowerMultiplier: 2f),
+            });
+        Assert.That(
+            unmatched.Allies.Single().Skills.Single(skill => skill.Id == "skill.warden.core").Power,
+            Is.EqualTo(4.5f).Within(0.0001f),
+            "allowed 태그 비매칭이면 변조가 없어야 한다");
+
+        // 클래스 게이트: RequiredClassTags(mystic)를 warden(vanguard)이 불충족 → 무변.
+        var classGated = CompileSingleHero(
+            Array.Empty<string>(),
+            mutateCore: MutateCore,
+            mutateSupport: skill => skill with
+            {
+                SupportAllowedTags = new[] { "strike" },
+                RequiredClassTags = new[] { "mystic" },
+                SupportModifier = new BattleSupportModifierSpec(PowerMultiplier: 2f),
+            });
+        Assert.That(
+            classGated.Allies.Single().Skills.Single(skill => skill.Id == "skill.warden.core").Power,
+            Is.EqualTo(4.5f).Within(0.0001f),
+            "RequiredClassTags 불충족 젬은 변조하지 않아야 한다");
+    }
+
+    [Test]
+    public void SupportGem_OwnerModifiers_ChangeSimOutcome()
+    {
+        var withGem = CompileSingleHero(
+            Array.Empty<string>(),
+            mutateSupport: skill => skill with
+            {
+                SupportModifier = new BattleSupportModifierSpec(
+                    OwnerModifiers: new[]
+                    {
+                        new StatModifier(StatKey.MaxHealth, ModifierOp.Flat, 200f, ModifierSource.Skill, "gem.owner"),
+                    }),
+            });
+        var without = CompileSingleHero(Array.Empty<string>());
+
+        Assert.That(
+            withGem.Allies.Single().NumericPackages.Any(package => package.SourceId == "support:skill.vanguard.support"),
+            Is.True,
+            "젬의 OwnerModifiers는 유닛 numeric package로 합류해야 한다");
+
+        var withRun = RunCompiledAllyVersusRaider(withGem);
+        var withoutRun = RunCompiledAllyVersusRaider(without);
+        Assert.That(withRun.AllySurvivedSteps, Is.GreaterThan(withoutRun.AllySurvivedSteps),
+            "젬 OwnerModifiers(+200 MaxHealth)가 실 sim 생존을 바꿔야 한다");
+    }
+
+    [Test]
     public void AffixTemplateCompile_SameScenarioTwice_StableHash()
     {
         var first = CompileSingleHero(affixIds: new[] { "affix.tempo", "affix.cond_met", "affix.cond_unmet" });
@@ -175,9 +257,11 @@ public sealed class ContentEffectDifferentialTests
 
     private static BattleLoadoutSnapshot CompileSingleHero(
         IReadOnlyList<string> affixIds,
-        Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null)
+        Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null,
+        Func<BattleSkillSpec, BattleSkillSpec>? mutateCore = null,
+        Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null)
     {
-        var content = BuildContentSnapshot(mutatePassive);
+        var content = BuildContentSnapshot(mutatePassive, mutateCore, mutateSupport);
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
         {
@@ -223,24 +307,39 @@ public sealed class ContentEffectDifferentialTests
             content);
     }
 
-    private static CombatContentSnapshot BuildContentSnapshot(Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null)
+    private static CombatContentSnapshot BuildContentSnapshot(
+        Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null,
+        Func<BattleSkillSpec, BattleSkillSpec>? mutateCore = null,
+        Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null)
     {
         var baseRules = new[]
         {
             new TacticRule(0, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
         };
+        var coreSkill = CreateSkill("skill.warden.core", CompiledSkillSlots.CoreActive, 4.5f);
+        if (mutateCore != null)
+        {
+            coreSkill = mutateCore(coreSkill);
+        }
+
         var passiveSkill = CreateSkill("skill.vanguard.passive", CompiledSkillSlots.Passive, 0f, SkillKind.Buff);
         if (mutatePassive != null)
         {
             passiveSkill = mutatePassive(passiveSkill);
         }
 
+        var supportSkill = CreateSkill("skill.vanguard.support", CompiledSkillSlots.Support, 0f, SkillKind.Buff);
+        if (mutateSupport != null)
+        {
+            supportSkill = mutateSupport(supportSkill);
+        }
+
         var wardenSkills = new[]
         {
-            CreateSkill("skill.warden.core", CompiledSkillSlots.CoreActive, 4.5f),
+            coreSkill,
             CreateSkill("skill.warden.utility", CompiledSkillSlots.UtilityActive, 0f, SkillKind.Utility),
             passiveSkill,
-            CreateSkill("skill.vanguard.support", CompiledSkillSlots.Support, 0f, SkillKind.Buff),
+            supportSkill,
         };
 
         return new CombatContentSnapshot(

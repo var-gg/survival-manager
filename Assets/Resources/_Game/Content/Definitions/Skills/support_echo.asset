@@ -149,4 +149,14 @@ MonoBehaviour:
   RequiredClassTags: []
   AppliedStatuses: []
   CleanseProfileId: 
+  SupportModifier:
+    PowerMultiplier: 1
+    CooldownMultiplier: 0.85
+    CastWindupMultiplier: 1
+    RangeBonus: 0
+    StatusDurationMultiplier: 1
+    ForceCanCrit: 0
+    AddedStatuses: []
+    GrantCleanseProfileId: 
+    OwnerModifiers: []
   legacyDisplayName: 
