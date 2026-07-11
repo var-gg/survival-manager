@@ -243,6 +243,21 @@ public sealed record TraitTokenTemplate(
     string Id,
     RewardType RewardType);
 
+/// <summary>
+/// affix의 non-numeric 계약(태그/조건/rule). 수치는 기존 AffixPackages가 계속 소유하고,
+/// 이 템플릿은 CompileTags 전파·RequiredTags/ExcludedTags 조건 게이트·RuleModifierTags를
+/// 컴파일까지 실어나른다. 과거에는 ModifierPackageConverter가 수치만 변환해 전부 드롭됐다.
+/// </summary>
+public sealed record AffixTemplate(
+    string Id,
+    IReadOnlyList<string> CompileTags,
+    IReadOnlyList<string> RequiredTags,
+    IReadOnlyList<string> ExcludedTags,
+    CombatRuleModifierPackage? RulePackage)
+{
+    public bool IsConditional => RequiredTags.Count > 0 || ExcludedTags.Count > 0;
+}
+
 public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, CombatArchetypeTemplate> Archetypes,
     IReadOnlyDictionary<string, CombatModifierPackage> TraitPackages,
@@ -269,7 +284,8 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, LootBundleTemplate>? LootBundles = null,
     IReadOnlyDictionary<string, TraitTokenTemplate>? TraitTokens = null,
     FirstPlayableSliceDefinition? FirstPlayableSlice = null,
-    IReadOnlyDictionary<string, CharacterTemplate>? Characters = null);
+    IReadOnlyDictionary<string, CharacterTemplate>? Characters = null,
+    IReadOnlyDictionary<string, AffixTemplate>? AffixCatalog = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

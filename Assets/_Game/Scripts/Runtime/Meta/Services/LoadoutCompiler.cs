@@ -15,7 +15,9 @@ namespace SM.Meta.Services;
 public sealed class LoadoutCompiler
 {
     // p3-skill-displacement.v1: 스킬 hash 직렬화에 DisplacementKind/Distance 추가(전 스킬 라인 변경).
-    public const string CurrentCompileVersion = "skill-area-effect.v1";
+    // affix-template.v1: affix의 CompileTags/RuleModifierTags 유닛 전파 + RequiredTags/ExcludedTags
+    //   조건 게이트 신설(과거엔 조건 무시로 수치 무조건 적용) — affix 장착 라인의 hash 변경.
+    public const string CurrentCompileVersion = "affix-template.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -91,6 +93,7 @@ public sealed class LoadoutCompiler
             AddNumericPackage(content.TraitPackages, hero.PositiveTraitId, artifacts, hero.Id, "trait");
             AddNumericPackage(content.TraitPackages, hero.NegativeTraitId, artifacts, hero.Id, "trait");
 
+            var deferredConditionalAffixes = new List<AffixTemplate>();
             if (loadout != null)
             {
                 foreach (var itemInstanceId in loadout.EquippedItemInstanceIds)
@@ -105,8 +108,18 @@ public sealed class LoadoutCompiler
 
                     foreach (var affixId in itemInstance.AffixIds.Where(id => !string.IsNullOrWhiteSpace(id)))
                     {
-                        AddNumericPackage(content.AffixPackages, affixId, artifacts, hero.Id, "affix");
                         artifacts.CompileTags.Add($"affix:{affixId}");
+                        var affixTemplate = ResolveAffixTemplate(content, affixId);
+                        if (affixTemplate is { IsConditional: true })
+                        {
+                            // 조건부 affix는 전체 태그 조립이 끝난 뒤 일괄 평가한다(아래).
+                            // 자기 CompileTags로 자기 조건을 충족시키는 순환을 여기서 차단한다.
+                            deferredConditionalAffixes.Add(affixTemplate);
+                            continue;
+                        }
+
+                        AddNumericPackage(content.AffixPackages, affixId, artifacts, hero.Id, "affix");
+                        ApplyAffixTemplate(affixTemplate, artifacts, hero.Id);
                     }
                 }
             }
@@ -232,6 +245,29 @@ public sealed class LoadoutCompiler
                 artifacts.CompileTags.Add($"target_directive:{PlayerTargetDirectiveRules.ToStableId(targetDirective)}");
             }
 
+            // 조건부 affix 게이트: 비조건 소스 전체가 조립을 마친 태그 집합의 스냅샷 기준으로
+            // 일괄 평가한다. 조건부끼리의 연쇄 발동은 의도적으로 없다(평가 순서 무관 → 결정성).
+            if (deferredConditionalAffixes.Count > 0)
+            {
+                var conditionContext = new HashSet<string>(artifacts.CompileTags, StringComparer.Ordinal);
+                foreach (var affixTemplate in deferredConditionalAffixes)
+                {
+                    if (!IsConditionalAffixSatisfied(affixTemplate, conditionContext))
+                    {
+                        artifacts.Provenance.Add(new CompileProvenanceEntry(
+                            hero.Id,
+                            ModifierSource.Item,
+                            affixTemplate.Id,
+                            "affix_conditional_inactive",
+                            BuildConditionalAffixDetails(affixTemplate)));
+                        continue;
+                    }
+
+                    AddNumericPackage(content.AffixPackages, affixTemplate.Id, artifacts, hero.Id, "affix_conditional");
+                    ApplyAffixTemplate(affixTemplate, artifacts, hero.Id);
+                }
+            }
+
             compiled.Add(new BattleUnitLoadout(
                 hero.Id,
                 hero.Name,
@@ -347,6 +383,41 @@ public sealed class LoadoutCompiler
 
         artifacts.NumericPackages.Add(package);
         artifacts.Provenance.Add(new CompileProvenanceEntry(subjectId, package.Source, package.SourceId, artifactKind, BuildModifierDetails(package.Modifiers)));
+    }
+
+    private static AffixTemplate? ResolveAffixTemplate(CombatContentSnapshot content, string affixId)
+    {
+        return content.AffixCatalog != null && content.AffixCatalog.TryGetValue(affixId, out var template)
+            ? template
+            : null;
+    }
+
+    private static void ApplyAffixTemplate(AffixTemplate? template, CompiledArtifacts artifacts, string subjectId)
+    {
+        if (template == null)
+        {
+            return;
+        }
+
+        foreach (var tag in template.CompileTags)
+        {
+            artifacts.CompileTags.Add(tag);
+        }
+
+        AddRulePackage(template.RulePackage, artifacts, subjectId, "affix_rule");
+    }
+
+    private static bool IsConditionalAffixSatisfied(AffixTemplate template, HashSet<string> compileTags)
+    {
+        return template.RequiredTags.All(compileTags.Contains)
+            && !template.ExcludedTags.Any(compileTags.Contains);
+    }
+
+    private static IReadOnlyList<string> BuildConditionalAffixDetails(AffixTemplate template)
+    {
+        return template.RequiredTags.Select(tag => $"requires:{tag}")
+            .Concat(template.ExcludedTags.Select(tag => $"excludes:{tag}"))
+            .ToList();
     }
 
     private static void AddRulePackage(

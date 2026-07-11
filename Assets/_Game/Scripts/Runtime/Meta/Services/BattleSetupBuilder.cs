@@ -54,9 +54,11 @@ public static class BattleSetupBuilder
         }
 
         var packages = new List<CombatModifierPackage>();
+        var appliedAffixTemplates = new List<AffixTemplate>();
+        var deferredConditionalAffixes = new List<AffixTemplate>();
         if (!TryAddTraitPackage(participant.PositiveTraitId, content, packages, out error) ||
             !TryAddTraitPackage(participant.NegativeTraitId, content, packages, out error) ||
-            !TryAddItemPackages(participant.EquippedItems, content, packages, out error) ||
+            !TryAddItemPackages(participant.EquippedItems, content, packages, appliedAffixTemplates, deferredConditionalAffixes, out error) ||
             !TryAddAugmentPackages(participant.TemporaryAugmentIds, content, packages, out error))
         {
             definition = null!;
@@ -71,7 +73,30 @@ public static class BattleSetupBuilder
                 ? archetype.RoleTag
                 : participant.RoleTag;
 
-        var rulePackages = BuildRulePackages(participant, archetype);
+        // 조건부 affix 게이트(sandbox/적 레인 미러): 이 레인은 유닛 CompileTags를 굽지 않으므로
+        // 평가용 태그 컨텍스트를 로컬로 조립한다. LoadoutCompiler와 동일하게 조건부의 자기
+        // CompileTags는 컨텍스트에 넣지 않는다(자기충족 순환 차단).
+        if (deferredConditionalAffixes.Count > 0)
+        {
+            var conditionContext = BuildAffixConditionContext(archetype, resolvedRoleTag, appliedAffixTemplates);
+            foreach (var template in deferredConditionalAffixes)
+            {
+                if (!template.RequiredTags.All(conditionContext.Contains)
+                    || template.ExcludedTags.Any(conditionContext.Contains))
+                {
+                    continue;
+                }
+
+                if (content.AffixPackages.TryGetValue(template.Id, out var affixPackage))
+                {
+                    packages.Add(affixPackage);
+                }
+
+                appliedAffixTemplates.Add(template);
+            }
+        }
+
+        var rulePackages = BuildRulePackages(participant, archetype, appliedAffixTemplates);
 
         definition = new BattleUnitLoadout(
             participant.ParticipantId,
@@ -122,7 +147,8 @@ public static class BattleSetupBuilder
 
     private static IReadOnlyList<CombatRuleModifierPackage>? BuildRulePackages(
         BattleParticipantSpec participant,
-        CombatArchetypeTemplate archetype)
+        CombatArchetypeTemplate archetype,
+        IReadOnlyList<AffixTemplate> appliedAffixTemplates)
     {
         var participantTags = (participant.RuleModifierTags ?? Array.Empty<string>())
             .Where(tag => !string.IsNullOrWhiteSpace(tag))
@@ -130,17 +156,62 @@ public static class BattleSetupBuilder
             .Distinct(StringComparer.Ordinal)
             .OrderBy(tag => tag, StringComparer.Ordinal)
             .ToList();
-        if (participantTags.Count == 0)
+        var affixRulePackages = appliedAffixTemplates
+            .Where(template => template.RulePackage != null)
+            .Select(template => template.RulePackage!)
+            .ToList();
+        if (participantTags.Count == 0 && affixRulePackages.Count == 0)
         {
             return archetype.RulePackages;
         }
 
         var rulePackages = (archetype.RulePackages ?? Array.Empty<CombatRuleModifierPackage>()).ToList();
-        rulePackages.Add(new CombatRuleModifierPackage(
-            $"participant:{participant.ParticipantId}",
-            ModifierSource.Other,
-            participantTags.Select(tag => new RuleModifier(RuleModifierKind.BehaviorTag, tag)).ToList()));
+        if (participantTags.Count > 0)
+        {
+            rulePackages.Add(new CombatRuleModifierPackage(
+                $"participant:{participant.ParticipantId}",
+                ModifierSource.Other,
+                participantTags.Select(tag => new RuleModifier(RuleModifierKind.BehaviorTag, tag)).ToList()));
+        }
+
+        rulePackages.AddRange(affixRulePackages);
         return rulePackages;
+    }
+
+    private static HashSet<string> BuildAffixConditionContext(
+        CombatArchetypeTemplate archetype,
+        string resolvedRoleTag,
+        IReadOnlyList<AffixTemplate> appliedAffixTemplates)
+    {
+        var tags = new HashSet<string>(StringComparer.Ordinal)
+        {
+            $"race:{archetype.RaceId}",
+            $"class:{archetype.ClassId}",
+            archetype.RaceId,
+            archetype.ClassId,
+        };
+        if (!string.IsNullOrWhiteSpace(resolvedRoleTag))
+        {
+            tags.Add(resolvedRoleTag);
+        }
+
+        foreach (var skill in archetype.Skills)
+        {
+            foreach (var tag in skill.CompileTags ?? Array.Empty<string>())
+            {
+                tags.Add(tag);
+            }
+        }
+
+        foreach (var template in appliedAffixTemplates)
+        {
+            foreach (var tag in template.CompileTags)
+            {
+                tags.Add(tag);
+            }
+        }
+
+        return tags;
     }
 
     private static DominantHand ResolveDominantHand(
@@ -215,6 +286,8 @@ public static class BattleSetupBuilder
         IReadOnlyList<BattleEquippedItemSpec> equippedItems,
         CombatContentSnapshot content,
         List<CombatModifierPackage> packages,
+        List<AffixTemplate> appliedAffixTemplates,
+        List<AffixTemplate> deferredConditionalAffixes,
         out string error)
     {
         foreach (var item in equippedItems)
@@ -239,7 +312,21 @@ public static class BattleSetupBuilder
                     return false;
                 }
 
+                var template = content.AffixCatalog != null && content.AffixCatalog.TryGetValue(affixId, out var resolved)
+                    ? resolved
+                    : null;
+                if (template is { IsConditional: true })
+                {
+                    // 조건 평가는 role 해상 이후(TryBuildDefinition)에서 일괄 수행한다.
+                    deferredConditionalAffixes.Add(template);
+                    continue;
+                }
+
                 packages.Add(affixPackage);
+                if (template != null)
+                {
+                    appliedAffixTemplates.Add(template);
+                }
             }
         }
 
