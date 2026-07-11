@@ -58,6 +58,19 @@ public sealed class TownSquadBuilderController : MonoBehaviour
 
         var root = GameSessionRoot.EnsureInstance();
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
-        _presenter = new SquadBuilderPresenter(document.rootVisualElement, root, contentText);
+        // 헤드리스-순수화 배선 — View가 UXML을 감싸고 presenter는 seam(delegate)만 받는다.
+        var view = new SquadBuilderView(document.rootVisualElement);
+        _presenter = new SquadBuilderPresenter(
+            root.SessionState,
+            root.CombatContentLookup,
+            view,
+            () => root.ProfileQueries.GetLoadoutView(root.ActiveProfileId),
+            () => root.SaveProfile(),
+            contentText.GetClassName,
+            contentText.GetRaceName,
+            contentText.GetSynergyName,
+            contentText.GetRoleName,
+            contentText.GetArchetypeName);
+        _presenter.Initialize();
     }
 }

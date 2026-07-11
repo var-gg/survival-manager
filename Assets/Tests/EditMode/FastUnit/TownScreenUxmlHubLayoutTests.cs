@@ -195,20 +195,31 @@ public sealed class TownScreenUxmlHubLayoutTests
         Assert.That(uxml, Does.Contain("대응"));
         Assert.That(uxml, Does.Not.Contain("자세 (Team Posture)"));
 
+        // 헤드리스-순수화 3파일 분리: presenter(순수 BuildState) / SquadBuilderView(UITK DOM) / ViewState(record).
         var presenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/SquadBuilderPresenter.cs");
-        Assert.That(presenter, Does.Contain("ProfileQueries.GetLoadoutView"));
-        Assert.That(presenter, Does.Contain("session.Profile.Heroes"));
-        Assert.That(presenter, Does.Contain("ContentTextResolver"));
+        Assert.That(presenter, Does.Contain("Profile.Heroes"));
         Assert.That(presenter, Does.Contain("BuildHeroRow"));
-        Assert.That(presenter, Does.Contain("RenderTacticalDecisionRows"));
+        Assert.That(presenter, Does.Contain("BuildOperationRows"));
         Assert.That(presenter, Does.Contain("ResolveRoleInstructionId"));
         Assert.That(presenter, Does.Contain("ResolveBehaviorProfile"));
         // "가짜 수치 없음" 문자열 마커는 c58d64a4(시너지 실연결)에서 소스가 사라져 stale — 실배선 마커로 교체.
         Assert.That(presenter, Does.Contain("SquadSynergyPreview.Evaluate"));
-        Assert.That(presenter, Does.Contain("sm-sqb-modal__roster-icon"));
         Assert.That(presenter, Does.Contain("ResolveRosterPipCount"));
         Assert.That(presenter, Does.Contain("팀 태세 갱신"));
         Assert.That(presenter, Does.Not.Contain("자세 갱신"));
+        // 순수성 가드 — presenter가 다시 UITK/씬 루트에 물리면 실패해야 한다.
+        Assert.That(presenter, Does.Not.Contain("UnityEngine.UIElements"));
+        Assert.That(presenter, Does.Not.Contain("GameSessionRoot"));
+
+        var squadBuilderView = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Town/SquadBuilderView.cs");
+        Assert.That(squadBuilderView, Does.Contain("ISquadBuilderView"));
+        Assert.That(squadBuilderView, Does.Contain("sm-sqb-modal__roster-icon"));
+        Assert.That(squadBuilderView, Does.Contain("SquadBuilderTargetDirectiveButton"));
+
+        // LoadoutView/save seam은 조립부(TownScreenController)가 delegate로 주입한다.
+        var townController = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/TownScreenController.cs");
+        Assert.That(townController, Does.Contain("ProfileQueries.GetLoadoutView"));
+        Assert.That(townController, Does.Contain("new SquadBuilderView"));
 
         var uss = File.ReadAllText("Assets/_Game/UI/Panels/TownSquadBuilder/TownSquadBuilder.uss");
         Assert.That(uss, Does.Contain("dense formation board"));

@@ -109,7 +109,20 @@ public static class TownPreviewCaptureUtility
             new SM.Unity.UI.Town.Preview.PermanentAugmentView(root).Close();
             new SM.Unity.UI.Town.Preview.RosterGridView(root, heroCardTemplate: null).Close();
 
-            var squadBuilder = new SM.Unity.UI.Town.SquadBuilderPresenter(root, sessionRoot, contentText);
+            // 헤드리스-순수화 배선 — View + Presenter 조립 (production TryWireTacticalSetup과 동일 seam).
+            var squadBuilderView = new SM.Unity.UI.Town.SquadBuilderView(root);
+            var squadBuilder = new SM.Unity.UI.Town.SquadBuilderPresenter(
+                sessionRoot.SessionState,
+                sessionRoot.CombatContentLookup,
+                squadBuilderView,
+                () => sessionRoot.ProfileQueries.GetLoadoutView(sessionRoot.ActiveProfileId),
+                () => sessionRoot.SaveProfile(),
+                contentText.GetClassName,
+                contentText.GetRaceName,
+                contentText.GetSynergyName,
+                contentText.GetRoleName,
+                contentText.GetArchetypeName);
+            squadBuilder.Initialize();
             if (openSquadBuilder)
             {
                 squadBuilder.Open();

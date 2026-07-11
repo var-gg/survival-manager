@@ -240,7 +240,21 @@ public sealed class TownScreenController : MonoBehaviour
     {
         try
         {
-            _squadBuilderPresenter = new SquadBuilderPresenter(root, _root, _contentText, _contentIconResolver.ResolveCharacterPortrait);
+            // 헤드리스-순수화: presenter는 GameSessionState + ICombatContentLookup + delegate seam만 알고,
+            // UITK DOM/포트레잇 resolve는 SquadBuilderView가 소유 (EquipmentRefit 패턴).
+            var squadBuilderView = new SquadBuilderView(root, _contentIconResolver.ResolveCharacterPortrait);
+            _squadBuilderPresenter = new SquadBuilderPresenter(
+                _root.SessionState,
+                _root.CombatContentLookup,
+                squadBuilderView,
+                () => _root.ProfileQueries.GetLoadoutView(_root.ActiveProfileId),
+                () => _root.SaveProfile(),
+                _contentText.GetClassName,
+                _contentText.GetRaceName,
+                _contentText.GetSynergyName,
+                _contentText.GetRoleName,
+                _contentText.GetArchetypeName);
+            _squadBuilderPresenter.Initialize();
             view.BindTacticalSetupOpen(_squadBuilderPresenter.Open);
             return true;
         }
