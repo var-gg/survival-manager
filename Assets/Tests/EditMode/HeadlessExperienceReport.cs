@@ -49,6 +49,101 @@ public sealed class HeadlessExperienceReport
         SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(HeadlessExperienceReport));
     }
 
+    // 밸런스 우회 full-campaign walkthrough — AutoResolve로 5챕터를 엔딩까지 관통해 전체 스토리 아크를 읽고
+    // full 플레이타임을 추정한다(전투 승패와 분리). 전투 관전시간은 Simulate 실측 평균(96 step)으로 추정.
+    [Test]
+    public void AiWalksFullCampaign_ReadsAllStory_AndEstimatesFullPlaytime()
+    {
+        const int estimatedStepsPerBattle = 96; // Simulate 실측 평균(86~126) — 밸런스 튜닝 후 실측으로 대체.
+
+        var lookup = new RuntimeCombatContentLookup();
+        var session = new GameSessionState(lookup);
+        session.BindProfile(new SaveProfile { ProfileId = "headless_walkthrough" });
+        session.SetCurrentScene(SceneNames.Town);
+
+        var text = new NarrativeTextResolver();
+        var report = new StringBuilder();
+        void Line(string s = "") => report.AppendLine(s);
+
+        var beats = new List<(string source, string key, string kind, int chars, bool resolved)>();
+        var siteRecords = new List<(string chapter, string site, int battles, int rewardOptions)>();
+
+        Line("# 헤드리스 full-campaign walkthrough — AI가 읽은 전체 스토리 아크");
+        Line();
+        Line("밸런스 우회(AutoResolve). 캠페인을 엔딩까지 관통하며 발화 narrative를 전부 읽고 full 플레이타임을 추정한다.");
+        Line($"_전투 관전시간은 Simulate 실측 평균 {estimatedStepsPerBattle} step(≈{estimatedStepsPerBattle * 0.1f:0.0}s)으로 추정._");
+        Line();
+
+        var policy = new ScriptedPlaythroughPolicy(rewardIndex: 0);
+        ApplyDeployment(session, policy);
+
+        var clearedSites = new List<string>();
+        var totalBattles = 0;
+        const int safety = 32;
+
+        while (!session.Profile.CampaignProgress.StoryCleared && clearedSites.Count < safety)
+        {
+            AdvanceToNextUnclearedSite(session);
+            var chapterId = session.SelectedCampaignChapterId;
+            var siteId = session.SelectedCampaignSiteId;
+            Line($"## {chapterId} / {siteId}");
+
+            session.BeginNewExpedition();
+            Drain(session, "SiteEntered", text, beats, report);
+
+            var battleNodes = 0;
+            while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            {
+                battleNodes++;
+                session.ResolveSelectedExpeditionNode(); // AutoResolve: 전투 노드 자동 통과(sim 없음)
+            }
+
+            session.ResolveSelectedNodeToRewardSettlement();
+            Drain(session, "ExtractCommitted", text, beats, report);
+
+            var rewardView = BuildRewardView(session, chapterId, siteId);
+            if (rewardView.Options.Count > 0)
+            {
+                session.ApplyRewardChoice(policy.DecideReward(rewardView));
+                Drain(session, "RewardCommitted", text, beats, report);
+            }
+
+            session.ReturnToTownAfterReward();
+            Drain(session, "Return", text, beats, report);
+
+            totalBattles += battleNodes;
+            siteRecords.Add((chapterId, siteId, battleNodes, rewardView.Options.Count));
+            clearedSites.Add(siteId);
+            Line($"- 전투 노드 {battleNodes} · 보상 {rewardView.Options.Count}안");
+            Line();
+        }
+
+        var battleSeconds = totalBattles * estimatedStepsPerBattle * 0.1f;
+        var readChars = beats.Where(b => b.resolved).Sum(b => b.chars);
+        var readSeconds = readChars / ReadingCharsPerSecond;
+        var deployDwell = 60f + (10f * session.Profile.Heroes.Count);
+        var rewardDwell = siteRecords.Sum(s => 12f * s.rewardOptions);
+        var siteDwell = clearedSites.Count * 8f;
+        var deliberation = deployDwell + rewardDwell + siteDwell;
+        var humanEstimate = battleSeconds + readSeconds + deliberation;
+
+        Line("## ⏱️ full-campaign 플레이타임 추정");
+        Line($"- 사이트 {clearedSites.Count} · 전투 {totalBattles} · narrative {beats.Count(b => b.resolved)}건 해상 / {readChars:N0}자");
+        Line($"- 관전(추정) {FormatTime(battleSeconds)} + 읽기 {FormatTime(readSeconds)} + 숙고 {FormatTime(deliberation)}");
+        Line($"- **추정 human full-campaign ≈ {FormatTime(humanEstimate)}** (밸런스 무관 콘텐츠 길이)");
+        Line();
+        Line($"_생성: {(session.Profile.CampaignProgress.StoryCleared ? "엔딩 도달" : "미완주")} · 클리어 챕터 {session.Profile.CampaignProgress.ClearedChapterIds.Count}._");
+
+        var fullPath = Path.GetFullPath("Library/SM/Reports/headless-walkthrough-report.md");
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+        File.WriteAllText(fullPath, report.ToString());
+        TestContext.WriteLine(report.ToString());
+
+        Assert.That(clearedSites, Is.Not.Empty, "최소 1사이트 관통.");
+        Assert.That(session.Profile.CampaignProgress.StoryCleared, Is.True,
+            "AutoResolve walkthrough가 캠페인을 엔딩까지 관통했다(전체 스토리 아크 도달).");
+    }
+
     [Test]
     public void AiPlaysCampaign_SurfacesStory_AndEstimatesPlaytime()
     {
