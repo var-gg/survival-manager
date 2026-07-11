@@ -1408,6 +1408,88 @@ public static class SampleSeedGenerator
         PatchRecruitSkillMetadata("support_siphon", tags, "siphon_support", "mystic_alignment", new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "burn" }, new[] { "backline", "magical" });
         PatchRecruitSkillMetadata("support_echo", tags, "echo_support", string.Empty, new[] { "mystic", "backline", "zone" }, new[] { "mystic", "support", "zone" }, new[] { "backline", "support" });
         PatchRecruitSkillMetadata("support_lingering", tags, "lingering_support", string.Empty, new[] { "mystic", "backline", "zone" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" });
+        PatchClassSkillCombatEffects();
+    }
+
+    /// <summary>
+    /// 클래스 기본 passive/support 16종의 실전투 효과 저작 (V1 후보치 — 오너 sweep 재료).
+    /// passive = TriggeredEffects(전투시작/처치/체력임계/아군사망), support = SupportModifier.OwnerModifiers.
+    /// 과거 이 16종은 payload가 비어 모든 전투 유닛이 무효과 기본 스킬을 들고 싸웠다.
+    /// </summary>
+    private static void PatchClassSkillCombatEffects()
+    {
+        // vanguard: 개전 방벽 / 빈사 수호
+        PatchSkillTriggeredEffect("skill_vanguard_passive_1", SM.Core.Contracts.CombatTriggerKind.BattleStart, SM.Core.Contracts.TriggeredEffectOp.Barrier, SM.Core.Contracts.EffectScope.Self, 5f, 0f, string.Empty, 0f);
+        PatchSkillTriggeredEffect("skill_vanguard_passive_2", SM.Core.Contracts.CombatTriggerKind.OnHpBelow, SM.Core.Contracts.TriggeredEffectOp.ApplyStatus, SM.Core.Contracts.EffectScope.Self, 1f, 0.4f, "guarded", 2f);
+        // duelist: 처치 가속 / 전투 도취
+        PatchSkillTriggeredEffect("skill_duelist_passive_1", SM.Core.Contracts.CombatTriggerKind.OnKill, SM.Core.Contracts.TriggeredEffectOp.GainEnergy, SM.Core.Contracts.EffectScope.Self, 15f, 0f, string.Empty, 0f);
+        PatchSkillTriggeredEffect("skill_duelist_passive_2", SM.Core.Contracts.CombatTriggerKind.OnKill, SM.Core.Contracts.TriggeredEffectOp.Heal, SM.Core.Contracts.EffectScope.Self, 4f, 0f, string.Empty, 0f);
+        // ranger: 사격 리듬 / 거리 벌리기 생존
+        PatchSkillTriggeredEffect("skill_ranger_passive_1", SM.Core.Contracts.CombatTriggerKind.OnKill, SM.Core.Contracts.TriggeredEffectOp.GainEnergy, SM.Core.Contracts.EffectScope.Self, 15f, 0f, string.Empty, 0f);
+        PatchSkillTriggeredEffect("skill_ranger_passive_2", SM.Core.Contracts.CombatTriggerKind.OnHpBelow, SM.Core.Contracts.TriggeredEffectOp.Barrier, SM.Core.Contracts.EffectScope.Self, 6f, 0.5f, string.Empty, 0f);
+        // mystic: 개전 가호(전 아군) / 응보(아군 사망 시 집중)
+        PatchSkillTriggeredEffect("skill_mystic_passive_1", SM.Core.Contracts.CombatTriggerKind.BattleStart, SM.Core.Contracts.TriggeredEffectOp.Barrier, SM.Core.Contracts.EffectScope.AlliedCombatants, 3f, 0f, string.Empty, 0f);
+        PatchSkillTriggeredEffect("skill_mystic_passive_2", SM.Core.Contracts.CombatTriggerKind.OnAllyDeath, SM.Core.Contracts.TriggeredEffectOp.GainEnergy, SM.Core.Contracts.EffectScope.Self, 25f, 0f, string.Empty, 0f);
+
+        PatchSkillOwnerModifier("skill_vanguard_support_1", "armor", SM.Core.Stats.ModifierOp.Flat, 1.5f);
+        PatchSkillOwnerModifier("skill_vanguard_support_2", "max_health", SM.Core.Stats.ModifierOp.Flat, 3f);
+        PatchSkillOwnerModifier("skill_duelist_support_1", "phys_power", SM.Core.Stats.ModifierOp.Flat, 1.5f);
+        PatchSkillOwnerModifier("skill_duelist_support_2", "attack_speed", SM.Core.Stats.ModifierOp.Increased, 0.04f);
+        PatchSkillOwnerModifier("skill_ranger_support_1", "attack_range", SM.Core.Stats.ModifierOp.Flat, 0.4f);
+        PatchSkillOwnerModifier("skill_ranger_support_2", "crit_chance", SM.Core.Stats.ModifierOp.Increased, 0.03f);
+        PatchSkillOwnerModifier("skill_mystic_support_1", "heal_power", SM.Core.Stats.ModifierOp.Flat, 1.5f);
+        PatchSkillOwnerModifier("skill_mystic_support_2", "mag_power", SM.Core.Stats.ModifierOp.Flat, 1.5f);
+    }
+
+    private static void PatchSkillTriggeredEffect(
+        string skillId,
+        SM.Core.Contracts.CombatTriggerKind trigger,
+        SM.Core.Contracts.TriggeredEffectOp op,
+        SM.Core.Contracts.EffectScope scope,
+        float magnitude,
+        float thresholdRatio,
+        string statusId,
+        float durationSeconds)
+    {
+        var skill = LoadDefinition<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{skillId}.asset");
+        if (skill == null)
+        {
+            return;
+        }
+
+        skill.TriggeredEffects = new List<TriggeredEffectSpec>
+        {
+            new()
+            {
+                Trigger = trigger,
+                Op = op,
+                Scope = scope,
+                Magnitude = magnitude,
+                ThresholdRatio = thresholdRatio,
+                StatusId = statusId,
+                DurationSeconds = durationSeconds,
+                MaxStacks = 1,
+            },
+        };
+        EditorUtility.SetDirty(skill);
+    }
+
+    private static void PatchSkillOwnerModifier(string skillId, string statId, SM.Core.Stats.ModifierOp op, float value)
+    {
+        var skill = LoadDefinition<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{skillId}.asset");
+        if (skill == null)
+        {
+            return;
+        }
+
+        skill.SupportModifier = new SupportModifierSpec
+        {
+            OwnerModifiers = new List<SerializableStatModifier>
+            {
+                new() { StatId = statId, Op = op, Value = value },
+            },
+        };
+        EditorUtility.SetDirty(skill);
     }
 
     private static void PatchRecruitSkillMetadata(

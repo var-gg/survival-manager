@@ -110,23 +110,68 @@ public sealed class PassiveSkillContentWitnessTests
             "실 support_anchored 젬의 OwnerModifiers(tenacity)가 유닛 numeric package로 합류해야 한다");
     }
 
-    private static BattleLoadoutSnapshot CompileWardenWithSupportSkill(CombatContentSnapshot content, string skillId)
+    [Test]
+    public void RealClassDefaultSkills_AllCarrySimEffectivePayload()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var classSkillIds =
+            from classId in new[] { "vanguard", "duelist", "ranger", "mystic" }
+            from kind in new[] { "passive", "support" }
+            from tier in new[] { 1, 2 }
+            select $"skill_{classId}_{kind}_{tier}";
+
+        foreach (var skillId in classSkillIds)
+        {
+            Assert.That(snapshot.SkillCatalog.ContainsKey(skillId), Is.True, $"{skillId} 카탈로그 존재");
+            var skill = snapshot.SkillCatalog[skillId];
+            var effective = (skill.TriggeredEffects?.Count ?? 0) > 0 || skill.SupportModifier != null;
+            Assert.That(effective, Is.True,
+                $"{skillId}는 sim-effective payload(TriggeredEffects 또는 SupportModifier)를 가져야 한다 — " +
+                "매 전투 장착되는 클래스 기본 스킬의 빈 껍데기 회귀 방지 계약");
+        }
+    }
+
+    [Test]
+    public void RealCompile_ArchetypeDefaults_CarryClassSkillEffects()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+
+        // warden 기본셋(로드아웃 없음) = skill_vanguard_passive_1 + skill_vanguard_support_1 포함.
+        var compiled = CompileWardenWithSupportSkill(snapshot, skillId: null);
+        var unit = compiled.Allies.Single();
+
+        Assert.That(
+            unit.EffectiveTriggeredEffects.Any(effect =>
+                effect.SourceId == "skill_vanguard_passive_1" && effect.Op == TriggeredEffectOp.Barrier),
+            Is.True,
+            "아키타입 기본 패시브(개전 방벽)가 유닛 트리거 채널에 도달해야 한다");
+        Assert.That(
+            unit.NumericPackages.Any(package => package.SourceId == "support:skill_vanguard_support_1"),
+            Is.True,
+            "아키타입 기본 서포트의 OwnerModifiers(armor)가 유닛 numeric package로 합류해야 한다");
+    }
+
+    private static BattleLoadoutSnapshot CompileWardenWithSupportSkill(CombatContentSnapshot content, string? skillId)
     {
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
         {
             new("hero.witness", "hero.witness", archetype.Id, archetype.RaceId, archetype.ClassId, string.Empty, string.Empty),
         };
-        var skillInstances = new Dictionary<string, SkillInstanceState>(StringComparer.Ordinal)
+        var skillInstances = new Dictionary<string, SkillInstanceState>(StringComparer.Ordinal);
+        var equippedSkillInstanceIds = new List<string>();
+        if (skillId != null)
         {
-            ["hero.witness.skill.0"] = new("hero.witness.skill.0", skillId, "support", Array.Empty<string>()),
-        };
+            skillInstances["hero.witness.skill.0"] = new("hero.witness.skill.0", skillId, "support", Array.Empty<string>());
+            equippedSkillInstanceIds.Add("hero.witness.skill.0");
+        }
+
         var heroLoadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal)
         {
             ["hero.witness"] = new(
                 "hero.witness",
                 Array.Empty<string>(),
-                new[] { "hero.witness.skill.0" },
+                equippedSkillInstanceIds,
                 "board.vanguard",
                 Array.Empty<string>(),
                 Array.Empty<string>()),
