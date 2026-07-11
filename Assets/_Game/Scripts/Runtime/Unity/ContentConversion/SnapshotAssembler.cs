@@ -81,6 +81,8 @@ internal sealed class SnapshotAssembler
             _affixDefinitions.Values.ToDictionary(affix => affix.Id, affix => ModifierPackageConverter.BuildAffixPackage(affix), StringComparer.Ordinal));
         var affixCatalog = BuildSection("affix catalog", () =>
             _affixDefinitions.Values.ToDictionary(affix => affix.Id, affix => CatalogEntryConverter.BuildAffixTemplate(affix), StringComparer.Ordinal));
+        var itemCatalog = BuildSection("item catalog", () =>
+            _itemDefinitions.Values.ToDictionary(item => item.Id, item => CatalogEntryConverter.BuildItemTemplate(item), StringComparer.Ordinal));
         var augmentPackages = BuildSection("augment packages", () =>
             _augmentDefinitions.Values.ToDictionary(augment => augment.Id, augment => ModifierPackageConverter.BuildAugmentPackage(augment), StringComparer.Ordinal));
         var skillCatalog = BuildSection("skill catalog", () =>
@@ -159,6 +161,7 @@ internal sealed class SnapshotAssembler
             traitTokenCatalog,
             _firstPlayableSlice,
             characterCatalog,
-            affixCatalog);
+            affixCatalog,
+            itemCatalog);
     }
 }

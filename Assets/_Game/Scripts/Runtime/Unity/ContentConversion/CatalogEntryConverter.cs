@@ -74,6 +74,14 @@ internal static class CatalogEntryConverter
             Enumerate(definition.MutualExclusionTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
     }
 
+    internal static ItemTemplate BuildItemTemplate(ItemBaseDefinition definition)
+    {
+        return new ItemTemplate(
+            definition.Id,
+            Enumerate(definition.CompileTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            definition.WeaponFamilyTag ?? string.Empty);
+    }
+
     internal static AffixTemplate BuildAffixTemplate(AffixDefinition definition)
     {
         return new AffixTemplate(

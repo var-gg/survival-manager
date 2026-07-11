@@ -78,7 +78,7 @@ public static class BattleSetupBuilder
         // CompileTags는 컨텍스트에 넣지 않는다(자기충족 순환 차단).
         if (deferredConditionalAffixes.Count > 0)
         {
-            var conditionContext = BuildAffixConditionContext(archetype, resolvedRoleTag, appliedAffixTemplates);
+            var conditionContext = BuildAffixConditionContext(archetype, resolvedRoleTag, appliedAffixTemplates, participant.EquippedItems, content);
             foreach (var template in deferredConditionalAffixes)
             {
                 if (!template.RequiredTags.All(conditionContext.Contains)
@@ -181,7 +181,9 @@ public static class BattleSetupBuilder
     private static HashSet<string> BuildAffixConditionContext(
         CombatArchetypeTemplate archetype,
         string resolvedRoleTag,
-        IReadOnlyList<AffixTemplate> appliedAffixTemplates)
+        IReadOnlyList<AffixTemplate> appliedAffixTemplates,
+        IReadOnlyList<BattleEquippedItemSpec> equippedItems,
+        CombatContentSnapshot content)
     {
         var tags = new HashSet<string>(StringComparer.Ordinal)
         {
@@ -193,6 +195,28 @@ public static class BattleSetupBuilder
         if (!string.IsNullOrWhiteSpace(resolvedRoleTag))
         {
             tags.Add(resolvedRoleTag);
+        }
+
+        if (content.ItemCatalog != null)
+        {
+            foreach (var item in equippedItems)
+            {
+                if (string.IsNullOrWhiteSpace(item.ItemBaseId)
+                    || !content.ItemCatalog.TryGetValue(item.ItemBaseId, out var itemTemplate))
+                {
+                    continue;
+                }
+
+                foreach (var tag in itemTemplate.CompileTags)
+                {
+                    tags.Add(tag);
+                }
+
+                if (!string.IsNullOrWhiteSpace(itemTemplate.WeaponFamilyTag))
+                {
+                    tags.Add(itemTemplate.WeaponFamilyTag);
+                }
+            }
         }
 
         foreach (var skill in archetype.Skills)

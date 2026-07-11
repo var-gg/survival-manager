@@ -246,6 +246,16 @@ public sealed record TraitTokenTemplate(
     RewardType RewardType);
 
 /// <summary>
+/// 아이템의 non-numeric 계약(CompileTags/무기 family 태그). 수치는 기존 ItemPackages가 소유하고,
+/// 이 템플릿은 유닛 태그 전파(→ affix 조건·서포트 젬 무기 게이트의 판정 재료)를 담당한다.
+/// 과거에는 수치만 변환돼 무기 게이트가 영구 무력이었다.
+/// </summary>
+public sealed record ItemTemplate(
+    string Id,
+    IReadOnlyList<string> CompileTags,
+    string WeaponFamilyTag);
+
+/// <summary>
 /// affix의 non-numeric 계약(태그/조건/rule). 수치는 기존 AffixPackages가 계속 소유하고,
 /// 이 템플릿은 CompileTags 전파·RequiredTags/ExcludedTags 조건 게이트·RuleModifierTags를
 /// 컴파일까지 실어나른다. 과거에는 ModifierPackageConverter가 수치만 변환해 전부 드롭됐다.
@@ -287,7 +297,8 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, TraitTokenTemplate>? TraitTokens = null,
     FirstPlayableSliceDefinition? FirstPlayableSlice = null,
     IReadOnlyDictionary<string, CharacterTemplate>? Characters = null,
-    IReadOnlyDictionary<string, AffixTemplate>? AffixCatalog = null);
+    IReadOnlyDictionary<string, AffixTemplate>? AffixCatalog = null,
+    IReadOnlyDictionary<string, ItemTemplate>? ItemCatalog = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

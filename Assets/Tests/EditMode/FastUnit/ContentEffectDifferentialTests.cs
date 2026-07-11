@@ -179,6 +179,40 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void SupportGem_WeaponGate_RequiresMatchingWeaponFamily()
+    {
+        BattleSkillSpec MutateCore(BattleSkillSpec skill) => skill with { CompileTags = new[] { "strike" } };
+        BattleSkillSpec MutateSupport(BattleSkillSpec skill) => skill with
+        {
+            SupportAllowedTags = new[] { "strike" },
+            RequiredWeaponTags = new[] { "bow" },
+            SupportModifier = new BattleSupportModifierSpec(PowerMultiplier: 2f),
+        };
+
+        // 활(bow) 미장착 → 무기 게이트가 젬을 차단(변조 없음).
+        var withoutBow = CompileSingleHero(
+            Array.Empty<string>(), mutateCore: MutateCore, mutateSupport: MutateSupport);
+        Assert.That(
+            withoutBow.Allies.Single().Skills.Single(skill => skill.Id == "skill.warden.core").Power,
+            Is.EqualTo(4.5f).Within(0.0001f),
+            "RequiredWeaponTags(bow) 미충족 젬은 변조하지 않아야 한다");
+
+        // 활 장착 → 무기 family 태그가 유닛에 전파되고 게이트 통과(변조 적용).
+        var withBow = CompileSingleHero(
+            Array.Empty<string>(),
+            mutateCore: MutateCore,
+            mutateSupport: MutateSupport,
+            itemIds: new[] { "item.shield", "item.bow" });
+        var unit = withBow.Allies.Single();
+        Assert.That(unit.CompileTags, Does.Contain("bow"),
+            "아이템의 weapon family 태그가 유닛 태그로 전파돼야 한다");
+        Assert.That(
+            unit.Skills.Single(skill => skill.Id == "skill.warden.core").Power,
+            Is.EqualTo(9f).Within(0.0001f),
+            "무기 게이트 충족 시 젬 변조가 적용돼야 한다 (4.5 × 2)");
+    }
+
+    [Test]
     public void SupportGem_OwnerModifiers_ChangeSimOutcome()
     {
         var withGem = CompileSingleHero(
@@ -295,23 +329,31 @@ public sealed class ContentEffectDifferentialTests
         IReadOnlyList<string> affixIds,
         Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null,
         Func<BattleSkillSpec, BattleSkillSpec>? mutateCore = null,
-        Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null)
+        Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null,
+        IReadOnlyList<string>? itemIds = null)
     {
+        itemIds ??= new[] { "item.shield" };
         var content = BuildContentSnapshot(mutatePassive, mutateCore, mutateSupport);
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
         {
             new("hero.warden", "hero.warden", archetype.Id, archetype.RaceId, archetype.ClassId, string.Empty, string.Empty),
         };
-        var itemInstances = new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal)
+        var itemInstances = new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal);
+        var itemInstanceIds = new List<string>();
+        for (var index = 0; index < itemIds.Count; index++)
         {
-            ["hero.warden.item.0"] = new("hero.warden.item.0", "item.shield", affixIds, "hero.warden"),
-        };
+            var instanceId = $"hero.warden.item.{index}";
+            // affix는 첫 아이템에만 부착(기존 시나리오 보존).
+            itemInstances[instanceId] = new(instanceId, itemIds[index], index == 0 ? affixIds : Array.Empty<string>(), "hero.warden");
+            itemInstanceIds.Add(instanceId);
+        }
+
         var heroLoadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal)
         {
             ["hero.warden"] = new(
                 "hero.warden",
-                new[] { "hero.warden.item.0" },
+                itemInstanceIds,
                 Array.Empty<string>(),
                 "board.vanguard",
                 Array.Empty<string>(),
@@ -405,6 +447,10 @@ public sealed class ContentEffectDifferentialTests
                 {
                     new StatModifier(StatKey.MaxHealth, ModifierOp.Flat, 3f, ModifierSource.Item, "item.shield"),
                 }),
+                ["item.bow"] = new CombatModifierPackage("item.bow", ModifierSource.Item, new[]
+                {
+                    new StatModifier(StatKey.AttackRange, ModifierOp.Flat, 0.5f, ModifierSource.Item, "item.bow"),
+                }),
             },
             new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal)
             {
@@ -438,6 +484,11 @@ public sealed class ContentEffectDifferentialTests
             new Dictionary<string, AugmentCatalogEntry>(StringComparer.Ordinal),
             new Dictionary<string, SynergyTierTemplate>(StringComparer.Ordinal),
             new Dictionary<string, IReadOnlyList<BattleSkillSpec>>(StringComparer.Ordinal),
+            ItemCatalog: new Dictionary<string, ItemTemplate>(StringComparer.Ordinal)
+            {
+                ["item.shield"] = new ItemTemplate("item.shield", Array.Empty<string>(), "shield"),
+                ["item.bow"] = new ItemTemplate("item.bow", Array.Empty<string>(), "bow"),
+            },
             AffixCatalog: new Dictionary<string, AffixTemplate>(StringComparer.Ordinal)
             {
                 // rule affix: 태그 + rule package 보유(계약: EquipmentContentV1 BuildShaping 계열의 축소판)

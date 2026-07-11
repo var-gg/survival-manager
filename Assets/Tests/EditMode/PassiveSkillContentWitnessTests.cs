@@ -102,12 +102,18 @@ public sealed class PassiveSkillContentWitnessTests
         Assert.That(brutalCore.Power, Is.EqualTo(baselineCore.Power * 1.25f).Within(0.001f),
             "실 support_brutal 젬이 실 warden 코어(strike)의 위력을 ×1.25 변조해야 한다");
 
-        // support_anchored(Classes: vanguard, OwnerModifiers: tenacity) — warden(vanguard) 게이트 통과.
-        var anchored = CompileWardenWithSupportSkill(snapshot, "support_anchored");
+        // support_anchored(Classes: vanguard, Weapons: shield) — 클래스는 통과, 무기는 장착 여부로 갈린다.
+        var anchoredNoShield = CompileWardenWithSupportSkill(snapshot, "support_anchored");
         Assert.That(
-            anchored.Allies.Single().NumericPackages.Any(package => package.SourceId == "support:support_anchored"),
+            anchoredNoShield.Allies.Single().NumericPackages.Any(package => package.SourceId == "support:support_anchored"),
+            Is.False,
+            "방패 미장착이면 support_anchored의 무기 게이트(shield)가 젬을 차단해야 한다");
+
+        var anchoredWithShield = CompileWardenWithSupportSkill(snapshot, "support_anchored", itemId: "item_guardian_shield");
+        Assert.That(
+            anchoredWithShield.Allies.Single().NumericPackages.Any(package => package.SourceId == "support:support_anchored"),
             Is.True,
-            "실 support_anchored 젬의 OwnerModifiers(tenacity)가 유닛 numeric package로 합류해야 한다");
+            "방패(item_guardian_shield) 장착 시 실 support_anchored 젬의 OwnerModifiers(tenacity)가 유닛 numeric package로 합류해야 한다");
     }
 
     [Test]
@@ -136,8 +142,9 @@ public sealed class PassiveSkillContentWitnessTests
     {
         var snapshot = new RuntimeCombatContentLookup().Snapshot;
 
-        // warden 기본셋(로드아웃 없음) = skill_vanguard_passive_1 + skill_vanguard_support_1 포함.
-        var compiled = CompileWardenWithSupportSkill(snapshot, skillId: null);
+        // warden 기본셋(스킬 로드아웃 없음) = skill_vanguard_passive_1 + skill_vanguard_support_1 포함.
+        // 기본 서포트는 무기 요구(shield)를 저작하고 있으므로 방패를 장착해 게이트를 충족시킨다.
+        var compiled = CompileWardenWithSupportSkill(snapshot, skillId: null, itemId: "item_guardian_shield");
         var unit = compiled.Allies.Single();
 
         Assert.That(
@@ -148,10 +155,10 @@ public sealed class PassiveSkillContentWitnessTests
         Assert.That(
             unit.NumericPackages.Any(package => package.SourceId == "support:skill_vanguard_support_1"),
             Is.True,
-            "아키타입 기본 서포트의 OwnerModifiers(armor)가 유닛 numeric package로 합류해야 한다");
+            "아키타입 기본 서포트의 OwnerModifiers(armor)가 무기 게이트(shield) 충족 시 유닛 numeric package로 합류해야 한다");
     }
 
-    private static BattleLoadoutSnapshot CompileWardenWithSupportSkill(CombatContentSnapshot content, string? skillId)
+    private static BattleLoadoutSnapshot CompileWardenWithSupportSkill(CombatContentSnapshot content, string? skillId, string? itemId = null)
     {
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
@@ -166,11 +173,19 @@ public sealed class PassiveSkillContentWitnessTests
             equippedSkillInstanceIds.Add("hero.witness.skill.0");
         }
 
+        var itemInstances = new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal);
+        var equippedItemInstanceIds = new List<string>();
+        if (itemId != null)
+        {
+            itemInstances["hero.witness.item.0"] = new("hero.witness.item.0", itemId, Array.Empty<string>(), "hero.witness");
+            equippedItemInstanceIds.Add("hero.witness.item.0");
+        }
+
         var heroLoadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal)
         {
             ["hero.witness"] = new(
                 "hero.witness",
-                Array.Empty<string>(),
+                equippedItemInstanceIds,
                 equippedSkillInstanceIds,
                 "board.vanguard",
                 Array.Empty<string>(),
@@ -185,7 +200,7 @@ public sealed class PassiveSkillContentWitnessTests
             heroes,
             heroLoadouts,
             heroProgressions,
-            new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal),
+            itemInstances,
             skillInstances,
             new Dictionary<string, PassiveBoardSelectionState>(StringComparer.Ordinal),
             new PermanentAugmentLoadoutState("bp.skill_witness", Array.Empty<string>()),

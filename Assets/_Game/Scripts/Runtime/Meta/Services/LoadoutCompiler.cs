@@ -21,7 +21,9 @@ public sealed class LoadoutCompiler
     //   슬롯의 실전투 통로) — 해당 스킬 장착 유닛의 trig 라인 hash 변경.
     // support-modifier.v1: 서포트 젬 페어-변조(SupportModifier) 신설 — 젬 장착 유닛의
     //   매칭 액티브 수치/상태/cleanse와 owner 스탯이 컴파일 타임에 변환된다.
-    public const string CurrentCompileVersion = "support-modifier.v1";
+    // item-template.v1: 아이템 CompileTags/무기 family 태그 유닛 전파 + 젬 무기 게이트 활성화
+    //   (RequiredWeaponTags 저작이 이제 실판정) — 아이템 장착 라인의 태그/hash 변경.
+    public const string CurrentCompileVersion = "item-template.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -109,6 +111,19 @@ public sealed class LoadoutCompiler
 
                     AddNumericPackage(content.ItemPackages, itemInstance.ItemBaseId, artifacts, hero.Id, "item");
                     artifacts.CompileTags.Add($"item:{itemInstance.ItemBaseId}");
+                    // 아이템 태그 전파 — affix 조건 게이트·서포트 젬 무기 게이트의 판정 재료.
+                    if (content.ItemCatalog != null && content.ItemCatalog.TryGetValue(itemInstance.ItemBaseId, out var itemTemplate))
+                    {
+                        foreach (var tag in itemTemplate.CompileTags)
+                        {
+                            artifacts.CompileTags.Add(tag);
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(itemTemplate.WeaponFamilyTag))
+                        {
+                            artifacts.CompileTags.Add(itemTemplate.WeaponFamilyTag);
+                        }
+                    }
 
                     foreach (var affixId in itemInstance.AffixIds.Where(id => !string.IsNullOrWhiteSpace(id)))
                     {
@@ -409,7 +424,8 @@ public sealed class LoadoutCompiler
     /// 서포트 젬 페어-변조 — SupportModifier를 가진 스킬(젬)이 같은 유닛의 액티브(코어/유틸리티) 중
     /// SupportAllowedTags/BlockedTags 매칭을 통과한 스킬을 컴파일 타임에 변환한다.
     /// 젬 id 오름차순으로 순차 적용(결정성), 젬이 젬을 변조하지 않는다.
-    /// 무기 태그 게이트(RequiredWeaponTags)는 weapon family 태그가 아직 유닛에 전파되지 않아 미적용(후속).
+    /// 클래스/무기 게이트: RequiredClassTags·RequiredWeaponTags가 유닛 태그(클래스 raw 태그,
+    /// 아이템 weapon family 태그)와 매칭돼야 발동한다.
     /// </summary>
     private static IReadOnlyList<ResolvedSkillSelection> ApplySupportModifiers(
         IReadOnlyList<ResolvedSkillSelection> resolved,
@@ -434,6 +450,14 @@ public sealed class LoadoutCompiler
             {
                 artifacts.Provenance.Add(new CompileProvenanceEntry(
                     heroId, ModifierSource.Skill, gem.Skill.Id, "support_modifier_class_gate", gem.Skill.RequiredClassTags.ToList()));
+                continue;
+            }
+
+            if (gem.Skill.RequiredWeaponTags is { Count: > 0 }
+                && !gem.Skill.RequiredWeaponTags.Any(artifacts.CompileTags.Contains))
+            {
+                artifacts.Provenance.Add(new CompileProvenanceEntry(
+                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_modifier_weapon_gate", gem.Skill.RequiredWeaponTags.ToList()));
                 continue;
             }
 
