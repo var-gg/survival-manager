@@ -146,6 +146,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5b8638d14ee22444e8b2baf4abd01965, type: 2}
   RequiredClassTags:
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
-  AppliedStatuses: []
+  AppliedStatuses:
+  - Id: status_silence
+    StatusId: silence
+    DurationSeconds: 1
+    Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
   CleanseProfileId: 
   legacyDisplayName: 
