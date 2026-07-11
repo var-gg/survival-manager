@@ -77,6 +77,7 @@ public sealed class HeadlessExperienceReport
 
         var policy = new ScriptedPlaythroughPolicy(rewardIndex: 0);
         ApplyDeployment(session, policy);
+        FireAndDrain(session, NarrativeMoment.TownEntered, text, beats, report); // 초기 타운 진입 = 프롤로그/오프닝(루프 전 1회)
 
         var clearedSites = new List<string>();
         var totalBattles = 0;
@@ -104,6 +105,7 @@ public sealed class HeadlessExperienceReport
 
             session.ResolveSelectedNodeToRewardSettlement();
             Drain(session, "ExtractCommitted", text, beats, report);
+            FireAndDrain(session, NarrativeMoment.RewardOpened, text, beats, report); // 보상 화면 서사
 
             var rewardView = BuildRewardView(session, chapterId, siteId);
             if (rewardView.Options.Count > 0)
@@ -114,6 +116,7 @@ public sealed class HeadlessExperienceReport
 
             session.ReturnToTownAfterReward();
             Drain(session, "Return", text, beats, report);
+            FireAndDrain(session, NarrativeMoment.TownEntered, text, beats, report); // 타운 복귀 서사(챕터말 등)
 
             totalBattles += battleNodes;
             siteRecords.Add((chapterId, siteId, battleNodes, rewardView.Options.Count));
@@ -177,6 +180,7 @@ public sealed class HeadlessExperienceReport
         // ── 편성 (정책 결정) ──
         var policy = new ScriptedPlaythroughPolicy(rewardIndex: 0);
         ApplyDeployment(session, policy);
+        FireAndDrain(session, NarrativeMoment.TownEntered, text, beats, report); // 초기 타운 진입 = 프롤로그/오프닝(루프 전 1회)
         var roster = session.Profile.Heroes;
         Line("## 편성");
         Line($"- 로스터 {roster.Count}인: {string.Join(", ", roster.Select(h => $"{h.ClassId}/{h.ArchetypeId}"))}");
@@ -238,6 +242,7 @@ public sealed class HeadlessExperienceReport
 
             session.ResolveSelectedNodeToRewardSettlement();
             Drain(session, "ExtractCommitted", text, beats, report); // ExtractCommitted 내부 발화
+            FireAndDrain(session, NarrativeMoment.RewardOpened, text, beats, report); // 보상 화면 서사
 
             var rewardView = BuildRewardView(session, chapterId, siteId);
             var pick = policy.DecideReward(rewardView);
@@ -249,6 +254,7 @@ public sealed class HeadlessExperienceReport
 
             session.ReturnToTownAfterReward();
             Drain(session, "Return", text, beats, report);
+            FireAndDrain(session, NarrativeMoment.TownEntered, text, beats, report); // 타운 복귀 서사(챕터말 등)
 
             clearedSites.Add(siteId);
             Line();
