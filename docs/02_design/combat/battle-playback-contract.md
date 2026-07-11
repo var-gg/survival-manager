@@ -43,7 +43,7 @@ QuickBattle과 InGame 모드를 우아하게 분리하는 것이 목표다.
 
 - **리플레이**: `Replay` 버튼 또는 스크러버 0 복귀로 같은 recorded timeline을 처음부터 다시 본다. 녹화된 데이터만 재사용한다.
 - **새 전투 (rebattle)**: `RebattleNewSeed()`로 새 시드 생성. 시뮬레이터와 타임라인 모두 재초기화.
-- **같은 시드 재시작**: `RestartSameSeed()`로 동일 시드 재실행. 타임라인 리셋.
+- **같은 시드 재시작**: `RestartSameSeed()`로 동일 시드 재실행. 타임라인 리셋. 전투 재합성은 세션 단일 소스(`GameSessionState.TryComposeBattleState`)를 경유한다 — 씬이 `BattleFactory`를 직접 호출하면 보스 overlay bootstrap이 빠지는 2nd battle-truth가 된다(가드: `BuildBoundaryGuardFastTests`, 골든: `BattleRestartSameSeedDeterminismTests`).
 
 ### presentation core API
 

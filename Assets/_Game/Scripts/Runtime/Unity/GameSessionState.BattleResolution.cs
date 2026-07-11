@@ -33,12 +33,29 @@ public sealed partial class GameSessionState
             return false;
         }
 
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var combatSnapshot, out error))
+        if (!TryResolveCurrentEncounter(out encounter, out error))
         {
             return false;
         }
 
-        if (!TryResolveCurrentEncounter(out encounter, out error))
+        return TryComposeBattleState(allySnapshot, encounter, out state, out error);
+    }
+
+    /// <summary>
+    /// 이미 확보한 스냅샷/인카운터로 BattleState를 합성한다 — BattleFactory + status rule fallback +
+    /// 보스 overlay bootstrap을 한 몸으로 묶은 **전투 합성 단일 소스**. 신규 전투
+    /// (<see cref="TryBuildSelectedBattleState"/>)와 같은 시드 재시작(BattleScreenController.RestartSameSeed)
+    /// 모두 이 경로 하나만 탄다. 재시작이 별도 BattleFactory 호출로 bootstrap(보스 overlay status)을
+    /// 빠뜨리던 2nd battle-truth 생성지를 차단한다(2026-07 준비도 감사 — 2nd-consumer 결정성 drift 계열).
+    /// </summary>
+    public bool TryComposeBattleState(
+        BattleLoadoutSnapshot allySnapshot,
+        ResolvedEncounterContext encounter,
+        out BattleState state,
+        out string error)
+    {
+        state = null!;
+        if (!_combatContentLookup.TryGetCombatSnapshot(out var combatSnapshot, out error))
         {
             return false;
         }

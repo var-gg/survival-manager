@@ -585,20 +585,21 @@ public sealed class BattleScreenController : MonoBehaviour
 
     private void RestartSameSeed()
     {
-        if (_compiledSnapshot == null || _resolvedEncounterContext == null)
+        if (_compiledSnapshot == null || _resolvedEncounterContext == null || _root == null)
         {
             return;
         }
 
         var encounter = _resolvedEncounterContext;
-        var newState = BattleFactory.Create(
-            _compiledSnapshot.Allies,
-            encounter.Enemies,
-            _compiledSnapshot.TeamTactic.Posture,
-            encounter.EnemyPosture,
-            BattleSimulator.DefaultFixedStepSeconds,
-            seed: encounter.Context.BattleSeed,
-            statusRules: _compiledSnapshot.StatusRules);
+        // 재합성은 세션 단일 소스(TryComposeBattleState) — 첫 전투(RunBattle)와 동일 합성이라 같은 시드
+        // 재시작이 byte-identical 전투를 보장한다. 씬이 별도 BattleFactory를 직접 호출하면 보스 overlay
+        // bootstrap·status rule fallback이 빠지는 2nd battle-truth가 된다(2026-07 준비도 감사로 차단).
+        if (!_root.SessionState.TryComposeBattleState(_compiledSnapshot, encounter, out var newState, out var composeError))
+        {
+            RenderErrorState(composeError);
+            return;
+        }
+
         _simulator = new BattleSimulator(newState, MaxBattleSteps);
 
         _timeline!.Reset(_simulator, _simulator.CurrentStep, MaxBattleSteps);

@@ -88,6 +88,60 @@ public sealed class BuildBoundaryGuardFastTests
     }
 
     [Test]
+    public void GameSessionState_PartialStructureBudget_DoesNotRegrow()
+    {
+        // 2026-07 준비도 감사: GameSessionState는 partial 11개(총 ~6.2k 라인) god-facade budget 상태이며,
+        // Session flow partial들이 공유 back-ref 위에서 커지는 패턴은 save-load 전역 Empty 오염 사고와 동형이다.
+        // budget = 현재 실측 + 여유(파일 수 +1, 최대 라인 +10%). 초과 = 세션에 더 얹지 말고 분할 백로그를 소화하라.
+        var unityRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity");
+        var partials = Directory.EnumerateFiles(unityRoot, "*.cs", SearchOption.AllDirectories)
+            .Where(path => Regex.IsMatch(ReadCodeText(path), @"partial\s+class\s+GameSessionState\b"))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.That(partials, Is.Not.Empty,
+            "GameSessionState partial을 하나도 찾지 못했다 — 가드 자체가 죽었다(탐지 경로/선언 이동 여부를 확인하라).");
+        Assert.That(partials.Count, Is.LessThanOrEqualTo(12),
+            "GameSessionState partial 파일 수가 budget(12 = 실측 11 + 1)을 넘었다 — 새 partial을 더 얹지 말고 " +
+            "세션 밖 focused collaborator로 책임을 분리해 분할 백로그를 소화하라.\n현재 partial:\n" +
+            string.Join("\n", partials));
+
+        var totalLines = 0;
+        foreach (var path in partials)
+        {
+            var lineCount = File.ReadLines(path).Count();
+            totalLines += lineCount;
+            Assert.That(lineCount, Is.LessThanOrEqualTo(1610),
+                $"{path} ({lineCount} 라인)가 partial 단일 파일 budget(1610 = 실측 최대 SessionExpeditionFlow 1467 + 10%)을 " +
+                "넘었다 — 이 partial에 더 얹지 말고 분할 백로그를 소화하라(한 파일 = 한 책임).");
+        }
+
+        Assert.That(totalLines, Is.LessThanOrEqualTo(6800),
+            $"GameSessionState partial 총 라인({totalLines})이 budget(6800 = 실측 ~6.2k + 10%)을 넘었다 — " +
+            "facade 총량이 계속 자라면 세션이 소유할 truth인지 먼저 분류하고 분할 백로그를 소화하라.");
+    }
+
+    [Test]
+    public void BattleComposition_SceneRestartStaysOnSessionSingleSource()
+    {
+        // 2026-07 준비도 감사: RestartSameSeed가 씬에서 BattleFactory를 직접 호출하는 2nd battle-truth라
+        // 보스 overlay bootstrap·status rule fallback이 빠졌다(같은 시드 재시작 ≠ 같은 전투). 씬은 세션 합성
+        // 단일 소스(TryComposeBattleState)만 소비한다 — FinalUnits id·BuildStableSeed 계열(2nd-consumer drift) 재발 차단.
+        // 행동 골든은 BattleRestartSameSeedDeterminismTests(BatchOnly, byte-identical 스트림).
+        var controllerPath = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "BattleScreenController.cs");
+        var controllerCode = ReadCodeText(controllerPath);
+        Assert.That(controllerCode, Does.Not.Contain(string.Concat("BattleFactory", ".Create")),
+            $"{controllerPath} 가 BattleFactory를 직접 호출한다 — 전투 합성은 세션 단일 소스(TryComposeBattleState)를 경유하라.");
+        Assert.That(controllerCode, Does.Contain("TryComposeBattleState"),
+            $"{controllerPath} 재시작 경로가 세션 합성 단일 소스(TryComposeBattleState)를 소비해야 한다.");
+
+        var resolutionPath = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionState.BattleResolution.cs");
+        var resolutionCode = ReadCodeText(resolutionPath);
+        Assert.That(resolutionCode, Does.Contain("ApplyBattleBootstrap"),
+            $"{resolutionPath} 합성 단일 소스에서 인카운터 bootstrap이 사라졌다 — 보스 overlay가 모든 소비자에서 침묵한다.");
+    }
+
+    [Test]
     public void SessionItemGeneration_StaysThinFacade()
     {
         var path = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "Session", "SessionItemGeneration.cs");
