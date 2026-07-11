@@ -54,7 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
   _id: story_event_boss_defeat_ruined_crypts.condition.02
   _kind: 2
-  _operandA: 4
+  _operandA: 3
   _operandB: 
 --- !u!114 &927108303214188558
 MonoBehaviour:

@@ -13,6 +13,7 @@ using SM.Meta;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Playthrough;
 using SM.Unity;
+using SM.Unity.Narrative;
 using UnityEditor.Localization;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -95,7 +96,10 @@ public sealed class HeadlessExperienceReport
             while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
             {
                 battleNodes++;
-                session.ResolveSelectedExpeditionNode(); // AutoResolve: 전투 노드 자동 통과(sim 없음)
+                // AutoResolve는 sim 없이 커서만 전진 → 전투 moment를 하네스가 발화(커서가 전투 노드에 있을 때 NodeIndex 정확).
+                FireAndDrain(session, NarrativeMoment.BattleStarted, text, beats, report);
+                FireAndDrain(session, NarrativeMoment.BattleResolved, text, beats, report);
+                session.ResolveSelectedExpeditionNode();
             }
 
             session.ResolveSelectedNodeToRewardSettlement();
@@ -197,6 +201,7 @@ public sealed class HeadlessExperienceReport
             {
                 var node = session.GetSelectedExpeditionNode()!;
                 battleIdx++;
+                FireAndDrain(session, NarrativeMoment.BattleStarted, text, beats, report); // 전투 진입 발화(boss-bark 등, 씬 controller 등가)
                 if (!session.TryResolveSelectedBattleNodeViaSimulation(out var br, out var err))
                 {
                     throw new InvalidOperationException($"전투 sim 실패({node.Id}): {err}");
@@ -288,6 +293,19 @@ public sealed class HeadlessExperienceReport
         Assert.That(battles.All(b => b.steps > 0), Is.True, "모든 전투가 실 BattleSimulator tick을 돌렸다.");
         Assert.That(session.Profile.CampaignProgress.StoryCleared || defeatedSite != null, Is.True,
             "캠페인이 실 결과로 종료 — 완주 또는 실 패배.");
+    }
+
+    // 소비자 전용 moment(BattleStarted 등)를 하네스가 능동 발화 + drain — 씬 controller 발화의 헤드리스 등가.
+    // BuildNodeContext가 현재 노드 인덱스를 실어 조건(NodeIs) 게이트가 맞물린다.
+    private static void FireAndDrain(
+        GameSessionState session,
+        NarrativeMoment moment,
+        NarrativeTextResolver text,
+        List<(string source, string key, string kind, int chars, bool resolved)> beats,
+        StringBuilder report)
+    {
+        session.AdvanceNarrative(moment, NarrativeMomentResolver.BuildNodeContext(session));
+        Drain(session, moment.ToString(), text, beats, report);
     }
 
     // 세션이 내부 발화한 presentation을 전부 drain하며 텍스트 해상 → 리포트/집계에 적재.

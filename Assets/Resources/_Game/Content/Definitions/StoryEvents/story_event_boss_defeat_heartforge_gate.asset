@@ -69,7 +69,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryConditionDefinition
   _id: story_event_boss_defeat_heartforge_gate.condition.02
   _kind: 2
-  _operandA: 4
+  _operandA: 3
   _operandB: 
 --- !u!114 &6770450277599669764
 MonoBehaviour:

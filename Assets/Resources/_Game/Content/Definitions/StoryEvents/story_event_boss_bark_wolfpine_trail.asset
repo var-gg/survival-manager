@@ -69,7 +69,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
   _id: story_event_boss_bark_wolfpine_trail.condition.02
   _kind: 2
-  _operandA: 4
+  _operandA: 3
   _operandB: 
 --- !u!114 &7951917367462403537
 MonoBehaviour:
