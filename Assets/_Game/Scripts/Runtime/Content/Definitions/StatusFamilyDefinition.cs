@@ -36,6 +36,10 @@ namespace SM.Content.Definitions
         public bool AffectedByTenacity = true;
         public float TenacityScale = 1f;
         public bool AppliesPeriodicDamage;
+
+        [Tooltip("이 상태가 유닛의 받는 피해 배수에 주는 delta (guarded=-0.1 → 받는 피해 10% 감소). 0=영향 없음. 과거 sim에 -0.1 리터럴로 박혀 있던 값의 콘텐츠 승격.")]
+        public float IncomingDamageDelta = 0f;
+
         public string VfxCueId = string.Empty;
         public string SfxHookId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };

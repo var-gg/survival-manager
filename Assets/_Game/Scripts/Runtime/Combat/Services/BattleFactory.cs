@@ -19,6 +19,8 @@ public static class BattleFactory
         CombatStatusRules? statusRules = null)
     {
         var resolved = layout ?? BattlefieldLayout.Default;
+        // 상태 규칙은 유닛 생성 전에 확정한다 — 유닛이 콘텐츠 튜닝값(guarded delta 등)을 스냅샷한다.
+        var resolvedStatusRules = statusRules ?? CombatStatusRules.Default;
         var allyPackages = ResolveTeamPackages(allyDefinitions);
         var enemyPackages = ResolveTeamPackages(enemyDefinitions);
         var allyTactic = ResolveTeamTactic(allyDefinitions, allyPosture);
@@ -28,14 +30,14 @@ public static class BattleFactory
         {
             var merged = MergePackages(def, allyPackages);
             var formation = ResolveFormationPosition(resolved, TeamSide.Ally, merged, allyTactic);
-            return new UnitSnapshot(new EntityId($"ally_{index}_{merged.Id}"), TeamSide.Ally, merged, formation.AnchorPosition, formation.SpawnPosition);
+            return new UnitSnapshot(new EntityId($"ally_{index}_{merged.Id}"), TeamSide.Ally, merged, formation.AnchorPosition, formation.SpawnPosition, resolvedStatusRules);
         }).ToList();
 
         var enemies = enemyDefinitions.Select((def, index) =>
         {
             var merged = MergePackages(def, enemyPackages);
             var formation = ResolveFormationPosition(resolved, TeamSide.Enemy, merged, enemyTactic);
-            return new UnitSnapshot(new EntityId($"enemy_{index}_{merged.Id}"), TeamSide.Enemy, merged, formation.AnchorPosition, formation.SpawnPosition);
+            return new UnitSnapshot(new EntityId($"enemy_{index}_{merged.Id}"), TeamSide.Enemy, merged, formation.AnchorPosition, formation.SpawnPosition, resolvedStatusRules);
         }).ToList();
 
         var state = new BattleState(
@@ -47,7 +49,7 @@ public static class BattleFactory
             seed,
             allyTactic: allyTactic,
             enemyTactic: enemyTactic,
-            statusRules: statusRules);
+            statusRules: resolvedStatusRules);
         RecordFormationTelemetry(state, resolved, TeamSide.Ally, allyTactic);
         RecordFormationTelemetry(state, resolved, TeamSide.Enemy, enemyTactic);
         return state;

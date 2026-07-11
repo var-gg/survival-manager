@@ -22,6 +22,7 @@ public sealed class UnitSnapshot
 
     private readonly List<AppliedStatusState> _statuses = new();
     private readonly HashSet<string> _firedTriggers = new(StringComparer.Ordinal);
+    private readonly float _guardedIncomingDamageDelta;
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -29,11 +30,15 @@ public sealed class UnitSnapshot
         TeamSide side,
         BattleUnitLoadout definition,
         CombatVector2 anchorPosition,
-        CombatVector2 spawnPosition)
+        CombatVector2 spawnPosition,
+        CombatStatusRules? statusRules = null)
     {
         Id = id;
         Side = side;
         Definition = definition;
+        // guarded 받는피해 delta — 콘텐츠(StatusFamilyDefinition) 튜닝값. 규칙 미주입 레인(레거시
+        // 손조립 테스트)은 과거 sim 리터럴(-0.1)과 동일한 기본값으로 떨어진다(결정성 보존).
+        _guardedIncomingDamageDelta = statusRules?.ResolveIncomingDamageDelta("guarded") ?? -0.1f;
         Anchor = definition.PreferredAnchor;
         FixedAnchorPosition = SpatialProjection.QuantizeToFixed(anchorPosition);
         FixedPosition = SpatialProjection.QuantizeToFixed(spawnPosition);
@@ -474,7 +479,8 @@ public sealed class UnitSnapshot
 
         if (IsGuarded)
         {
-            multiplier -= 0.1f;
+            // 콘텐츠 튜닝값(기본 -0.1) — status_family_guarded.asset IncomingDamageDelta.
+            multiplier += _guardedIncomingDamageDelta;
         }
 
         return Math.Max(0.25f, multiplier);

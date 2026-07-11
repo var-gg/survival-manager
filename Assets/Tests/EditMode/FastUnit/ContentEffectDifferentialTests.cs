@@ -205,6 +205,42 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void GuardedIncomingDamageDelta_IsContentTunable_InRealSim()
+    {
+        // 같은 전투를 상태 규칙만 바꿔 두 번 — guarded delta는 이제 콘텐츠 튜닝값이다.
+        // 프로브 유닛에 개전 시 장시간 guarded를 발동시켜(slic A 트리거 채널) delta가 매 피격에 적용되게 한다.
+        var compiled = CompileSingleHero(
+            Array.Empty<string>(),
+            mutatePassive: skill => skill with
+            {
+                TriggeredEffects = new[]
+                {
+                    new CombatTriggeredEffect(
+                        skill.Id,
+                        CombatTriggerKind.BattleStart,
+                        TriggeredEffectOp.ApplyStatus,
+                        EffectScope.Self,
+                        Magnitude: 1f,
+                        StatusId: "guarded",
+                        DurationSeconds: 600f),
+                },
+            });
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var strongGuard = new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == "guarded"
+                    ? pair.Value with { IncomingDamageDelta = -0.6f }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
+        var strongRun = RunCompiledAllyVersusRaider(compiled, strongGuard);
+
+        Assert.That(strongRun.AllySurvivedSteps, Is.GreaterThan(defaultRun.AllySurvivedSteps),
+            "guarded 받는피해 delta를 콘텐츠 값(-0.6)으로 키우면 실 sim 생존이 뚜렷하게 늘어야 한다 — 숫자 콘텐츠화의 1차 가드");
+    }
+
+    [Test]
     public void AffixTemplateCompile_SameScenarioTwice_StableHash()
     {
         var first = CompileSingleHero(affixIds: new[] { "affix.tempo", "affix.cond_met", "affix.cond_unmet" });
@@ -216,7 +252,7 @@ public sealed class ContentEffectDifferentialTests
 
     private sealed record SimRun(string Stream, int AllySurvivedSteps);
 
-    private static SimRun RunCompiledAllyVersusRaider(BattleLoadoutSnapshot compiled)
+    private static SimRun RunCompiledAllyVersusRaider(BattleLoadoutSnapshot compiled, CombatStatusRules? statusRules = null)
     {
         var enemy = CombatTestFactory.CreateUnit(
             "enemy.raider",
@@ -226,7 +262,7 @@ public sealed class ContentEffectDifferentialTests
             hp: 500f,
             attack: 8f);
         var simulator = new BattleSimulator(
-            CombatTestFactory.CreateBattleState(compiled.Allies, new[] { enemy }, seed: Seed),
+            CombatTestFactory.CreateBattleState(compiled.Allies, new[] { enemy }, seed: Seed, statusRules: statusRules),
             MaxSteps);
 
         var sb = new StringBuilder();

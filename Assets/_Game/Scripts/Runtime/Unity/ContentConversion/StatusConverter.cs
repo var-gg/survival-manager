@@ -26,7 +26,8 @@ internal static class StatusConverter
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
                 .ToList(),
-            BuildGovernanceSummary(definition.BudgetCard));
+            BuildGovernanceSummary(definition.BudgetCard),
+            IncomingDamageDelta: definition.IncomingDamageDelta);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)

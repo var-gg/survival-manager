@@ -15,7 +15,9 @@ public sealed record CombatStatusFamilyRule(
     bool AppliesPeriodicDamage,
     bool IsRuleModifierOnly,
     IReadOnlyList<string>? CompileTags = null,
-    string VfxCueId = "");
+    string VfxCueId = "",
+    // 이 상태가 유닛의 받는 피해 배수에 주는 delta (guarded=-0.1) — sim 리터럴의 콘텐츠 승격.
+    float IncomingDamageDelta = 0f);
 
 public sealed record CombatCleanseProfileRule(
     string Id,
@@ -95,6 +97,10 @@ public sealed class CombatStatusRules
     public bool AppliesPeriodicDamage(string statusId)
         => TryGetStatusFamily(statusId, out var rule) && rule.AppliesPeriodicDamage;
 
+    /// <summary>해당 상태가 받는 피해 배수에 주는 delta — 콘텐츠(StatusFamilyDefinition) 튜닝값.</summary>
+    public float ResolveIncomingDamageDelta(string statusId)
+        => TryGetStatusFamily(statusId, out var rule) ? rule.IncomingDamageDelta : 0f;
+
     public float ResolveTenacityScale(string statusId)
     {
         if (!TryGetStatusFamily(statusId, out var statusRule) || !statusRule.AffectedByTenacity)
@@ -130,7 +136,7 @@ public sealed class CombatStatusRules
                 new CombatStatusFamilyRule("marked", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "marked" }, "vfx.status_marked"),
                 new CombatStatusFamilyRule("exposed", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "exposed" }, "vfx.status_exposed"),
                 new CombatStatusFamilyRule("barrier", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "barrier" }, "vfx.status_barrier"),
-                new CombatStatusFamilyRule("guarded", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "guarded" }, "vfx.status_guarded"),
+                new CombatStatusFamilyRule("guarded", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "guarded" }, "vfx.status_guarded", IncomingDamageDelta: -0.1f),
                 new CombatStatusFamilyRule("unstoppable", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "unstoppable" }, "vfx.status_unstoppable"),
             }
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);

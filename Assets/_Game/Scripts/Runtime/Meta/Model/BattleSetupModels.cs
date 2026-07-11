@@ -196,7 +196,9 @@ public sealed record StatusFamilyTemplate(
     string VfxCueId,
     bool IsRuleModifierOnly,
     IReadOnlyList<string> CompileTags,
-    ContentGovernanceSummary? Governance = null);
+    ContentGovernanceSummary? Governance = null,
+    // 받는 피해 배수 delta (guarded=-0.1) — sim 리터럴의 콘텐츠 승격.
+    float IncomingDamageDelta = 0f);
 
 public sealed record CleanseProfileTemplate(
     string Id,
