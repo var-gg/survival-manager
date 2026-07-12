@@ -1716,14 +1716,14 @@ public static class SampleSeedGenerator
         var grants = new (string NodeId, string SkillId, string KoName, string EnName, string KoDesc, string EnDesc)[]
         {
             ("passive_vanguard_notable_01", "skill_iron_hide_memory", "철가죽 기억", "Iron-Hide Memory",
-                "체력과 방어가 오릅니다. 체력이 절반 아래로 처음 떨어지면 보호막 45를 얻습니다.",
-                "Improves health and armor. The first time health falls below half, gain a 45 barrier."),
+                "체력과 방어가 오릅니다. 체력이 절반 아래로 처음 떨어지면 보호막 25를 얻습니다.",
+                "Improves health and armor. The first time health falls below half, gain a 25 barrier."),
             ("passive_vanguard_notable_02", "skill_sentinel_oath", "맹세의 무게", "Weight of the Oath",
                 "강인함과 보호 반경이 오릅니다. 전투 시작 후 8초간 받는 피해가 줄어듭니다.",
                 "Improves tenacity and protect radius. Take reduced damage for 8 seconds after battle starts."),
             ("passive_vanguard_notable_05", "skill_lattice_bastion", "격자 보루", "Lattice Bastion",
-                "체력과 대상 전환이 개선됩니다. 아군이 쓰러질 때마다 남은 아군 전체가 보호막 25를 얻습니다.",
-                "Improves health and target switching. Whenever an ally falls, surviving allies gain a 25 barrier."),
+                "체력과 대상 전환이 개선됩니다. 아군이 쓰러질 때마다 남은 아군 전체가 보호막 12를 얻습니다.",
+                "Improves health and target switching. Whenever an ally falls, surviving allies gain a 12 barrier."),
             ("passive_duelist_notable_01", "skill_shard_memory", "파편 기억", "Shard Memory",
                 "물리 출력과 공격 속도가 오릅니다. 적을 처치하면 2.5초간 남은 적들의 빈틈이 드러납니다.",
                 "Improves physical output and attack speed. On kill, remaining enemies are exposed for 2.5 seconds."),

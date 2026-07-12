@@ -35,7 +35,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_sunken_bastion_elite_1_squad_2
     NameKey: 
-    ArchetypeId: bastion_penitent
+    ArchetypeId: slayer
     CharacterId: extra_bastion_reliquary_guard
     Anchor: 2
     Role: 0

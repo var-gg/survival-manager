@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_sunken_bastion_skirmish_1_squad_1
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: raider
     CharacterId: extra_bastion_line_guard
     Anchor: 0
     Role: 0

@@ -135,7 +135,7 @@ MonoBehaviour:
   - Trigger: 3
     Op: 2
     Scope: 4
-    Magnitude: 25
+    Magnitude: 12
     ThresholdRatio: 0
     StatusId: 
     DurationSeconds: 0

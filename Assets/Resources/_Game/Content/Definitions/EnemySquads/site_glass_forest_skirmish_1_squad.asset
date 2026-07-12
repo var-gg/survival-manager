@@ -35,7 +35,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_glass_forest_skirmish_1_squad_2
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: raider
     CharacterId: extra_glass_shard_bailiff
     Anchor: 2
     Role: 0
