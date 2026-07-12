@@ -209,7 +209,9 @@ public sealed record StatusFamilyTemplate(
     // 보유 시 액티브 시전 차단(silence) — 3보 3c. false=차단 없음(현행 기본).
     bool BlocksActiveSkills = false,
     // 보유 시 자발 이동 차단(root) — 3보 3d. false=차단 없음(현행 기본).
-    bool BlocksMovement = false);
+    bool BlocksMovement = false,
+    // 보유 시 행동 차단(턴 스킵/취소/전 행동 게이트, stun) — 3보 3e. false=차단 없음(현행 기본).
+    bool BlocksAction = false);
 
 public sealed record CleanseProfileTemplate(
     string Id,

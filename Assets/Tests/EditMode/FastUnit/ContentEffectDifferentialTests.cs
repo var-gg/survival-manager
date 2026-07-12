@@ -6,6 +6,7 @@ using System.Text;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta;
@@ -537,6 +538,45 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void StunKind_IsContentDriven_InRealSim()
+    {
+        // 효과 종류 데이터화 3보 3e — "행동 차단(턴 스킵/취소/전 행동 게이트)"은 이제 HasStatus("stun")
+        // 문자열 조회가 아니라 콘텐츠 kind(BlocksAction)가 파생한 set이다. 구도는 3d와 동일(2보 slow
+        // differential 검증 구도): 개전 시 적 전체에 stun(600s)을 걸면 접근·공격 의지가 실증된 raider가
+        // 기본 규칙에선 매 턴 스킵돼 아무것도 못 하고, kind를 끄면 같은 상태를 갖고도 정상 행동한다.
+        var compiled = CompileStatusProbe("stun", 1f, scope: EffectScope.EnemyCombatants);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var disabledRun = RunCompiledAllyVersusRaider(compiled, RulesWithStunKind(false));
+        Assert.That(defaultRun.AllySurvivedSteps, Is.GreaterThan(disabledRun.AllySurvivedSteps),
+            "기본 규칙(stun이 행동 차단 kind 보유)에선 개전에 기절한 raider가 행동하지 못해 아군이 뚜렷하게 " +
+            "오래 생존해야 하고, kind를 끄면 같은 stun 상태로도 정상 교전해야 한다 — 행동차단 membership이 " +
+            "규칙 파생 set에서 소비된다는 1차 가드(잔존 상태 != 차단 효과 분리 증명)");
+
+        // 항등 계약: true 명시 저작 == 기본 규칙 — 전투 스트림 byte-identical.
+        var explicitTrueRun = RunCompiledAllyVersusRaider(compiled, RulesWithStunKind(true));
+        Assert.That(explicitTrueRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "BlocksAction=true 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
+    public void NewHardControlFamily_BlocksAction_WhenAuthored_InRealSim()
+    {
+        // 3e의 실제 payoff — hard-control 행동차단 갭 해소 증명. 감사가 확정한 갭: IsHardControl=true
+        // 신규 family(freeze류)를 저작하면 저지불가 면역·DR·tenacity는 전부 받는데 행동은 멀쩡히 했다
+        // (행동차단이 "stun" 문자열에만 배선). 이제 같은 신규 family("stagger", 어떤 canonical id도 아님)에
+        // BlocksAction을 저작하면 실 sim에서 행동이 실제로 막히고, 끄면 과거 갭 동작(잔존만)이 재현된다.
+        var compiled = CompileStatusProbe("stagger", 1f, scope: EffectScope.EnemyCombatants);
+
+        var authoredRun = RunCompiledAllyVersusRaider(compiled, RulesWithCustomStagger(blocksAction: true));
+        var gapRun = RunCompiledAllyVersusRaider(compiled, RulesWithCustomStagger(blocksAction: false));
+        Assert.That(authoredRun.AllySurvivedSteps, Is.GreaterThan(gapRun.AllySurvivedSteps),
+            "신규 hard-control family(stagger)에 BlocksAction=true를 저작하면 raider가 행동 불능이 돼 아군이 " +
+            "뚜렷하게 오래 생존해야 한다 — 문자열 id와 무관하게 kind 저작만으로 행동차단이 성립(freeze류 " +
+            "신규 상태를 에디터 없이 저작 가능해졌다는 갭 해소의 직접 증명)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -918,6 +958,30 @@ public sealed class ContentEffectDifferentialTests
                     : pair.Value, StringComparer.Ordinal),
             null,
             null);
+    }
+
+    /// <summary>기본 규칙에서 stun family 의 행동 차단 kind 만 바꾼 상태 규칙 — 3보 3e differential.</summary>
+    private static CombatStatusRules RulesWithStunKind(bool blocksAction)
+    {
+        return new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == "stun"
+                    ? pair.Value with { BlocksAction = blocksAction }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
+    }
+
+    /// <summary>기본 규칙 + 신규 hard-control family("stagger", canonical id 아님) — 3e 행동차단 갭 해소
+    /// 증명용. blocksAction=false 는 감사가 확정한 과거 갭 동작(DR/면역만 받고 행동)의 재현이다.</summary>
+    private static CombatStatusRules RulesWithCustomStagger(bool blocksAction)
+    {
+        var families = CombatStatusRules.Default.StatusFamilies
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        families["stagger"] = new CombatStatusFamilyRule(
+            "stagger", StatusGroupValue.Control, true, true, false, 0f, false, false,
+            new[] { "stagger" }, "vfx.status_stagger", BlocksAction: blocksAction);
+        return new CombatStatusRules(families, null, null);
     }
 
     private static BattleLoadoutSnapshot CompileSingleHero(

@@ -55,6 +55,9 @@ namespace SM.Content.Definitions
         [Tooltip("이 상태를 보유한 유닛의 자발 이동을 차단한다 — MoveTowards/전진 스텝/후퇴 스텝 + 모빌리티 (root=true). 과거 sim에 HasStatus(\"root\") 문자열 조회로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 3d. 저작 강제이동(넉백/끌기)과 micro-knockback은 별개 축.")]
         public bool BlocksMovement;
 
+        [Tooltip("이 상태를 보유한 유닛의 행동을 차단한다 — 턴 스킵 + 진행 액션 취소 + 기본공격/스킬/모빌리티/블록 전부 (stun=true). 과거 sim에 HasStatus(\"stun\") 문자열 조회로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 3e. freeze류 신규 hard-control은 BlocksAction+BlocksMovement 조합 저작으로 성립(행동차단 갭 해소).")]
+        public bool BlocksAction;
+
         public string VfxCueId = string.Empty;
         public string SfxHookId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };

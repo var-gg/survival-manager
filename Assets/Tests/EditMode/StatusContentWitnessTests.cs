@@ -153,6 +153,29 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
+    public void RealStunFamily_CarriesBlocksAction()
+    {
+        // 효과 종류 데이터화 3보 3e — 행동 차단 kind가 실 committed asset(status_family_stun.asset)에서
+        // 전투 규칙까지 실려야 한다. 실 콘텐츠 제어 스킬(스턴 저작)이 이 kind에 의존한다.
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rules = CombatStatusRuleCompiler.Compile(snapshot);
+
+        Assert.That(rules.TryGetStatusFamily("stun", out var stun), Is.True,
+            "실 콘텐츠에 stun 상태 패밀리가 존재해야 한다");
+        Assert.That(stun.BlocksAction, Is.True,
+            "stun의 행동 차단 kind가 콘텐츠(status_family_stun.asset)에서 전투 규칙까지 실려야 한다 — " +
+            "false면 미저작/파서 결손으로 기절이 잔존만 하는 무효과 상태로 추락하는 회귀");
+
+        var carriers = rules.StatusFamilies.Values
+            .Where(rule => rule.BlocksAction)
+            .Select(rule => rule.Id)
+            .ToList();
+        Assert.That(carriers, Is.EqualTo(new[] { "stun" }),
+            "실 콘텐츠에서 행동 차단 kind 보유 family는 정확히 stun 하나여야 한다 — 새 family가 " +
+            "의도적으로 행동차단을 저작하면 이 목록을 의식적으로 갱신할 것(무의식 누출 가드)");
+    }
+
+    [Test]
     public void RealSkillAppliedStatus_LandsOnEnemy_InRealSim()
     {
         // 오너 의심(2026-07-12) 실측 응답: "스킬에서 상태이상 적용이 미구현 아닌가" —

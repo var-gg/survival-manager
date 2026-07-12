@@ -34,6 +34,7 @@ internal static class StatusFileParser
             definition.GrantsUnstoppable = ExtractBool(lines, "GrantsUnstoppable:");
             definition.BlocksActiveSkills = ExtractBool(lines, "BlocksActiveSkills:");
             definition.BlocksMovement = ExtractBool(lines, "BlocksMovement:");
+            definition.BlocksAction = ExtractBool(lines, "BlocksAction:");
             definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
             definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
@@ -193,8 +194,10 @@ internal static class StatusFileParser
             "barrier" or "guarded" or "unstoppable" => StatusGroupValue.DefensiveBoon,
             _ => definition.Group,
         };
-        definition.IsHardControl = definition.Id is "root" or "silence" or "stun";
-        definition.UsesControlDiminishing = definition.IsHardControl;
+        // 저작값 우선 + id 폴백(효과 종류 데이터화 3e 동반 교정) — 과거 강제 대입은 파일 파서 레인에서
+        // 신규 hard-control 저작을 소거했다. committed 3종(root/silence/stun)은 저작값 1이라 동작 항등.
+        definition.IsHardControl = definition.IsHardControl || definition.Id is "root" or "silence" or "stun";
+        definition.UsesControlDiminishing = definition.UsesControlDiminishing || definition.IsHardControl;
         definition.AppliesPeriodicDamage = definition.AppliesPeriodicDamage || definition.Id is "burn" or "bleed";
         // 미저작(구버전) asset 안전망 — barrier의 즉시 보호막 전환이 파서 레인에서 꺼지지 않게.
         // 신규 family 저작은 || 라 저작값이 그대로 살아난다(효과 종류 데이터화 3보).
@@ -205,6 +208,8 @@ internal static class StatusFileParser
         definition.BlocksActiveSkills = definition.BlocksActiveSkills || definition.Id is "silence";
         // 동일 축 안전망(3d) — root의 자발 이동 차단 kind가 파서 레인에서 꺼지지 않게.
         definition.BlocksMovement = definition.BlocksMovement || definition.Id is "root";
+        // 동일 축 안전망(3e) — stun의 행동 차단 kind가 파서 레인에서 꺼지지 않게.
+        definition.BlocksAction = definition.BlocksAction || definition.Id is "stun";
         if (string.IsNullOrWhiteSpace(definition.VfxCueId))
         {
             definition.VfxCueId = $"vfx.status_{definition.Id}";

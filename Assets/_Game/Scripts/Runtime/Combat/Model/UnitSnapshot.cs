@@ -34,10 +34,12 @@ public sealed class UnitSnapshot
     private static readonly HashSet<string> FallbackUnstoppableStatusIds = new(StringComparer.Ordinal) { "unstoppable" };
     private static readonly HashSet<string> FallbackBlocksActiveSkillsStatusIds = new(StringComparer.Ordinal) { "silence" };
     private static readonly HashSet<string> FallbackBlocksMovementStatusIds = new(StringComparer.Ordinal) { "root" };
+    private static readonly HashSet<string> FallbackBlocksActionStatusIds = new(StringComparer.Ordinal) { "stun" };
     // kind별 상태 id set 스냅샷(효과 종류 데이터화 3보) — 생성 시 1회 확정, 핫패스 사전 조회 0.
     private readonly HashSet<string> _unstoppableStatusIds;
     private readonly HashSet<string> _blocksActiveSkillsStatusIds;
     private readonly HashSet<string> _blocksMovementStatusIds;
+    private readonly HashSet<string> _blocksActionStatusIds;
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -64,6 +66,7 @@ public sealed class UnitSnapshot
         _unstoppableStatusIds = statusRules?.UnstoppableStatusIds ?? FallbackUnstoppableStatusIds;
         _blocksActiveSkillsStatusIds = statusRules?.BlocksActiveSkillsStatusIds ?? FallbackBlocksActiveSkillsStatusIds;
         _blocksMovementStatusIds = statusRules?.BlocksMovementStatusIds ?? FallbackBlocksMovementStatusIds;
+        _blocksActionStatusIds = statusRules?.BlocksActionStatusIds ?? FallbackBlocksActionStatusIds;
         Anchor = definition.PreferredAnchor;
         FixedAnchorPosition = SpatialProjection.QuantizeToFixed(anchorPosition);
         FixedPosition = SpatialProjection.QuantizeToFixed(spawnPosition);
@@ -220,7 +223,8 @@ public sealed class UnitSnapshot
     public float Defense => Armor;
     public float Speed => AttackSpeed;
     public float HealthRatio => MaxHealth <= 0 ? 0 : CurrentHealth / MaxHealth;
-    public bool IsStunned => HasStatus("stun");
+    // 행동 차단 membership은 콘텐츠 kind(BlocksAction)가 파생한 set — "stun" 리터럴 조회의 승격(3보 3e).
+    public bool IsStunned => HasAnyStatusOf(_blocksActionStatusIds);
     // 자발 이동 차단 membership은 콘텐츠 kind(BlocksMovement)가 파생한 set — "root" 리터럴 조회의 승격(3보 3d).
     public bool IsRooted => HasAnyStatusOf(_blocksMovementStatusIds);
     // 액티브 시전 차단 membership은 콘텐츠 kind(BlocksActiveSkills)가 파생한 set — "silence" 리터럴 조회의 승격(3보 3c).

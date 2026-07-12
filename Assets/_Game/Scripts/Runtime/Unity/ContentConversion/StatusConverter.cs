@@ -32,7 +32,8 @@ internal static class StatusConverter
             GrantsBarrierOnApply: definition.GrantsBarrierOnApply,
             GrantsUnstoppable: definition.GrantsUnstoppable,
             BlocksActiveSkills: definition.BlocksActiveSkills,
-            BlocksMovement: definition.BlocksMovement);
+            BlocksMovement: definition.BlocksMovement,
+            BlocksAction: definition.BlocksAction);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)
