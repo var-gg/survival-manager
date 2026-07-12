@@ -92,7 +92,8 @@ public static class TeamBlackboardService
     private static int ScoreFocusCandidate(BattleState state, TeamSide side, UnitSnapshot target)
     {
         var score = 0;
-        if (target.HasStatus("marked"))
+        // 타게팅 표식 membership — "marked" 리터럴의 kind 승격(3보 3g).
+        if (target.IsMarkedTarget)
         {
             score += FocusMarkedStatusScore;
         }

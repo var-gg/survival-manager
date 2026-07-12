@@ -39,6 +39,7 @@ public sealed class UnitSnapshot
     private static readonly HashSet<string> FallbackBlocksActiveSkillsStatusIds = new(StringComparer.Ordinal) { "silence" };
     private static readonly HashSet<string> FallbackBlocksMovementStatusIds = new(StringComparer.Ordinal) { "root" };
     private static readonly HashSet<string> FallbackBlocksActionStatusIds = new(StringComparer.Ordinal) { "stun" };
+    private static readonly HashSet<string> FallbackMarksTargetStatusIds = new(StringComparer.Ordinal) { "marked" };
     // 채널 폴백(id ordinal 정렬) — 과거 sim 리터럴 배선과 항등(marked/exposed 가산·guarded -0.1·배율 1).
     private static readonly StatusChannelEntry[] FallbackAmplifyIncomingEntries = { new("exposed", 1f), new("marked", 1f) };
     private static readonly StatusChannelEntry[] FallbackGuardedDefenseEntries = { new("guarded", -0.1f) };
@@ -50,6 +51,7 @@ public sealed class UnitSnapshot
     private readonly HashSet<string> _blocksActiveSkillsStatusIds;
     private readonly HashSet<string> _blocksMovementStatusIds;
     private readonly HashSet<string> _blocksActionStatusIds;
+    private readonly HashSet<string> _marksTargetStatusIds;
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -78,6 +80,7 @@ public sealed class UnitSnapshot
         _blocksActiveSkillsStatusIds = statusRules?.BlocksActiveSkillsStatusIds ?? FallbackBlocksActiveSkillsStatusIds;
         _blocksMovementStatusIds = statusRules?.BlocksMovementStatusIds ?? FallbackBlocksMovementStatusIds;
         _blocksActionStatusIds = statusRules?.BlocksActionStatusIds ?? FallbackBlocksActionStatusIds;
+        _marksTargetStatusIds = statusRules?.MarksTargetStatusIds ?? FallbackMarksTargetStatusIds;
         Anchor = definition.PreferredAnchor;
         FixedAnchorPosition = SpatialProjection.QuantizeToFixed(anchorPosition);
         FixedPosition = SpatialProjection.QuantizeToFixed(spawnPosition);
@@ -236,6 +239,8 @@ public sealed class UnitSnapshot
     public float HealthRatio => MaxHealth <= 0 ? 0 : CurrentHealth / MaxHealth;
     // 행동 차단 membership은 콘텐츠 kind(BlocksAction)가 파생한 set — "stun" 리터럴 조회의 승격(3보 3e).
     public bool IsStunned => HasAnyStatusOf(_blocksActionStatusIds);
+    // 타게팅 표식 membership은 콘텐츠 kind(MarksTarget)가 파생한 set — "marked" 타게팅 조회의 승격(3보 3g).
+    public bool IsMarkedTarget => HasAnyStatusOf(_marksTargetStatusIds);
     // 자발 이동 차단 membership은 콘텐츠 kind(BlocksMovement)가 파생한 set — "root" 리터럴 조회의 승격(3보 3d).
     public bool IsRooted => HasAnyStatusOf(_blocksMovementStatusIds);
     // 액티브 시전 차단 membership은 콘텐츠 kind(BlocksActiveSkills)가 파생한 set — "silence" 리터럴 조회의 승격(3보 3c).

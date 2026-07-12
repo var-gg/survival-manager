@@ -73,6 +73,9 @@ namespace SM.Content.Definitions
         [Tooltip("공속/이속 감쇠 채널 소속 (slow=true) — magnitude×MagnitudeScale이 감쇠율, 바닥 0.1은 코드 소유. 3보 3f.")]
         public bool DampensTempo;
 
+        [Tooltip("타게팅 표식 membership (marked=true) — MarkedEnemy 셀렉터/RequireMarked 필터/포커스 캡 상향(0.20)/팀 블랙보드 포커스 점수. 과거 sim 타게팅에 HasStatus(\"marked\")로 박혀 있던 효과 종류의 콘텐츠 승격 — 3보 3g(최종 sim 슬라이스).")]
+        public bool MarksTarget;
+
         public string VfxCueId = string.Empty;
         public string SfxHookId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };

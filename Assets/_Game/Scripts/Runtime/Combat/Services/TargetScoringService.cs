@@ -114,7 +114,7 @@ public static class TargetScoringService
             TargetSelector.LowestCurrentHpEnemy => candidates.OrderBy(target => ScreenedSortKey(state, actor, target, includeScreenPenalty)).ThenBy(target => target.CurrentHealth).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
             TargetSelector.LowestHpPercentEnemy => candidates.OrderBy(target => ScreenedSortKey(state, actor, target, includeScreenPenalty)).ThenBy(target => target.HealthRatio).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => MovementResolver.ComputeEdgeDistance(actor, target)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
             TargetSelector.LowestEhpEnemy => candidates.OrderBy(target => ScreenedSortKey(state, actor, target, includeScreenPenalty)).ThenBy(target => EstimateEhpAgainst(actor, target)).ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty)).ThenBy(target => target.Id.Value, StringComparer.Ordinal).FirstOrDefault(),
-            TargetSelector.MarkedEnemy => candidates.FirstOrDefault(target => target.HasStatus("marked")) ?? ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty),
+            TargetSelector.MarkedEnemy => candidates.FirstOrDefault(target => target.IsMarkedTarget) ?? ResolveFallback(state, actor, rule, candidates, context, includeScreenPenalty),
             TargetSelector.LargestEnemyCluster => candidates
                 .OrderByDescending(target => CountClusterTargets(candidates, target.Position, Math.Max(0.1f, rule.ClusterRadius)))
                 .ThenBy(target => ResolveTacticTargetBias(state, actor, target, context, includeScreenPenalty))
@@ -285,7 +285,7 @@ public static class TargetScoringService
             return false;
         }
 
-        if (rule.Filters.HasFlag(TargetFilterFlags.RequireMarked) && !target.HasStatus("marked"))
+        if (rule.Filters.HasFlag(TargetFilterFlags.RequireMarked) && !target.IsMarkedTarget)
         {
             return false;
         }

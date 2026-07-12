@@ -3542,6 +3542,8 @@ public static class SampleSeedGenerator
                 asset.ShredsDefense = definition.Id == "sunder";
                 asset.ReducesHealing = definition.Id == "wound";
                 asset.DampensTempo = definition.Id == "slow";
+                // 타게팅 표식 membership(3보 3g) — marked의 셀렉터/필터/포커스 소속.
+                asset.MarksTarget = definition.Id == "marked";
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;

@@ -218,7 +218,9 @@ public sealed record StatusFamilyTemplate(
     bool GrantsGuardedDefense = false,
     bool ShredsDefense = false,
     bool ReducesHealing = false,
-    bool DampensTempo = false);
+    bool DampensTempo = false,
+    // 타게팅 표식 membership(marked) — 3g. false=표식 아님(현행 기본).
+    bool MarksTarget = false);
 
 public sealed record CleanseProfileTemplate(
     string Id,

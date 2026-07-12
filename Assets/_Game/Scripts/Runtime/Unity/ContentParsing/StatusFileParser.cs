@@ -40,6 +40,7 @@ internal static class StatusFileParser
             definition.ShredsDefense = ExtractBool(lines, "ShredsDefense:");
             definition.ReducesHealing = ExtractBool(lines, "ReducesHealing:");
             definition.DampensTempo = ExtractBool(lines, "DampensTempo:");
+            definition.MarksTarget = ExtractBool(lines, "MarksTarget:");
             definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
             definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
@@ -221,6 +222,7 @@ internal static class StatusFileParser
         definition.ShredsDefense = definition.ShredsDefense || definition.Id is "sunder";
         definition.ReducesHealing = definition.ReducesHealing || definition.Id is "wound";
         definition.DampensTempo = definition.DampensTempo || definition.Id is "slow";
+        definition.MarksTarget = definition.MarksTarget || definition.Id is "marked";
         if (string.IsNullOrWhiteSpace(definition.VfxCueId))
         {
             definition.VfxCueId = $"vfx.status_{definition.Id}";

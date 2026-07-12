@@ -199,6 +199,8 @@ public sealed class StatusContentWitnessTests
             "치유 감소 채널 carrier는 정확히 wound여야 한다");
         Assert.That(Carriers(rule => rule.DampensTempo), Is.EqualTo(new[] { "slow" }),
             "공속/이속 감쇠 채널 carrier는 정확히 slow여야 한다");
+        Assert.That(Carriers(rule => rule.MarksTarget), Is.EqualTo(new[] { "marked" }),
+            "타게팅 표식 membership carrier는 정확히 marked여야 한다(3g) — 셀렉터/필터/포커스가 이 kind를 소비");
     }
 
     [Test]

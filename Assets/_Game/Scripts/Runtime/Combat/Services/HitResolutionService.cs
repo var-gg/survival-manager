@@ -207,7 +207,7 @@ public static class HitResolutionService
         var focusLink = 0.035f + (0.015f * Math.Max(0f, context.FocusModeBias));
         var cap = skill?.AllowsEliteFocusCap == true
             ? 0.30f
-            : target.HasStatus("marked")
+            : target.IsMarkedTarget
                 ? 0.20f
                 : 0.15f;
         var bonus = Math.Min(cap, focusLink * Math.Max(0, focusCount - 1));

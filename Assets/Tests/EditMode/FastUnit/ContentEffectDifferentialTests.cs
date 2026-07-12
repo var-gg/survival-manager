@@ -618,6 +618,40 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void MarksTargetMembership_IsContentDriven_AtTargetingConsumer()
+    {
+        // 3g(최종 sim 슬라이스) — "타게팅 표식 소속"은 이제 HasStatus("marked") 타게팅 조회가 아니라
+        // 콘텐츠 kind(MarksTarget)가 파생한 set이다. 실측 교훈(허구 위생, 2회 실측): 손조립 기본 전술
+        // (LowestHpEnemy) comp의 full-sim 피해 분포는 마크 on/off에 byte-동일 — 블랙보드 마크 점수는
+        // 이 레인의 타깃 선택 경로에 비소비라 분포 관측이 이 kind에 불감이다. 실소비자는 MarkedEnemy
+        // 셀렉터/RequireMarked 필터(role instruction 레인)이므로, 실 BattleState(규칙 주입)에서 셀렉터
+        // 소비 지점을 직접 겨냥해 단언한다. magnitude 0.01은 증폭 채널(3f) 혼입을 무시 수준으로 누른다.
+        // InRange 기본 필터는 근접 striker 기준 후보를 전멸시켜 마크 조회가 폴백으로 추락한다(실측) —
+        // 셀렉터 소비를 겨냥하는 spec이므로 획득 사거리를 넉넉히 열고 range 필터를 뺀다.
+        var markedRule = new TargetRule
+        {
+            PrimarySelector = TargetSelector.MarkedEnemy,
+            Filters = TargetFilterFlags.ExcludeUntargetable,
+            MaxAcquireRange = 50f,
+        };
+
+        var defaultPick = ResolveMarkedSelectorPick(CombatStatusRules.Default, markedRule);
+        Assert.That(defaultPick, Is.EqualTo("enemy_1_dummy_b"),
+            "기본 규칙에선 MarkedEnemy 셀렉터가 마크 보유 대상을 선택해야 한다(더 가까운 무표식 후보를 제치고)");
+
+        var disabledPick = ResolveMarkedSelectorPick(RulesWithFamilyMutation("marked",
+            rule => rule with { MarksTarget = false }), markedRule);
+        Assert.That(disabledPick, Is.Not.EqualTo("enemy_1_dummy_b"),
+            "표식 membership을 콘텐츠 값(false)으로 끄면 같은 marked 상태가 잔존해도 셀렉터가 표식으로 " +
+            "인정하지 않아 폴백으로 떨어져야 한다(잔존 상태 != 타게팅 효과 분리 증명)");
+
+        var explicitTruePick = ResolveMarkedSelectorPick(RulesWithFamilyMutation("marked",
+            rule => rule with { MarksTarget = true }), markedRule);
+        Assert.That(explicitTruePick, Is.EqualTo(defaultPick),
+            "MarksTarget=true 명시 저작은 기본 규칙과 선택이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -1011,6 +1045,23 @@ public sealed class ContentEffectDifferentialTests
                     : pair.Value, StringComparer.Ordinal),
             null,
             null);
+    }
+
+    /// <summary>실 BattleState(규칙 주입)에서 MarkedEnemy 셀렉터의 선택 결과를 해상 — 3g 전용.
+    /// dummy_a(동일 앵커, 최근접)가 폴백 후보, dummy_b(원거리)만 marked 를 보유한다.</summary>
+    private static string? ResolveMarkedSelectorPick(CombatStatusRules? statusRules, TargetRule markedRule)
+    {
+        var striker = CombatTestFactory.CreateUnit("striker", classId: "duelist", anchor: DeploymentAnchorId.FrontTop, hp: 400f, attack: 12f);
+        var dummyA = CombatTestFactory.CreateUnit("dummy_a", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontTop, hp: 800f, attack: 1f);
+        var dummyB = CombatTestFactory.CreateUnit("dummy_b", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontBottom, hp: 800f, attack: 1f);
+        var state = CombatTestFactory.CreateBattleState(new[] { striker }, new[] { dummyA, dummyB }, seed: Seed, statusRules: statusRules);
+
+        // BattleFactory id 계약: enemy_{index}_{loadoutId}
+        state.Enemies.First(unit => unit.Id.Value == "enemy_1_dummy_b")
+            .ApplyStatus(new StatusApplicationSpec("probe:mark", "marked", 600f, 0.01f));
+
+        var actor = state.Allies.Single();
+        return TargetScoringService.SelectTarget(state, actor, markedRule)?.Id.Value;
     }
 
     /// <summary>기본 규칙에서 한 family 의 rule 만 임의 변형한 상태 규칙 — kind/채널 membership differential 공용(3f).</summary>
