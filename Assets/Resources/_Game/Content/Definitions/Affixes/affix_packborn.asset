@@ -18,16 +18,14 @@ MonoBehaviour:
   Category: 5
   Tier: 2
   AffixFamily: 3
-  EffectType: 2
+  EffectType: 4
   ValueMin: 2
   ValueMax: 4
   AllowedSlotTypes: 0100000002000000
   CompileTags:
   - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
-  RuleModifierTags:
-  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
-  - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}
+  RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
   ItemLevelMin: 0

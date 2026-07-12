@@ -338,6 +338,7 @@ internal sealed class SkillSchemaRule : DefinitionSchemaRule<SkillDefinitionAsse
         ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(skill.LearnSource, "Skill learn source", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, skill.CompileTags, assetPath, "Skill compile");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, skill.RuleModifierTags, assetPath, "Skill rule modifier");
+        ContentDefinitionSchemaRuleSupport.ValidateRuleTagScaffold(issues, skill.RuleModifierTags, assetPath, "Skill rule modifier");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, skill.SupportAllowedTags, assetPath, "Skill support allowed");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, skill.SupportBlockedTags, assetPath, "Skill support blocked");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, skill.RequiredWeaponTags, assetPath, "Skill required weapon");
@@ -471,6 +472,7 @@ internal sealed class AugmentSchemaRule : DefinitionSchemaRule<AugmentDefinition
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, augment.MutualExclusionTags, assetPath, "Augment mutual exclusion");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, augment.RequiresTags, assetPath, "Augment requires");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, augment.RuleModifierTags, assetPath, "Augment rule modifier");
+        ContentDefinitionSchemaRuleSupport.ValidateRuleTagScaffold(issues, augment.RuleModifierTags, assetPath, "Augment rule modifier");
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(augment.IconId, "augment.icon", assetPath, issues);
         if (string.IsNullOrWhiteSpace(augment.IconId))
         {
@@ -610,6 +612,7 @@ internal sealed class ItemSchemaRule : DefinitionSchemaRule<ItemBaseDefinition>
         ContentDefinitionSchemaRuleSupport.ValidateModifiers(issues, item.BaseModifiers, assetPath, "ItemBaseDefinition.BaseModifiers");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, item.CompileTags, assetPath, "Item compile");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, item.RuleModifierTags, assetPath, "Item rule modifier");
+        ContentDefinitionSchemaRuleSupport.ValidateRuleTagScaffold(issues, item.RuleModifierTags, assetPath, "Item rule modifier");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, item.AllowedArchetypeTags, assetPath, "Item allowed archetype");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, item.UniqueRuleTags, assetPath, "Item unique rule");
         ContentDefinitionSchemaRuleSupport.ValidateSchemaIdOrKey(item.IconId, "item.icon", assetPath, issues);
@@ -652,6 +655,7 @@ internal sealed class AffixSchemaRule : DefinitionSchemaRule<AffixDefinition>
         ContentDefinitionSchemaRuleSupport.ValidateModifiers(issues, affix.Modifiers, assetPath, "AffixDefinition.Modifiers");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, affix.CompileTags, assetPath, "Affix compile");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, affix.RuleModifierTags, assetPath, "Affix rule modifier");
+        ContentDefinitionSchemaRuleSupport.ValidateRuleTagScaffold(issues, affix.RuleModifierTags, assetPath, "Affix rule modifier");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, affix.RequiredTags, assetPath, "Affix required");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, affix.ExcludedTags, assetPath, "Affix excluded");
 
@@ -685,9 +689,9 @@ internal sealed class AffixSchemaRule : DefinitionSchemaRule<AffixDefinition>
             ContentValidationIssueFactory.AddError(issues, "affix.effect_payload", "StatModifier affixes must define at least one stat modifier.", assetPath);
         }
 
-        if (affix.EffectType == AffixEffectTypeValue.RuleModifier && affix.RuleModifierTags.Count == 0)
+        if (affix.EffectType == AffixEffectTypeValue.RuleModifier)
         {
-            ContentValidationIssueFactory.AddError(issues, "affix.effect_payload", "RuleModifier affixes must define at least one rule modifier tag.", assetPath);
+            ContentValidationIssueFactory.AddError(issues, "affix.effect_payload", "RuleModifier effect type은 sim 해석기가 없는 스캐폴드 — BuildShaping/StatModifier/ConditionalTagged로 저작할 것 (해석기 도입 전 저작 금지).", assetPath);
         }
 
         if (affix.EffectType == AffixEffectTypeValue.ConditionalTagged && affix.RequiredTags.Count == 0)
@@ -847,6 +851,7 @@ internal sealed class PassiveNodeSchemaRule : DefinitionSchemaRule<PassiveNodeDe
         ContentDefinitionSchemaRuleSupport.ValidateModifiers(issues, passiveNode.Modifiers, assetPath, "PassiveNodeDefinition.Modifiers");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, passiveNode.CompileTags, assetPath, "Passive node compile");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, passiveNode.RuleModifierTags, assetPath, "Passive node rule modifier");
+        ContentDefinitionSchemaRuleSupport.ValidateRuleTagScaffold(issues, passiveNode.RuleModifierTags, assetPath, "Passive node rule modifier");
         ContentDefinitionSchemaRuleSupport.ValidateStableTags(issues, passiveNode.MutualExclusionTags, assetPath, "Passive node mutual exclusion");
         if (string.IsNullOrWhiteSpace(passiveNode.BoardId))
         {
@@ -1094,6 +1099,23 @@ internal static class ContentDefinitionSchemaRuleSupport
         if (!Enum.IsDefined(typeof(TEnum), value))
         {
             ContentValidationIssueFactory.AddError(issues, "enum.undefined", $"{label} is not a defined enum value.", assetPath);
+        }
+    }
+
+    /// <summary>
+    /// RuleModifierTags(BehaviorTag rule 축)는 도입 이래 sim 해석기가 존재한 적 없는 스캐폴드다.
+    /// 저작된 rule tag는 아무 전투 효과 없이 운반만 되므로(저작자 오해 유발 = inert 계열)
+    /// 해석기가 실제로 생기기 전까지 콘텐츠 저작을 금지한다 — 2026-07-13 위생 정리로 기존 16개 전량 제거.
+    /// </summary>
+    internal static void ValidateRuleTagScaffold(ICollection<ContentValidationIssue> issues, IEnumerable<StableTagDefinition> tags, string assetPath, string scope)
+    {
+        if (tags != null && tags.Any(tag => tag != null))
+        {
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "rule_tag.scaffold_only",
+                $"{scope}: RuleModifierTags는 sim 해석기가 없는 스캐폴드 — 전투 효과가 필요하면 CompileTags/TriggeredEffects/SupportModifier를 사용하고, rule tag는 해석기 도입 전까지 저작 금지.",
+                assetPath);
         }
     }
 

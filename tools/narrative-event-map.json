@@ -558,42 +558,6 @@
       ]
     },
     {
-      "eventId": "story_event_boss_engage_gate_warden",
-      "chapterId": "chapter_ashen_gate",
-      "siteId": "site_ashen_gate",
-      "moment": "BattleStarted",
-      "priority": 300,
-      "oncePolicy": "OncePerProfile",
-      "presentationKey": "dialogue_scene_gate_warden",
-      "presentationKind": "DialogueScene",
-      "conditions": [
-        {"kindToken": "ChapterIs", "operandA": "chapter_ashen_gate"},
-        {"kindToken": "SiteIs", "operandA": "site_ashen_gate"},
-        {"kindToken": "NodeIs", "operandA": "4"}
-      ],
-      "effects": [
-        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
-      ]
-    },
-    {
-      "eventId": "story_event_boss_engage_wolfpine",
-      "chapterId": "chapter_ashen_gate",
-      "siteId": "site_wolfpine_trail",
-      "moment": "BattleStarted",
-      "priority": 300,
-      "oncePolicy": "OncePerProfile",
-      "presentationKey": "dialogue_overlay_boss_wolfpine_engage",
-      "presentationKind": "DialogueScene",
-      "conditions": [
-        {"kindToken": "ChapterIs", "operandA": "chapter_ashen_gate"},
-        {"kindToken": "SiteIs", "operandA": "site_wolfpine_trail"},
-        {"kindToken": "NodeIs", "operandA": "4"}
-      ],
-      "effects": [
-        {"kindToken": "EnqueuePresentation", "payload": "DialogueScene"}
-      ]
-    },
-    {
       "eventId": "story_event_ashen_priest_first_crack",
       "chapterId": "chapter_ashen_gate",
       "siteId": "site_ashen_gate",

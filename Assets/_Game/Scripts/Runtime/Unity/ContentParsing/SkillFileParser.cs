@@ -78,6 +78,8 @@ internal static class SkillFileParser
             definition.RequiredClassTags = ArchetypeFileParser.ParseStableTagList(lines, "RequiredClassTags:", guidToPath);
             definition.AppliedStatuses = StatusFileParser.ParseStatusApplicationRules(lines, "AppliedStatuses:");
             definition.CleanseProfileId = ExtractValue(lines, "CleanseProfileId:");
+            definition.TriggeredEffects = SkillEffectSpecFileParser.ParseTriggeredEffects(lines, "TriggeredEffects:");
+            definition.SupportModifier = SkillEffectSpecFileParser.ParseSupportModifier(lines, "SupportModifier:") ?? definition.SupportModifier;
             ApplyFallbackIdentity(definition, path);
             ApplySkillFallbacks(definition);
             return definition;

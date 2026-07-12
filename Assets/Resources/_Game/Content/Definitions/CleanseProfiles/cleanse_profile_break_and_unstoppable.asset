@@ -22,5 +22,6 @@ MonoBehaviour:
   RemovesOneHardControl: 1
   GrantsUnstoppable: 1
   GrantedUnstoppableDurationSeconds: 0.8
+  GrantedStatusId: unstoppable
   legacyDisplayName: 
   legacyDescription: 

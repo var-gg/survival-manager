@@ -138,8 +138,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
   - {fileID: 11400000, guid: 56f2ffc08c9f8014fa4d63021ffd878d, type: 2}
   - {fileID: 11400000, guid: d26a7dc25b947aa4a81d97f531b94095, type: 2}
-  RuleModifierTags:
-  - {fileID: 11400000, guid: d26a7dc25b947aa4a81d97f531b94095, type: 2}
+  RuleModifierTags: []
   SupportAllowedTags:
   - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
   - {fileID: 11400000, guid: 56f2ffc08c9f8014fa4d63021ffd878d, type: 2}

@@ -58,12 +58,15 @@ public readonly record struct StatusChannelEntry(string StatusId, float Value)
     public override string ToString() => $"{StatusId}:{Value}";
 }
 
+// GrantedStatusId 기본값은 과거 ApplyCleanse의 "unstoppable" 리터럴과 동일 — 미저작/손조립 레인
+// byte-identity 계약(1보 `?? -0.1f` 패턴의 문자열 판). 저지불가 kind 보유 파생 상태로 교체 저작 가능.
 public sealed record CombatCleanseProfileRule(
     string Id,
     IReadOnlyList<string> RemovesStatusIds,
     bool RemovesOneHardControl,
     bool GrantsUnstoppable,
-    float GrantedUnstoppableDurationSeconds);
+    float GrantedUnstoppableDurationSeconds,
+    string GrantedStatusId = "unstoppable");
 
 public sealed record CombatControlDiminishingRule(
     string Id,

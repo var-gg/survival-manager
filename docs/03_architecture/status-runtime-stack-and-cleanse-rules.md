@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-14
+- 최종수정일: 2026-07-13
 - 소스오브트루스: `docs/03_architecture/status-runtime-stack-and-cleanse-rules.md`
 - 관련문서:
   - `docs/02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
@@ -80,6 +80,31 @@ launch floor에서는 OOP status 계층 대신 typed family + resolver chain을 
 - `break_and_unstoppable`: `stun`, `root`, `silence` 제거 후 짧은 `unstoppable`
 
 cleanse는 non-status rule modifier를 제거하지 않는다.
+
+정화가 부여하는 상태 id는 `CleanseProfileDefinition.GrantedStatusId`가 소유한다(기본 `unstoppable`,
+2026-07-13 위생 정리에서 sim 리터럴을 콘텐츠로 승격). 저지불가 kind(`GrantsUnstoppable`)를 가진
+파생 상태로 교체 저작할 수 있으며, 부여 지속시간의 하한 0.1초는 아래 클램프 표의 코드 소유 항목이다.
+
+## 코드 소유 클램프 바닥 (튜닝 축 아님)
+
+상태이상 숫자(1·2보)와 효과 종류(3보)는 콘텐츠가 소유하지만, 아래 바닥/상수는 **코드가 소유한다**
+(오너 게이트④ 비준, 2026-07-12 — "클램프 코드 소유"). 어떤 magnitude·배율 조합을 저작해도 sim이
+붕괴 값(공속 0, 즉사 증폭, 0 틱)으로 떨어지지 않게 하는 안전 레일이며, 여기 값을 조정하고 싶다면
+콘텐츠 필드 승격이 아니라 이 문서와 코드를 함께 바꾸는 구조 결정으로 다룬다.
+
+| 지점 | 바닥/상수 | 코드 위치 |
+| --- | --- | --- |
+| 받는 피해 배수 하한 (증폭+수호 가산 후) | `0.25` | `UnitSnapshot.GetIncomingDamageMultiplier` |
+| 치유 수신 배수 하한 (`ReducesHealing` 가산 후) | `0.1` | `UnitSnapshot.GetHealingTakenMultiplier` |
+| 공속/이속 감쇠 배수 하한 (`DampensTempo` 가산 후) | `0.1` | `UnitSnapshot.GetSlowMultiplier` |
+| 공속/이속 최종값 절대 하한 | `0.1` | `UnitSnapshot.AttackSpeed` / `MoveSpeed` |
+| 방어/저항 차감 바닥 (`ShredsDefense` 차감 후) | `0` | `UnitSnapshot.Armor` / `Resist` |
+| 즉시 보호막 전환 최소량 (`GrantsBarrierOnApply`) | `1` | `StatusResolutionService.ApplySingleStatus` |
+| 주기 틱 피해 최소량 (burn/bleed × `MagnitudeScale` 후) | `1` | `StatusResolutionService.ApplyPeriodicDamage` |
+| 제어 저항 창의 지속 감쇠 하한 | `0.1` 배수 | `StatusResolutionService` (resist window 적용부) |
+| 정화 부여 상태 지속 하한 | `0.1`초 | `StatusResolutionService.ApplyCleanse` |
+| 치유 산출 최소량 | `1` | `HitResolutionService.ResolveSupportValue` |
+| 방어 준선형 감쇠 상수 | `ArmorScalingK = 10` | `HitResolutionService` (`M/(M+K)`) |
 
 ## battle event 계약
 

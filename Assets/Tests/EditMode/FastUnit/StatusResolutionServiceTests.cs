@@ -201,6 +201,50 @@ public sealed class StatusResolutionServiceTests
     }
 
     [Test]
+    public void AuthoredCleanseGrantedStatusId_AppliesConfiguredStatus_InsteadOfLiteral()
+    {
+        // ApplyCleanse 부여 상태 id의 콘텐츠 승격(위생 꼬리) — 과거 "unstoppable" 리터럴 하드코딩이라
+        // 프로필이 다른 파생 상태(시전 슈퍼아머 등)를 부여하도록 저작해도 무시됐다. 저지불가 kind(3b)를
+        // 가진 신규 family를 부여 대상으로 저작하면 IsUnstoppable까지 성립해야 한다(kind 사슬 합류 증명).
+        var statusRules = new CombatStatusRules(
+            new Dictionary<string, CombatStatusFamilyRule>
+            {
+                ["cast_aegis"] = new("cast_aegis", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false,
+                    GrantsUnstoppable: true),
+            },
+            new Dictionary<string, CombatCleanseProfileRule>
+            {
+                ["break_custom"] = new("break_custom", Array.Empty<string>(), false, true, 1.5f, "cast_aegis"),
+            },
+            null);
+        var cleanseSkill = new BattleSkillSpec(
+            "skill.break.custom",
+            "skill.break.custom",
+            SkillKind.Utility,
+            0f,
+            0f,
+            CleanseProfileId: "break_custom");
+        var actorLoadout = CombatTestFactory.CreateUnit("actor", skills: new[] { cleanseSkill });
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { actorLoadout },
+            new[] { CombatTestFactory.CreateUnit("enemy") },
+            statusRules: statusRules);
+        var actor = state.Allies.Single();
+        var events = new List<BattleEvent>();
+
+        StatusResolutionService.ApplySkillStatuses(state, actor, actor, cleanseSkill, events);
+
+        Assert.That(actor.HasStatus("cast_aegis"), Is.True,
+            "부여 상태 id는 프로필 데이터(GrantedStatusId)가 소유해야 한다");
+        Assert.That(actor.HasStatus("unstoppable"), Is.False,
+            "과거 리터럴 잔재가 부여되면 안 된다");
+        Assert.That(actor.IsUnstoppable, Is.True,
+            "저지불가 kind를 가진 파생 상태를 부여하면 저지불가가 성립해야 한다(3b set 사슬 합류)");
+        Assert.That(events.Any(@event => @event.EventKind == BattleEventKind.ControlResistApplied && @event.PayloadId == "cast_aegis"), Is.True,
+            "제어 저항 이벤트 라벨도 부여 상태 id를 따라가야 한다");
+    }
+
+    [Test]
     public void AuthoredStatusRules_DrivePeriodicDamageCleanseAndDiminishing()
     {
         var statusRules = new CombatStatusRules(

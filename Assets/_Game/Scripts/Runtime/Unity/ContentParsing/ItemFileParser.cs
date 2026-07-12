@@ -130,6 +130,7 @@ internal static class ItemFileParser
             definition.RosterSlotDelta = ExtractInt(lines, "RosterSlotDelta:");
             definition.Effects = ParseEffectDescriptors(lines, "Effects:");
             definition.Modifiers = ParseModifiers(lines, "Modifiers:");
+            definition.TriggeredEffects = SkillEffectSpecFileParser.ParseTriggeredEffects(lines, "TriggeredEffects:");
             ApplyFallbackIdentity(definition, path);
             ApplyAugmentFallbacks(definition);
             return definition;

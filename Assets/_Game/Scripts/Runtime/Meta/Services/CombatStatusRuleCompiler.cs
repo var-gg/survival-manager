@@ -51,7 +51,8 @@ public static class CombatStatusRuleCompiler
                 profile.RemovesStatusIds ?? Array.Empty<string>(),
                 profile.RemovesOneHardControl,
                 profile.GrantsUnstoppable,
-                profile.GrantedUnstoppableDurationSeconds))
+                profile.GrantedUnstoppableDurationSeconds,
+                string.IsNullOrWhiteSpace(profile.GrantedStatusId) ? "unstoppable" : profile.GrantedStatusId))
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);
         var control = (content.ControlDiminishingRules ?? new Dictionary<string, ControlDiminishingTemplate>())
             .Values

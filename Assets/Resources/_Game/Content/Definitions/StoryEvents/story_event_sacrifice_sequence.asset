@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SM.Content::SM.Content.StoryConditionDefinition
   _id: story_event_sacrifice_sequence.condition.02
   _kind: 2
-  _operandA: 4
+  _operandA: 3
   _operandB: 
 --- !u!114 &11400000
 MonoBehaviour:

@@ -52,7 +52,8 @@ internal static class StatusConverter
                 .ToList(),
             definition.RemovesOneHardControl,
             definition.GrantsUnstoppable,
-            definition.GrantedUnstoppableDurationSeconds);
+            definition.GrantedUnstoppableDurationSeconds,
+            string.IsNullOrWhiteSpace(definition.GrantedStatusId) ? "unstoppable" : definition.GrantedStatusId);
     }
 
     internal static ControlDiminishingTemplate BuildControlDiminishingTemplate(ControlDiminishingRuleDefinition definition)

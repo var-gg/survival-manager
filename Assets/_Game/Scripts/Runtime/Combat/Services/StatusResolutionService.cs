@@ -146,9 +146,11 @@ public static class StatusResolutionService
 
         if (cleanseRule.GrantsUnstoppable)
         {
+            // 부여 상태 id는 프로필 데이터 소유(GrantedStatusId, 기본 "unstoppable") — 과거 리터럴의 승격.
+            // 바닥 0.1s는 코드 소유 클램프.
             target.ApplyStatus(new StatusApplicationSpec(
-                $"status.{cleanseRule.Id}.unstoppable",
-                "unstoppable",
+                $"status.{cleanseRule.Id}.{cleanseRule.GrantedStatusId}",
+                cleanseRule.GrantedStatusId,
                 Math.Max(0.1f, cleanseRule.GrantedUnstoppableDurationSeconds),
                 0f),
                 actor.Id.Value,
@@ -163,8 +165,8 @@ public static class StatusResolutionService
             {
                 var controlRule = state.StatusRules.ControlDiminishing;
                 target.ApplyControlResistWindow(controlRule.WindowSeconds, controlRule.ControlResistMultiplier);
-                stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.ControlResistApplied, "unstoppable", controlRule.ControlResistMultiplier));
-                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, "unstoppable", controlRule.ControlResistMultiplier);
+                stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.ControlResistApplied, cleanseRule.GrantedStatusId, controlRule.ControlResistMultiplier));
+                BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, cleanseRule.GrantedStatusId, controlRule.ControlResistMultiplier);
             }
         }
     }

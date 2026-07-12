@@ -76,6 +76,9 @@ internal static class StatusFileParser
             definition.RemovesOneHardControl = ExtractBool(lines, "RemovesOneHardControl:");
             definition.GrantsUnstoppable = ExtractBool(lines, "GrantsUnstoppable:");
             definition.GrantedUnstoppableDurationSeconds = ExtractFloat(lines, "GrantedUnstoppableDurationSeconds:");
+            // 부여 상태 id 미저작(구버전 asset)은 기존 리터럴과 동일한 "unstoppable"로 접는다(기본 non-zero 필드 함정 축).
+            var grantedStatusId = ExtractValue(lines, "GrantedStatusId:");
+            definition.GrantedStatusId = string.IsNullOrWhiteSpace(grantedStatusId) ? "unstoppable" : grantedStatusId;
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
             ApplyFallbackIdentity(definition, path);

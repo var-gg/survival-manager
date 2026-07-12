@@ -2631,7 +2631,8 @@ public static class SampleSeedGenerator
                 asset.PowerFlat = 0f;
                 asset.CanCrit = false;
                 asset.CompileTags = ResolveTags(tags, definition.Include.Concat(new[] { definition.Id }));
-                asset.RuleModifierTags = ResolveTags(tags, new[] { definition.Id });
+                // rule tag는 sim 해석기 없는 스캐폴드라 저작 금지(스키마 가드 rule_tag.scaffold_only) — 젬 실효과는 SupportModifier가 소유.
+                asset.RuleModifierTags = new List<StableTagDefinition>();
                 asset.SupportAllowedTags = ResolveTags(tags, definition.Include);
                 asset.SupportBlockedTags = ResolveTags(tags, definition.Exclude);
                 asset.RequiredWeaponTags = ResolveTags(tags, definition.Weapons);
@@ -3582,6 +3583,8 @@ public static class SampleSeedGenerator
             asset.RemovesOneHardControl = true;
             asset.GrantsUnstoppable = true;
             asset.GrantedUnstoppableDurationSeconds = 0.8f;
+            // 부여 상태 id 명시 저작 — fresh 재생성 시 기본값 드리프트 함정 봉합(2보 CreateStatusCatalog와 동일 축).
+            asset.GrantedStatusId = "unstoppable";
             UpsertStringEntry(ContentLocalizationTables.Status, asset.NameKey, "해방과 저지불가", "Break and Unstoppable");
             UpsertStringEntry(ContentLocalizationTables.Status, asset.DescriptionKey, "강한 제어 해제 후 저지불가 부여", "Breaks one hard control and grants unstoppable");
         });

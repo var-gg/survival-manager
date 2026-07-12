@@ -13,10 +13,12 @@ using SM.Unity;
 namespace SM.Tests.EditMode;
 
 /// <summary>
-/// 실 committed affix 콘텐츠의 non-numeric 계약(rule tag/조건 게이트)이 실 컴파일 유닛까지
+/// 실 committed affix 콘텐츠의 non-numeric 계약(태그/조건 게이트)이 실 컴파일 유닛까지
 /// 도달하는지 단언하는 witness — FastUnit 손조립(ContentEffectDifferentialTests)의 실 asset 쌍.
-/// 과거엔 ModifierPackageConverter가 수치만 변환해 affix_relentless(BuildShaping)의 rule tag,
+/// 과거엔 ModifierPackageConverter가 수치만 변환해 affix_relentless(BuildShaping)의 CompileTags,
 /// affix_farshot(ConditionalTagged)의 RequiredTags가 전량 드롭됐다(조건부가 무조건으로 동작).
+/// rule tag(BehaviorTag)는 sim 해석기가 없는 스캐폴드로 판정돼 2026-07-13 위생 정리에서 콘텐츠
+/// 전량 제거 — 여기서는 "실 콘텐츠에 rule 축이 다시 스며들지 않는다"를 역방향으로 단언한다.
 /// </summary>
 [Category("BatchOnly")]
 public sealed class AffixContentWitnessTests
@@ -40,12 +42,8 @@ public sealed class AffixContentWitnessTests
         var relentless = snapshot.AffixCatalog["affix_relentless"];
         Assert.That(relentless.CompileTags, Does.Contain("tempo"));
         Assert.That(relentless.CompileTags, Does.Contain("execute"));
-        Assert.That(relentless.RulePackage, Is.Not.Null,
-            "BuildShaping affix의 RuleModifierTags는 rule package로 변환돼야 한다");
-        Assert.That(
-            relentless.RulePackage!.Modifiers.Any(modifier =>
-                modifier.Kind == RuleModifierKind.BehaviorTag && modifier.Value == "tempo"),
-            Is.True);
+        Assert.That(relentless.RulePackage, Is.Null,
+            "rule tag는 sim 해석기 없는 스캐폴드 — 위생 정리로 콘텐츠에서 제거됐고, 재유입은 스키마 가드(rule_tag.scaffold_only) 위반이다");
 
         var farshot = snapshot.AffixCatalog["affix_farshot"];
         Assert.That(farshot.RequiredTags, Does.Contain("projectile"),
@@ -75,8 +73,8 @@ public sealed class AffixContentWitnessTests
         Assert.That(
             (unit.RulePackages ?? Array.Empty<CombatRuleModifierPackage>())
                 .Any(package => package.SourceId == "affix_relentless"),
-            Is.True,
-            "실 affix_relentless의 rule package가 컴파일 유닛에 도달해야 한다");
+            Is.False,
+            "rule tag 장식이 제거된 실 affix는 rule package를 만들지 않아야 한다(스캐폴드 재유입 가드)");
 
         Assert.That(unit.NumericPackages.Any(package => package.SourceId == "affix_relentless"), Is.True,
             "비조건 affix 수치는 그대로 적용");

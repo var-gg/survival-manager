@@ -227,7 +227,9 @@ public sealed record CleanseProfileTemplate(
     IReadOnlyList<string> RemovesStatusIds,
     bool RemovesOneHardControl,
     bool GrantsUnstoppable,
-    float GrantedUnstoppableDurationSeconds);
+    float GrantedUnstoppableDurationSeconds,
+    // 부여 상태 id — 과거 sim "unstoppable" 리터럴의 콘텐츠 승격(위생 꼬리). 기본값=현행 동작.
+    string GrantedStatusId = "unstoppable");
 
 public sealed record ControlDiminishingTemplate(
     string Id,
