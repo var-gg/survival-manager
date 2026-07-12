@@ -23,6 +23,12 @@ public sealed class UnitSnapshot
     private readonly List<AppliedStatusState> _statuses = new();
     private readonly HashSet<string> _firedTriggers = new(StringComparer.Ordinal);
     private readonly float _guardedIncomingDamageDelta;
+    // magnitude→숫자 채널 배율 스냅샷(콘텐츠 튜닝값, 숫자 콘텐츠화 2보) — 생성 시 1회 확정, 핫패스 조회 없음.
+    private readonly float _sunderMagnitudeScale;
+    private readonly float _markedMagnitudeScale;
+    private readonly float _exposedMagnitudeScale;
+    private readonly float _woundMagnitudeScale;
+    private readonly float _slowMagnitudeScale;
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -39,6 +45,12 @@ public sealed class UnitSnapshot
         // guarded 받는피해 delta — 콘텐츠(StatusFamilyDefinition) 튜닝값. 규칙 미주입 레인(레거시
         // 손조립 테스트)은 과거 sim 리터럴(-0.1)과 동일한 기본값으로 떨어진다(결정성 보존).
         _guardedIncomingDamageDelta = statusRules?.ResolveIncomingDamageDelta("guarded") ?? -0.1f;
+        // 숫자 채널 배율(2보) — 규칙 미주입 레인은 1(=magnitude 직소비, 과거 식과 동일)로 떨어진다(결정성 보존).
+        _sunderMagnitudeScale = statusRules?.ResolveMagnitudeScale("sunder") ?? 1f;
+        _markedMagnitudeScale = statusRules?.ResolveMagnitudeScale("marked") ?? 1f;
+        _exposedMagnitudeScale = statusRules?.ResolveMagnitudeScale("exposed") ?? 1f;
+        _woundMagnitudeScale = statusRules?.ResolveMagnitudeScale("wound") ?? 1f;
+        _slowMagnitudeScale = statusRules?.ResolveMagnitudeScale("slow") ?? 1f;
         Anchor = definition.PreferredAnchor;
         FixedAnchorPosition = SpatialProjection.QuantizeToFixed(anchorPosition);
         FixedPosition = SpatialProjection.QuantizeToFixed(spawnPosition);
@@ -151,8 +163,9 @@ public sealed class UnitSnapshot
     public BattleMobilitySpec? EffectiveMobilityReaction => Definition.EffectiveMobilityReaction;
     public float MaxHealth => Stats.Get(StatKey.MaxHealth);
     public float MaxEnergy => Math.Max(0f, Definition.EffectiveEnergy.Max);
-    public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - GetStatusMagnitude("sunder"));
-    public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - GetStatusMagnitude("sunder"));
+    // sunder: magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 곧 방어/저항 차감량 — 숫자 콘텐츠화 2보.
+    public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - (GetStatusMagnitude("sunder") * _sunderMagnitudeScale));
+    public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - (GetStatusMagnitude("sunder") * _sunderMagnitudeScale));
     public float PhysPen => Math.Max(0f, Stats.Get(StatKey.PhysPen));
     public float MagPen => Math.Max(0f, Stats.Get(StatKey.MagPen));
     public float Lifesteal => Math.Max(0f, Stats.Get(StatKey.Lifesteal));
@@ -469,12 +482,13 @@ public sealed class UnitSnapshot
         var multiplier = 1f;
         if (HasStatus("marked"))
         {
-            multiplier += Math.Max(0f, GetStatusMagnitude("marked"));
+            // magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 받는 피해 배수 가산량 — 숫자 콘텐츠화 2보.
+            multiplier += Math.Max(0f, GetStatusMagnitude("marked") * _markedMagnitudeScale);
         }
 
         if (HasStatus("exposed"))
         {
-            multiplier += Math.Max(0f, GetStatusMagnitude("exposed"));
+            multiplier += Math.Max(0f, GetStatusMagnitude("exposed") * _exposedMagnitudeScale);
         }
 
         if (IsGuarded)
@@ -751,14 +765,16 @@ public sealed class UnitSnapshot
 
     private float GetHealingTakenMultiplier()
     {
+        // wound: magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 치유 감소율 — 숫자 콘텐츠화 2보.
         var woundMagnitude = GetStatusMagnitude("wound");
-        return Math.Max(0.1f, 1f - woundMagnitude);
+        return Math.Max(0.1f, 1f - (woundMagnitude * _woundMagnitudeScale));
     }
 
     private float GetSlowMultiplier()
     {
+        // slow: magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 공속/이속 감쇠율 — 숫자 콘텐츠화 2보.
         var slowMagnitude = GetStatusMagnitude("slow");
-        return Math.Max(0.1f, 1f - slowMagnitude);
+        return Math.Max(0.1f, 1f - (slowMagnitude * _slowMagnitudeScale));
     }
 
     // public: 기본공격/피격/처치 내부 경로 + 증강 트리거(GainEnergy op)의 범용 에너지 부여 공용 연산.

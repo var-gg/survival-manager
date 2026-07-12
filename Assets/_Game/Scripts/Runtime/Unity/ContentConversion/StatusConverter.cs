@@ -27,7 +27,8 @@ internal static class StatusConverter
                 .Distinct(StringComparer.Ordinal)
                 .ToList(),
             BuildGovernanceSummary(definition.BudgetCard),
-            IncomingDamageDelta: definition.IncomingDamageDelta);
+            IncomingDamageDelta: definition.IncomingDamageDelta,
+            MagnitudeScale: definition.MagnitudeScale);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)

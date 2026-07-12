@@ -21,6 +21,7 @@ MonoBehaviour:
   AffectedByTenacity: 0
   TenacityScale: 0
   AppliesPeriodicDamage: 0
+  MagnitudeScale: 1
   VfxCueId: vfx.status_slow
   SfxHookId: sfx.status.slow.apply
   BudgetCard:

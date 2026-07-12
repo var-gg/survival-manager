@@ -28,6 +28,8 @@ internal static class StatusFileParser
             definition.TenacityScale = ExtractFloat(lines, "TenacityScale:");
             definition.AppliesPeriodicDamage = ExtractBool(lines, "AppliesPeriodicDamage:");
             definition.IncomingDamageDelta = ExtractFloat(lines, "IncomingDamageDelta:");
+            // 기본 1(=magnitude 직소비) 필드 — 미저작 asset이 0으로 추락해 채널이 통째로 꺼지지 않도록 fallback 필수.
+            definition.MagnitudeScale = ExtractFloat(lines, "MagnitudeScale:", 1f);
             definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
             definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;

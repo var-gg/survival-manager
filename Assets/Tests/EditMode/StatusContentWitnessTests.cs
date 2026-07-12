@@ -43,6 +43,25 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
+    public void RealMagnitudeChannelFamilies_CarryMagnitudeScale()
+    {
+        // 숫자 콘텐츠화 2보 — magnitude 직소비 채널(sunder=방어/저항 차감, marked/exposed=받는 피해 가산,
+        // wound=치유 감소, slow=공속/이속 감쇠)의 배율이 실 committed asset 에서 전투 규칙까지 실려야 한다.
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rules = CombatStatusRuleCompiler.Compile(snapshot);
+
+        foreach (var statusId in new[] { "sunder", "marked", "exposed", "wound", "slow" })
+        {
+            Assert.That(rules.TryGetStatusFamily(statusId, out var rule), Is.True,
+                $"실 콘텐츠에 {statusId} 상태 패밀리가 존재해야 한다");
+            Assert.That(rule.MagnitudeScale, Is.EqualTo(1f).Within(0.0001f),
+                $"{statusId}의 MagnitudeScale(1)이 콘텐츠(status_family_{statusId}.asset)에서 전투 규칙까지 실려야 한다 — " +
+                "0이면 미저작/파서 결손으로 해당 숫자 채널이 통째로 무효화되는 회귀");
+            Assert.That(rules.ResolveMagnitudeScale(statusId), Is.EqualTo(1f).Within(0.0001f));
+        }
+    }
+
+    [Test]
     public void RealSkillAppliedStatus_LandsOnEnemy_InRealSim()
     {
         // 오너 의심(2026-07-12) 실측 응답: "스킬에서 상태이상 적용이 미구현 아닌가" —

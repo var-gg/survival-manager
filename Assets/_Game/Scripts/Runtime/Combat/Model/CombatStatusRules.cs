@@ -17,7 +17,10 @@ public sealed record CombatStatusFamilyRule(
     IReadOnlyList<string>? CompileTags = null,
     string VfxCueId = "",
     // 이 상태가 유닛의 받는 피해 배수에 주는 delta (guarded=-0.1) — sim 리터럴의 콘텐츠 승격.
-    float IncomingDamageDelta = 0f);
+    float IncomingDamageDelta = 0f,
+    // 적용 magnitude가 이 상태의 숫자 채널에 실리는 배율 (sunder=방어/저항 차감, marked/exposed=받는 피해 가산,
+    // wound=치유 감소, slow=공속/이속 감쇠). 1=magnitude 직소비(현행 공식) — 숫자 콘텐츠화 2보.
+    float MagnitudeScale = 1f);
 
 public sealed record CombatCleanseProfileRule(
     string Id,
@@ -100,6 +103,11 @@ public sealed class CombatStatusRules
     /// <summary>해당 상태가 받는 피해 배수에 주는 delta — 콘텐츠(StatusFamilyDefinition) 튜닝값.</summary>
     public float ResolveIncomingDamageDelta(string statusId)
         => TryGetStatusFamily(statusId, out var rule) ? rule.IncomingDamageDelta : 0f;
+
+    /// <summary>적용 magnitude가 해당 상태의 숫자 채널에 실리는 배율 — 콘텐츠(StatusFamilyDefinition) 튜닝값.
+    /// 미등록 family는 1(=magnitude 직소비, 현행 공식 보존).</summary>
+    public float ResolveMagnitudeScale(string statusId)
+        => TryGetStatusFamily(statusId, out var rule) ? rule.MagnitudeScale : 1f;
 
     public float ResolveTenacityScale(string statusId)
     {

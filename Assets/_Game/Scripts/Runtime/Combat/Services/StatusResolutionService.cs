@@ -109,28 +109,16 @@ public static class StatusResolutionService
         }
 
         var adjusted = spec with { DurationSeconds = adjustedDuration };
-        switch (spec.StatusId)
+        // 실동작 분기는 barrier(즉시 흡수막 적립, 상태 미보유)뿐 — 과거 12개 named case는 default와
+        // 동일한 ApplyStatus 열거였다(2026-07 감사 확정, 동작 무변경 단순화). 상태별 효과 의미론의
+        // 완전 데이터화(효과 종류 콘텐츠화)는 3보 범위.
+        if (string.Equals(spec.StatusId, "barrier", StringComparison.Ordinal))
         {
-            case "barrier":
-                target.AddBarrier(Math.Max(1f, spec.Magnitude));
-                break;
-            case "guarded":
-            case "unstoppable":
-            case "stun":
-            case "root":
-            case "silence":
-            case "slow":
-            case "burn":
-            case "bleed":
-            case "wound":
-            case "sunder":
-            case "marked":
-            case "exposed":
-                target.ApplyStatus(adjusted, actor.Id.Value, skill.Id, spec.Id);
-                break;
-            default:
-                target.ApplyStatus(adjusted, actor.Id.Value, skill.Id, spec.Id);
-                break;
+            target.AddBarrier(Math.Max(1f, spec.Magnitude));
+        }
+        else
+        {
+            target.ApplyStatus(adjusted, actor.Id.Value, skill.Id, spec.Id);
         }
 
         stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.StatusApplied, spec.StatusId, spec.Magnitude));

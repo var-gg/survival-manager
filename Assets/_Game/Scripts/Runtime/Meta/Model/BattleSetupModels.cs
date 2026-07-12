@@ -199,7 +199,9 @@ public sealed record StatusFamilyTemplate(
     IReadOnlyList<string> CompileTags,
     ContentGovernanceSummary? Governance = null,
     // 받는 피해 배수 delta (guarded=-0.1) — sim 리터럴의 콘텐츠 승격.
-    float IncomingDamageDelta = 0f);
+    float IncomingDamageDelta = 0f,
+    // magnitude→숫자 채널 배율 (sunder/marked/exposed/wound/slow). 1=magnitude 직소비(현행 공식) — 2보.
+    float MagnitudeScale = 1f);
 
 public sealed record CleanseProfileTemplate(
     string Id,

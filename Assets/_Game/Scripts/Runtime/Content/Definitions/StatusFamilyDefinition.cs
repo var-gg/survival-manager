@@ -40,6 +40,9 @@ namespace SM.Content.Definitions
         [Tooltip("이 상태가 유닛의 받는 피해 배수에 주는 delta (guarded=-0.1 → 받는 피해 10% 감소). 0=영향 없음. 과거 sim에 -0.1 리터럴로 박혀 있던 값의 콘텐츠 승격.")]
         public float IncomingDamageDelta = 0f;
 
+        [Tooltip("적용 magnitude가 이 상태의 숫자 채널에 실리는 배율 — sunder=방어/저항 차감량, marked/exposed=받는 피해 가산, wound=치유 감소율, slow=공속/이속 감쇠율. 1=magnitude 그대로(현행 공식). 과거 sim에 magnitude 직소비로 박혀 있던 식의 콘텐츠 승격(숫자 콘텐츠화 2보).")]
+        public float MagnitudeScale = 1f;
+
         public string VfxCueId = string.Empty;
         public string SfxHookId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };

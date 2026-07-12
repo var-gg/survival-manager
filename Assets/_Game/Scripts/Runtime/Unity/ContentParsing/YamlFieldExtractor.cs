@@ -43,6 +43,14 @@ internal static class YamlFieldExtractor
         return ParseFloat(ExtractValue(lines, key));
     }
 
+    /// <summary>기본값이 0이 아닌 float 필드용 — 라인이 없으면(구버전/미저작 asset) fallback 을 반환한다.
+    /// 무인자 overload 는 missing 을 0으로 접기 때문에 기본 1 스케일류 필드가 0으로 추락한다.</summary>
+    internal static float ExtractFloat(string[] lines, string key, float fallback)
+    {
+        var raw = ExtractValue(lines, key);
+        return string.IsNullOrWhiteSpace(raw) ? fallback : ParseFloat(raw);
+    }
+
     internal static bool ExtractBool(string[] lines, string key)
     {
         return ParseBool(ExtractValue(lines, key));

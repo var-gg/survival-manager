@@ -275,6 +275,100 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void MarkedMagnitudeScale_IsContentTunable_InRealSim()
+    {
+        // 같은 전투를 상태 규칙만 바꿔 — marked magnitude(0.5)가 받는 피해 배수 가산에 실리는
+        // 배율은 이제 콘텐츠 튜닝값이다(숫자 콘텐츠화 2보). 개전 self-marked 600s로 매 피격에 프로브.
+        var compiled = CompileStatusProbe("marked", 0.5f);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var amplifiedRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("marked", 4f));
+        Assert.That(amplifiedRun.AllySurvivedSteps, Is.LessThan(defaultRun.AllySurvivedSteps),
+            "marked 배율을 콘텐츠 값(4)으로 키우면(×1.5→×3.0) 실 sim 생존이 뚜렷하게 줄어야 한다");
+
+        // 항등 계약: 배율 1 저작 == 미저작 기본 — 전투 스트림 byte-identical(콘텐츠가 현행 값을
+        // 저작하면 결과 무변이라는 2보 핵심 계약의 실행 사양).
+        var explicitOneRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("marked", 1f));
+        Assert.That(explicitOneRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "MagnitudeScale=1 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 배율)");
+    }
+
+    [Test]
+    public void ExposedMagnitudeScale_IsContentTunable_InRealSim()
+    {
+        var compiled = CompileStatusProbe("exposed", 0.5f);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var amplifiedRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("exposed", 4f));
+        Assert.That(amplifiedRun.AllySurvivedSteps, Is.LessThan(defaultRun.AllySurvivedSteps),
+            "exposed 배율을 콘텐츠 값(4)으로 키우면 실 sim 생존이 뚜렷하게 줄어야 한다");
+    }
+
+    [Test]
+    public void SunderMagnitudeScale_IsContentTunable_InRealSim()
+    {
+        // 파쇄는 magnitude × 배율이 곧 방어/저항 차감량. 방어(+30 affix, 합계 31)를 세운 프로브에
+        // self-sunder(30)를 얹어 배율 0(차감 무효, 방어 31 유지) vs 기본 1(방어 1로 파쇄)을 대조한다.
+        var compiled = CompileStatusProbe("sunder", 30f, affixIds: new[] { "affix.plated" });
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var neutralizedRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("sunder", 0f));
+        Assert.That(neutralizedRun.AllySurvivedSteps, Is.GreaterThan(defaultRun.AllySurvivedSteps),
+            "sunder 배율을 콘텐츠 값(0)으로 끄면 방어 차감이 사라져 실 sim 생존이 뚜렷하게 늘어야 한다");
+    }
+
+    [Test]
+    public void WoundMagnitudeScale_IsContentTunable_InRealSim()
+    {
+        // 상처는 magnitude × 배율이 치유 감소율(UnitSnapshot.GetHealingTakenMultiplier). 컴파일 유닛의
+        // 흡혈은 basic attack 전용이라 프로브가 안 되므로(1차 실측), 체력 50% 관문에서 자가 힐(15)을
+        // 발동시키고 self-wound(0.9)로 그 힐을 깎는다 — 배율 0(치유 온전 +15) vs 기본 1(치유 ×0.1) 대조.
+        // 힐량 15는 MaxHealth(33) 캡에 물리지 않는 크기다(캡에 닿으면 양 런이 같아져 측정 허구).
+        var compiled = CompileSingleHero(
+            Array.Empty<string>(),
+            mutatePassive: skill => skill with
+            {
+                TriggeredEffects = new[]
+                {
+                    new CombatTriggeredEffect(
+                        skill.Id,
+                        CombatTriggerKind.BattleStart,
+                        TriggeredEffectOp.ApplyStatus,
+                        EffectScope.Self,
+                        Magnitude: 0.9f,
+                        StatusId: "wound",
+                        DurationSeconds: 600f),
+                    new CombatTriggeredEffect(
+                        skill.Id,
+                        CombatTriggerKind.OnHpBelow,
+                        TriggeredEffectOp.Heal,
+                        EffectScope.Self,
+                        Magnitude: 15f,
+                        ThresholdRatio: 0.5f),
+                },
+            });
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var neutralizedRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("wound", 0f));
+        Assert.That(neutralizedRun.AllySurvivedSteps, Is.GreaterThan(defaultRun.AllySurvivedSteps),
+            "wound 배율을 콘텐츠 값(0)으로 끄면 관문 치유가 온전해져 실 sim 생존이 뚜렷하게 늘어야 한다");
+    }
+
+    [Test]
+    public void SlowMagnitudeScale_IsContentTunable_InRealSim()
+    {
+        // 감속은 magnitude × 배율이 공속/이속 감쇠율. 컴파일 유닛의 화력은 스킬(공속 무관) 기반이라
+        // 자기 감속으로는 결과가 안 바뀌므로(1차 실측), basic attack 유닛인 적 전체에 개전 slow(0.45)를
+        // 걸어 배율 2(공속/이속 ×0.1 바닥) vs 기본 1(×0.55)의 적 화력 둔화를 아군 생존으로 대조한다.
+        var compiled = CompileStatusProbe("slow", 0.45f, scope: EffectScope.EnemyCombatants);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var amplifiedRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("slow", 2f));
+        Assert.That(amplifiedRun.AllySurvivedSteps, Is.GreaterThan(defaultRun.AllySurvivedSteps),
+            "slow 배율을 콘텐츠 값(2)으로 키우면 적 공속/이속이 더 죽어 아군 생존이 뚜렷하게 늘어야 한다");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -444,6 +538,44 @@ public sealed class ContentEffectDifferentialTests
         return new SimRun(sb.ToString(), allySurvivedSteps);
     }
 
+    /// <summary>개전 시 지정 스코프에 장시간(600s) 상태를 발동시키는 프로브 컴파일 — 숫자 채널
+    /// (sunder/marked/exposed/wound/slow) differential 의 공용 recipe(guarded 1보 트리거 채널과 동일).</summary>
+    private static BattleLoadoutSnapshot CompileStatusProbe(
+        string statusId,
+        float magnitude,
+        EffectScope scope = EffectScope.Self,
+        IReadOnlyList<string>? affixIds = null)
+    {
+        return CompileSingleHero(
+            affixIds ?? Array.Empty<string>(),
+            mutatePassive: skill => skill with
+            {
+                TriggeredEffects = new[]
+                {
+                    new CombatTriggeredEffect(
+                        skill.Id,
+                        CombatTriggerKind.BattleStart,
+                        TriggeredEffectOp.ApplyStatus,
+                        scope,
+                        Magnitude: magnitude,
+                        StatusId: statusId,
+                        DurationSeconds: 600f),
+                },
+            });
+    }
+
+    /// <summary>기본 규칙에서 한 family 의 MagnitudeScale 만 바꾼 상태 규칙 — 콘텐츠 튜닝 시나리오 재현.</summary>
+    private static CombatStatusRules RulesWithMagnitudeScale(string statusId, float scale)
+    {
+        return new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == statusId
+                    ? pair.Value with { MagnitudeScale = scale }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
+    }
+
     private static BattleLoadoutSnapshot CompileSingleHero(
         IReadOnlyList<string> affixIds,
         Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null,
@@ -599,6 +731,12 @@ public sealed class ContentEffectDifferentialTests
                 ["affix.tempo"] = new CombatModifierPackage("affix.tempo", ModifierSource.Item, new[]
                 {
                     new StatModifier(StatKey.AttackSpeed, ModifierOp.Increased, 0.06f, ModifierSource.Item, "affix.tempo"),
+                }),
+                // 숫자 채널 differential 프로브용: sunder 는 유의미한 방어 스탯이 있어야
+                // 배율 변화가 실 sim 결과로 드러난다.
+                ["affix.plated"] = new CombatModifierPackage("affix.plated", ModifierSource.Item, new[]
+                {
+                    new StatModifier(StatKey.Armor, ModifierOp.Flat, 30f, ModifierSource.Item, "affix.plated"),
                 }),
             },
             new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal),
