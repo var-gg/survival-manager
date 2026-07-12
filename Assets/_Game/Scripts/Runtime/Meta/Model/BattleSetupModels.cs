@@ -201,7 +201,9 @@ public sealed record StatusFamilyTemplate(
     // 받는 피해 배수 delta (guarded=-0.1) — sim 리터럴의 콘텐츠 승격.
     float IncomingDamageDelta = 0f,
     // magnitude→숫자 채널 배율 (sunder/marked/exposed/wound/slow). 1=magnitude 직소비(현행 공식) — 2보.
-    float MagnitudeScale = 1f);
+    float MagnitudeScale = 1f,
+    // 적용 시 즉시 보호막 전환(barrier) — 효과 종류 데이터화 3보 1슬라이스. false=일반 상태 잔존(현행 기본).
+    bool GrantsBarrierOnApply = false);
 
 public sealed record CleanseProfileTemplate(
     string Id,

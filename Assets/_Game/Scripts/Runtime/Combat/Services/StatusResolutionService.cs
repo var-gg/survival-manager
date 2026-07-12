@@ -109,10 +109,10 @@ public static class StatusResolutionService
         }
 
         var adjusted = spec with { DurationSeconds = adjustedDuration };
-        // 실동작 분기는 barrier(즉시 흡수막 적립, 상태 미보유)뿐 — 과거 12개 named case는 default와
-        // 동일한 ApplyStatus 열거였다(2026-07 감사 확정, 동작 무변경 단순화). 상태별 효과 의미론의
-        // 완전 데이터화(효과 종류 콘텐츠화)는 3보 범위.
-        if (string.Equals(spec.StatusId, "barrier", StringComparison.Ordinal))
+        // 즉시 보호막 전환(상태 미잔존)은 콘텐츠 효과 종류 서술자(GrantsBarrierOnApply) — 과거
+        // StatusId=="barrier" 문자열 분기의 승격(효과 종류 데이터화 3보 1슬라이스). 바닥 1은 코드
+        // 소유 클램프. 나머지 효과 종류(행동차단/침묵/표식 등)의 데이터화는 3b~3g 페이즈 범위.
+        if (state.StatusRules.ResolveGrantsBarrierOnApply(spec.StatusId))
         {
             target.AddBarrier(Math.Max(1f, spec.Magnitude));
         }

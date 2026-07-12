@@ -387,6 +387,46 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void BarrierOnApplyKind_IsContentDriven_InRealSim()
+    {
+        // 효과 종류 데이터화 3보 1슬라이스 — "적용 시 즉시 보호막 전환"은 이제 StatusId=="barrier"
+        // 문자열 분기가 아니라 콘텐츠 kind(GrantsBarrierOnApply)다. 1차 프로브(컴파일 유닛의 적 대상
+        // 스킬 시전)는 측정 허구로 판명(적 최종 체력 800 무변 — 컴파일 워든의 공격 접촉은 어떤
+        // differential 도 전제한 적 없는 미검증 가정) — 실측 후 legacy 손조립 캐스터의 Self
+        // ActiveSkill 반복 시전으로 교정. Utility kind 는 피해 스킵 + ApplySkillStatuses 만 태우는
+        // 확정 경로다(StatusResolutionServiceTests 와 동일 조립, 사거리 재검증도 없음).
+        var barrierSkill = new BattleSkillSpec(
+            "skill.probe.barrier",
+            "skill.probe.barrier",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[] { new StatusApplicationSpec("probe:barrier", "barrier", 3f, 60f) });
+        var caster = CombatTestFactory.CreateUnit(
+            "caster",
+            hp: 40f,
+            attack: 1f,
+            skills: new[] { barrierSkill },
+            tactics: new[]
+            {
+                new TacticRule(0, TacticConditionType.Fallback, 0f, BattleActionType.ActiveSkill, TargetSelectorType.Self, "skill.probe.barrier"),
+                new TacticRule(1, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
+            });
+
+        var defaultRun = RunBarrierCasterVersusRaider(caster, CombatStatusRules.Default);
+        var disabledRun = RunBarrierCasterVersusRaider(caster, RulesWithBarrierOnApply(false));
+        Assert.That(disabledRun.AllySurvivedSteps, Is.LessThan(defaultRun.AllySurvivedSteps),
+            "barrier 전환 kind를 콘텐츠 값(false)으로 끄면 자기 시전이 보호막 대신 무효과 잔존 상태로 " +
+            "떨어져 실 sim 생존이 뚜렷하게 줄어야 한다 — 효과 종류가 규칙에서 소비된다는 1차 가드");
+
+        // 항등 계약: true 명시 저작 == 기본 규칙 — 전투 스트림 byte-identical(콘텐츠가 현행 값을
+        // 저작하면 결과 무변이라는 1보/2보와 같은 핵심 계약의 kind 판).
+        var explicitTrueRun = RunBarrierCasterVersusRaider(caster, RulesWithBarrierOnApply(true));
+        Assert.That(explicitTrueRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "GrantsBarrierOnApply=true 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -592,6 +632,59 @@ public sealed class ContentEffectDifferentialTests
                     : pair.Value, StringComparer.Ordinal),
             null,
             null);
+    }
+
+    /// <summary>기본 규칙에서 barrier family 의 즉시 보호막 전환 kind 만 바꾼 상태 규칙 — 3보 1슬라이스 differential.</summary>
+    private static CombatStatusRules RulesWithBarrierOnApply(bool grantsBarrierOnApply)
+    {
+        return new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == "barrier"
+                    ? pair.Value with { GrantsBarrierOnApply = grantsBarrierOnApply }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
+    }
+
+    /// <summary>손조립 barrier 캐스터 vs 손조립 raider(hp 500/attack 8) — Self ActiveSkill 반복 시전이
+    /// StatusResolutionService.ApplyStatus 의 barrier 전환 kind 를 매 시전 태우는 러너(3보 1슬라이스 전용).</summary>
+    private static SimRun RunBarrierCasterVersusRaider(BattleUnitLoadout caster, CombatStatusRules? statusRules)
+    {
+        var enemy = CombatTestFactory.CreateUnit(
+            "enemy.raider",
+            race: "undead",
+            classId: "duelist",
+            anchor: DeploymentAnchorId.FrontBottom,
+            hp: 500f,
+            attack: 8f);
+        var simulator = new BattleSimulator(
+            CombatTestFactory.CreateBattleState(new[] { caster }, new[] { enemy }, seed: Seed, statusRules: statusRules),
+            MaxSteps);
+
+        var sb = new StringBuilder();
+        var allySurvivedSteps = 0;
+        var steps = 0;
+        var guard = 0;
+        while (!simulator.IsFinished && guard++ < 10000)
+        {
+            var step = simulator.Step();
+            steps++;
+            foreach (var unit in step.Units)
+            {
+                sb.Append(unit.Id).Append(':')
+                    .Append(unit.CurrentHealth.ToString("R", CultureInfo.InvariantCulture)).Append(',')
+                    .Append(unit.IsAlive ? '1' : '0').Append(';');
+                // BattleFactory id 계약: ally_{index}_{loadoutId} (BattleFactory.cs:31)
+                if (unit.Id == "ally_0_caster" && unit.IsAlive)
+                {
+                    allySurvivedSteps = steps;
+                }
+            }
+
+            sb.Append('\n');
+        }
+
+        return new SimRun(sb.ToString(), allySurvivedSteps);
     }
 
     private static BattleLoadoutSnapshot CompileSingleHero(

@@ -63,6 +63,25 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
+    public void RealBarrierFamily_CarriesGrantsBarrierOnApply()
+    {
+        // 효과 종류 데이터화 3보 1슬라이스 — 적용 시 즉시 보호막 전환 kind가 실 committed asset
+        // (status_family_barrier.asset)에서 전투 규칙까지 실려야 한다. 실 콘텐츠 5개 스킬
+        // (bulwark_core/priest_core/aegis_sentinel_oath/memory_tuning/square_wall)이 이 kind에 의존한다.
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rules = CombatStatusRuleCompiler.Compile(snapshot);
+
+        Assert.That(rules.TryGetStatusFamily("barrier", out var barrier), Is.True,
+            "실 콘텐츠에 barrier 상태 패밀리가 존재해야 한다");
+        Assert.That(barrier.GrantsBarrierOnApply, Is.True,
+            "barrier의 즉시 보호막 전환 kind가 콘텐츠(status_family_barrier.asset)에서 전투 규칙까지 실려야 한다 — " +
+            "false면 미저작/파서 결손으로 barrier 스킬이 무효과 잔존 상태로 추락하는 회귀");
+        Assert.That(rules.ResolveGrantsBarrierOnApply("barrier"), Is.True);
+        Assert.That(rules.ResolveGrantsBarrierOnApply("guarded"), Is.False,
+            "즉시 보호막 전환 kind가 다른 family로 새면 안 된다(전환은 barrier 저작 전용)");
+    }
+
+    [Test]
     public void RealSkillAppliedStatus_LandsOnEnemy_InRealSim()
     {
         // 오너 의심(2026-07-12) 실측 응답: "스킬에서 상태이상 적용이 미구현 아닌가" —

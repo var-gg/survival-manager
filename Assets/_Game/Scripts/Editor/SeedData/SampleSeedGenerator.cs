@@ -3523,6 +3523,9 @@ public static class SampleSeedGenerator
                 // C# 기본값으로 추락해 guarded delta(-0.1)가 조용히 0이 되는 잠재 함정(2026-07-12 실측).
                 asset.IncomingDamageDelta = definition.Id == "guarded" ? -0.1f : 0f;
                 asset.MagnitudeScale = 1f;
+                // 효과 종류 서술자(3보 1슬라이스) — barrier의 즉시 보호막 전환. 미명시면 fresh 재생성 시
+                // false 추락으로 barrier가 무효과 잔존 상태가 되는 함정(guarded delta와 동일 축).
+                asset.GrantsBarrierOnApply = definition.Id == "barrier";
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;

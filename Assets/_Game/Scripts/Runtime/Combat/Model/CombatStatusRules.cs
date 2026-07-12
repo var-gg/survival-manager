@@ -20,7 +20,10 @@ public sealed record CombatStatusFamilyRule(
     float IncomingDamageDelta = 0f,
     // 적용 magnitude가 이 상태의 숫자 채널에 실리는 배율 (sunder=방어/저항 차감, marked/exposed=받는 피해 가산,
     // wound=치유 감소, slow=공속/이속 감쇠). 1=magnitude 직소비(현행 공식) — 숫자 콘텐츠화 2보.
-    float MagnitudeScale = 1f);
+    float MagnitudeScale = 1f,
+    // 적용 시 상태 잔존 대신 즉시 보호막 전환 (barrier=true) — StatusId 문자열 분기의 콘텐츠 승격
+    // (효과 종류 데이터화 3보 1슬라이스). 미등록/미저작 family는 false(=일반 상태 잔존).
+    bool GrantsBarrierOnApply = false);
 
 public sealed record CombatCleanseProfileRule(
     string Id,
@@ -109,6 +112,11 @@ public sealed class CombatStatusRules
     public float ResolveMagnitudeScale(string statusId)
         => TryGetStatusFamily(statusId, out var rule) ? rule.MagnitudeScale : 1f;
 
+    /// <summary>적용 시 상태 잔존 대신 즉시 보호막으로 전환하는 family 인가 — 콘텐츠(StatusFamilyDefinition)
+    /// 효과 종류 서술자(3보 1슬라이스). 미등록 family는 false(=일반 상태 잔존).</summary>
+    public bool ResolveGrantsBarrierOnApply(string statusId)
+        => TryGetStatusFamily(statusId, out var rule) && rule.GrantsBarrierOnApply;
+
     public float ResolveTenacityScale(string statusId)
     {
         if (!TryGetStatusFamily(statusId, out var statusRule) || !statusRule.AffectedByTenacity)
@@ -143,7 +151,7 @@ public sealed class CombatStatusRules
                 new CombatStatusFamilyRule("sunder", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "sunder" }, "vfx.status_sunder"),
                 new CombatStatusFamilyRule("marked", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "marked" }, "vfx.status_marked"),
                 new CombatStatusFamilyRule("exposed", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "exposed" }, "vfx.status_exposed"),
-                new CombatStatusFamilyRule("barrier", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "barrier" }, "vfx.status_barrier"),
+                new CombatStatusFamilyRule("barrier", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "barrier" }, "vfx.status_barrier", GrantsBarrierOnApply: true),
                 new CombatStatusFamilyRule("guarded", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "guarded" }, "vfx.status_guarded", IncomingDamageDelta: -0.1f),
                 new CombatStatusFamilyRule("unstoppable", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "unstoppable" }, "vfx.status_unstoppable"),
             }
