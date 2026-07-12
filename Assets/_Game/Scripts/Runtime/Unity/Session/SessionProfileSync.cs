@@ -686,10 +686,15 @@ public sealed partial class GameSessionState
             }
 
             var nodesById = BuildPassiveBoardNodeDictionary(loadout.PassiveBoardId);
+            // 노드 예산은 영웅 레벨 계단(오너 게이트③) — 레벨은 단조 증가라 정상 세이브에서 trim은 발생하지
+            // 않고, 손편집/오염 세이브의 초과 선택만 잘린다.
+            var progression = Profile.HeroProgressions.FirstOrDefault(record =>
+                string.Equals(record.HeroId, loadout.HeroId, StringComparison.Ordinal));
             var normalized = PassiveBoardSelectionValidator.Normalize(
                 loadout.PassiveBoardId,
                 loadout.SelectedPassiveNodeIds,
-                nodesById);
+                nodesById,
+                PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(progression?.Level ?? 1));
             loadout.SelectedPassiveNodeIds = normalized.NormalizedNodeIds.ToList();
         }
 

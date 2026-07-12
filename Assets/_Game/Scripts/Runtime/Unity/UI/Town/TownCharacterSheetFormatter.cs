@@ -63,7 +63,7 @@ public sealed class TownCharacterSheetFormatter
                 Equipment: Array.Empty<TownCharacterSheetEquipmentSlotViewState>(),
                 ProgressionNodes: Array.Empty<TownCharacterSheetProgressionNodeViewState>(),
                 LevelProgress: new TownCharacterSheetLevelProgressViewState("Lv. —", string.Empty, 0f),
-                PassiveTrackCaption: BuildPassiveTrackCaption(),
+                PassiveTrackCaption: BuildPassiveTrackCaption(null),
                 Overview: new TownCharacterSheetPanelViewState(titles.Overview, emptyRows),
                 Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, emptyRows),
                 Passives: new TownCharacterSheetPanelViewState(titles.Passives, emptyRows),
@@ -95,10 +95,10 @@ public sealed class TownCharacterSheetFormatter
             Equipment: BuildEquipmentSlots(session, hero),
             ProgressionNodes: BuildProgressionNodes(loadout, progression),
             LevelProgress: BuildLevelProgress(progression),
-            PassiveTrackCaption: BuildPassiveTrackCaption(),
+            PassiveTrackCaption: BuildPassiveTrackCaption(progression),
             Overview: new TownCharacterSheetPanelViewState(titles.Overview, BuildOverviewBody(session, hero, archetype)),
             Loadout: new TownCharacterSheetPanelViewState(titles.Loadout, BuildLoadoutBody(session, hero, baseline)),
-            Passives: new TownCharacterSheetPanelViewState(titles.Passives, BuildPassivesBody(loadout, board, selectedNode)),
+            Passives: new TownCharacterSheetPanelViewState(titles.Passives, BuildPassivesBody(loadout, board, selectedNode, progression)),
             Synergy: new TownCharacterSheetPanelViewState(titles.Synergy, BuildSynergyBody(session, hero, archetype, baseline)),
             Progression: new TownCharacterSheetPanelViewState(
                 titles.Progression,
@@ -230,8 +230,8 @@ public sealed class TownCharacterSheetFormatter
             ? progression.UnlockedPassiveNodeIds
             : Array.Empty<string>();
         var nodes = new List<TownCharacterSheetProgressionNodeViewState>();
-        // 트랙 슬롯 수는 패시브 보드 최대 활성 노드 수와 일치시킨다(하드코딩 6 → 5 정합).
-        var slotCount = PassiveBoardSelectionValidator.MaxActiveNodeCount;
+        // 트랙 슬롯 수 = 이 영웅의 레벨 예산(오너 게이트③ 계단 5→8) — 보드 검증기와 단일 소스.
+        var slotCount = PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(progression?.Level ?? 1);
 
         foreach (var nodeId in selectedIds.Where(id => !string.IsNullOrWhiteSpace(id)).Take(slotCount))
         {
@@ -378,7 +378,8 @@ public sealed class TownCharacterSheetFormatter
     private IReadOnlyList<TownCharacterSheetPanelRowViewState> BuildPassivesBody(
         HeroLoadoutRecord? loadout,
         PassiveBoardDefinition? board,
-        PassiveNodeDefinition? selectedNode)
+        PassiveNodeDefinition? selectedNode,
+        HeroProgressionRecord? progression)
     {
         IReadOnlyList<string> selectedNodeIds = loadout == null
             ? Array.Empty<string>()
@@ -388,7 +389,7 @@ public sealed class TownCharacterSheetFormatter
             Row("ui.town.sheet.board", "Board", FormatPassiveBoardName(board?.Id ?? string.Empty)),
             Row("ui.town.sheet.active_nodes", "Active Nodes", FormatNodeList(selectedNodeIds)),
             Row("ui.town.sheet.highlighted_node", "Highlighted Node", FormatPassiveNodeName(selectedNode?.Id ?? string.Empty)),
-            Row("ui.town.sheet.node_count", "Node Count", $"{selectedNodeIds.Count}/{PassiveBoardSelectionValidator.MaxActiveNodeCount}"),
+            Row("ui.town.sheet.node_count", "Node Count", $"{selectedNodeIds.Count}/{PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(progression?.Level ?? 1)}"),
             Row(
                 "ui.town.sheet.keystone",
                 "Keystone",
@@ -733,7 +734,7 @@ public sealed class TownCharacterSheetFormatter
         var selected = loadout?.SelectedPassiveNodeIds?.Count ?? 0;
         var unlocked = progression?.UnlockedPassiveNodeIds?.Count ?? 0;
         return $"{selected} {LocalizeTown("ui.town.sheet.state.active", "active")} / " +
-               $"{PassiveBoardSelectionValidator.MaxActiveNodeCount} {LocalizeTown("ui.town.sheet.max", "max")} / " +
+               $"{PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(progression?.Level ?? 1)} {LocalizeTown("ui.town.sheet.max", "max")} / " +
                $"{unlocked} {LocalizeTown("ui.town.sheet.unlocked", "unlocked")}";
     }
 
@@ -816,12 +817,12 @@ public sealed class TownCharacterSheetFormatter
         return new TownCharacterSheetLevelProgressViewState($"Lv. {level}", $"{exp} / {next}", fraction);
     }
 
-    private string BuildPassiveTrackCaption()
+    private string BuildPassiveTrackCaption(HeroProgressionRecord? progression)
     {
         return LocalizeTown(
             "ui.town.selected_hero.passive_nodes",
             "Passive Nodes: {0}",
-            PassiveBoardSelectionValidator.MaxActiveNodeCount);
+            PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(progression?.Level ?? 1));
     }
 
     private string LocalizeTown(string key, string fallback, params object[] args)

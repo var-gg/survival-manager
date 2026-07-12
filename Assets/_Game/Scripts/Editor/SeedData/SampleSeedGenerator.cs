@@ -1671,7 +1671,9 @@ public static class SampleSeedGenerator
             NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_vanguard_small_13" }, "방벽 규율", "Bulwark Discipline", "체력과 저항을 함께 높입니다.", "Improves health and resistance together.", new[] { "frontline", "guard" }, Mods(("max_health", 2f), ("resist", 0.5f))),
             NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_vanguard_small_14" }, "흔들림 없는 전열", "Unshaken Line", "방어와 강인함을 높입니다.", "Improves armor and tenacity.", new[] { "frontline", "shield_skill" }, Mods(("armor", 1f), ("tenacity", 0.05f))),
             NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_vanguard_notable_05" }, "도발 반경", "Challenge Radius", "보호와 위협 반경을 넓힙니다.", "Expands protect and aggro radius.", new[] { "frontline", "guard" }, Mods(("protect_radius", 0.35f), ("aggro_radius", 0.4f))),
-            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_vanguard_notable_06", "passive_vanguard_notable_07" }, "불굴의 방패", "Unbroken Shield", "전열 유지력을 크게 높입니다.", "Greatly improves frontline staying power.", new[] { "frontline", "guard", "shield_skill" }, Mods(("armor", 1.2f), ("max_health", 3f), ("tenacity", 0.08f))),
+            // keystone_02 선행은 심층 1선(n06)만 — 이중선(n06+n07) 요구는 closure 13으로 예산 상한(8)에서도
+            // 도달 불능이었다(오너 게이트③ 부활 목표 위반, 2026-07-12 witness 실측). n06 단선 closure=7.
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_vanguard_notable_06" }, "불굴의 방패", "Unbroken Shield", "전열 유지력을 크게 높입니다.", "Greatly improves frontline staying power.", new[] { "frontline", "guard", "shield_skill" }, Mods(("armor", 1.2f), ("max_health", 3f), ("tenacity", 0.08f))),
         });
 
         CreateClassSafeTargetPassiveNodes("duelist", tags, new[]
@@ -1681,7 +1683,7 @@ public static class SampleSeedGenerator
             NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_small_13" }, "처형 자세", "Execution Stance", "물리 출력과 치명타 배율을 높입니다.", "Improves physical output and critical multiplier.", new[] { "frontline", "execute" }, Mods(("phys_power", 0.8f), ("crit_multiplier", 0.08f))),
             NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_small_14" }, "끊김 없는 추격", "Relentless Chase", "이동과 공격 예열을 개선합니다.", "Improves movement and attack windup.", new[] { "frontline", "physical" }, Mods(("move_speed", 0.05f), ("attack_windup", -0.04f))),
             NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_notable_05" }, "피의 빈틈", "Blood Opening", "흡혈과 관통력을 높입니다.", "Improves lifesteal and penetration.", new[] { "frontline", "execute" }, Mods(("lifesteal", 0.02f), ("phys_pen", 0.6f))),
-            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_duelist_notable_06", "passive_duelist_notable_07" }, "창백한 결말", "Pale Finale", "마무리 폭발력을 크게 높입니다.", "Greatly improves execution burst.", new[] { "frontline", "execute", "physical" }, Mods(("phys_power", 1.2f), ("crit_chance", 0.02f), ("target_switch_delay", -0.06f))),
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_duelist_notable_06" }, "창백한 결말", "Pale Finale", "마무리 폭발력을 크게 높입니다.", "Greatly improves execution burst.", new[] { "frontline", "execute", "physical" }, Mods(("phys_power", 1.2f), ("crit_chance", 0.02f), ("target_switch_delay", -0.06f))),
         });
 
         CreateClassSafeTargetPassiveNodes("ranger", tags, new[]
@@ -1691,7 +1693,7 @@ public static class SampleSeedGenerator
             NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_ranger_small_13" }, "약점 사거리", "Weakside Reach", "물리 출력과 사거리를 높입니다.", "Improves physical output and range.", new[] { "backline", "projectile" }, Mods(("phys_power", 0.8f), ("attack_range", 0.2f))),
             NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_ranger_small_14" }, "정조준 흐름", "Aimed Flow", "치명타 확률과 투사체 속도를 높입니다.", "Improves critical chance and projectile speed.", new[] { "backline", "mark" }, Mods(("crit_chance", 0.02f), ("projectile_speed", 0.35f))),
             NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_ranger_notable_05" }, "그림자 이동", "Shadow Step", "이동과 대상 전환을 개선합니다.", "Improves movement and target switching.", new[] { "backline", "exposed" }, Mods(("move_speed", 0.05f), ("target_switch_delay", -0.04f))),
-            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_ranger_notable_06", "passive_ranger_notable_07" }, "균열 저격", "Rift Marksmanship", "후열 화력의 사거리와 정확도를 크게 높입니다.", "Greatly improves backline range and precision.", new[] { "backline", "projectile", "mark" }, Mods(("phys_power", 1f), ("attack_range", 0.25f), ("crit_chance", 0.02f))),
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_ranger_notable_06" }, "균열 저격", "Rift Marksmanship", "후열 화력의 사거리와 정확도를 크게 높입니다.", "Greatly improves backline range and precision.", new[] { "backline", "projectile", "mark" }, Mods(("phys_power", 1f), ("attack_range", 0.25f), ("crit_chance", 0.02f))),
         });
 
         CreateClassSafeTargetPassiveNodes("mystic", tags, new[]
@@ -1701,7 +1703,7 @@ public static class SampleSeedGenerator
             NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_mystic_small_13" }, "정화 성가", "Cleansing Canticle", "회복과 재사용 회복을 높입니다.", "Improves healing and cooldown recovery.", new[] { "backline", "cleanse", "heal" }, Mods(("heal_power", 0.8f), ("cooldown_recovery", 0.04f))),
             NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_mystic_small_14" }, "집속 주문", "Focused Hex", "마법 출력과 관통력을 높입니다.", "Improves magic output and penetration.", new[] { "backline", "magical" }, Mods(("mag_power", 0.8f), ("mag_pen", 0.6f))),
             NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_mystic_notable_05" }, "거울 안정", "Mirror Stability", "강인함과 저항을 높입니다.", "Improves tenacity and resistance.", new[] { "backline", "support" }, Mods(("tenacity", 0.04f), ("resist", 0.5f))),
-            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_mystic_notable_06", "passive_mystic_notable_07" }, "쌍성 성가", "Twin Cantor", "지원과 마법 순환을 크게 높입니다.", "Greatly improves support and magic cadence.", new[] { "backline", "support", "magical" }, Mods(("heal_power", 1f), ("mag_power", 0.8f), ("cooldown_recovery", 0.06f))),
+            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_mystic_notable_06" }, "쌍성 성가", "Twin Cantor", "지원과 마법 순환을 크게 높입니다.", "Greatly improves support and magic cadence.", new[] { "backline", "support", "magical" }, Mods(("heal_power", 1f), ("mag_power", 0.8f), ("cooldown_recovery", 0.06f))),
         });
     }
 

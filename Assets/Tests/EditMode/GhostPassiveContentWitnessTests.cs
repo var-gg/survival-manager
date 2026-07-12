@@ -68,22 +68,48 @@ public sealed class GhostPassiveContentWitnessTests
     [Test]
     public void RealHostNodes_AreReachable_WithinFiveNodeBudget()
     {
-        // 도달 비용(선행 closure 크기)이 선택 예산(5)을 넘으면 grant는 죽은 콘텐츠다 —
-        // notable 06~08/keystone처럼 수학적으로 도달 불능인 자리에 배치되는 회귀를 차단한다.
+        // 도달 비용(선행 closure 크기)이 기본 선택 예산(5)을 넘으면 grant는 초반 죽은 콘텐츠다 —
+        // grant 호스트는 레벨 예산 계단과 무관하게 Lv1 기본 예산에서 도달 가능해야 한다(배치 설계 계약).
         var snapshot = new RuntimeCombatContentLookup().Snapshot;
         foreach (var (nodeId, skillId) in HostGrants)
         {
             var closure = BuildPrerequisiteClosure(snapshot, nodeId);
-            Assert.That(closure.Count, Is.LessThanOrEqualTo(PassiveBoardSelectionValidator.MaxActiveNodeCount),
-                $"{nodeId}({skillId})의 도달 비용({closure.Count})이 선택 예산({PassiveBoardSelectionValidator.MaxActiveNodeCount})을 넘으면 안 된다");
+            Assert.That(closure.Count, Is.LessThanOrEqualTo(PassiveBoardSelectionValidator.BaseActiveNodeCount),
+                $"{nodeId}({skillId})의 도달 비용({closure.Count})이 기본 선택 예산({PassiveBoardSelectionValidator.BaseActiveNodeCount})을 넘으면 안 된다");
 
             var boardId = snapshot.PassiveNodes[nodeId].BoardId;
             var boardNodes = snapshot.PassiveNodes.Values
                 .Where(node => node.BoardId == boardId)
                 .ToDictionary(node => node.Id, StringComparer.Ordinal);
-            var normalized = PassiveBoardSelectionValidator.Normalize(boardId, closure, boardNodes);
+            var normalized = PassiveBoardSelectionValidator.Normalize(boardId, closure, boardNodes, PassiveBoardSelectionValidator.BaseActiveNodeCount);
             Assert.That(normalized.NormalizedNodeIds, Does.Contain(nodeId),
                 $"{nodeId}의 선행 closure 전체 선택은 합법이어야 한다(선행/예산/키스톤 규칙 통과)");
+        }
+    }
+
+    [Test]
+    public void AllAuthoredNodes_AreReachable_WithinNodeCountCap()
+    {
+        // 오너 게이트③ 채택(2026-07-12) — 레벨 예산 계단 5→8이 과거 사장 콘텐츠(심층 notable 06~08 +
+        // 키스톤, 게임 전체 20노드)를 부활시켰는지의 전수 witness. 저작된 모든 노드는 상한 예산(8)에서
+        // 합법 도달 가능해야 한다 — 도달 불능 노드를 다시 저작하는 순간 여기서 적발된다.
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        Assert.That(snapshot.PassiveNodes, Is.Not.Empty, "실 콘텐츠 패시브 노드 존재");
+
+        foreach (var node in snapshot.PassiveNodes.Values)
+        {
+            var closure = BuildPrerequisiteClosure(snapshot, node.Id);
+            Assert.That(closure.Count, Is.LessThanOrEqualTo(PassiveBoardSelectionValidator.ActiveNodeCountCap),
+                $"{node.Id}의 도달 비용({closure.Count})이 상한 예산({PassiveBoardSelectionValidator.ActiveNodeCountCap})을 넘으면 " +
+                "영원히 도달 불능인 사장 콘텐츠다 — 예산 상향 또는 사슬 단축이 필요");
+
+            var boardNodes = snapshot.PassiveNodes.Values
+                .Where(other => other.BoardId == node.BoardId)
+                .ToDictionary(other => other.Id, StringComparer.Ordinal);
+            var normalized = PassiveBoardSelectionValidator.Normalize(
+                node.BoardId, closure, boardNodes, PassiveBoardSelectionValidator.ActiveNodeCountCap);
+            Assert.That(normalized.NormalizedNodeIds, Does.Contain(node.Id),
+                $"{node.Id}의 선행 closure 전체 선택은 상한 예산에서 합법이어야 한다(선행/예산/키스톤/배타 규칙 통과)");
         }
     }
 

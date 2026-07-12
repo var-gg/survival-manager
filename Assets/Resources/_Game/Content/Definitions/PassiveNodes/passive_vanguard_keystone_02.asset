@@ -19,7 +19,6 @@ MonoBehaviour:
   NodeKind: 2
   PrerequisiteNodeIds:
   - passive_vanguard_notable_06
-  - passive_vanguard_notable_07
   MutualExclusionTags: []
   BoardDepth: 5
   CompileTags:

@@ -764,11 +764,15 @@ public sealed partial class GameSessionState
             return Result.Fail("현재 패시브 보드의 노드 정의를 찾을 수 없습니다.");
         }
 
+        // 노드 예산은 영웅 레벨 계단(오너 게이트③) — 미기록 progression은 Lv1(=기본 5).
+        var progression = Profile.HeroProgressions.FirstOrDefault(
+            r => string.Equals(r.HeroId, heroId, StringComparison.Ordinal));
         var result = PassiveBoardSelectionValidator.Toggle(
             loadout.PassiveBoardId,
             loadout.SelectedPassiveNodeIds ?? new List<string>(),
             nodeId,
-            nodesById);
+            nodesById,
+            PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(progression?.Level ?? 1));
         if (!result.IsValid)
         {
             return Result.Fail(result.Error);

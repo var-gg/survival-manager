@@ -20,13 +20,35 @@ public sealed record PassiveBoardSelectionValidationResult(
 
 public static class PassiveBoardSelectionValidator
 {
-    public const int MaxActiveNodeCount = 5;
+    // 노드 예산 성장 계단(오너 게이트③ 채택, 2026-07-12) — 시작 5, 레벨 문턱 {4,6,8}마다 +1, 상한 8.
+    // 과거 고정 5는 심층 notable 06~08·키스톤(도달 비용 6+) 20노드를 수학적으로 사장시켰다. 상한 8 =
+    // 키스톤 1선 완주(6) + 여유 2로 빌드 선택 압력 유지. 문턱은 실측 레벨 커브 기반 V1 후보치(승리당
+    // 50xp, ExperienceToNextLevel=100+50L → 완주 캠페인 최대 40승 ≈ L7 도달) — 수치 sweep 재료.
+    public const int BaseActiveNodeCount = 5;
+    public const int ActiveNodeCountCap = 8;
     public const int MaxKeystoneCount = 1;
+    private static readonly int[] BudgetLevelThresholds = { 4, 6, 8 };
+
+    /// <summary>영웅 레벨이 허용하는 최대 활성 노드 수 — 예산은 메타 검증 레이어 소유(sim 무접촉).</summary>
+    public static int ResolveMaxActiveNodeCount(int heroLevel)
+    {
+        var budget = BaseActiveNodeCount;
+        foreach (var threshold in BudgetLevelThresholds)
+        {
+            if (heroLevel >= threshold)
+            {
+                budget++;
+            }
+        }
+
+        return Math.Min(ActiveNodeCountCap, budget);
+    }
 
     public static PassiveBoardSelectionValidationResult Normalize(
         string boardId,
         IReadOnlyCollection<string> requestedNodeIds,
-        IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById)
+        IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById,
+        int maxActiveNodeCount)
     {
         if (string.IsNullOrWhiteSpace(boardId) || nodesById.Count == 0)
         {
@@ -44,10 +66,10 @@ public static class PassiveBoardSelectionValidator
             .ThenBy(entry => entry.NodeId, StringComparer.Ordinal)
             .ToList();
 
-        var accepted = new List<string>(MaxActiveNodeCount);
+        var accepted = new List<string>(maxActiveNodeCount);
         foreach (var candidate in orderedCandidates)
         {
-            if (TryGetSelectionError(boardId, accepted, candidate.NodeId, nodesById, out _))
+            if (TryGetSelectionError(boardId, accepted, candidate.NodeId, nodesById, maxActiveNodeCount, out _))
             {
                 continue;
             }
@@ -62,22 +84,23 @@ public static class PassiveBoardSelectionValidator
         string boardId,
         IReadOnlyCollection<string> currentNodeIds,
         string nodeId,
-        IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById)
+        IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById,
+        int maxActiveNodeCount)
     {
-        var normalizedCurrent = Normalize(boardId, currentNodeIds, nodesById).NormalizedNodeIds.ToList();
+        var normalizedCurrent = Normalize(boardId, currentNodeIds, nodesById, maxActiveNodeCount).NormalizedNodeIds.ToList();
         if (normalizedCurrent.Contains(nodeId, StringComparer.Ordinal))
         {
             normalizedCurrent.RemoveAll(existing => string.Equals(existing, nodeId, StringComparison.Ordinal));
-            return Normalize(boardId, normalizedCurrent, nodesById);
+            return Normalize(boardId, normalizedCurrent, nodesById, maxActiveNodeCount);
         }
 
-        if (TryGetSelectionError(boardId, normalizedCurrent, nodeId, nodesById, out var error))
+        if (TryGetSelectionError(boardId, normalizedCurrent, nodeId, nodesById, maxActiveNodeCount, out var error))
         {
             return PassiveBoardSelectionValidationResult.Fail(error, normalizedCurrent);
         }
 
         normalizedCurrent.Add(nodeId);
-        return Normalize(boardId, normalizedCurrent, nodesById);
+        return Normalize(boardId, normalizedCurrent, nodesById, maxActiveNodeCount);
     }
 
     private static bool TryGetSelectionError(
@@ -85,6 +108,7 @@ public static class PassiveBoardSelectionValidator
         IReadOnlyCollection<string> selectedNodeIds,
         string candidateNodeId,
         IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById,
+        int maxActiveNodeCount,
         out string error)
     {
         error = string.Empty;
@@ -109,9 +133,9 @@ public static class PassiveBoardSelectionValidator
             }
         }
 
-        if (selectedNodeIds.Count >= MaxActiveNodeCount)
+        if (selectedNodeIds.Count >= maxActiveNodeCount)
         {
-            error = $"패시브 노드는 최대 {MaxActiveNodeCount}개까지 활성화할 수 있습니다.";
+            error = $"패시브 노드는 최대 {maxActiveNodeCount}개까지 활성화할 수 있습니다.";
             return true;
         }
 
