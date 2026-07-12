@@ -21,6 +21,7 @@ MonoBehaviour:
   AffectedByTenacity: 1
   TenacityScale: 1
   AppliesPeriodicDamage: 0
+  BlocksMovement: 1
   VfxCueId: vfx.status_root
   SfxHookId: sfx.status.root.apply
   BudgetCard:

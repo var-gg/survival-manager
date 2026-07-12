@@ -33,6 +33,7 @@ internal static class StatusFileParser
             definition.GrantsBarrierOnApply = ExtractBool(lines, "GrantsBarrierOnApply:");
             definition.GrantsUnstoppable = ExtractBool(lines, "GrantsUnstoppable:");
             definition.BlocksActiveSkills = ExtractBool(lines, "BlocksActiveSkills:");
+            definition.BlocksMovement = ExtractBool(lines, "BlocksMovement:");
             definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
             definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
@@ -202,6 +203,8 @@ internal static class StatusFileParser
         definition.GrantsUnstoppable = definition.GrantsUnstoppable || definition.Id is "unstoppable";
         // 동일 축 안전망(3c) — silence의 액티브 시전 차단 kind가 파서 레인에서 꺼지지 않게.
         definition.BlocksActiveSkills = definition.BlocksActiveSkills || definition.Id is "silence";
+        // 동일 축 안전망(3d) — root의 자발 이동 차단 kind가 파서 레인에서 꺼지지 않게.
+        definition.BlocksMovement = definition.BlocksMovement || definition.Id is "root";
         if (string.IsNullOrWhiteSpace(definition.VfxCueId))
         {
             definition.VfxCueId = $"vfx.status_{definition.Id}";

@@ -3530,6 +3530,8 @@ public static class SampleSeedGenerator
                 asset.GrantsUnstoppable = definition.Id == "unstoppable";
                 // 효과 종류 서술자(3보 3c) — silence의 액티브 시전 차단. 동일 함정 축.
                 asset.BlocksActiveSkills = definition.Id == "silence";
+                // 효과 종류 서술자(3보 3d) — root의 자발 이동 차단. 동일 함정 축.
+                asset.BlocksMovement = definition.Id == "root";
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;

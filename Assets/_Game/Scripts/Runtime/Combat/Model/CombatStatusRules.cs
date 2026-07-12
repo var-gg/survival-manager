@@ -29,7 +29,10 @@ public sealed record CombatStatusFamilyRule(
     bool GrantsUnstoppable = false,
     // 보유 시 액티브 시전 차단 — ActiveSkill 전술 게이트 + signature/flex 슬롯 차단 (silence=true).
     // HasStatus("silence") 문자열 조회의 콘텐츠 승격(효과 종류 데이터화 3보 3c). 미등록/미저작은 false.
-    bool BlocksActiveSkills = false);
+    bool BlocksActiveSkills = false,
+    // 보유 시 자발 이동 차단 — MoveTowards/전진·후퇴 스텝 + 모빌리티 (root=true).
+    // HasStatus("root") 문자열 조회의 콘텐츠 승격(효과 종류 데이터화 3보 3d). 미등록/미저작은 false.
+    bool BlocksMovement = false);
 
 public sealed record CombatCleanseProfileRule(
     string Id,
@@ -66,6 +69,7 @@ public sealed class CombatStatusRules
         ControlDiminishing = controlDiminishing ?? Default.ControlDiminishing;
         UnstoppableStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.GrantsUnstoppable);
         BlocksActiveSkillsStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksActiveSkills);
+        BlocksMovementStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksMovement);
     }
 
     private CombatStatusRules(
@@ -79,6 +83,7 @@ public sealed class CombatStatusRules
         ControlDiminishing = controlDiminishing;
         UnstoppableStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.GrantsUnstoppable);
         BlocksActiveSkillsStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksActiveSkills);
+        BlocksMovementStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksMovement);
     }
 
     public IReadOnlyDictionary<string, CombatStatusFamilyRule> StatusFamilies { get; }
@@ -89,6 +94,7 @@ public sealed class CombatStatusRules
     // 스냅샷해 핫패스 게터(IsUnstoppable/IsSilenced 등)가 사전 조회 없이 Contains만 소비한다(효과 종류 데이터화 3보).
     internal HashSet<string> UnstoppableStatusIds { get; }
     internal HashSet<string> BlocksActiveSkillsStatusIds { get; }
+    internal HashSet<string> BlocksMovementStatusIds { get; }
 
     public bool TryGetStatusFamily(string statusId, out CombatStatusFamilyRule rule)
     {
@@ -173,7 +179,7 @@ public sealed class CombatStatusRules
         var families = new[]
             {
                 new CombatStatusFamilyRule("stun", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "stun" }, "vfx.status_stun"),
-                new CombatStatusFamilyRule("root", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "root" }, "vfx.status_root"),
+                new CombatStatusFamilyRule("root", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "root" }, "vfx.status_root", BlocksMovement: true),
                 new CombatStatusFamilyRule("silence", StatusGroupValue.Control, true, true, true, 0.5f, false, false, new[] { "silence" }, "vfx.status_silence", BlocksActiveSkills: true),
                 new CombatStatusFamilyRule("slow", StatusGroupValue.Control, false, false, false, 0f, false, false, new[] { "slow" }, "vfx.status_slow"),
                 new CombatStatusFamilyRule("burn", StatusGroupValue.Attrition, false, false, false, 0f, true, false, new[] { "burn" }, "vfx.status_burn"),

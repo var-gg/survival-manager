@@ -513,6 +513,30 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void RootKind_IsContentDriven_InRealSim()
+    {
+        // 효과 종류 데이터화 3보 3d — "자발 이동 차단"은 이제 HasStatus("root") 문자열 조회가 아니라
+        // 콘텐츠 kind(BlocksMovement)가 파생한 set이다. 1차 프로브(자기 뿌리박기 + 기본공격 전술)는
+        // 기본/off 변위가 byte-동일(2.42m)로 실측돼 폐기 — 손조립 캐스터는 교전 접근을 아예 하지 않아
+        // 이동 수요가 0이었다(3a 측정 허구 교훈의 이동판). 교정: 2보 slow differential의 검증된 구도
+        // 재사용 — 개전 시 적 전체에 root(600s)를 걸면, 접근 의지가 전 프로브에서 실증된 raider가
+        // 기본 규칙에선 묶여 도달하지 못하고 kind를 끄면 같은 상태를 갖고도 걸어와 아군을 잡는다.
+        var compiled = CompileStatusProbe("root", 1f, scope: EffectScope.EnemyCombatants);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var disabledRun = RunCompiledAllyVersusRaider(compiled, RulesWithRootKind(false));
+        Assert.That(defaultRun.AllySurvivedSteps, Is.GreaterThan(disabledRun.AllySurvivedSteps),
+            "기본 규칙(root가 이동 차단 kind 보유)에선 개전에 묶인 raider가 접근하지 못해 아군이 뚜렷하게 " +
+            "오래 생존해야 하고, kind를 끄면 같은 root 상태로도 걸어와 잡아야 한다 — 차단 membership이 " +
+            "규칙 파생 set에서 소비된다는 1차 가드(잔존 상태 != 차단 효과 분리 증명)");
+
+        // 항등 계약: true 명시 저작 == 기본 규칙 — 전투 스트림 byte-identical.
+        var explicitTrueRun = RunCompiledAllyVersusRaider(compiled, RulesWithRootKind(true));
+        Assert.That(explicitTrueRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "BlocksMovement=true 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -882,6 +906,18 @@ public sealed class ContentEffectDifferentialTests
         }
 
         return new SilenceRun(sb.ToString(), allyDefendingSteps);
+    }
+
+    /// <summary>기본 규칙에서 root family 의 자발 이동 차단 kind 만 바꾼 상태 규칙 — 3보 3d differential.</summary>
+    private static CombatStatusRules RulesWithRootKind(bool blocksMovement)
+    {
+        return new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == "root"
+                    ? pair.Value with { BlocksMovement = blocksMovement }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
     }
 
     private static BattleLoadoutSnapshot CompileSingleHero(

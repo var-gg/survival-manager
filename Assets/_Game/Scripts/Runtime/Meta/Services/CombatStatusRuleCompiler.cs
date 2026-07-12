@@ -33,7 +33,8 @@ public static class CombatStatusRuleCompiler
                 family.MagnitudeScale,
                 family.GrantsBarrierOnApply,
                 family.GrantsUnstoppable,
-                family.BlocksActiveSkills))
+                family.BlocksActiveSkills,
+                family.BlocksMovement))
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);
         var cleanses = (content.CleanseProfiles ?? new Dictionary<string, CleanseProfileTemplate>())
             .Values

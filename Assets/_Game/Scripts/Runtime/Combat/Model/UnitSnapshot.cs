@@ -33,9 +33,11 @@ public sealed class UnitSnapshot
     // 동일한 정적 set(결정성 보존, 1보 ?? -0.1f / 2보 ?? 1f와 같은 계약). 공유 인스턴스 — 변이 금지.
     private static readonly HashSet<string> FallbackUnstoppableStatusIds = new(StringComparer.Ordinal) { "unstoppable" };
     private static readonly HashSet<string> FallbackBlocksActiveSkillsStatusIds = new(StringComparer.Ordinal) { "silence" };
+    private static readonly HashSet<string> FallbackBlocksMovementStatusIds = new(StringComparer.Ordinal) { "root" };
     // kind별 상태 id set 스냅샷(효과 종류 데이터화 3보) — 생성 시 1회 확정, 핫패스 사전 조회 0.
     private readonly HashSet<string> _unstoppableStatusIds;
     private readonly HashSet<string> _blocksActiveSkillsStatusIds;
+    private readonly HashSet<string> _blocksMovementStatusIds;
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -61,6 +63,7 @@ public sealed class UnitSnapshot
         // 효과 종류 set(3보) — 규칙이 전투당 1회 파생한 set 참조를 스냅샷. 미주입 레인은 정적 폴백(결정성 보존).
         _unstoppableStatusIds = statusRules?.UnstoppableStatusIds ?? FallbackUnstoppableStatusIds;
         _blocksActiveSkillsStatusIds = statusRules?.BlocksActiveSkillsStatusIds ?? FallbackBlocksActiveSkillsStatusIds;
+        _blocksMovementStatusIds = statusRules?.BlocksMovementStatusIds ?? FallbackBlocksMovementStatusIds;
         Anchor = definition.PreferredAnchor;
         FixedAnchorPosition = SpatialProjection.QuantizeToFixed(anchorPosition);
         FixedPosition = SpatialProjection.QuantizeToFixed(spawnPosition);
@@ -218,7 +221,8 @@ public sealed class UnitSnapshot
     public float Speed => AttackSpeed;
     public float HealthRatio => MaxHealth <= 0 ? 0 : CurrentHealth / MaxHealth;
     public bool IsStunned => HasStatus("stun");
-    public bool IsRooted => HasStatus("root");
+    // 자발 이동 차단 membership은 콘텐츠 kind(BlocksMovement)가 파생한 set — "root" 리터럴 조회의 승격(3보 3d).
+    public bool IsRooted => HasAnyStatusOf(_blocksMovementStatusIds);
     // 액티브 시전 차단 membership은 콘텐츠 kind(BlocksActiveSkills)가 파생한 set — "silence" 리터럴 조회의 승격(3보 3c).
     public bool IsSilenced => HasAnyStatusOf(_blocksActiveSkillsStatusIds);
     public bool IsSlowed => HasStatus("slow");

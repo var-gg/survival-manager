@@ -207,7 +207,9 @@ public sealed record StatusFamilyTemplate(
     // 보유 시 저지불가(하드 컨트롤 적용 면역 + 저작 강제이동 면역, unstoppable) — 3보 3b. false=면역 없음(현행 기본).
     bool GrantsUnstoppable = false,
     // 보유 시 액티브 시전 차단(silence) — 3보 3c. false=차단 없음(현행 기본).
-    bool BlocksActiveSkills = false);
+    bool BlocksActiveSkills = false,
+    // 보유 시 자발 이동 차단(root) — 3보 3d. false=차단 없음(현행 기본).
+    bool BlocksMovement = false);
 
 public sealed record CleanseProfileTemplate(
     string Id,

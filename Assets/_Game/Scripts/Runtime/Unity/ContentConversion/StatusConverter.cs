@@ -31,7 +31,8 @@ internal static class StatusConverter
             MagnitudeScale: definition.MagnitudeScale,
             GrantsBarrierOnApply: definition.GrantsBarrierOnApply,
             GrantsUnstoppable: definition.GrantsUnstoppable,
-            BlocksActiveSkills: definition.BlocksActiveSkills);
+            BlocksActiveSkills: definition.BlocksActiveSkills,
+            BlocksMovement: definition.BlocksMovement);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)
