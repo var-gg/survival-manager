@@ -275,6 +275,125 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
+    {
+        // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
+        // 발동형 효과를 유닛 트리거 채널로 실어야 하고, 미선택이면 흔적이 없어야 한다.
+        var grantedSkill = CreateSkill("skill.node.granted", CompiledSkillSlots.Passive, 0f, SkillKind.Buff) with
+        {
+            CompileTags = new[] { "node_grant_witness" },
+            TriggeredEffects = new[]
+            {
+                new CombatTriggeredEffect("skill.node.granted", CombatTriggerKind.BattleStart, TriggeredEffectOp.Barrier, EffectScope.Self, Magnitude: 60f),
+            },
+        };
+        var nodes = new Dictionary<string, PassiveNodeTemplate>(StringComparer.Ordinal)
+        {
+            ["node.grant"] = new PassiveNodeTemplate(
+                "node.grant",
+                new CombatModifierPackage("node.grant", ModifierSource.Other, Array.Empty<StatModifier>()),
+                Array.Empty<string>(),
+                BoardId: "board.vanguard",
+                GrantedSkillId: "skill.node.granted"),
+        };
+
+        var selected = CompileSingleHero(
+            Array.Empty<string>(), extraSkills: new[] { grantedSkill }, passiveNodes: nodes, selectedNodeIds: new[] { "node.grant" });
+        var selectedUnit = selected.Allies.Single();
+        Assert.That(
+            selectedUnit.EffectiveTriggeredEffects.Any(effect =>
+                effect.SourceId == "skill.node.granted" && effect.Op == TriggeredEffectOp.Barrier),
+            Is.True,
+            "선택된 노드의 부여 스킬 발동형 효과가 유닛 트리거 채널에 도달해야 한다");
+        Assert.That(selectedUnit.CompileTags, Does.Contain("node_grant_witness"),
+            "부여 스킬의 CompileTags가 유닛 태그로 전파돼야 한다");
+        Assert.That(selectedUnit.Skills.Any(skill => skill.Id == "skill.node.granted"), Is.False,
+            "부여 스킬은 4슬롯 계약 밖 효과 캐리어다 — 스킬 슬롯을 차지하면 안 된다");
+
+        var unselected = CompileSingleHero(Array.Empty<string>(), extraSkills: new[] { grantedSkill }, passiveNodes: nodes);
+        Assert.That(
+            unselected.Allies.Single().EffectiveTriggeredEffects.Any(effect => effect.SourceId == "skill.node.granted"),
+            Is.False,
+            "음성 대조군: 노드 미선택이면 부여 효과 흔적이 없어야 한다");
+
+        var selectedRun = RunCompiledAllyVersusRaider(selected);
+        var unselectedRun = RunCompiledAllyVersusRaider(unselected);
+        Assert.That(selectedRun.AllySurvivedSteps, Is.GreaterThan(unselectedRun.AllySurvivedSteps),
+            "노드 도달 보상(개전 방벽 60)이 실 sim 생존을 바꿔야 한다 — 유령 패시브 획득 경로의 1차 가드");
+    }
+
+    [Test]
+    public void PassiveNodeGrant_SupportGem_TransformsActive_WithoutSlotUse()
+    {
+        // SupportModifier 보유 부여 스킬은 장착 젬과 동일하게 매칭 액티브를 변조해야 한다(슬롯 밖 합류).
+        BattleSkillSpec MutateCore(BattleSkillSpec skill) => skill with { CompileTags = new[] { "strike" } };
+        var gemSkill = CreateSkill("skill.node.gem", CompiledSkillSlots.Support, 0f, SkillKind.Buff) with
+        {
+            SupportAllowedTags = new[] { "strike" },
+            SupportModifier = new BattleSupportModifierSpec(PowerMultiplier: 2f),
+        };
+        var nodes = new Dictionary<string, PassiveNodeTemplate>(StringComparer.Ordinal)
+        {
+            ["node.gem"] = new PassiveNodeTemplate(
+                "node.gem",
+                new CombatModifierPackage("node.gem", ModifierSource.Other, Array.Empty<StatModifier>()),
+                Array.Empty<string>(),
+                BoardId: "board.vanguard",
+                GrantedSkillId: "skill.node.gem"),
+        };
+
+        var selected = CompileSingleHero(
+            Array.Empty<string>(), mutateCore: MutateCore, extraSkills: new[] { gemSkill }, passiveNodes: nodes, selectedNodeIds: new[] { "node.gem" });
+        var selectedUnit = selected.Allies.Single();
+        Assert.That(
+            selectedUnit.Skills.Single(skill => skill.Id == "skill.warden.core").Power,
+            Is.EqualTo(9f).Within(0.0001f),
+            "노드 부여 젬이 매칭 액티브(strike)를 변조해야 한다 (4.5 × 2)");
+        Assert.That(selectedUnit.Skills.Any(skill => skill.Id == "skill.node.gem"), Is.False,
+            "부여 젬은 스킬 슬롯을 차지하지 않아야 한다");
+
+        var unselected = CompileSingleHero(
+            Array.Empty<string>(), mutateCore: MutateCore, extraSkills: new[] { gemSkill }, passiveNodes: nodes);
+        Assert.That(
+            unselected.Allies.Single().Skills.Single(skill => skill.Id == "skill.warden.core").Power,
+            Is.EqualTo(4.5f).Within(0.0001f),
+            "음성 대조군: 노드 미선택이면 변조가 없어야 한다");
+    }
+
+    [Test]
+    public void PassiveNodeGrant_MissingSkillId_IsFullyInert_InSim()
+    {
+        // 저작 오류(존재하지 않는 스킬 id)는 컴파일이 조용히 건너뛰고(sim 누출 0),
+        // 저작 시점 차단은 catalog validator(passive_node.granted_skill_ref)의 몫이다.
+        var nodes = new Dictionary<string, PassiveNodeTemplate>(StringComparer.Ordinal)
+        {
+            ["node.grant_missing"] = new PassiveNodeTemplate(
+                "node.grant_missing",
+                new CombatModifierPackage("node.grant_missing", ModifierSource.Other, Array.Empty<StatModifier>()),
+                Array.Empty<string>(),
+                BoardId: "board.vanguard",
+                GrantedSkillId: "skill.not_exists"),
+            ["node.stat_only"] = new PassiveNodeTemplate(
+                "node.stat_only",
+                new CombatModifierPackage("node.stat_only", ModifierSource.Other, Array.Empty<StatModifier>()),
+                Array.Empty<string>(),
+                BoardId: "board.vanguard"),
+        };
+
+        var missingGrant = CompileSingleHero(
+            Array.Empty<string>(), passiveNodes: nodes, selectedNodeIds: new[] { "node.grant_missing" });
+        var statOnly = CompileSingleHero(
+            Array.Empty<string>(), passiveNodes: nodes, selectedNodeIds: new[] { "node.stat_only" });
+
+        Assert.That(missingGrant.Allies.Single().EffectiveTriggeredEffects, Is.Empty,
+            "미존재 스킬 grant는 트리거 채널에 아무 것도 남기지 않아야 한다");
+        var missingRun = RunCompiledAllyVersusRaider(missingGrant);
+        var statOnlyRun = RunCompiledAllyVersusRaider(statOnly);
+        Assert.That(missingRun.Stream, Is.EqualTo(statOnlyRun.Stream),
+            "미존재 grant 노드는 스탯 전용 노드와 전투 결과가 완전히 동일해야 한다(누출 0)");
+    }
+
+    [Test]
     public void AffixTemplateCompile_SameScenarioTwice_StableHash()
     {
         var first = CompileSingleHero(affixIds: new[] { "affix.tempo", "affix.cond_met", "affix.cond_unmet" });
@@ -330,10 +449,13 @@ public sealed class ContentEffectDifferentialTests
         Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null,
         Func<BattleSkillSpec, BattleSkillSpec>? mutateCore = null,
         Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null,
-        IReadOnlyList<string>? itemIds = null)
+        IReadOnlyList<string>? itemIds = null,
+        IReadOnlyList<BattleSkillSpec>? extraSkills = null,
+        IReadOnlyDictionary<string, PassiveNodeTemplate>? passiveNodes = null,
+        IReadOnlyList<string>? selectedNodeIds = null)
     {
         itemIds ??= new[] { "item.shield" };
-        var content = BuildContentSnapshot(mutatePassive, mutateCore, mutateSupport);
+        var content = BuildContentSnapshot(mutatePassive, mutateCore, mutateSupport, extraSkills, passiveNodes);
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
         {
@@ -364,13 +486,19 @@ public sealed class ContentEffectDifferentialTests
             ["hero.warden"] = new("hero.warden", 1, 0, Array.Empty<string>(), archetype.Skills.Select(skill => skill.Id).ToList()),
         };
 
+        var passiveSelections = new Dictionary<string, PassiveBoardSelectionState>(StringComparer.Ordinal);
+        if (selectedNodeIds is { Count: > 0 })
+        {
+            passiveSelections["hero.warden"] = new PassiveBoardSelectionState("hero.warden", "board.vanguard", selectedNodeIds);
+        }
+
         return new LoadoutCompiler().Compile(
             heroes,
             heroLoadouts,
             heroProgressions,
             itemInstances,
             new Dictionary<string, SkillInstanceState>(StringComparer.Ordinal),
-            new Dictionary<string, PassiveBoardSelectionState>(StringComparer.Ordinal),
+            passiveSelections,
             new PermanentAugmentLoadoutState("bp.differential", Array.Empty<string>()),
             new SquadBlueprintState(
                 "bp.differential",
@@ -388,7 +516,9 @@ public sealed class ContentEffectDifferentialTests
     private static CombatContentSnapshot BuildContentSnapshot(
         Func<BattleSkillSpec, BattleSkillSpec>? mutatePassive = null,
         Func<BattleSkillSpec, BattleSkillSpec>? mutateCore = null,
-        Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null)
+        Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null,
+        IReadOnlyList<BattleSkillSpec>? extraSkills = null,
+        IReadOnlyDictionary<string, PassiveNodeTemplate>? passiveNodes = null)
     {
         var baseRules = new[]
         {
@@ -472,7 +602,7 @@ public sealed class ContentEffectDifferentialTests
                 }),
             },
             new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal),
-            wardenSkills.ToDictionary(skill => skill.Id, skill => skill, StringComparer.Ordinal),
+            wardenSkills.Concat(extraSkills ?? Array.Empty<BattleSkillSpec>()).ToDictionary(skill => skill.Id, skill => skill, StringComparer.Ordinal),
             new Dictionary<string, TeamTacticTemplate>(StringComparer.Ordinal)
             {
                 ["team_tactic_standard_advance"] = new TeamTacticTemplate(
@@ -480,7 +610,7 @@ public sealed class ContentEffectDifferentialTests
                     new TeamTacticProfile("team_tactic_standard_advance", "Standard", TeamPostureType.StandardAdvance, 1f, 0f, 0f, 0f, 0f, 0f)),
             },
             new Dictionary<string, RoleInstructionTemplate>(StringComparer.Ordinal),
-            new Dictionary<string, PassiveNodeTemplate>(StringComparer.Ordinal),
+            passiveNodes ?? new Dictionary<string, PassiveNodeTemplate>(StringComparer.Ordinal),
             new Dictionary<string, AugmentCatalogEntry>(StringComparer.Ordinal),
             new Dictionary<string, SynergyTierTemplate>(StringComparer.Ordinal),
             new Dictionary<string, IReadOnlyList<BattleSkillSpec>>(StringComparer.Ordinal),

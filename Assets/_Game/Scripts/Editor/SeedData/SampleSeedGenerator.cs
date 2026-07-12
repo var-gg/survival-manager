@@ -61,6 +61,7 @@ public static class SampleSeedGenerator
         CreateItems();
         CreateAffixes();
         CreateSafeTargetPassiveNodes(stableTags);
+        PatchGrantedSkillHostNodes();
         PatchLaunchFloorItemsAndSkills(stableTags);
         CreateStatusCatalog();
         CreateTraitTokens();
@@ -1702,6 +1703,68 @@ public static class SampleSeedGenerator
             NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_mystic_notable_05" }, "거울 안정", "Mirror Stability", "강인함과 저항을 높입니다.", "Improves tenacity and resistance.", new[] { "backline", "support" }, Mods(("tenacity", 0.04f), ("resist", 0.5f))),
             NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_mystic_notable_06", "passive_mystic_notable_07" }, "쌍성 성가", "Twin Cantor", "지원과 마법 순환을 크게 높입니다.", "Greatly improves support and magic cadence.", new[] { "backline", "support", "magical" }, Mods(("heal_power", 1f), ("mag_power", 0.8f), ("cooldown_recovery", 0.06f))),
         });
+    }
+
+    private static void PatchGrantedSkillHostNodes()
+    {
+        // PoE식 노드 도달 보상(passive-granted-skill.v1) — 유령 패시브 12종의 획득 경로.
+        // 호스트 노드(base notable)는 seed 비생성이라 커밋 YAML이 truth이고, 여기서는
+        // grant 지정과 노드 정체성 로컬라이즈(스킬 이름 = 노드 이름)만 수렴시킨다.
+        // 스킬 payload(TriggeredEffects/SupportModifier) 저작은 스킬 asset이 단독 truth.
+        var grants = new (string NodeId, string SkillId, string KoName, string EnName, string KoDesc, string EnDesc)[]
+        {
+            ("passive_vanguard_notable_01", "skill_iron_hide_memory", "철가죽 기억", "Iron-Hide Memory",
+                "체력과 방어가 오릅니다. 체력이 절반 아래로 처음 떨어지면 보호막 45를 얻습니다.",
+                "Improves health and armor. The first time health falls below half, gain a 45 barrier."),
+            ("passive_vanguard_notable_02", "skill_sentinel_oath", "맹세의 무게", "Weight of the Oath",
+                "강인함과 보호 반경이 오릅니다. 전투 시작 후 8초간 받는 피해가 줄어듭니다.",
+                "Improves tenacity and protect radius. Take reduced damage for 8 seconds after battle starts."),
+            ("passive_vanguard_notable_05", "skill_lattice_bastion", "격자 보루", "Lattice Bastion",
+                "체력과 대상 전환이 개선됩니다. 아군이 쓰러질 때마다 남은 아군 전체가 보호막 25를 얻습니다.",
+                "Improves health and target switching. Whenever an ally falls, surviving allies gain a 25 barrier."),
+            ("passive_duelist_notable_01", "skill_shard_memory", "파편 기억", "Shard Memory",
+                "물리 출력과 공격 속도가 오릅니다. 적을 처치하면 2.5초간 남은 적들의 빈틈이 드러납니다.",
+                "Improves physical output and attack speed. On kill, remaining enemies are exposed for 2.5 seconds."),
+            ("passive_duelist_notable_02", "skill_edge_of_sentence", "선고의 칼끝", "Edge of the Sentence",
+                "치명타와 흡혈이 오릅니다. 적을 처치하면 에너지 20을 얻습니다.",
+                "Improves critical chance and lifesteal. On kill, gain 20 energy."),
+            ("passive_duelist_notable_05", "skill_bloodless_form", "무혈식", "Bloodless Form",
+                "물리 출력과 치명타가 오릅니다. 적을 처치하면 2.5초간 받는 피해가 줄어듭니다.",
+                "Improves physical output and critical chance. On kill, take reduced damage for 2.5 seconds."),
+            ("passive_ranger_notable_01", "skill_prism_sight", "프리즘 시야", "Prism Sight",
+                "사거리와 교전 거리가 늘어납니다. 자신의 액티브 스킬이 치명타를 낼 수 있게 되고 사거리가 더 늘어납니다.",
+                "Improves attack range and preferred distance. Your active skills can critically strike and reach farther."),
+            ("passive_ranger_notable_02", "skill_quick_kindling", "빠른 불쏘시개", "Quick Kindling",
+                "물리 출력과 치명타가 오릅니다. 전투를 에너지 15로 시작합니다.",
+                "Improves physical output and critical chance. Start each battle with 15 energy."),
+            ("passive_ranger_notable_04", "skill_heat_haze", "열아지랑이", "Heat Haze",
+                "이동과 대상 전환이 개선됩니다. 체력이 60% 아래로 처음 떨어지면 4초간 받는 피해가 줄어듭니다.",
+                "Improves movement and target switching. The first time health falls below 60%, take reduced damage for 4 seconds."),
+            ("passive_ranger_notable_05", "skill_glass_pathfinder", "유리길 탐색자", "Glass Pathfinder",
+                "물리 출력과 사거리가 오릅니다. 아군이 쓰러지면 3초간 적 전체가 표적으로 새겨집니다.",
+                "Improves physical output and range. When an ally falls, all enemies are marked for 3 seconds."),
+            ("passive_mystic_notable_01", "skill_echo_archive", "반향 기록고", "Echo Archive",
+                "마법 출력과 재사용 회복이 오릅니다. 자신의 액티브가 부여하는 상태이상이 30% 오래 지속됩니다.",
+                "Improves magic output and cooldown recovery. Status effects from your active skills last 30% longer."),
+            ("passive_mystic_notable_04", "skill_lattice_listener", "격자 청취자", "Lattice Listener",
+                "마법 출력과 저항이 오릅니다. 전투 시작 시 3초간 적 전체가 느려집니다.",
+                "Improves magic output and resistance. At battle start, all enemies are slowed for 3 seconds."),
+        };
+
+        foreach (var grant in grants)
+        {
+            var node = LoadDefinition<PassiveNodeDefinition>($"{ResourcesRoot}/PassiveNodes/{grant.NodeId}.asset");
+            if (node == null)
+            {
+                Debug.LogWarning($"[SampleSeedGenerator] granted-skill host node missing: {grant.NodeId}");
+                continue;
+            }
+
+            node.GrantedSkillId = grant.SkillId;
+            EditorUtility.SetDirty(node);
+            UpsertStringEntry(ContentLocalizationTables.Passives, node.NameKey, grant.KoName, grant.EnName);
+            UpsertStringEntry(ContentLocalizationTables.Passives, node.DescriptionKey, grant.KoDesc, grant.EnDesc);
+        }
     }
 
     private static void CreateClassSafeTargetPassiveNodes(

@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: attack_range
     Op: 0
     Value: 0.2
+  GrantedSkillId: skill_glass_pathfinder
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

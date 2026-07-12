@@ -131,4 +131,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AppliedStatuses: []
   CleanseProfileId: 
+  TriggeredEffects:
+  - Trigger: 3
+    Op: 0
+    Scope: 5
+    Magnitude: 1
+    ThresholdRatio: 0
+    StatusId: marked
+    DurationSeconds: 3
+    MaxStacks: 1
   legacyDisplayName: 

@@ -124,11 +124,23 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   RuleModifierTags: []
   SupportAllowedTags:
-  - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
+  - {fileID: 11400000, guid: f3d6dde03d5ebbc40b81076b5de3c9ca, type: 2}
+  - {fileID: 11400000, guid: 87ee2a1451846e348a799e7d8e57f8b3, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
   SupportBlockedTags: []
   RequiredWeaponTags: []
   RequiredClassTags:
   - {fileID: 11400000, guid: b13217e3576706d49ad47f8f7f296492, type: 2}
   AppliedStatuses: []
   CleanseProfileId: 
+  SupportModifier:
+    PowerMultiplier: 1
+    CooldownMultiplier: 1
+    CastWindupMultiplier: 1
+    RangeBonus: 0
+    StatusDurationMultiplier: 1.3
+    ForceCanCrit: 0
+    AddedStatuses: []
+    GrantCleanseProfileId: 
+    OwnerModifiers: []
   legacyDisplayName: 

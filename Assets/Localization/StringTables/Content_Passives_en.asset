@@ -115,19 +115,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168048764903424
-    m_Localized: vanguard notable 01
+    m_Localized: Iron-Hide Memory
     m_Metadata:
       m_Items: []
   - m_Id: 168048764903425
-    m_Localized: vanguard notable node.
+    m_Localized: Improves health and armor. The first time health falls below half,
+      gain a 45 barrier.
     m_Metadata:
       m_Items: []
   - m_Id: 168049486323712
-    m_Localized: vanguard notable 02
+    m_Localized: Weight of the Oath
     m_Metadata:
       m_Items: []
   - m_Id: 168049486323713
-    m_Localized: vanguard notable node.
+    m_Localized: Improves tenacity and protect radius. Take reduced damage for 8
+      seconds after battle starts.
     m_Metadata:
       m_Items: []
   - m_Id: 168050060943360
@@ -147,11 +149,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168051235348480
-    m_Localized: vanguard notable 05
+    m_Localized: Lattice Bastion
     m_Metadata:
       m_Items: []
   - m_Id: 168051235348481
-    m_Localized: vanguard notable node.
+    m_Localized: Improves health and target switching. Whenever an ally falls, surviving
+      allies gain a 25 barrier.
     m_Metadata:
       m_Items: []
   - m_Id: 168051927408640
@@ -267,19 +270,20 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168060748029952
-    m_Localized: duelist notable 01
+    m_Localized: Shard Memory
     m_Metadata:
       m_Items: []
   - m_Id: 168060748029953
-    m_Localized: duelist notable node.
+    m_Localized: Improves physical output and attack speed. On kill, remaining enemies
+      are exposed for 2.5 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 168061335232512
-    m_Localized: duelist notable 02
+    m_Localized: Edge of the Sentence
     m_Metadata:
       m_Items: []
   - m_Id: 168061335232513
-    m_Localized: duelist notable node.
+    m_Localized: Improves critical chance and lifesteal. On kill, gain 20 energy.
     m_Metadata:
       m_Items: []
   - m_Id: 168061972766720
@@ -299,11 +303,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168063159754752
-    m_Localized: duelist notable 05
+    m_Localized: Bloodless Form
     m_Metadata:
       m_Items: []
   - m_Id: 168063159754753
-    m_Localized: duelist notable node.
+    m_Localized: Improves physical output and critical chance. On kill, take reduced
+      damage for 2.5 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 168063767928832
@@ -419,19 +424,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168072479498240
-    m_Localized: ranger notable 01
+    m_Localized: Prism Sight
     m_Metadata:
       m_Items: []
   - m_Id: 168072479498241
-    m_Localized: ranger notable node.
+    m_Localized: Improves attack range and preferred distance. Your active skills
+      can critically strike and reach farther.
     m_Metadata:
       m_Items: []
   - m_Id: 168073083478016
-    m_Localized: ranger notable 02
+    m_Localized: Quick Kindling
     m_Metadata:
       m_Items: []
   - m_Id: 168073083478017
-    m_Localized: ranger notable node.
+    m_Localized: Improves physical output and critical chance. Start each battle
+      with 15 energy.
     m_Metadata:
       m_Items: []
   - m_Id: 168073700040704
@@ -443,19 +450,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168074308214784
-    m_Localized: ranger notable 04
+    m_Localized: Heat Haze
     m_Metadata:
       m_Items: []
   - m_Id: 168074308214785
-    m_Localized: ranger notable node.
+    m_Localized: Improves movement and target switching. The first time health falls
+      below 60%, take reduced damage for 4 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 168074899611648
-    m_Localized: ranger notable 05
+    m_Localized: Glass Pathfinder
     m_Metadata:
       m_Items: []
   - m_Id: 168074899611649
-    m_Localized: ranger notable node.
+    m_Localized: Improves physical output and range. When an ally falls, all enemies
+      are marked for 3 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 168075537145856
@@ -571,11 +580,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168084592648192
-    m_Localized: mystic notable 01
+    m_Localized: Echo Archive
     m_Metadata:
       m_Items: []
   - m_Id: 168084592648193
-    m_Localized: mystic notable node.
+    m_Localized: Improves magic output and cooldown recovery. Status effects from
+      your active skills last 30% longer.
     m_Metadata:
       m_Items: []
   - m_Id: 168085230182400
@@ -595,11 +605,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168086383616000
-    m_Localized: mystic notable 04
+    m_Localized: Lattice Listener
     m_Metadata:
       m_Items: []
   - m_Id: 168086383616001
-    m_Localized: mystic notable node.
+    m_Localized: Improves magic output and resistance. At battle start, all enemies
+      are slowed for 3 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 168086933069824

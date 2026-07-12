@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: crit_chance
     Op: 0
     Value: 0.02
+  GrantedSkillId: skill_bloodless_form
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

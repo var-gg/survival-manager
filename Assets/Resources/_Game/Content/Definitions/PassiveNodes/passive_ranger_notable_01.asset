@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: preferred_distance
     Op: 0
     Value: 0.18
+  GrantedSkillId: skill_prism_sight
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

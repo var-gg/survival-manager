@@ -71,7 +71,8 @@ internal static class CatalogEntryConverter
             definition.BoardDepth,
             definition.NodeKind,
             definition.PrerequisiteNodeIds.Where(id => !string.IsNullOrWhiteSpace(id)).ToList(),
-            Enumerate(definition.MutualExclusionTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
+            Enumerate(definition.MutualExclusionTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            definition.GrantedSkillId ?? string.Empty);
     }
 
     internal static ItemTemplate BuildItemTemplate(ItemBaseDefinition definition)

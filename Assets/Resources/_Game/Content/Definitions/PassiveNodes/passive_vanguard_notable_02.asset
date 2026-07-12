@@ -31,6 +31,7 @@ MonoBehaviour:
   - StatId: protect_radius
     Op: 0
     Value: 0.3
+  GrantedSkillId: skill_sentinel_oath
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

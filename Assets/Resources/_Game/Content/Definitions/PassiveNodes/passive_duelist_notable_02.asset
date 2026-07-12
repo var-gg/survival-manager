@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: lifesteal
     Op: 0
     Value: 0.02
+  GrantedSkillId: skill_edge_of_sentence
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

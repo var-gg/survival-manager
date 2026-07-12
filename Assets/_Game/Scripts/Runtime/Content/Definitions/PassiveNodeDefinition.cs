@@ -21,6 +21,9 @@ namespace SM.Content.Definitions
         public List<StableTagDefinition> RuleModifierTags = new();
         public List<SerializableStatModifier> Modifiers = new();
 
+        [Tooltip("PoE식 노드 도달 보상 스킬 id — 이 노드를 선택하면 해당 스킬의 발동형 효과(TriggeredEffects)와 서포트 변조(SupportModifier)가 슬롯 계약 밖 효과 캐리어로 유닛에 합류한다. 빈 값이면 스탯 전용 노드.")]
+        public string GrantedSkillId = string.Empty;
+
         [FormerlySerializedAs("IsKeystone")]
         [SerializeField, HideInInspector] private bool legacyIsKeystone;
 

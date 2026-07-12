@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: cooldown_recovery
     Op: 0
     Value: 0.05
+  GrantedSkillId: skill_echo_archive
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

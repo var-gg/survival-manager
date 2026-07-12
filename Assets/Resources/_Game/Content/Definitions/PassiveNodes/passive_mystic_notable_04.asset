@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: resist
     Op: 0
     Value: 0.6
+  GrantedSkillId: skill_lattice_listener
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

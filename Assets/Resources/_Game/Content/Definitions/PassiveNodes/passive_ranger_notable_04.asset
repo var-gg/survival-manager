@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: target_switch_delay
     Op: 0
     Value: -0.05
+  GrantedSkillId: skill_heat_haze
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

@@ -31,6 +31,7 @@ MonoBehaviour:
   - StatId: armor
     Op: 0
     Value: 0.9
+  GrantedSkillId: skill_iron_hide_memory
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

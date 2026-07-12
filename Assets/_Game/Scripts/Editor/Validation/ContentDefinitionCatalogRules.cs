@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Unity;
+using UnityEngine;
 
 namespace SM.Editor.Validation;
 
@@ -26,6 +27,7 @@ internal sealed class CatalogValidationContext
         Characters = catalog.OfType<CharacterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         ExtraActors = catalog.OfType<ExtraActorCharacterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         PassiveBoards = catalog.OfType<PassiveBoardDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        PassiveNodes = catalog.OfType<PassiveNodeDefinition>().ToList();
         Statuses = catalog.OfType<StatusFamilyDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         CleanseProfiles = catalog.OfType<CleanseProfileDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         ControlRules = catalog.OfType<ControlDiminishingRuleDefinition>().ToList();
@@ -51,6 +53,7 @@ internal sealed class CatalogValidationContext
     internal IReadOnlyDictionary<string, CharacterDefinition> Characters { get; }
     internal IReadOnlyDictionary<string, ExtraActorCharacterDefinition> ExtraActors { get; }
     internal IReadOnlyDictionary<string, PassiveBoardDefinition> PassiveBoards { get; }
+    internal IReadOnlyList<PassiveNodeDefinition> PassiveNodes { get; }
     internal IReadOnlyDictionary<string, StatusFamilyDefinition> Statuses { get; }
     internal IReadOnlyDictionary<string, CleanseProfileDefinition> CleanseProfiles { get; }
     internal IReadOnlyList<ControlDiminishingRuleDefinition> ControlRules { get; }
@@ -102,6 +105,7 @@ internal sealed class CatalogValidationRuleRegistry
             new RewardCatalogValidator(),
             new BuildLaneCoverageCatalogValidator(),
             new SkillCatalogValidator(),
+            new PassiveNodeCatalogValidator(),
             new ItemCatalogValidator(),
             new EquipmentContentV1CatalogValidator(),
             new FactionIsolationValidator(),
@@ -991,6 +995,62 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
     private static int GetCount<TKey>(IReadOnlyDictionary<TKey, int> counts, TKey key)
     {
         return counts.TryGetValue(key, out var count) ? count : 0;
+    }
+}
+
+/// <summary>
+/// 패시브 노드 도달 보상(GrantedSkillId) 무결성 — 참조 스킬이 카탈로그에 존재하고,
+/// sim-effective payload(TriggeredEffects 또는 non-identity SupportModifier)를 가져야 한다.
+/// 빈 껍데기 스킬을 노드에 얹는 유령 콘텐츠 재발을 저작 시점에 차단한다.
+/// </summary>
+internal sealed class PassiveNodeCatalogValidator : ICatalogValidationRule
+{
+    public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
+    {
+        var skillsById = context.Skills
+            .Where(skill => !string.IsNullOrWhiteSpace(skill.Id))
+            .GroupBy(skill => skill.Id, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+
+        foreach (var node in context.PassiveNodes)
+        {
+            if (string.IsNullOrWhiteSpace(node.GrantedSkillId))
+            {
+                continue;
+            }
+
+            var assetPath = context.GetPath(node);
+            if (!skillsById.TryGetValue(node.GrantedSkillId, out var granted))
+            {
+                ContentValidationIssueFactory.AddError(issues, "passive_node.granted_skill_ref", $"Passive node '{node.Id}' grants missing skill '{node.GrantedSkillId}'.", assetPath);
+                continue;
+            }
+
+            var hasTriggeredEffects = granted.TriggeredEffects != null && granted.TriggeredEffects.Count > 0;
+            if (!hasTriggeredEffects && IsIdentitySupportModifier(granted.SupportModifier))
+            {
+                ContentValidationIssueFactory.AddError(issues, "passive_node.granted_skill_payload", $"Passive node '{node.Id}' grants skill '{granted.Id}' with no sim-effective payload (TriggeredEffects or SupportModifier).", assetPath);
+            }
+        }
+    }
+
+    private static bool IsIdentitySupportModifier(SupportModifierSpec? spec)
+    {
+        if (spec == null)
+        {
+            return true;
+        }
+
+        // SkillConverter.BuildSupportModifier의 identity 판정과 동일 기준 — identity면 컨버터가 null로 접는다.
+        return Mathf.Approximately(spec.PowerMultiplier, 1f)
+            && Mathf.Approximately(spec.CooldownMultiplier, 1f)
+            && Mathf.Approximately(spec.CastWindupMultiplier, 1f)
+            && Mathf.Approximately(spec.RangeBonus, 0f)
+            && Mathf.Approximately(spec.StatusDurationMultiplier, 1f)
+            && !spec.ForceCanCrit
+            && !spec.AddedStatuses.Any(rule => rule != null && !string.IsNullOrWhiteSpace(rule.StatusId))
+            && string.IsNullOrWhiteSpace(spec.GrantCleanseProfileId)
+            && !spec.OwnerModifiers.Any(modifier => modifier != null);
     }
 }
 

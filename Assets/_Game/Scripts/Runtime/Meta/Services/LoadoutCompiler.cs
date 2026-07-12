@@ -23,7 +23,10 @@ public sealed class LoadoutCompiler
     //   매칭 액티브 수치/상태/cleanse와 owner 스탯이 컴파일 타임에 변환된다.
     // item-template.v1: 아이템 CompileTags/무기 family 태그 유닛 전파 + 젬 무기 게이트 활성화
     //   (RequiredWeaponTags 저작이 이제 실판정) — 아이템 장착 라인의 태그/hash 변경.
-    public const string CurrentCompileVersion = "item-template.v1";
+    // passive-granted-skill.v1: 패시브 노드 도달 보상 스킬(PoE식 notable) 신설 — 선택 노드의
+    //   GrantedSkillId가 가리키는 스킬의 TriggeredEffects/CompileTags가 유닛에 합류하고,
+    //   SupportModifier 보유 스킬은 서포트 젬 목록에 합류(4슬롯 계약 무접촉).
+    public const string CurrentCompileVersion = "passive-granted-skill.v1";
 
     private sealed class CompiledArtifacts
     {
@@ -183,6 +186,7 @@ public sealed class LoadoutCompiler
                 }
             }
 
+            var grantedSupportGems = new List<BattleSkillSpec>();
             if (passiveSelection != null)
             {
                 foreach (var nodeId in passiveSelection.SelectedNodeIds)
@@ -199,6 +203,8 @@ public sealed class LoadoutCompiler
                     {
                         artifacts.CompileTags.Add(tag);
                     }
+
+                    ApplyPassiveGrantedSkill(node, artifacts, hero.Id, content, grantedSupportGems);
                 }
             }
 
@@ -213,7 +219,8 @@ public sealed class LoadoutCompiler
             var resolvedSkills = ApplySupportModifiers(
                 ResolveSkills(hero, archetype, loadout, itemInstances, skillInstances, content),
                 artifacts,
-                hero.Id);
+                hero.Id,
+                grantedSupportGems);
             foreach (var selection in resolvedSkills)
             {
                 var skill = selection.Skill;
@@ -430,11 +437,18 @@ public sealed class LoadoutCompiler
     private static IReadOnlyList<ResolvedSkillSelection> ApplySupportModifiers(
         IReadOnlyList<ResolvedSkillSelection> resolved,
         CompiledArtifacts artifacts,
-        string heroId)
+        string heroId,
+        IReadOnlyList<BattleSkillSpec>? grantedGems = null)
     {
+        // 젬 풀 = 장착 슬롯 젬 + 패시브 노드 부여 젬(슬롯 밖). 같은 스킬 중복은 1회만(슬롯 dedup과 동일 의미론),
+        // id 오름차순 순차 적용으로 결정성 유지.
         var gems = resolved
             .Where(selection => selection.Skill.SupportModifier != null)
-            .OrderBy(selection => selection.Skill.Id, StringComparer.Ordinal)
+            .Select(selection => selection.Skill)
+            .Concat(grantedGems ?? Array.Empty<BattleSkillSpec>())
+            .GroupBy(skill => skill.Id, StringComparer.Ordinal)
+            .Select(group => group.First())
+            .OrderBy(skill => skill.Id, StringComparer.Ordinal)
             .ToList();
         if (gems.Count == 0)
         {
@@ -444,46 +458,89 @@ public sealed class LoadoutCompiler
         var transformed = resolved.ToList();
         foreach (var gem in gems)
         {
-            var modifier = gem.Skill.SupportModifier!;
-            if (gem.Skill.RequiredClassTags is { Count: > 0 }
-                && !gem.Skill.RequiredClassTags.Any(artifacts.CompileTags.Contains))
+            var modifier = gem.SupportModifier!;
+            if (gem.RequiredClassTags is { Count: > 0 }
+                && !gem.RequiredClassTags.Any(artifacts.CompileTags.Contains))
             {
                 artifacts.Provenance.Add(new CompileProvenanceEntry(
-                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_modifier_class_gate", gem.Skill.RequiredClassTags.ToList()));
+                    heroId, ModifierSource.Skill, gem.Id, "support_modifier_class_gate", gem.RequiredClassTags.ToList()));
                 continue;
             }
 
-            if (gem.Skill.RequiredWeaponTags is { Count: > 0 }
-                && !gem.Skill.RequiredWeaponTags.Any(artifacts.CompileTags.Contains))
+            if (gem.RequiredWeaponTags is { Count: > 0 }
+                && !gem.RequiredWeaponTags.Any(artifacts.CompileTags.Contains))
             {
                 artifacts.Provenance.Add(new CompileProvenanceEntry(
-                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_modifier_weapon_gate", gem.Skill.RequiredWeaponTags.ToList()));
+                    heroId, ModifierSource.Skill, gem.Id, "support_modifier_weapon_gate", gem.RequiredWeaponTags.ToList()));
                 continue;
             }
 
             if (modifier.OwnerModifiers is { Count: > 0 })
             {
-                var package = new CombatModifierPackage($"support:{gem.Skill.Id}", ModifierSource.Skill, modifier.OwnerModifiers.ToList());
+                var package = new CombatModifierPackage($"support:{gem.Id}", ModifierSource.Skill, modifier.OwnerModifiers.ToList());
                 artifacts.NumericPackages.Add(package);
                 artifacts.Provenance.Add(new CompileProvenanceEntry(
-                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_owner_numeric", BuildModifierDetails(package.Modifiers)));
+                    heroId, ModifierSource.Skill, gem.Id, "support_owner_numeric", BuildModifierDetails(package.Modifiers)));
             }
 
             for (var i = 0; i < transformed.Count; i++)
             {
                 var selection = transformed[i];
-                if (selection.Skill.SupportModifier != null || !IsSupportTarget(gem.Skill, selection.Skill))
+                if (selection.Skill.SupportModifier != null || !IsSupportTarget(gem, selection.Skill))
                 {
                     continue;
                 }
 
                 transformed[i] = selection with { Skill = TransformSupportedSkill(selection.Skill, modifier) };
                 artifacts.Provenance.Add(new CompileProvenanceEntry(
-                    heroId, ModifierSource.Skill, gem.Skill.Id, "support_modifier", new[] { $"target:{selection.Skill.Id}" }));
+                    heroId, ModifierSource.Skill, gem.Id, "support_modifier", new[] { $"target:{selection.Skill.Id}" }));
             }
         }
 
         return transformed;
+    }
+
+    /// <summary>
+    /// PoE식 패시브 노드 도달 보상 — 노드의 GrantedSkillId가 가리키는 스킬을 슬롯 계약 밖
+    /// 효과 캐리어로 합류시킨다. TriggeredEffects/CompileTags는 증강과 동일 채널,
+    /// SupportModifier 보유 스킬은 서포트 젬 풀 합류(ApplySupportModifiers에서 게이트/변조 판정).
+    /// 미존재 스킬 id는 조용히 건너뛴다(저작 오류는 catalog validator가 잡는다).
+    /// </summary>
+    private static void ApplyPassiveGrantedSkill(
+        PassiveNodeTemplate node,
+        CompiledArtifacts artifacts,
+        string heroId,
+        CombatContentSnapshot content,
+        List<BattleSkillSpec> grantedSupportGems)
+    {
+        if (string.IsNullOrWhiteSpace(node.GrantedSkillId)
+            || !content.SkillCatalog.TryGetValue(node.GrantedSkillId, out var skill))
+        {
+            return;
+        }
+
+        foreach (var tag in skill.CompileTags ?? Array.Empty<string>())
+        {
+            artifacts.CompileTags.Add(tag);
+        }
+
+        if (skill.TriggeredEffects is { Count: > 0 })
+        {
+            artifacts.TriggeredEffects.AddRange(skill.TriggeredEffects);
+            artifacts.Provenance.Add(new CompileProvenanceEntry(
+                heroId,
+                ModifierSource.Skill,
+                skill.Id,
+                "passive_granted_skill",
+                skill.TriggeredEffects.Select(effect => $"{effect.Trigger}:{effect.Op}:{effect.StatusId}").ToList()));
+        }
+
+        if (skill.SupportModifier != null)
+        {
+            grantedSupportGems.Add(skill);
+            artifacts.Provenance.Add(new CompileProvenanceEntry(
+                heroId, ModifierSource.Skill, skill.Id, "passive_granted_support", new[] { $"node:{node.Id}" }));
+        }
     }
 
     private static bool IsSupportTarget(BattleSkillSpec gem, BattleSkillSpec candidate)

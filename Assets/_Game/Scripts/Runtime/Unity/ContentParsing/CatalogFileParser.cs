@@ -87,6 +87,7 @@ internal static class CatalogFileParser
             definition.CompileTags = ParseReferenceList(lines, "CompileTags:", guidToPath, stableTags);
             definition.RuleModifierTags = ParseReferenceList(lines, "RuleModifierTags:", guidToPath, stableTags);
             definition.Modifiers = ParseModifiers(lines, "Modifiers:");
+            definition.GrantedSkillId = ExtractValue(lines, "GrantedSkillId:");
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
             return definition;

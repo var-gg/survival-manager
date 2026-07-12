@@ -98,7 +98,8 @@ public sealed record PassiveNodeTemplate(
     int BoardDepth = 0,
     PassiveNodeKindValue NodeKind = PassiveNodeKindValue.Small,
     IReadOnlyList<string>? PrerequisiteNodeIds = null,
-    IReadOnlyList<string>? MutualExclusionTagIds = null);
+    IReadOnlyList<string>? MutualExclusionTagIds = null,
+    string GrantedSkillId = "");
 
 public sealed record AugmentCatalogEntry(
     string Id,

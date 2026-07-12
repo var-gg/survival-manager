@@ -474,7 +474,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350411
-    m_Localized: Passive; improves reliability when holding anchor posture.
+    m_Localized: Passive. Take reduced damage for 8 seconds after battle starts.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350412
@@ -482,7 +482,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350413
-    m_Localized: Passive; converts repeated pressure into extra barrier budget.
+    m_Localized: Passive. Whenever an ally falls, surviving allies gain a 25 barrier.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350414
@@ -522,7 +522,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350423
-    m_Localized: Passive; repeated damage grants a small durability budget.
+    m_Localized: Passive. The first time health falls below half, gain a 45 barrier.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350424
@@ -587,7 +587,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350439
-    m_Localized: Passive; marked targets increase projectile reliability.
+    m_Localized: Passive. Your active skills can critically strike and reach farther.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350440
@@ -595,7 +595,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350441
-    m_Localized: Passive; after moving, incoming ranged pressure is less reliable.
+    m_Localized: Passive. The first time health falls below 60%, take reduced damage
+      for 4 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350442
@@ -603,7 +604,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350443
-    m_Localized: Passive; first burn application in combat gains extra tempo budget.
+    m_Localized: Passive. Start each battle with 15 energy.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350444
@@ -611,8 +612,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350445
-    m_Localized: Passive; improves target switching when fighting through marked
-      zones.
+    m_Localized: Passive. When an ally falls, all enemies are marked for 3 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350446
@@ -652,7 +652,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350455
-    m_Localized: Passive; hitting exposed targets stores a small follow-up budget.
+    m_Localized: Passive. On kill, remaining enemies are exposed for 2.5 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350456
@@ -660,7 +660,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350457
-    m_Localized: Passive; execution windows gain a small true-damage bias.
+    m_Localized: Passive. On kill, gain 20 energy.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350458
@@ -668,7 +668,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350459
-    m_Localized: Passive; reduces self-risk when chaining utility movement.
+    m_Localized: Passive. On kill, take reduced damage for 2.5 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350460
@@ -701,7 +701,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350467
-    m_Localized: Passive; repeated status applications improve reliability.
+    m_Localized: Passive. Status effects from your active skills last 30% longer.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350468
@@ -709,7 +709,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350469
-    m_Localized: Passive; improves target selection against controlled enemies.
+    m_Localized: Passive. At battle start, all enemies are slowed for 3 seconds.
     m_Metadata:
       m_Items: []
   - m_Id: 335601013350470

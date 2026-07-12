@@ -30,6 +30,7 @@ MonoBehaviour:
   - StatId: attack_speed
     Op: 0
     Value: 0.08
+  GrantedSkillId: skill_shard_memory
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 
