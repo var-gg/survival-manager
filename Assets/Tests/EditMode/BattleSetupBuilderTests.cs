@@ -41,6 +41,55 @@ public sealed class BattleSetupBuilderTests
     }
 
     [Test]
+    public void EnemyLane_FiresAuthoredSynergyTiers_LikeAllyCompileLane()
+    {
+        // 적군 시너지 대칭 배선 witness(오너 게이트② 채택, 2026-07-12) — 과거 이 레인은 CompileTags/
+        // TeamPackages를 null로 구워 authored 시너지 tier가 적군에 영원히 미적용(V1 하드코딩 폴백만)이었다.
+        // 특정 id 하드코딩 없이 실 카탈로그에서 "아키타입 race/class와 일치하는 CountedTagId tier"를
+        // 동적으로 찾아, threshold 수만큼 같은 아키타입 comp을 굽고 tier 패키지 발화를 단언한다.
+        var lookup = new RuntimeCombatContentLookup();
+        Assert.That(lookup.TryGetCombatSnapshot(out var snapshot, out var error), Is.True, error);
+
+        var archetypes = snapshot.Archetypes.Values.ToList();
+        var match = snapshot.SynergyCatalog.Values
+            .Select(template => template.Rule)
+            .Select(rule => (Rule: rule, Archetype: archetypes.FirstOrDefault(archetype =>
+                archetype.RaceId == rule.CountedTagId || archetype.ClassId == rule.CountedTagId)))
+            .FirstOrDefault(pair => pair.Archetype != null);
+        Assert.That(match.Archetype, Is.Not.Null,
+            "실 콘텐츠에 아키타입 race/class와 일치하는 CountedTagId tier가 최소 하나 존재해야 한다(시너지 카탈로그 계약)");
+
+        var enemies = Enumerable.Range(0, match.Rule.Threshold)
+            .Select(index => new BattleParticipantSpec(
+                $"enemy_synergy_{index}",
+                $"Synergy Probe {index}",
+                match.Archetype!.Id,
+                DeploymentAnchorId.FrontCenter,
+                string.Empty,
+                string.Empty,
+                Array.Empty<BattleEquippedItemSpec>(),
+                Array.Empty<string>()))
+            .ToList();
+        var result = BattleSetupBuilder.Build(
+            Array.Empty<BattleParticipantSpec>(),
+            new BattleEncounterPlan(enemies, TeamPostureType.StandardAdvance),
+            snapshot);
+        Assert.That(result.IsSuccess, Is.True, result.Error);
+
+        var enemy = result.Enemies.First();
+        Assert.That(enemy.CompileTags, Is.Not.Null.And.Not.Empty,
+            "적군 유닛 CompileTags가 저작돼야 한다(null parity 해소) — 시너지 카운트의 소재");
+        Assert.That(enemy.CompileTags, Does.Contain(match.Rule.CountedTagId),
+            "적군 CompileTags에 tier가 세는 race/class 태그가 실려야 한다");
+        Assert.That(enemy.TeamPackages, Is.Not.Null.And.Not.Empty,
+            "적군 TeamPackages에 팀 평가 결과가 실려야 한다");
+        Assert.That(
+            enemy.TeamPackages!.Any(package => package.SourceId.StartsWith($"synergy:{match.Rule.SynergyId}", StringComparison.Ordinal)),
+            Is.True,
+            "적군 팀 패키지에 authored tier(synergy:*)가 발화해야 한다 — race:/class:* 폴백만 있으면 대칭 배선 회귀");
+    }
+
+    [Test]
     public void SameArchetypeHeroes_WithDifferentTraitItemAndAugmentInputs_EndWithDifferentStats()
     {
         var lookup = new RuntimeCombatContentLookup();

@@ -37,7 +37,28 @@ public static class BattleSetupBuilder
             enemyDefinitions.Add(definition);
         }
 
+        // 팀 시너지 대칭 배선(오너 게이트② 채택, 2026-07-12) — 이 레인(캠페인 적군 + 샌드박스 양측)도
+        // LoadoutCompiler와 같은 authored tier 평가를 받는다. 과거 TeamPackages null은 BattleFactory의
+        // V1 하드코딩 폴백으로만 떨어져 authored 시너지 7계열이 적군에 영원히 미적용이었다(FM 정찰→
+        // 카운터 편성 pillar 성립 조건). tier 미발화 comp은 기존 폴백과 동일 결과로 수렴한다.
+        ApplyTeamPackages(allyDefinitions, content);
+        ApplyTeamPackages(enemyDefinitions, content);
+
         return BattleSetupBuildResult.Success(allyDefinitions, enemyDefinitions, CombatStatusRuleCompiler.Compile(content));
+    }
+
+    private static void ApplyTeamPackages(List<BattleUnitLoadout> definitions, CombatContentSnapshot content)
+    {
+        if (definitions.Count == 0)
+        {
+            return;
+        }
+
+        var teamPackages = SynergyLoadoutService.BuildTeamPackages(definitions, content);
+        for (var i = 0; i < definitions.Count; i++)
+        {
+            definitions[i] = definitions[i] with { TeamPackages = teamPackages };
+        }
     }
 
     private static bool TryBuildDefinition(
@@ -98,6 +119,13 @@ public static class BattleSetupBuilder
 
         var rulePackages = BuildRulePackages(participant, archetype, appliedAffixTemplates);
 
+        // 유닛 CompileTags 저작(null parity 해소) — LoadoutCompiler와 같은 축(race:/class:/raw/role/
+        // 아이템/스킬/affix 태그). 시너지 tier 카운트(CountedTagId=race/class id)의 소재. 조건부 affix는
+        // 위 게이트 통과분만 appliedAffixTemplates에 있어 자기충족 순환이 없고, ordinal 정렬로 결정적.
+        var compileTags = BuildAffixConditionContext(archetype, resolvedRoleTag, appliedAffixTemplates, participant.EquippedItems, content)
+            .OrderBy(tag => tag, StringComparer.Ordinal)
+            .ToList();
+
         definition = new BattleUnitLoadout(
             participant.ParticipantId,
             participant.DisplayName,
@@ -115,7 +143,7 @@ public static class BattleSetupBuilder
             participant.OpeningIntent,
             packages,
             null,
-            null,
+            compileTags,
             resolvedRoleTag,
             RoleVariantTag.Unassigned,
             archetype.Footprint,
