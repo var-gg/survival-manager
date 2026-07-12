@@ -203,7 +203,9 @@ public sealed record StatusFamilyTemplate(
     // magnitude→숫자 채널 배율 (sunder/marked/exposed/wound/slow). 1=magnitude 직소비(현행 공식) — 2보.
     float MagnitudeScale = 1f,
     // 적용 시 즉시 보호막 전환(barrier) — 효과 종류 데이터화 3보 1슬라이스. false=일반 상태 잔존(현행 기본).
-    bool GrantsBarrierOnApply = false);
+    bool GrantsBarrierOnApply = false,
+    // 보유 시 저지불가(하드 컨트롤 적용 면역 + 저작 강제이동 면역, unstoppable) — 3보 3b. false=면역 없음(현행 기본).
+    bool GrantsUnstoppable = false);
 
 public sealed record CleanseProfileTemplate(
     string Id,

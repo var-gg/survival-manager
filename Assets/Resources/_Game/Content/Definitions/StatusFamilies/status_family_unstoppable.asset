@@ -21,6 +21,7 @@ MonoBehaviour:
   AffectedByTenacity: 0
   TenacityScale: 0
   AppliesPeriodicDamage: 0
+  GrantsUnstoppable: 1
   VfxCueId: vfx.status_unstoppable
   SfxHookId: sfx.status.unstoppable.apply
   BudgetCard:

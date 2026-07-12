@@ -23,7 +23,10 @@ public sealed record CombatStatusFamilyRule(
     float MagnitudeScale = 1f,
     // 적용 시 상태 잔존 대신 즉시 보호막 전환 (barrier=true) — StatusId 문자열 분기의 콘텐츠 승격
     // (효과 종류 데이터화 3보 1슬라이스). 미등록/미저작 family는 false(=일반 상태 잔존).
-    bool GrantsBarrierOnApply = false);
+    bool GrantsBarrierOnApply = false,
+    // 보유 시 저지불가 — 하드 컨트롤 적용 면역 + 저작 강제이동(넉백/끌기) 면역 (unstoppable=true).
+    // HasStatus("unstoppable") 문자열 조회의 콘텐츠 승격(효과 종류 데이터화 3보 3b). 미등록/미저작은 false.
+    bool GrantsUnstoppable = false);
 
 public sealed record CombatCleanseProfileRule(
     string Id,
@@ -58,6 +61,7 @@ public sealed class CombatStatusRules
         StatusFamilies = statusFamilies ?? Default.StatusFamilies;
         CleanseProfiles = cleanseProfiles ?? Default.CleanseProfiles;
         ControlDiminishing = controlDiminishing ?? Default.ControlDiminishing;
+        UnstoppableStatusIds = DeriveUnstoppableStatusIds(StatusFamilies);
     }
 
     private CombatStatusRules(
@@ -69,11 +73,16 @@ public sealed class CombatStatusRules
         StatusFamilies = statusFamilies;
         CleanseProfiles = cleanseProfiles;
         ControlDiminishing = controlDiminishing;
+        UnstoppableStatusIds = DeriveUnstoppableStatusIds(StatusFamilies);
     }
 
     public IReadOnlyDictionary<string, CombatStatusFamilyRule> StatusFamilies { get; }
     public IReadOnlyDictionary<string, CombatCleanseProfileRule> CleanseProfiles { get; }
     public CombatControlDiminishingRule ControlDiminishing { get; }
+
+    // kind별 상태 id set — 생성 시 1회 eager 파생, 이후 불변(변이 금지). UnitSnapshot이 생성자에서 참조를
+    // 스냅샷해 핫패스 게터(IsUnstoppable)가 사전 조회 없이 Contains만 소비한다(효과 종류 데이터화 3보 3b).
+    internal HashSet<string> UnstoppableStatusIds { get; }
 
     public bool TryGetStatusFamily(string statusId, out CombatStatusFamilyRule rule)
     {
@@ -137,6 +146,20 @@ public sealed class CombatStatusRules
         return Math.Clamp(statusRule.TenacityScale, 0f, 1f);
     }
 
+    private static HashSet<string> DeriveUnstoppableStatusIds(IReadOnlyDictionary<string, CombatStatusFamilyRule> statusFamilies)
+    {
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var rule in statusFamilies.Values)
+        {
+            if (rule.GrantsUnstoppable)
+            {
+                ids.Add(rule.Id);
+            }
+        }
+
+        return ids;
+    }
+
     private static CombatStatusRules CreateDefault()
     {
         var families = new[]
@@ -153,7 +176,7 @@ public sealed class CombatStatusRules
                 new CombatStatusFamilyRule("exposed", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "exposed" }, "vfx.status_exposed"),
                 new CombatStatusFamilyRule("barrier", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "barrier" }, "vfx.status_barrier", GrantsBarrierOnApply: true),
                 new CombatStatusFamilyRule("guarded", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "guarded" }, "vfx.status_guarded", IncomingDamageDelta: -0.1f),
-                new CombatStatusFamilyRule("unstoppable", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "unstoppable" }, "vfx.status_unstoppable"),
+                new CombatStatusFamilyRule("unstoppable", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "unstoppable" }, "vfx.status_unstoppable", GrantsUnstoppable: true),
             }
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);
         var cleanse = new[]

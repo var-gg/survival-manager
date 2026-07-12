@@ -29,7 +29,8 @@ internal static class StatusConverter
             BuildGovernanceSummary(definition.BudgetCard),
             IncomingDamageDelta: definition.IncomingDamageDelta,
             MagnitudeScale: definition.MagnitudeScale,
-            GrantsBarrierOnApply: definition.GrantsBarrierOnApply);
+            GrantsBarrierOnApply: definition.GrantsBarrierOnApply,
+            GrantsUnstoppable: definition.GrantsUnstoppable);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)

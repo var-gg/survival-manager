@@ -3526,6 +3526,8 @@ public static class SampleSeedGenerator
                 // 효과 종류 서술자(3보 1슬라이스) — barrier의 즉시 보호막 전환. 미명시면 fresh 재생성 시
                 // false 추락으로 barrier가 무효과 잔존 상태가 되는 함정(guarded delta와 동일 축).
                 asset.GrantsBarrierOnApply = definition.Id == "barrier";
+                // 효과 종류 서술자(3보 3b) — unstoppable의 저지불가(하드 컨트롤 면역 + 강제이동 면역). 동일 함정 축.
+                asset.GrantsUnstoppable = definition.Id == "unstoppable";
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;

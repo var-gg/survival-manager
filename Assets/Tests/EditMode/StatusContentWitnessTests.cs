@@ -82,6 +82,30 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
+    public void RealUnstoppableFamily_CarriesGrantsUnstoppable()
+    {
+        // 효과 종류 데이터화 3보 3b — 저지불가 kind(하드 컨트롤 적용 면역 + 저작 강제이동 면역)가
+        // 실 committed asset(status_family_unstoppable.asset)에서 전투 규칙까지 실려야 한다.
+        // 실 콘텐츠 skill_warden_utility(정화 break_and_unstoppable의 unstoppable 부여)가 이 kind에 의존한다.
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rules = CombatStatusRuleCompiler.Compile(snapshot);
+
+        Assert.That(rules.TryGetStatusFamily("unstoppable", out var unstoppable), Is.True,
+            "실 콘텐츠에 unstoppable 상태 패밀리가 존재해야 한다");
+        Assert.That(unstoppable.GrantsUnstoppable, Is.True,
+            "unstoppable의 저지불가 kind가 콘텐츠(status_family_unstoppable.asset)에서 전투 규칙까지 실려야 한다 — " +
+            "false면 미저작/파서 결손으로 하드 컨트롤 면역·강제이동 면역이 통째로 꺼지는 회귀");
+
+        var carriers = rules.StatusFamilies.Values
+            .Where(rule => rule.GrantsUnstoppable)
+            .Select(rule => rule.Id)
+            .ToList();
+        Assert.That(carriers, Is.EqualTo(new[] { "unstoppable" }),
+            "실 콘텐츠에서 저지불가 kind 보유 family는 정확히 unstoppable 하나여야 한다 — 새 family가 " +
+            "의도적으로 저지불가를 저작하면 이 목록을 의식적으로 갱신할 것(무의식 누출 가드)");
+    }
+
+    [Test]
     public void RealSkillAppliedStatus_LandsOnEnemy_InRealSim()
     {
         // 오너 의심(2026-07-12) 실측 응답: "스킬에서 상태이상 적용이 미구현 아닌가" —

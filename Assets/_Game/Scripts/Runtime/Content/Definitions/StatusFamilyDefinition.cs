@@ -46,6 +46,9 @@ namespace SM.Content.Definitions
         [Tooltip("적용 시 상태로 잔존하는 대신 즉시 보호막(barrier)으로 전환한다 (barrier=true). 과거 sim에 StatusId==\"barrier\" 문자열 분기로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 1슬라이스. 바닥 1은 코드 소유 클램프.")]
         public bool GrantsBarrierOnApply;
 
+        [Tooltip("이 상태를 보유한 유닛이 저지불가가 된다 — 하드 컨트롤 적용 면역 + 저작 강제이동(넉백/끌기) 면역 (unstoppable=true). 과거 sim에 HasStatus(\"unstoppable\") 문자열 조회로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 3b. 정화 프로필이 부여하는 상태 id는 별개 축(CleanseProfileDefinition.GrantsUnstoppable).")]
+        public bool GrantsUnstoppable;
+
         public string VfxCueId = string.Empty;
         public string SfxHookId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };

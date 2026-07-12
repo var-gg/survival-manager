@@ -31,7 +31,8 @@ public static class CombatStatusRuleCompiler
                 family.VfxCueId ?? string.Empty,
                 family.IncomingDamageDelta,
                 family.MagnitudeScale,
-                family.GrantsBarrierOnApply))
+                family.GrantsBarrierOnApply,
+                family.GrantsUnstoppable))
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);
         var cleanses = (content.CleanseProfiles ?? new Dictionary<string, CleanseProfileTemplate>())
             .Values

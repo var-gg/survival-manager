@@ -31,6 +31,7 @@ internal static class StatusFileParser
             // 기본 1(=magnitude 직소비) 필드 — 미저작 asset이 0으로 추락해 채널이 통째로 꺼지지 않도록 fallback 필수.
             definition.MagnitudeScale = ExtractFloat(lines, "MagnitudeScale:", 1f);
             definition.GrantsBarrierOnApply = ExtractBool(lines, "GrantsBarrierOnApply:");
+            definition.GrantsUnstoppable = ExtractBool(lines, "GrantsUnstoppable:");
             definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
             definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
@@ -196,6 +197,8 @@ internal static class StatusFileParser
         // 미저작(구버전) asset 안전망 — barrier의 즉시 보호막 전환이 파서 레인에서 꺼지지 않게.
         // 신규 family 저작은 || 라 저작값이 그대로 살아난다(효과 종류 데이터화 3보).
         definition.GrantsBarrierOnApply = definition.GrantsBarrierOnApply || definition.Id is "barrier";
+        // 동일 축 안전망(3b) — unstoppable의 저지불가 kind가 파서 레인에서 꺼지지 않게.
+        definition.GrantsUnstoppable = definition.GrantsUnstoppable || definition.Id is "unstoppable";
         if (string.IsNullOrWhiteSpace(definition.VfxCueId))
         {
             definition.VfxCueId = $"vfx.status_{definition.Id}";

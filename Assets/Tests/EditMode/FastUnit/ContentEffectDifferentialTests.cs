@@ -427,6 +427,51 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void UnstoppableKind_IsContentDriven_InRealSim()
+    {
+        // 효과 종류 데이터화 3보 3b — "보유 시 저지불가(하드 컨트롤 적용 면역)"는 이제 HasStatus("unstoppable")
+        // 문자열 조회가 아니라 콘텐츠 kind(GrantsUnstoppable)가 파생한 상태 id set이다(핫패스 set 스냅샷 최초 개통).
+        // 프로브는 legacy 손조립 캐스터의 Self ActiveSkill 확정 경로만 사용(3a에서 실측된 컴파일 유닛 공격 접촉
+        // 미검증 함정 회피): 한 시전이 unstoppable(60s)을 먼저 적용하고 곧이어 self stun(2s)을 적용한다 —
+        // 기본 규칙에선 면역이 stun을 기각하고, kind를 끄면 같은 시전이 자기 스턴으로 떨어진다.
+        var probeSkill = new BattleSkillSpec(
+            "skill.probe.unstoppable",
+            "skill.probe.unstoppable",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[]
+            {
+                new StatusApplicationSpec("probe:unstoppable", "unstoppable", 60f, 1f),
+                new StatusApplicationSpec("probe:self_stun", "stun", 2f, 1f),
+            });
+        var caster = CombatTestFactory.CreateUnit(
+            "caster",
+            hp: 400f,
+            attack: 1f,
+            skills: new[] { probeSkill },
+            tactics: new[]
+            {
+                new TacticRule(0, TacticConditionType.Fallback, 0f, BattleActionType.ActiveSkill, TargetSelectorType.Self, "skill.probe.unstoppable"),
+                new TacticRule(1, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
+            });
+
+        var defaultRun = RunUnstoppableCasterVersusRaider(caster, CombatStatusRules.Default);
+        var disabledRun = RunUnstoppableCasterVersusRaider(caster, RulesWithUnstoppableKind(false));
+        Assert.That(defaultRun.AllyStunnedSteps, Is.Zero,
+            "기본 규칙(unstoppable family가 kind 보유)에선 하드 컨트롤 면역이 self stun을 매 시전 기각해 " +
+            "실 sim 전체에서 스턴 보유 관측이 0이어야 한다");
+        Assert.That(disabledRun.AllyStunnedSteps, Is.GreaterThan(0),
+            "저지불가 kind를 콘텐츠 값(false)으로 끄면 같은 시전이 자기 스턴으로 떨어져 실 sim에서 스턴이 " +
+            "관측돼야 한다 — 면역 membership이 규칙 파생 set에서 소비된다는 1차 가드");
+
+        // 항등 계약: true 명시 저작 == 기본 규칙 — 전투 스트림 byte-identical(1보/2보/3a와 같은 핵심 계약).
+        var explicitTrueRun = RunUnstoppableCasterVersusRaider(caster, RulesWithUnstoppableKind(true));
+        Assert.That(explicitTrueRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "GrantsUnstoppable=true 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -685,6 +730,62 @@ public sealed class ContentEffectDifferentialTests
         }
 
         return new SimRun(sb.ToString(), allySurvivedSteps);
+    }
+
+    private sealed record UnstoppableRun(string Stream, int AllyStunnedSteps);
+
+    /// <summary>기본 규칙에서 unstoppable family 의 저지불가 kind 만 바꾼 상태 규칙 — 3보 3b differential.</summary>
+    private static CombatStatusRules RulesWithUnstoppableKind(bool grantsUnstoppable)
+    {
+        return new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == "unstoppable"
+                    ? pair.Value with { GrantsUnstoppable = grantsUnstoppable }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
+    }
+
+    /// <summary>손조립 unstoppable 캐스터 vs 손조립 raider(hp 500/attack 8) — Self ActiveSkill 확정 경로가
+    /// 한 시전에서 unstoppable(60s) 적용 직후 self stun(2s) 적용을 시도해 StatusResolutionService.ApplyStatus
+    /// 의 하드 컨트롤 면역 분기를 매 시전 태우는 러너(3보 3b 전용). 스트림에 stun 보유 여부를 함께 기록한다.</summary>
+    private static UnstoppableRun RunUnstoppableCasterVersusRaider(BattleUnitLoadout caster, CombatStatusRules? statusRules)
+    {
+        var enemy = CombatTestFactory.CreateUnit(
+            "enemy.raider",
+            race: "undead",
+            classId: "duelist",
+            anchor: DeploymentAnchorId.FrontBottom,
+            hp: 500f,
+            attack: 8f);
+        var simulator = new BattleSimulator(
+            CombatTestFactory.CreateBattleState(new[] { caster }, new[] { enemy }, seed: Seed, statusRules: statusRules),
+            MaxSteps);
+
+        var sb = new StringBuilder();
+        var allyStunnedSteps = 0;
+        var guard = 0;
+        while (!simulator.IsFinished && guard++ < 10000)
+        {
+            var step = simulator.Step();
+            foreach (var unit in step.Units)
+            {
+                var hasStun = unit.StatusIds?.Contains("stun") == true;
+                sb.Append(unit.Id).Append(':')
+                    .Append(unit.CurrentHealth.ToString("R", CultureInfo.InvariantCulture)).Append(',')
+                    .Append(unit.IsAlive ? '1' : '0').Append(',')
+                    .Append(hasStun ? '1' : '0').Append(';');
+                // BattleFactory id 계약: ally_{index}_{loadoutId} (BattleFactory.cs:31)
+                if (unit.Id == "ally_0_caster" && hasStun)
+                {
+                    allyStunnedSteps++;
+                }
+            }
+
+            sb.Append('\n');
+        }
+
+        return new UnstoppableRun(sb.ToString(), allyStunnedSteps);
     }
 
     private static BattleLoadoutSnapshot CompileSingleHero(
