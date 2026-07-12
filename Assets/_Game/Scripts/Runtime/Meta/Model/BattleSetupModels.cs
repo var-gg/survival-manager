@@ -211,7 +211,14 @@ public sealed record StatusFamilyTemplate(
     // 보유 시 자발 이동 차단(root) — 3보 3d. false=차단 없음(현행 기본).
     bool BlocksMovement = false,
     // 보유 시 행동 차단(턴 스킵/취소/전 행동 게이트, stun) — 3보 3e. false=차단 없음(현행 기본).
-    bool BlocksAction = false);
+    bool BlocksAction = false,
+    // 채널 membership 5종(3f) — 받는피해 가산(marked/exposed)/받는피해 delta(guarded)/방어·저항 차감(sunder)/
+    // 치유 감소(wound)/공속·이속 감쇠(slow). false=채널 비소속(현행 기본).
+    bool AmplifiesIncomingDamage = false,
+    bool GrantsGuardedDefense = false,
+    bool ShredsDefense = false,
+    bool ReducesHealing = false,
+    bool DampensTempo = false);
 
 public sealed record CleanseProfileTemplate(
     string Id,

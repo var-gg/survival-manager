@@ -577,6 +577,47 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void AmplifyMembership_IsContentDriven_InRealSim()
+    {
+        // 3f — "받는 피해 증폭 채널 소속"은 이제 marked/exposed 문자열 분기가 아니라 콘텐츠 kind
+        // (AmplifiesIncomingDamage)가 파생한 엔트리다. 개전 자기 표식(magnitude 0.35) — 기본 규칙에선
+        // 받는 피해 +35%로 빨리 죽고, membership을 끄면 같은 상태가 잔존만 해 오래 산다.
+        var compiled = CompileStatusProbe("marked", 0.35f, scope: EffectScope.Self);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var disabledRun = RunCompiledAllyVersusRaider(compiled, RulesWithFamilyMutation("marked",
+            rule => rule with { AmplifiesIncomingDamage = false }));
+        Assert.That(disabledRun.AllySurvivedSteps, Is.GreaterThan(defaultRun.AllySurvivedSteps),
+            "증폭 membership을 콘텐츠 값(false)으로 끄면 같은 marked 상태가 잔존해도 피해 증폭이 사라져 " +
+            "뚜렷하게 오래 생존해야 한다(잔존 상태 != 채널 효과 분리 증명)");
+
+        var explicitTrueRun = RunCompiledAllyVersusRaider(compiled, RulesWithFamilyMutation("marked",
+            rule => rule with { AmplifiesIncomingDamage = true }));
+        Assert.That(explicitTrueRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "AmplifiesIncomingDamage=true 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
+    public void GuardedDefenseMembership_IsContentDriven_InRealSim()
+    {
+        // 3f — "받는 피해 delta 채널 소속(수호)"의 membership 분리 증명. 개전 자기 수호 — 기본 규칙에선
+        // guarded delta(-0.1)로 오래 살고, membership을 끄면 delta가 저작돼 있어도 채널이 무시해 빨리 죽는다.
+        var compiled = CompileStatusProbe("guarded", 1f, scope: EffectScope.Self);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var disabledRun = RunCompiledAllyVersusRaider(compiled, RulesWithFamilyMutation("guarded",
+            rule => rule with { GrantsGuardedDefense = false }));
+        Assert.That(defaultRun.AllySurvivedSteps, Is.GreaterThan(disabledRun.AllySurvivedSteps),
+            "수호 membership을 콘텐츠 값(false)으로 끄면 IncomingDamageDelta가 저작돼 있어도 채널이 " +
+            "무시해 생존이 줄어야 한다 — delta 값(1보)과 채널 소속(3f)의 분리 증명");
+
+        var explicitTrueRun = RunCompiledAllyVersusRaider(compiled, RulesWithFamilyMutation("guarded",
+            rule => rule with { GrantsGuardedDefense = true }));
+        Assert.That(explicitTrueRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "GrantsGuardedDefense=true 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -967,6 +1008,18 @@ public sealed class ContentEffectDifferentialTests
             CombatStatusRules.Default.StatusFamilies
                 .ToDictionary(pair => pair.Key, pair => pair.Key == "stun"
                     ? pair.Value with { BlocksAction = blocksAction }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
+    }
+
+    /// <summary>기본 규칙에서 한 family 의 rule 만 임의 변형한 상태 규칙 — kind/채널 membership differential 공용(3f).</summary>
+    private static CombatStatusRules RulesWithFamilyMutation(string statusId, Func<CombatStatusFamilyRule, CombatStatusFamilyRule> mutate)
+    {
+        return new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == statusId
+                    ? mutate(pair.Value)
                     : pair.Value, StringComparer.Ordinal),
             null,
             null);

@@ -13,6 +13,50 @@ namespace SM.Tests.EditMode;
 public sealed class StatusResolutionServiceTests
 {
     [Test]
+    public void ChannelMembership_SumsAcrossFamilies_WithinChannel()
+    {
+        // 3f 합산 규칙(오너 비준 2026-07-12)의 실행 스펙 — 채널 내 family 간 **가산**, family 내 Max
+        // (스택 병합), 클램프 코드 소유, 가산 순서 id ordinal. canonical id가 아닌 신규 family("brand"/
+        // "ward")가 같은 채널에 저작되면 각자 가산된다 — 채널 membership이 문자열 id에서 해방됐다는 증명.
+        var rules = new CombatStatusRules(
+            new Dictionary<string, CombatStatusFamilyRule>
+            {
+                ["marked"] = CombatStatusRules.Default.StatusFamilies["marked"],
+                ["brand"] = new("brand", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false,
+                    AmplifiesIncomingDamage: true, MagnitudeScale: 1f),
+                ["guarded"] = CombatStatusRules.Default.StatusFamilies["guarded"],
+                ["ward"] = new("ward", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false,
+                    GrantsGuardedDefense: true, IncomingDamageDelta: -0.05f),
+                ["sunder"] = CombatStatusRules.Default.StatusFamilies["sunder"],
+                ["rend"] = new("rend", StatusGroupValue.Attrition, false, false, false, 0f, false, false,
+                    ShredsDefense: true, MagnitudeScale: 1f),
+            },
+            null,
+            null);
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { CombatTestFactory.CreateUnit("actor") },
+            new[] { CombatTestFactory.CreateUnit("enemy") },
+            statusRules: rules);
+        var actor = state.Allies.Single();
+
+        actor.ApplyStatus(new StatusApplicationSpec("t:marked", "marked", 5f, 0.2f));
+        actor.ApplyStatus(new StatusApplicationSpec("t:brand", "brand", 5f, 0.3f));
+        Assert.That(actor.GetIncomingDamageMultiplier(), Is.EqualTo(1.5f).Within(0.0001f),
+            "같은 증폭 채널의 두 family(marked 0.2 + brand 0.3)는 가산돼야 한다(1 + 0.2 + 0.3)");
+
+        actor.ApplyStatus(new StatusApplicationSpec("t:guarded", "guarded", 5f, 1f));
+        actor.ApplyStatus(new StatusApplicationSpec("t:ward", "ward", 5f, 1f));
+        Assert.That(actor.GetIncomingDamageMultiplier(), Is.EqualTo(1.35f).Within(0.0001f),
+            "수호 채널의 두 family delta(-0.1 + -0.05)도 가산돼야 한다(1 + 0.5 - 0.15)");
+
+        var baseArmor = actor.Stats.Get(StatKey.Armor);
+        actor.ApplyStatus(new StatusApplicationSpec("t:sunder", "sunder", 5f, 2f));
+        actor.ApplyStatus(new StatusApplicationSpec("t:rend", "rend", 5f, 3f));
+        Assert.That(actor.Armor, Is.EqualTo(Math.Max(0f, baseArmor - 5f)).Within(0.0001f),
+            "방어 차감 채널의 두 family(sunder 2 + rend 3)는 가산 차감돼야 한다(바닥 0은 코드 소유)");
+    }
+
+    [Test]
     public void ReapplyPolicy_UsesSingleSlotMaxMagnitudeBoundedStacksAndLatestSource()
     {
         var weakBurn = new BattleSkillSpec(

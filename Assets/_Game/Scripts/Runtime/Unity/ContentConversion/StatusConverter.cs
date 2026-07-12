@@ -33,7 +33,12 @@ internal static class StatusConverter
             GrantsUnstoppable: definition.GrantsUnstoppable,
             BlocksActiveSkills: definition.BlocksActiveSkills,
             BlocksMovement: definition.BlocksMovement,
-            BlocksAction: definition.BlocksAction);
+            BlocksAction: definition.BlocksAction,
+            AmplifiesIncomingDamage: definition.AmplifiesIncomingDamage,
+            GrantsGuardedDefense: definition.GrantsGuardedDefense,
+            ShredsDefense: definition.ShredsDefense,
+            ReducesHealing: definition.ReducesHealing,
+            DampensTempo: definition.DampensTempo);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)

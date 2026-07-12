@@ -35,7 +35,25 @@ public sealed record CombatStatusFamilyRule(
     bool BlocksMovement = false,
     // 보유 시 행동 차단 — 턴 스킵 + 진행 액션 취소 + 기본공격/스킬/모빌리티/블록 게이트 (stun=true).
     // HasStatus("stun") 문자열 조회의 콘텐츠 승격(효과 종류 데이터화 3보 3e). 미등록/미저작은 false.
-    bool BlocksAction = false);
+    bool BlocksAction = false,
+    // ─ 채널 membership 5종(3보 3f, 합산 규칙: family 간 가산·family 내 Max·클램프 코드 소유) ─
+    // 받는 피해 배수 가산 채널 소속 (marked/exposed=true) — magnitude×MagnitudeScale이 가산량.
+    bool AmplifiesIncomingDamage = false,
+    // 받는 피해 delta 채널 소속 (guarded=true) — IncomingDamageDelta가 가산량(방어 boon).
+    bool GrantsGuardedDefense = false,
+    // 방어/저항 차감 채널 소속 (sunder=true) — magnitude×MagnitudeScale이 차감량.
+    bool ShredsDefense = false,
+    // 치유 감소 채널 소속 (wound=true) — magnitude×MagnitudeScale이 감소율.
+    bool ReducesHealing = false,
+    // 공속/이속 감쇠 채널 소속 (slow=true) — magnitude×MagnitudeScale이 감쇠율.
+    bool DampensTempo = false);
+
+/// <summary>채널 membership 엔트리 — kind를 가진 family의 (상태 id, 채널 값) 쌍. CombatStatusRules가
+/// 생성 시 id ordinal 정렬로 파생(가산 순서 고정 = IEEE 결정성)해 UnitSnapshot이 스냅샷한다(3보 3f).</summary>
+public readonly record struct StatusChannelEntry(string StatusId, float Value)
+{
+    public override string ToString() => $"{StatusId}:{Value}";
+}
 
 public sealed record CombatCleanseProfileRule(
     string Id,
@@ -74,6 +92,11 @@ public sealed class CombatStatusRules
         BlocksActiveSkillsStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksActiveSkills);
         BlocksMovementStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksMovement);
         BlocksActionStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksAction);
+        AmplifyIncomingDamageEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.AmplifiesIncomingDamage, static rule => rule.MagnitudeScale);
+        GuardedDefenseEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.GrantsGuardedDefense, static rule => rule.IncomingDamageDelta);
+        ShredsDefenseEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.ShredsDefense, static rule => rule.MagnitudeScale);
+        ReducesHealingEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.ReducesHealing, static rule => rule.MagnitudeScale);
+        DampensTempoEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.DampensTempo, static rule => rule.MagnitudeScale);
     }
 
     private CombatStatusRules(
@@ -89,6 +112,11 @@ public sealed class CombatStatusRules
         BlocksActiveSkillsStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksActiveSkills);
         BlocksMovementStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksMovement);
         BlocksActionStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksAction);
+        AmplifyIncomingDamageEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.AmplifiesIncomingDamage, static rule => rule.MagnitudeScale);
+        GuardedDefenseEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.GrantsGuardedDefense, static rule => rule.IncomingDamageDelta);
+        ShredsDefenseEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.ShredsDefense, static rule => rule.MagnitudeScale);
+        ReducesHealingEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.ReducesHealing, static rule => rule.MagnitudeScale);
+        DampensTempoEntries = DeriveChannelEntries(StatusFamilies, static rule => rule.DampensTempo, static rule => rule.MagnitudeScale);
     }
 
     public IReadOnlyDictionary<string, CombatStatusFamilyRule> StatusFamilies { get; }
@@ -101,6 +129,12 @@ public sealed class CombatStatusRules
     internal HashSet<string> BlocksActiveSkillsStatusIds { get; }
     internal HashSet<string> BlocksMovementStatusIds { get; }
     internal HashSet<string> BlocksActionStatusIds { get; }
+    // 채널 membership 엔트리(3f) — id ordinal 정렬 배열(가산 순서 고정), 생성 시 1회 파생·불변(변이 금지).
+    internal StatusChannelEntry[] AmplifyIncomingDamageEntries { get; }
+    internal StatusChannelEntry[] GuardedDefenseEntries { get; }
+    internal StatusChannelEntry[] ShredsDefenseEntries { get; }
+    internal StatusChannelEntry[] ReducesHealingEntries { get; }
+    internal StatusChannelEntry[] DampensTempoEntries { get; }
 
     public bool TryGetStatusFamily(string statusId, out CombatStatusFamilyRule rule)
     {
@@ -180,6 +214,18 @@ public sealed class CombatStatusRules
         return ids;
     }
 
+    private static StatusChannelEntry[] DeriveChannelEntries(
+        IReadOnlyDictionary<string, CombatStatusFamilyRule> statusFamilies,
+        Func<CombatStatusFamilyRule, bool> hasKind,
+        Func<CombatStatusFamilyRule, float> channelValue)
+    {
+        return statusFamilies.Values
+            .Where(hasKind)
+            .OrderBy(rule => rule.Id, StringComparer.Ordinal)
+            .Select(rule => new StatusChannelEntry(rule.Id, channelValue(rule)))
+            .ToArray();
+    }
+
     private static CombatStatusRules CreateDefault()
     {
         var families = new[]
@@ -187,15 +233,15 @@ public sealed class CombatStatusRules
                 new CombatStatusFamilyRule("stun", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "stun" }, "vfx.status_stun", BlocksAction: true),
                 new CombatStatusFamilyRule("root", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "root" }, "vfx.status_root", BlocksMovement: true),
                 new CombatStatusFamilyRule("silence", StatusGroupValue.Control, true, true, true, 0.5f, false, false, new[] { "silence" }, "vfx.status_silence", BlocksActiveSkills: true),
-                new CombatStatusFamilyRule("slow", StatusGroupValue.Control, false, false, false, 0f, false, false, new[] { "slow" }, "vfx.status_slow"),
+                new CombatStatusFamilyRule("slow", StatusGroupValue.Control, false, false, false, 0f, false, false, new[] { "slow" }, "vfx.status_slow", DampensTempo: true),
                 new CombatStatusFamilyRule("burn", StatusGroupValue.Attrition, false, false, false, 0f, true, false, new[] { "burn" }, "vfx.status_burn"),
                 new CombatStatusFamilyRule("bleed", StatusGroupValue.Attrition, false, false, false, 0f, true, false, new[] { "bleed" }, "vfx.status_bleed"),
-                new CombatStatusFamilyRule("wound", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "wound" }, "vfx.status_wound"),
-                new CombatStatusFamilyRule("sunder", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "sunder" }, "vfx.status_sunder"),
-                new CombatStatusFamilyRule("marked", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "marked" }, "vfx.status_marked"),
-                new CombatStatusFamilyRule("exposed", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "exposed" }, "vfx.status_exposed"),
+                new CombatStatusFamilyRule("wound", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "wound" }, "vfx.status_wound", ReducesHealing: true),
+                new CombatStatusFamilyRule("sunder", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "sunder" }, "vfx.status_sunder", ShredsDefense: true),
+                new CombatStatusFamilyRule("marked", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "marked" }, "vfx.status_marked", AmplifiesIncomingDamage: true),
+                new CombatStatusFamilyRule("exposed", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "exposed" }, "vfx.status_exposed", AmplifiesIncomingDamage: true),
                 new CombatStatusFamilyRule("barrier", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "barrier" }, "vfx.status_barrier", GrantsBarrierOnApply: true),
-                new CombatStatusFamilyRule("guarded", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "guarded" }, "vfx.status_guarded", IncomingDamageDelta: -0.1f),
+                new CombatStatusFamilyRule("guarded", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "guarded" }, "vfx.status_guarded", IncomingDamageDelta: -0.1f, GrantsGuardedDefense: true),
                 new CombatStatusFamilyRule("unstoppable", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "unstoppable" }, "vfx.status_unstoppable", GrantsUnstoppable: true),
             }
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);

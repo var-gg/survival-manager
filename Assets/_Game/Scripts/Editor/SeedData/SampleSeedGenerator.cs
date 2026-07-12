@@ -3536,6 +3536,12 @@ public static class SampleSeedGenerator
                 asset.BlocksMovement = definition.Id == "root";
                 // 효과 종류 서술자(3보 3e) — stun의 행동 차단. 동일 함정 축.
                 asset.BlocksAction = definition.Id == "stun";
+                // 채널 membership 5종(3보 3f) — 받는피해 가산/받는피해 delta/방어·저항 차감/치유 감소/감쇠.
+                asset.AmplifiesIncomingDamage = definition.Id is "marked" or "exposed";
+                asset.GrantsGuardedDefense = definition.Id == "guarded";
+                asset.ShredsDefense = definition.Id == "sunder";
+                asset.ReducesHealing = definition.Id == "wound";
+                asset.DampensTempo = definition.Id == "slow";
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;

@@ -22,6 +22,7 @@ MonoBehaviour:
   TenacityScale: 0
   AppliesPeriodicDamage: 0
   IncomingDamageDelta: -0.1
+  GrantsGuardedDefense: 1
   VfxCueId: vfx.status_guarded
   SfxHookId: sfx.status.guarded.apply
   BudgetCard:

@@ -22,6 +22,7 @@ MonoBehaviour:
   TenacityScale: 0
   AppliesPeriodicDamage: 0
   MagnitudeScale: 1
+  ReducesHealing: 1
   VfxCueId: vfx.status_wound
   SfxHookId: sfx.status.wound.apply
   BudgetCard:

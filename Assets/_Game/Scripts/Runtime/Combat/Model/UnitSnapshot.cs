@@ -22,19 +22,29 @@ public sealed class UnitSnapshot
 
     private readonly List<AppliedStatusState> _statuses = new();
     private readonly HashSet<string> _firedTriggers = new(StringComparer.Ordinal);
+    // WaitDefend 자세의 받는피해 delta 브리지 — 자세는 상태가 아니라 canonical guarded family의 delta를
+    // 빌린다(현행 의미론 보존). guarded-kind 상태가 있으면 채널 엔트리가 가산하고 브리지는 침묵(중복 방지).
     private readonly float _guardedIncomingDamageDelta;
-    // magnitude→숫자 채널 배율 스냅샷(콘텐츠 튜닝값, 숫자 콘텐츠화 2보) — 생성 시 1회 확정, 핫패스 조회 없음.
-    private readonly float _sunderMagnitudeScale;
-    private readonly float _markedMagnitudeScale;
-    private readonly float _exposedMagnitudeScale;
-    private readonly float _woundMagnitudeScale;
-    private readonly float _slowMagnitudeScale;
+    // 채널 membership 엔트리 스냅샷(효과 종류 데이터화 3보 3f) — 규칙이 id ordinal 정렬로 파생한 배열
+    // 참조를 생성 시 1회 확정(가산 순서 고정 = IEEE 결정성, 핫패스 조회 0). 합산 규칙: family 간 가산·
+    // family 내 Max(스택 병합이 이미 Max)·클램프는 코드 소유.
+    private readonly StatusChannelEntry[] _amplifyIncomingEntries;
+    private readonly StatusChannelEntry[] _guardedDefenseEntries;
+    private readonly StatusChannelEntry[] _shredsDefenseEntries;
+    private readonly StatusChannelEntry[] _reducesHealingEntries;
+    private readonly StatusChannelEntry[] _dampensTempoEntries;
     // 규칙 미주입 레인(레거시 손조립 테스트)의 kind set 폴백 — 과거 sim 리터럴 HasStatus("...")와
     // 동일한 정적 set(결정성 보존, 1보 ?? -0.1f / 2보 ?? 1f와 같은 계약). 공유 인스턴스 — 변이 금지.
     private static readonly HashSet<string> FallbackUnstoppableStatusIds = new(StringComparer.Ordinal) { "unstoppable" };
     private static readonly HashSet<string> FallbackBlocksActiveSkillsStatusIds = new(StringComparer.Ordinal) { "silence" };
     private static readonly HashSet<string> FallbackBlocksMovementStatusIds = new(StringComparer.Ordinal) { "root" };
     private static readonly HashSet<string> FallbackBlocksActionStatusIds = new(StringComparer.Ordinal) { "stun" };
+    // 채널 폴백(id ordinal 정렬) — 과거 sim 리터럴 배선과 항등(marked/exposed 가산·guarded -0.1·배율 1).
+    private static readonly StatusChannelEntry[] FallbackAmplifyIncomingEntries = { new("exposed", 1f), new("marked", 1f) };
+    private static readonly StatusChannelEntry[] FallbackGuardedDefenseEntries = { new("guarded", -0.1f) };
+    private static readonly StatusChannelEntry[] FallbackShredsDefenseEntries = { new("sunder", 1f) };
+    private static readonly StatusChannelEntry[] FallbackReducesHealingEntries = { new("wound", 1f) };
+    private static readonly StatusChannelEntry[] FallbackDampensTempoEntries = { new("slow", 1f) };
     // kind별 상태 id set 스냅샷(효과 종류 데이터화 3보) — 생성 시 1회 확정, 핫패스 사전 조회 0.
     private readonly HashSet<string> _unstoppableStatusIds;
     private readonly HashSet<string> _blocksActiveSkillsStatusIds;
@@ -53,15 +63,16 @@ public sealed class UnitSnapshot
         Id = id;
         Side = side;
         Definition = definition;
-        // guarded 받는피해 delta — 콘텐츠(StatusFamilyDefinition) 튜닝값. 규칙 미주입 레인(레거시
-        // 손조립 테스트)은 과거 sim 리터럴(-0.1)과 동일한 기본값으로 떨어진다(결정성 보존).
+        // WaitDefend 브리지 delta — 규칙 미주입 레인(레거시 손조립 테스트)은 과거 sim 리터럴(-0.1)과
+        // 동일한 기본값으로 떨어진다(결정성 보존).
         _guardedIncomingDamageDelta = statusRules?.ResolveIncomingDamageDelta("guarded") ?? -0.1f;
-        // 숫자 채널 배율(2보) — 규칙 미주입 레인은 1(=magnitude 직소비, 과거 식과 동일)로 떨어진다(결정성 보존).
-        _sunderMagnitudeScale = statusRules?.ResolveMagnitudeScale("sunder") ?? 1f;
-        _markedMagnitudeScale = statusRules?.ResolveMagnitudeScale("marked") ?? 1f;
-        _exposedMagnitudeScale = statusRules?.ResolveMagnitudeScale("exposed") ?? 1f;
-        _woundMagnitudeScale = statusRules?.ResolveMagnitudeScale("wound") ?? 1f;
-        _slowMagnitudeScale = statusRules?.ResolveMagnitudeScale("slow") ?? 1f;
+        // 채널 membership 엔트리(3f) — 규칙이 전투당 1회 파생한 ordinal 정렬 배열을 스냅샷. 미주입 레인은
+        // 과거 리터럴 배선과 항등인 정적 폴백(2보 ?? 1f 계약의 채널 판).
+        _amplifyIncomingEntries = statusRules?.AmplifyIncomingDamageEntries ?? FallbackAmplifyIncomingEntries;
+        _guardedDefenseEntries = statusRules?.GuardedDefenseEntries ?? FallbackGuardedDefenseEntries;
+        _shredsDefenseEntries = statusRules?.ShredsDefenseEntries ?? FallbackShredsDefenseEntries;
+        _reducesHealingEntries = statusRules?.ReducesHealingEntries ?? FallbackReducesHealingEntries;
+        _dampensTempoEntries = statusRules?.DampensTempoEntries ?? FallbackDampensTempoEntries;
         // 효과 종류 set(3보) — 규칙이 전투당 1회 파생한 set 참조를 스냅샷. 미주입 레인은 정적 폴백(결정성 보존).
         _unstoppableStatusIds = statusRules?.UnstoppableStatusIds ?? FallbackUnstoppableStatusIds;
         _blocksActiveSkillsStatusIds = statusRules?.BlocksActiveSkillsStatusIds ?? FallbackBlocksActiveSkillsStatusIds;
@@ -179,9 +190,9 @@ public sealed class UnitSnapshot
     public BattleMobilitySpec? EffectiveMobilityReaction => Definition.EffectiveMobilityReaction;
     public float MaxHealth => Stats.Get(StatKey.MaxHealth);
     public float MaxEnergy => Math.Max(0f, Definition.EffectiveEnergy.Max);
-    // sunder: magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 곧 방어/저항 차감량 — 숫자 콘텐츠화 2보.
-    public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - (GetStatusMagnitude("sunder") * _sunderMagnitudeScale));
-    public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - (GetStatusMagnitude("sunder") * _sunderMagnitudeScale));
+    // 방어/저항 차감 채널(ShredsDefense membership, 3f) — Σ(magnitude×배율) 가산, 바닥 0 클램프 코드 소유.
+    public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - SumChannelMagnitude(_shredsDefenseEntries));
+    public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - SumChannelMagnitude(_shredsDefenseEntries));
     public float PhysPen => Math.Max(0f, Stats.Get(StatKey.PhysPen));
     public float MagPen => Math.Max(0f, Stats.Get(StatKey.MagPen));
     public float Lifesteal => Math.Max(0f, Stats.Get(StatKey.Lifesteal));
@@ -229,10 +240,10 @@ public sealed class UnitSnapshot
     public bool IsRooted => HasAnyStatusOf(_blocksMovementStatusIds);
     // 액티브 시전 차단 membership은 콘텐츠 kind(BlocksActiveSkills)가 파생한 set — "silence" 리터럴 조회의 승격(3보 3c).
     public bool IsSilenced => HasAnyStatusOf(_blocksActiveSkillsStatusIds);
-    public bool IsSlowed => HasStatus("slow");
     // 저지불가 membership은 콘텐츠 kind(GrantsUnstoppable)가 파생한 set — "unstoppable" 리터럴 조회의 승격(3보 3b).
     public bool IsUnstoppable => HasAnyStatusOf(_unstoppableStatusIds);
-    public bool IsGuarded => HasStatus("guarded") || IsDefending;
+    // 수호 membership은 콘텐츠 kind(GrantsGuardedDefense)가 파생한 엔트리 — "guarded" 리터럴 조회의 승격(3f).
+    public bool IsGuarded => HasAnyChannelStatus(_guardedDefenseEntries) || IsDefending;
     public float WindupProgress => ActionState == CombatActionState.ExecuteAction && ActionTicksTotal > 0
         ? 1f - ((float)ActionTicksRemaining / ActionTicksTotal)
         : 0f;
@@ -514,21 +525,31 @@ public sealed class UnitSnapshot
 
     public float GetIncomingDamageMultiplier()
     {
+        // 받는 피해 채널(3f) — 증폭 membership(magnitude×배율, 음수 차단)과 수호 membership(family delta)이
+        // family 간 가산. 엔트리는 id ordinal 정렬(가산 순서 고정), 바닥 0.25 클램프는 코드 소유.
         var multiplier = 1f;
-        if (HasStatus("marked"))
+        foreach (var entry in _amplifyIncomingEntries)
         {
-            // magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 받는 피해 배수 가산량 — 숫자 콘텐츠화 2보.
-            multiplier += Math.Max(0f, GetStatusMagnitude("marked") * _markedMagnitudeScale);
+            if (HasStatus(entry.StatusId))
+            {
+                multiplier += Math.Max(0f, GetStatusMagnitude(entry.StatusId) * entry.Value);
+            }
         }
 
-        if (HasStatus("exposed"))
+        var guardedByStatus = false;
+        foreach (var entry in _guardedDefenseEntries)
         {
-            multiplier += Math.Max(0f, GetStatusMagnitude("exposed") * _exposedMagnitudeScale);
+            if (HasStatus(entry.StatusId))
+            {
+                multiplier += entry.Value;
+                guardedByStatus = true;
+            }
         }
 
-        if (IsGuarded)
+        // WaitDefend 자세는 상태가 아니므로 canonical guarded delta 브리지로 가산 — guarded-kind 상태가
+        // 이미 가산됐으면 침묵(현행 "상태 or 자세 = delta 1회" 의미론 보존).
+        if (!guardedByStatus && IsDefending)
         {
-            // 콘텐츠 튜닝값(기본 -0.1) — status_family_guarded.asset IncomingDamageDelta.
             multiplier += _guardedIncomingDamageDelta;
         }
 
@@ -800,16 +821,41 @@ public sealed class UnitSnapshot
 
     private float GetHealingTakenMultiplier()
     {
-        // wound: magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 치유 감소율 — 숫자 콘텐츠화 2보.
-        var woundMagnitude = GetStatusMagnitude("wound");
-        return Math.Max(0.1f, 1f - (woundMagnitude * _woundMagnitudeScale));
+        // 치유 감소 채널(ReducesHealing membership, 3f) — family 간 가산, 바닥 0.1 클램프 코드 소유.
+        return Math.Max(0.1f, 1f - SumChannelMagnitude(_reducesHealingEntries));
     }
 
     private float GetSlowMultiplier()
     {
-        // slow: magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 공속/이속 감쇠율 — 숫자 콘텐츠화 2보.
-        var slowMagnitude = GetStatusMagnitude("slow");
-        return Math.Max(0.1f, 1f - (slowMagnitude * _slowMagnitudeScale));
+        // 공속/이속 감쇠 채널(DampensTempo membership, 3f) — family 간 가산, 바닥 0.1 클램프 코드 소유.
+        return Math.Max(0.1f, 1f - SumChannelMagnitude(_dampensTempoEntries));
+    }
+
+    /// <summary>채널 membership 엔트리의 magnitude×배율 합(3f 합산 규칙: family 간 가산, family 내는
+    /// 스택 병합 Max). 엔트리는 규칙이 ordinal 정렬로 파생한 불변 배열 — 가산 순서 고정(IEEE 결정성).</summary>
+    private float SumChannelMagnitude(StatusChannelEntry[] entries)
+    {
+        var total = 0f;
+        foreach (var entry in entries)
+        {
+            total += GetStatusMagnitude(entry.StatusId) * entry.Value;
+        }
+
+        return total;
+    }
+
+    /// <summary>보유 상태 중 하나라도 채널 membership 엔트리에 속하는가 — IsGuarded 등 membership 게터 소비.</summary>
+    private bool HasAnyChannelStatus(StatusChannelEntry[] entries)
+    {
+        foreach (var entry in entries)
+        {
+            if (HasStatus(entry.StatusId))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // public: 기본공격/피격/처치 내부 경로 + 증강 트리거(GainEnergy op)의 범용 에너지 부여 공용 연산.

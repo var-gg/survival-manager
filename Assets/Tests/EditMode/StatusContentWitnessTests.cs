@@ -176,6 +176,32 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
+    public void RealChannelFamilies_CarryMembership_ExactCarrierSets()
+    {
+        // 채널 membership 데이터화 3보 3f — 5채널 membership이 실 committed asset에서 전투 규칙까지
+        // 실리고, 채널별 carrier가 정확히 현행 배선과 일치해야 한다(무의식 누출/결손 양방향 가드).
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rules = CombatStatusRuleCompiler.Compile(snapshot);
+
+        List<string> Carriers(Func<CombatStatusFamilyRule, bool> hasKind) => rules.StatusFamilies.Values
+            .Where(hasKind)
+            .Select(rule => rule.Id)
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.That(Carriers(rule => rule.AmplifiesIncomingDamage), Is.EqualTo(new[] { "exposed", "marked" }),
+            "받는피해 증폭 채널 carrier는 정확히 exposed/marked여야 한다");
+        Assert.That(Carriers(rule => rule.GrantsGuardedDefense), Is.EqualTo(new[] { "guarded" }),
+            "수호 delta 채널 carrier는 정확히 guarded여야 한다");
+        Assert.That(Carriers(rule => rule.ShredsDefense), Is.EqualTo(new[] { "sunder" }),
+            "방어/저항 차감 채널 carrier는 정확히 sunder여야 한다");
+        Assert.That(Carriers(rule => rule.ReducesHealing), Is.EqualTo(new[] { "wound" }),
+            "치유 감소 채널 carrier는 정확히 wound여야 한다");
+        Assert.That(Carriers(rule => rule.DampensTempo), Is.EqualTo(new[] { "slow" }),
+            "공속/이속 감쇠 채널 carrier는 정확히 slow여야 한다");
+    }
+
+    [Test]
     public void RealSkillAppliedStatus_LandsOnEnemy_InRealSim()
     {
         // 오너 의심(2026-07-12) 실측 응답: "스킬에서 상태이상 적용이 미구현 아닌가" —

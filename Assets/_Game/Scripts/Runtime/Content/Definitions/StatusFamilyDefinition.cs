@@ -58,6 +58,21 @@ namespace SM.Content.Definitions
         [Tooltip("이 상태를 보유한 유닛의 행동을 차단한다 — 턴 스킵 + 진행 액션 취소 + 기본공격/스킬/모빌리티/블록 전부 (stun=true). 과거 sim에 HasStatus(\"stun\") 문자열 조회로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 3e. freeze류 신규 hard-control은 BlocksAction+BlocksMovement 조합 저작으로 성립(행동차단 갭 해소).")]
         public bool BlocksAction;
 
+        [Tooltip("받는 피해 배수 가산 채널 소속 (marked/exposed=true) — magnitude×MagnitudeScale이 가산량. 채널 membership 데이터화 3보 3f(합산: family 간 가산, family 내 Max, 바닥 0.25는 코드 소유).")]
+        public bool AmplifiesIncomingDamage;
+
+        [Tooltip("받는 피해 delta 채널 소속 (guarded=true) — IncomingDamageDelta가 가산량(방어 boon). WaitDefend 자세는 canonical guarded delta 브리지를 계속 쓴다. 3보 3f.")]
+        public bool GrantsGuardedDefense;
+
+        [Tooltip("방어/저항 차감 채널 소속 (sunder=true) — magnitude×MagnitudeScale이 차감량, 바닥 0은 코드 소유. 3보 3f.")]
+        public bool ShredsDefense;
+
+        [Tooltip("치유 감소 채널 소속 (wound=true) — magnitude×MagnitudeScale이 감소율, 바닥 0.1은 코드 소유. 3보 3f.")]
+        public bool ReducesHealing;
+
+        [Tooltip("공속/이속 감쇠 채널 소속 (slow=true) — magnitude×MagnitudeScale이 감쇠율, 바닥 0.1은 코드 소유. 3보 3f.")]
+        public bool DampensTempo;
+
         public string VfxCueId = string.Empty;
         public string SfxHookId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };

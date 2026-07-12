@@ -35,6 +35,11 @@ internal static class StatusFileParser
             definition.BlocksActiveSkills = ExtractBool(lines, "BlocksActiveSkills:");
             definition.BlocksMovement = ExtractBool(lines, "BlocksMovement:");
             definition.BlocksAction = ExtractBool(lines, "BlocksAction:");
+            definition.AmplifiesIncomingDamage = ExtractBool(lines, "AmplifiesIncomingDamage:");
+            definition.GrantsGuardedDefense = ExtractBool(lines, "GrantsGuardedDefense:");
+            definition.ShredsDefense = ExtractBool(lines, "ShredsDefense:");
+            definition.ReducesHealing = ExtractBool(lines, "ReducesHealing:");
+            definition.DampensTempo = ExtractBool(lines, "DampensTempo:");
             definition.VfxCueId = ExtractValue(lines, "VfxCueId:");
             definition.SfxHookId = ExtractValue(lines, "SfxHookId:");
             definition.BudgetCard = ParseBudgetCard(lines, "BudgetCard:") ?? definition.BudgetCard;
@@ -210,6 +215,12 @@ internal static class StatusFileParser
         definition.BlocksMovement = definition.BlocksMovement || definition.Id is "root";
         // 동일 축 안전망(3e) — stun의 행동 차단 kind가 파서 레인에서 꺼지지 않게.
         definition.BlocksAction = definition.BlocksAction || definition.Id is "stun";
+        // 동일 축 안전망(3f) — 채널 membership 5종이 파서 레인에서 꺼지지 않게.
+        definition.AmplifiesIncomingDamage = definition.AmplifiesIncomingDamage || definition.Id is "marked" or "exposed";
+        definition.GrantsGuardedDefense = definition.GrantsGuardedDefense || definition.Id is "guarded";
+        definition.ShredsDefense = definition.ShredsDefense || definition.Id is "sunder";
+        definition.ReducesHealing = definition.ReducesHealing || definition.Id is "wound";
+        definition.DampensTempo = definition.DampensTempo || definition.Id is "slow";
         if (string.IsNullOrWhiteSpace(definition.VfxCueId))
         {
             definition.VfxCueId = $"vfx.status_{definition.Id}";
