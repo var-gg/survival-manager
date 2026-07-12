@@ -30,7 +30,8 @@ internal static class StatusConverter
             IncomingDamageDelta: definition.IncomingDamageDelta,
             MagnitudeScale: definition.MagnitudeScale,
             GrantsBarrierOnApply: definition.GrantsBarrierOnApply,
-            GrantsUnstoppable: definition.GrantsUnstoppable);
+            GrantsUnstoppable: definition.GrantsUnstoppable,
+            BlocksActiveSkills: definition.BlocksActiveSkills);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)

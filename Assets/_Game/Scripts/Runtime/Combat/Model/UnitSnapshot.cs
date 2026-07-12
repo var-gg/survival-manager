@@ -29,11 +29,13 @@ public sealed class UnitSnapshot
     private readonly float _exposedMagnitudeScale;
     private readonly float _woundMagnitudeScale;
     private readonly float _slowMagnitudeScale;
-    // 규칙 미주입 레인(레거시 손조립 테스트)의 kind set 폴백 — 과거 sim 리터럴 HasStatus("unstoppable")과
+    // 규칙 미주입 레인(레거시 손조립 테스트)의 kind set 폴백 — 과거 sim 리터럴 HasStatus("...")와
     // 동일한 정적 set(결정성 보존, 1보 ?? -0.1f / 2보 ?? 1f와 같은 계약). 공유 인스턴스 — 변이 금지.
     private static readonly HashSet<string> FallbackUnstoppableStatusIds = new(StringComparer.Ordinal) { "unstoppable" };
-    // 저지불가 kind 상태 id set 스냅샷(효과 종류 데이터화 3보 3b) — 생성 시 1회 확정, 핫패스 사전 조회 0.
+    private static readonly HashSet<string> FallbackBlocksActiveSkillsStatusIds = new(StringComparer.Ordinal) { "silence" };
+    // kind별 상태 id set 스냅샷(효과 종류 데이터화 3보) — 생성 시 1회 확정, 핫패스 사전 조회 0.
     private readonly HashSet<string> _unstoppableStatusIds;
+    private readonly HashSet<string> _blocksActiveSkillsStatusIds;
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -56,8 +58,9 @@ public sealed class UnitSnapshot
         _exposedMagnitudeScale = statusRules?.ResolveMagnitudeScale("exposed") ?? 1f;
         _woundMagnitudeScale = statusRules?.ResolveMagnitudeScale("wound") ?? 1f;
         _slowMagnitudeScale = statusRules?.ResolveMagnitudeScale("slow") ?? 1f;
-        // 효과 종류 set(3보 3b) — 규칙이 전투당 1회 파생한 set 참조를 스냅샷. 미주입 레인은 정적 폴백(결정성 보존).
+        // 효과 종류 set(3보) — 규칙이 전투당 1회 파생한 set 참조를 스냅샷. 미주입 레인은 정적 폴백(결정성 보존).
         _unstoppableStatusIds = statusRules?.UnstoppableStatusIds ?? FallbackUnstoppableStatusIds;
+        _blocksActiveSkillsStatusIds = statusRules?.BlocksActiveSkillsStatusIds ?? FallbackBlocksActiveSkillsStatusIds;
         Anchor = definition.PreferredAnchor;
         FixedAnchorPosition = SpatialProjection.QuantizeToFixed(anchorPosition);
         FixedPosition = SpatialProjection.QuantizeToFixed(spawnPosition);
@@ -216,7 +219,8 @@ public sealed class UnitSnapshot
     public float HealthRatio => MaxHealth <= 0 ? 0 : CurrentHealth / MaxHealth;
     public bool IsStunned => HasStatus("stun");
     public bool IsRooted => HasStatus("root");
-    public bool IsSilenced => HasStatus("silence");
+    // 액티브 시전 차단 membership은 콘텐츠 kind(BlocksActiveSkills)가 파생한 set — "silence" 리터럴 조회의 승격(3보 3c).
+    public bool IsSilenced => HasAnyStatusOf(_blocksActiveSkillsStatusIds);
     public bool IsSlowed => HasStatus("slow");
     // 저지불가 membership은 콘텐츠 kind(GrantsUnstoppable)가 파생한 set — "unstoppable" 리터럴 조회의 승격(3보 3b).
     public bool IsUnstoppable => HasAnyStatusOf(_unstoppableStatusIds);

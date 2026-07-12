@@ -26,7 +26,10 @@ public sealed record CombatStatusFamilyRule(
     bool GrantsBarrierOnApply = false,
     // 보유 시 저지불가 — 하드 컨트롤 적용 면역 + 저작 강제이동(넉백/끌기) 면역 (unstoppable=true).
     // HasStatus("unstoppable") 문자열 조회의 콘텐츠 승격(효과 종류 데이터화 3보 3b). 미등록/미저작은 false.
-    bool GrantsUnstoppable = false);
+    bool GrantsUnstoppable = false,
+    // 보유 시 액티브 시전 차단 — ActiveSkill 전술 게이트 + signature/flex 슬롯 차단 (silence=true).
+    // HasStatus("silence") 문자열 조회의 콘텐츠 승격(효과 종류 데이터화 3보 3c). 미등록/미저작은 false.
+    bool BlocksActiveSkills = false);
 
 public sealed record CombatCleanseProfileRule(
     string Id,
@@ -61,7 +64,8 @@ public sealed class CombatStatusRules
         StatusFamilies = statusFamilies ?? Default.StatusFamilies;
         CleanseProfiles = cleanseProfiles ?? Default.CleanseProfiles;
         ControlDiminishing = controlDiminishing ?? Default.ControlDiminishing;
-        UnstoppableStatusIds = DeriveUnstoppableStatusIds(StatusFamilies);
+        UnstoppableStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.GrantsUnstoppable);
+        BlocksActiveSkillsStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksActiveSkills);
     }
 
     private CombatStatusRules(
@@ -73,7 +77,8 @@ public sealed class CombatStatusRules
         StatusFamilies = statusFamilies;
         CleanseProfiles = cleanseProfiles;
         ControlDiminishing = controlDiminishing;
-        UnstoppableStatusIds = DeriveUnstoppableStatusIds(StatusFamilies);
+        UnstoppableStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.GrantsUnstoppable);
+        BlocksActiveSkillsStatusIds = DeriveKindStatusIds(StatusFamilies, static rule => rule.BlocksActiveSkills);
     }
 
     public IReadOnlyDictionary<string, CombatStatusFamilyRule> StatusFamilies { get; }
@@ -81,8 +86,9 @@ public sealed class CombatStatusRules
     public CombatControlDiminishingRule ControlDiminishing { get; }
 
     // kind별 상태 id set — 생성 시 1회 eager 파생, 이후 불변(변이 금지). UnitSnapshot이 생성자에서 참조를
-    // 스냅샷해 핫패스 게터(IsUnstoppable)가 사전 조회 없이 Contains만 소비한다(효과 종류 데이터화 3보 3b).
+    // 스냅샷해 핫패스 게터(IsUnstoppable/IsSilenced 등)가 사전 조회 없이 Contains만 소비한다(효과 종류 데이터화 3보).
     internal HashSet<string> UnstoppableStatusIds { get; }
+    internal HashSet<string> BlocksActiveSkillsStatusIds { get; }
 
     public bool TryGetStatusFamily(string statusId, out CombatStatusFamilyRule rule)
     {
@@ -146,12 +152,14 @@ public sealed class CombatStatusRules
         return Math.Clamp(statusRule.TenacityScale, 0f, 1f);
     }
 
-    private static HashSet<string> DeriveUnstoppableStatusIds(IReadOnlyDictionary<string, CombatStatusFamilyRule> statusFamilies)
+    private static HashSet<string> DeriveKindStatusIds(
+        IReadOnlyDictionary<string, CombatStatusFamilyRule> statusFamilies,
+        Func<CombatStatusFamilyRule, bool> hasKind)
     {
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var rule in statusFamilies.Values)
         {
-            if (rule.GrantsUnstoppable)
+            if (hasKind(rule))
             {
                 ids.Add(rule.Id);
             }
@@ -166,7 +174,7 @@ public sealed class CombatStatusRules
             {
                 new CombatStatusFamilyRule("stun", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "stun" }, "vfx.status_stun"),
                 new CombatStatusFamilyRule("root", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "root" }, "vfx.status_root"),
-                new CombatStatusFamilyRule("silence", StatusGroupValue.Control, true, true, true, 0.5f, false, false, new[] { "silence" }, "vfx.status_silence"),
+                new CombatStatusFamilyRule("silence", StatusGroupValue.Control, true, true, true, 0.5f, false, false, new[] { "silence" }, "vfx.status_silence", BlocksActiveSkills: true),
                 new CombatStatusFamilyRule("slow", StatusGroupValue.Control, false, false, false, 0f, false, false, new[] { "slow" }, "vfx.status_slow"),
                 new CombatStatusFamilyRule("burn", StatusGroupValue.Attrition, false, false, false, 0f, true, false, new[] { "burn" }, "vfx.status_burn"),
                 new CombatStatusFamilyRule("bleed", StatusGroupValue.Attrition, false, false, false, 0f, true, false, new[] { "bleed" }, "vfx.status_bleed"),

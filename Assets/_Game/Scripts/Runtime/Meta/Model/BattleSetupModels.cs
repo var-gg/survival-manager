@@ -205,7 +205,9 @@ public sealed record StatusFamilyTemplate(
     // 적용 시 즉시 보호막 전환(barrier) — 효과 종류 데이터화 3보 1슬라이스. false=일반 상태 잔존(현행 기본).
     bool GrantsBarrierOnApply = false,
     // 보유 시 저지불가(하드 컨트롤 적용 면역 + 저작 강제이동 면역, unstoppable) — 3보 3b. false=면역 없음(현행 기본).
-    bool GrantsUnstoppable = false);
+    bool GrantsUnstoppable = false,
+    // 보유 시 액티브 시전 차단(silence) — 3보 3c. false=차단 없음(현행 기본).
+    bool BlocksActiveSkills = false);
 
 public sealed record CleanseProfileTemplate(
     string Id,

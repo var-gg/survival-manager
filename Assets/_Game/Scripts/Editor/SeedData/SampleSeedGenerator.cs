@@ -3528,6 +3528,8 @@ public static class SampleSeedGenerator
                 asset.GrantsBarrierOnApply = definition.Id == "barrier";
                 // 효과 종류 서술자(3보 3b) — unstoppable의 저지불가(하드 컨트롤 면역 + 강제이동 면역). 동일 함정 축.
                 asset.GrantsUnstoppable = definition.Id == "unstoppable";
+                // 효과 종류 서술자(3보 3c) — silence의 액티브 시전 차단. 동일 함정 축.
+                asset.BlocksActiveSkills = definition.Id == "silence";
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;

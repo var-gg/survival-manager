@@ -21,6 +21,7 @@ MonoBehaviour:
   AffectedByTenacity: 1
   TenacityScale: 0.5
   AppliesPeriodicDamage: 0
+  BlocksActiveSkills: 1
   VfxCueId: vfx.status_silence
   SfxHookId: sfx.status.silence.apply
   BudgetCard:

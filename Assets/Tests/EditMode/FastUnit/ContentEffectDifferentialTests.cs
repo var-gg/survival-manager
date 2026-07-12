@@ -472,6 +472,47 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void SilenceKind_IsContentDriven_InRealSim()
+    {
+        // 효과 종류 데이터화 3보 3c — "액티브 시전 차단"은 이제 HasStatus("silence") 문자열 조회가
+        // 아니라 콘텐츠 kind(BlocksActiveSkills)가 파생한 set이다(3b가 개통한 set 스냅샷 재사용).
+        // 프로브: legacy 손조립 Self ActiveSkill 확정 경로 — 시전이 자기에게 silence(2.5s)를 적용.
+        // 기본 규칙에선 침묵 창 동안 ActiveSkill 전술 규칙이 게이트돼(TacticEvaluator) WaitDefend로
+        // 강등(방어 관측 발생), kind를 끄면 침묵이 잔존만 하고 시전을 안 막아 방어 강등이 사라진다.
+        var probeSkill = new BattleSkillSpec(
+            "skill.probe.silence",
+            "skill.probe.silence",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[] { new StatusApplicationSpec("probe:self_silence", "silence", 2.5f, 1f) });
+        var caster = CombatTestFactory.CreateUnit(
+            "caster",
+            hp: 400f,
+            attack: 1f,
+            skills: new[] { probeSkill },
+            tactics: new[]
+            {
+                new TacticRule(0, TacticConditionType.Fallback, 0f, BattleActionType.ActiveSkill, TargetSelectorType.Self, "skill.probe.silence"),
+                new TacticRule(1, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
+            });
+
+        var defaultRun = RunSilenceCasterVersusRaider(caster, CombatStatusRules.Default);
+        var disabledRun = RunSilenceCasterVersusRaider(caster, RulesWithSilenceKind(false));
+        Assert.That(defaultRun.AllyDefendingSteps, Is.GreaterThan(0),
+            "기본 규칙(silence family가 kind 보유)에선 자기 침묵 창 동안 ActiveSkill 전술이 게이트돼 " +
+            "WaitDefend로 강등된 방어 관측이 있어야 한다 — 차단이 규칙 파생 set에서 소비된다는 1차 가드");
+        Assert.That(disabledRun.AllyDefendingSteps, Is.LessThan(defaultRun.AllyDefendingSteps),
+            "차단 kind를 콘텐츠 값(false)으로 끄면 침묵이 잔존해도 시전이 막히지 않아 방어 강등이 " +
+            "뚜렷하게 줄어야 한다(잔존 상태 != 차단 효과의 분리 증명)");
+
+        // 항등 계약: true 명시 저작 == 기본 규칙 — 전투 스트림 byte-identical.
+        var explicitTrueRun = RunSilenceCasterVersusRaider(caster, RulesWithSilenceKind(true));
+        Assert.That(explicitTrueRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "BlocksActiveSkills=true 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 서술자)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의
@@ -786,6 +827,61 @@ public sealed class ContentEffectDifferentialTests
         }
 
         return new UnstoppableRun(sb.ToString(), allyStunnedSteps);
+    }
+
+    private sealed record SilenceRun(string Stream, int AllyDefendingSteps);
+
+    /// <summary>기본 규칙에서 silence family 의 액티브 시전 차단 kind 만 바꾼 상태 규칙 — 3보 3c differential.</summary>
+    private static CombatStatusRules RulesWithSilenceKind(bool blocksActiveSkills)
+    {
+        return new CombatStatusRules(
+            CombatStatusRules.Default.StatusFamilies
+                .ToDictionary(pair => pair.Key, pair => pair.Key == "silence"
+                    ? pair.Value with { BlocksActiveSkills = blocksActiveSkills }
+                    : pair.Value, StringComparer.Ordinal),
+            null,
+            null);
+    }
+
+    /// <summary>손조립 silence 캐스터 vs 손조립 raider — Self ActiveSkill이 자기 침묵을 반복 적용해
+    /// TacticEvaluator의 ActiveSkill 게이트(CanUseActiveSkill)를 매 결정마다 태우는 러너(3보 3c 전용).
+    /// 스트림에 방어 여부를 함께 기록한다(침묵 차단 시 WaitDefend 강등이 유일한 행동 창구).</summary>
+    private static SilenceRun RunSilenceCasterVersusRaider(BattleUnitLoadout caster, CombatStatusRules? statusRules)
+    {
+        var enemy = CombatTestFactory.CreateUnit(
+            "enemy.raider",
+            race: "undead",
+            classId: "duelist",
+            anchor: DeploymentAnchorId.FrontBottom,
+            hp: 500f,
+            attack: 8f);
+        var simulator = new BattleSimulator(
+            CombatTestFactory.CreateBattleState(new[] { caster }, new[] { enemy }, seed: Seed, statusRules: statusRules),
+            MaxSteps);
+
+        var sb = new StringBuilder();
+        var allyDefendingSteps = 0;
+        var guard = 0;
+        while (!simulator.IsFinished && guard++ < 10000)
+        {
+            var step = simulator.Step();
+            foreach (var unit in step.Units)
+            {
+                sb.Append(unit.Id).Append(':')
+                    .Append(unit.CurrentHealth.ToString("R", CultureInfo.InvariantCulture)).Append(',')
+                    .Append(unit.IsAlive ? '1' : '0').Append(',')
+                    .Append(unit.IsDefending ? '1' : '0').Append(';');
+                // BattleFactory id 계약: ally_{index}_{loadoutId} (BattleFactory.cs:31)
+                if (unit.Id == "ally_0_caster" && unit.IsDefending)
+                {
+                    allyDefendingSteps++;
+                }
+            }
+
+            sb.Append('\n');
+        }
+
+        return new SilenceRun(sb.ToString(), allyDefendingSteps);
     }
 
     private static BattleLoadoutSnapshot CompileSingleHero(

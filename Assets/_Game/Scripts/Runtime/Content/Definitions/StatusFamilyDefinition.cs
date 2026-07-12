@@ -49,6 +49,9 @@ namespace SM.Content.Definitions
         [Tooltip("이 상태를 보유한 유닛이 저지불가가 된다 — 하드 컨트롤 적용 면역 + 저작 강제이동(넉백/끌기) 면역 (unstoppable=true). 과거 sim에 HasStatus(\"unstoppable\") 문자열 조회로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 3b. 정화 프로필이 부여하는 상태 id는 별개 축(CleanseProfileDefinition.GrantsUnstoppable).")]
         public bool GrantsUnstoppable;
 
+        [Tooltip("이 상태를 보유한 유닛의 액티브 시전을 차단한다 — ActiveSkill 전술 규칙 게이트 + signature/flex 슬롯 차단 (silence=true). 과거 sim에 HasStatus(\"silence\") 문자열 조회로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 3c.")]
+        public bool BlocksActiveSkills;
+
         public string VfxCueId = string.Empty;
         public string SfxHookId = string.Empty;
         public BudgetCard BudgetCard = new() { Domain = BudgetDomain.Status, PowerBand = PowerBand.Minor };
