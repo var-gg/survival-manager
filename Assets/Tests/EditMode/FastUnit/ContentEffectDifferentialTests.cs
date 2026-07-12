@@ -369,6 +369,24 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void BurnMagnitudeScale_IsContentTunable_InRealSim()
+    {
+        // 주기 피해(burn/bleed)는 magnitude × 배율이 틱 피해량(StatusResolutionService.ApplyPeriodicDamage,
+        // 바닥 1은 코드 소유). 개전 self-burn(5) 600s 프로브 — 배율 3(틱 15) vs 기본 1(틱 5)의
+        // 자가 소모를 생존으로 대조하고, 배율 1 명시 저작의 항등 계약을 스트림으로 단언한다.
+        var compiled = CompileStatusProbe("burn", 5f);
+
+        var defaultRun = RunCompiledAllyVersusRaider(compiled, CombatStatusRules.Default);
+        var amplifiedRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("burn", 3f));
+        Assert.That(amplifiedRun.AllySurvivedSteps, Is.LessThan(defaultRun.AllySurvivedSteps),
+            "burn 배율을 콘텐츠 값(3)으로 키우면(틱 5→15) 실 sim 생존이 뚜렷하게 줄어야 한다");
+
+        var explicitOneRun = RunCompiledAllyVersusRaider(compiled, RulesWithMagnitudeScale("burn", 1f));
+        Assert.That(explicitOneRun.Stream, Is.EqualTo(defaultRun.Stream),
+            "MagnitudeScale=1 명시 저작은 기본 규칙과 전투 스트림이 완전히 동일해야 한다(항등 배율)");
+    }
+
+    [Test]
     public void PassiveNodeGrant_TriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         // PoE식 노드 도달 보상(passive-granted-skill.v1) — 노드 선택이 부여 스킬의

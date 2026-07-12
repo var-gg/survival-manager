@@ -177,7 +177,9 @@ public static class StatusResolutionService
         }
 
         var source = ResolveStatusSourceUnit(state, unit, status.SourceActorId);
-        var damage = Math.Max(1f, status.Magnitude);
+        // 주기 피해(burn/bleed)도 magnitude × 배율(콘텐츠 튜닝값, 기본 1)이 틱 피해량 — 숫자 콘텐츠화 2보.
+        // 바닥 1은 코드 소유 클램프(바닥값 리터럴 백로그와 동일 축).
+        var damage = Math.Max(1f, status.Magnitude * state.StatusRules.ResolveMagnitudeScale(status.StatusId));
         unit.TakeDamage(damage);
         BattleTelemetryRecorder.RecordStatusTick(state, source, unit, status.StatusId, damage);
         stepEvents.Add(new BattleEvent(

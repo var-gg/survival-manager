@@ -46,11 +46,12 @@ public sealed class StatusContentWitnessTests
     public void RealMagnitudeChannelFamilies_CarryMagnitudeScale()
     {
         // 숫자 콘텐츠화 2보 — magnitude 직소비 채널(sunder=방어/저항 차감, marked/exposed=받는 피해 가산,
-        // wound=치유 감소, slow=공속/이속 감쇠)의 배율이 실 committed asset 에서 전투 규칙까지 실려야 한다.
+        // wound=치유 감소, slow=공속/이속 감쇠, burn/bleed=주기 틱 피해)의 배율이
+        // 실 committed asset 에서 전투 규칙까지 실려야 한다.
         var snapshot = new RuntimeCombatContentLookup().Snapshot;
         var rules = CombatStatusRuleCompiler.Compile(snapshot);
 
-        foreach (var statusId in new[] { "sunder", "marked", "exposed", "wound", "slow" })
+        foreach (var statusId in new[] { "sunder", "marked", "exposed", "wound", "slow", "burn", "bleed" })
         {
             Assert.That(rules.TryGetStatusFamily(statusId, out var rule), Is.True,
                 $"실 콘텐츠에 {statusId} 상태 패밀리가 존재해야 한다");

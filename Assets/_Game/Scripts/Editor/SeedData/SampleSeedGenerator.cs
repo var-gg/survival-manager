@@ -3519,6 +3519,10 @@ public static class SampleSeedGenerator
                 asset.AffectedByTenacity = definition.Tenacity;
                 asset.TenacityScale = definition.Scale;
                 asset.AppliesPeriodicDamage = definition.Id is "burn" or "bleed";
+                // 숫자 콘텐츠화 튜닝값의 시드 명시(V1 sweep 재료) — 미명시면 asset 삭제 후 fresh 재생성 시
+                // C# 기본값으로 추락해 guarded delta(-0.1)가 조용히 0이 되는 잠재 함정(2026-07-12 실측).
+                asset.IncomingDamageDelta = definition.Id == "guarded" ? -0.1f : 0f;
+                asset.MagnitudeScale = 1f;
                 asset.VfxCueId = $"vfx.status_{definition.Id}";
                 asset.SfxHookId = ShouldAssignStatusSfxHookId(definition.Id) ? ResolveStatusSfxHookId(definition.Id) : string.Empty;
                 asset.IsRuleModifierOnly = definition.RuleOnly;

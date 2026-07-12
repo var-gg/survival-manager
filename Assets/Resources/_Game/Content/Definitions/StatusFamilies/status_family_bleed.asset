@@ -21,6 +21,7 @@ MonoBehaviour:
   AffectedByTenacity: 0
   TenacityScale: 0
   AppliesPeriodicDamage: 1
+  MagnitudeScale: 1
   VfxCueId: vfx.status_bleed
   SfxHookId: sfx.status.bleed.apply
   BudgetCard:
