@@ -20,7 +20,8 @@ public static class NarrativeContentValidator
     private const string ChapterBeatsResourcesPath = "_Game/Content/Definitions/ChapterBeats";
     private const string HeroLoreResourcesPath = "_Game/Content/Definitions/HeroLore";
     private const string StoryTableName = "Content_Story";
-    private const int ExpectedStoryEventAssetCount = 71;
+    // 2026-07-13 위생 정리에서 사문 boss_engage 2종(gate_warden/wolfpine, NodeIs 4 영원 미발화 orphan) 삭제 — 71→69.
+    private const int ExpectedStoryEventAssetCount = 69;
     private const int ExpectedDialogueSequenceAssetCount = 204;
 
     [MenuItem("SM/내러티브/내러티브 콘텐츠 검증")]

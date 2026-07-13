@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: story_event_final_boss
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEventDefinition
   _id: story_event_final_boss
-  _moment: 5
+  _moment: 4
   _priority: 700
   _oncePolicy: 0
   _conditions:
@@ -22,7 +22,6 @@ MonoBehaviour:
   - {fileID: 487390084992400068}
   _effects:
   - {fileID: 4593132423260806866}
-  - {fileID: 3710357151942106756}
   _presentationKey: dialogue_scene_final_confrontation
 --- !u!114 &487390084992400068
 MonoBehaviour:
@@ -72,21 +71,6 @@ MonoBehaviour:
   _kind: 1
   _operandA: site_worldscar_depths
   _operandB: 
---- !u!114 &3710357151942106756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d69b36a769aedd54a94ccf538e75828e, type: 3}
-  m_Name: effect_01
-  m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
-  _id: story_event_final_boss.effect.01
-  _kind: 3
-  _payload: DialogueScene
 --- !u!114 &4593132423260806866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,5 +84,5 @@ MonoBehaviour:
   m_Name: effect_00
   m_EditorClassIdentifier: SM.Content:SM.Content:StoryEffectDefinition
   _id: story_event_final_boss.effect.00
-  _kind: 1
-  _payload: story_flag_final_boss_defeated
+  _kind: 3
+  _payload: DialogueScene

@@ -53,7 +53,7 @@ Pack Raider|bitter|""포위가 아니야. 구경하는 거야. 너희가 얼마�
 Narrator||Pack Raider가 코를 들어올린다. 솔잎 아래로 젖은 흙과 털 냄새가 겹친다.
 Pack Raider|solemn|""새끼들이 가까이 있어. 여기서부턴 네 식대로 하면 안 돼.""
 Dawn Priest|resolute|""당신의 영역이라는 것은 인정합니다. 하지만 우리의 명분은 변하지 않습니다.""
-Pack Raider|sardonic|""명분. 좋은 냄새가 나는 단어야. 숲에선 냄새가 안 나는 것만 위험하거든.""
+Pack Raider|sardonic|""명분이라. 냄새가 안 나는 말이군. 숲에선 냄새 없는 놈이 제일 위험해.""
 "),
             Seq("dialogue_scene_raider_first_contact", @"
 Narrator||Pack Raider의 손이 묶여 있다. 하지만 코는 쉬지 않는다 — 연신 바람을 읽고 있다.
@@ -575,10 +575,9 @@ Narrator||사실이다. 아무도 반박하지 못한다.
 Echo Savant|quiet|""의무가 아니다. 선택이다.""
 "),
             Seq("dialogue_overlay_boss_bark_worldscar_depths", @"
-Aldric|calm|""내가 Heartforge를 통제했소. 내가 혼돈에 질서를 가져왔소.""
-Aldric|reasonable|""너희는 내가 세운 모든 것을 파괴하고 있소.""
-Dawn Priest|resolute|""당신이 세운 것은 도굴 위의 성전이었습니다.""
-Echo Savant|grim|""끝이다, 설계자.""
+Aldric|resolute|""그럼 — 보시오. 내가 지킨 것이 무엇이었는지.""
+Narrator||학자의 가운이 빛으로 일어선다. 3000년의 기록이 전부 무기가 된다.
+Pack Raider|defiant|""말은 여기까지. 남은 건 이빨이야.""
 "),
             Seq("dialogue_scene_final_confrontation", @"
 Narrator||Aldric이 서 있다. 괴물이 아니다. 한 남자의 형상. 학자의 가운을 입고 있다. 눈이 차분하다.

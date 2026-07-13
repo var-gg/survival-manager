@@ -330,13 +330,16 @@ internal static partial class NarrativeSeedData
                 "dialogue_overlay_boss_bark_worldscar_depths",
                 new[] { Cond(StoryConditionKind.ChapterIs, "chapter_heartforge_descent"), Cond(StoryConditionKind.SiteIs, "site_worldscar_depths"), Cond(StoryConditionKind.NodeIs, "3") },
                 System.Array.Empty<StoryEffectSeed>()),
+            // 대면 문답은 개전 프레이밍("전투가 시작된다"로 닫힘) — BattleResolved에 물리면 희생 시퀀스(800)
+            // 뒤에 읽히는 순서 역전이 난다. BattleStarted 소유로 이관, 격파 flag는 sacrifice_sequence가 소유.
+            // 같은 개전 모먼트의 bark(200)보다 priority가 높아 대면 → 개전 외침 순서가 고정된다.
             Evt(
                 "story_event_final_boss",
-                NarrativeMoment.BattleResolved,
+                NarrativeMoment.BattleStarted,
                 700,
                 "dialogue_scene_final_confrontation",
                 new[] { Cond(StoryConditionKind.ChapterIs, "chapter_heartforge_descent"), Cond(StoryConditionKind.SiteIs, "site_worldscar_depths"), Cond(StoryConditionKind.NodeIs, "3") },
-                new[] { Eff(StoryEffectKind.SetFlag, "story_flag_final_boss_defeated") }),
+                System.Array.Empty<StoryEffectSeed>()),
             Evt(
                 "story_event_campaign_complete",
                 NarrativeMoment.ExtractCommitted,
@@ -350,7 +353,7 @@ internal static partial class NarrativeSeedData
                 800,
                 "dialogue_scene_sacrifice_sequence",
                 new[] { Cond(StoryConditionKind.ChapterIs, "chapter_heartforge_descent"), Cond(StoryConditionKind.SiteIs, "site_worldscar_depths"), Cond(StoryConditionKind.NodeIs, "3") },
-                new[] { Eff(StoryEffectKind.SetFlag, "story_flag_sacrifice_done") }),
+                new[] { Eff(StoryEffectKind.SetFlag, "story_flag_final_boss_defeated"), Eff(StoryEffectKind.SetFlag, "story_flag_sacrifice_done") }),
             Evt(
                 "story_event_echo_farewell",
                 NarrativeMoment.ExtractCommitted,
