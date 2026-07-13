@@ -70,3 +70,16 @@ MonoBehaviour:
       Value: -1
     legacyDisplayName: 
     legacyDescription: 
+  EncounterTraits:
+  - Id: marksman_encounter_suppressed_retinue
+    NameKey: content.trait.marksman.marksman_encounter_suppressed_retinue.name
+    DescriptionKey: content.trait.marksman.marksman_encounter_suppressed_retinue.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 1
+      Value: -0.18
+    - StatId: mag_power
+      Op: 1
+      Value: -0.18
+    legacyDisplayName: 
+    legacyDescription: 

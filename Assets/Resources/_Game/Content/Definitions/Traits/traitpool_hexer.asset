@@ -70,3 +70,16 @@ MonoBehaviour:
       Value: -1
     legacyDisplayName: 
     legacyDescription: 
+  EncounterTraits:
+  - Id: hexer_encounter_dampened_assault
+    NameKey: content.trait.hexer.hexer_encounter_dampened_assault.name
+    DescriptionKey: content.trait.hexer.hexer_encounter_dampened_assault.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 1
+      Value: -0.04
+    - StatId: mag_power
+      Op: 1
+      Value: -0.04
+    legacyDisplayName: 
+    legacyDescription: 

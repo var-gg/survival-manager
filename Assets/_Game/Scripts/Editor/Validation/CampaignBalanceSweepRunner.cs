@@ -52,15 +52,30 @@ public static class CampaignBalanceSweepRunner
     private const string DeltaReportFileName = "sweep_delta_report.json";
     private const string HumanReportFileName = "sweep_report.md";
 
-    // ── 비준 밴드(초기값 — 1회전 후 오너 감각으로 조정 가능) ──
-    private const float CurveChapter1MinClearRate = 0.90f;
+    // ── 재비준 밴드(2회전 — 오너 위임 GPT Pro 결정 2026-07-13, 리포트 §질문 4건의 답) ──
+    // Q1: 1챕 온보딩은 사이트 AND가 아니라 노드별 첫판 승률(3분대 전부 ≥0.90).
+    private const float CurveChapter1MinNodeWinRate = 0.90f;
+    // Q1: 종챕 50~70% 밴드는 고정 기준 분대(frontline)의 사이트 AND율로만 판정 — 동적 최약이 아니라 불변 기준점.
+    private const string CurveReferenceSquad = "frontline";
     private const float CurveFinalChapterMinClearRate = 0.50f;
     private const float CurveFinalChapterMaxClearRate = 0.70f;
+    // Q1: 카운터 분대(ranged/mixed)는 종챕 바닥만 두고 상한 없음 — 정찰→카운터 편성 보상을 깎지 않는다.
+    private const float CurveFinalCounterMinClearRate = 0.85f;
+    // Q2: 절벽의 공식 판정 = 어느 분대든 개별 노드 첫판 승률 < 0.30 (사이트 AND율·연속 낙차는 진단 출력 전용).
+    private const float CurveCliffNodeMinWinRate = 0.30f;
     private const float CurveCliffMaxDrop = 0.30f;
+    // 관찰 지표(리스크 감시): 종반(마지막 2사이트 8노드)에서 카운터 분대의 상시 포화 신호.
+    private const float LateSaturationNodeRate = 0.95f;
+
     private const float DeltaDeadBelow = 0.01f;
     private const float DeltaTargetMin = 0.02f;
     private const float DeltaTargetMax = 0.10f;
+    private const float DeltaGreyHighMax = 0.15f;
     private const float DeltaDominantAbove = 0.15f;
+    // Q4: 착용자 민감도 positive control — 착용자 파워 증폭(+3레벨 등가) paired Δ가 이 미만이면
+    // 그 벤치마크는 해당 착용자에 비민감 → dead 판정 유보(insensitive)로 기록.
+    private const float SensitivityControlMinDelta = 0.05f;
+    private const int SensitivityControlLevelBoost = 3;
 
     private const int BattleXpGainPerVictory = 50; // SessionRewardSettlementFlow와 동일 상수(벤치마크 XP 저작용).
 
@@ -272,12 +287,15 @@ public static class CampaignBalanceSweepRunner
         var perSeedWin = new bool[seedCount];
         var steps = new List<float>(seedCount);
         var timeouts = 0;
+        var enemyHealingTotals = new List<float>(seedCount);
+        var firstEnemyDeathSeconds = new List<float>(seedCount);
         BattleResult? firstVariantWin = null;
 
         var canonical = BattleResolver.Run(canonicalState, BattleSimulator.DefaultMaxSteps);
         perSeedWin[0] = canonical.Winner == TeamSide.Ally;
         steps.Add(canonical.StepCount);
         timeouts += canonical.StepCount >= BattleSimulator.DefaultMaxSteps ? 1 : 0;
+        AccumulateNodeObservability(canonicalState, enemyHealingTotals, firstEnemyDeathSeconds);
 
         for (var k = 1; k < seedCount; k++)
         {
@@ -292,6 +310,7 @@ public static class CampaignBalanceSweepRunner
             perSeedWin[k] = result.Winner == TeamSide.Ally;
             steps.Add(result.StepCount);
             timeouts += result.StepCount >= BattleSimulator.DefaultMaxSteps ? 1 : 0;
+            AccumulateNodeObservability(variantState, enemyHealingTotals, firstEnemyDeathSeconds);
             if (perSeedWin[k])
             {
                 firstVariantWin ??= result;
@@ -322,7 +341,40 @@ public static class CampaignBalanceSweepRunner
             Percentile(steps, 0.5f),
             timeouts,
             progressionKind,
-            perSeedWin);
+            perSeedWin,
+            enemyHealingTotals.Count == 0 ? 0f : enemyHealingTotals.Average(),
+            firstEnemyDeathSeconds.Count == 0 ? -1f : firstEnemyDeathSeconds.Average());
+    }
+
+    /// <summary>노드 관찰 지표(재비준 리스크 감시) — 적측 총 회복량(힐 수렁 검증)과 첫 적 처치 시간.
+    /// 판정에 쓰지 않는 순수 관찰값이라 sim/판정 코드 무접촉. id 매칭은 실 인스턴스 id set(접두사 허구 금지).</summary>
+    private static void AccumulateNodeObservability(BattleState state, List<float> enemyHealingTotals, List<float> firstEnemyDeathSeconds)
+    {
+        var enemyIds = new HashSet<string>(state.Enemies.Select(unit => unit.Id.Value), StringComparer.Ordinal);
+        var healing = 0f;
+        var firstDeath = -1f;
+        foreach (var record in state.TelemetryEvents)
+        {
+            if (record.EventKind == TelemetryEventKind.HealingApplied
+                && record.Actor != null
+                && enemyIds.Contains(record.Actor.UnitInstanceId))
+            {
+                healing += Math.Max(0f, record.ValueA);
+            }
+            else if (record.EventKind == TelemetryEventKind.UnitDied
+                && firstDeath < 0f
+                && record.Actor != null
+                && enemyIds.Contains(record.Actor.UnitInstanceId))
+            {
+                firstDeath = record.TimeSeconds;
+            }
+        }
+
+        enemyHealingTotals.Add(healing);
+        if (firstDeath >= 0f)
+        {
+            firstEnemyDeathSeconds.Add(firstDeath);
+        }
     }
 
     // ─────────────────────────────────────────────
@@ -460,10 +512,39 @@ public static class CampaignBalanceSweepRunner
             itemIds = itemIds.Take(itemLimit).ToList();
         }
 
+        // Q4(재비준): 4-arm paired — A0=bare(baseline), A1=base only, A2=base+대표 어픽스(완제품),
+        // C=착용자 민감도 positive control(+3레벨 등가). dead 판정의 주 기준은 A2-A0이고,
+        // A1-A0은 harmful/dominant만 판정하는 정보값. 착용자 민감도 미달이면 verdict=insensitive(판정 유보).
+        var affixIndex = LoadAffixMetaIndex();
+        var sensitivityByHero = new Dictionary<string, float>(StringComparer.Ordinal);
+
+        float ResolveWearerSensitivity(string heroId)
+        {
+            if (sensitivityByHero.TryGetValue(heroId, out var cached))
+            {
+                return cached;
+            }
+
+            var controlSession = CreateBenchmarkSession(lookup, itemIndex, content, benchmark, $"control_{heroId}", squad.Archetypes);
+            // C arm = 예산 확보(+3레벨) 후 착용자만 패시브 보드 탐욕 성장 — 파워 전달이 검증된 채널.
+            BoostHeroLevels(controlSession, heroId, SensitivityControlLevelBoost);
+            var controlHero = controlSession.Profile.Heroes.FirstOrDefault(record => string.Equals(record.HeroId, heroId, StringComparison.Ordinal));
+            if (controlHero != null)
+            {
+                GrowHeroPassives(controlSession, content, controlHero);
+            }
+
+            var controlRate = MeasureBenchmarkNodeWinRate(controlSession, baselineNode.BattleNodeIndex, scope.SeedCount);
+            var sensitivity = controlRate - baselineNode.WinRate;
+            sensitivityByHero[heroId] = sensitivity;
+            Debug.Log($"[CampaignSweep] delta squad={squad.Name} sensitivity hero={heroId} Δ={sensitivity:+0.00;-0.00}");
+            return sensitivity;
+        }
+
         var itemArms = new List<DeltaArmMeasurement>();
         foreach (var itemId in itemIds)
         {
-            if (!itemIndex.TryGetValue(itemId, out _))
+            if (!itemIndex.TryGetValue(itemId, out var itemMeta))
             {
                 itemArms.Add(new DeltaArmMeasurement(itemId, "item", squad.Name, string.Empty, 0f, 0f, "no-item-meta"));
                 continue;
@@ -484,7 +565,49 @@ public static class CampaignBalanceSweepRunner
             }
 
             var rate = MeasureBenchmarkNodeWinRate(session, baselineNode.BattleNodeIndex, scope.SeedCount);
-            itemArms.Add(new DeltaArmMeasurement(itemId, "item", squad.Name, equippedHeroId, rate, rate - baselineNode.WinRate, "measured"));
+            var baseOnlyDelta = rate - baselineNode.WinRate;
+
+            // A2 — base-only가 dead 미만 구간이면 대표 어픽스 완제품으로 재측정(dead 판정의 주 기준).
+            string representativeAffixId = string.Empty;
+            float? completeRate = null;
+            float? completeDelta = null;
+            if (baseOnlyDelta < DeltaDeadBelow)
+            {
+                representativeAffixId = ResolveRepresentativeAffix(affixIndex, itemMeta.SlotType);
+                if (!string.IsNullOrEmpty(representativeAffixId))
+                {
+                    var completeSession = CreateBenchmarkSession(lookup, itemIndex, content, benchmark, $"item_{itemId}_affix", squad.Archetypes);
+                    var completeInstanceId = $"sweep_{itemId}_complete";
+                    completeSession.Profile.Inventory.Add(new InventoryItemRecord
+                    {
+                        ItemInstanceId = completeInstanceId,
+                        ItemBaseId = itemId,
+                        AffixIds = new List<string> { representativeAffixId },
+                    });
+                    var completeHeroId = TryEquipOnEligibleSquadHero(completeSession, itemIndex, completeInstanceId, itemId);
+                    if (completeHeroId != null)
+                    {
+                        completeRate = MeasureBenchmarkNodeWinRate(completeSession, baselineNode.BattleNodeIndex, scope.SeedCount);
+                        completeDelta = completeRate - baselineNode.WinRate;
+                    }
+                }
+            }
+
+            var wearerSensitivity = ResolveWearerSensitivity(equippedHeroId);
+            var verdict = ResolveArmVerdict(baseOnlyDelta, completeDelta, wearerSensitivity);
+            itemArms.Add(new DeltaArmMeasurement(
+                itemId,
+                "item",
+                squad.Name,
+                equippedHeroId,
+                rate,
+                baseOnlyDelta,
+                "measured",
+                representativeAffixId,
+                completeRate,
+                completeDelta,
+                wearerSensitivity,
+                verdict));
         }
 
         // 유령 패시브 arm — 이 분대의 클래스 보드에 속한 host만. prereq-only 대조 arm으로
@@ -510,6 +633,14 @@ public static class CampaignBalanceSweepRunner
                 ? baselineNode.WinRate
                 : MeasureGhostArm(lookup, itemIndex, content, benchmark, squad, scope.SeedCount, baselineNode.BattleNodeIndex, host, prereqOnly, out _, out _);
 
+            // Q4: 유령 패시브도 착용자 민감도 게이트를 통과해야 dead 판정이 성립(비민감=insensitive).
+            float? ghostSensitivity = fullStatus == "measured" && !string.IsNullOrEmpty(heroId)
+                ? ResolveWearerSensitivity(heroId)
+                : null;
+            var ghostVerdict = fullStatus == "measured"
+                ? ResolveArmVerdict(fullRate - baselineNode.WinRate, null, ghostSensitivity)
+                : fullStatus;
+
             ghostArms.Add(new GhostArmMeasurement(
                 host.Id,
                 host.GrantedSkillId,
@@ -519,7 +650,9 @@ public static class CampaignBalanceSweepRunner
                 fullRate,
                 fullRate - baselineNode.WinRate,
                 fullRate - controlRate,
-                fullStatus));
+                fullStatus,
+                ghostSensitivity,
+                ghostVerdict));
         }
 
         return new SquadDeltaReport(
@@ -773,6 +906,96 @@ public static class CampaignBalanceSweepRunner
         }
     }
 
+    /// <summary>Q4 착용자 민감도 컨트롤(C arm)의 파워 부스트 1단계 — 레벨은 이 게임에서 전투 스탯에
+    /// 직결되지 않고(2회전 실측: 레벨만 부스트한 C arm 전부 Δ0) 패시브 예산 계단(5→8)만 연다.
+    /// 실제 파워 전달은 2단계(GrowHeroPassives — 검증된 스탯 노드 채널)가 담당한다.</summary>
+    private static void BoostHeroLevels(GameSessionState session, string heroId, int levels)
+    {
+        var progression = session.Profile.HeroProgressions.FirstOrDefault(record => string.Equals(record.HeroId, heroId, StringComparison.Ordinal));
+        var level = progression?.Level ?? 1;
+        var experience = 0;
+        for (var i = 0; i < levels; i++)
+        {
+            experience += HeroProgressionCurve.ExperienceToNextLevel(level + i);
+        }
+
+        ApplyExperience(session.Profile, heroId, experience);
+    }
+
+    private sealed record AffixMeta(string AffixId, IReadOnlyList<ItemSlotType> Slots, bool Unconditional, bool Spawnable, float BudgetScore);
+
+    private static IReadOnlyList<AffixMeta> LoadAffixMetaIndex()
+    {
+        var list = new List<AffixMeta>();
+        foreach (var definition in Resources.LoadAll<AffixDefinition>("_Game/Content/Definitions/Affixes"))
+        {
+            if (definition == null || string.IsNullOrWhiteSpace(definition.Id))
+            {
+                continue;
+            }
+
+            list.Add(new AffixMeta(
+                definition.Id,
+                (definition.AllowedSlotTypes ?? new List<ItemSlotType>()).ToList(),
+                (definition.RequiredTags ?? new List<StableTagDefinition>()).All(tag => tag == null || string.IsNullOrWhiteSpace(tag.Id)),
+                definition.SpawnWeight > 0f,
+                definition.BudgetScore));
+        }
+
+        return list.OrderBy(meta => meta.AffixId, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>Q4 대표 어픽스 선정(재비준 규칙): legal pool(슬롯 허용 + 무조건 발동 + spawnable) 중
+    /// 파워 예산이 pool 중앙값에 가장 가까운 것, 동률은 affix id 사전순 최초.</summary>
+    private static string ResolveRepresentativeAffix(IReadOnlyList<AffixMeta> affixes, ItemSlotType slot)
+    {
+        var pool = affixes.Where(meta => meta.Spawnable && meta.Unconditional && meta.Slots.Contains(slot)).ToList();
+        if (pool.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var scores = pool.Select(meta => meta.BudgetScore).OrderBy(score => score).ToList();
+        var median = scores[scores.Count / 2];
+        return pool
+            .OrderBy(meta => Math.Abs(meta.BudgetScore - median))
+            .ThenBy(meta => meta.AffixId, StringComparer.Ordinal)
+            .First().AffixId;
+    }
+
+    /// <summary>Q4 verdict: 민감도 미달=insensitive(판정 유보), 이후 유효 델타(완제품 우선)를
+    /// harmful/dead/grey-low/target/grey-high/dominant로 등급화.</summary>
+    private static string ResolveArmVerdict(float baseOnlyDelta, float? completeDelta, float? wearerSensitivity)
+    {
+        if (wearerSensitivity.HasValue && wearerSensitivity.Value < SensitivityControlMinDelta)
+        {
+            return "insensitive";
+        }
+
+        var effective = completeDelta ?? baseOnlyDelta;
+        if (effective < 0f)
+        {
+            return "harmful";
+        }
+
+        if (effective < DeltaDeadBelow)
+        {
+            return "dead";
+        }
+
+        if (effective < DeltaTargetMin)
+        {
+            return "grey-low";
+        }
+
+        if (effective <= DeltaTargetMax)
+        {
+            return "target";
+        }
+
+        return effective <= DeltaGreyHighMax ? "grey-high" : "dominant";
+    }
+
     // ─────────────────────────────────────────────
     // 분대 저작/성장 헬퍼 — 전부 실게임 세션 API 경유.
     // ─────────────────────────────────────────────
@@ -995,39 +1218,46 @@ public static class CampaignBalanceSweepRunner
 
         foreach (var hero in session.Profile.Heroes.ToList())
         {
-            if (!EnsurePassiveBoardSelected(session, hero).IsSuccess)
-            {
-                continue;
-            }
+            GrowHeroPassives(session, content, hero);
+        }
+    }
 
-            var boardId = $"board_{hero.ClassId}";
-            var selected = new HashSet<string>(
-                session.Profile.PassiveSelections
-                    .FirstOrDefault(record => string.Equals(record.HeroId, hero.HeroId, StringComparison.Ordinal))
-                    ?.SelectedNodeIds ?? new List<string>(),
-                StringComparer.Ordinal);
-            var boardNodes = content.PassiveNodes.Values
-                .Where(nodeTemplate => string.Equals(nodeTemplate.BoardId, boardId, StringComparison.Ordinal))
-                .OrderBy(nodeTemplate => nodeTemplate.BoardDepth)
-                .ThenBy(nodeTemplate => nodeTemplate.Id, StringComparer.Ordinal)
-                .ToList();
+    /// <summary>단일 hero의 보드를 얕은 노드부터 예산까지 탐욕 토글 — 곡선 레인 성장과
+    /// Q4 민감도 컨트롤(C arm)이 같은 코드를 공유한다(레인 간 성장 의미 동일성).</summary>
+    private static void GrowHeroPassives(GameSessionState session, CombatContentSnapshot content, HeroInstanceRecord hero)
+    {
+        if (!EnsurePassiveBoardSelected(session, hero).IsSuccess)
+        {
+            return;
+        }
 
-            var changed = true;
-            while (changed)
+        var boardId = $"board_{hero.ClassId}";
+        var selected = new HashSet<string>(
+            session.Profile.PassiveSelections
+                .FirstOrDefault(record => string.Equals(record.HeroId, hero.HeroId, StringComparison.Ordinal))
+                ?.SelectedNodeIds ?? new List<string>(),
+            StringComparer.Ordinal);
+        var boardNodes = content.PassiveNodes.Values
+            .Where(nodeTemplate => string.Equals(nodeTemplate.BoardId, boardId, StringComparison.Ordinal))
+            .OrderBy(nodeTemplate => nodeTemplate.BoardDepth)
+            .ThenBy(nodeTemplate => nodeTemplate.Id, StringComparer.Ordinal)
+            .ToList();
+
+        var changed = true;
+        while (changed)
+        {
+            changed = false;
+            foreach (var nodeTemplate in boardNodes)
             {
-                changed = false;
-                foreach (var nodeTemplate in boardNodes)
+                if (selected.Contains(nodeTemplate.Id))
                 {
-                    if (selected.Contains(nodeTemplate.Id))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (session.TogglePassiveNode(hero.HeroId, nodeTemplate.Id).IsSuccess)
-                    {
-                        selected.Add(nodeTemplate.Id);
-                        changed = true;
-                    }
+                if (session.TogglePassiveNode(hero.HeroId, nodeTemplate.Id).IsSuccess)
+                {
+                    selected.Add(nodeTemplate.Id);
+                    changed = true;
                 }
             }
         }
@@ -1166,70 +1396,120 @@ public static class CampaignBalanceSweepRunner
         var cliffs = new List<string>();
         var chapter1Violations = new List<string>();
         var finalBandNotes = new List<string>();
+        var diagnostics = new List<string>();
+        var lateSaturation = new List<string>();
 
         foreach (var preset in curve)
         {
+            var lateNodesAtSaturation = 0;
+            var lateNodesTotal = 0;
             for (var index = 0; index < preset.Sites.Count; index++)
             {
                 var site = preset.Sites[index];
                 var chapterOrder = chapterOrderById.TryGetValue(site.ChapterId, out var order) ? order : 0;
-                if (chapterOrder == 1 && site.ClearRate < CurveChapter1MinClearRate)
+                foreach (var node in site.Nodes)
                 {
-                    chapter1Violations.Add($"{preset.Preset}:{site.SiteId}={site.ClearRate:0.00}");
+                    // Q2: 절벽의 공식 판정 단위는 개별 노드 첫판 승률.
+                    if (node.WinRate < CurveCliffNodeMinWinRate)
+                    {
+                        cliffs.Add($"{preset.Preset}:{site.SiteId}/{node.NodeId}={node.WinRate:0.00}");
+                    }
+
+                    // Q1: 1챕 온보딩은 노드별로, 3분대 전부.
+                    if (chapterOrder == 1 && node.WinRate < CurveChapter1MinNodeWinRate)
+                    {
+                        chapter1Violations.Add($"{preset.Preset}:{site.SiteId}/{node.NodeId}={node.WinRate:0.00}");
+                    }
                 }
 
+                // 진단 전용(자동 판정 아님) — 사이트 AND율 기반 연속 낙차는 관찰 신호로만 남긴다.
                 if (index > 0)
                 {
                     var drop = preset.Sites[index - 1].ClearRate - site.ClearRate;
                     if (drop > CurveCliffMaxDrop)
                     {
-                        cliffs.Add($"{preset.Preset}:{preset.Sites[index - 1].SiteId}({preset.Sites[index - 1].ClearRate:0.00})→{site.SiteId}({site.ClearRate:0.00}) drop={drop:0.00}");
+                        diagnostics.Add($"낙차(진단) {preset.Preset}:{preset.Sites[index - 1].SiteId}({preset.Sites[index - 1].ClearRate:0.00})→{site.SiteId}({site.ClearRate:0.00}) drop={drop:0.00}");
                     }
                 }
 
-                if (chapterOrder == finalChapterOrder
-                    && (site.ClearRate < CurveFinalChapterMinClearRate || site.ClearRate > CurveFinalChapterMaxClearRate))
+                if (chapterOrder == finalChapterOrder)
                 {
-                    finalBandNotes.Add($"{preset.Preset}:{site.SiteId}={site.ClearRate:0.00}");
+                    // Q1: 종챕 50~70%는 고정 기준 분대(frontline)만, 카운터 분대는 바닥 0.85만.
+                    if (string.Equals(preset.Preset, CurveReferenceSquad, StringComparison.Ordinal)
+                        && (site.ClearRate < CurveFinalChapterMinClearRate || site.ClearRate > CurveFinalChapterMaxClearRate))
+                    {
+                        finalBandNotes.Add($"{preset.Preset}:{site.SiteId}={site.ClearRate:0.00} (기준 분대 밴드 {CurveFinalChapterMinClearRate:0.00}~{CurveFinalChapterMaxClearRate:0.00})");
+                    }
+                    else if (!string.Equals(preset.Preset, CurveReferenceSquad, StringComparison.Ordinal)
+                        && site.ClearRate < CurveFinalCounterMinClearRate)
+                    {
+                        finalBandNotes.Add($"{preset.Preset}:{site.SiteId}={site.ClearRate:0.00} (카운터 분대 바닥 {CurveFinalCounterMinClearRate:0.00})");
+                    }
+                }
+
+                // 관찰: 종반(마지막 2사이트) 상시 포화 — 카운터 분대의 무긴장화 리스크 감시.
+                if (index >= preset.Sites.Count - 2)
+                {
+                    foreach (var node in site.Nodes)
+                    {
+                        lateNodesTotal++;
+                        if (node.WinRate >= LateSaturationNodeRate)
+                        {
+                            lateNodesAtSaturation++;
+                        }
+                    }
                 }
             }
+
+            lateSaturation.Add($"{preset.Preset}: 종반 {lateNodesTotal}노드 중 {lateNodesAtSaturation}노드 ≥{LateSaturationNodeRate:0.00}");
         }
 
-        return new CurveFindings(cliffs, chapter1Violations, finalBandNotes);
+        return new CurveFindings(cliffs, chapter1Violations, finalBandNotes, diagnostics, lateSaturation);
     }
 
     private static DeltaOutliers EvaluateDeltaBands(IReadOnlyList<SquadDeltaReport> deltas)
     {
+        // Q4(재비준): 거버넌스 대상은 verdict — dead는 완제품(A2) 기준이고 착용자 민감도 게이트를
+        // 통과한 arm에만 성립한다. base-only(A1)는 harmful/dominant만 판정(dead 하한 미적용, 정보값).
         var dead = new List<string>();
         var dominant = new List<string>();
+        var harmful = new List<string>();
+        var insensitive = new List<string>();
+
+        void Classify(string squad, string siteId, string contentId, string verdict, float effectiveDelta)
+        {
+            var label = $"{squad}@{siteId}:{contentId} Δ{effectiveDelta:+0.00;-0.00}";
+            switch (verdict)
+            {
+                case "dead":
+                    dead.Add(label);
+                    break;
+                case "dominant":
+                    dominant.Add(label);
+                    break;
+                case "harmful":
+                    harmful.Add(label);
+                    break;
+                case "insensitive":
+                    insensitive.Add(label);
+                    break;
+            }
+        }
+
         foreach (var delta in deltas)
         {
             foreach (var arm in delta.ItemArms.Where(arm => arm.Status == "measured"))
             {
-                if (arm.Delta < DeltaDeadBelow)
-                {
-                    dead.Add($"{delta.Squad}@{delta.SiteId}:{arm.ContentId} Δ{arm.Delta:+0.00;-0.00}");
-                }
-                else if (arm.Delta > DeltaDominantAbove)
-                {
-                    dominant.Add($"{delta.Squad}@{delta.SiteId}:{arm.ContentId} Δ{arm.Delta:+0.00;-0.00}");
-                }
+                Classify(delta.Squad, delta.SiteId, arm.ContentId, arm.Verdict, arm.CompleteDelta ?? arm.Delta);
             }
 
             foreach (var ghost in delta.GhostArms.Where(arm => arm.Status == "measured"))
             {
-                if (ghost.DeltaVsBaseline < DeltaDeadBelow)
-                {
-                    dead.Add($"{delta.Squad}@{delta.SiteId}:{ghost.HostNodeId} Δ{ghost.DeltaVsBaseline:+0.00;-0.00}");
-                }
-                else if (ghost.DeltaVsBaseline > DeltaDominantAbove)
-                {
-                    dominant.Add($"{delta.Squad}@{delta.SiteId}:{ghost.HostNodeId} Δ{ghost.DeltaVsBaseline:+0.00;-0.00}");
-                }
+                Classify(delta.Squad, delta.SiteId, ghost.HostNodeId, ghost.Verdict, ghost.DeltaVsBaseline);
             }
         }
 
-        return new DeltaOutliers(dead, dominant);
+        return new DeltaOutliers(dead, dominant, harmful, insensitive);
     }
 
     private static string WriteReports(
@@ -1263,8 +1543,9 @@ public static class CampaignBalanceSweepRunner
         builder.AppendLine("# 캠페인 밸런스 sweep 리포트 (게이트①)");
         builder.AppendLine();
         builder.AppendLine($"- 시드 {scope.SeedCount} (0=canonical) · 곡선 분대 {curve.Count}종 · 델타 분대 {deltas.Count}종(적응 벤치마크)");
-        builder.AppendLine($"- 곡선 밴드: 1챕 ≥{CurveChapter1MinClearRate:P0} · 종챕 {CurveFinalChapterMinClearRate:P0}~{CurveFinalChapterMaxClearRate:P0} · 절벽 {CurveCliffMaxDrop:P0} 초과 금지");
-        builder.AppendLine($"- 델타 밴드: dead < {DeltaDeadBelow:P0} · 목표 {DeltaTargetMin:P0}~{DeltaTargetMax:P0} · dominant > {DeltaDominantAbove:P0}");
+        builder.AppendLine($"- 곡선 밴드(2회전 재비준): 1챕 노드별 ≥{CurveChapter1MinNodeWinRate:0.00}(전 분대) · 종챕 {CurveReferenceSquad} {CurveFinalChapterMinClearRate:0.00}~{CurveFinalChapterMaxClearRate:0.00} / 카운터 분대 ≥{CurveFinalCounterMinClearRate:0.00} · 절벽 = 노드 승률 <{CurveCliffNodeMinWinRate:0.00}");
+        builder.AppendLine($"- 델타 밴드(2회전 재비준): dead 판정은 완제품(A2=base+대표어픽스) + 착용자 민감도(C, Δ≥{SensitivityControlMinDelta:0.00}) 통과 시에만 · 목표 {DeltaTargetMin:0.00}~{DeltaTargetMax:0.00} · dominant >{DeltaDominantAbove:0.00}");
+        builder.AppendLine($"- 민감도 컨트롤 구현: 착용자 +{SensitivityControlLevelBoost}레벨(예산 계단) + 해당 hero 패시브 보드 탐욕 성장 — 슬롯별 스탯 ×1.25의 세션 합법 대체(검증된 스탯 노드 채널, 편차 명시)");
         builder.AppendLine();
 
         builder.AppendLine("## 캠페인 곡선 (사이트 클리어율 = 시드별 전 노드 첫판 전승률)");
@@ -1287,11 +1568,32 @@ public static class CampaignBalanceSweepRunner
 
         builder.AppendLine("_노드별 승률의 `*` = canonical 시드 패배._");
         builder.AppendLine();
-        builder.AppendLine("### 곡선 밴드 판정");
+        builder.AppendLine("### 곡선 밴드 판정 (2회전 재비준 기준)");
         builder.AppendLine();
-        AppendFindingList(builder, "절벽(연속 사이트 낙차 >30%p)", curveFindings.Cliffs);
-        AppendFindingList(builder, "1챕터 90% 미달", curveFindings.Chapter1Violations);
-        AppendFindingList(builder, "종챕터 50~70% 밴드 이탈", curveFindings.FinalChapterBandNotes);
+        AppendFindingList(builder, $"절벽(노드 승률 <{CurveCliffNodeMinWinRate:0.00})", curveFindings.Cliffs);
+        AppendFindingList(builder, $"1챕 노드 {CurveChapter1MinNodeWinRate:0.00} 미달(전 분대)", curveFindings.Chapter1Violations);
+        AppendFindingList(builder, "종챕 밴드 이탈", curveFindings.FinalChapterBandNotes);
+        AppendFindingList(builder, "진단(판정 비관여 — 사이트 AND율 낙차)", curveFindings.Diagnostics);
+        builder.AppendLine();
+        builder.AppendLine("### 관찰 지표 (리스크 감시)");
+        builder.AppendLine();
+        foreach (var entry in curveFindings.LateSaturation)
+        {
+            builder.AppendLine($"- 종반 포화: {entry}");
+        }
+
+        foreach (var preset in curve)
+        {
+            foreach (var site in preset.Sites)
+            {
+                foreach (var node in site.Nodes.Where(node => node.WinRate < 0.60f))
+                {
+                    var firstKill = node.MeanFirstEnemyDeathSeconds < 0f ? "관측없음" : $"{node.MeanFirstEnemyDeathSeconds:0.0}s";
+                    builder.AppendLine($"- 저승률 노드 심층: {preset.Preset}:{site.SiteId}/{node.NodeId} 승률 {node.WinRate:0.00} · 적측 평균 회복 {node.MeanEnemyHealing:0.0} · 첫 적 처치 {firstKill}");
+                }
+            }
+        }
+
         builder.AppendLine();
 
         builder.AppendLine("## 아이템/유령 패시브 델타 (paired 시드, 분대별 bare baseline 대비 %p)");
@@ -1301,25 +1603,36 @@ public static class CampaignBalanceSweepRunner
             var sensitivityNote = delta.LowSensitivity ? " ⚠️ low-sensitivity(전 후보 불감 — 최근접 fallback)" : string.Empty;
             builder.AppendLine($"### {delta.Squad} 분대 ({delta.Archetypes}) — 벤치마크 {delta.ChapterId}/{delta.SiteId} Lv{delta.SquadLevel}, 노드 {delta.ChosenNodeId}, baseline {delta.BaselineWinRate:0.00}{sensitivityNote}");
             builder.AppendLine();
-            builder.AppendLine("| 콘텐츠 | 종류 | 장착 대상 | 승률 | Δ | 밴드 |");
-            builder.AppendLine("| --- | --- | --- | --- | --- | --- |");
+            builder.AppendLine("| 콘텐츠 | 종류 | 장착 대상 | base Δ(A1) | 완제품 Δ(A2) | 민감도(C) | verdict |");
+            builder.AppendLine("| --- | --- | --- | --- | --- | --- | --- |");
             foreach (var arm in delta.ItemArms)
             {
-                builder.AppendLine($"| {arm.ContentId} | {arm.Kind} | {arm.EquippedHeroId} | {FormatRate(arm.WinRate, arm.Status)} | {FormatDelta(arm.Delta, arm.Status)} | {ResolveDeltaBand(arm.Delta, arm.Status)} |");
+                var complete = arm.CompleteDelta.HasValue
+                    ? $"{arm.CompleteDelta.Value.ToString("+0.00;-0.00", CultureInfo.InvariantCulture)} ({arm.RepresentativeAffixId})"
+                    : "—";
+                var sensitivity = arm.WearerSensitivityDelta.HasValue
+                    ? arm.WearerSensitivityDelta.Value.ToString("+0.00;-0.00", CultureInfo.InvariantCulture)
+                    : "—";
+                builder.AppendLine($"| {arm.ContentId} | {arm.Kind} | {arm.EquippedHeroId} | {FormatDelta(arm.Delta, arm.Status)} | {complete} | {sensitivity} | {ResolveVerdictLabel(arm.Verdict, arm.Status)} |");
             }
 
             foreach (var ghost in delta.GhostArms)
             {
-                builder.AppendLine($"| {ghost.HostNodeId} ({ghost.GrantedSkillId}) | ghost | {ghost.HeroId} | {FormatRate(ghost.WinRate, ghost.Status)} | {FormatDelta(ghost.DeltaVsBaseline, ghost.Status)} (스킬 단독 {FormatDelta(ghost.DeltaVsPrereqOnly, ghost.Status)}) | {ResolveDeltaBand(ghost.DeltaVsBaseline, ghost.Status)} |");
+                var sensitivity = ghost.WearerSensitivityDelta.HasValue
+                    ? ghost.WearerSensitivityDelta.Value.ToString("+0.00;-0.00", CultureInfo.InvariantCulture)
+                    : "—";
+                builder.AppendLine($"| {ghost.HostNodeId} ({ghost.GrantedSkillId}) | ghost | {ghost.HeroId} | {FormatDelta(ghost.DeltaVsBaseline, ghost.Status)} (스킬 단독 {FormatDelta(ghost.DeltaVsPrereqOnly, ghost.Status)}) | — | {sensitivity} | {ResolveVerdictLabel(ghost.Verdict, ghost.Status)} |");
             }
 
             builder.AppendLine();
         }
 
-        builder.AppendLine("### 델타 outlier");
+        builder.AppendLine("### 델타 outlier (verdict 기준 — 완제품 Δ + 민감도 게이트)");
         builder.AppendLine();
-        AppendFindingList(builder, $"dead (<{DeltaDeadBelow:P0})", outliers.Dead);
+        AppendFindingList(builder, "harmful (Δ<0)", outliers.Harmful);
+        AppendFindingList(builder, $"dead (<{DeltaDeadBelow:P0}, 완제품 기준)", outliers.Dead);
         AppendFindingList(builder, $"dominant (>{DeltaDominantAbove:P0})", outliers.Dominant);
+        AppendFindingList(builder, "insensitive (벤치마크 비민감 — 판정 유보)", outliers.Insensitive);
         builder.AppendLine();
         builder.AppendLine("_상태 배율 7채널은 비준대로 측정 arm 없음 — 상태 부여 콘텐츠의 델타로 관측하고 배율은 outlier 조정 노브로만 쓴다._");
         return builder.ToString();
@@ -1338,25 +1651,8 @@ public static class CampaignBalanceSweepRunner
     private static string FormatDelta(float delta, string status)
         => status == "measured" ? delta.ToString("+0.00;-0.00", CultureInfo.InvariantCulture) : "—";
 
-    private static string ResolveDeltaBand(float delta, string status)
-    {
-        if (status != "measured")
-        {
-            return status;
-        }
-
-        if (delta < DeltaDeadBelow)
-        {
-            return "dead";
-        }
-
-        if (delta > DeltaDominantAbove)
-        {
-            return "dominant";
-        }
-
-        return delta >= DeltaTargetMin && delta <= DeltaTargetMax ? "target" : "soft";
-    }
+    private static string ResolveVerdictLabel(string verdict, string status)
+        => status != "measured" ? status : string.IsNullOrEmpty(verdict) ? "—" : verdict;
 
     // ─────────────────────────────────────────────
     // 관찰값 모델(리포트 직렬화 대상).
@@ -1392,12 +1688,17 @@ public static class CampaignBalanceSweepRunner
         float StepP50,
         int Timeouts,
         string ProgressionKind,
-        [property: JsonIgnore] IReadOnlyList<bool> PerSeedWin);
+        [property: JsonIgnore] IReadOnlyList<bool> PerSeedWin,
+        // 관찰 지표(판정 비관여): 적측 평균 총 회복량(힐 수렁 검증) · 첫 적 처치까지 평균 초(-1=관측 없음).
+        float MeanEnemyHealing = 0f,
+        float MeanFirstEnemyDeathSeconds = -1f);
 
     public sealed record CurveFindings(
         IReadOnlyList<string> Cliffs,
         IReadOnlyList<string> Chapter1Violations,
-        IReadOnlyList<string> FinalChapterBandNotes);
+        IReadOnlyList<string> FinalChapterBandNotes,
+        IReadOnlyList<string> Diagnostics,
+        IReadOnlyList<string> LateSaturation);
 
     public sealed record SquadDeltaReport(
         string Squad,
@@ -1420,7 +1721,13 @@ public static class CampaignBalanceSweepRunner
         string EquippedHeroId,
         float WinRate,
         float Delta,
-        string Status);
+        string Status,
+        // Q4(재비준) 4-arm 확장 — base-only(A1)는 위 WinRate/Delta, 아래는 완제품(A2)·민감도(C)·최종 verdict.
+        string RepresentativeAffixId = "",
+        float? CompleteWinRate = null,
+        float? CompleteDelta = null,
+        float? WearerSensitivityDelta = null,
+        string Verdict = "");
 
     public sealed record GhostArmMeasurement(
         string HostNodeId,
@@ -1431,9 +1738,14 @@ public static class CampaignBalanceSweepRunner
         float WinRate,
         float DeltaVsBaseline,
         float DeltaVsPrereqOnly,
-        string Status);
+        string Status,
+        // Q4(재비준): 착용자 민감도 컨트롤 Δ(+3레벨 등가) — 미달이면 verdict=insensitive(판정 유보).
+        float? WearerSensitivityDelta = null,
+        string Verdict = "");
 
     public sealed record DeltaOutliers(
         IReadOnlyList<string> Dead,
-        IReadOnlyList<string> Dominant);
+        IReadOnlyList<string> Dominant,
+        IReadOnlyList<string> Harmful,
+        IReadOnlyList<string> Insensitive);
 }

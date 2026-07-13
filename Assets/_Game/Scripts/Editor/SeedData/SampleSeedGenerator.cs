@@ -922,8 +922,11 @@ public static class SampleSeedGenerator
                     MakeTrait(archetypeId, $"{archetypeId}_negative_clumsy", "Clumsy", "서툼", "phys_power", -1f),
                     MakeTrait(archetypeId, $"{archetypeId}_negative_slow", "Slow", "둔함", "attack_speed", -1f),
                 };
+                // 적 encounter 수치 노브(sweep 2회전 재비준 조정) — 추첨 풀과 분리된 EncounterTraits 컨테이너.
+                // outgoing damage ×k ≈ phys/mag power ×k (힐·HP·속도 무접촉, GPT 결정 파라미터).
+                a.EncounterTraits = CreateEncounterTraits(archetypeId);
             });
-            PatchSerializedTraitPool(asset, asset.Id, asset.ArchetypeId, asset.PositiveTraits, asset.NegativeTraits);
+            PatchSerializedTraitPool(asset, asset.Id, asset.ArchetypeId, asset.PositiveTraits, asset.NegativeTraits, asset.EncounterTraits);
             result[archetypeId] = asset;
         }
         return result;
@@ -2473,7 +2476,12 @@ public static class SampleSeedGenerator
         });
     }
 
-    private static TraitEntry MakeTrait(string archetypeId, string id, string enName, string koName, string statId, float value)
+    private static TraitEntry MakeTrait(string archetypeId, string id, string enName, string koName, string statId, float value, SM.Core.Stats.ModifierOp op = SM.Core.Stats.ModifierOp.Flat)
+    {
+        return MakeTraitMulti(archetypeId, id, enName, koName, (statId, op, value));
+    }
+
+    private static TraitEntry MakeTraitMulti(string archetypeId, string id, string enName, string koName, params (string StatId, SM.Core.Stats.ModifierOp Op, float Value)[] modifiers)
     {
         var nameKey = ContentLocalizationTables.BuildTraitNameKey(archetypeId, id);
         var descriptionKey = ContentLocalizationTables.BuildTraitDescriptionKey(archetypeId, id);
@@ -2484,11 +2492,45 @@ public static class SampleSeedGenerator
             Id = id,
             NameKey = nameKey,
             DescriptionKey = descriptionKey,
-            Modifiers = new List<SerializableStatModifier>
-            {
-                new() { StatId = statId, Value = value }
-            }
+            Modifiers = modifiers
+                .Select(modifier => new SerializableStatModifier { StatId = modifier.StatId, Op = modifier.Op, Value = modifier.Value })
+                .ToList()
         };
+    }
+
+    /// <summary>
+    /// 적 encounter 수치 노브 trait(sweep 2회전 GPT 결정 파라미터의 콘텐츠화):
+    /// suppressed_retinue = sunken elite 비네임드 화력 ×0.82 / dampened_assault = ashen skirmish_2 적 화력 ×0.96
+    /// / pack_fatigue = wolfpine skirmish_2 적 화력 ×0.92. outgoing damage ×k는 phys/mag power ×k로 구현
+    /// (스킬 계수·기본공격 모두 파워 스탯 기반 — 힐·HP·속도 무접촉).
+    /// </summary>
+    private static List<TraitEntry> CreateEncounterTraits(string archetypeId)
+    {
+        TraitEntry Damp(string suffix, string en, string ko, float scale) => MakeTraitMulti(
+            archetypeId,
+            $"{archetypeId}_encounter_{suffix}",
+            en,
+            ko,
+            ("phys_power", SM.Core.Stats.ModifierOp.Increased, scale),
+            ("mag_power", SM.Core.Stats.ModifierOp.Increased, scale));
+
+        var traits = new List<TraitEntry>();
+        if (archetypeId is "slayer" or "mirror_cantor" or "marksman")
+        {
+            traits.Add(Damp("suppressed_retinue", "Suppressed Retinue", "눌린 수행단", -0.18f));
+        }
+
+        if (archetypeId is "guardian" or "scout" or "hexer" or "hunter")
+        {
+            traits.Add(Damp("dampened_assault", "Dampened Assault", "무뎌진 공세", -0.04f));
+        }
+
+        if (archetypeId is "rift_stalker" or "raider" or "scout" or "hunter")
+        {
+            traits.Add(Damp("pack_fatigue", "Pack Fatigue", "지친 무리", -0.08f));
+        }
+
+        return traits;
     }
 
     private static RewardEntry MakeRewardEntry(string id, RewardType type, int amount, string enLabel, string koLabel)
@@ -3274,7 +3316,12 @@ public static class SampleSeedGenerator
                 };
             }
 
-            PatchSerializedTraitPool(asset, asset.Id, asset.ArchetypeId, asset.PositiveTraits, asset.NegativeTraits);
+            if (asset.EncounterTraits.Count == 0)
+            {
+                asset.EncounterTraits = CreateEncounterTraits(archetypeId);
+            }
+
+            PatchSerializedTraitPool(asset, asset.Id, asset.ArchetypeId, asset.PositiveTraits, asset.NegativeTraits, asset.EncounterTraits);
             EditorUtility.SetDirty(asset);
         }
     }
@@ -3783,7 +3830,8 @@ public static class SampleSeedGenerator
                 "faction_solarum_border", ThreatTierValue.Tier1, "answer_lane_guard_anchor",
                 new[] { "encounter_family_bastion_front", "encounter_family_protect_carry", "encounter_family_control_cleanse", "encounter_family_sustain_grind" },
                 Members(Member("bastion_penitent", "extra_kojin_gate_warden"), Member("warden", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe"), Member("raider", "extra_border_reliquary_carry")),
-                Members(Member("guardian", "extra_kojin_gate_warden"), Member("scout", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe"), Member("hunter", "extra_border_reliquary_carry")),
+                // sweep 2회전 조정(GPT 결정): skirmish_2 적 전체 화력 ×0.96 — 1챕 노드 하한(0.90) 복구.
+                Members(Member("guardian", "extra_kojin_gate_warden", "guardian_encounter_dampened_assault"), Member("scout", "extra_solarum_border_lancer", "scout_encounter_dampened_assault"), Member("hexer", "extra_solarum_sigil_scribe", "hexer_encounter_dampened_assault"), Member("hunter", "extra_border_reliquary_carry", "hunter_encounter_dampened_assault")),
                 Members(Member("bulwark", "hero_aegis_sentinel"), Member("hunter", "extra_solarum_border_lancer"), Member("mirror_cantor", "extra_solarum_sigil_scribe"), Member("warden", "extra_kojin_gate_warden")),
                 Member("warden", "hero_aegis_sentinel"),
                 Members(Member("hunter", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe")),
@@ -3794,7 +3842,8 @@ public static class SampleSeedGenerator
                 "faction_wolfpine_pack", ThreatTierValue.Tier1, "answer_lane_peel_anti_dive",
                 new[] { "encounter_family_weakside_dive", "encounter_family_tempo_swarm", "encounter_family_mark_execute", "encounter_family_protect_carry" },
                 Members(Member("scout", "extra_wolfpine_outrider"), Member("raider", "extra_wolfpine_ember_runner_cell"), Member("hunter", "extra_grey_fang_vanguard"), Member("shaman", "extra_wolfpine_outrider")),
-                Members(Member("rift_stalker", "extra_wolfpine_outrider"), Member("raider", "hero_ember_runner"), Member("scout", "extra_grey_fang_vanguard"), Member("hunter", "extra_wolfpine_ember_runner_cell")),
+                // sweep 2회전 조정(GPT 결정): skirmish_2 적 전체 화력 ×0.92 — 1챕 노드 하한(0.90) 복구.
+                Members(Member("rift_stalker", "extra_wolfpine_outrider", "rift_stalker_encounter_pack_fatigue"), Member("raider", "hero_ember_runner", "raider_encounter_pack_fatigue"), Member("scout", "extra_grey_fang_vanguard", "scout_encounter_pack_fatigue"), Member("hunter", "extra_wolfpine_ember_runner_cell", "hunter_encounter_pack_fatigue")),
                 Members(Member("reaver", "npc_grey_fang"), Member("raider", "extra_grey_fang_vanguard"), Member("scout", "hero_ember_runner"), Member("shaman", "extra_wolfpine_outrider")),
                 Member("reaver", "npc_grey_fang"),
                 Members(Member("rift_stalker", "extra_wolfpine_outrider"), Member("shaman", "extra_grey_fang_vanguard")),
@@ -3804,9 +3853,13 @@ public static class SampleSeedGenerator
                 "site_sunken_bastion", 1, "Sunken Bastion", "가라앉은 보루", "Shielded adjudicators protect a submerged reliquary.", "방패 든 심판관들이 잠긴 성물고를 지킨다.",
                 "faction_sunken_adjudicators", ThreatTierValue.Tier2, "answer_lane_break_formation",
                 new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry" },
-                Members(Member("guardian", "extra_bastion_line_guard"), Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant"), Member("marksman", "extra_sunken_bastion_adjudicator")),
+                // sweep 1회전 조정(22414461) 시드 동기 — skirmish1 guardian→raider, elite bastion_penitent→slayer
+                // (vanguard counted 쌍 해제·단역 CharacterId 유지). asset-단독 조정은 재시드가 되돌린다(회귀 함정).
+                Members(Member("raider", "extra_bastion_line_guard"), Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant"), Member("marksman", "extra_sunken_bastion_adjudicator")),
                 Members(Member("bulwark", "hero_iron_pelt"), Member("guardian", "extra_bastion_line_guard"), Member("hexer", "extra_sunken_bastion_adjudicator"), Member("priest", "extra_bastion_reliquary_guard")),
-                Members(Member("guardian", "hero_iron_pelt"), Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("mirror_cantor", "extra_sunken_adjudicator_lieutenant"), Member("marksman", "extra_sunken_bastion_adjudicator")),
+                // sweep 2회전 조정(GPT 결정): elite 비네임드 3체 화력 ×0.82(눌린 수행단) — 힐 노브(잠긴 성가)는
+                // 적측 회복 실측 0.0으로 죽은 노브 판명·삭제. 네임드(iron_pelt)·comp 무접촉.
+                Members(Member("guardian", "hero_iron_pelt"), Member("slayer", "extra_bastion_reliquary_guard", "slayer_encounter_suppressed_retinue"), Member("mirror_cantor", "extra_sunken_adjudicator_lieutenant", "mirror_cantor_encounter_suppressed_retinue"), Member("marksman", "extra_sunken_bastion_adjudicator", "marksman_encounter_suppressed_retinue")),
                 Member("guardian", "hero_iron_pelt"),
                 Members(Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant")),
                 "boss_overlay_sunken_bastion", "boss_aura_drowned_bastion", "boss_utility_reliquary_seal", "barrier"),
@@ -3848,7 +3901,8 @@ public static class SampleSeedGenerator
                 "site_glass_forest", 1, "Glass Forest", "유리숲", "Shards, clerics, and recordkeepers split targeting priorities.", "유리 파편, 성직자, 기록관이 타깃 우선순위를 흔든다.",
                 "faction_glass_forest", ThreatTierValue.Tier3, "answer_lane_cleanse_mobility",
                 new[] { "encounter_family_control_cleanse", "encounter_family_mark_execute", "encounter_family_weakside_dive", "encounter_family_sustain_grind" },
-                Members(Member("priest", "extra_glass_field_cleric"), Member("marksman", "extra_glass_shard_bailiff"), Member("scout", "extra_glass_forest_recordkeeper"), Member("hexer", "extra_glass_field_cleric")),
+                // sweep 1회전 조정(22414461) 시드 동기 — skirmish1 marksman→raider(ranger 쌍 해제 + 근접 접점).
+                Members(Member("priest", "extra_glass_field_cleric"), Member("raider", "extra_glass_shard_bailiff"), Member("scout", "extra_glass_forest_recordkeeper"), Member("hexer", "extra_glass_field_cleric")),
                 Members(Member("marksman", "hero_prism_seeker"), Member("rift_stalker", "extra_glass_shard_bailiff"), Member("priest", "extra_glass_field_cleric"), Member("hexer", "extra_glass_forest_recordkeeper")),
                 Members(Member("marksman", "hero_prism_seeker"), Member("mirror_cantor", "extra_glass_forest_recordkeeper"), Member("scout", "extra_glass_shard_bailiff"), Member("priest", "extra_glass_field_cleric")),
                 Member("marksman", "hero_prism_seeker"),
@@ -3890,9 +3944,9 @@ public static class SampleSeedGenerator
         };
     }
 
-    private static EnemyMemberSeed Member(string archetypeId, string characterId = "")
+    private static EnemyMemberSeed Member(string archetypeId, string characterId = "", string negativeTraitId = "")
     {
-        return new EnemyMemberSeed(archetypeId, characterId);
+        return new EnemyMemberSeed(archetypeId, characterId, negativeTraitId);
     }
 
     private static IReadOnlyList<EnemyMemberSeed> Members(params EnemyMemberSeed[] members)
@@ -4076,7 +4130,7 @@ public static class SampleSeedGenerator
         string OverlayUtilityTag,
         string OverlayStatusId);
 
-    private sealed record EnemyMemberSeed(string ArchetypeId, string CharacterId);
+    private sealed record EnemyMemberSeed(string ArchetypeId, string CharacterId, string NegativeTraitId = "");
 
     private static void CreateRewardSource(string id, string enName, string koName, RewardSourceKindValue kind, string dropTableId, IReadOnlyList<RarityBracketValue> rarityBrackets)
     {
@@ -4178,7 +4232,9 @@ public static class SampleSeedGenerator
                 },
                 Role = EnemySquadMemberRoleValue.Unit,
                 PositiveTraitId = string.Empty,
-                NegativeTraitId = string.Empty,
+                // encounter-local 수치 노브 — 특정 인카운터의 특정 멤버만 스탯을 조정할 때 trait 채널을 쓴다
+                // (sweep 2회전 Q3: sunken elite 성가대 힐 완화). 아키타입/전역 수치 무접촉.
+                NegativeTraitId = member.NegativeTraitId,
                 RuleModifierTags = new List<string>()
             }).ToList();
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, id, id);
@@ -4842,13 +4898,15 @@ public static class SampleSeedGenerator
         string id,
         string archetypeId,
         IReadOnlyList<TraitEntry> positiveTraits,
-        IReadOnlyList<TraitEntry> negativeTraits)
+        IReadOnlyList<TraitEntry> negativeTraits,
+        IReadOnlyList<TraitEntry>? encounterTraits = null)
     {
         var serializedObject = new SerializedObject(asset);
         serializedObject.FindProperty(nameof(TraitPoolDefinition.Id))!.stringValue = id ?? string.Empty;
         serializedObject.FindProperty(nameof(TraitPoolDefinition.ArchetypeId))!.stringValue = archetypeId ?? string.Empty;
         SetTraitEntryArray(serializedObject.FindProperty(nameof(TraitPoolDefinition.PositiveTraits)), positiveTraits);
         SetTraitEntryArray(serializedObject.FindProperty(nameof(TraitPoolDefinition.NegativeTraits)), negativeTraits);
+        SetTraitEntryArray(serializedObject.FindProperty(nameof(TraitPoolDefinition.EncounterTraits)), encounterTraits ?? Array.Empty<TraitEntry>());
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
     }
 

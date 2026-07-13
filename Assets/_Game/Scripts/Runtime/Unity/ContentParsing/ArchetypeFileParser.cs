@@ -139,7 +139,8 @@ internal static class ArchetypeFileParser
             definition.Id = ExtractValue(lines, "Id:");
             definition.ArchetypeId = ExtractValue(lines, "ArchetypeId:");
             definition.PositiveTraits = ParseTraitEntries(lines, "PositiveTraits:", "NegativeTraits:", definition.ArchetypeId);
-            definition.NegativeTraits = ParseTraitEntries(lines, "NegativeTraits:", null, definition.ArchetypeId);
+            definition.NegativeTraits = ParseTraitEntries(lines, "NegativeTraits:", "EncounterTraits:", definition.ArchetypeId);
+            definition.EncounterTraits = ParseTraitEntries(lines, "EncounterTraits:", null, definition.ArchetypeId);
             ApplyFallbackIdentity(definition, path);
             ApplyTraitPoolFallbacks(definition);
             return definition;

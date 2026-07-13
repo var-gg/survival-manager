@@ -27,7 +27,12 @@ internal sealed class SessionInventoryItemBuilder
         var resolvedInstanceId = string.IsNullOrWhiteSpace(itemInstanceId)
             ? $"{itemBaseId}-{Guid.NewGuid():N}"
             : itemInstanceId;
-        var seed = _buildStableSeed(resolvedInstanceId, profile.Inventory.Count);
+        // 어픽스 롤 시드는 인스턴스 id(GUID)가 아니라 결정적 컨텍스트(base id + 획득 순번)에서 파생 —
+        // 같은 진행은 같은 드랍이어야 결정성 원칙(cross-process byte-identical)과 측정 재현성(sweep 곡선)이
+        // 성립한다. GUID가 시드에 스미면 동일 세이브·동일 전투 시드에서도 run마다 어픽스가 리롤된다
+        // (sweep 2회전 실측: 무변경 재실행에서 곡선이 wolfpine부터 분기 — GUID hero id 허구와 동일 계열).
+        // 인스턴스 id 자체는 전역 유일성용으로 GUID를 유지한다(어픽스와 분리).
+        var seed = _buildStableSeed($"{itemBaseId}|{profile.Inventory.Count}", profile.Inventory.Count);
 
         return new InventoryItemRecord
         {

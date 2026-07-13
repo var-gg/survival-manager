@@ -72,7 +72,9 @@ internal sealed class SnapshotAssembler
             _archetypeDefinitions.Values.ToDictionary(definition => definition.Id, archetypeConverter.BuildArchetypeTemplate, StringComparer.Ordinal));
         var traitPackages = BuildSection("trait packages", () =>
             _traitPools.Values
-                .SelectMany(pool => Enumerate(pool.PositiveTraits).Concat(Enumerate(pool.NegativeTraits)))
+                // EncounterTraits는 적 encounter 노브 전용 — 추첨 풀(TryGetTraitIds)에는 넣지 않고
+                // 패키지 조립에만 합류한다(아군 배분 modulo 오염 차단).
+                .SelectMany(pool => Enumerate(pool.PositiveTraits).Concat(Enumerate(pool.NegativeTraits)).Concat(Enumerate(pool.EncounterTraits)))
                 .Where(entry => !string.IsNullOrWhiteSpace(entry.Id))
                 .ToDictionary(entry => entry.Id, entry => ModifierPackageConverter.BuildTraitPackage(entry), StringComparer.Ordinal));
         var itemPackages = BuildSection("item packages", () =>

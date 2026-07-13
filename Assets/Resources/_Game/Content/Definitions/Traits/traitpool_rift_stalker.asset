@@ -70,3 +70,16 @@ MonoBehaviour:
       Value: -1
     legacyDisplayName: 
     legacyDescription: 
+  EncounterTraits:
+  - Id: rift_stalker_encounter_pack_fatigue
+    NameKey: content.trait.rift_stalker.rift_stalker_encounter_pack_fatigue.name
+    DescriptionKey: content.trait.rift_stalker.rift_stalker_encounter_pack_fatigue.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 1
+      Value: -0.08
+    - StatId: mag_power
+      Op: 1
+      Value: -0.08
+    legacyDisplayName: 
+    legacyDescription: 

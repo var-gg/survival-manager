@@ -70,3 +70,28 @@ MonoBehaviour:
       Value: -1
     legacyDisplayName: 
     legacyDescription: 
+  EncounterTraits:
+  - Id: scout_encounter_dampened_assault
+    NameKey: content.trait.scout.scout_encounter_dampened_assault.name
+    DescriptionKey: content.trait.scout.scout_encounter_dampened_assault.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 1
+      Value: -0.04
+    - StatId: mag_power
+      Op: 1
+      Value: -0.04
+    legacyDisplayName: 
+    legacyDescription: 
+  - Id: scout_encounter_pack_fatigue
+    NameKey: content.trait.scout.scout_encounter_pack_fatigue.name
+    DescriptionKey: content.trait.scout.scout_encounter_pack_fatigue.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 1
+      Value: -0.08
+    - StatId: mag_power
+      Op: 1
+      Value: -0.08
+    legacyDisplayName: 
+    legacyDescription: 

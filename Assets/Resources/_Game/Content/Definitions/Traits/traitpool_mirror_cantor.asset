@@ -70,3 +70,16 @@ MonoBehaviour:
       Value: -1
     legacyDisplayName: 
     legacyDescription: 
+  EncounterTraits:
+  - Id: mirror_cantor_encounter_suppressed_retinue
+    NameKey: content.trait.mirror_cantor.mirror_cantor_encounter_suppressed_retinue.name
+    DescriptionKey: content.trait.mirror_cantor.mirror_cantor_encounter_suppressed_retinue.desc
+    Modifiers:
+    - StatId: phys_power
+      Op: 1
+      Value: -0.18
+    - StatId: mag_power
+      Op: 1
+      Value: -0.18
+    legacyDisplayName: 
+    legacyDescription: 

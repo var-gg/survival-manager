@@ -30,7 +30,7 @@ MonoBehaviour:
     Anchor: 0
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: guardian_encounter_dampened_assault
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_2_squad_2
@@ -40,7 +40,7 @@ MonoBehaviour:
     Anchor: 2
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: scout_encounter_dampened_assault
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_2_squad_3
@@ -50,7 +50,7 @@ MonoBehaviour:
     Anchor: 3
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: hexer_encounter_dampened_assault
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_2_squad_4
@@ -60,7 +60,7 @@ MonoBehaviour:
     Anchor: 5
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: hunter_encounter_dampened_assault
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

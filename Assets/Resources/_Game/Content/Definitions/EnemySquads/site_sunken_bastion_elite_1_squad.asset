@@ -40,7 +40,7 @@ MonoBehaviour:
     Anchor: 2
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: slayer_encounter_suppressed_retinue
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_elite_1_squad_3
@@ -50,7 +50,7 @@ MonoBehaviour:
     Anchor: 3
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: mirror_cantor_encounter_suppressed_retinue
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_elite_1_squad_4
@@ -60,7 +60,7 @@ MonoBehaviour:
     Anchor: 5
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: marksman_encounter_suppressed_retinue
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 
