@@ -10,6 +10,7 @@ namespace SM.Combat.Services;
 internal static class FormationStatusEmitter
 {
     internal const float RiposteExposedDurationSeconds = 1.2f;
+    internal const float PhalanxRiposteDurationBonusSeconds = 0.6f;
     internal const float FlankExposedDurationSeconds = 0.8f;
     internal const int InternalCooldownTicks = 25; // 2.5s @ 0.1s fixed tick
 
@@ -46,7 +47,10 @@ internal static class FormationStatusEmitter
                 attacker,
                 RiposteApplicationId,
                 ExposedStatusId,
-                RiposteExposedDurationSeconds,
+                RiposteExposedDurationSeconds
+                + (state.TeamRuleSet.Has(screener.Side, TeamRuleSet.PhalanxRuleId)
+                    ? PhalanxRiposteDurationBonusSeconds
+                    : 0f),
                 ExposedMagnitude,
                 stepEvents);
         }

@@ -6,4 +6,5 @@ namespace SM.Combat.Model;
 public sealed record CombatModifierPackage(
     string SourceId,
     ModifierSource Source,
-    IReadOnlyList<StatModifier> Modifiers);
+    IReadOnlyList<StatModifier> Modifiers,
+    string GrantedTeamRuleId = "");

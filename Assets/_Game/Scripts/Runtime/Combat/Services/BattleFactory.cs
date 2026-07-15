@@ -23,6 +23,9 @@ public static class BattleFactory
         var resolvedStatusRules = statusRules ?? CombatStatusRules.Default;
         var allyPackages = ResolveTeamPackages(allyDefinitions);
         var enemyPackages = ResolveTeamPackages(enemyDefinitions);
+        var teamRuleSet = new TeamRuleSet(
+            allyPackages.Select(package => package.GrantedTeamRuleId),
+            enemyPackages.Select(package => package.GrantedTeamRuleId));
         var allyTactic = ResolveTeamTactic(allyDefinitions, allyPosture);
         var enemyTactic = ResolveTeamTactic(enemyDefinitions, enemyPosture);
 
@@ -49,7 +52,8 @@ public static class BattleFactory
             seed,
             allyTactic: allyTactic,
             enemyTactic: enemyTactic,
-            statusRules: resolvedStatusRules);
+            statusRules: resolvedStatusRules,
+            teamRuleSet: teamRuleSet);
         RecordFormationTelemetry(state, resolved, TeamSide.Ally, allyTactic);
         RecordFormationTelemetry(state, resolved, TeamSide.Enemy, enemyTactic);
         return state;

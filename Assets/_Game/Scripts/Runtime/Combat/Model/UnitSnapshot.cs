@@ -9,7 +9,7 @@ using SM.Core.Stats;
 
 namespace SM.Combat.Model;
 
-public sealed class UnitSnapshot
+public sealed partial class UnitSnapshot
 {
     private const float SignatureCastThreshold = 100f;
     private const float EnergyPerBasicAttack = 12f;
@@ -202,9 +202,9 @@ public sealed class UnitSnapshot
     public float Omnivamp => Math.Max(0f, Stats.Get(StatKey.Omnivamp));
     public float PhysPower => Stats.Get(StatKey.PhysPower);
     public float MagPower => Stats.Get(StatKey.MagPower);
-    public float AttackSpeed => Math.Max(0.1f, Stats.Get(StatKey.AttackSpeed) * GetSlowMultiplier());
+    public float AttackSpeed => Math.Max(0.1f, Stats.Get(StatKey.AttackSpeed) * GetSlowMultiplier() * GetBloodrushMultiplier());
     public float HealPower => Stats.Get(StatKey.HealPower);
-    public float MoveSpeed => Math.Max(0.1f, Stats.Get(StatKey.MoveSpeed) * GetSlowMultiplier());
+    public float MoveSpeed => Math.Max(0.1f, Stats.Get(StatKey.MoveSpeed) * GetSlowMultiplier() * GetBloodrushMultiplier());
     public float AttackRange => Math.Max(0.5f, Stats.Get(StatKey.AttackRange));
     public float SkillHaste => Math.Max(0f, Stats.Get(StatKey.SkillHaste));
     public float ManaMax => Stats.Get(StatKey.ManaMax);
@@ -927,6 +927,11 @@ public sealed class UnitSnapshot
         for (var index = _statuses.Count - 1; index >= 0; index--)
         {
             var status = _statuses[index];
+            if (status.RemainingTicks == int.MaxValue)
+            {
+                continue;
+            }
+
             var remaining = status.RemainingTicks - 1;
             if (remaining <= 0)
             {

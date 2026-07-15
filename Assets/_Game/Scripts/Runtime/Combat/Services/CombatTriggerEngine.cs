@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 
 namespace SM.Combat.Services;
 
 /// <summary>
 /// 증강·패시브의 트리거 효과(<see cref="CombatTriggeredEffect"/>)를 전투 hook 시점에 평가·실행한다.
 /// 효과는 전부 기존 <see cref="UnitSnapshot"/> 연산(ApplyStatus/Heal/AddBarrier)으로 매핑되어
-/// 전투에 새로운 스탯 레이어를 추가하지 않는다 (저위험). BattleStart/OnKill/OnHpBelow 트리거 지원.
+/// 전투에 새로운 스탯 레이어를 추가하지 않는다 (저위험). BattleStart/OnKill/OnTeamKill/OnAllyDeath/OnHpBelow 트리거 지원.
 /// Phase 3: 모든 발동은 <see cref="CombatBeat"/> 을 남기고(숨은 발동 금지), 다중 유닛 hook 은
 /// 명시적 결정 순서(speed desc → side → stableId asc — 시뮬레이터 유닛 루프와 동일 계약)로 돈다.
 /// </summary>
@@ -32,6 +33,22 @@ public static class CombatTriggerEngine
         }
 
         FireTriggers(state, killer, CombatTriggerKind.OnKill);
+    }
+
+    /// <summary>
+    /// 전장 사망 hook — 어느 편이 처치했는지와 무관하게 양 팀의 활성 상위 시너지 규칙을 한 번씩 평가한다.
+    /// BattleSimulator의 결정적 Kill 이벤트 순서를 그대로 소비하고, 대상은 stable id ordinal 순서로 적용한다.
+    /// 새 RNG나 TeamRuleSet 변이는 없다.
+    /// </summary>
+    public static void OnTeamKill(BattleState state, UnitSnapshot victim)
+    {
+        if (victim.IsAlive)
+        {
+            return;
+        }
+
+        ApplyTeamKillRules(state, TeamSide.Ally);
+        ApplyTeamKillRules(state, TeamSide.Enemy);
     }
 
     /// <summary>사망 hook — 쓰러진 victim 의 생존 아군이 OnAllyDeath 트리거를 발동(같은 팀 한정, 사망마다).</summary>
@@ -83,6 +100,87 @@ public static class CombatTriggerEngine
         {
             ApplyEffect(state, owner, effect);
         }
+    }
+
+    private static void ApplyTeamKillRules(BattleState state, TeamSide side)
+    {
+        if (state.TeamRuleSet.Has(side, TeamRuleSet.BloodrushRuleId))
+        {
+            foreach (var unit in RuleRecipients(state, side, "beastkin"))
+            {
+                unit.ApplyStatus(
+                    new StatusApplicationSpec(
+                        TeamRuleSet.BloodrushRuleId,
+                        TeamRuleSet.BloodrushStatusId,
+                        TeamRuleSet.BloodrushDurationSeconds,
+                        TeamRuleSet.BloodrushTempoPerStack,
+                        TeamRuleSet.MaxRuleStacks,
+                        RefreshDurationOnReapply: true),
+                    sourceApplicationId: TeamRuleSet.BloodrushRuleId);
+                RecordTeamRuleBeat(state, unit, TeamRuleSet.BloodrushRuleId, TeamRuleSet.BloodrushTempoPerStack);
+            }
+        }
+
+        if (state.TeamRuleSet.Has(side, TeamRuleSet.DeathTollRuleId))
+        {
+            foreach (var unit in RuleRecipients(state, side, "undead"))
+            {
+                if (unit.Statuses.Any(status => string.Equals(
+                        status.StatusId,
+                        TeamRuleSet.DeathTollStatusId,
+                        System.StringComparison.Ordinal)
+                    && status.Stacks >= TeamRuleSet.MaxRuleStacks))
+                {
+                    continue;
+                }
+
+                unit.AddStatModifier(new StatModifier(
+                    StatKey.PhysPower,
+                    ModifierOp.Flat,
+                    TeamRuleSet.DeathTollPhysPowerPerStack,
+                    ModifierSource.Synergy,
+                    TeamRuleSet.DeathTollRuleId));
+                unit.AddStatModifier(new StatModifier(
+                    StatKey.MaxHealth,
+                    ModifierOp.Flat,
+                    TeamRuleSet.DeathTollMaxHealthPerStack,
+                    ModifierSource.Synergy,
+                    TeamRuleSet.DeathTollRuleId));
+                unit.ApplyPermanentStatus(
+                    new StatusApplicationSpec(
+                        TeamRuleSet.DeathTollRuleId,
+                        TeamRuleSet.DeathTollStatusId,
+                        DurationSeconds: 0f,
+                        Magnitude: 1f,
+                        MaxStacks: TeamRuleSet.MaxRuleStacks,
+                        RefreshDurationOnReapply: true),
+                    sourceApplicationId: TeamRuleSet.DeathTollRuleId);
+                RecordTeamRuleBeat(state, unit, TeamRuleSet.DeathTollRuleId, TeamRuleSet.DeathTollPhysPowerPerStack);
+            }
+        }
+    }
+
+    private static IEnumerable<UnitSnapshot> RuleRecipients(BattleState state, TeamSide side, string raceId)
+    {
+        return state.GetTeam(side)
+            .Where(unit => unit.IsAlive
+                           && unit.EntityKind == CombatEntityKind.RosterUnit
+                           && string.Equals(unit.Definition.RaceId, raceId, System.StringComparison.Ordinal))
+            .OrderBy(unit => unit.Id.Value, System.StringComparer.Ordinal);
+    }
+
+    private static void RecordTeamRuleBeat(BattleState state, UnitSnapshot target, string ruleId, float value)
+    {
+        state.RecordBeat(
+            type: CombatBeatType.OnKillEffect,
+            side: target.Side,
+            sourceId: null,
+            targetId: target.Id,
+            chainId: 0,
+            importance: CombatBeatImportance.OnKillEffect,
+            value: value,
+            position: target.Position,
+            tag: ruleId);
     }
 
     private static IEnumerable<CombatTriggeredEffect> EffectsFor(UnitSnapshot owner, CombatTriggerKind trigger)

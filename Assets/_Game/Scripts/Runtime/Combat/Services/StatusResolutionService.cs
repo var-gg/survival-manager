@@ -247,6 +247,15 @@ public static class StatusResolutionService
             status.StatusId,
             0f,
             "status_tick"));
+        if (!unit.IsAlive)
+        {
+            stepEvents.AddRange(CombatActionResolver.ResolveKillAndAssist(
+                state,
+                source,
+                unit,
+                BattleActionType.ActiveSkill,
+                skill: null));
+        }
     }
 
     private static UnitSnapshot ResolveStatusSourceUnit(BattleState state, UnitSnapshot fallback, string sourceActorId)

@@ -51,6 +51,7 @@ public sealed class BattleSimulator
         State.ResetStepMotions();
         State.ResetStepCombatEvents();
         var stepEvents = new List<BattleEvent>();
+        var processedKillVictimIds = new HashSet<string>(StringComparer.Ordinal);
         foreach (var unit in State.AllUnits)
         {
             unit.AdvanceTick();
@@ -58,6 +59,7 @@ public sealed class BattleSimulator
         State.AdvanceGroupDispersalLocks();
 
         StatusResolutionService.AdvanceStatuses(State, stepEvents);
+        ProcessKillEvents(stepEvents, processedKillVictimIds);
         State.ScheduleOwnedEntityDespawnIfOwnerDead();
         State.AdvanceOwnedEntityDespawns();
         if (CheckForWinner())
@@ -184,26 +186,7 @@ public sealed class BattleSimulator
         // 원본 이벤트 수만 순회하므로 payoff/kill 이벤트 append가 콤보 재진입을 만들지 않는다.
         CombatComboService.ProcessStep(State, stepEvents);
 
-        foreach (var resolvedEvent in stepEvents)
-        {
-            if (resolvedEvent.EventKind != BattleEventKind.Kill)
-            {
-                continue;
-            }
-
-            var killerId = resolvedEvent.KillPayload?.ActualKiller ?? resolvedEvent.ActorId;
-            var killer = State.FindUnit(killerId);
-            if (killer != null)
-            {
-                CombatTriggerEngine.OnKill(State, killer);
-            }
-
-            if (resolvedEvent.KillPayload?.ActualVictim is { } victimId
-                && State.FindUnit(victimId) is { } victim)
-            {
-                CombatTriggerEngine.OnAllyDeath(State, victim);
-            }
-        }
+        ProcessKillEvents(stepEvents, processedKillVictimIds);
 
         CombatTriggerEngine.OnPostStep(State);
 
@@ -224,6 +207,54 @@ public sealed class BattleSimulator
 
         CurrentStep = BattleReadModelBuilder.BuildStep(State, stepEvents, IsFinished, Winner, State.StepMotions, State.StepCombatEvents, State.DrainStepBeats());
         return CurrentStep;
+    }
+
+    private void ProcessKillEvents(
+        IReadOnlyList<BattleEvent> stepEvents,
+        HashSet<string> processedKillVictimIds)
+    {
+        // 한 phase의 다중 사망은 victim stable id → killer stable id 전순서로 소비한다. action append 순서나
+        // combo payoff append 위치가 달라도 OnKill/OnTeamKill/OnAllyDeath 발화 순서는 cross-process 동일하다.
+        var killEvents = stepEvents
+            .Where(resolvedEvent => resolvedEvent.EventKind == BattleEventKind.Kill)
+            .Where(resolvedEvent => !processedKillVictimIds.Contains(
+                resolvedEvent.KillPayload?.ActualVictim.Value
+                ?? resolvedEvent.TargetId?.Value
+                ?? string.Empty))
+            .OrderBy(
+                resolvedEvent => resolvedEvent.KillPayload?.ActualVictim.Value
+                                 ?? resolvedEvent.TargetId?.Value
+                                 ?? string.Empty,
+                StringComparer.Ordinal)
+            .ThenBy(
+                resolvedEvent => resolvedEvent.KillPayload?.ActualKiller.Value
+                                 ?? resolvedEvent.ActorId.Value,
+                StringComparer.Ordinal)
+            .ToList();
+        foreach (var resolvedEvent in killEvents)
+        {
+            var stableVictimId = resolvedEvent.KillPayload?.ActualVictim.Value
+                                 ?? resolvedEvent.TargetId?.Value
+                                 ?? string.Empty;
+            if (!processedKillVictimIds.Add(stableVictimId))
+            {
+                continue;
+            }
+
+            var killerId = resolvedEvent.KillPayload?.ActualKiller ?? resolvedEvent.ActorId;
+            var killer = State.FindUnit(killerId);
+            if (killer != null)
+            {
+                CombatTriggerEngine.OnKill(State, killer);
+            }
+
+            if (resolvedEvent.KillPayload?.ActualVictim is { } victimId
+                && State.FindUnit(victimId) is { } victim)
+            {
+                CombatTriggerEngine.OnTeamKill(State, victim);
+                CombatTriggerEngine.OnAllyDeath(State, victim);
+            }
+        }
     }
 
     // onStep: 매 스텝을 관전자에게 흘려보낸다(헤드리스가 BattleHighlightLedger로 formation payoff를 집계하는 통로).

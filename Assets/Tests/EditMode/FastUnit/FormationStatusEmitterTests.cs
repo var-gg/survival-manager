@@ -55,6 +55,21 @@ public sealed class FormationStatusEmitterTests
     }
 
     [Test]
+    public void Phalanx_ScreenedRiposte_ExtendsExposedByPointSixSeconds()
+    {
+        var state = CreateScreenState(includeFinisher: false, phalanx: true);
+        var carry = state.Allies.Single(unit => unit.Definition.Id == "carry");
+        var attacker = state.Enemies.Single();
+
+        ResolveBasic(state, attacker, carry);
+
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.PhalanxRuleId), Is.True);
+        Assert.That(attacker.Statuses.Single(status => status.StatusId == "exposed").RemainingSeconds,
+            Is.EqualTo(1.8f).Within(0.001f),
+            "phalanx는 기존 riposte exposed 1.2s에 정확히 +0.6s만 더한다");
+    }
+
+    [Test]
     public void RearHit_EmitsExposedOnVictim()
     {
         var state = BattleFactory.Create(
@@ -163,7 +178,7 @@ public sealed class FormationStatusEmitterTests
         Assert.That(events.Count(IsExposedApplied), Is.Zero);
     }
 
-    private static BattleState CreateScreenState(bool includeFinisher)
+    private static BattleState CreateScreenState(bool includeFinisher, bool phalanx = false)
     {
         var allies = new List<BattleUnitLoadout>
         {
@@ -173,6 +188,12 @@ public sealed class FormationStatusEmitterTests
         if (includeFinisher)
         {
             allies.Add(CombatTestFactory.CreateLoopAUnit("finisher", hp: 200f, physPower: 4f, behavior: CleanFrontline));
+        }
+
+        if (phalanx)
+        {
+            allies.Add(CombatTestFactory.CreateLoopAUnit("phalanx_a", classId: "duelist", behavior: CleanFrontline));
+            allies.Add(CombatTestFactory.CreateLoopAUnit("phalanx_b", classId: "mystic", behavior: CleanFrontline));
         }
 
         var state = BattleFactory.Create(

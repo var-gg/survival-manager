@@ -21,6 +21,9 @@ public static class BattleFormationConsequence
     /// <summary>스크린이 멀쩡한 후열이 받는 피해 경감 기본치.</summary>
     public const float ScreenMitigationBase = 0.12f;
 
+    /// <summary>방진(rule.phalanx)이 수비측 스크린 경감에 더하는 팀-조건부 가산치.</summary>
+    public const float PhalanxScreenMitigationBonus = 0.04f;
+
     /// <summary>interpose 스크린 폭(m) — 전열 가드가 "공격자→후열" 사선에서 이 수선거리 안이면 몸으로 막는다.
     /// 같은 레인 정면 사선(수선 ~0.5m)은 잡고, 완전 옆 레인 대각 사선(~1.26m)은 안 잡는 값.</summary>
     public const float InterposeScreenWidth = 1.1f;
@@ -112,7 +115,12 @@ public static class BattleFormationConsequence
         }
 
         var context = state.GetTacticContext(target.Side);
-        return ScreenMitigationBase + (ScreenMitigationProtectCarryBonus * context.ProtectCarryBias);
+        var phalanxBonus = state.TeamRuleSet.Has(target.Side, TeamRuleSet.PhalanxRuleId)
+            ? PhalanxScreenMitigationBonus
+            : 0f;
+        return ScreenMitigationBase
+            + (ScreenMitigationProtectCarryBonus * context.ProtectCarryBias)
+            + phalanxBonus;
     }
 
     // 스크린 가드 탐색 — 두 성분의 OR:

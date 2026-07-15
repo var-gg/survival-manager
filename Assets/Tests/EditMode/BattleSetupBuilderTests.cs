@@ -90,6 +90,58 @@ public sealed class BattleSetupBuilderTests
     }
 
     [Test]
+    public void RealRaceFourComps_CarryUpperTierRules_ThroughCompiledPath()
+    {
+        // Move 4 make-or-break — 실 authored tier의 GrantedTeamRuleId는 아직 빈 값이다. SynergyService의
+        // (CountedTagId, Threshold) 코드-SoT overlay와 CombatModifierPackage 전달 필드가 빠지면,
+        // Default 폴백 테스트는 통과해도 실게임 BattleSetupBuilder 경로의 TeamRuleSet은 비게 된다.
+        var lookup = new RuntimeCombatContentLookup();
+        Assert.That(lookup.TryGetCombatSnapshot(out var snapshot, out var error), Is.True, error);
+
+        foreach (var (raceId, expectedRuleId) in new[]
+                 {
+                     ("human", TeamRuleSet.PhalanxRuleId),
+                     ("beastkin", TeamRuleSet.BloodrushRuleId),
+                     ("undead", TeamRuleSet.DeathTollRuleId),
+                 })
+        {
+            var tier = snapshot.SynergyCatalog.Values
+                .Select(template => template.Rule)
+                .Single(rule => rule.CountedTagId == raceId && rule.Threshold == 4);
+            var archetypes = snapshot.Archetypes.Values
+                .Where(candidate => candidate.RaceId == raceId)
+                .OrderBy(candidate => candidate.Id, StringComparer.Ordinal)
+                .Take(tier.Threshold)
+                .ToList();
+            Assert.That(archetypes, Has.Count.EqualTo(tier.Threshold),
+                $"실 {raceId} roster가 race@4 witness에 필요한 {tier.Threshold}개 아키타입을 제공해야 한다");
+            var allies = Enumerable.Range(0, tier.Threshold)
+                .Select(index => new BattleParticipantSpec(
+                    $"{raceId}_rule_witness_{index}",
+                    $"{raceId} Rule Witness {index}",
+                    archetypes[index].Id,
+                    DeploymentAnchorId.FrontCenter,
+                    string.Empty,
+                    string.Empty,
+                    Array.Empty<BattleEquippedItemSpec>(),
+                    Array.Empty<string>()))
+                .ToList();
+            var build = BattleSetupBuilder.Build(
+                allies,
+                new BattleEncounterPlan(Array.Empty<BattleParticipantSpec>(), TeamPostureType.StandardAdvance),
+                snapshot);
+            Assert.That(build.IsSuccess, Is.True, build.Error);
+
+            var state = BattleFactory.Create(build.Allies, build.Enemies, statusRules: build.StatusRules);
+
+            Assert.That(build.Allies[0].TeamPackages!.Any(package => package.GrantedTeamRuleId == expectedRuleId), Is.True,
+                $"{raceId}@4 authored tier가 compiled package에 {expectedRuleId}를 실어야 한다");
+            Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, expectedRuleId), Is.True,
+                $"{raceId}@4 실 콘텐츠 comp이 BattleState.TeamRuleSet에 {expectedRuleId}를 활성화해야 한다");
+        }
+    }
+
+    [Test]
     public void SameArchetypeHeroes_WithDifferentTraitItemAndAugmentInputs_EndWithDifferentStats()
     {
         var lookup = new RuntimeCombatContentLookup();

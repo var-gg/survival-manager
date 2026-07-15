@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
@@ -127,6 +128,177 @@ public sealed class CombatTriggerEngineTests
         CombatTriggerEngine.OnKill(state, killer);
 
         Assert.That(killer.CurrentHealth, Is.GreaterThan(hpBefore), "OnKill Heal should restore killer health");
+    }
+
+    [Test]
+    public void OnTeamKill_Bloodrush_StacksTempoForLivingBeastkin_AndExpiresAfterPointTwoFiveSeconds()
+    {
+        var allies = Enumerable.Range(0, 4)
+            .Select(index => CombatTestFactory.CreateLoopAUnit($"beast_{index}", race: "beastkin", classId: $"class_{index}"))
+            .ToArray();
+        var state = BattleFactory.Create(
+            allies,
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("victim_a", race: "human"),
+                CombatTestFactory.CreateLoopAUnit("victim_b", race: "human"),
+            });
+        var baselineAttackSpeed = state.Allies[0].AttackSpeed;
+        var baselineMoveSpeed = state.Allies[0].MoveSpeed;
+
+        var firstVictim = state.Enemies[0];
+        firstVictim.TakeDamage(firstVictim.CurrentHealth + 1f);
+        CombatTriggerEngine.OnTeamKill(state, firstVictim);
+        var secondVictim = state.Enemies[1];
+        secondVictim.TakeDamage(secondVictim.CurrentHealth + 1f);
+        CombatTriggerEngine.OnTeamKill(state, secondVictim);
+
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.BloodrushRuleId), Is.True);
+        Assert.That(state.Allies.All(unit => unit.Statuses.Single(status =>
+            status.SourceApplicationId == TeamRuleSet.BloodrushRuleId).Stacks == 2), Is.True);
+        Assert.That(state.Allies[0].AttackSpeed,
+            Is.EqualTo(baselineAttackSpeed * 1.10f).Within(0.0001f));
+        Assert.That(state.Allies[0].MoveSpeed,
+            Is.EqualTo(baselineMoveSpeed * 1.10f).Within(0.0001f));
+
+        for (var tick = 0; tick < BattleTickMath.DurationToTicks(2.5f); tick++)
+        {
+            foreach (var unit in state.Allies)
+            {
+                unit.AdvanceStatusTimers();
+            }
+        }
+
+        Assert.That(state.Allies.All(unit => unit.Statuses.All(status =>
+            status.SourceApplicationId != TeamRuleSet.BloodrushRuleId)), Is.True);
+    }
+
+    [Test]
+    public void OnTeamKill_DeathToll_PermanentlyStacksPhysPowerAndMaxHealthForLivingUndead()
+    {
+        var allies = Enumerable.Range(0, 4)
+            .Select(index => CombatTestFactory.CreateLoopAUnit($"undead_{index}", race: "undead", classId: $"class_{index}"))
+            .ToArray();
+        var state = BattleFactory.Create(
+            allies,
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("victim_a", race: "human"),
+                CombatTestFactory.CreateLoopAUnit("victim_b", race: "human"),
+            });
+        var baselinePhysPower = state.Allies[0].PhysPower;
+        var baselineMaxHealth = state.Allies[0].MaxHealth;
+        foreach (var victim in state.Enemies)
+        {
+            victim.TakeDamage(victim.CurrentHealth + 1f);
+        }
+
+        var beforeRules = BattleStateCanonicalHash.Compute(state);
+        foreach (var victim in state.Enemies)
+        {
+            CombatTriggerEngine.OnTeamKill(state, victim);
+        }
+        var afterRules = BattleStateCanonicalHash.Compute(state);
+
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.DeathTollRuleId), Is.True);
+        Assert.That(state.Allies.All(unit => unit.Statuses.Single(status =>
+            status.SourceApplicationId == TeamRuleSet.DeathTollRuleId).Stacks == 2), Is.True);
+        Assert.That(state.Allies[0].PhysPower,
+            Is.EqualTo(baselinePhysPower + 0.5f).Within(0.0001f));
+        Assert.That(state.Allies[0].MaxHealth,
+            Is.EqualTo(baselineMaxHealth + 2f).Within(0.0001f));
+        Assert.That(afterRules, Is.Not.EqualTo(beforeRules),
+            "deathtoll 영구 stat modifier의 재구성 marker status가 canonical state에 남아야 한다");
+
+        for (var tick = 0; tick < 500; tick++)
+        {
+            state.Allies[0].AdvanceStatusTimers();
+        }
+
+        Assert.That(state.Allies[0].Statuses.Any(status =>
+            status.SourceApplicationId == TeamRuleSet.DeathTollRuleId), Is.True,
+            "deathtoll buff는 전투 종료까지 timer로 소멸하지 않는다");
+    }
+
+    [Test]
+    public void OnTeamKill_WithoutUpperRaceRule_IsNoOp()
+    {
+        var allies = Enumerable.Range(0, 3)
+            .Select(index => CombatTestFactory.CreateLoopAUnit($"beast_{index}", race: "beastkin", classId: $"class_{index}"))
+            .ToArray();
+        var state = BattleFactory.Create(
+            allies,
+            new[] { CombatTestFactory.CreateLoopAUnit("victim", race: "human") });
+        var baselineSpeed = state.Allies[0].AttackSpeed;
+        var victim = state.Enemies[0];
+        victim.TakeDamage(victim.CurrentHealth + 1f);
+        var before = BattleStateCanonicalHash.Compute(state);
+
+        CombatTriggerEngine.OnTeamKill(state, victim);
+
+        var after = BattleStateCanonicalHash.Compute(state);
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.BloodrushRuleId), Is.False);
+        Assert.That(state.Allies.All(unit => unit.Statuses.All(status =>
+            status.SourceApplicationId != TeamRuleSet.BloodrushRuleId)), Is.True);
+        Assert.That(state.Allies[0].AttackSpeed, Is.EqualTo(baselineSpeed));
+        Assert.That(after, Is.EqualTo(before), "규칙 없는 comp의 OnTeamKill은 canonical state byte-identity를 보존한다");
+    }
+
+    [Test]
+    public void BattleSimulator_KillLoop_FiresOnTeamKillExactlyOncePerKill()
+    {
+        var allies = Enumerable.Range(0, 4)
+            .Select(index => CombatTestFactory.CreateLoopAUnit(
+                $"beast_{index}",
+                race: "beastkin",
+                classId: $"class_{index}",
+                physPower: index == 0 ? 50f : 1f))
+            .ToArray();
+        var state = BattleFactory.Create(
+            allies,
+            new[] { CombatTestFactory.CreateLoopAUnit("victim", race: "human", hp: 1f) });
+        var killer = state.Allies[0];
+        var victim = state.Enemies[0];
+        killer.SetPosition(new CombatVector2(0f, 0f));
+        victim.SetPosition(new CombatVector2(0.5f, 0f));
+        killer.BeginWindup(BattleActionType.BasicAttack, victim.Id, null);
+
+        var simulator = new BattleSimulator(state);
+        simulator.Step();
+
+        Assert.That(victim.IsAlive, Is.False);
+        Assert.That(state.Allies.All(unit => unit.Statuses.Single(status =>
+            status.SourceApplicationId == TeamRuleSet.BloodrushRuleId).Stacks == 1), Is.True,
+            "단일 Kill 이벤트는 bloodrush stack을 정확히 한 번만 부여해야 한다");
+    }
+
+    [Test]
+    public void BattleSimulator_PeriodicDamageDeath_FiresOnTeamKillBeforeWinnerEarlyExit()
+    {
+        var allies = Enumerable.Range(0, 4)
+            .Select(index => CombatTestFactory.CreateLoopAUnit(
+                $"beast_{index}",
+                race: "beastkin",
+                classId: $"class_{index}"))
+            .ToArray();
+        var state = BattleFactory.Create(
+            allies,
+            new[] { CombatTestFactory.CreateLoopAUnit("victim", race: "human", hp: 1f) });
+        var source = state.Allies[0];
+        var victim = state.Enemies[0];
+        victim.ApplyStatus(
+            new StatusApplicationSpec("dot_probe", "burn", 1f, 2f),
+            sourceActorId: source.Id.Value,
+            sourceApplicationId: "dot_probe");
+
+        var simulator = new BattleSimulator(state);
+        simulator.Step();
+
+        Assert.That(victim.IsAlive, Is.False);
+        Assert.That(simulator.IsFinished, Is.True, "마지막 적의 status tick 사망은 즉시 승자 판정으로 끝난다");
+        Assert.That(state.Allies.All(unit => unit.Statuses.Single(status =>
+            status.SourceApplicationId == TeamRuleSet.BloodrushRuleId).Stacks == 1), Is.True,
+            "winner early-exit 전 periodic Kill 이벤트도 OnTeamKill을 정확히 한 번 통과해야 한다");
     }
 
     [Test]

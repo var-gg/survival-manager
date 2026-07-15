@@ -47,7 +47,8 @@ public record TeamSynergyTierRule(
     string SynergyId,
     string CountedTagId,
     int Threshold,
-    IReadOnlyList<StatModifier> Modifiers);
+    IReadOnlyList<StatModifier> Modifiers,
+    string GrantedTeamRuleId = "");
 
 public record BattleUnitLoadout(
     string Id,

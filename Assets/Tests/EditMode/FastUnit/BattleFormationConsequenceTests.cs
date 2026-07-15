@@ -49,6 +49,25 @@ public sealed class BattleFormationConsequenceTests
     }
 
     [Test]
+    public void Phalanx_AddsPointZeroFour_ToDefendingTeamsScreenMitigation()
+    {
+        var baseline = CreateScreenScenario(screenNearCarry: true);
+        var phalanx = CreateScreenScenario(screenNearCarry: true, phalanx: true);
+        var baselineMitigation = BattleFormationConsequence.ResolveScreenMitigation(
+            baseline,
+            baseline.Enemies.Single(),
+            baseline.Allies.Single(unit => unit.Definition.Id == "carry"));
+        var phalanxMitigation = BattleFormationConsequence.ResolveScreenMitigation(
+            phalanx,
+            phalanx.Enemies.Single(),
+            phalanx.Allies.Single(unit => unit.Definition.Id == "carry"));
+
+        Assert.That(phalanx.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.PhalanxRuleId), Is.True);
+        Assert.That(phalanxMitigation - baselineMitigation,
+            Is.EqualTo(BattleFormationConsequence.PhalanxScreenMitigationBonus).Within(0.0001f));
+    }
+
+    [Test]
     public void InterposedGuard_KeepsScreen_EvenWhenAdvancedBeyondRadius()
     {
         // 가드는 carry에서 4.02m — 가드 반경(3m) 밖으로 "전진 교전"한 배치. 종전 radius 규칙만으론
@@ -341,14 +360,24 @@ public sealed class BattleFormationConsequenceTests
             unitsDebug);
     }
 
-    private static BattleState CreateScreenScenario(bool screenNearCarry)
+    private static BattleState CreateScreenScenario(bool screenNearCarry, bool phalanx = false)
     {
-        var state = BattleFactory.Create(
-            new[]
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("screen", behavior: CleanFrontline),
+            CombatTestFactory.CreateLoopAUnit("carry", classId: "ranger", behavior: CleanBackline),
+        };
+        if (phalanx)
+        {
+            allies = allies.Concat(new[]
             {
-                CombatTestFactory.CreateLoopAUnit("screen", behavior: CleanFrontline),
-                CombatTestFactory.CreateLoopAUnit("carry", classId: "ranger", behavior: CleanBackline),
-            },
+                CombatTestFactory.CreateLoopAUnit("phalanx_a", classId: "duelist", behavior: CleanFrontline),
+                CombatTestFactory.CreateLoopAUnit("phalanx_b", classId: "mystic", behavior: CleanFrontline),
+            }).ToArray();
+        }
+
+        var state = BattleFactory.Create(
+            allies,
             new[] { CombatTestFactory.CreateLoopAUnit("attacker", physPower: 8f) },
             seed: 3);
         state.Allies.Single(unit => unit.Definition.Id == "carry").SetPosition(new CombatVector2(-4f, 0f));

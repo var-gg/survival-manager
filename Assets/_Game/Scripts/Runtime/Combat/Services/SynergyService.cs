@@ -24,7 +24,8 @@ public static class SynergyService
                 list.Add(new CombatModifierPackage(
                     $"race:{raceGroup.Key}:{count}",
                     ModifierSource.Synergy,
-                    new[] { new StatModifier(StatKey.PhysPower, ModifierOp.Flat, count >= 4 ? 4f : 2f, ModifierSource.Synergy, $"race:{raceGroup.Key}:{count}") }));
+                    new[] { new StatModifier(StatKey.PhysPower, ModifierOp.Flat, count >= 4 ? 4f : 2f, ModifierSource.Synergy, $"race:{raceGroup.Key}:{count}") },
+                    ResolveGrantedTeamRuleId(raceGroup.Key, count >= 4 ? 4 : 2, string.Empty)));
             }
         }
 
@@ -62,10 +63,30 @@ public static class SynergyService
             compiled.Add(new CombatModifierPackage(
                 $"synergy:{rule.SynergyId}:{rule.Threshold}",
                 ModifierSource.Synergy,
-                rule.Modifiers));
+                rule.Modifiers,
+                ResolveGrantedTeamRuleId(rule.CountedTagId, rule.Threshold, rule.GrantedTeamRuleId)));
         }
 
         return compiled.Count > 0 ? compiled : BuildForTeam(materialized);
+    }
+
+    // Move 4 code-SoT overlay. TeamSynergyTierRule asset은 아직 GrantedTeamRuleId를 저작하지 않으므로,
+    // 안정 신원(CountedTagId + Threshold)으로 상위 race tier 규칙을 실어 authored/fallback 양쪽의
+    // CombatModifierPackage가 같은 규칙 id를 운반하게 한다. 미등록 tier는 authored 값을 그대로 보존한다.
+    private static string ResolveGrantedTeamRuleId(string countedTagId, int threshold, string authoredRuleId)
+    {
+        if (threshold == 4)
+        {
+            return countedTagId switch
+            {
+                "human" => TeamRuleSet.PhalanxRuleId,
+                "beastkin" => TeamRuleSet.BloodrushRuleId,
+                "undead" => TeamRuleSet.DeathTollRuleId,
+                _ => authoredRuleId ?? string.Empty,
+            };
+        }
+
+        return authoredRuleId ?? string.Empty;
     }
 
     /// <summary>

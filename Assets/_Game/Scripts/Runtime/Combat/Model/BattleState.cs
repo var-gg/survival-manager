@@ -28,7 +28,8 @@ public sealed class BattleState
         TelemetryContext? telemetryContext = null,
         TeamTacticProfile? allyTactic = null,
         TeamTacticProfile? enemyTactic = null,
-        CombatStatusRules? statusRules = null)
+        CombatStatusRules? statusRules = null,
+        TeamRuleSet? teamRuleSet = null)
     {
         Allies = allies;
         Enemies = enemies;
@@ -40,6 +41,7 @@ public sealed class BattleState
         Seed = seed;
         TelemetryContext = telemetryContext;
         StatusRules = statusRules ?? CombatStatusRules.Default;
+        TeamRuleSet = teamRuleSet ?? TeamRuleSet.Empty;
     }
 
     public IReadOnlyList<UnitSnapshot> Allies { get; }
@@ -52,6 +54,8 @@ public sealed class BattleState
     public int Seed { get; }
     public TelemetryContext? TelemetryContext { get; }
     public CombatStatusRules StatusRules { get; }
+    /// <summary>전투 시작 시 시너지 패키지에서 컴파일된 팀별 불변 규칙. 파생 상수라 직렬화하지 않는다.</summary>
+    public TeamRuleSet TeamRuleSet { get; }
     public BattleActivityTelemetryAccumulator ActivityTelemetry { get; } = new();
     public int StepIndex { get; private set; }
     // Phase 2.2d: StepIndex 파생(누산 float 제거). 권위는 정수 StepIndex, 이 값은 telemetry/read-model용 초 projection.
