@@ -171,6 +171,7 @@ public sealed class HeadlessExperienceReport
         var beats = new List<(string source, string key, string kind, int chars, bool resolved)>();
         var battles = new List<(string node, bool win, int steps, float seconds)>();
         var rewards = new List<(string site, int options, int pick, string kind)>();
+        var payoffs = new List<BattleFormationPayoffSummary>(); // 전투마다 깊이 발현(시너지/콤보/진형) 요약
 
         Line("# 헤드리스 체감 리포트 — AI가 코드로 완주한 게임");
         Line();
@@ -219,6 +220,16 @@ public sealed class HeadlessExperienceReport
                 var win = br.Winner == TeamSide.Ally;
                 battles.Add((node.Id, win, br.StepCount, br.DurationSeconds));
                 Line($"- ⚔️ 전투 {battleIdx} `{node.Id}` — {(win ? "승" : "패")} ({br.StepCount} step · {br.DurationSeconds:0.0}s)");
+                // 깊이가 이 전투에서 실제로 발화했는지 표면화 — 데이터엔 있으나 리포트가 안 찍던 신호.
+                var payoff = session.LastBattleFormationPayoff;
+                payoffs.Add(payoff);
+                if (payoff.HasData)
+                {
+                    Line($"  · MVP {payoff.MvpUnitName} (피해 {payoff.MvpDamage:0} · 처치 {payoff.MvpKills})"
+                        + $" | 진형 측면{payoff.FlankStrikes}·후방{payoff.RearStrikes}·차단{payoff.ScreenAbsorbs}·구출{payoff.SaveMoments}·후열격파{payoff.BacklineDiveKills}"
+                        + $" | 발현 시너지{payoff.SynergyActivations}·콤보{payoff.ComboConsumes}·증강{payoff.TriggeredEffects}");
+                }
+
                 Drain(session, "BattleResolved", text, beats, report); // BattleResolved 내부 발화
 
                 if (!win)
@@ -290,6 +301,12 @@ public sealed class HeadlessExperienceReport
         if (battles.Count > 0)
         {
             Line($"- 전투 길이 분포: {battles.Min(b => b.steps)}~{battles.Max(b => b.steps)} step (평균 {battles.Average(b => b.steps):0}) — 너무 짧으면 얄팍/너무 길면 지루");
+        }
+        var payoffData = payoffs.Where(p => p.HasData).ToList();
+        if (payoffData.Count > 0)
+        {
+            Line($"- 진형 전과 총계: 측면 {payoffData.Sum(p => p.FlankStrikes)}·후방 {payoffData.Sum(p => p.RearStrikes)}·차단 {payoffData.Sum(p => p.ScreenAbsorbs)}·구출 {payoffData.Sum(p => p.SaveMoments)}·후열격파 {payoffData.Sum(p => p.BacklineDiveKills)}");
+            Line($"- **깊이 발현 총계: 시너지 발동 {payoffData.Sum(p => p.SynergyActivations)}·콤보 작렬 {payoffData.Sum(p => p.ComboConsumes)}·증강/규칙 {payoffData.Sum(p => p.TriggeredEffects)}** — 0에 가까우면 깊이가 실 콘텐츠에서 안 터지는 것(튜닝 포인트)");
         }
         Line();
         Line($"_생성: 실 콘텐츠 헤드리스, 사이트 {clearedSites.Count}클리어, {(session.Profile.CampaignProgress.StoryCleared ? "엔딩 도달" : "미완주")}._");

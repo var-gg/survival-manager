@@ -261,6 +261,11 @@ public sealed class BattleSimulator
     // 순수 관찰 — 반환 BattleResult는 onStep 유무와 무관하게 동일하다.
     public BattleResult RunToEnd(Action<BattleSimulationStep>? onStep = null)
     {
+        // step 0(개전) 관찰 — 시너지 발동·BattleStart 트리거 beat은 생성자에서 CurrentStep에 실린다(line 30).
+        // 이 첫 흘려보내기가 없으면 관찰자(BattleHighlightLedger)가 Step()=step 1부터 읽어 step-0-only인
+        // 시너지 발동을 통째로 놓친다 → payoff SynergyActivations가 항상 0으로 undercount(보상화면·헤드리스 리포트 공통).
+        // 순수 관찰이라 BattleResult byte-identity 무영향.
+        onStep?.Invoke(CurrentStep);
         while (!IsFinished)
         {
             var step = Step();
