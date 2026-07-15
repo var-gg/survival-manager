@@ -19,17 +19,17 @@ MonoBehaviour:
   Tier: 2
   AffixFamily: 1
   EffectType: 1
-  ValueMin: 1
-  ValueMax: 2
+  ValueMin: 0.1
+  ValueMax: 0.2
   AllowedSlotTypes: 0000000002000000
   CompileTags: []
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
-  ItemLevelMin: 999
-  SpawnWeight: 0
-  ExclusiveGroupId: reserved.hallowed_heal
-  BudgetScore: 6
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: suffix.status_potency
+  BudgetScore: 8
   BudgetCard:
     Domain: 4
     Rarity: 0
@@ -52,7 +52,7 @@ MonoBehaviour:
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: content.affix.template.reserved
+  TextTemplateKey: content.affix.template.scalar
   AuthorityLayer: 2
   Effects:
   - Layer: 2
@@ -62,8 +62,8 @@ MonoBehaviour:
     AllowsPersistentSummonChain: 0
     LoadoutTopologyDelta: 0
   Modifiers:
-  - StatId: heal_power
+  - StatId: status_potency
     Op: 0
-    Value: 1.5
+    Value: 0.15
   legacyDisplayName: 
   legacyDescription: 

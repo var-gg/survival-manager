@@ -30,8 +30,8 @@ internal static class EquipmentContentV1Contract
 {
     internal const int ItemCount = 42;
     internal const int AffixCount = 30;
-    internal const int LiveAffixCount = 24;
-    internal const int ReservedAffixCount = 6;
+    internal const int LiveAffixCount = 25;
+    internal const int ReservedAffixCount = 5;
     internal const int ReservedAffixItemLevelMin = 999;
     internal const string RefitCurrencyTag = "echo";
 
@@ -117,12 +117,12 @@ internal static class EquipmentContentV1Contract
         "affix_watchful",
         "affix_packborn",
         "affix_wraithbound",
+        "affix_hallowed",
     };
 
     internal static readonly HashSet<string> ReservedAffixIds = new(StringComparer.Ordinal)
     {
         "affix_heavy",
-        "affix_hallowed",
         "affix_quick",
         "affix_ravenous",
         "affix_reaching",
@@ -139,6 +139,7 @@ internal static class EquipmentContentV1Contract
         "affix_fierce",
         "affix_focusing",
         "affix_guarded",
+        "affix_hallowed",
         "affix_hasty",
         "affix_ironclad",
         "affix_lithe",
@@ -174,6 +175,9 @@ internal static class EquipmentContentV1Contract
         Live("affix_mender", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "heal_power", ModifierOp.Flat, 1f, 3f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("heal", "support"), Tags(), Tags(), "prefix.heal_power", "content.affix.template.scalar", 8f),
         Live("affix_lithe", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "move_speed", ModifierOp.Increased, 0.04f, 0.08f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("tempo"), Tags(), Tags(), "prefix.move_speed", "content.affix.template.scalar", 8f),
         Live("affix_lucid", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "skill_haste", ModifierOp.Increased, 0.04f, 0.08f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("tempo", "magical"), Tags(), Tags(), "prefix.skill_haste", "content.affix.template.scalar", 8f),
+        // ratio-valued stat with a zero baseline: Flat carries the authored +0.10~+0.20 potency;
+        // Increased would multiply the zero baseline and silently compile to zero.
+        Live("affix_hallowed", AffixTierValue.Suffix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "status_potency", ModifierOp.Flat, 0.10f, 0.20f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags(), Tags(), Tags(), "suffix.status_potency", "content.affix.template.scalar", 8f),
 
         Live("affix_farshot", AffixTierValue.Prefix, AffixFamilyValue.ConditionalTagged, AffixEffectTypeValue.ConditionalTagged, AffixCategoryValue.SynergyTagged, "attack_range", ModifierOp.Flat, 0.15f, 0.3f, Slots(ItemSlotType.Weapon), Tags("projectile", "backline"), Tags("projectile"), Tags(), "conditional.projectile_range", "content.affix.template.conditional", 10f),
         Live("affix_guarded", AffixTierValue.Prefix, AffixFamilyValue.ConditionalTagged, AffixEffectTypeValue.ConditionalTagged, AffixCategoryValue.SynergyTagged, "armor", ModifierOp.Flat, 1f, 2f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("guard", "frontline"), Tags("guard"), Tags(), "conditional.guard_armor", "content.affix.template.conditional", 10f),
@@ -190,7 +194,6 @@ internal static class EquipmentContentV1Contract
         Live("affix_wraithbound", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.BuildShaping, AffixCategoryValue.SynergyTagged, "mag_power", ModifierOp.Flat, 1f, 3f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("magical", "wildcard_risk"), Tags(), Tags(), "build.wraithbound_magic", "content.affix.template.build", 12f),
 
         Reserved("affix_heavy", AffixTierValue.Prefix, "armor", ModifierOp.Flat, Slots(ItemSlotType.Armor), "reserved.heavy_armor"),
-        Reserved("affix_hallowed", AffixTierValue.Suffix, "heal_power", ModifierOp.Flat, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), "reserved.hallowed_heal"),
         Reserved("affix_quick", AffixTierValue.Prefix, "attack_speed", ModifierOp.Increased, Slots(ItemSlotType.Accessory), "reserved.quick_speed"),
         Reserved("affix_ravenous", AffixTierValue.Suffix, "lifesteal", ModifierOp.Increased, Slots(ItemSlotType.Weapon), "reserved.ravenous_lifesteal"),
         Reserved("affix_reaching", AffixTierValue.Prefix, "attack_range", ModifierOp.Flat, Slots(ItemSlotType.Weapon), "reserved.reaching_range"),

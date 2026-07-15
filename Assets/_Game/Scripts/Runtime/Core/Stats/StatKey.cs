@@ -41,6 +41,7 @@ public readonly record struct StatKey(string Value)
     public static readonly StatKey CollisionRadius = new("collision_radius");
     public static readonly StatKey RepositionCooldown = new("reposition_cooldown");
     public static readonly StatKey AttackCooldown = new("attack_cooldown");
+    public static readonly StatKey StatusPotency = new("status_potency");
 
     [Obsolete("Use PhysPower instead.")]
     public static readonly StatKey Attack = new("attack");
@@ -86,6 +87,7 @@ public readonly record struct StatKey(string Value)
         [CollisionRadius.Value] = CollisionRadius,
         [RepositionCooldown.Value] = RepositionCooldown,
         [AttackCooldown.Value] = AttackCooldown,
+        [StatusPotency.Value] = StatusPotency,
     };
 
     private static readonly IReadOnlyDictionary<string, StatKey> LegacyAliasToCanonical = new Dictionary<string, StatKey>(StringComparer.Ordinal)

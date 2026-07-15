@@ -33,10 +33,14 @@ public sealed class StatV2AndSandboxTests
         Assert.That(StatKey.TryResolve("omnivamp", out var omnivampKey, out var omnivampIsLegacy), Is.True);
         Assert.That(omnivampKey, Is.EqualTo(StatKey.Omnivamp));
         Assert.That(omnivampIsLegacy, Is.False);
+        Assert.That(StatKey.TryResolve("status_potency", out var statusPotencyKey, out var statusPotencyIsLegacy), Is.True);
+        Assert.That(statusPotencyKey, Is.EqualTo(StatKey.StatusPotency));
+        Assert.That(statusPotencyIsLegacy, Is.False);
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("attack"), Is.EqualTo(StatIdValidationStatus.LegacyAlias));
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("phys_power"), Is.EqualTo(StatIdValidationStatus.Canonical));
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("lifesteal"), Is.EqualTo(StatIdValidationStatus.Canonical));
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("omnivamp"), Is.EqualTo(StatIdValidationStatus.Canonical));
+        Assert.That(ContentDefinitionValidator.GetStatIdStatus("status_potency"), Is.EqualTo(StatIdValidationStatus.Canonical));
         Assert.That(ContentDefinitionValidator.GetStatIdStatus("unsupported_stat"), Is.EqualTo(StatIdValidationStatus.Unsupported));
     }
 

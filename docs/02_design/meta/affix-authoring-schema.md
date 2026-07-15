@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-01
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/02_design/meta/affix-authoring-schema.md`
 - 관련문서:
   - `docs/02_design/meta/item-and-affix-system.md`
@@ -55,7 +55,9 @@ Loop A 기준으로 affix는 `owner self` 또는 `owner-owned summons`만 수정
   - `crit_multiplier`
   - `tenacity`
   - `move_speed`
-- `dodge`, `block`, `status_potency`, `summon_power`는 v1 broad affix core로 바로 승격하지 않는다.
+  - `status_potency`
+- `status_potency`는 ratio-valued self stat이며 V1에서는 `affix_hallowed` 단일 carrier만 허용한다. proc을 추가하지 않고 적용자가 거는 모든 숫자 상태 magnitude에 `×(1 + potency)`로 균일 적용한다.
+- `dodge`, `block`, `summon_power`는 v1 broad affix core로 바로 승격하지 않는다.
 
 ## schema field
 
@@ -91,7 +93,7 @@ Loop A 기준으로 affix는 `owner self` 또는 `owner-owned summons`만 수정
 
 ## live subset rule
 
-- committed asset live subset은 `16~24 affix`면 충분하다.
+- committed asset live subset은 `16~25 affix`면 충분하다.
 - full catalog는 Markdown source-of-truth로 유지하고, asset runtime 진입은 subset만 허용한다.
 
 ## Loop C governance addendum

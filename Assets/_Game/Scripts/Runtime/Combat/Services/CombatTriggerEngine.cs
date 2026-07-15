@@ -198,11 +198,17 @@ public static class CombatTriggerEngine
                 case TriggeredEffectOp.ApplyStatus:
                     if (!string.IsNullOrEmpty(effect.StatusId))
                     {
+                        // status_potency(적용자=owner 소유)는 스킬/진형 경로(StatusResolutionService.ApplyStatus)와
+                        // 동일하게 트리거 상태의 magnitude도 증폭한다 — 증강·패시브 proc도 아이템 "동사 증폭" 대상.
+                        // 팀 독트린 버프(bloodrush/deathtoll)는 별도 핸들러라 이 경로를 타지 않아 무영향.
+                        // potency 0이면 ×1.0 IEEE 항등 — 미장착 유닛 byte-parity 보존.
+                        var potency = System.Math.Max(0f, owner.Stats.Get(StatKey.StatusPotency));
+                        var scaledMagnitude = effect.Magnitude * (1f + potency);
                         target.ApplyStatus(new StatusApplicationSpec(
                             $"trig:{effect.SourceId}",
                             effect.StatusId,
                             effect.DurationSeconds,
-                            effect.Magnitude,
+                            scaledMagnitude,
                             effect.MaxStacks <= 0 ? 1 : effect.MaxStacks,
                             RefreshDurationOnReapply: true),
                             owner.Id.Value,

@@ -151,27 +151,33 @@ public static class StatusResolutionService
             return;
         }
 
+        var potency = Math.Max(0f, actor.Stats.Get(StatKey.StatusPotency));
+        var scaledMagnitude = spec.Magnitude * (1f + potency);
         var adjustedDuration = AdjustDurationForTenacity(state, target, spec.StatusId, spec.DurationSeconds);
         if (target.ControlResistWindow is { } resistWindow && state.StatusRules.IsHardControl(spec.StatusId))
         {
             adjustedDuration *= Math.Max(0.1f, 1f - resistWindow.ResistMultiplier);
         }
 
-        var adjusted = spec with { DurationSeconds = adjustedDuration };
+        var adjusted = spec with
+        {
+            DurationSeconds = adjustedDuration,
+            Magnitude = scaledMagnitude,
+        };
         // 즉시 보호막 전환(상태 미잔존)은 콘텐츠 효과 종류 서술자(GrantsBarrierOnApply) — 과거
         // StatusId=="barrier" 문자열 분기의 승격(효과 종류 데이터화 3보 1슬라이스). 바닥 1은 코드
         // 소유 클램프. 나머지 효과 종류(행동차단/침묵/표식 등)의 데이터화는 3b~3g 페이즈 범위.
         if (state.StatusRules.ResolveGrantsBarrierOnApply(spec.StatusId))
         {
-            target.AddBarrier(Math.Max(1f, spec.Magnitude));
+            target.AddBarrier(Math.Max(1f, scaledMagnitude));
         }
         else
         {
             target.ApplyStatus(adjusted, actor.Id.Value, sourceSkillId, spec.Id);
         }
 
-        stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.StatusApplied, spec.StatusId, spec.Magnitude));
-        BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, spec.StatusId, spec.Magnitude);
+        stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.StatusApplied, spec.StatusId, scaledMagnitude));
+        BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, spec.StatusId, scaledMagnitude);
     }
 
     private static void ApplyCleanse(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec skill, string cleanseProfileId, List<BattleEvent> stepEvents)

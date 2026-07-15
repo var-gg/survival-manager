@@ -93,6 +93,30 @@ public sealed class ContentEffectDifferentialTests
     }
 
     [Test]
+    public void StatusPotency_AmplifiesTriggeredEffectStatus_InRealSim()
+    {
+        // status_potency는 스킬 AppliedStatuses뿐 아니라 증강·패시브 TriggeredEffects(ApplyStatus) 경로의
+        // 상태 magnitude도 증폭한다 — 유닛 상태 출력이 proc 위주인 킷에서도 아이템 "동사 증폭"이 작동하도록.
+        // CombatTriggerEngine 경로는 StatusApplied 이벤트를 방출하지 않으므로(직접 target.ApplyStatus)
+        // 이벤트 값 대신 실 전투 스트림 차이로 증폭을 관측한다.
+        var equipped = CompileTriggeredMarkedProbe("affix.status_potency");
+        var bare = CompileTriggeredMarkedProbe();
+
+        Assert.That(RunCompiledAllyVersusRaider(equipped).Stream, Is.Not.EqualTo(RunCompiledAllyVersusRaider(bare).Stream),
+            "적용자 status_potency 0.2가 트리거 경로 marked magnitude(0.5→0.6)를 키워 받는 피해 증폭을 바꾸고 전투 스트림을 달라지게 해야 한다");
+    }
+
+    [Test]
+    public void StatusPotencyZero_TriggeredPath_IsByteIdenticalToAbsent_InRealSim()
+    {
+        var explicitZero = CompileTriggeredMarkedProbe("affix.status_potency_zero");
+        var absent = CompileTriggeredMarkedProbe();
+
+        Assert.That(RunCompiledAllyVersusRaider(explicitZero).Stream, Is.EqualTo(RunCompiledAllyVersusRaider(absent).Stream),
+            "명시 status_potency=0은 트리거 경로에서도 ×1.0 항등이라 미보유와 byte-identical이어야 한다");
+    }
+
+    [Test]
     public void PassiveSkillTriggeredEffect_ReachesUnit_AndChangesSimOutcome()
     {
         var withTrigger = CompileSingleHero(
@@ -821,6 +845,31 @@ public sealed class ContentEffectDifferentialTests
         return new SimRun(sb.ToString(), allySurvivedSteps);
     }
 
+    /// <summary>패시브 TriggeredEffects(ApplyStatus)로 자신에게 marked(0.5)를 거는 프로브 —
+    /// status_potency의 CombatTriggerEngine 경로 증폭을 스킬 choke point와 분리해 관측한다.</summary>
+    private static BattleLoadoutSnapshot CompileTriggeredMarkedProbe(string? affixId = null)
+    {
+        var affixIds = string.IsNullOrWhiteSpace(affixId)
+            ? Array.Empty<string>()
+            : new[] { affixId };
+        return CompileSingleHero(
+            affixIds,
+            mutatePassive: skill => skill with
+            {
+                TriggeredEffects = new[]
+                {
+                    new CombatTriggeredEffect(
+                        skill.Id,
+                        CombatTriggerKind.BattleStart,
+                        TriggeredEffectOp.ApplyStatus,
+                        EffectScope.Self,
+                        Magnitude: 0.5f,
+                        StatusId: "marked",
+                        DurationSeconds: 600f),
+                },
+            });
+    }
+
     /// <summary>개전 시 지정 스코프에 장시간(600s) 상태를 발동시키는 프로브 컴파일 — 숫자 채널
     /// (sunder/marked/exposed/wound/slow) differential 의 공용 recipe(guarded 1보 트리거 채널과 동일).</summary>
     private static BattleLoadoutSnapshot CompileStatusProbe(
@@ -1096,10 +1145,11 @@ public sealed class ContentEffectDifferentialTests
         IReadOnlyList<string>? itemIds = null,
         IReadOnlyList<BattleSkillSpec>? extraSkills = null,
         IReadOnlyDictionary<string, PassiveNodeTemplate>? passiveNodes = null,
-        IReadOnlyList<string>? selectedNodeIds = null)
+        IReadOnlyList<string>? selectedNodeIds = null,
+        IReadOnlyList<TacticRule>? tacticRules = null)
     {
         itemIds ??= new[] { "item.shield" };
-        var content = BuildContentSnapshot(mutatePassive, mutateCore, mutateSupport, extraSkills, passiveNodes);
+        var content = BuildContentSnapshot(mutatePassive, mutateCore, mutateSupport, extraSkills, passiveNodes, tacticRules);
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
         {
@@ -1162,9 +1212,10 @@ public sealed class ContentEffectDifferentialTests
         Func<BattleSkillSpec, BattleSkillSpec>? mutateCore = null,
         Func<BattleSkillSpec, BattleSkillSpec>? mutateSupport = null,
         IReadOnlyList<BattleSkillSpec>? extraSkills = null,
-        IReadOnlyDictionary<string, PassiveNodeTemplate>? passiveNodes = null)
+        IReadOnlyDictionary<string, PassiveNodeTemplate>? passiveNodes = null,
+        IReadOnlyList<TacticRule>? tacticRules = null)
     {
-        var baseRules = new[]
+        var baseRules = tacticRules ?? new[]
         {
             new TacticRule(0, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self),
         };
@@ -1249,6 +1300,14 @@ public sealed class ContentEffectDifferentialTests
                 ["affix.plated"] = new CombatModifierPackage("affix.plated", ModifierSource.Item, new[]
                 {
                     new StatModifier(StatKey.Armor, ModifierOp.Flat, 30f, ModifierSource.Item, "affix.plated"),
+                }),
+                ["affix.status_potency"] = new CombatModifierPackage("affix.status_potency", ModifierSource.Item, new[]
+                {
+                    new StatModifier(StatKey.StatusPotency, ModifierOp.Flat, 0.2f, ModifierSource.Item, "affix.status_potency"),
+                }),
+                ["affix.status_potency_zero"] = new CombatModifierPackage("affix.status_potency_zero", ModifierSource.Item, new[]
+                {
+                    new StatModifier(StatKey.StatusPotency, ModifierOp.Flat, 0f, ModifierSource.Item, "affix.status_potency_zero"),
                 }),
             },
             new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal),

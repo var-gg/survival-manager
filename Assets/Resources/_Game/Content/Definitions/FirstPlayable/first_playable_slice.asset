@@ -17,7 +17,7 @@ MonoBehaviour:
   SignaturePassiveCap: 8
   FlexActiveCap: 15
   FlexPassiveCap: 20
-  AffixCap: 24
+  AffixCap: 25
   SynergyFamilyCap: 7
   TemporaryAugmentCap: 24
   PermanentAugmentCap: 1
@@ -126,6 +126,7 @@ MonoBehaviour:
   - affix_fierce
   - affix_focusing
   - affix_guarded
+  - affix_hallowed
   - affix_hasty
   - affix_ironclad
   - affix_lithe
@@ -183,7 +184,6 @@ MonoBehaviour:
   - board_ranger
   - board_mystic
   ParkingLotContentIds:
-  - affix_hallowed
   - affix_heavy
   - affix_quick
   - affix_ravenous

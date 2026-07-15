@@ -96,6 +96,48 @@ public sealed class StatusResolutionServiceTests
     }
 
     [Test]
+    public void StatusPotency_ScalesAppliedStatusMagnitude_AtSkillChokePoint()
+    {
+        // Move 5 아이템=동사 증폭: 적용자(applier) status_potency가 스킬 AppliedStatuses의 magnitude를
+        // ×(1+potency)로 키운다. 스킬 캐스팅 sim 동역학에 의존하지 않도록 public choke point를 직접 태운다.
+        // potency 없는 적용자는 완전 항등(0.5), 0.2 적용자는 0.6 — 저장 magnitude와 StatusApplied 이벤트 둘 다.
+        var markSkill = new BattleSkillSpec(
+            "skill.mark",
+            "skill.mark",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[] { new StatusApplicationSpec("apply.marked", "marked", 5f, 0.5f) });
+        var potentBase = CombatTestFactory.CreateUnit("actor_potent", classId: "mystic", skills: new[] { markSkill });
+        var potentStats = new Dictionary<StatKey, float>(potentBase.BaseStats)
+        {
+            [StatKey.StatusPotency] = 0.2f,
+        };
+        var potentActor = potentBase with { BaseStats = potentStats };
+        var plainActor = CombatTestFactory.CreateUnit("actor_plain", classId: "mystic", skills: new[] { markSkill });
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { potentActor, plainActor },
+            new[] { CombatTestFactory.CreateUnit("target_a"), CombatTestFactory.CreateUnit("target_b") });
+        var potent = state.Allies[0];
+        var plain = state.Allies[1];
+        var targetA = state.Enemies[0];
+        var targetB = state.Enemies[1];
+        var events = new List<BattleEvent>();
+
+        StatusResolutionService.ApplySkillStatuses(state, potent, targetA, markSkill, events);
+        StatusResolutionService.ApplySkillStatuses(state, plain, targetB, markSkill, events);
+
+        Assert.That(targetA.Statuses.Single(status => status.StatusId == "marked").Magnitude, Is.EqualTo(0.6f).Within(0.0001f),
+            "적용자 status_potency 0.2가 choke point에서 marked magnitude 0.5를 ×1.2해 0.6으로 저장해야 한다");
+        Assert.That(targetB.Statuses.Single(status => status.StatusId == "marked").Magnitude, Is.EqualTo(0.5f).Within(0.0001f),
+            "potency 없는 적용자는 magnitude 항등(0.5)이어야 한다");
+        Assert.That(
+            events.First(@event => @event.EventKind == BattleEventKind.StatusApplied && @event.TargetId == targetA.Id).Value,
+            Is.EqualTo(0.6f).Within(0.0001f),
+            "StatusApplied 이벤트 값도 스케일된 magnitude를 실어 관전/텔레메트리와 정합해야 한다");
+    }
+
+    [Test]
     public void PeriodicDamageTelemetry_AttributesTickToStatusSource()
     {
         var burnSkill = new BattleSkillSpec(

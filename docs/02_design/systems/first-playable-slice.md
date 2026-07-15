@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-11
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/02_design/systems/first-playable-slice.md`
 - 관련문서:
   - `docs/02_design/systems/launch-content-scope-and-balance.md`
@@ -20,7 +20,7 @@ Loop D에서 실제로 밸런스하고 검증하는 V1 playable subset을 cap과
 - `SignaturePassive = 8`
 - `FlexActive = 15` (utility 12 + displacement 강타 3 — P3 콘텐츠 승격, 2026-06-11)
 - `FlexPassive = 20`
-- `Affix = 24`
+- `Affix = 25` (`affix_hallowed` status potency carrier 포함)
 - `SynergyFamily = 7` (race 3 + class 4)
 - `TemporaryAugment = 24`
 - `PermanentAugment = 1` (live equip candidate slot; authored candidates are larger than live slice)
@@ -99,7 +99,7 @@ debug/dev menu도 same filter를 따르되, `ParkingLotContentIds`는 별도 ins
 
 ## 현재 운영 메모
 
-- 현재 authored count 기준으로 unit 12, affix 24는 cap과 같다.
+- 현재 authored count 기준으로 unit 12, affix 25는 cap과 같다.
 - slice pressure는 skill, augment, synergy family에 집중된다.
 - current skill 분류의 canonical source는 authored `LockedSignature*`가 아니라 compiled slot이다.
 - synergy family는 7로 고정. schema capacity는 넓어도 live subset은 7이다.

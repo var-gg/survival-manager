@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-20
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/02_design/meta/affix-pool-v1.md`
 - 관련문서:
   - `docs/02_design/meta/affix-authoring-schema.md`
@@ -18,8 +18,8 @@
 
 - schema capacity: `100~120`
 - v1 committed catalog: `30`
-- current live subset: `24`
-- current reserved subset: `6`
+- current live subset: `25`
+- current reserved subset: `5`
 
 ## committed v1 live subset
 
@@ -27,20 +27,19 @@
 | --- | ---: | --- |
 | `Implicit` | 6 | `affix_sharp`, `affix_focusing`, `affix_sturdy`, `affix_warded`, `affix_blessed`, `affix_hasty` |
 | `Prefix` | 12 | `affix_fierce`, `affix_precise`, `affix_piercing`, `affix_vital`, `affix_ironclad`, `affix_mender`, `affix_lithe`, `affix_lucid`, `affix_farshot`, `affix_guarded`, `affix_channeling`, `affix_cleansing` |
-| `Suffix` | 6 | `affix_bracing`, `affix_resolute`, `affix_relentless`, `affix_watchful`, `affix_packborn`, `affix_wraithbound` |
+| `Suffix` | 7 | `affix_bracing`, `affix_hallowed`, `affix_resolute`, `affix_relentless`, `affix_watchful`, `affix_packborn`, `affix_wraithbound` |
 
 | family | count | 역할 |
 | --- | ---: | --- |
-| `CoreScalar` | 14 | stat scalar와 slot-readable item identity |
+| `CoreScalar` | 15 | stat scalar와 slot-readable item identity |
 | `ConditionalTagged` | 6 | tag 조건을 가진 build 방향성 |
 | `BuildShaping` | 4 | rule marker를 가진 후속 확장용 build hook |
 
 ## reserved v1 subset
 
-아래 6개는 committed asset으로 유지하되 `SpawnWeight = 0`, `ItemLevelMin = 999`로 live roll에서 제외한다.
+아래 5개는 committed asset으로 유지하되 `SpawnWeight = 0`, `ItemLevelMin = 999`로 live roll에서 제외한다.
 
 - `affix_heavy`
-- `affix_hallowed`
 - `affix_quick`
 - `affix_ravenous`
 - `affix_reaching`
@@ -112,4 +111,5 @@
 ## 운영 메모
 
 - current committed asset은 subset만 runtime에 연결한다.
-- broad public stat 과잉 노출을 막기 위해 `block`, `dodge`, `summon_power`, `status_potency`는 catalog에만 두고 live subset 기본선에서는 좁게 쓴다.
+- `status_potency`는 `affix_hallowed` 하나만 live carrier로 두며, 적용자 소유 상태 magnitude 증폭에만 사용한다.
+- broad public stat 과잉 노출을 막기 위해 `block`, `dodge`, `summon_power`는 catalog에만 두고 live subset 기본선에서는 좁게 쓴다.

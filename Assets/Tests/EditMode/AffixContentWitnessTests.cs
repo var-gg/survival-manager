@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Combat.Services;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 using SM.Editor.SeedData;
 using SM.Meta;
 using SM.Meta.Model;
@@ -82,7 +84,33 @@ public sealed class AffixContentWitnessTests
             "미충족 조건부 affix(projectile 요구) 수치는 이제 게이트로 차단돼야 한다");
     }
 
-    private static BattleLoadoutSnapshot CompileWarden(CombatContentSnapshot content, IReadOnlyList<string> affixIds)
+    [Test]
+    public void RealStatusPotencyAffix_CompilesIntoUnitStat()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        Assert.That(snapshot.ItemPackages.ContainsKey("item_warden_trinket"), Is.True);
+        Assert.That(snapshot.AffixPackages.ContainsKey("affix_hallowed"), Is.True);
+
+        var authoredModifier = snapshot.AffixPackages["affix_hallowed"].Modifiers.Single();
+        Assert.That(authoredModifier.Stat, Is.EqualTo(StatKey.StatusPotency),
+            "실 committed affix_hallowed가 status_potency modifier로 변환돼야 한다");
+        Assert.That(authoredModifier.Value, Is.GreaterThan(0f));
+
+        var compiled = CompileWarden(
+            snapshot,
+            new[] { "affix_hallowed" },
+            itemBaseId: "item_warden_trinket");
+        var state = BattleFactory.Create(compiled.Allies, Array.Empty<BattleUnitLoadout>());
+        var unit = state.Allies.Single();
+
+        Assert.That(unit.Stats.Get(StatKey.StatusPotency), Is.EqualTo(0.15f).Within(0.0001f),
+            "실 asset -> RuntimeCombatContentLookup -> LoadoutCompiler -> UnitSnapshot stat 경로가 potency를 보존해야 한다");
+    }
+
+    private static BattleLoadoutSnapshot CompileWarden(
+        CombatContentSnapshot content,
+        IReadOnlyList<string> affixIds,
+        string itemBaseId = "item_raider_armor")
     {
         var archetype = content.Archetypes["warden"];
         var heroes = new List<HeroRecord>
@@ -91,7 +119,7 @@ public sealed class AffixContentWitnessTests
         };
         var itemInstances = new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal)
         {
-            ["hero.witness.item.0"] = new("hero.witness.item.0", "item_raider_armor", affixIds, "hero.witness"),
+            ["hero.witness.item.0"] = new("hero.witness.item.0", itemBaseId, affixIds, "hero.witness"),
         };
         var heroLoadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal)
         {

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-20
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/02_design/meta/equipment-family-and-crafting-depth.md`
 - 관련문서:
   - `docs/02_design/meta/item-and-affix-system.md`
@@ -40,14 +40,14 @@ shield 전용 별도 slot은 열지 않는다.
 
 ## affix 구조
 
-V1 committed catalog는 affix asset `30`개를 유지하고, 그중 `24`개만 live roll 후보로 둔다.
-reserved `6`개는 asset으로 남기되 `SpawnWeight = 0`, `ItemLevelMin = 999`로 live 생성에서 제외한다.
+V1 committed catalog는 affix asset `30`개를 유지하고, 그중 `25`개를 live roll 후보로 둔다.
+reserved `5`개는 asset으로 남기되 `SpawnWeight = 0`, `ItemLevelMin = 999`로 live 생성에서 제외한다.
 
 | tier | live 수량 | 역할 |
 | --- | ---: | --- |
 | `Implicit` | 6 | base item identity 축, `Refit` 대상 아님 |
 | `Prefix` | 12 | 주요 수치/조건 보정, `Refit` 후보 |
-| `Suffix` | 6 | 보조 보정/빌드 hook, `Refit` 후보 |
+| `Suffix` | 7 | 보조 보정/빌드 hook, `Refit` 후보 |
 
 아이템 한 장의 표시 단위는 rarity/identity에 따라 아래처럼 제한한다.
 

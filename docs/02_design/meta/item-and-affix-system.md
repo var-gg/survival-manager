@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-20
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/02_design/meta/item-and-affix-system.md`
 - 관련문서:
   - `docs/02_design/meta/affix-authoring-schema.md`
@@ -24,9 +24,9 @@ affix field schema와 catalog는 별도 문서가 소유하고, 이 문서는 it
 - base item
 - item catalog `42`: `Common 30 / Rare 9 / Epic 3`
 - item identity `42`: `Baseline 34 / Named 6 / Unique 2`
-- affix catalog `30`: live `24`, reserved `6`
-- live affix mix: `Implicit 6 / Prefix 12 / Suffix 6`
-- live family mix: `CoreScalar 14 / ConditionalTagged 6 / BuildShaping 4`
+- affix catalog `30`: live `25`, reserved `5`
+- live affix mix: `Implicit 6 / Prefix 12 / Suffix 7`
+- live family mix: `CoreScalar 15 / ConditionalTagged 6 / BuildShaping 4`
 - `weapon / armor / accessory` 3슬롯
 - `shield / blade / bow / focus` weapon family
 - granted skill
@@ -68,7 +68,9 @@ shield 전용 별도 슬롯은 열지 않는다.
 - affix family는 `CoreScalar`, `ConditionalTagged`, `BuildShaping`으로 나눈다.
 - unique / boss item은 rarity가 아니라 identity다. 수치 과적 대신 granted skill 또는 rule marker를 우선한다.
 - item authoring은 canonical `WeaponFamilyTag`, optional `GrantedSkillId`, optional `UniqueRuleModifierTag`를 가진다.
-- `dodge`, `block`, `status_potency`, `summon_power`는 v1 broad affix public layer로 성급히 승격하지 않는다.
+- 아이템은 증강처럼 새 proc 동사를 추가하지 않고, `status_potency`로 적용자가 거는 숫자 상태의 magnitude를 `×(1 + potency)` 증폭한다.
+- V1 `status_potency`는 `affix_hallowed` 단일 carrier로 좁게 live화한다. magnitude가 0인 제어 상태는 곱셈 결과도 0이라 무영향이다.
+- `dodge`, `block`, `summon_power`는 v1 broad affix public layer로 성급히 승격하지 않는다.
 
 ## 재련/리롤 원칙
 

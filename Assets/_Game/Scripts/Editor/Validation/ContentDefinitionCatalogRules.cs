@@ -912,7 +912,7 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
 
         if (liveAffixes.Count != EquipmentContentV1Contract.LiveAffixCount || reservedAffixes.Count != EquipmentContentV1Contract.ReservedAffixCount)
         {
-            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_live_reserved_mix", $"Equipment V1 affix mix must be live/reserved = 24/6. Found {liveAffixes.Count}/{reservedAffixes.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_live_reserved_mix", $"Equipment V1 affix mix must be live/reserved = 25/5. Found {liveAffixes.Count}/{reservedAffixes.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         var tierMix = liveAffixes
@@ -920,19 +920,19 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
             .ToDictionary(group => group.Key, group => group.Count());
         if (GetCount(tierMix, AffixTierValue.Implicit) != 6
             || GetCount(tierMix, AffixTierValue.Prefix) != 12
-            || GetCount(tierMix, AffixTierValue.Suffix) != 6)
+            || GetCount(tierMix, AffixTierValue.Suffix) != 7)
         {
-            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_tier_mix", $"Live affix tiers must be Implicit/Prefix/Suffix = 6/12/6.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_tier_mix", $"Live affix tiers must be Implicit/Prefix/Suffix = 6/12/7.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         var familyMix = liveAffixes
             .GroupBy(affix => affix.AffixFamily)
             .ToDictionary(group => group.Key, group => group.Count());
-        if (GetCount(familyMix, AffixFamilyValue.CoreScalar) != 14
+        if (GetCount(familyMix, AffixFamilyValue.CoreScalar) != 15
             || GetCount(familyMix, AffixFamilyValue.ConditionalTagged) != 6
             || GetCount(familyMix, AffixFamilyValue.BuildShaping) != 4)
         {
-            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_family_mix", $"Live affix families must be CoreScalar/ConditionalTagged/BuildShaping = 14/6/4.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_family_mix", $"Live affix families must be CoreScalar/ConditionalTagged/BuildShaping = 15/6/4.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         foreach (var spec in EquipmentContentV1Contract.AffixSpecs)
