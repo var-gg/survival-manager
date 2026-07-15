@@ -90,6 +90,9 @@ public sealed class BattleState
     /// <summary>콤보 연쇄 상태(프라이머 윈도우/ICD/ChainId). seed 재시뮬로 재구성 — 직렬화하지 않는다.</summary>
     public CombatComboLedger ComboLedger { get; } = new();
 
+    /// <summary>진형 상태 방출 ICD. seed 재시뮬로 재구성 — ComboLedger와 같이 직렬화하지 않는다.</summary>
+    public FormationStatusLedger FormationStatusLedger { get; } = new();
+
     public IEnumerable<UnitSnapshot> AllUnits => Allies.Concat(Enemies);
     public IEnumerable<UnitSnapshot> LivingAllies => Allies.Where(x => x.IsAlive);
     public IEnumerable<UnitSnapshot> LivingEnemies => Enemies.Where(x => x.IsAlive);

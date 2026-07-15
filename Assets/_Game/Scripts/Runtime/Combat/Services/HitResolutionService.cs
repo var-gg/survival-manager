@@ -12,7 +12,9 @@ public sealed record HitResolutionResult(
     bool WasCritical,
     bool WasBlocked,
     float MitigationValue,
-    string Note);
+    string Note,
+    string ScreeningUnitId = "",
+    bool WasRearFlank = false);
 
 public static class HitResolutionService
 {
@@ -114,7 +116,7 @@ public static class HitResolutionService
         var note = blocked
             ? critical ? "crit+block" : "block"
             : critical ? "crit" : string.Empty;
-        var screenMitigation = BattleFormationConsequence.ResolveScreenMitigation(state, actor, target);
+        var screenMitigation = BattleFormationConsequence.ResolveScreenMitigation(state, actor, target, out var screeningUnit);
         if (screenMitigation > 0f)
         {
             var screened = Hp64.Max(oneHp, resolved * (Fixed32.One - Fixed32.FromFloatQuantized(screenMitigation)));
@@ -132,7 +134,15 @@ public static class HitResolutionService
             note = ComposeNoteToken(note, flank.NoteToken);
         }
 
-        return new HitResolutionResult(resolved.ToFloat(), false, critical, blocked, mitigation, note);
+        return new HitResolutionResult(
+            resolved.ToFloat(),
+            false,
+            critical,
+            blocked,
+            mitigation,
+            note,
+            screeningUnit?.Id.Value ?? string.Empty,
+            flank.NoteToken == "rear");
     }
 
     private static float ResolveSkillDamagePower(UnitSnapshot actor, BattleSkillSpec skill)

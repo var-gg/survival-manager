@@ -59,7 +59,7 @@ public static class BattleFormationConsequence
     public static bool IsBacklineExposed(BattleState state, UnitSnapshot target)
     {
         return target.Behavior.FormationLine == FormationLine.Backline
-            && !HasScreeningGuard(state, target, attacker: null);
+            && ResolveScreeningGuard(state, target, attacker: null) == null;
     }
 
     /// <summary>
@@ -69,21 +69,21 @@ public static class BattleFormationConsequence
     public static bool IsBacklineExposedFrom(BattleState state, UnitSnapshot attacker, UnitSnapshot target)
     {
         return target.Behavior.FormationLine == FormationLine.Backline
-            && !HasScreeningGuard(state, target, attacker);
+            && ResolveScreeningGuard(state, target, attacker) == null;
     }
 
     /// <summary>스크린이 멀쩡한 후열인가(공격자-무관, 근접 가드 성분만) — 노출 술어의 보호 측 읽기.</summary>
     public static bool IsScreenedBackline(BattleState state, UnitSnapshot target)
     {
         return target.Behavior.FormationLine == FormationLine.Backline
-            && HasScreeningGuard(state, target, attacker: null);
+            && ResolveScreeningGuard(state, target, attacker: null) != null;
     }
 
     /// <summary>스크린이 멀쩡한 후열인가(공격자-상대적) — 이 공격자의 축에 대해 근접 가드 OR interpose.</summary>
     public static bool IsScreenedBacklineFrom(BattleState state, UnitSnapshot attacker, UnitSnapshot target)
     {
         return target.Behavior.FormationLine == FormationLine.Backline
-            && HasScreeningGuard(state, target, attacker);
+            && ResolveScreeningGuard(state, target, attacker) != null;
     }
 
     /// <summary>
@@ -91,8 +91,22 @@ public static class BattleFormationConsequence
     /// 같은 배치라도 전술 선택이 결과를 바꾸는 P1 레버 훅.
     /// </summary>
     public static float ResolveScreenMitigation(BattleState state, UnitSnapshot actor, UnitSnapshot target)
+        => ResolveScreenMitigation(state, actor, target, out _);
+
+    /// <summary>
+    /// 피해 경감과 그 경감을 만든 스크리너를 한 번의 판정으로 돌려준다. 스크리너 귀속은 팀 unit 순서의
+    /// 첫 유효 가드로 고정되며, HitResolutionService가 이 결과를 상태 방출 seam으로 전달한다.
+    /// </summary>
+    internal static float ResolveScreenMitigation(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        out UnitSnapshot? screeningUnit)
     {
-        if (target.Side == actor.Side || !IsScreenedBacklineFrom(state, actor, target))
+        screeningUnit = target.Side == actor.Side || target.Behavior.FormationLine != FormationLine.Backline
+            ? null
+            : ResolveScreeningGuard(state, target, actor);
+        if (screeningUnit == null)
         {
             return 0f;
         }
@@ -106,7 +120,7 @@ public static class BattleFormationConsequence
     // (2) interpose(공격자-상대적): 전열 아군 G가 "표적 T→공격자 A" 축에서 사이 구간(along ∈ (0, |A-T|))에
     //     있고 수선거리² ≤ InterposeWidthSq. 전진 교전 중인 전열도 사선을 막고 있으면 스크린이 유지된다.
     // 산술 노트: |along| ≤ 아레나 대각(~17m), along²·거리² ≤ ~297 — Q16.16 범위 내(FixedVector2 스케일 계약).
-    private static bool HasScreeningGuard(BattleState state, UnitSnapshot target, UnitSnapshot? attacker)
+    private static UnitSnapshot? ResolveScreeningGuard(BattleState state, UnitSnapshot target, UnitSnapshot? attacker)
     {
         var hasAxis = false;
         var axisDir = default(FixedVector2);
@@ -135,7 +149,7 @@ public static class BattleFormationConsequence
             var guardRadius = Fixed32.FromFloatQuantized(ally.Behavior.FrontlineGuardRadius);
             if (toGuard.LengthSquared <= guardRadius * guardRadius)
             {
-                return true;
+                return ally;
             }
 
             if (hasAxis)
@@ -147,13 +161,13 @@ public static class BattleFormationConsequence
                     var perpSq = toGuard.LengthSquared - (along * along);
                     if (perpSq.Raw <= InterposeWidthSq.Raw)
                     {
-                        return true;
+                        return ally;
                     }
                 }
             }
         }
 
-        return false;
+        return null;
     }
 
     /// <summary>

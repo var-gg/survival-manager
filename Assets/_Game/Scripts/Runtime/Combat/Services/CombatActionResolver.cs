@@ -95,6 +95,7 @@ public static class CombatActionResolver
                     attackResult.Value,
                     attackResult.MitigationValue,
                     attackNote));
+                FormationStatusEmitter.EmitForResolvedHit(state, actor, target, attackResult, events);
                 if (!target.IsAlive)
                 {
                     events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.BasicAttack, null));
@@ -239,6 +240,7 @@ public static class CombatActionResolver
                         skillResult.Value,
                         skillResult.MitigationValue,
                         skillResult.Note));
+                    FormationStatusEmitter.EmitForResolvedHit(state, actor, target, skillResult, events);
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                     if (!target.IsAlive)
                     {
@@ -314,6 +316,7 @@ public static class CombatActionResolver
                 resolvedValue,
                 result.MitigationValue,
                 ComposeNote(result.Note, $"{skill.AreaEffectFamily}:{hit.ChainIndex}")));
+            FormationStatusEmitter.EmitForResolvedHit(state, actor, target, result, events);
         }
 
         if (caughtTargets.Count >= 3)

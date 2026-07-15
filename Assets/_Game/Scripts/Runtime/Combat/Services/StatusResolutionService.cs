@@ -60,6 +60,29 @@ public static class StatusResolutionService
         }
     }
 
+    /// <summary>
+    /// 스킬이 아닌 formation consequence가 상태 truth와 StatusApplied 이벤트를 우회하지 않고 쓰는 경로.
+    /// sourceSkillId는 의도적으로 비워 authored skill attribution과 섞이지 않는다.
+    /// </summary>
+    internal static void ApplyFormationStatus(
+        BattleState state,
+        UnitSnapshot source,
+        UnitSnapshot target,
+        string applicationId,
+        string statusId,
+        float durationSeconds,
+        float magnitude,
+        List<BattleEvent> stepEvents)
+    {
+        ApplyStatus(
+            state,
+            source,
+            target,
+            new StatusApplicationSpec(applicationId, statusId, durationSeconds, magnitude),
+            sourceSkillId: string.Empty,
+            stepEvents: stepEvents);
+    }
+
     public static bool CanUseActiveSkill(UnitSnapshot actor)
     {
         return actor.IsAlive && !actor.IsStunned && !actor.IsSilenced;
@@ -91,6 +114,15 @@ public static class StatusResolutionService
     }
 
     private static void ApplyStatus(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleSkillSpec skill, StatusApplicationSpec spec, List<BattleEvent> stepEvents)
+        => ApplyStatus(state, actor, target, spec, skill.Id, stepEvents);
+
+    private static void ApplyStatus(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        StatusApplicationSpec spec,
+        string sourceSkillId,
+        List<BattleEvent> stepEvents)
     {
         if (string.IsNullOrWhiteSpace(spec.StatusId))
         {
@@ -118,7 +150,7 @@ public static class StatusResolutionService
         }
         else
         {
-            target.ApplyStatus(adjusted, actor.Id.Value, skill.Id, spec.Id);
+            target.ApplyStatus(adjusted, actor.Id.Value, sourceSkillId, spec.Id);
         }
 
         stepEvents.Add(BuildStatusEvent(state, actor, target, BattleEventKind.StatusApplied, spec.StatusId, spec.Magnitude));
