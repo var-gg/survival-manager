@@ -18,32 +18,34 @@
 
 - schema capacity: `100~120`
 - v1 committed catalog: `30`
-- current live subset: `25`
-- current reserved subset: `5`
+- current live subset: `30`
+- current reserved subset: `0`
 
 ## committed v1 live subset
 
 | tier | count | affix ids |
 | --- | ---: | --- |
 | `Implicit` | 6 | `affix_sharp`, `affix_focusing`, `affix_sturdy`, `affix_warded`, `affix_blessed`, `affix_hasty` |
-| `Prefix` | 12 | `affix_fierce`, `affix_precise`, `affix_piercing`, `affix_vital`, `affix_ironclad`, `affix_mender`, `affix_lithe`, `affix_lucid`, `affix_farshot`, `affix_guarded`, `affix_channeling`, `affix_cleansing` |
-| `Suffix` | 7 | `affix_bracing`, `affix_hallowed`, `affix_resolute`, `affix_relentless`, `affix_watchful`, `affix_packborn`, `affix_wraithbound` |
+| `Prefix` | 15 | `affix_fierce`, `affix_precise`, `affix_piercing`, `affix_vital`, `affix_ironclad`, `affix_mender`, `affix_lithe`, `affix_lucid`, `affix_heavy`, `affix_quick`, `affix_reaching`, `affix_farshot`, `affix_guarded`, `affix_channeling`, `affix_cleansing` |
+| `Suffix` | 9 | `affix_bracing`, `affix_hallowed`, `affix_ravenous`, `affix_spined`, `affix_resolute`, `affix_relentless`, `affix_watchful`, `affix_packborn`, `affix_wraithbound` |
 
 | family | count | 역할 |
 | --- | ---: | --- |
-| `CoreScalar` | 15 | stat scalar와 slot-readable item identity |
+| `CoreScalar` | 20 | stat scalar와 slot-readable item identity |
 | `ConditionalTagged` | 6 | tag 조건을 가진 build 방향성 |
 | `BuildShaping` | 4 | rule marker를 가진 후속 확장용 build hook |
 
 ## reserved v1 subset
 
-아래 5개는 committed asset으로 유지하되 `SpawnWeight = 0`, `ItemLevelMin = 999`로 live roll에서 제외한다.
+현재 reserved affix는 없다. 기존 reserved 5종은 모두 `CoreScalar / StatModifier` live affix로 승격됐다.
 
-- `affix_heavy`
-- `affix_quick`
-- `affix_ravenous`
-- `affix_reaching`
-- `affix_spined`
+| affix id | tier | stat / op | V1 value band |
+| --- | --- | --- | ---: |
+| `affix_heavy` | `Prefix` | `armor / Flat` | `1~3` |
+| `affix_quick` | `Prefix` | `attack_speed / Increased` | `0.04~0.08` |
+| `affix_ravenous` | `Suffix` | `lifesteal / Flat` | `0.04~0.08` |
+| `affix_reaching` | `Prefix` | `attack_range / Flat` | `0.10~0.20` |
+| `affix_spined` | `Suffix` | `phys_pen / Flat` | `0.4~0.9` |
 
 ## core scalar 24
 
@@ -110,6 +112,7 @@
 
 ## 운영 메모
 
-- current committed asset은 subset만 runtime에 연결한다.
+- schema capacity와 Markdown candidate 중 committed 30개 asset만 runtime에 연결한다.
 - `status_potency`는 `affix_hallowed` 하나만 live carrier로 두며, 적용자 소유 상태 magnitude 증폭에만 사용한다.
+- `lifesteal`처럼 base가 `0`인 ratio stat은 `Flat`으로 저작해 유효 수치가 0에 곱해져 사라지지 않게 한다.
 - broad public stat 과잉 노출을 막기 위해 `block`, `dodge`, `summon_power`는 catalog에만 두고 live subset 기본선에서는 좁게 쓴다.

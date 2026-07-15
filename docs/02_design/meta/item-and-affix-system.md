@@ -24,9 +24,9 @@ affix field schema와 catalog는 별도 문서가 소유하고, 이 문서는 it
 - base item
 - item catalog `42`: `Common 30 / Rare 9 / Epic 3`
 - item identity `42`: `Baseline 34 / Named 6 / Unique 2`
-- affix catalog `30`: live `25`, reserved `5`
-- live affix mix: `Implicit 6 / Prefix 12 / Suffix 7`
-- live family mix: `CoreScalar 15 / ConditionalTagged 6 / BuildShaping 4`
+- affix catalog `30`: live `30`, reserved `0`
+- live affix mix: `Implicit 6 / Prefix 15 / Suffix 9`
+- live family mix: `CoreScalar 20 / ConditionalTagged 6 / BuildShaping 4`
 - `weapon / armor / accessory` 3슬롯
 - `shield / blade / bow / focus` weapon family
 - granted skill

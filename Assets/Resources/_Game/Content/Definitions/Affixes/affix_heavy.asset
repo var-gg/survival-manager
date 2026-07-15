@@ -20,16 +20,18 @@ MonoBehaviour:
   AffixFamily: 1
   EffectType: 1
   ValueMin: 1
-  ValueMax: 2
-  AllowedSlotTypes: 0100000002000000
-  CompileTags: []
+  ValueMax: 3
+  AllowedSlotTypes: 01000000
+  CompileTags:
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
-  ItemLevelMin: 999
-  SpawnWeight: 0
-  ExclusiveGroupId: reserved.heavy_armor
-  BudgetScore: 6
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: prefix.armor
+  BudgetScore: 8
   BudgetCard:
     Domain: 4
     Rarity: 0
@@ -52,7 +54,7 @@ MonoBehaviour:
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: content.affix.template.reserved
+  TextTemplateKey: content.affix.template.scalar
   AuthorityLayer: 2
   Effects:
   - Layer: 2

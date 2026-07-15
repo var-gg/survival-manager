@@ -30,8 +30,8 @@ internal static class EquipmentContentV1Contract
 {
     internal const int ItemCount = 42;
     internal const int AffixCount = 30;
-    internal const int LiveAffixCount = 25;
-    internal const int ReservedAffixCount = 5;
+    internal const int LiveAffixCount = 30;
+    internal const int ReservedAffixCount = 0;
     internal const int ReservedAffixItemLevelMin = 999;
     internal const string RefitCurrencyTag = "echo";
 
@@ -118,16 +118,14 @@ internal static class EquipmentContentV1Contract
         "affix_packborn",
         "affix_wraithbound",
         "affix_hallowed",
-    };
-
-    internal static readonly HashSet<string> ReservedAffixIds = new(StringComparer.Ordinal)
-    {
         "affix_heavy",
         "affix_quick",
         "affix_ravenous",
         "affix_reaching",
         "affix_spined",
     };
+
+    internal static readonly HashSet<string> ReservedAffixIds = new(StringComparer.Ordinal);
 
     internal static readonly IReadOnlyList<string> LiveAffixOrder = new[]
     {
@@ -141,6 +139,7 @@ internal static class EquipmentContentV1Contract
         "affix_guarded",
         "affix_hallowed",
         "affix_hasty",
+        "affix_heavy",
         "affix_ironclad",
         "affix_lithe",
         "affix_lucid",
@@ -148,9 +147,13 @@ internal static class EquipmentContentV1Contract
         "affix_packborn",
         "affix_piercing",
         "affix_precise",
+        "affix_quick",
+        "affix_ravenous",
+        "affix_reaching",
         "affix_relentless",
         "affix_resolute",
         "affix_sharp",
+        "affix_spined",
         "affix_sturdy",
         "affix_vital",
         "affix_warded",
@@ -175,9 +178,14 @@ internal static class EquipmentContentV1Contract
         Live("affix_mender", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "heal_power", ModifierOp.Flat, 1f, 3f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("heal", "support"), Tags(), Tags(), "prefix.heal_power", "content.affix.template.scalar", 8f),
         Live("affix_lithe", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "move_speed", ModifierOp.Increased, 0.04f, 0.08f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("tempo"), Tags(), Tags(), "prefix.move_speed", "content.affix.template.scalar", 8f),
         Live("affix_lucid", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "skill_haste", ModifierOp.Increased, 0.04f, 0.08f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("tempo", "magical"), Tags(), Tags(), "prefix.skill_haste", "content.affix.template.scalar", 8f),
-        // ratio-valued stat with a zero baseline: Flat carries the authored +0.10~+0.20 potency;
+        Live("affix_heavy", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.DefenseFlat, "armor", ModifierOp.Flat, 1f, 3f, Slots(ItemSlotType.Armor), Tags("frontline", "guard"), Tags(), Tags(), "prefix.armor", "content.affix.template.scalar", 8f),
+        Live("affix_quick", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "attack_speed", ModifierOp.Increased, 0.04f, 0.08f, Slots(ItemSlotType.Accessory), Tags("tempo"), Tags(), Tags(), "prefix.attack_speed", "content.affix.template.scalar", 8f),
+        Live("affix_reaching", AffixTierValue.Prefix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "attack_range", ModifierOp.Flat, 0.10f, 0.20f, Slots(ItemSlotType.Weapon), Tags("backline"), Tags(), Tags(), "prefix.attack_range", "content.affix.template.scalar", 8f),
+        // Ratio-valued stats with a zero baseline carry their percentage-point magnitude as Flat;
         // Increased would multiply the zero baseline and silently compile to zero.
         Live("affix_hallowed", AffixTierValue.Suffix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "status_potency", ModifierOp.Flat, 0.10f, 0.20f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags(), Tags(), Tags(), "suffix.status_potency", "content.affix.template.scalar", 8f),
+        Live("affix_ravenous", AffixTierValue.Suffix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "lifesteal", ModifierOp.Flat, 0.04f, 0.08f, Slots(ItemSlotType.Weapon), Tags("sustain"), Tags(), Tags(), "suffix.lifesteal", "content.affix.template.scalar", 8f),
+        Live("affix_spined", AffixTierValue.Suffix, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.OffenseFlat, "phys_pen", ModifierOp.Flat, 0.4f, 0.9f, Slots(ItemSlotType.Weapon, ItemSlotType.Armor), Tags("pierce", "physical"), Tags(), Tags(), "suffix.phys_pen", "content.affix.template.scalar", 8f),
 
         Live("affix_farshot", AffixTierValue.Prefix, AffixFamilyValue.ConditionalTagged, AffixEffectTypeValue.ConditionalTagged, AffixCategoryValue.SynergyTagged, "attack_range", ModifierOp.Flat, 0.15f, 0.3f, Slots(ItemSlotType.Weapon), Tags("projectile", "backline"), Tags("projectile"), Tags(), "conditional.projectile_range", "content.affix.template.conditional", 10f),
         Live("affix_guarded", AffixTierValue.Prefix, AffixFamilyValue.ConditionalTagged, AffixEffectTypeValue.ConditionalTagged, AffixCategoryValue.SynergyTagged, "armor", ModifierOp.Flat, 1f, 2f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("guard", "frontline"), Tags("guard"), Tags(), "conditional.guard_armor", "content.affix.template.conditional", 10f),
@@ -193,11 +201,6 @@ internal static class EquipmentContentV1Contract
         Live("affix_packborn", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.BuildShaping, AffixCategoryValue.SynergyTagged, "max_health", ModifierOp.Flat, 2f, 4f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("support", "sustain"), Tags(), Tags(), "build.packborn_sustain", "content.affix.template.build", 12f),
         Live("affix_wraithbound", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.BuildShaping, AffixCategoryValue.SynergyTagged, "mag_power", ModifierOp.Flat, 1f, 3f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("magical", "wildcard_risk"), Tags(), Tags(), "build.wraithbound_magic", "content.affix.template.build", 12f),
 
-        Reserved("affix_heavy", AffixTierValue.Prefix, "armor", ModifierOp.Flat, Slots(ItemSlotType.Armor), "reserved.heavy_armor"),
-        Reserved("affix_quick", AffixTierValue.Prefix, "attack_speed", ModifierOp.Increased, Slots(ItemSlotType.Accessory), "reserved.quick_speed"),
-        Reserved("affix_ravenous", AffixTierValue.Suffix, "lifesteal", ModifierOp.Increased, Slots(ItemSlotType.Weapon), "reserved.ravenous_lifesteal"),
-        Reserved("affix_reaching", AffixTierValue.Prefix, "attack_range", ModifierOp.Flat, Slots(ItemSlotType.Weapon), "reserved.reaching_range"),
-        Reserved("affix_spined", AffixTierValue.Suffix, "phys_pen", ModifierOp.Flat, Slots(ItemSlotType.Weapon, ItemSlotType.Armor), "reserved.spined_pierce"),
     };
 
     internal static readonly IReadOnlyDictionary<string, EquipmentAffixV1Spec> AffixSpecsById =
@@ -240,35 +243,6 @@ internal static class EquipmentContentV1Contract
             budgetScore,
             1f,
             0);
-    }
-
-    private static EquipmentAffixV1Spec Reserved(
-        string id,
-        AffixTierValue tier,
-        string statId,
-        ModifierOp operation,
-        IReadOnlyList<ItemSlotType> slots,
-        string exclusiveGroup)
-    {
-        return new EquipmentAffixV1Spec(
-            id,
-            tier,
-            AffixFamilyValue.CoreScalar,
-            AffixEffectTypeValue.StatModifier,
-            AffixCategoryValue.Utility,
-            statId,
-            operation,
-            1f,
-            2f,
-            slots,
-            Array.Empty<string>(),
-            Array.Empty<string>(),
-            Array.Empty<string>(),
-            exclusiveGroup,
-            "content.affix.template.reserved",
-            6f,
-            0f,
-            ReservedAffixItemLevelMin);
     }
 
     private static IReadOnlyList<ItemSlotType> Slots(params ItemSlotType[] slots) => slots;

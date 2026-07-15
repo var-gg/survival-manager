@@ -40,14 +40,13 @@ shield 전용 별도 slot은 열지 않는다.
 
 ## affix 구조
 
-V1 committed catalog는 affix asset `30`개를 유지하고, 그중 `25`개를 live roll 후보로 둔다.
-reserved `5`개는 asset으로 남기되 `SpawnWeight = 0`, `ItemLevelMin = 999`로 live 생성에서 제외한다.
+V1 committed catalog의 affix asset `30`개는 모두 live roll 후보이며, reserved affix는 없다.
 
 | tier | live 수량 | 역할 |
 | --- | ---: | --- |
 | `Implicit` | 6 | base item identity 축, `Refit` 대상 아님 |
-| `Prefix` | 12 | 주요 수치/조건 보정, `Refit` 후보 |
-| `Suffix` | 7 | 보조 보정/빌드 hook, `Refit` 후보 |
+| `Prefix` | 15 | 주요 수치/조건 보정, `Refit` 후보 |
+| `Suffix` | 9 | 보조 보정/빌드 hook, `Refit` 후보 |
 
 아이템 한 장의 표시 단위는 rarity/identity에 따라 아래처럼 제한한다.
 

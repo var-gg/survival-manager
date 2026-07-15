@@ -93,7 +93,7 @@ Loop A 기준으로 affix는 `owner self` 또는 `owner-owned summons`만 수정
 
 ## live subset rule
 
-- committed asset live subset은 `16~25 affix`면 충분하다.
+- committed asset live subset은 현재 V1 목표인 `30 affix`로 고정한다.
 - full catalog는 Markdown source-of-truth로 유지하고, asset runtime 진입은 subset만 허용한다.
 
 ## Loop C governance addendum

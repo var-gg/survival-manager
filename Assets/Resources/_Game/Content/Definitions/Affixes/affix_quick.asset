@@ -19,17 +19,18 @@ MonoBehaviour:
   Tier: 1
   AffixFamily: 1
   EffectType: 1
-  ValueMin: 1
-  ValueMax: 2
-  AllowedSlotTypes: 0200000001000000
-  CompileTags: []
+  ValueMin: 0.04
+  ValueMax: 0.08
+  AllowedSlotTypes: 02000000
+  CompileTags:
+  - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
-  ItemLevelMin: 999
-  SpawnWeight: 0
-  ExclusiveGroupId: reserved.quick_speed
-  BudgetScore: 6
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: prefix.attack_speed
+  BudgetScore: 8
   BudgetCard:
     Domain: 4
     Rarity: 0
@@ -52,7 +53,7 @@ MonoBehaviour:
     DeclaredThreatPatterns: 
     DeclaredCounterTools: []
     DeclaredFeatureFlags: 0
-  TextTemplateKey: content.affix.template.reserved
+  TextTemplateKey: content.affix.template.scalar
   AuthorityLayer: 2
   Effects:
   - Layer: 2
@@ -63,7 +64,7 @@ MonoBehaviour:
     LoadoutTopologyDelta: 0
   Modifiers:
   - StatId: attack_speed
-    Op: 0
-    Value: 1
+    Op: 1
+    Value: 0.06
   legacyDisplayName: 
   legacyDescription: 

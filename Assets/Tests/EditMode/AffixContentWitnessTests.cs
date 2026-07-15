@@ -7,6 +7,7 @@ using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Editor.SeedData;
+using SM.Editor.Validation;
 using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
@@ -15,7 +16,7 @@ using SM.Unity;
 namespace SM.Tests.EditMode;
 
 /// <summary>
-/// 실 committed affix 콘텐츠의 non-numeric 계약(태그/조건 게이트)이 실 컴파일 유닛까지
+/// 실 committed affix 콘텐츠의 태그/조건 게이트와 numeric 승격이 실 컴파일 유닛까지
 /// 도달하는지 단언하는 witness — FastUnit 손조립(ContentEffectDifferentialTests)의 실 asset 쌍.
 /// 과거엔 ModifierPackageConverter가 수치만 변환해 affix_relentless(BuildShaping)의 CompileTags,
 /// affix_farshot(ConditionalTagged)의 RequiredTags가 전량 드롭됐다(조건부가 무조건으로 동작).
@@ -105,6 +106,42 @@ public sealed class AffixContentWitnessTests
 
         Assert.That(unit.Stats.Get(StatKey.StatusPotency), Is.EqualTo(0.15f).Within(0.0001f),
             "실 asset -> RuntimeCombatContentLookup -> LoadoutCompiler -> UnitSnapshot stat 경로가 potency를 보존해야 한다");
+    }
+
+    [TestCase("affix_heavy", "item_raider_armor", "armor", ModifierOp.Flat, 2f)]
+    [TestCase("affix_quick", "item_warden_trinket", "attack_speed", ModifierOp.Increased, 0.06f)]
+    [TestCase("affix_ravenous", "item_iron_sword", "lifesteal", ModifierOp.Flat, 0.06f)]
+    [TestCase("affix_reaching", "item_iron_sword", "attack_range", ModifierOp.Flat, 0.15f)]
+    [TestCase("affix_spined", "item_iron_sword", "phys_pen", ModifierOp.Flat, 0.65f)]
+    public void RealPromotedAffix_CompilesIntoEffectiveUnitStat(
+        string affixId,
+        string itemBaseId,
+        string statId,
+        ModifierOp expectedOperation,
+        float expectedModifierValue)
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        Assert.That(EquipmentContentV1Contract.LiveAffixIds, Does.Contain(affixId),
+            "승격 witness 대상은 V1 live manifest에 있어야 한다");
+        Assert.That(EquipmentContentV1Contract.ReservedAffixIds, Does.Not.Contain(affixId));
+        Assert.That(snapshot.ItemPackages.ContainsKey(itemBaseId), Is.True);
+        Assert.That(snapshot.AffixPackages.ContainsKey(affixId), Is.True);
+        Assert.That(StatKey.TryResolve(statId, out var statKey), Is.True);
+
+        var authoredModifier = snapshot.AffixPackages[affixId].Modifiers.Single();
+        Assert.That(authoredModifier.Stat, Is.EqualTo(statKey));
+        Assert.That(authoredModifier.Op, Is.EqualTo(expectedOperation));
+        Assert.That(authoredModifier.Value, Is.EqualTo(expectedModifierValue).Within(0.0001f));
+
+        var baseline = CompileWarden(snapshot, Array.Empty<string>(), itemBaseId);
+        var promoted = CompileWarden(snapshot, new[] { affixId }, itemBaseId);
+        Assert.That(promoted.Allies.Single().NumericPackages.Any(package => package.SourceId == affixId), Is.True,
+            "실 promoted affix numeric package가 LoadoutCompiler 출력에 남아야 한다");
+
+        var baselineUnit = BattleFactory.Create(baseline.Allies, Array.Empty<BattleUnitLoadout>()).Allies.Single();
+        var promotedUnit = BattleFactory.Create(promoted.Allies, Array.Empty<BattleUnitLoadout>()).Allies.Single();
+        Assert.That(promotedUnit.Stats.Get(statKey), Is.GreaterThan(baselineUnit.Stats.Get(statKey)),
+            "실 asset -> lookup -> compile -> UnitSnapshot 경로에서 promoted affix가 유효 stat을 증가시켜야 한다");
     }
 
     private static BattleLoadoutSnapshot CompileWarden(
