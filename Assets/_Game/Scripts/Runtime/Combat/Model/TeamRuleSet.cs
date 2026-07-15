@@ -14,13 +14,24 @@ public sealed class TeamRuleSet
     public const string PhalanxRuleId = "rule.phalanx";
     public const string BloodrushRuleId = "rule.bloodrush";
     public const string DeathTollRuleId = "rule.deathtoll";
+    public const string BulwarkRuleId = "rule.bulwark";
+    public const string ExecuteRuleId = "rule.execute";
+    public const string KillzoneRuleId = "rule.killzone";
+    public const string ResonanceRuleId = "rule.resonance";
 
     internal const string BloodrushStatusId = "team-rule.bloodrush";
     internal const string DeathTollStatusId = "team-rule.deathtoll";
+    internal const string BulwarkStatusId = "guarded";
+    internal const string KillzoneStatusId = "team-rule.killzone";
     internal const float BloodrushDurationSeconds = 2.5f;
     internal const float BloodrushTempoPerStack = 0.05f;
     internal const float DeathTollPhysPowerPerStack = 0.25f;
     internal const float DeathTollMaxHealthPerStack = 1f;
+    internal const float BulwarkGuardedDurationSeconds = 600f;
+    internal const float ExecuteComboPayoffMultiplierBonus = 0.25f;
+    internal const float KillzonePhysPowerPerStack = 0.25f;
+    internal const float KillzoneCritChancePerStack = 0.01f;
+    internal const float ResonanceStatusPotencyBonus = 0.20f;
     internal const int MaxRuleStacks = 99;
 
     private static readonly string[] EmptyRules = Array.Empty<string>();

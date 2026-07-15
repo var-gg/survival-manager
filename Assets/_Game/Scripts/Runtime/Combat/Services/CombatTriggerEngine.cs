@@ -18,6 +18,11 @@ public static class CombatTriggerEngine
     /// <summary>전투 시작 hook — 모든 유닛의 BattleStart 트리거 발동.</summary>
     public static void OnBattleStart(BattleState state)
     {
+        // 팀 규칙은 기존 BattleStart trigger보다 먼저 적용한다. resonance의 status_potency가 같은
+        // 개전 hook에서 발화하는 상태에도 일관되게 적용되며, 규칙 없는 팀은 완전 no-op이다.
+        ApplyBattleStartRules(state, TeamSide.Ally);
+        ApplyBattleStartRules(state, TeamSide.Enemy);
+
         foreach (var unit in InStableTriggerOrder(state.AllUnits.Where(unit => unit.IsAlive)))
         {
             FireTriggers(state, unit, CombatTriggerKind.BattleStart);
@@ -102,6 +107,46 @@ public static class CombatTriggerEngine
         }
     }
 
+    private static void ApplyBattleStartRules(BattleState state, TeamSide side)
+    {
+        if (state.TeamRuleSet.Has(side, TeamRuleSet.BulwarkRuleId))
+        {
+            foreach (var unit in RuleRecipients(state, side, "vanguard", matchClassId: true))
+            {
+                unit.ApplyStatus(
+                    new StatusApplicationSpec(
+                        TeamRuleSet.BulwarkRuleId,
+                        TeamRuleSet.BulwarkStatusId,
+                        TeamRuleSet.BulwarkGuardedDurationSeconds,
+                        Magnitude: 1f),
+                    sourceApplicationId: TeamRuleSet.BulwarkRuleId);
+                RecordBattleStartTeamRuleBeat(
+                    state,
+                    unit,
+                    TeamRuleSet.BulwarkRuleId,
+                    TeamRuleSet.BulwarkGuardedDurationSeconds);
+            }
+        }
+
+        if (state.TeamRuleSet.Has(side, TeamRuleSet.ResonanceRuleId))
+        {
+            foreach (var unit in RuleRecipients(state, side, "mystic", matchClassId: true))
+            {
+                unit.AddStatModifier(new StatModifier(
+                    StatKey.StatusPotency,
+                    ModifierOp.Flat,
+                    TeamRuleSet.ResonanceStatusPotencyBonus,
+                    ModifierSource.Synergy,
+                    TeamRuleSet.ResonanceRuleId));
+                RecordBattleStartTeamRuleBeat(
+                    state,
+                    unit,
+                    TeamRuleSet.ResonanceRuleId,
+                    TeamRuleSet.ResonanceStatusPotencyBonus);
+            }
+        }
+    }
+
     private static void ApplyTeamKillRules(BattleState state, TeamSide side)
     {
         if (state.TeamRuleSet.Has(side, TeamRuleSet.BloodrushRuleId))
@@ -158,15 +203,76 @@ public static class CombatTriggerEngine
                 RecordTeamRuleBeat(state, unit, TeamRuleSet.DeathTollRuleId, TeamRuleSet.DeathTollPhysPowerPerStack);
             }
         }
+
+        if (state.TeamRuleSet.Has(side, TeamRuleSet.KillzoneRuleId))
+        {
+            foreach (var unit in RuleRecipients(state, side, "ranger", matchClassId: true))
+            {
+                if (unit.Statuses.Any(status => string.Equals(
+                        status.StatusId,
+                        TeamRuleSet.KillzoneStatusId,
+                        System.StringComparison.Ordinal)
+                    && status.Stacks >= TeamRuleSet.MaxRuleStacks))
+                {
+                    continue;
+                }
+
+                unit.AddStatModifier(new StatModifier(
+                    StatKey.PhysPower,
+                    ModifierOp.Flat,
+                    TeamRuleSet.KillzonePhysPowerPerStack,
+                    ModifierSource.Synergy,
+                    TeamRuleSet.KillzoneRuleId));
+                unit.AddStatModifier(new StatModifier(
+                    StatKey.CritChance,
+                    ModifierOp.Flat,
+                    TeamRuleSet.KillzoneCritChancePerStack,
+                    ModifierSource.Synergy,
+                    TeamRuleSet.KillzoneRuleId));
+                // 동적 kill stack은 stat modifier만으로 canonical hash에 드러나지 않으므로 deathtoll과
+                // 같은 영구 marker status를 남긴다. Stacks가 재현 가능한 전장 사망 횟수다.
+                unit.ApplyPermanentStatus(
+                    new StatusApplicationSpec(
+                        TeamRuleSet.KillzoneRuleId,
+                        TeamRuleSet.KillzoneStatusId,
+                        DurationSeconds: 0f,
+                        Magnitude: 1f,
+                        MaxStacks: TeamRuleSet.MaxRuleStacks,
+                        RefreshDurationOnReapply: true),
+                    sourceApplicationId: TeamRuleSet.KillzoneRuleId);
+                RecordTeamRuleBeat(state, unit, TeamRuleSet.KillzoneRuleId, TeamRuleSet.KillzonePhysPowerPerStack);
+            }
+        }
     }
 
-    private static IEnumerable<UnitSnapshot> RuleRecipients(BattleState state, TeamSide side, string raceId)
+    private static IEnumerable<UnitSnapshot> RuleRecipients(
+        BattleState state,
+        TeamSide side,
+        string tagId,
+        bool matchClassId = false)
     {
         return state.GetTeam(side)
             .Where(unit => unit.IsAlive
                            && unit.EntityKind == CombatEntityKind.RosterUnit
-                           && string.Equals(unit.Definition.RaceId, raceId, System.StringComparison.Ordinal))
+                           && string.Equals(
+                               matchClassId ? unit.Definition.ClassId : unit.Definition.RaceId,
+                               tagId,
+                               System.StringComparison.Ordinal))
             .OrderBy(unit => unit.Id.Value, System.StringComparer.Ordinal);
+    }
+
+    private static void RecordBattleStartTeamRuleBeat(BattleState state, UnitSnapshot target, string ruleId, float value)
+    {
+        state.RecordBeat(
+            type: CombatBeatType.BattleStartEffect,
+            side: target.Side,
+            sourceId: null,
+            targetId: target.Id,
+            chainId: 0,
+            importance: CombatBeatImportance.BattleStartEffect,
+            value: value,
+            position: target.Position,
+            tag: ruleId);
     }
 
     private static void RecordTeamRuleBeat(BattleState state, UnitSnapshot target, string ruleId, float value)

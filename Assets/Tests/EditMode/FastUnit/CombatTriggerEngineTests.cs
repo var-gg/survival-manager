@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Core.Ids;
+using SM.Core.Stats;
 
 namespace SM.Tests.EditMode;
 
@@ -88,6 +90,109 @@ public sealed class CombatTriggerEngineTests
         Assert.That(leader.HasStatus("guarded"), Is.True, "Effect owner should be guarded");
         Assert.That(mate.HasStatus("guarded"), Is.True, "Allied team should be guarded");
         Assert.That(enemy.HasStatus("guarded"), Is.False, "Enemy should NOT be guarded");
+    }
+
+    [Test]
+    public void OnBattleStart_Bulwark_GuardsLivingVanguardsOnly_WithDeterministicRuleBeats()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("vanguard_human", race: "human", classId: "vanguard"),
+            CombatTestFactory.CreateLoopAUnit("vanguard_beastkin", race: "beastkin", classId: "vanguard"),
+            CombatTestFactory.CreateLoopAUnit("vanguard_undead", race: "undead", classId: "vanguard"),
+            CombatTestFactory.CreateLoopAUnit("duelist_probe", race: "outsider", classId: "duelist"),
+        };
+        var state = BattleFactory.Create(
+            allies,
+            new[] { CombatTestFactory.CreateLoopAUnit("enemy", race: "enemy", classId: "enemy") });
+
+        CombatTriggerEngine.OnBattleStart(state);
+
+        var vanguards = state.Allies.Where(unit => unit.Definition.ClassId == "vanguard").ToList();
+        var nonVanguard = state.Allies.Single(unit => unit.Definition.ClassId != "vanguard");
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.BulwarkRuleId), Is.True);
+        Assert.That(vanguards, Has.Count.EqualTo(3));
+        Assert.That(vanguards.All(unit => unit.Statuses.Single(status =>
+            status.SourceApplicationId == TeamRuleSet.BulwarkRuleId).StatusId == "guarded"), Is.True);
+        Assert.That(vanguards.All(unit => unit.Statuses.Single(status =>
+            status.SourceApplicationId == TeamRuleSet.BulwarkRuleId).RemainingSeconds == 600f), Is.True);
+        Assert.That(vanguards.All(unit => unit.GetIncomingDamageMultiplier() == 0.9f), Is.True,
+            "bulwark guarded는 Move 3 guarded 채널(-0.1)을 그대로 소비해야 한다");
+        Assert.That(nonVanguard.Statuses.Any(status =>
+            status.SourceApplicationId == TeamRuleSet.BulwarkRuleId), Is.False);
+
+        var ruleBeats = state.DrainStepBeats()
+            .Where(beat => beat.Tag == TeamRuleSet.BulwarkRuleId)
+            .ToList();
+        Assert.That(ruleBeats, Has.Count.EqualTo(3));
+        Assert.That(ruleBeats.All(beat => beat.Type == CombatBeatType.BattleStartEffect
+                                         && beat.SourceId == null
+                                         && beat.TargetId != null), Is.True,
+            "개전 팀규칙은 대상별 BattleStartEffect beat로 발화해야 한다");
+        var targetIds = ruleBeats.Select(beat => beat.TargetId!.Value.Value).ToList();
+        Assert.That(
+            targetIds,
+            Is.EqualTo(targetIds.OrderBy(id => id, System.StringComparer.Ordinal).ToList()),
+            "class recipient는 stable id ordinal 순서로 처리해야 한다");
+    }
+
+    [Test]
+    public void OnBattleStart_Resonance_GrantsMysticStatusPotency_ConsumedByStatusChokePoint()
+    {
+        var markSkill = new BattleSkillSpec(
+            "skill.resonance.mark",
+            "Resonance Mark",
+            SkillKind.Utility,
+            0f,
+            1f,
+            AppliedStatuses: new[] { new StatusApplicationSpec("apply.resonance.mark", "marked", 5f, 0.5f) });
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("mystic_human", race: "human", classId: "mystic", signatureActive: markSkill),
+            CombatTestFactory.CreateLoopAUnit("mystic_beastkin", race: "beastkin", classId: "mystic"),
+            CombatTestFactory.CreateLoopAUnit("mystic_undead", race: "undead", classId: "mystic"),
+            CombatTestFactory.CreateLoopAUnit("ranger_probe", race: "outsider", classId: "ranger"),
+        };
+        var state = BattleFactory.Create(
+            allies,
+            new[] { CombatTestFactory.CreateLoopAUnit("target", race: "enemy", classId: "enemy") });
+
+        CombatTriggerEngine.OnBattleStart(state);
+
+        var mystics = state.Allies.Where(unit => unit.Definition.ClassId == "mystic").ToList();
+        var nonMystic = state.Allies.Single(unit => unit.Definition.ClassId != "mystic");
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.ResonanceRuleId), Is.True);
+        Assert.That(mystics.All(unit => unit.Stats.Get(StatKey.StatusPotency) == 0.20f), Is.True);
+        Assert.That(nonMystic.Stats.Get(StatKey.StatusPotency), Is.Zero);
+
+        var events = new List<BattleEvent>();
+        StatusResolutionService.ApplySkillStatuses(state, mystics[0], state.Enemies.Single(), markSkill, events);
+
+        Assert.That(
+            state.Enemies.Single().Statuses.Single(status => status.StatusId == "marked").Magnitude,
+            Is.EqualTo(0.6f).Within(0.0001f),
+            "resonance potency 0.2가 Move 5 choke point에서 marked 0.5를 ×1.2 해야 한다");
+        Assert.That(state.DrainStepBeats().Count(beat => beat.Tag == TeamRuleSet.ResonanceRuleId), Is.EqualTo(3));
+    }
+
+    [Test]
+    public void OnBattleStart_WithoutUpperClassRule_IsCanonicalNoOp()
+    {
+        var state = BattleFactory.Create(
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("vanguard_human", race: "human", classId: "vanguard"),
+                CombatTestFactory.CreateLoopAUnit("vanguard_beastkin", race: "beastkin", classId: "vanguard"),
+            },
+            new[] { CombatTestFactory.CreateLoopAUnit("enemy", race: "enemy", classId: "enemy") });
+        var before = BattleStateCanonicalHash.Compute(state);
+
+        CombatTriggerEngine.OnBattleStart(state);
+
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.BulwarkRuleId), Is.False);
+        Assert.That(BattleStateCanonicalHash.Compute(state), Is.EqualTo(before),
+            "class@2 stat-only comp의 OnBattleStart는 canonical state byte-identity를 보존한다");
+        Assert.That(state.DrainStepBeats(), Is.Empty);
     }
 
     [Test]
@@ -218,6 +323,54 @@ public sealed class CombatTriggerEngineTests
         Assert.That(state.Allies[0].Statuses.Any(status =>
             status.SourceApplicationId == TeamRuleSet.DeathTollRuleId), Is.True,
             "deathtoll buff는 전투 종료까지 timer로 소멸하지 않는다");
+    }
+
+    [Test]
+    public void OnTeamKill_Killzone_PermanentlyStacksPhysPowerAndCritForLivingRangers()
+    {
+        var allies = new[]
+        {
+            CombatTestFactory.CreateLoopAUnit("ranger_human", race: "human", classId: "ranger"),
+            CombatTestFactory.CreateLoopAUnit("ranger_beastkin", race: "beastkin", classId: "ranger"),
+            CombatTestFactory.CreateLoopAUnit("ranger_undead", race: "undead", classId: "ranger"),
+            CombatTestFactory.CreateLoopAUnit("vanguard_probe", race: "outsider", classId: "vanguard"),
+        };
+        var state = BattleFactory.Create(
+            allies,
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("victim_a", race: "enemy", classId: "enemy_a"),
+                CombatTestFactory.CreateLoopAUnit("victim_b", race: "enemy", classId: "enemy_b"),
+            });
+        var ranger = state.Allies.First(unit => unit.Definition.ClassId == "ranger");
+        var nonRanger = state.Allies.Single(unit => unit.Definition.ClassId != "ranger");
+        var baselinePhysPower = ranger.PhysPower;
+        var baselineCritChance = ranger.Stats.Get(StatKey.CritChance);
+        var nonRangerPhysPower = nonRanger.PhysPower;
+        var nonRangerCritChance = nonRanger.Stats.Get(StatKey.CritChance);
+        foreach (var victim in state.Enemies)
+        {
+            victim.TakeDamage(victim.CurrentHealth + 1f);
+        }
+
+        var beforeRules = BattleStateCanonicalHash.Compute(state);
+        foreach (var victim in state.Enemies)
+        {
+            CombatTriggerEngine.OnTeamKill(state, victim);
+        }
+        var afterRules = BattleStateCanonicalHash.Compute(state);
+
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.KillzoneRuleId), Is.True);
+        Assert.That(state.Allies.Where(unit => unit.Definition.ClassId == "ranger").All(unit => unit.Statuses.Single(status =>
+            status.SourceApplicationId == TeamRuleSet.KillzoneRuleId).Stacks == 2), Is.True);
+        Assert.That(ranger.PhysPower,
+            Is.EqualTo(baselinePhysPower + (2f * 0.25f)).Within(0.0001f));
+        Assert.That(ranger.Stats.Get(StatKey.CritChance),
+            Is.EqualTo(baselineCritChance + (2f * 0.01f)).Within(0.0001f));
+        Assert.That(nonRanger.PhysPower, Is.EqualTo(nonRangerPhysPower));
+        Assert.That(nonRanger.Stats.Get(StatKey.CritChance), Is.EqualTo(nonRangerCritChance));
+        Assert.That(afterRules, Is.Not.EqualTo(beforeRules),
+            "killzone의 동적 kill stack이 permanent marker status로 canonical state에 남아야 한다");
     }
 
     [Test]

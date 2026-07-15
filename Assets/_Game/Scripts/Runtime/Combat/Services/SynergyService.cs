@@ -37,7 +37,8 @@ public static class SynergyService
                 list.Add(new CombatModifierPackage(
                     $"class:{classGroup.Key}:{count}",
                     ModifierSource.Synergy,
-                    new[] { new StatModifier(StatKey.Armor, ModifierOp.Flat, count >= 3 ? 4f : 2f, ModifierSource.Synergy, $"class:{classGroup.Key}:{count}") }));
+                    new[] { new StatModifier(StatKey.Armor, ModifierOp.Flat, count >= 3 ? 4f : 2f, ModifierSource.Synergy, $"class:{classGroup.Key}:{count}") },
+                    ResolveGrantedTeamRuleId(classGroup.Key, count >= 3 ? 3 : 2, string.Empty)));
             }
         }
 
@@ -70,8 +71,8 @@ public static class SynergyService
         return compiled.Count > 0 ? compiled : BuildForTeam(materialized);
     }
 
-    // Move 4 code-SoT overlay. TeamSynergyTierRule asset은 아직 GrantedTeamRuleId를 저작하지 않으므로,
-    // 안정 신원(CountedTagId + Threshold)으로 상위 race tier 규칙을 실어 authored/fallback 양쪽의
+    // Move 4/후속 class@3 code-SoT overlay. TeamSynergyTierRule asset은 아직 GrantedTeamRuleId를 저작하지 않으므로,
+    // 안정 신원(CountedTagId + Threshold)으로 상위 race/class tier 규칙을 실어 authored/fallback 양쪽의
     // CombatModifierPackage가 같은 규칙 id를 운반하게 한다. 미등록 tier는 authored 값을 그대로 보존한다.
     private static string ResolveGrantedTeamRuleId(string countedTagId, int threshold, string authoredRuleId)
     {
@@ -82,6 +83,18 @@ public static class SynergyService
                 "human" => TeamRuleSet.PhalanxRuleId,
                 "beastkin" => TeamRuleSet.BloodrushRuleId,
                 "undead" => TeamRuleSet.DeathTollRuleId,
+                _ => authoredRuleId ?? string.Empty,
+            };
+        }
+
+        if (threshold == 3)
+        {
+            return countedTagId switch
+            {
+                "vanguard" => TeamRuleSet.BulwarkRuleId,
+                "duelist" => TeamRuleSet.ExecuteRuleId,
+                "ranger" => TeamRuleSet.KillzoneRuleId,
+                "mystic" => TeamRuleSet.ResonanceRuleId,
                 _ => authoredRuleId ?? string.Empty,
             };
         }

@@ -135,6 +135,13 @@ public static class CombatComboService
         if (victim.IsAlive)
         {
             payoffDamage = stepEvent.Value * state.StatusRules.ResolveComboPayoffBonus(primer.StatusId);
+            if (state.TeamRuleSet.Has(attacker.Side, TeamRuleSet.ExecuteRuleId))
+            {
+                // class@3 execute는 기존 family payoff 공식을 바꾸지 않고, 해당 팀의 최종 payoff에만
+                // 조건부 배율을 얹는다. 규칙이 없으면 이 분기를 타지 않아 기존 float 연산도 그대로다.
+                payoffDamage *= 1f + TeamRuleSet.ExecuteComboPayoffMultiplierBonus;
+            }
+
             if (payoffDamage > 0f)
             {
                 state.RegisterDamage(attacker, victim);

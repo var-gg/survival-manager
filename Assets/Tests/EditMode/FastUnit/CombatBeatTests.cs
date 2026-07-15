@@ -220,6 +220,35 @@ public sealed class CombatBeatTests
     }
 
     [Test]
+    public void ComboPayoff_ExecuteRule_MultipliesExistingFamilyPayoff_ForDuelistTeamOnly()
+    {
+        var state = CombatTestFactory.CreateBattleState(
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("duelist_human", race: "human", classId: "duelist"),
+                CombatTestFactory.CreateLoopAUnit("duelist_beastkin", race: "beastkin", classId: "duelist"),
+                CombatTestFactory.CreateLoopAUnit("duelist_undead", race: "undead", classId: "duelist"),
+            },
+            new[] { CombatTestFactory.CreateLoopAUnit("victim", race: "enemy", classId: "enemy", hp: 100f) });
+        var setter = state.Allies[0];
+        var finisher = state.Allies[1];
+        var victim = state.Enemies.Single();
+        var events = new List<BattleEvent>
+        {
+            StatusAppliedEvent(state, setter, victim, "sunder"),
+            DamageEvent(state, finisher, victim, 12f),
+        };
+
+        CombatComboService.ProcessStep(state, events);
+
+        Assert.That(state.TeamRuleSet.Has(TeamSide.Ally, TeamRuleSet.ExecuteRuleId), Is.True);
+        Assert.That(events.Single(evt => evt.LogCode == BattleLogCode.ComboPayoffDamage).Value,
+            Is.EqualTo(3.75f).Within(0.0001f),
+            "기존 sunder payoff 12×0.25에 execute +25% 배율만 조건부로 곱해야 한다");
+        Assert.That(victim.CurrentHealth, Is.EqualTo(96.25f).Within(0.0001f));
+    }
+
+    [Test]
     public void ComboPayoff_MainHitAlreadyKilledVictim_RecordsConsumeWithoutExtraDamage()
     {
         var setter = CreateUnit("ally_setter", TeamSide.Ally);

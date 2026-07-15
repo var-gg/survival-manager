@@ -61,8 +61,77 @@ public sealed class SynergyServiceTests
             Unit("a", "human", "vanguard"), Unit("b", "beastkin", "vanguard"), Unit("c", "undead", "vanguard"),
         });
         Assert.That(ClassBonus(three, "vanguard"), Is.EqualTo(4f), "3 class members reach tier-2 under 직업 2/3");
-        Assert.That(three.Any(package => !string.IsNullOrEmpty(package.GrantedTeamRuleId)), Is.False,
-            "class@3 규칙은 이번 슬라이스 범위 밖이다");
+        Assert.That(three.Single(package => package.SourceId.StartsWith("class:vanguard")).GrantedTeamRuleId,
+            Is.EqualTo(TeamRuleSet.BulwarkRuleId),
+            "vanguard@3 폴백도 상위 규칙을 compiled package에 실어야 한다");
+    }
+
+    [Test]
+    public void AuthoredClassTierThree_OverlaysAllUpperRules_WhileTierTwoAndBelowThresholdRemainStatOnly()
+    {
+        foreach (var (classId, expectedRuleId) in new[]
+                 {
+                     ("vanguard", TeamRuleSet.BulwarkRuleId),
+                     ("duelist", TeamRuleSet.ExecuteRuleId),
+                     ("ranger", TeamRuleSet.KillzoneRuleId),
+                     ("mystic", TeamRuleSet.ResonanceRuleId),
+                 })
+        {
+            var majorTier = new TeamSynergyTierRule(
+                $"synergy_{classId}",
+                classId,
+                3,
+                System.Array.Empty<SM.Core.Stats.StatModifier>());
+            var activeUnits = Enumerable.Range(0, majorTier.Threshold)
+                .Select(index => Unit($"{classId}_{index}", $"race_{index}", classId) with
+                {
+                    CompileTags = new[] { classId },
+                })
+                .ToArray();
+
+            var activePackages = SynergyService.BuildForTeam(activeUnits, new[] { majorTier });
+            var activeState = BattleFactory.Create(
+                activeUnits.Select(unit => unit with { TeamPackages = activePackages }).ToList(),
+                new[] { Unit("enemy", "enemy", "enemy") });
+
+            Assert.That(activePackages.Single().GrantedTeamRuleId, Is.EqualTo(expectedRuleId),
+                $"authored {classId}@3 package가 코드-SoT overlay 규칙을 운반해야 한다");
+            Assert.That(activeState.TeamRuleSet.Has(TeamSide.Ally, expectedRuleId), Is.True,
+                $"authored {classId}@3가 BattleState.TeamRuleSet에 도달해야 한다");
+
+            var belowThresholdPackages = SynergyService.BuildForTeam(activeUnits.Take(2), new[] { majorTier });
+            Assert.That(belowThresholdPackages.Any(package => package.GrantedTeamRuleId == expectedRuleId), Is.False,
+                $"{classId}@3 미충족은 상위 규칙을 부여하지 않는다");
+
+            var minorPackages = SynergyService.BuildForTeam(
+                activeUnits.Take(2),
+                new[] { majorTier with { Threshold = 2 } });
+            Assert.That(minorPackages.Any(package => !string.IsNullOrEmpty(package.GrantedTeamRuleId)), Is.False,
+                $"{classId}@2 authored tier는 기존 stat-only 계약을 유지한다");
+        }
+    }
+
+    [Test]
+    public void AuthoredUnknownClassTierWithoutRule_RemainsRuleFree()
+    {
+        const string unknownTag = "unknown-class";
+        var tier = new TeamSynergyTierRule(
+            "synergy_unknown",
+            unknownTag,
+            3,
+            System.Array.Empty<SM.Core.Stats.StatModifier>());
+        var units = Enumerable.Range(0, tier.Threshold)
+            .Select(index => Unit($"unknown_{index}", $"race_{index}", $"class_{index}") with
+            {
+                CompileTags = new[] { unknownTag },
+            })
+            .ToArray();
+
+        var packages = SynergyService.BuildForTeam(units, new[] { tier });
+
+        Assert.That(packages, Has.Count.EqualTo(1));
+        Assert.That(packages[0].GrantedTeamRuleId, Is.Empty,
+            "등록되지 않은 class@3 tag와 미저작 rule id는 규칙을 발명하지 않는다");
     }
 
     [Test]
