@@ -369,11 +369,17 @@ public static class TargetScoringService
         var focusMarkBias = blackboard.FocusMarkId == target.Id
             ? -FocusMarkTargetBias
             : 0f;
-        return switchPenalty + focusBias + flankBias + screenPenalty + focusMarkBias;
+        var comboOpportunityBias = state.ComboLedger.FindOldestActivePrimer(target.Id, actor.Side, state.StepIndex) != null
+            ? -ComboOpportunityBias
+            : 0f;
+        return switchPenalty + focusBias + flankBias + screenPenalty + focusMarkBias + comboOpportunityBias;
     }
 
     /// <summary>FocusMark 표적의 타게팅 매력 보너스(미터 등가) — V1 authority 튜닝 노브.</summary>
     private const float FocusMarkTargetBias = 0.45f;
+
+    /// <summary>아군 활성 프라이머 표적의 타게팅 매력 보너스(미터 등가) — V1 authority 튜닝 노브.</summary>
+    private const float ComboOpportunityBias = 0.40f;
 
     private static float ResolveAcquireRange(UnitSnapshot actor, TargetRule rule)
     {

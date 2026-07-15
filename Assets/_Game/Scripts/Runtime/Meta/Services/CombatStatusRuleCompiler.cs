@@ -41,7 +41,11 @@ public static class CombatStatusRuleCompiler
                 family.ShredsDefense,
                 family.ReducesHealing,
                 family.DampensTempo,
-                family.MarksTarget))
+                family.MarksTarget,
+                // 콤보 payoff는 전투 튜닝 노브(코드 SoT=Default, 콤보 window/ICD·타게팅 bias와 동종) —
+                // StatusFamilyTemplate/asset 저작면 밖이다. content 경로가 family를 저작하면 payoff는
+                // 여기서 Default를 id로 overlay해 실게임에 실린다. content-lane 승격은 seed-sync 감사와 함께(후속).
+                ComboPayoffDamageBonus: DefaultComboPayoff(family.Id)))
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);
         var cleanses = (content.CleanseProfiles ?? new Dictionary<string, CleanseProfileTemplate>())
             .Values
@@ -70,4 +74,10 @@ public static class CombatStatusRuleCompiler
             cleanses.Count > 0 ? cleanses : CombatStatusRules.Default.CleanseProfiles,
             control ?? CombatStatusRules.Default.ControlDiminishing);
     }
+
+    // 콤보 payoff 배율은 Default(코드 SoT)에만 저작된다. compiler가 content template로 family를
+    // 재구성할 때 id가 일치하는 Default family의 payoff를 실어, 실게임 compiled 경로에서도 추가타가 산다.
+    // 미등록 family는 0(현행 보존).
+    private static float DefaultComboPayoff(string statusId)
+        => CombatStatusRules.Default.TryGetStatusFamily(statusId, out var rule) ? rule.ComboPayoffDamageBonus : 0f;
 }

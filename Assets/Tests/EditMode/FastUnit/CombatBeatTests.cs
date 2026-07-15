@@ -176,10 +176,97 @@ public sealed class CombatBeatTests
         Assert.That(beats[0].SourceId, Is.EqualTo(setter.Id));
         Assert.That(beats[1].Type, Is.EqualTo(CombatBeatType.ComboConsumed));
         Assert.That(beats[1].SourceId, Is.EqualTo(finisher.Id));
-        Assert.That(beats[1].Value, Is.EqualTo(12f));
+        Assert.That(beats[1].Value, Is.EqualTo(12f * 0.35f).Within(0.0001f),
+            "consume beat Value 는 원 타격이 아니라 실제 콤보 추가타 금액이다");
         Assert.That(beats[0].ChainId, Is.GreaterThan(0));
         Assert.That(beats[1].ChainId, Is.EqualTo(beats[0].ChainId),
             "primer 와 consume 은 같은 ChainId 를 공유한다");
+    }
+
+    [TestCase("stun", 0.35f)]
+    [TestCase("root", 0.25f)]
+    [TestCase("slow", 0.15f)]
+    [TestCase("sunder", 0.25f)]
+    [TestCase("marked", 0.20f)]
+    [TestCase("exposed", 0.30f)]
+    public void ComboPayoffBonus_DefaultFamiliesMatchV1Authority(string statusId, float expected)
+    {
+        Assert.That(CombatStatusRules.Default.ResolveComboPayoffBonus(statusId), Is.EqualTo(expected).Within(0.0001f));
+        Assert.That(CombatStatusRules.Default.ResolveComboPayoffBonus("unregistered_family"), Is.Zero,
+            "미등록 family는 추가타를 만들지 않아 기존 동작을 보존한다");
+    }
+
+    [Test]
+    public void ComboPayoff_SunderFollowup_AppliesSeparateDamageEventAndBeatValue()
+    {
+        var setter = CreateUnit("ally_setter", TeamSide.Ally);
+        var finisher = CreateUnit("ally_finisher", TeamSide.Ally, anchor: DeploymentAnchorId.FrontTop);
+        var victim = CreateUnit("enemy_victim", TeamSide.Enemy, hp: 100f);
+        var state = CreateState(new[] { setter, finisher }, new[] { victim });
+        var events = new List<BattleEvent>
+        {
+            StatusAppliedEvent(state, setter, victim, "sunder"),
+            DamageEvent(state, finisher, victim, 12f),
+        };
+
+        CombatComboService.ProcessStep(state, events);
+
+        var payoff = events.Single(evt => evt.LogCode == BattleLogCode.ComboPayoffDamage);
+        var consume = state.DrainStepBeats().Single(beat => beat.Type == CombatBeatType.ComboConsumed);
+        Assert.That(payoff.Value, Is.EqualTo(3f).Within(0.0001f));
+        Assert.That(victim.CurrentHealth, Is.EqualTo(97f).Within(0.0001f));
+        Assert.That(consume.Value, Is.EqualTo(payoff.Value).Within(0.0001f));
+        Assert.That(consume.Tag, Is.EqualTo("sunder"));
+    }
+
+    [Test]
+    public void ComboPayoff_MainHitAlreadyKilledVictim_RecordsConsumeWithoutExtraDamage()
+    {
+        var setter = CreateUnit("ally_setter", TeamSide.Ally);
+        var finisher = CreateUnit("ally_finisher", TeamSide.Ally, anchor: DeploymentAnchorId.FrontTop);
+        var victim = CreateUnit("enemy_victim", TeamSide.Enemy, hp: 10f);
+        var state = CreateState(new[] { setter, finisher }, new[] { victim });
+        CombatComboService.ProcessStep(state, new List<BattleEvent>
+        {
+            StatusAppliedEvent(state, setter, victim, "sunder"),
+        });
+        state.DrainStepBeats();
+        state.AdvanceStep();
+        victim.TakeDamage(10f); // CombatActionResolver의 메인 히트가 ProcessStep 전에 이미 사망시킨 상태.
+        var events = new List<BattleEvent>
+        {
+            DamageEvent(state, finisher, victim, 12f),
+        };
+
+        CombatComboService.ProcessStep(state, events);
+
+        var consume = state.DrainStepBeats().Single(beat => beat.Type == CombatBeatType.ComboConsumed);
+        Assert.That(events.Any(evt => evt.LogCode == BattleLogCode.ComboPayoffDamage), Is.False,
+            "죽은 victim을 추가타로 다시 처리하지 않는다");
+        Assert.That(events.Count(evt => evt.EventKind == BattleEventKind.Kill), Is.Zero);
+        Assert.That(consume.Value, Is.Zero, "완성 beat는 남되 적용되지 않은 페이오프 금액은 0이다");
+    }
+
+    [Test]
+    public void ComboPayoff_LethalDamage_AppendsNormalKillEventForSimulatorTriggerPass()
+    {
+        var setter = CreateUnit("ally_setter", TeamSide.Ally);
+        var finisher = CreateUnit("ally_finisher", TeamSide.Ally, anchor: DeploymentAnchorId.FrontTop);
+        var victim = CreateUnit("enemy_victim", TeamSide.Enemy, hp: 2f);
+        var state = CreateState(new[] { setter, finisher }, new[] { victim });
+        var events = new List<BattleEvent>
+        {
+            StatusAppliedEvent(state, setter, victim, "sunder"),
+            DamageEvent(state, finisher, victim, 12f),
+        };
+
+        CombatComboService.ProcessStep(state, events);
+
+        Assert.That(victim.IsAlive, Is.False);
+        Assert.That(events.Select(evt => evt.LogCode), Does.Contain(BattleLogCode.ComboPayoffDamage));
+        var kill = events.Single(evt => evt.EventKind == BattleEventKind.Kill);
+        Assert.That(kill.KillPayload?.ActualKiller, Is.EqualTo(finisher.Id));
+        Assert.That(kill.KillPayload?.ActualVictim, Is.EqualTo(victim.Id));
     }
 
     [Test]

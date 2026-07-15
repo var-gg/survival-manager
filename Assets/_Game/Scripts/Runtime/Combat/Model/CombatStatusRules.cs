@@ -49,7 +49,9 @@ public sealed record CombatStatusFamilyRule(
     bool DampensTempo = false,
     // 타게팅 표식 membership (marked=true) — MarkedEnemy 셀렉터/RequireMarked 필터/포커스 캡 상향/
     // 팀 블랙보드 포커스 점수. HasStatus("marked") 타게팅 조회의 콘텐츠 승격(3보 3g, 최종 sim 슬라이스).
-    bool MarksTarget = false);
+    bool MarksTarget = false,
+    // 콤보 프라이머 소비 시 원 타격에 별도 추가타로 곱하는 보너스. 미저작 family는 0(현행 보존).
+    float ComboPayoffDamageBonus = 0f);
 
 /// <summary>채널 membership 엔트리 — kind를 가진 family의 (상태 id, 채널 값) 쌍. CombatStatusRules가
 /// 생성 시 id ordinal 정렬로 파생(가산 순서 고정 = IEEE 결정성)해 UnitSnapshot이 스냅샷한다(3보 3f).</summary>
@@ -182,6 +184,10 @@ public sealed class CombatStatusRules
     public float ResolveMagnitudeScale(string statusId)
         => TryGetStatusFamily(statusId, out var rule) ? rule.MagnitudeScale : 1f;
 
+    /// <summary>콤보 프라이머 소비 시 별도 추가타로 적용할 원 타격 배율. 미등록 family는 0.</summary>
+    public float ResolveComboPayoffBonus(string statusId)
+        => TryGetStatusFamily(statusId, out var rule) ? rule.ComboPayoffDamageBonus : 0f;
+
     /// <summary>적용 시 상태 잔존 대신 즉시 보호막으로 전환하는 family 인가 — 콘텐츠(StatusFamilyDefinition)
     /// 효과 종류 서술자(3보 1슬라이스). 미등록 family는 false(=일반 상태 잔존).</summary>
     public bool ResolveGrantsBarrierOnApply(string statusId)
@@ -239,16 +245,16 @@ public sealed class CombatStatusRules
     {
         var families = new[]
             {
-                new CombatStatusFamilyRule("stun", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "stun" }, "vfx.status_stun", BlocksAction: true),
-                new CombatStatusFamilyRule("root", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "root" }, "vfx.status_root", BlocksMovement: true),
+                new CombatStatusFamilyRule("stun", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "stun" }, "vfx.status_stun", BlocksAction: true, ComboPayoffDamageBonus: 0.35f),
+                new CombatStatusFamilyRule("root", StatusGroupValue.Control, true, true, true, 1f, false, false, new[] { "root" }, "vfx.status_root", BlocksMovement: true, ComboPayoffDamageBonus: 0.25f),
                 new CombatStatusFamilyRule("silence", StatusGroupValue.Control, true, true, true, 0.5f, false, false, new[] { "silence" }, "vfx.status_silence", BlocksActiveSkills: true),
-                new CombatStatusFamilyRule("slow", StatusGroupValue.Control, false, false, false, 0f, false, false, new[] { "slow" }, "vfx.status_slow", DampensTempo: true),
+                new CombatStatusFamilyRule("slow", StatusGroupValue.Control, false, false, false, 0f, false, false, new[] { "slow" }, "vfx.status_slow", DampensTempo: true, ComboPayoffDamageBonus: 0.15f),
                 new CombatStatusFamilyRule("burn", StatusGroupValue.Attrition, false, false, false, 0f, true, false, new[] { "burn" }, "vfx.status_burn"),
                 new CombatStatusFamilyRule("bleed", StatusGroupValue.Attrition, false, false, false, 0f, true, false, new[] { "bleed" }, "vfx.status_bleed"),
                 new CombatStatusFamilyRule("wound", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "wound" }, "vfx.status_wound", ReducesHealing: true),
-                new CombatStatusFamilyRule("sunder", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "sunder" }, "vfx.status_sunder", ShredsDefense: true),
-                new CombatStatusFamilyRule("marked", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "marked" }, "vfx.status_marked", AmplifiesIncomingDamage: true, MarksTarget: true),
-                new CombatStatusFamilyRule("exposed", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "exposed" }, "vfx.status_exposed", AmplifiesIncomingDamage: true),
+                new CombatStatusFamilyRule("sunder", StatusGroupValue.Attrition, false, false, false, 0f, false, false, new[] { "sunder" }, "vfx.status_sunder", ShredsDefense: true, ComboPayoffDamageBonus: 0.25f),
+                new CombatStatusFamilyRule("marked", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "marked" }, "vfx.status_marked", AmplifiesIncomingDamage: true, MarksTarget: true, ComboPayoffDamageBonus: 0.20f),
+                new CombatStatusFamilyRule("exposed", StatusGroupValue.TacticalMark, false, false, false, 0f, false, false, new[] { "exposed" }, "vfx.status_exposed", AmplifiesIncomingDamage: true, ComboPayoffDamageBonus: 0.30f),
                 new CombatStatusFamilyRule("barrier", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "barrier" }, "vfx.status_barrier", GrantsBarrierOnApply: true),
                 new CombatStatusFamilyRule("guarded", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "guarded" }, "vfx.status_guarded", IncomingDamageDelta: -0.1f, GrantsGuardedDefense: true),
                 new CombatStatusFamilyRule("unstoppable", StatusGroupValue.DefensiveBoon, false, false, false, 0f, false, false, new[] { "unstoppable" }, "vfx.status_unstoppable", GrantsUnstoppable: true),

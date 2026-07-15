@@ -31,6 +31,18 @@ public sealed class MeleeNearestEngagementOverrideTests
         return new BattleState(allies, enemies, TeamPostureType.StandardAdvance, TeamPostureType.StandardAdvance, BattleSimulator.DefaultFixedStepSeconds, 7);
     }
 
+    private static void PrimeTarget(BattleState state, UnitSnapshot source, UnitSnapshot target, string statusId = "sunder")
+    {
+        state.ComboLedger.AddPrimer(new ComboPrimerWindow(
+            state.ComboLedger.AllocateChainId(),
+            source.Id,
+            source.Side,
+            target.Id,
+            statusId,
+            state.StepIndex,
+            state.StepIndex + CombatComboService.PrimerWindowTicks));
+    }
+
     [Test]
     public void Melee_DoesNotChaseFarLowHpFocus_PastANearerEnemy()
     {
@@ -43,10 +55,42 @@ public sealed class MeleeNearestEngagementOverrideTests
         nearFullHp.SetPosition(new CombatVector2(1.0f, 0f));
 
         var state = MakeState(new[] { actor }, new[] { farLowHp, nearFullHp });
+        PrimeTarget(state, actor, farLowHp);
         var selected = TargetScoringService.SelectTarget(state, actor, TargetSelectorType.LowestHpEnemy, BattleActionType.BasicAttack, null);
 
         Assert.That(selected, Is.Not.Null);
-        Assert.That(selected!.Id.Value, Is.EqualTo("near_fullhp"), "melee engages the nearer enemy instead of chasing the far low-HP focus");
+        Assert.That(selected!.Id.Value, Is.EqualTo("near_fullhp"),
+            "melee 최근접 가드는 활성 프라이머가 있는 먼 low-HP focus보다 상위다");
+    }
+
+    [Test]
+    public void Ranged_PrefersFriendlyActivePrimer_WhenFocusMarkPinnedElsewhere()
+    {
+        // combo bias(0.40)는 focusMark(0.45)보다 의도적으로 약한 2차 신호다 — focusMark가 후보 중 하나를
+        // 잡으면 그게 우선한다(설계 위계). combo bias를 고립 검증하려면 focusMark를 제3의 저HP 미끼로
+        // 고정해(점수 lowHP40+isolated25 ≈ 65 vs 동일 위치라 상호 protected인 후보쌍 ≈ -50), 두 동조건
+        // 후보에서 focusMark 교란을 제거한다. (미끼는 사거리 밖·원거리라 후보/선택엔 안 낀다.)
+        var ranger = MakeUnit("ranger", TeamSide.Ally, classId: "ranger", attackRange: 5.6f);
+        var focusDecoy = MakeUnit("enemy_m_decoy", TeamSide.Enemy);
+        var plain = MakeUnit("enemy_a_plain", TeamSide.Enemy);
+        var primed = MakeUnit("enemy_z_primed", TeamSide.Enemy);
+        focusDecoy.TakeDamage(46f); // HealthRatio 0.08 (≤0.35) → focusMark 점수 최상
+        ranger.SetPosition(new CombatVector2(0f, 0f));
+        focusDecoy.SetPosition(new CombatVector2(9f, 0f));
+        plain.SetPosition(new CombatVector2(3f, 0f));
+        primed.SetPosition(new CombatVector2(3f, 0f));
+        var state = MakeState(new[] { ranger }, new[] { focusDecoy, plain, primed });
+        PrimeTarget(state, ranger, primed);
+
+        var selected = TargetScoringService.SelectTarget(
+            state,
+            ranger,
+            TargetSelectorType.NearestEnemy,
+            BattleActionType.BasicAttack,
+            null);
+
+        Assert.That(selected?.Id, Is.EqualTo(primed.Id),
+            "focusMark가 제3 미끼로 고정된 상태에서, 동조건 두 후보 중 아군 활성 프라이머 표적이 -0.40m bias로 먼저 선택된다");
     }
 
     [Test]

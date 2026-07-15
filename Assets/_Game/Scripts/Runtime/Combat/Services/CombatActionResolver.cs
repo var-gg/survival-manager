@@ -433,7 +433,7 @@ public static class CombatActionResolver
             note);
     }
 
-    private static IReadOnlyList<BattleEvent> ResolveKillAndAssist(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleActionType actionType, BattleSkillSpec? skill)
+    internal static IReadOnlyList<BattleEvent> ResolveKillAndAssist(BattleState state, UnitSnapshot actor, UnitSnapshot target, BattleActionType actionType, BattleSkillSpec? skill)
     {
         var events = new List<BattleEvent>();
         var killPayload = BuildKillPayload(actor, target);

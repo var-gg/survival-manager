@@ -7,8 +7,8 @@ namespace SM.Combat.Services;
 /// <summary>
 /// Phase 3 콤보 발현 — "세팅 디버프(primer) → 윈도우 안의 후속 타격(consume)" 연쇄를 결정론적으로
 /// 인식해 <see cref="CombatBeatType.ComboPrimerApplied"/>/<see cref="CombatBeatType.ComboConsumed"/>
-/// beat(같은 ChainId)을 남긴다. 이 서비스는 전투 수치를 일절 바꾸지 않는다 — 이미 일어난 사실
-/// (<see cref="BattleEvent"/>의 status 적용·피해)을 step 이벤트 순서 그대로 읽는 인식 레이어다.
+/// beat(같은 ChainId)을 남기고, 소비 타격에 프라이머 family별 별도 추가타를 적용한다.
+/// 이미 일어난 사실(<see cref="BattleEvent"/>의 status 적용·피해)은 step 이벤트 순서 그대로 읽는다.
 /// 윈도우(1.2s)/ICD(2.5s)/프라이머 레지스트리는 마스터 플랜 기준값으로 시작하는 V1 authority 노브.
 /// </summary>
 public static class CombatComboService
@@ -32,19 +32,23 @@ public static class CombatComboService
     /// step 말미에 1회 — 이번 step 의 이벤트를 기록 순서대로 읽어 프라이머 개시/소비를 판정한다.
     /// 이벤트 순서가 곧 인과 순서라, 같은 step 안에서도 "프라이머 이후의 타격"만 소비할 수 있다.
     /// </summary>
-    public static void ProcessStep(BattleState state, IReadOnlyList<BattleEvent> stepEvents)
+    public static void ProcessStep(BattleState state, List<BattleEvent> stepEvents)
     {
         state.ComboLedger.PruneExpired(state.StepIndex);
 
-        foreach (var stepEvent in stepEvents)
+        // payoff/kill 이벤트를 같은 리스트에 append하므로 원본 사실만 스냅샷 길이로 순회한다.
+        // 새 ComboPayoffDamage가 다시 콤보를 소비하거나 컬렉션 순회가 깨지는 것을 동시에 막는다.
+        var sourceEventCount = stepEvents.Count;
+        for (var index = 0; index < sourceEventCount; index++)
         {
+            var stepEvent = stepEvents[index];
             if (stepEvent.EventKind == BattleEventKind.StatusApplied)
             {
                 TryOpenPrimer(state, stepEvent);
             }
             else if (IsDamageContact(stepEvent))
             {
-                TryConsumePrimer(state, stepEvent);
+                TryConsumePrimer(state, stepEvent, stepEvents);
             }
         }
     }
@@ -96,7 +100,7 @@ public static class CombatComboService
             stepEvent.PayloadId);
     }
 
-    private static void TryConsumePrimer(BattleState state, BattleEvent stepEvent)
+    private static void TryConsumePrimer(BattleState state, BattleEvent stepEvent, List<BattleEvent> stepEvents)
     {
         var attacker = state.FindUnit(stepEvent.ActorId);
         var victim = state.FindUnit(stepEvent.TargetId);
@@ -126,6 +130,46 @@ public static class CombatComboService
 
         state.ComboLedger.RemovePrimer(primer);
         state.ComboLedger.MarkChainConsumed(chainKey, state.StepIndex);
+
+        var payoffDamage = 0f;
+        if (victim.IsAlive)
+        {
+            payoffDamage = stepEvent.Value * state.StatusRules.ResolveComboPayoffBonus(primer.StatusId);
+            if (payoffDamage > 0f)
+            {
+                state.RegisterDamage(attacker, victim);
+                victim.TakeDamage(payoffDamage);
+                BattleTelemetryRecorder.RecordImpact(
+                    state,
+                    TelemetryEventKind.DamageApplied,
+                    attacker,
+                    victim,
+                    stepEvent.ActionType,
+                    null,
+                    payoffDamage,
+                    stringValueA: $"combo_payoff:{primer.StatusId}");
+                stepEvents.Add(CombatActionResolver.BuildEvent(
+                    state,
+                    attacker,
+                    stepEvent.ActionType,
+                    BattleLogCode.ComboPayoffDamage,
+                    victim,
+                    payoffDamage,
+                    note: $"combo_payoff:{primer.StatusId}"));
+
+                if (!victim.IsAlive)
+                {
+                    stepEvents.AddRange(CombatActionResolver.ResolveKillAndAssist(
+                        state,
+                        attacker,
+                        victim,
+                        stepEvent.ActionType,
+                        null));
+                    attacker.ClearTarget(applySwitchDelay: true);
+                }
+            }
+        }
+
         state.RecordBeat(
             CombatBeatType.ComboConsumed,
             attacker.Side,
@@ -133,7 +177,7 @@ public static class CombatComboService
             victim.Id,
             primer.ChainId,
             CombatBeatImportance.ComboConsumed,
-            stepEvent.Value,
+            payoffDamage,
             victim.Position,
             primer.StatusId);
     }

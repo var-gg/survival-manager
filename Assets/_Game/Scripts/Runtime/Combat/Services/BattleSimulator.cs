@@ -180,6 +180,10 @@ public sealed class BattleSimulator
             }
         }
 
+        // 콤보 추가타가 만든 사망도 아래의 단일 kill-trigger 경로로 수렴시킨다. ProcessStep은
+        // 원본 이벤트 수만 순회하므로 payoff/kill 이벤트 append가 콤보 재진입을 만들지 않는다.
+        CombatComboService.ProcessStep(State, stepEvents);
+
         foreach (var resolvedEvent in stepEvents)
         {
             if (resolvedEvent.EventKind != BattleEventKind.Kill)
@@ -202,10 +206,6 @@ public sealed class BattleSimulator
         }
 
         CombatTriggerEngine.OnPostStep(State);
-
-        // Phase 3 콤보 인식 패스: 이번 step 의 사실(status 적용·피해)을 순서대로 읽어 primer/consume
-        // beat 을 기록한다. 전투 수치는 바꾸지 않는다(순수 인식 레이어).
-        CombatComboService.ProcessStep(State, stepEvents);
 
         MovementResolver.ResolveFormationSpacing(State);
         State.ActivityTelemetry.RecordClusterTradeoff(EffectMembershipSampler.SampleStep(State));

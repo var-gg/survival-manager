@@ -163,6 +163,46 @@ public sealed class BattleFormationConsequenceTests
     }
 
     [Test]
+    public void LowestHpTargeting_ScreenSortStaysAboveComboOpportunityBias()
+    {
+        var tactic = new TeamTacticProfile("plain", "Plain", TeamPostureType.StandardAdvance);
+        var state = BattleFactory.Create(
+            new[] { CombatTestFactory.CreateLoopAUnit("shooter", classId: "ranger", attackRange: 8f) with { TeamTactic = tactic } },
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("enemy_screen", behavior: CleanFrontline) with { TeamTactic = tactic },
+                CombatTestFactory.CreateLoopAUnit("enemy_carry", classId: "mystic", behavior: CleanBackline) with { TeamTactic = tactic },
+            },
+            seed: 6);
+        var shooter = state.Allies.Single();
+        var screen = state.Enemies.Single(unit => unit.Definition.Id == "enemy_screen");
+        var carry = state.Enemies.Single(unit => unit.Definition.Id == "enemy_carry");
+        shooter.SetPosition(new CombatVector2(-2f, 0f));
+        screen.SetPosition(new CombatVector2(2.25f, 0f));
+        carry.SetPosition(new CombatVector2(2f, 0f));
+        carry.TakeDamage(carry.CurrentHealth * 0.75f);
+        state.ComboLedger.AddPrimer(new ComboPrimerWindow(
+            state.ComboLedger.AllocateChainId(),
+            shooter.Id,
+            shooter.Side,
+            carry.Id,
+            "sunder",
+            state.StepIndex,
+            state.StepIndex + CombatComboService.PrimerWindowTicks));
+
+        var selected = TargetScoringService.SelectTarget(
+            state,
+            shooter,
+            TargetSelectorType.LowestHpEnemy,
+            BattleActionType.BasicAttack,
+            null);
+
+        Assert.That(BattleFormationConsequence.IsScreenedBacklineFrom(state, shooter, carry), Is.True);
+        Assert.That(selected?.Id, Is.EqualTo(screen.Id),
+            "LowestHp 계열의 ScreenedSortKey는 HP와 콤보 bias보다 먼저 적용된다");
+    }
+
+    [Test]
     public void SaveMomentDetector_CountsClutchHeal_OnNearDeathAlly()
     {
         var healSkill = new BattleSkillSpec(

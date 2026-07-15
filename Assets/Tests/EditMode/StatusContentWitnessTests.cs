@@ -43,6 +43,31 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
+    public void RealPrimerFamilies_CarryComboPayoffBonus_ThroughCompiledPath()
+    {
+        // Move 1 make-or-break — 콤보 payoff는 Default(코드 SoT)에만 저작되는데 실게임은 compiler 경로로
+        // 돈다. compiler의 Default overlay가 빠지면 compiled(실게임) 규칙에서 payoff가 0으로 떨어져
+        // 콤보 추가타가 통째로 무결과가 되는 회귀. 실 committed 콘텐츠를 컴파일해 payoff가 실게임 규칙까지
+        // 실리는지 단언한다. (Default 기반 FastUnit 테스트는 이 회귀를 못 잡는다 — 실게임 경로 witness.)
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rules = CombatStatusRuleCompiler.Compile(snapshot);
+
+        foreach (var (statusId, expected) in new[]
+                 {
+                     ("stun", 0.35f), ("root", 0.25f), ("slow", 0.15f),
+                     ("sunder", 0.25f), ("marked", 0.20f), ("exposed", 0.30f),
+                 })
+        {
+            Assert.That(rules.ResolveComboPayoffBonus(statusId), Is.EqualTo(expected).Within(0.0001f),
+                $"{statusId}의 콤보 payoff가 compiled(실게임) 경로까지 실려야 한다 — 0이면 compiler overlay 결손으로 " +
+                "실게임 콤보 추가타가 무결과로 추락하는 회귀");
+        }
+
+        Assert.That(rules.ResolveComboPayoffBonus("guarded"), Is.Zero,
+            "프라이머가 아닌 family는 콤보 payoff 0(현행 보존)");
+    }
+
+    [Test]
     public void RealMagnitudeChannelFamilies_CarryMagnitudeScale()
     {
         // 숫자 콘텐츠화 2보 — magnitude 직소비 채널(sunder=방어/저항 차감, marked/exposed=받는 피해 가산,

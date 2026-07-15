@@ -3,7 +3,7 @@ namespace SM.Combat.Model;
 public enum TeamSide { Ally = 0, Enemy = 1 }
 public enum DeploymentAnchorId { FrontTop = 0, FrontCenter = 1, FrontBottom = 2, BackTop = 3, BackCenter = 4, BackBottom = 5 }
 public enum BattleActionType { BasicAttack = 0, ActiveSkill = 1, WaitDefend = 2 }
-public enum BattleLogCode { Generic = 0, BasicAttackDamage = 1, ActiveSkillDamage = 2, ActiveSkillHeal = 3, WaitDefend = 4 }
+public enum BattleLogCode { Generic = 0, BasicAttackDamage = 1, ActiveSkillDamage = 2, ActiveSkillHeal = 3, WaitDefend = 4, ComboPayoffDamage = 5 }
 public enum TacticConditionType { SelfHpBelow = 0, AllyHpBelow = 1, EnemyInRange = 2, LowestHpEnemy = 3, EnemyExposed = 4, Fallback = 5 }
 public enum TargetSelectorType { Self = 0, LowestHpAlly = 1, FirstEnemyInRange = 2, LowestHpEnemy = 3, NearestEnemy = 4, MostExposedEnemy = 5 }
 public enum SkillKind { Strike = 0, Heal = 1, Shield = 2, Buff = 3, Debuff = 4, Utility = 5 }
