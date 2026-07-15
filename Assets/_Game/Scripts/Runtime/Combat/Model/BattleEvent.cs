@@ -11,6 +11,7 @@ public enum BattleEventKind
     CleanseTriggered = 3,
     ControlResistApplied = 4,
     Kill = 5,
+    StatusResisted = 6,
 }
 
 public sealed record BattleEvent(

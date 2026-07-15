@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 
@@ -126,6 +127,22 @@ public static class StatusResolutionService
     {
         if (string.IsNullOrWhiteSpace(spec.StatusId))
         {
+            return;
+        }
+
+        // Move 3 표식 방패: 현재 barrier가 남아 있으면 TacticalMark 그룹 전체(marked/exposed 및
+        // 파생 family)가 상태 적용 truth에서 튕긴다. family id 리터럴 대신 저작 group을 소비한다.
+        if (target.Barrier > 0f
+            && state.StatusRules.TryGetStatusFamily(spec.StatusId, out var statusRule)
+            && statusRule.Group == StatusGroupValue.TacticalMark)
+        {
+            stepEvents.Add(BuildStatusEvent(
+                state,
+                actor,
+                target,
+                BattleEventKind.StatusResisted,
+                spec.StatusId,
+                target.Barrier));
             return;
         }
 

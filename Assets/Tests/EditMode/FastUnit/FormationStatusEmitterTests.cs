@@ -86,6 +86,40 @@ public sealed class FormationStatusEmitterTests
     }
 
     [Test]
+    public void RearHit_WhenVictimHasBarrier_BouncesExposed()
+    {
+        var state = BattleFactory.Create(
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("attacker", physPower: 4f),
+                CombatTestFactory.CreateLoopAUnit("bait"),
+            },
+            new[]
+            {
+                CombatTestFactory.CreateLoopAUnit("victim", hp: 200f, behavior: CleanFrontline),
+            },
+            seed: 29);
+        var attacker = state.Allies.Single(unit => unit.Definition.Id == "attacker");
+        var bait = state.Allies.Single(unit => unit.Definition.Id == "bait");
+        var victim = state.Enemies.Single();
+        victim.SetPosition(new CombatVector2(0f, 0f));
+        bait.SetPosition(new CombatVector2(-2f, 0f));
+        victim.SetCurrentTarget(bait.Id);
+        attacker.SetPosition(new CombatVector2(2f, 0f));
+        victim.AddBarrier(10f);
+
+        var events = ResolveBasic(state, attacker, victim);
+
+        Assert.That(victim.HasStatus("exposed"), Is.False,
+            "Move 2 rear-flank exposed도 TacticalMark 적용 truth의 barrier 가드를 우회하면 안 된다");
+        var resisted = events.Single(@event =>
+            @event.EventKind == BattleEventKind.StatusResisted && @event.PayloadId == "exposed");
+        Assert.That(resisted.ActorId, Is.EqualTo(attacker.Id));
+        Assert.That(resisted.TargetId, Is.EqualTo(victim.Id));
+        Assert.That(events.Count(IsExposedApplied), Is.Zero);
+    }
+
+    [Test]
     public void RiposteExposed_SameStepFollowup_OpensAndConsumesCombo()
     {
         var state = CreateScreenState(includeFinisher: true);

@@ -363,6 +363,12 @@ public static class TargetScoringService
         var screenPenalty = includeScreenPenalty && BattleFormationConsequence.IsScreenedBacklineFrom(state, actor, target)
             ? BattleFormationConsequence.ScreenedTargetScorePenalty
             : 0f;
+        // Move 3 수비 회피 압력: guarded 채널을 보유한 표적은 일반 타게팅에서 덜 매력적이다.
+        // marked는 지목 의도를 보존하므로 면제한다. Dive는 RoleBrain의 intent target override가 이
+        // 합산 bias 경로를 우회한다. screen counterfactual 계측에서도 이 항은 유지해 차단 효과와 섞지 않는다.
+        var guardedPenalty = target.IsGuarded && !target.IsMarkedTarget
+            ? GuardedTargetScorePenalty
+            : 0f;
         // Phase 2 FocusMark: 팀 블랙보드가 지목한 표적은 약간 더 매력적(미터 등가 보너스) — 선호일 뿐
         // 강제가 아니라서 P1 플레이어 지시·marked·Dive/Peel 오버라이드·melee 최근접 가드가 그대로 우선한다.
         var blackboard = AiPerceptionBlackboardService.Build(state, actor);
@@ -372,8 +378,11 @@ public static class TargetScoringService
         var comboOpportunityBias = state.ComboLedger.FindOldestActivePrimer(target.Id, actor.Side, state.StepIndex) != null
             ? -ComboOpportunityBias
             : 0f;
-        return switchPenalty + focusBias + flankBias + screenPenalty + focusMarkBias + comboOpportunityBias;
+        return switchPenalty + focusBias + flankBias + screenPenalty + guardedPenalty + focusMarkBias + comboOpportunityBias;
     }
+
+    /// <summary>guarded 표적의 일반 타게팅 거리 등가 페널티 — V1 owner-sweep placeholder.</summary>
+    private const float GuardedTargetScorePenalty = 0.35f;
 
     /// <summary>FocusMark 표적의 타게팅 매력 보너스(미터 등가) — V1 authority 튜닝 노브.</summary>
     private const float FocusMarkTargetBias = 0.45f;
