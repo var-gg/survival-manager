@@ -1016,6 +1016,12 @@ public sealed class BattleActorView : MonoBehaviour
     private static string ResolveImpactLabel(BattlePresentationCue cue, BattleAnimationSemantic semantic)
     {
         var amount = Mathf.Max(0, Mathf.CeilToInt(cue.Magnitude));
+        // Move 1: 콤보 페이오프(추가타)는 원 타격과 분리된 "작렬" 라벨 — 이 숫자가 콤보 몫임을 화면에서 읽힌다.
+        if (cue.IsComboPayoff)
+        {
+            return $"작렬 -{amount}";
+        }
+
         var baseLabel = semantic switch
         {
             BattleAnimationSemantic.Miss => "MISS",

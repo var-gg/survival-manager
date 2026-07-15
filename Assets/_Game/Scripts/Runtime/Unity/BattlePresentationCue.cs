@@ -114,4 +114,7 @@ public sealed record BattlePresentationCue(
     SkillPresentationGesture PresentationGesture = SkillPresentationGesture.None,
     // Phase 4: 이 contact 가 콤보 연쇄의 소비 타격(ComboConsumed beat 매칭)임 — 임팩트 텍스트/스케일/
     // 히트스톱 강조의 표시 전용 플래그. sim 의 beat 채널에서 유도되며 gameplay truth 가 아니다.
-    bool IsComboEmphasis = false);
+    bool IsComboEmphasis = false,
+    // Move 1: 이 팝업이 콤보 페이오프(추가타 = ComboPayoffDamage 이벤트)임 — 원 타격과 분리된 별도
+    // 숫자로 "이 피해는 콤보 몫"을 화면에서 읽히게 하는 표시 전용 플래그. sim 의 이벤트 채널에서 유도.
+    bool IsComboPayoff = false);

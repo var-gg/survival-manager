@@ -180,6 +180,25 @@ public sealed class BattlePresentationCueBuilder
                     eventData.ActionType));
             }
 
+            if (eventData.LogCode == BattleLogCode.ComboPayoffDamage && eventData.TargetId != null)
+            {
+                // Move 1: 콤보 페이오프(추가타)를 원 타격과 분리된 별도 임팩트 팝업으로 — sim 이 별도
+                // ComboPayoffDamage 이벤트로 얹은 값(hit×bonus)을 여기서 표시 cue 하나로 옮긴다. "저 숫자는
+                // 콤보 몫"이 화면에서 분리돼 읽힌다(Fable §3.3). 표시 전용 — gameplay truth 아님.
+                cues.Add(new BattlePresentationCue(
+                    BattlePresentationCueType.ImpactDamage,
+                    currentStep.StepIndex,
+                    eventData.TargetId.Value.Value,
+                    eventData.ActorId.Value,
+                    eventData.ActionType,
+                    eventData.Value,
+                    BattlePresentationAnchorId.Center,
+                    BattlePresentationAnchorId.Cast,
+                    AnimationSemantic: BattleAnimationSemantic.HitLight,
+                    AnimationIntensity: BattleAnimationIntensity.Medium,
+                    IsComboPayoff: true));
+            }
+
             if (eventData.EventKind == BattleEventKind.Kill && eventData.TargetId != null)
             {
                 AddDeathCue(deathCues, deathCueSubjects, new BattlePresentationCue(
