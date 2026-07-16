@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-21
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/03_architecture/dependency-direction.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -22,12 +22,13 @@
 | `SM.Core` | 공통 primitive, id, result, stat, rng, content schema enum | 없음 |
 | `SM.Content` | ScriptableObject authored definition과 content 친화 모델 | `SM.Core` |
 | `SM.Combat` | 전투 규칙과 시뮬레이션 | `SM.Core` |
+| `SM.HeadlessMetrics` | H100 전투·캠페인 record, replay hash envelope, 결정적 artifact, gate 평가 | `SM.Core`, `SM.Combat` |
 | `SM.Meta` | town, expedition, reward, progression 규칙과 pure runtime spec/model | `SM.Core`, `SM.Combat` |
 | `SM.Meta.Serialization` | Meta snapshot serialization helper와 pure DTO 변환 | `SM.Core`, `SM.Combat`, `SM.Meta` |
 | `SM.Persistence.Abstractions` | save contract, repository port, save model | `SM.Core`, `SM.Meta` |
 | `SM.Persistence.Json` | JSON serializer/repository adapter | `SM.Persistence.Abstractions`, `SM.Core`, `SM.Meta` |
 | `SM.Unity` | Boot, scene/input/view orchestration | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Persistence.Abstractions`, `SM.Persistence.Json` |
-| `SM.Editor` | bootstrap, validation, editor utility | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions`, `SM.Unity` |
+| `SM.Editor` | bootstrap, validation, editor utility | `SM.Core`, `SM.Content`, `SM.Combat`, `SM.HeadlessMetrics`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions`, `SM.Unity` |
 | `SM.Tests` | 테스트 전용 조합 레이어 | 대상 시나리오에 필요한 runtime asmdef, FastUnit은 `SM.Editor` 금지, EditMode/EditMode.Integration은 `SM.Editor` 추가 허용 |
 
 ## 금지 의존 관계
@@ -35,6 +36,7 @@
 - `SM.Core` -> 다른 어떤 상위 계층도 금지
 - `SM.Content` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Combat` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
+- `SM.HeadlessMetrics` -> `SM.Content`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Meta` -> `SM.Content`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Meta.Serialization` -> `SM.Content`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Persistence.Abstractions` -> `SM.Persistence.Json`, `SM.Unity`, `SM.Editor` 금지
@@ -99,6 +101,7 @@
 - 문서에서는 `SM.Tests`를 테스트 어셈블리 그룹의 약칭으로 쓴다.
 - 실제 asmdef는 `SM.Tests.FastUnit`, `SM.Tests.EditMode`, `SM.Tests.EditMode.Integration`, `SM.Tests.PlayMode`다.
 - `SM.Tests.FastUnit`은 EditMode 실행을 위해 `Editor` platform target을 쓰지만 `SM.Editor`와 editor-only package 참조를 금지한다.
+- `SM.Tests.FastUnit`은 `SM.HeadlessMetrics`의 pure projection, hash, deterministic serialization, gate evaluation을 직접 검증할 수 있다. 실제 content/session corpus runner는 `SM.Editor` 경계이므로 이 lane에서 호출하지 않는다.
 - EditMode와 EditMode.Integration은 editor bootstrap과 validator 확인을 위해 `SM.Editor` 참조를 허용한다.
 - 현재 BatchOnly 테스트 일부는 `SM.Tests.EditMode` 루트에 category 기반으로 남아 있다.
 - EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 점진 이동할 reserved lane이다.

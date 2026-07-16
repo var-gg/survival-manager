@@ -1,0 +1,88 @@
+using System;
+using System.Collections.Generic;
+using SM.Combat.Services;
+using SM.HeadlessMetrics;
+using SM.Unity;
+
+namespace SM.Editor.Validation;
+
+/// <summary>첫 authored campaign encounter를 paired seed/replay copy로 실행하는 전투 corpus runner.</summary>
+internal static class H100BattleCorpusRunner
+{
+    public static IReadOnlyList<BattleMetricRecord> Run(
+        RuntimeCombatContentLookup lookup,
+        H100MetricsRunSettings settings,
+        float targetBattleSeconds)
+    {
+        var records = new List<BattleMetricRecord>(settings.BattleCount * settings.ReplayCopies);
+        GameSessionState session;
+        try
+        {
+            session = H100SessionDriver.CreateSession(lookup, $"{settings.RunId}-battle-corpus");
+            session.BeginNewExpedition();
+        }
+        catch (Exception exception)
+        {
+            AppendBuildFailures(records, settings, $"setup-exception:{exception.GetType().Name}");
+            return records;
+        }
+
+        if (!session.TryBuildSelectedBattleState(out _, out var encounter, out var allySnapshot, out var buildError))
+        {
+            AppendBuildFailures(records, settings, buildError);
+            return records;
+        }
+
+        var scenarioId = H100SessionDriver.ScenarioId(encounter.Context);
+        for (var groupIndex = 0; groupIndex < settings.BattleCount; groupIndex++)
+        {
+            var replayGroupId = $"battle-corpus-{groupIndex:D6}";
+            var seed = H100SessionDriver.DeriveSeed(encounter.Context.BattleContextHash, settings.SeedBase + groupIndex);
+            var seededEncounter = encounter with { Context = encounter.Context with { BattleSeed = seed } };
+            for (var copy = 0; copy < settings.ReplayCopies; copy++)
+            {
+                var battleId = $"{replayGroupId}-copy-{copy:D2}";
+                try
+                {
+                    if (!session.TryComposeBattleState(allySnapshot, seededEncounter, out var state, out var composeError))
+                    {
+                        records.Add(BattleMetricProjector.ProjectFailure(
+                            settings.RunId, string.Empty, battleId, replayGroupId, copy, scenarioId,
+                            H100MetricsRunSettings.PolicyId, seed, $"compose:{composeError}"));
+                        continue;
+                    }
+
+                    var result = BattleResolver.Run(state, settings.MaxBattleSteps);
+                    records.Add(BattleMetricProjector.Project(
+                        settings.RunId, string.Empty, battleId, replayGroupId, copy, scenarioId,
+                        H100MetricsRunSettings.PolicyId, state, result, settings.MaxBattleSteps, targetBattleSeconds));
+                }
+                catch (Exception exception)
+                {
+                    records.Add(BattleMetricProjector.ProjectFailure(
+                        settings.RunId, string.Empty, battleId, replayGroupId, copy, scenarioId,
+                        H100MetricsRunSettings.PolicyId, seed, $"exception:{exception.GetType().Name}"));
+                }
+            }
+        }
+
+        return records;
+    }
+
+    private static void AppendBuildFailures(
+        ICollection<BattleMetricRecord> records,
+        H100MetricsRunSettings settings,
+        string error)
+    {
+        for (var groupIndex = 0; groupIndex < settings.BattleCount; groupIndex++)
+        {
+            var replayGroupId = $"battle-corpus-{groupIndex:D6}";
+            for (var copy = 0; copy < settings.ReplayCopies; copy++)
+            {
+                records.Add(BattleMetricProjector.ProjectFailure(
+                    settings.RunId, string.Empty, $"{replayGroupId}-copy-{copy:D2}", replayGroupId, copy,
+                    "unavailable", H100MetricsRunSettings.PolicyId, 0, $"build:{error}"));
+            }
+        }
+    }
+}

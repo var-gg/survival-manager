@@ -1,0 +1,14 @@
+{
+  "name": "SM.HeadlessMetrics",
+  "rootNamespace": "SM.HeadlessMetrics",
+  "references": ["SM.Core", "SM.Combat"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": ["Newtonsoft.Json.dll"],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

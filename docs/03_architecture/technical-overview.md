@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-21
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/03_architecture/technical-overview.md`
 - 관련문서:
   - `docs/03_architecture/index.md`
@@ -40,6 +40,7 @@
 - `SM.Core`
 - `SM.Content`
 - `SM.Combat`
+- `SM.HeadlessMetrics`
 - `SM.Meta`
 - `SM.Meta.Serialization`
 - `SM.Persistence.Abstractions`
@@ -61,6 +62,7 @@
 - persistence truth는 `SM.Persistence.Abstractions` 뒤에 두고 구현은 adapter로 분리한다.
 - `SM.Unity`는 scene/input/view orchestration과 authored-to-runtime conversion을 담당한다.
 - `SM.Editor`는 bootstrap, validation, authoring 지원만 담당한다.
+- `SM.HeadlessMetrics`는 기존 combat truth를 읽는 H100 record/hash/gate projection만 담당하고 실제 content/session composition은 `SM.Editor.Validation`에 둔다.
 
 ## 순수 런타임 어셈블리
 
@@ -68,11 +70,12 @@
 
 - `SM.Core`
 - `SM.Combat`
+- `SM.HeadlessMetrics`
 - `SM.Meta`
 - `SM.Meta.Serialization`
 - `SM.Persistence.Abstractions`
 
-`BuildBoundaryGuardFastTests`는 위 pure asmdef의 `noEngineReferences=true`와 핵심 참조 allowlist를 고정한다. `SM.Meta.Serialization`은 `SM.Core`, `SM.Combat`, `SM.Meta`만, `SM.Persistence.Abstractions`는 `SM.Core`, `SM.Meta`만 참조해야 한다.
+`BuildBoundaryGuardFastTests`는 위 pure asmdef의 `noEngineReferences=true`와 핵심 참조 allowlist를 고정한다. `SM.HeadlessMetrics`는 `SM.Core`, `SM.Combat`만, `SM.Meta.Serialization`은 `SM.Core`, `SM.Combat`, `SM.Meta`만, `SM.Persistence.Abstractions`는 `SM.Core`, `SM.Meta`만 참조해야 한다.
 
 `SM.Content`는 authored `ScriptableObject` 정의를 포함하므로 Unity-bound assembly로 본다.
 `SM.Unity.ContentConversion`은 `SM.Content` definition을 `SM.Meta` pure spec/model로 바꾸는 composition boundary다. 현재는 별도 asmdef가 아니라 `SM.Unity` 내부 converter 폴더 경계이며, guard는 public API, session/persistence/UI ownership, registry 밖 resource/editor fallback을 금지한다. production narrative resource bootstrap은 `SM.Unity` 내부 `GameSessionRuntimeBootstrapProvider`가 소유하며, FastUnit은 `GameSessionTestFactory`와 empty bootstrap/fake lookup 경로를 사용한다.
@@ -84,6 +87,7 @@
 - `MonoBehaviour`나 scene script 책임이 헷갈리면 `unity-boundaries.md`
 - context 책임이 헷갈리면 `bounded-contexts.md`
 - 데이터 모델 분리가 필요하면 `data-model.md`
+- H100 계측·replay hash·gate report 경계가 필요하면 `h100-headless-metrics-contract.md`
 
 ## 현재 구현 범위
 

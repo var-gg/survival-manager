@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-07
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -42,6 +42,7 @@
 - `adr-0027-warrant-judgment-architecture.md`: ludonarrative 루프 P2a — 출격 전 서약(Warrant)을 전투 사실(승패·생존·turn 수)로 판정. `WarrantJudge`(`SM.Meta` 순수), 서약 id는 overlay rail(`RewardSourceId` 동렬), outcome은 `DossierEntryRecord`에 영속. combat 0 변경. separability 실측 후 GPT Pro 전략 검수로 정치적 전환(→ ADR-0028) — Swift/Intact build축 tactical warrant는 미분리로 중단
 - `adr-0028-political-warrant-loop.md`: ludonarrative 루프 P2 전환 — warrant=faction political mandate. `FactionState`(profile truth, trust per faction) + `WarrantResult`(issuer/opposed faction) + trust delta(`SM.Meta` 순수). judgment rail(ADR-0027) 재사용, combat 무관. slice 1(정치 상태 + warrant→trust), slice 2(trust→다음 전투 mutation)로 루프 닫음
 - `adr-0029-deterministic-fixed-point-sim.md`: 결정론적 고정소수점 sim — float→fixed 마이그레이션(approach A). ingress(콘텐츠 float 저작→진입 양자화, 리플레이 raw fixed) + egress(read-model float, `SM.Unity` 무수정) 경계, 도메인 fixed 타입(`Fixed32`/`Score64`/`Hp64`, 범용 Wide 금지), 정수 틱 권위, `StatBlock` 결정적 순서, cross-platform golden hash(backend matrix). B(soft-float)·C(하이브리드) 기각. GPT Pro 검수(2026-06-07) 반영. 상세 계획 `docs/03_architecture/deterministic-sim-and-fixed-point-migration.md`
+- `adr-0030-h100-headless-metrics-boundary.md`: H100 계측을 `SM.Core` + `SM.Combat` 전용 pure `SM.HeadlessMetrics` asmdef로 분리하고, real-content/session 조립은 `SM.Editor.Validation`에 남기는 경계 (proposed, HUB 구조 승인 대기)
 
 ## 운영 메모
 

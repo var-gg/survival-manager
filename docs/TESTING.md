@@ -80,6 +80,18 @@ public sealed class MyFastTests
 - `snapshot`: 커스텀 `CombatContentSnapshot` (기본값: 빈 snapshot)
 - `firstPlayableSlice`: `RefitItem` 등에서 사용하는 slice 데이터
 
+## H100 헤드리스 계측
+
+`SM.HeadlessMetrics`는 `SM.Core`, `SM.Combat`만 참조하는 pure asmdef다. `H100HeadlessMetricsTests`는 기존 `BattleStateCanonicalHash`를 포함한 replay hash 재현성, record projection, 결정적 JSONL, gate metric 부재의 fail-closed 동작, checked-in gate spec shape를 FastUnit에서 검증한다.
+
+실제 content와 `GameSessionState`를 조립하는 `H100MetricsRunner`는 `SM.Editor.Validation`에 있으므로 FastUnit closure 밖이다. 축소 integration witness는 Unity batch execute-method를 사용하는 아래 명령으로 실행한다.
+
+```powershell
+pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 2
+```
+
+성공 조건은 필수 JSONL/report/manifest 파일 생성과 같은 replay group의 `replay_hash_match_rate == 1.0`이다. H100 전체 gate pass는 현재 측정되지 않는 paired, blind, external metric 때문에 별도 조건이며 smoke 성공과 동일하지 않다. 세부 계약은 `docs/03_architecture/h100-headless-metrics-contract.md`를 따른다.
+
 ## CLI 명령어
 
 ### canonical / smoke / recovery verbs

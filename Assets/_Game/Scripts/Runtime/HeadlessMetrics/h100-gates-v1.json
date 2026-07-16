@@ -1,0 +1,136 @@
+{
+  "schema_version": "h100-gate-spec-v1",
+  "spec_version": "h100-gates-v1",
+  "threshold_policy_note": "H100-v1 권고 임계치. 첫 기준선 측정 후 인증용 홀드아웃을 열기 전에 1회만 조정할 수 있으며, 인증 데이터 확인 후에는 변경하지 않는다.",
+  "target_battle_seconds": 35.0,
+  "gates": [
+    {
+      "id": "integrity_reproducibility",
+      "name_ko": "무결성·재현성",
+      "measurement": "같은 설정·시드·입력의 replay hash와 campaign fuzz 무결성",
+      "thresholds": [
+        { "metric_id": "battle_replay_group_count", "operator": "gte", "value": 10000, "unit": "battles", "note": "동일 입력 반복 비교 전투" },
+        { "metric_id": "replay_hash_match_rate", "operator": "eq", "value": 1.0, "unit": "ratio", "note": "리플레이 해시 일치율 100%" },
+        { "metric_id": "campaign_fuzz_count", "operator": "gte", "value": 10000, "unit": "campaigns", "note": "엔드투엔드 fuzz 캠페인" },
+        { "metric_id": "crash_count", "operator": "eq", "value": 0, "unit": "count", "note": "crash 0" },
+        { "metric_id": "softlock_count", "operator": "eq", "value": 0, "unit": "count", "note": "softlock 0" },
+        { "metric_id": "nan_or_infinite_state_count", "operator": "eq", "value": 0, "unit": "count", "note": "NaN/Infinity 0" },
+        { "metric_id": "illegal_negative_state_count", "operator": "eq", "value": 0, "unit": "count", "note": "음수 불법 상태 0" },
+        { "metric_id": "non_terminating_state_count", "operator": "eq", "value": 0, "unit": "count", "note": "비종결 상태 0" },
+        { "metric_id": "unresolved_sev_1_2_count", "operator": "eq", "value": 0, "unit": "count", "note": "미해결 Sev-1/2 0" }
+      ]
+    },
+    {
+      "id": "campaign_completion",
+      "name_ko": "캠페인 완주성",
+      "measurement": "미사용 seed에서 no-cheat 유능 정책과 greedy 정책 비교",
+      "thresholds": [
+        { "metric_id": "campaign_seed_count", "operator": "gte", "value": 1000, "unit": "seeds", "note": "인증용 미사용 시드" },
+        { "metric_id": "competent_completion_rate", "operator": "range_inclusive", "min_value": 0.60, "max_value": 0.80, "unit": "ratio", "note": "Normal 유능 AI 완주율" },
+        { "metric_id": "competent_minus_greedy_completion_rate", "operator": "gte", "value": 0.15, "unit": "ratio", "note": "유능 AI-greedy 격차 15%p 이상" },
+        { "metric_id": "competent_minus_greedy_ci95_lower", "operator": "gte", "value": 0.10, "unit": "ratio", "note": "격차 95% CI 하한 10%p 이상" },
+        { "metric_id": "ensemble_solvability_rate", "operator": "gte", "value": 0.90, "unit": "ratio", "note": "유능 정책 앙상블 중 하나라도 완주" },
+        { "metric_id": "forced_timeout_rate", "operator": "lt", "value": 0.005, "unit": "ratio", "note": "강제 타임아웃 0.5% 미만" }
+      ]
+    },
+    {
+      "id": "build_ecology",
+      "name_ko": "빌드 생태계",
+      "measurement": "동일 성장·아이템·패시브 예산의 family와 matchup 조정 승률",
+      "thresholds": [
+        { "metric_id": "viable_doctrine_family_count", "operator": "gte", "value": 7, "unit": "families", "note": "7개 독트린 전부 viable" },
+        { "metric_id": "viable_non_doctrine_or_hybrid_family_count", "operator": "gte", "value": 2, "unit": "families", "note": "비독트린/하이브리드 최소 2개" },
+        { "metric_id": "family_adjusted_win_rate_min", "operator": "gte", "value": 0.42, "unit": "ratio", "note": "family 상대 풀 조정 승률 하한" },
+        { "metric_id": "family_adjusted_win_rate_max", "operator": "lte", "value": 0.58, "unit": "ratio", "note": "family 상대 풀 조정 승률 상한" },
+        { "metric_id": "non_hard_matchup_win_rate_min", "operator": "gte", "value": 0.35, "unit": "ratio", "note": "비의도 하드카운터 matchup 하한" },
+        { "metric_id": "non_hard_matchup_win_rate_max", "operator": "lte", "value": 0.65, "unit": "ratio", "note": "비의도 하드카운터 matchup 상한" },
+        { "metric_id": "hard_counter_matchup_win_rate_min", "operator": "gte", "value": 0.30, "unit": "ratio", "note": "의도 하드카운터 matchup 하한" },
+        { "metric_id": "hard_counter_matchup_win_rate_max", "operator": "lte", "value": 0.70, "unit": "ratio", "note": "의도 하드카운터 matchup 상한" }
+      ]
+    },
+    {
+      "id": "effective_build_diversity",
+      "name_ko": "실효 빌드 다양성",
+      "measurement": "성공 런 macro-family 점유율의 N_eff와 상위 점유율",
+      "thresholds": [
+        { "metric_id": "effective_build_diversity_neff", "operator": "gte", "value": 6.0, "unit": "families", "note": "N_eff 6 이상" },
+        { "metric_id": "largest_family_share", "operator": "lte", "value": 0.25, "unit": "ratio", "note": "최다 family 점유율 25% 이하" },
+        { "metric_id": "top_three_family_share", "operator": "lte", "value": 0.60, "unit": "ratio", "note": "상위 3개 합 60% 이하" },
+        { "metric_id": "min_viable_subbuild_count_per_doctrine", "operator": "gte", "value": 2, "unit": "subbuilds", "note": "독트린별 상이한 viable 하위 빌드 최소 2개" }
+      ]
+    },
+    {
+      "id": "decision_depth",
+      "name_ko": "의사결정 깊이",
+      "measurement": "상태별 합법 행동 V(s,a)의 paired rollout",
+      "thresholds": [
+        { "metric_id": "important_choice_near_best_alternative_rate", "operator": "gte", "value": 0.40, "unit": "ratio", "note": "최고 행동과 5%p 이내 대안이 2개 이상인 중요 선택" },
+        { "metric_id": "important_choice_high_leverage_rate", "operator": "gte", "value": 0.30, "unit": "ratio", "note": "최고-중앙값 행동 가치 차이 10%p 이상인 중요 선택" }
+      ]
+    },
+    {
+      "id": "formation_significance",
+      "name_ko": "포메이션 유의미성",
+      "measurement": "동일 편성·적·시드에서 합법 배치 paired 비교",
+      "thresholds": [
+        { "metric_id": "formation_leverage_median", "operator": "range_inclusive", "min_value": 0.05, "max_value": 0.15, "unit": "ratio", "note": "전체 최적-기본 배치 승률 차이 중앙값" },
+        { "metric_id": "formation_sensitive_leverage_median", "operator": "range_inclusive", "min_value": 0.08, "max_value": 0.20, "unit": "ratio", "note": "진형 민감 표본 중앙값" },
+        { "metric_id": "formation_leverage_p90", "operator": "lt", "value": 0.30, "unit": "ratio", "note": "배치 효과 p90 30%p 미만" },
+        { "metric_id": "default_formation_optimal_rate", "operator": "lte", "value": 0.60, "unit": "ratio", "note": "기본 자세 최적 비율 60% 이하" }
+      ]
+    },
+    {
+      "id": "spectator_arc",
+      "name_ko": "관전 구조·전투 호흡",
+      "measurement": "T=35초에 대응하는 headless tick 전투시간 분포",
+      "thresholds": [
+        { "metric_id": "battle_duration_median_target_ratio", "operator": "range_inclusive", "min_value": 0.80, "max_value": 1.20, "unit": "T ratio", "note": "전투시간 중앙값 0.8~1.2T" },
+        { "metric_id": "battle_duration_within_0_5_1_6_target_rate", "operator": "gte", "value": 0.80, "unit": "ratio", "note": "전투 80%가 0.5~1.6T" },
+        { "metric_id": "battle_duration_over_2_target_rate", "operator": "lt", "value": 0.05, "unit": "ratio", "note": "2T 초과 5% 미만" },
+        { "metric_id": "battle_timeout_rate", "operator": "lt", "value": 0.005, "unit": "ratio", "note": "타임아웃 0.5% 미만" },
+        { "metric_id": "battle_stomp_rate", "operator": "range_inclusive", "min_value": 0.10, "max_value": 0.25, "unit": "ratio", "note": "0.35T 미만 stomp 10~25%" }
+      ]
+    },
+    {
+      "id": "depth_causality",
+      "name_ko": "깊이 발현과 인과성",
+      "measurement": "공용 RNG를 유지한 grammar/doctrine/event ablation replay",
+      "thresholds": [
+        { "metric_id": "representative_grammar_fire_rate", "operator": "gte", "value": 0.70, "unit": "ratio", "note": "대표 문법 eligible 전투 발화율" },
+        { "metric_id": "representative_grammar_causal_impact_rate", "operator": "gte", "value": 0.25, "unit": "ratio", "note": "승패 또는 최종 전력차를 의미 있게 변화" },
+        { "metric_id": "nontrivial_battle_causal_salient_event_rate", "operator": "gte", "value": 0.70, "unit": "ratio", "note": "비자명 전투에 인과적 salient event 1개 이상" },
+        { "metric_id": "nontrivial_battle_two_grammar_rate", "operator": "gte", "value": 0.80, "unit": "ratio", "note": "비자명 전투 문법 2종 이상" },
+        { "metric_id": "nontrivial_battle_three_grammar_rate", "operator": "gte", "value": 0.50, "unit": "ratio", "note": "비자명 전투 문법 3종 이상" }
+      ]
+    },
+    {
+      "id": "blind_fun_approval",
+      "name_ko": "블라인드 재미 승인",
+      "measurement": "player-visible 정보만 담은 50 replay의 owner·고정 AI blind 평가",
+      "thresholds": [
+        { "metric_id": "blind_replay_count", "operator": "eq", "value": 50, "unit": "replays", "note": "player-visible replay 50개" },
+        { "metric_id": "blind_random_replay_count", "operator": "eq", "value": 30, "unit": "replays", "note": "무작위 표본 30개" },
+        { "metric_id": "blind_stratified_replay_count", "operator": "eq", "value": 20, "unit": "replays", "note": "층화 표본 20개" },
+        { "metric_id": "owner_pivotal_chain_identification_rate", "operator": "gte", "value": 0.80, "unit": "ratio", "note": "오너 pivotal causal chain 식별" },
+        { "metric_id": "fixed_ai_pivotal_chain_identification_rate", "operator": "gte", "value": 0.80, "unit": "ratio", "note": "고정 AI pivotal causal chain 식별" },
+        { "metric_id": "causal_legibility_median", "operator": "gte", "value": 4.0, "unit": "score/5", "note": "인과 가독성 중앙값" },
+        { "metric_id": "build_identity_median", "operator": "gte", "value": 4.0, "unit": "score/5", "note": "빌드 정체성 중앙값" },
+        { "metric_id": "rewatch_intent_median", "operator": "gte", "value": 4.0, "unit": "score/5", "note": "다시 보고 싶은 정도 중앙값" },
+        { "metric_id": "blind_overall_score_four_plus_rate", "operator": "gte", "value": 0.70, "unit": "ratio", "note": "전체 점수 4 이상 replay" },
+        { "metric_id": "blind_rater_disagreement_over_one_rate", "operator": "lte", "value": 0.20, "unit": "ratio", "note": "평가자 1점 초과 불일치" }
+      ]
+    },
+    {
+      "id": "final_reproduction",
+      "name_ko": "최종 재현",
+      "measurement": "서로 겹치지 않는 두 인증 seed set에서 전체 AND gate 반복",
+      "thresholds": [
+        { "metric_id": "holdout_seed_set_count", "operator": "eq", "value": 2, "unit": "sets", "note": "인증 seed set 두 개" },
+        { "metric_id": "holdout_seed_sets_disjoint", "operator": "eq", "value": 1, "unit": "boolean", "note": "두 인증 seed set이 서로 겹치지 않음" },
+        { "metric_id": "holdout_full_gate_pass_rate", "operator": "eq", "value": 1.0, "unit": "ratio", "note": "두 holdout 모두 전 gate 통과" },
+        { "metric_id": "post_certification_threshold_change_count", "operator": "eq", "value": 0, "unit": "count", "note": "gate 임계치 사후 변경 0" },
+        { "metric_id": "pinned_certification_archive_count", "operator": "eq", "value": 2, "unit": "archives", "note": "각 holdout의 Git SHA·content hash·seed manifest·report 고정" }
+      ]
+    }
+  ]
+}

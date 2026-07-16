@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-21
+- 최종수정일: 2026-07-16
 - 소스오브트루스: `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
@@ -20,6 +20,7 @@
 | 레이어 | 책임 | 하지 말아야 할 일 |
 | --- | --- | --- |
 | `SM.Meta` | town, expedition, encounter, reward, progression, arena 같은 비즈니스 상태 변화와 pure runtime spec/model | authored `ScriptableObject` 타입 참조, `SM.Content` 직접 참조, persistence record 타입 참조, Unity scene/component 타입 참조, repository concrete 생성 |
+| `SM.HeadlessMetrics` | H100 record, 기존 combat truth의 pure projection, replay hash envelope, deterministic artifact와 gate 평가 | authored content/session/persistence/UI/editor ownership, sim/save truth 변경 |
 | `SM.Unity` | Boot, scene flow, session orchestration, runtime composition root, UI/controller 진입점, authored content conversion | editor-only logic 소유, persistence ownership을 Meta로 밀어 넣는 일 |
 | `SM.Persistence.Abstractions` | save contract, record 모델, repository port, persistence-facing DTO | gameplay 규칙 결정, Unity scene 진입점 소유, concrete serializer 구현 |
 
@@ -29,6 +30,7 @@
 - `SM.Meta` 서비스가 `StoryEventDefinition`, `DialogueSequenceDefinition`, `PassiveNodeDefinition` 같은 authored definition을 직접 받는 것
 - `SM.Meta`가 save repository를 직접 new 하거나 adapter 세부를 아는 것
 - `SM.Persistence.Abstractions`가 `GameSessionState`, `BattleScreenController` 같은 Unity 진입점을 아는 것
+- `SM.HeadlessMetrics`가 `RuntimeCombatContentLookup`, `GameSessionState`, authored definition 또는 editor API를 아는 것
 - `SM.Unity`가 editor bootstrap과 validation 구현을 runtime asmdef 안에 끌어오는 것
 - 순환을 피하려고 record와 domain 모델을 한 asmdef로 합쳐 버리는 것
 
@@ -58,6 +60,7 @@
 - `ContentConversion` hardening은 authored-to-runtime converter 책임을 좁히는 guard이지, `SM.Unity`를 pure asmdef로 승격하거나 authored content lane을 제거한다는 뜻이 아니다.
 - `GameSessionState` public facade와 production constructor는 유지된다. production narrative `Resources` bootstrap은 `GameSessionRuntimeBootstrapProvider`가 명시적 choke point로 소유하고, `GameSessionState` 본 파일은 provider에 위임한다. FastUnit에서는 `SM.Tests.FastUnit`의 `GameSessionTestFactory`와 fake lookup을 사용하고, production bootstrap coverage는 BatchOnly 또는 runtime integration lane에서 다룬다.
 - persistence ownership closure는 `SM.Meta`가 persistence record/repository concrete를 알지 않는다는 뜻이지, `SM.Unity` runtime adapter가 사라졌다는 뜻이 아니다.
+- `SM.HeadlessMetrics`는 `SM.Core`, `SM.Combat`만 참조하는 pure boundary다. 실제 content/session execution은 `SM.Editor.Validation` adapter에 남고, record로 투영된 뒤에만 계측 core로 들어간다.
 
 ## asmdef cycle 사전 점검 규칙
 
