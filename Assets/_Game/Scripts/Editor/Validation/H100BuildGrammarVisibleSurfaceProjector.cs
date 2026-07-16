@@ -663,7 +663,7 @@ internal static class H100BuildGrammarVisibleSurfaceProjector
     private static string FactId(HeadlessPolicyObservation observation, string key)
         => observation.EvidenceFactIdsBySignal.TryGetValue(key, out var factId) ? factId : string.Empty;
 
-    private static IReadOnlyList<string> FeedbackWitnessVocabulary()
+    internal static IReadOnlyList<string> FeedbackWitnessVocabulary()
         => new[]
         {
             "beat.ally_death_effect",

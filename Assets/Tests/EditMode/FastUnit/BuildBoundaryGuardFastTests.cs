@@ -118,7 +118,7 @@ public sealed class BuildBoundaryGuardFastTests
     [Test]
     public void HeadlessPolicySources_DoNotReferenceEvaluatorOnlySymbols()
     {
-        var forbiddenPattern = @"\b(?:Oracle|Census|TruthGraph|BuildGrammarTruthGraph|FutureOffer|FutureNode|ResolvedEnemyStats?)\b";
+        var forbiddenPattern = @"\b(?:Oracle|Census|TruthGraph|BuildGrammarTruthGraph|ConceptCatalog|ConceptContract|FutureOffer|FutureNode|ResolvedEnemyStats?)\b";
         var policyRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "HeadlessPolicies");
         foreach (var path in Directory.EnumerateFiles(policyRoot, "*.cs", SearchOption.AllDirectories))
         {

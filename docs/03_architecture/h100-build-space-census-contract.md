@@ -12,14 +12,14 @@
 
 ## 목적
 
-이 문서는 12개 canonical archetype에서 4명을 고르는 편성공간과 여섯 anchor에 네 role slot을 놓는 배치공간을 전투 없이 전수 열거하는 계약을 고정한다. 또한 같은 pure assembly에 두는 evaluator-only build grammar truth graph의 경계를 고정한다. census는 구조적 기준선을 제공하며 승률, player-visible audit, H100 통과를 선언하지 않는다.
+이 문서는 12개 canonical archetype에서 4명을 고르는 편성공간과 여섯 battlefield anchor에 네 role slot을 놓는 배치공간을 전투 없이 전수 열거하는 계약을 고정한다. 또한 같은 pure assembly에 두는 evaluator-only build grammar truth graph와 BT1 컨셉 카탈로그 파생 경계를 고정한다. census와 컨셉 카탈로그는 구조적 기준선을 제공하며 승률, player-visible audit, H100 통과를 선언하지 않는다.
 
 ## 소유 경계
 
 | 경계 | 책임 | 금지 |
 | --- | --- | --- |
 | `SM.Combat` | V1 시너지 breakpoint와 `TeamRuleSet` doctrine id, anchor·battlefield geometry, 실제 진형 predicate | census 파일 출력과 군집 결과 소유 |
-| `SM.HeadlessCensus` | pure roster DTO, C(12,4)·P(6,4) 열거, build grammar truth graph, 시너지·역할·진형 feature, deterministic medoid, 구조 assertion과 산출물 | authored content, player-visible audit, session, persistence, Unity/editor API, 전투 실행 |
+| `SM.HeadlessCensus` | pure roster DTO, C(12,4)·P(6,4) 열거, build grammar truth graph, 시너지·역할·진형 feature, deterministic medoid, BT1 컨셉 카탈로그 파생, 구조 assertion과 산출물 | authored content, player-visible audit, session, persistence, Unity/editor API, 전투 실행 |
 | `SM.Editor.Validation` | `RuntimeCombatContentLookup` canonical roster를 pure DTO로 투영하고 medoid screening을 실제 session/sim 경로로 실행 | census 구조값이나 시너지 rule id를 별도로 복제 |
 | `SM.HeadlessMetrics` | screening 전투 결과의 `BattleMetricRecord` projection과 replay hash | census 열거·군집·정적 구조 판정 |
 
@@ -45,6 +45,36 @@
 `BuildGrammarTruthGraph`는 편성 495×배치 360 열거 결과와 별개인 순수 evaluator 구조다. authored snapshot을 읽는 일은 `SM.Editor.Validation` adapter가 맡고, `SM.HeadlessCensus`에는 `SM.Core`·`SM.Combat` DTO만 들어온다. graph builder는 authored recruit, reward, refit, passive, synergy 후보에서 직접 확인되는 `produces`·`amplifies`·`requires`·`pays_off`·`conflicts`·`substitutes`·`acquired_by` 관계만 만든다.
 
 이 graph는 player-visible fact나 audit 결과를 알지 못한다. `SM.HeadlessMetrics`도 graph를 직접 참조하지 않으며 Editor adapter가 sibling DTO를 매핑한다. 이 분리는 정책 assembly로 evaluator truth가 새는 것을 막고 `BuildBoundaryGuardFastTests`의 exact asmdef allowlist를 유지한다. 세부 BT3 비교·artifact 계약은 `h100-headless-metrics-contract.md`가 소유한다.
+
+## BT1 컨셉 카탈로그 파생 계약
+
+`OwnerConceptAnchorCatalog`는 owner가 제시한 열 가지 판타지 anchor의 id·이름·짧은 의도만 소유한다. 모든 anchor는 `ratification_pending=true`인 draft이며 recipe, 현재 콘텐츠 id, motif 매핑을 정의 파일에 섞지 않는다. 실제 파생 결과는 별도 `OwnerConceptDerivation`에 기록하여 owner 의도와 evaluator 계산을 분리한다.
+
+각 파생 컨셉의 `ConceptContract`는 다음 여덟 필드만 계약 표면으로 가진다.
+
+- `identity_predicates`
+- `progress_milestones`
+- `payoff_witness`
+- `allowed_substitutions`
+- `flex_slots`
+- `counter_affordances`
+- `availability_tier` (`core` 또는 `aspirational`)
+- `pivot_conditions`
+
+`ConceptMotifEnumerator`는 authored snapshot을 직접 읽지 않는다. Editor adapter가 투영한 build grammar truth graph, 495개 편성, 360개 labelled formation을 입력으로 받아 다음 두 motif 계열을 만든다.
+
+- threshold → doctrine → tactical payoff
+- enabler → amplifier → payoff
+
+formation은 전체 360개를 결정적으로 profile로 묶되 실제 census formation signature를 대표값으로 사용한다. 후보는 구체 content id를 제외한 `ConceptFingerprint`로 동형성을 판정하고, weighted token distance와 ordinal tie-break로 cluster medoid를 고른다. stable id는 정렬된 계약 입력의 SHA-256에서 파생하며 wall clock, GUID, 현재 culture 정렬을 사용하지 않는다.
+
+raw-stat-only 증폭은 독립 컨셉으로 인정하지 않는다. 비수치 payoff나 전술 witness로 이어지는 graph route가 있을 때만 motif에 들어간다. `payoff_witness`는 E01 player-visible feedback vocabulary를 Editor adapter가 명시적으로 주입한 값만 허용하며, deriver가 새로운 witness 이름을 만들거나 정책 observation을 참조하지 않는다. `SM.HeadlessPolicies`에는 `ConceptCatalog`와 `ConceptContract`가 접근 불가능해야 하며 이 제약은 FastUnit boundary guard가 고정한다.
+
+owner anchor마다 실제 motif를 연결한 recipe가 하나 이상 있거나, 구조화된 derivation gap 하나가 있어야 한다. 현재 tier seed가 owner 정의에 없으므로 `availability_tier`는 reachable threshold와 acquisition route로부터 시스템이 파생하며 owner ratification 전까지 확정된 기획 truth로 취급하지 않는다. owner anchor에 선택되지 않은 cluster medoid는 `system_derived_medoids`로 별도 보존한다.
+
+BT1 산출물은 `Logs/h100-concept-catalog/concept_catalog_bt1.json`이다. artifact에는 owner anchor 정의와 derivation, variants, system-derived 미배정 medoid, tier 분포, raw-stat-only 제외 수, 동형 중복 제거 수를 분리해 기록한다. 탐색 중 숨겨지는 정보나 Coverage QA 관측 주입은 이 계약 범위가 아니며 후속 BT1-E04가 소유한다.
+
+FastUnit은 pure fixture로 byte-identical determinism, raw-stat-only 제외, 동형 dedupe, witness whitelist, 정책 접근 차단을 검증한다. 실제 authored content smoke는 Editor runner가 canonical snapshot을 투영한 뒤 같은 pure deriver와 validator를 호출한다. 이 분리는 FastUnit의 resource-free/authored-object-free 계약을 유지한다.
 
 ## 진형 feature와 medoid
 
@@ -97,6 +127,12 @@ Stage 4 placement leverage runner는 이 8개 medoid를 그대로 재사용한�
 pwsh -File tools/h100-build-space.ps1
 ```
 
+BT1 컨셉 카탈로그를 실제 canonical content에서 다시 파생하고 검증한다.
+
+```powershell
+pwsh -File tools/h100-concept-catalog.ps1
+```
+
 Stage 4에서 같은 medoid를 placement leverage에 재사용하는 integration은 별도 명령으로 확인한다.
 
 ```powershell
@@ -115,6 +151,7 @@ pwsh -File tools/h100-build-space.ps1 -ScreeningBuildCount 1 -ScreeningSeedCount
 pwsh -File tools/unity-bridge.ps1 test-batch-fast
 pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 pwsh -File tools/h100-build-space.ps1
+pwsh -File tools/h100-concept-catalog.ps1
 ```
 
 ## deferred
