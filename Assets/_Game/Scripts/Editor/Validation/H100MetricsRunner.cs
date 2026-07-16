@@ -35,8 +35,8 @@ public static class H100MetricsRunner
             throw new InvalidOperationException($"combat snapshot unavailable: {contentError}");
         }
 
-        var battleCorpus = H100BattleCorpusRunner.Run(lookup, settings, spec.TargetBattleSeconds);
-        var campaignCorpus = H100CampaignCorpusRunner.Run(lookup, settings, spec.TargetBattleSeconds);
+        var battleCorpus = H100BattleCorpusRunner.Run(lookup, settings, spec.TargetBattleSeconds, message => Debug.Log(message));
+        var campaignCorpus = H100CampaignCorpusRunner.Run(lookup, settings, spec.TargetBattleSeconds, message => Debug.Log(message));
         var battles = battleCorpus.Concat(campaignCorpus.Battles).ToArray();
         var campaigns = campaignCorpus.Campaigns.ToArray();
         var gateReport = H100GateEvaluator.Generate(spec, battles, campaigns);
@@ -83,7 +83,7 @@ public static class H100MetricsRunner
             MaxBattleSteps = settings.MaxBattleSteps,
             CampaignSiteSafety = settings.CampaignSiteSafety,
             TargetBattleSeconds = spec.TargetBattleSeconds,
-            PolicyId = H100MetricsRunSettings.PolicyId,
+            PolicyId = settings.PolicyId,
             ReplayManifestHash = ReplayHash.ComputeManifest(battles.Select(record => record.ReplayHash)),
             OverallPass = gateReport.OverallPass,
             BattleJsonl = Path.GetFileName(artifacts.BattleJsonlPath),

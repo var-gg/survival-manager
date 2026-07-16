@@ -1,5 +1,6 @@
 using System;
 using SM.Combat.Services;
+using SM.HeadlessPolicies;
 
 namespace SM.Editor.Validation;
 
@@ -11,11 +12,13 @@ internal sealed record H100MetricsRunSettings(
     int CampaignSiteSafety,
     int MaxBattleSteps,
     bool WriteCsv,
-    string OutputDirectory)
+    string OutputDirectory,
+    string PolicyId)
 {
-    public const string PolicyId = "scripted-player-view-v1";
+    public string RunId => $"h100-stage2-{PolicyId}-s{SeedBase}-b{BattleCount}-c{CampaignCount}-r{ReplayCopies}-m{MaxBattleSteps}-sites{CampaignSiteSafety}";
 
-    public string RunId => $"h100-stage1-s{SeedBase}-b{BattleCount}-c{CampaignCount}-r{ReplayCopies}-m{MaxBattleSteps}-sites{CampaignSiteSafety}";
+    /// <summary>정책 비교에서도 sim/reward identity가 같도록 policy id를 제외한 profile id를 만든다.</summary>
+    public string PairingProfileId(string corpusId) => $"h100-paired-s{SeedBase}-{corpusId}";
 
     public static H100MetricsRunSettings Smoke { get; } = new(
         BattleCount: 4,
@@ -25,7 +28,8 @@ internal sealed record H100MetricsRunSettings(
         CampaignSiteSafety: 2,
         MaxBattleSteps: BattleSimulator.DefaultMaxSteps,
         WriteCsv: true,
-        OutputDirectory: "Logs/h100-metrics");
+        OutputDirectory: "Logs/h100-metrics",
+        PolicyId: HeadlessPolicyFactory.GreedyId);
 
     public static H100MetricsRunSettings FromEnvironment()
     {
@@ -37,7 +41,8 @@ internal sealed record H100MetricsRunSettings(
             CampaignSiteSafety: ReadPositiveInt("SM_H100_SITE_SAFETY", 32),
             MaxBattleSteps: ReadPositiveInt("SM_H100_MAX_BATTLE_STEPS", BattleSimulator.DefaultMaxSteps),
             WriteCsv: ReadBool("SM_H100_WRITE_CSV", true),
-            OutputDirectory: Environment.GetEnvironmentVariable("SM_H100_OUTPUT") ?? "Logs/h100-metrics");
+            OutputDirectory: Environment.GetEnvironmentVariable("SM_H100_OUTPUT") ?? "Logs/h100-metrics",
+            PolicyId: HeadlessPolicyFactory.NormalizePolicyId(Environment.GetEnvironmentVariable("SM_H100_POLICY")));
     }
 
     private static int ReadPositiveInt(string name, int fallback)

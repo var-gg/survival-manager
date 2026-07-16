@@ -10,6 +10,8 @@
   - `docs/03_architecture/sim-sweep-and-balance-kpis.md`
   - `docs/03_architecture/telemetry-contract.md`
   - `docs/04_decisions/adr-0030-h100-headless-metrics-boundary.md`
+  - `docs/03_architecture/h100-headless-policy-contract.md`
+  - `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
 
 ## 목적
 
@@ -21,6 +23,7 @@
 | --- | --- | --- |
 | `SM.Combat` | 전투 상태, 결과, 활동 telemetry, canonical state hash의 authoritative truth | H100 보고서나 파일 출력 소유 |
 | `SM.HeadlessMetrics` | 전투·캠페인 레코드, 순수 projection, replay hash 조합, 결정적 JSONL/CSV, 게이트 평가 | `SM.Unity`, authored content, session, persistence, editor API 참조 |
+| `SM.HeadlessPolicies` | player-visible observation/decision과 6개 deterministic 정책 | session/content/persistence/editor 참조, future RNG·미공개 node·resolved enemy stat 입력 |
 | `SM.Editor.Validation` | 실제 `RuntimeCombatContentLookup`과 `GameSessionState`를 조립해 전투·캠페인을 실행 | 계측 스키마나 판정 규칙을 별도로 복제 |
 
 `SM.HeadlessMetrics` asmdef는 `SM.Core`, `SM.Combat`만 참조하고 `noEngineReferences=true`를 유지한다. `SM.Content`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 참조는 금지한다. 실제 콘텐츠와 캠페인 세션은 Unity 경계이므로 `SM.Editor.Validation` runner가 실행하고, 순수 계측 레코드로 투영한 뒤에만 `SM.HeadlessMetrics`로 넘긴다.
@@ -69,10 +72,10 @@
 
 ## 실행과 검증
 
-축소 witness는 다음 명령으로 실행한다.
+축소 witness는 다음 명령으로 실행한다. `-Policy` 기본값은 Stage 1 행동을 보존하는 `greedy-v1`이다.
 
 ```powershell
-pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 2
+pwsh -File tools/h100-metrics.ps1 -Policy greedy-v1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 2
 ```
 
 대량 실행은 같은 명령에서 수를 명시한다. `BattleCount`는 같은 입력을 반복하는 replay group 수이며 실제 battle record 수는 replay copy 수만큼 증가한다.
@@ -95,6 +98,6 @@ pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 
 
 ## 현재 한계와 후속
 
-- `IPlaythroughDecisionPolicy`와 `ScriptedPlaythroughPolicy`는 현재 `SM.Tests.FastUnit`에 있고 `SM.Unity` session 타입을 소비한다. production asmdef가 test asmdef를 참조할 수 없으므로 Stage 1 runner는 같은 player-visible deterministic 선택 규칙을 editor validation 내부에서 사용한다. 정책 비교와 paired rollout을 시작하기 전에 production-safe policy port를 별도 설계한다.
+- test-only `IPlaythroughDecisionPolicy`는 production이 참조하지 않는다. production-safe port는 ADR-0031의 `SM.HeadlessPolicies` + `SM.Editor.Validation` projection adapter로 분리됐으며 상세 observation/action 계약은 `h100-headless-policy-contract.md`가 소유한다.
 - tagged/subsystem RNG stream이 없어 공용 RNG를 보존하는 counterfactual ablation을 아직 보증하지 않는다.
 - `SM.HeadlessMetrics` 자체는 pure .NET으로 빌드 가능하지만 실제 콘텐츠/session composition은 Unity adapter에 남아 있다. 2M+ 전투용 pure dotnet CLI는 content snapshot과 campaign orchestration port를 분리한 뒤 추가한다.

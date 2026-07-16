@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using SM.Combat.Model;
+using SM.HeadlessPolicies;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
@@ -13,43 +12,58 @@ namespace SM.Editor.Validation;
 /// <summary>player-visible 정보만 사용하는 deterministic campaign session 동작 집합.</summary>
 internal static class H100SessionDriver
 {
-    private static readonly HashSet<string> FrontRowClasses = new(StringComparer.Ordinal)
-    {
-        "vanguard", "duelist",
-    };
-
     public static GameSessionState CreateSession(RuntimeCombatContentLookup lookup, string profileId)
     {
         var session = new GameSessionState(lookup);
         session.BindProfile(new SaveProfile { ProfileId = profileId });
         session.SetCurrentScene(SceneNames.Town);
-        ApplyScriptedDeployment(session);
         return session;
     }
 
-    public static void ApplyScriptedDeployment(GameSessionState session)
+    public static HeadlessDeploymentDecision ApplyPolicyDeployment(
+        GameSessionState session,
+        RuntimeCombatContentLookup lookup,
+        IHeadlessPolicy policy,
+        int decisionSeed,
+        Action<string>? decisionLog = null)
     {
+        var observation = H100PolicyObservationBuilder.Build(session, lookup, decisionSeed);
+        var decision = policy.DecideDeployment(observation);
+        HeadlessPolicyGuard.ValidateDeploymentDecision(observation, decision);
         foreach (var anchor in session.DeploymentAnchors)
         {
             session.AssignHeroToAnchor(anchor, null);
         }
 
-        var front = new Queue<DeploymentAnchorId>(session.DeploymentAnchors.Where(anchor => anchor.IsFrontRow()));
-        var back = new Queue<DeploymentAnchorId>(session.DeploymentAnchors.Where(anchor => !anchor.IsFrontRow()));
-        foreach (var hero in session.Profile.Heroes)
+        foreach (var placement in decision.Placements)
         {
-            var prefersFront = FrontRowClasses.Contains(hero.ClassId);
-            var primary = prefersFront ? front : back;
-            var fallback = prefersFront ? back : front;
-            if (primary.Count > 0)
+            if (!session.AssignHeroToAnchor(placement.Anchor, placement.HeroId))
             {
-                session.AssignHeroToAnchor(primary.Dequeue(), hero.HeroId);
-            }
-            else if (fallback.Count > 0)
-            {
-                session.AssignHeroToAnchor(fallback.Dequeue(), hero.HeroId);
+                throw new InvalidOperationException($"Validated H100 deployment could not be applied: {placement.HeroId}@{placement.Anchor}.");
             }
         }
+
+        decisionLog?.Invoke(FormatDecisionLog(policy.Id, "deployment", observation, decision.Rationale, decision.EstimatedValue));
+        return decision;
+    }
+
+    public static HeadlessRewardDecision ApplyPolicyReward(
+        GameSessionState session,
+        RuntimeCombatContentLookup lookup,
+        IHeadlessPolicy policy,
+        int decisionSeed,
+        Action<string>? decisionLog = null)
+    {
+        var observation = H100PolicyObservationBuilder.Build(session, lookup, decisionSeed);
+        var decision = policy.DecideReward(observation);
+        HeadlessPolicyGuard.ValidateRewardDecision(observation, decision);
+        if (decision.OptionIndex >= 0 && !session.ApplyRewardChoice(decision.OptionIndex))
+        {
+            throw new InvalidOperationException($"Validated H100 reward choice could not be applied: {decision.OptionIndex}.");
+        }
+
+        decisionLog?.Invoke(FormatDecisionLog(policy.Id, "reward", observation, decision.Rationale, decision.EstimatedValue));
+        return decision;
     }
 
     public static void AdvanceToNextUnclearedSite(GameSessionState session)
@@ -87,5 +101,18 @@ internal static class H100SessionDriver
             var result = (int)(hash & 0x7fffffffu);
             return result == 0 ? 1 : result;
         }
+    }
+
+    private static string FormatDecisionLog(
+        string policyId,
+        string decisionKind,
+        HeadlessPolicyObservation observation,
+        string rationale,
+        double estimatedValue)
+    {
+        var singleLineRationale = rationale.Replace('\r', ' ').Replace('\n', ' ');
+        return $"[H100Policy] policy={policyId} kind={decisionKind} chapter={observation.ChapterId} "
+               + $"site={observation.SiteId} seed={observation.DecisionSeed.ToString(CultureInfo.InvariantCulture)} "
+               + $"value={estimatedValue.ToString("F3", CultureInfo.InvariantCulture)} reason={singleLineRationale}";
     }
 }

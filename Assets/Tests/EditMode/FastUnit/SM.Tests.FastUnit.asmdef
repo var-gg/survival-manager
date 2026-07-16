@@ -6,6 +6,7 @@
     "SM.Content",
     "SM.Combat",
     "SM.HeadlessMetrics",
+    "SM.HeadlessPolicies",
     "SM.Meta",
     "SM.Atlas",
     "SM.Persistence.Abstractions",

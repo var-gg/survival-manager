@@ -1,0 +1,14 @@
+{
+  "name": "SM.HeadlessPolicies",
+  "rootNamespace": "SM.HeadlessPolicies",
+  "references": ["SM.Combat"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

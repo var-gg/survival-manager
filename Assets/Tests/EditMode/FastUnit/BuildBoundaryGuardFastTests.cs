@@ -20,16 +20,29 @@ public sealed class BuildBoundaryGuardFastTests
         AssertNoEngineReference(assemblies, "SM.Meta");
         AssertNoEngineReference(assemblies, "SM.Meta.Serialization");
         AssertNoEngineReference(assemblies, "SM.HeadlessMetrics");
+        AssertNoEngineReference(assemblies, "SM.HeadlessPolicies");
         AssertNoEngineReference(assemblies, "SM.Persistence.Abstractions");
 
         AssertAssemblyReferences(assemblies, "SM.Meta", "SM.Core", "SM.Combat");
         AssertAssemblyReferences(assemblies, "SM.Meta.Serialization", "SM.Core", "SM.Combat", "SM.Meta");
         AssertAssemblyReferences(assemblies, "SM.HeadlessMetrics", "SM.Core", "SM.Combat");
+        AssertAssemblyReferences(assemblies, "SM.HeadlessPolicies", "SM.Combat");
         AssertAssemblyReferences(assemblies, "SM.Persistence.Abstractions", "SM.Core", "SM.Meta");
         AssertNoReferences(
             assemblies,
             "SM.Meta.Serialization",
             "SM.Content",
+            "SM.Persistence.Abstractions",
+            "SM.Persistence.Json",
+            "SM.Unity",
+            "SM.Editor");
+        AssertNoReferences(
+            assemblies,
+            "SM.HeadlessPolicies",
+            "SM.Content",
+            "SM.HeadlessMetrics",
+            "SM.Meta",
+            "SM.Meta.Serialization",
             "SM.Persistence.Abstractions",
             "SM.Persistence.Json",
             "SM.Unity",

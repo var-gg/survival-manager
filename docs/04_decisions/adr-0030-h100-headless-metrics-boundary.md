@@ -10,6 +10,7 @@
   - `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`
   - `docs/04_decisions/adr-0006-combat-sim-boundary.md`
   - `docs/04_decisions/adr-0029-deterministic-fixed-point-sim.md`
+  - `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
 
 ## 문맥
 
@@ -25,7 +26,7 @@ H100 release-candidate 판정은 전투와 캠페인의 실전 출현 빈도, �
 - `ReplayHash`는 `BattleStateCanonicalHash`를 재사용하고 activity replay hash를 versioned envelope로 결합한다. 별도 canonicalizer를 만들지 않는다.
 - 계측은 sim/save truth를 변경하지 않는 additive projection이다. `BattleHashCorpus` golden은 수정하지 않는다.
 - 게이트 metric이 없으면 evaluator가 fail closed한다. Stage 1의 부분 관측으로 H100 pass를 선언하지 않는다.
-- test-only `IPlaythroughDecisionPolicy`를 production assembly가 참조하지 않는다. 정책 port 승격과 tagged RNG counterfactual은 후속 구조 결정으로 남긴다.
+- test-only `IPlaythroughDecisionPolicy`를 production assembly가 참조하지 않는다. 정책 port 승격은 ADR-0031의 별도 pure policy 경계로 수행하고 tagged RNG counterfactual은 후속으로 남긴다.
 
 ## 검토한 대안
 
@@ -41,7 +42,7 @@ H100 release-candidate 판정은 전투와 캠페인의 실전 출현 빈도, �
 - 새 asmdef와 exact reference guard가 추가된다. `SM.Editor`와 `SM.Tests.FastUnit`은 순수 계측 assembly를 소비할 수 있지만 역방향 참조는 없다.
 - Json.NET은 결정적 파일 포맷을 위해 precompiled reference로 사용한다. JSON property 순서와 컬렉션 정렬은 코드와 FastUnit으로 고정한다.
 - 실제 콘텐츠 smoke는 Unity batchmode가 필요하다. pure FastUnit은 hash, projection, serialization, fail-closed evaluator를 검증한다.
-- 현재 campaign runner는 player-visible deterministic 규칙 한 종류만 제공하므로 completion policy gap, decision counterfactual, formation paired rollout, blind 평가 metric은 unavailable로 실패한다.
+- ADR-0031 이후 campaign runner는 player-visible deterministic 정책 여섯 개를 제공한다. decision counterfactual, formation paired rollout, blind 평가 metric은 여전히 unavailable로 실패한다.
 - 후속 pure dotnet CLI는 `SM.HeadlessMetrics`를 그대로 재사용할 수 있으나 content snapshot과 campaign policy port를 추가로 분리해야 한다.
 
 ## 승인 조건

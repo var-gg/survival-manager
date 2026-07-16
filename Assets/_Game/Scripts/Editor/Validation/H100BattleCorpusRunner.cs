@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SM.Combat.Services;
 using SM.HeadlessMetrics;
+using SM.HeadlessPolicies;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -12,13 +13,21 @@ internal static class H100BattleCorpusRunner
     public static IReadOnlyList<BattleMetricRecord> Run(
         RuntimeCombatContentLookup lookup,
         H100MetricsRunSettings settings,
-        float targetBattleSeconds)
+        float targetBattleSeconds,
+        Action<string>? decisionLog = null)
     {
         var records = new List<BattleMetricRecord>(settings.BattleCount * settings.ReplayCopies);
         GameSessionState session;
         try
         {
-            session = H100SessionDriver.CreateSession(lookup, $"{settings.RunId}-battle-corpus");
+            var policy = HeadlessPolicyFactory.Create(settings.PolicyId);
+            session = H100SessionDriver.CreateSession(lookup, settings.PairingProfileId("battle-corpus"));
+            H100SessionDriver.ApplyPolicyDeployment(
+                session,
+                lookup,
+                policy,
+                H100SessionDriver.DeriveSeed("battle-corpus-deployment", settings.SeedBase),
+                decisionLog);
             session.BeginNewExpedition();
         }
         catch (Exception exception)
@@ -48,20 +57,20 @@ internal static class H100BattleCorpusRunner
                     {
                         records.Add(BattleMetricProjector.ProjectFailure(
                             settings.RunId, string.Empty, battleId, replayGroupId, copy, scenarioId,
-                            H100MetricsRunSettings.PolicyId, seed, $"compose:{composeError}"));
+                            settings.PolicyId, seed, $"compose:{composeError}"));
                         continue;
                     }
 
                     var result = BattleResolver.Run(state, settings.MaxBattleSteps);
                     records.Add(BattleMetricProjector.Project(
                         settings.RunId, string.Empty, battleId, replayGroupId, copy, scenarioId,
-                        H100MetricsRunSettings.PolicyId, state, result, settings.MaxBattleSteps, targetBattleSeconds));
+                        settings.PolicyId, state, result, settings.MaxBattleSteps, targetBattleSeconds));
                 }
                 catch (Exception exception)
                 {
                     records.Add(BattleMetricProjector.ProjectFailure(
                         settings.RunId, string.Empty, battleId, replayGroupId, copy, scenarioId,
-                        H100MetricsRunSettings.PolicyId, seed, $"exception:{exception.GetType().Name}"));
+                        settings.PolicyId, seed, $"exception:{exception.GetType().Name}"));
                 }
             }
         }
@@ -81,7 +90,7 @@ internal static class H100BattleCorpusRunner
             {
                 records.Add(BattleMetricProjector.ProjectFailure(
                     settings.RunId, string.Empty, $"{replayGroupId}-copy-{copy:D2}", replayGroupId, copy,
-                    "unavailable", H100MetricsRunSettings.PolicyId, 0, $"build:{error}"));
+                    "unavailable", settings.PolicyId, 0, $"build:{error}"));
             }
         }
     }

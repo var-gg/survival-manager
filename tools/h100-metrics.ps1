@@ -10,6 +10,8 @@ param(
     [int]$CampaignSiteSafety = 2,
     [ValidateRange(1, 1000000)]
     [int]$MaxBattleSteps = 300,
+    [ValidateSet('random-legal-v1', 'greedy-v1', 'competent-doctrine-v1', 'competent-formation-v1', 'competent-counter-adaptive-v1', 'competent-search-planner-v1')]
+    [string]$Policy = 'greedy-v1',
     [string]$OutputDirectory = 'Logs/h100-metrics',
     [switch]$NoCsv
 )
@@ -24,6 +26,7 @@ $environmentValues = [ordered]@{
     SM_H100_SEED_BASE = $SeedBase.ToString([Globalization.CultureInfo]::InvariantCulture)
     SM_H100_SITE_SAFETY = $CampaignSiteSafety.ToString([Globalization.CultureInfo]::InvariantCulture)
     SM_H100_MAX_BATTLE_STEPS = $MaxBattleSteps.ToString([Globalization.CultureInfo]::InvariantCulture)
+    SM_H100_POLICY = $Policy
     SM_H100_WRITE_CSV = (-not $NoCsv).ToString().ToLowerInvariant()
     SM_H100_OUTPUT = $OutputDirectory
 }
@@ -44,7 +47,7 @@ try {
     & pwsh -File $executeMethod `
         -Method 'SM.Editor.Validation.H100MetricsRunner.RunFromCli' `
         -LogFile 'Logs/h100-metrics-ci.log' `
-        -PhaseName 'H100 stage 1 metrics' `
+        -PhaseName "H100 stage 2 metrics ($Policy)" `
         -ProjectRoot $projectRoot
     if ($LASTEXITCODE -ne 0) {
         throw "H100 metrics executeMethod failed with exit code $LASTEXITCODE."
@@ -71,7 +74,7 @@ try {
         throw 'H100 replay hash same-seed witness did not reach 100%.'
     }
 
-    Write-Host "H100 metrics artifacts: $resolvedOutput"
+    Write-Host "H100 metrics artifacts: $resolvedOutput (policy=$Policy)"
     Write-Host "Replay hash match rate: $($hashThreshold.observed_value) (groups=$($hashThreshold.sample_count))"
     Write-Host "Overall H100 gate pass: $($gateReport.overall_pass) (smoke/sample-floor failures are expected for small N)"
 }

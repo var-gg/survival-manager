@@ -21,6 +21,7 @@
 - `unity-boundaries.md`: `MonoBehaviour`, `ScriptableObject`, scene 책임 경계
 - `assembly-boundaries-and-persistence-ownership.md`: `SM.Meta` content adapter, persistence ownership, asmdef 사전 점검 규칙
 - `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, 결정적 산출물, replay hash, fail-closed gate 계약
+- `h100-headless-policy-contract.md`: H100 player-visible observation, 6정책, no-cheat guard, policy witness 계약
 - `validation-and-acceptance-oracles.md`: feature closure, acceptance matrix, evidence 기록 기준
 - `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft
 
@@ -36,13 +37,14 @@
 | --- | --- | --- |
 | `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` | pure boundary로 닫힘 | `test-batch-fast`, exact asmdef allowlist, boundary guard |
 | `SM.HeadlessMetrics` | `SM.Core` + `SM.Combat`만 소비하는 pure 계측 boundary | `test-batch-fast`, exact asmdef allowlist, 결정적 writer/hash tests |
+| `SM.HeadlessPolicies` | `SM.Combat`만 소비하는 pure 정책 boundary | `test-batch-fast`, exact asmdef allowlist, 6정책 결정론/no-cheat contract tests |
 | `FastUnit` test lane | `SM.Tests.FastUnit` 전용 asmdef에서 editor-free/resource-free/authored-object-free로 닫힘 | fake lookup, pure fixture, class-level category, dedicated folder/alias-wrapper guard |
 | `SM.Unity`, `GameSessionState`, runtime bootstrap/content lookup | boundary adapter로 유지 | `GameSessionRuntimeBootstrapProvider` production choke point, FastUnit 밖, 필요 시 focused session 또는 BatchOnly |
 | authored content, `ScriptableObject`, `Resources.Load*`, content conversion | pure closure 밖 | content validation 또는 BatchOnly; `ContentConversion`은 내부 converter guard로 관리 |
 | UI/controller/scene/prefab, PlayMode | runtime/editor integration lane | focused EditMode, PlayMode smoke, manual/editor-required |
 | `ManualLoopD` | 장시간 balance/telemetry lane | default fast closure 증거로 쓰지 않음; symmetric mirror 4v4 policy 추적 포함 |
 
-아키텍처 문서에서 “editor-free closure”라고 쓸 때는 첫 두 행의 범위를 뜻한다. `SM.Unity`와 authored content/UI loop가 repo-wide pure boundary 안으로 들어왔다는 뜻으로 쓰지 않는다.
+아키텍처 문서에서 “editor-free closure”라고 쓸 때는 첫 세 행의 범위를 뜻한다. `SM.Unity`와 authored content/UI loop가 repo-wide pure boundary 안으로 들어왔다는 뜻으로 쓰지 않는다.
 
 ## 변경 라우팅 Quick Reference
 
@@ -50,6 +52,7 @@
 | --- | --- | --- | --- |
 | 전투 규칙, damage, targeting, movement, status | `SM.Combat` | `test-batch-fast`, combat focused tests | editor-free |
 | H100 record, replay hash envelope, gate evaluation | `SM.HeadlessMetrics` | `test-batch-fast`, `H100HeadlessMetricsTests` | editor-free; 실제 content/session corpus 실행은 `SM.Editor.Validation` |
+| H100 player-visible observation과 정책 선택 | `SM.HeadlessPolicies` + `SM.Editor.Validation` projection adapter | `test-batch-fast`, 정책별 `h100-metrics.ps1`, `h100-policy-witness.ps1` | 정책은 editor-free; 실제 session projection/corpus는 editor-required |
 | 공통 id/stat/result/content schema enum | `SM.Core`, `SM.Core.Content` | `test-batch-fast` | editor-free |
 | reward, passive, loot, expedition progression rule | `SM.Meta` pure model/service | `test-batch-fast`, `MetaRewardPickTests` | editor-free unless session/UI application is in scope |
 | story/dialogue/runtime narrative decision | `SM.Meta` story/spec model | `test-batch-fast`, `StoryDirectorServiceTests` | editor-free when authored definition is not touched |
@@ -120,6 +123,7 @@
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
 - `deterministic-sim-and-fixed-point-migration.md`: float→fixed 결정론 마이그레이션 contract와 단계별 계획 (draft, ADR-0029)
 - `h100-headless-metrics-contract.md`: H100 record, replay hash, deterministic JSONL/CSV, gate report와 real-content runner 경계
+- `h100-headless-policy-contract.md`: H100 6정책, player-visible observation whitelist, no-cheat guard와 paired direction witness
 - `battle-actor-wrapper-and-asset-intake-seam.md`: battle wrapper prefab, socket surface, vendor intake seam
 
 ## 내러티브 아키텍처 문서

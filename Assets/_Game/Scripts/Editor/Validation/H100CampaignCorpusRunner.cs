@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.HeadlessMetrics;
+using SM.HeadlessPolicies;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -20,13 +21,14 @@ internal static class H100CampaignCorpusRunner
     public static Corpus Run(
         RuntimeCombatContentLookup lookup,
         H100MetricsRunSettings settings,
-        float targetBattleSeconds)
+        float targetBattleSeconds,
+        Action<string>? decisionLog = null)
     {
         var battles = new List<BattleMetricRecord>();
         var campaigns = new List<CampaignMetricRecord>(settings.CampaignCount);
         for (var index = 0; index < settings.CampaignCount; index++)
         {
-            RunOne(lookup, settings, targetBattleSeconds, index, battles, campaigns);
+            RunOne(lookup, settings, targetBattleSeconds, index, battles, campaigns, decisionLog);
         }
 
         return new Corpus(battles, campaigns);
@@ -38,14 +40,15 @@ internal static class H100CampaignCorpusRunner
         float targetBattleSeconds,
         int campaignIndex,
         ICollection<BattleMetricRecord> allBattles,
-        ICollection<CampaignMetricRecord> allCampaigns)
+        ICollection<CampaignMetricRecord> allCampaigns,
+        Action<string>? decisionLog)
     {
         var campaignId = $"campaign-{campaignIndex:D6}";
         var campaignSeed = H100SessionDriver.DeriveSeed("campaign", settings.SeedBase + campaignIndex);
         var campaignBattles = new List<BattleMetricRecord>();
         GameSessionState? session = null;
         var siteCount = 0;
-        var decisionCount = 1; // initial deployment
+        var decisionCount = 0;
         var terminalReason = "unknown";
         var crashCount = 0;
         var softlockCount = 0;
@@ -55,12 +58,18 @@ internal static class H100CampaignCorpusRunner
 
         try
         {
-            session = H100SessionDriver.CreateSession(lookup, $"{settings.RunId}-{campaignId}");
+            var policy = HeadlessPolicyFactory.Create(settings.PolicyId);
+            session = H100SessionDriver.CreateSession(lookup, settings.PairingProfileId(campaignId));
             while (!session.Profile.CampaignProgress.StoryCleared
                    && siteCount < settings.CampaignSiteSafety
                    && !defeated)
             {
                 H100SessionDriver.AdvanceToNextUnclearedSite(session);
+                var deploymentSeed = H100SessionDriver.DeriveSeed(
+                    $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|deployment",
+                    campaignSeed + siteCount);
+                H100SessionDriver.ApplyPolicyDeployment(session, lookup, policy, deploymentSeed, decisionLog);
+                decisionCount++;
                 session.BeginNewExpedition();
                 var siteBattleCount = 0;
                 while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
@@ -81,7 +90,7 @@ internal static class H100CampaignCorpusRunner
                     {
                         campaignBattles.Add(BattleMetricProjector.ProjectFailure(
                             settings.RunId, campaignId, battleId, replayGroupId, 0, "unavailable",
-                            H100MetricsRunSettings.PolicyId, campaignSeed, $"build:{buildError}"));
+                            settings.PolicyId, campaignSeed, $"build:{buildError}"));
                         crashCount++;
                         terminalReason = "battle-build-failed";
                         session.AbandonExpeditionRun();
@@ -98,7 +107,7 @@ internal static class H100CampaignCorpusRunner
                     {
                         campaignBattles.Add(BattleMetricProjector.ProjectFailure(
                             settings.RunId, campaignId, battleId, replayGroupId, 0, scenarioId,
-                            H100MetricsRunSettings.PolicyId, battleSeed, $"compose:{composeError}"));
+                            settings.PolicyId, battleSeed, $"compose:{composeError}"));
                         crashCount++;
                         terminalReason = "battle-compose-failed";
                         session.AbandonExpeditionRun();
@@ -110,7 +119,7 @@ internal static class H100CampaignCorpusRunner
                     var result = BattleResolver.Run(state, settings.MaxBattleSteps, highlightLedger.Record);
                     var metric = BattleMetricProjector.Project(
                         settings.RunId, campaignId, battleId, replayGroupId, 0, scenarioId,
-                        H100MetricsRunSettings.PolicyId, state, result, settings.MaxBattleSteps, targetBattleSeconds);
+                        settings.PolicyId, state, result, settings.MaxBattleSteps, targetBattleSeconds);
                     campaignBattles.Add(metric);
                     battleIndex++;
 
@@ -138,8 +147,11 @@ internal static class H100CampaignCorpusRunner
                 session.ResolveSelectedNodeToRewardSettlement();
                 if (session.PendingRewardChoices.Count > 0)
                 {
+                    var rewardSeed = H100SessionDriver.DeriveSeed(
+                        $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|reward",
+                        campaignSeed + siteCount);
+                    H100SessionDriver.ApplyPolicyReward(session, lookup, policy, rewardSeed, decisionLog);
                     decisionCount++;
-                    session.ApplyRewardChoice(0);
                 }
 
                 session.ReturnToTownAfterReward();
@@ -181,7 +193,7 @@ internal static class H100CampaignCorpusRunner
         {
             RunId = settings.RunId,
             CampaignId = campaignId,
-            PolicyId = H100MetricsRunSettings.PolicyId,
+            PolicyId = settings.PolicyId,
             Seed = campaignSeed,
             Completed = completed,
             Truncated = truncated,
