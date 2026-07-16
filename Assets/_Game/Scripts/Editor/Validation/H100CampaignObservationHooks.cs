@@ -1,4 +1,6 @@
 using System;
+using SM.Combat.Model;
+using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
 using SM.Unity;
 
@@ -9,7 +11,20 @@ internal sealed record H100CampaignObservationHooks(
     Action<H100SiteArrivalContext>? SiteArrived = null,
     Action<H100RewardOfferedContext>? RewardOffered = null,
     Action<H100RewardChosenContext>? RewardChosen = null,
-    Func<bool>? StopRequested = null);
+    Func<bool>? StopRequested = null,
+    Action<H100DeploymentOfferedContext>? DeploymentOffered = null,
+    Action<H100BattleCompletedContext>? BattleCompleted = null);
+
+internal sealed record H100DeploymentOfferedContext(
+    string CampaignId,
+    int CampaignIndex,
+    int CampaignSeed,
+    int SiteIndex,
+    int BattleStartIndex,
+    int DecisionIndex,
+    int DecisionSeed,
+    GameSessionState Session,
+    HeadlessPolicyObservation Observation);
 
 internal sealed record H100SiteArrivalContext(
     string CampaignId,
@@ -27,8 +42,10 @@ internal sealed record H100RewardOfferedContext(
     int CampaignSeed,
     int SiteIndex,
     int BattleIndex,
+    int DecisionIndex,
     int DecisionSeed,
-    GameSessionState Session);
+    GameSessionState Session,
+    HeadlessPolicyObservation Observation);
 
 internal sealed record H100RewardChosenContext(
     string CampaignId,
@@ -38,3 +55,11 @@ internal sealed record H100RewardChosenContext(
     int BattleIndex,
     GameSessionState Session,
     HeadlessRewardDecision Decision);
+
+internal sealed record H100BattleCompletedContext(
+    string CampaignId,
+    int CampaignIndex,
+    int SiteIndex,
+    int BattleIndex,
+    BattleResult Result,
+    BattleMetricRecord Metric);

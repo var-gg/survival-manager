@@ -173,8 +173,8 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 | BT3 | 정보 표면 완결성 | hard | 네 surface audit metric 실측 평가 | E02 |
 | BT4 | 빌드 문법 유추 가능성 | hard | `not_yet_evaluable` | E02, E03, E07 |
 | BT5 | 욕구 형성·커밋 | hard | `not_yet_evaluable` | E04, E07 |
-| BT6 | 트랙 개방성·에이전시 연속성 | hard | `not_yet_evaluable` | E03, E05 |
-| BT7 | 의도 실현·payoff runway | hard | `not_yet_evaluable` | E03, E05 |
+| BT6 | 트랙 개방성·에이전시 연속성 | hard | E05 track oracle 실측 평가 | E03, E05 |
+| BT7 | 의도 실현·payoff runway | hard | E05 conditional realization 실측 평가 | E03, E05 |
 | BT8 | 적응형 도달성 | hard | `not_yet_evaluable` | E01, E06 |
 | BT9 | 함정 옵션·버그급 지배성 부재 | hard | `not_yet_evaluable` | E08, E09 |
 | BT10 | 베타테스터 재미·재시도 two-key | hard | `not_yet_evaluable` | E04, E05, E07 |
@@ -187,6 +187,18 @@ role-aware 평가 의미는 다음과 같다.
 - diagnostic metric 누락은 `status=missing`, `pass=null`로 반드시 출력하며 전체 hard 판정을 막지 않는다.
 - 관측된 diagnostic 값과 PASS/FAIL은 삭제하지 않고 report에 보존하되 릴리스 블록에는 사용하지 않는다.
 - `owner_approval`은 BT10의 별도 boolean 임계치다. 기계 지표가 이를 대신할 수 없다.
+
+### BT1-E05 intent track oracle
+
+`SM.HeadlessCensus.IntentTrackEvaluator`는 정책에 노출되지 않는 evaluator-only 순수 탐색기다. 입력은 campaign 종료 뒤 `SM.Editor.Validation`이 실제 session에서 수집한 초기 roster/inventory 상태와 확정된 offer window DTO다. 탐색 목표는 승률 최대화가 아니라 E03 `ConceptContract.identity_predicates` 도달이며, 계약 관련 semantic만 상태 signature에 남기고 동일 상태당 최선 경로 하나를 memoize한다. `SM.HeadlessPolicies`는 `SM.HeadlessCensus`를 참조하지 않으며 미래 offer와 oracle 결과를 decision 시점에 읽을 수 없다.
+
+agency window는 플레이어 선택이 실제로 발생하는 한 지점이다. 현재 campaign 표면에서는 도달한 사이트마다 배치 선택 1회와 보상 선택 1회가 각각 한 window다. 전투 node 자체는 자동 진행이므로 window가 아니다. v1 lever는 `deployment`, `reward`이고 탐색 DTO와 CLI는 `recruit`, `level_node`, `refit` 식별자를 파라미터로 수용하지만, E07이 실제 선택점을 열기 전에는 해당 window를 생성하지 않는다. 따라서 현 결과의 `agency_gap`은 영입·노드·Refit이 닫힌 만큼 과대 측정될 수 있다.
+
+run별 핵심 값은 `TrackAvailable`, `FirstProgressTime`, `OracleRealizationTime`, `MaxAgencyDrought`, `Starved`, `PolicyCaptureRate = P(realized | TrackAvailable)`, `FalseHopeRate`, `PayoffRunway`, `IdentityRetentionAfterCounter`다. drought는 진척 또는 명시된 유효 대체가 하나도 제시되지 않은 연속 window 수이며 정확히 4개부터 starvation으로 판정한다. track 자체가 horizon 안에 없을 때도 starved다. capture 분모에는 `TrackAvailable=true`인 run만 들어간다.
+
+실패 원인은 상호배타적인 네 종류로 내린다. 경로 자체가 없으면 `agency_gap`, 경로가 있고 정책이 놓쳤으며 관련 E02 subject 위반이 있으면 `surface_gap`, 관련 위반이 없으면 `policy_gap`, 정책이 identity를 실현했지만 이후 전투 telemetry/beat에서 계약 payoff가 없으면 `combat_gap`이다. 실현과 payoff까지 있으면 `none`이다.
+
+비율 하한은 `z=1.6448536269514722`인 one-sided 95% Wilson score lower bound를 쓴다. 기본 owner 표본은 E03 결정 순서의 첫 variant를 대표 계약으로 삼은 10 anchor×16 seed이며 CLI에서 64 seed까지 허용한다. system medoid는 `isomorphic_recipe_count` 내림차순과 stable variant id로 고른 대표 N개만 v1에 포함한다. 출력 `intent_track_report.json`은 run, anchor, tier, gap 분포, BT6/BT7 공급 metric과 현재 PASS/FAIL을 invariant snake_case·ordinal order·UTF-8 no-BOM으로 기록하고 wallclock/GUID를 포함하지 않는다.
 
 ### H100-RC1 migration map
 
@@ -218,6 +230,14 @@ E02 정보 표면만 실콘텐츠에서 빠르게 재측정할 때는 다음 명
 ```powershell
 pwsh -File tools/h100-surface-audit.ps1
 ```
+
+E05 기본 실측은 owner 10×16 seed와 system medoid 대표 8개를 같은 coverage campaign 경로에서 실행한다. BT6/BT7가 임계치에 못 미치면 wrapper는 측정 실패를 숨기지 않고 `status=fail`을 출력하되, artifact 생성 자체가 정상인 한 프로세스 오류로 바꾸지 않는다.
+
+```powershell
+pwsh -File tools/h100-intent-track.ps1
+```
+
+64-seed RC 경로는 `-SeedCount 64`를 명시한다. 반복 결정성은 같은 인자로 별도 output directory에 두 번 실행한 `intent_track_report.json`의 byte hash 일치로 검증한다.
 
 대량 실행은 같은 명령에서 수를 명시한다. `BattleCount`는 같은 입력을 반복하는 replay group 수이며 실제 battle record 수는 replay copy 수만큼 증가한다.
 

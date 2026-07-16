@@ -82,7 +82,7 @@
       "name_ko": "트랙 개방성·에이전시 연속성",
       "measurement": "실제 오퍼열의 core/aspirational track oracle과 진척 drought",
       "role": "hard",
-      "evaluable_now": false,
+      "evaluable_now": true,
       "depends_on_envelope": ["E03", "E05"],
       "legacy_gate_ids": ["campaign_completion", "effective_build_diversity", "decision_depth"],
       "thresholds": [
@@ -101,7 +101,7 @@
       "name_ko": "의도 실현·payoff runway",
       "measurement": "owner-anchor별 conditional realization, 실현 시점, 사용 기회와 visible payoff",
       "role": "hard",
-      "evaluable_now": false,
+      "evaluable_now": true,
       "depends_on_envelope": ["E03", "E05"],
       "legacy_gate_ids": ["effective_build_diversity", "formation_significance", "depth_causality"],
       "thresholds": [

@@ -76,6 +76,12 @@ BT1 산출물은 `Logs/h100-concept-catalog/concept_catalog_bt1.json`이다. art
 
 FastUnit은 pure fixture로 byte-identical determinism, raw-stat-only 제외, 동형 dedupe, witness whitelist, 정책 접근 차단을 검증한다. 실제 authored content smoke는 Editor runner가 canonical snapshot을 투영한 뒤 같은 pure deriver와 validator를 호출한다. 이 분리는 FastUnit의 resource-free/authored-object-free 계약을 유지한다.
 
+## E05 intent track 탐색 경계
+
+`IntentTrackEvaluator`는 E03 계약을 실제 campaign offer stream에 대조하는 evaluator-only 순수 검색 책임이다. `IntentTrackState`, `IntentTrackAgencyWindow`, `IntentTrackChoice`는 authored object, session, content lookup을 포함하지 않는 DTO이며 roster, inventory, skill/passive, passive budget, Refit 자원, 배치, formation, milestone 상태만 운반한다. Editor adapter가 실제 배치와 보상 선택지를 delta DTO로 낮추고 campaign 종료 뒤 한 번에 넘긴다.
+
+탐색은 `identity_predicates`를 모두 만족하는 합법 경로의 존재와 가장 이른 진척/실현 시점을 구한다. contract-relevant component/effect만 state signature에 남기고 동일 signature의 열등 경로를 제거해 확정 offer열의 유한 분기를 줄인다. 이는 정밀 최적화 인증기가 아니라 BT6/BT7 지표 공급기다. 정책 assembly가 이 타입을 참조하거나 미래 offer를 observation으로 받는 변경은 금지하며 `BuildBoundaryGuardFastTests`와 E05 witness가 이를 고정한다.
+
 ## 진형 feature와 medoid
 
 formation feature는 실제 전투 결과가 아니라 정적 eligibility proxy다.

@@ -108,6 +108,16 @@ internal static class H100CampaignCorpusRunner
                     siteCount,
                     decisionCount,
                     H100PolicyObservationBuilder.Build(session, lookup, deploymentSeed));
+                observationHooks?.DeploymentOffered?.Invoke(new H100DeploymentOfferedContext(
+                    campaignId,
+                    campaignIndex,
+                    campaignSeed,
+                    siteCount,
+                    battleIndex,
+                    decisionCount,
+                    deploymentSeed,
+                    session,
+                    deploymentObservation));
                 var deploymentDecision = H100SessionDriver.ApplyPolicyDeployment(
                     session,
                     lookup,
@@ -189,6 +199,13 @@ internal static class H100CampaignCorpusRunner
                         settings.RunId, campaignId, battleId, replayGroupId, 0, scenarioId,
                         settings.PolicyId, state, result, settings.MaxBattleSteps, targetBattleSeconds);
                     campaignBattles.Add(metric);
+                    observationHooks?.BattleCompleted?.Invoke(new H100BattleCompletedContext(
+                        campaignId,
+                        campaignIndex,
+                        siteCount,
+                        battleIndex,
+                        result,
+                        metric));
                     battleIndex++;
 
                     var finalUnits = result.FinalUnits;
@@ -218,20 +235,22 @@ internal static class H100CampaignCorpusRunner
                     var rewardSeed = H100SessionDriver.DeriveSeed(
                         $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|reward",
                         campaignSeed + siteCount);
-                    observationHooks?.RewardOffered?.Invoke(new H100RewardOfferedContext(
-                        campaignId,
-                        campaignIndex,
-                        campaignSeed,
-                        siteCount,
-                        battleIndex,
-                        rewardSeed,
-                        session));
                     var rewardObservation = factLedger.Observe(
                         campaignId,
                         campaignIndex,
                         siteCount,
                         decisionCount,
                         H100PolicyObservationBuilder.Build(session, lookup, rewardSeed));
+                    observationHooks?.RewardOffered?.Invoke(new H100RewardOfferedContext(
+                        campaignId,
+                        campaignIndex,
+                        campaignSeed,
+                        siteCount,
+                        battleIndex,
+                        decisionCount,
+                        rewardSeed,
+                        session,
+                        rewardObservation));
                     var rewardDecision = H100SessionDriver.ApplyPolicyReward(
                         session,
                         lookup,
