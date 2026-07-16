@@ -24,7 +24,8 @@ public sealed class RandomLegalPolicy : IHeadlessPolicy
         return new HeadlessDeploymentDecision(
             placements,
             $"seeded legal shuffle seed={observation.DecisionSeed}; selected={HeadlessPolicyScoring.HeroSignature(selected)}",
-            HeadlessPolicyScoring.EvaluateDeployment(observation, selected, placements));
+            HeadlessPolicyScoring.EvaluateDeployment(observation, selected, placements),
+            HeadlessPolicyEvidence.ForDeployment(observation, usesDecisionSeed: true, usesCampaignContext: true));
     }
 
     public HeadlessRewardDecision DecideReward(HeadlessPolicyObservation observation)
@@ -32,7 +33,11 @@ public sealed class RandomLegalPolicy : IHeadlessPolicy
         HeadlessPolicyGuard.ValidateObservation(observation);
         if (observation.RewardOptions.Count == 0)
         {
-            return new HeadlessRewardDecision(-1, "no visible reward options", 0d);
+            return new HeadlessRewardDecision(
+                -1,
+                "no visible reward options",
+                0d,
+                HeadlessPolicyEvidence.ForReward(observation, true, true, false));
         }
 
         var rng = CreateRng(observation, "reward");
@@ -40,7 +45,8 @@ public sealed class RandomLegalPolicy : IHeadlessPolicy
         return new HeadlessRewardDecision(
             option.Index,
             $"seeded legal reward draw seed={observation.DecisionSeed}",
-            HeadlessPolicyScoring.RewardScore(observation, option, false, false, false));
+            HeadlessPolicyScoring.RewardScore(observation, option, false, false, false),
+            HeadlessPolicyEvidence.ForReward(observation, true, true, false));
     }
 
     private static PolicyRng CreateRng(HeadlessPolicyObservation observation, string decisionKind)

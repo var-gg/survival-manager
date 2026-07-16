@@ -80,7 +80,7 @@ internal static class HeadlessPolicyScoring
         HeadlessPolicyObservation observation,
         Func<IReadOnlyList<HeadlessHeroObservation>, double> score)
     {
-        IReadOnlyList<HeadlessHeroObservation>? best = null;
+        IReadOnlyList<HeadlessHeroObservation> best = null;
         var bestScore = double.NegativeInfinity;
         var bestSignature = string.Empty;
         foreach (var candidate in EnumerateCombinations(observation.Roster, observation.DeployCapacity))
@@ -234,15 +234,18 @@ internal static class HeadlessPolicyScoring
             _ => 0d,
         };
 
-        var deployed = observation.Roster.Where(hero => hero.IsDeployed).ToArray();
-        if (deployed.Length == 0)
+        if (doctrineBias)
         {
-            deployed = observation.Roster.Take(observation.DeployCapacity).ToArray();
-        }
+            var deployed = observation.Roster.Where(hero => hero.IsDeployed).ToArray();
+            if (deployed.Length == 0)
+            {
+                deployed = observation.Roster.Take(observation.DeployCapacity).ToArray();
+            }
 
-        if (doctrineBias && PayloadMatchesRoster(option.PayloadId, deployed))
-        {
-            score += 24d;
+            if (PayloadMatchesRoster(option.PayloadId, deployed))
+            {
+                score += 24d;
+            }
         }
 
         if (formationBias && ContainsAny(option.PayloadId, "heal", "guard", "shield", "support", "rescue", "barrier"))

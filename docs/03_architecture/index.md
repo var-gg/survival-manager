@@ -21,8 +21,8 @@
 - `dependency-direction.md`: asmdef/context/layer 의존 허용·금지 규칙
 - `unity-boundaries.md`: `MonoBehaviour`, `ScriptableObject`, scene 책임 경계
 - `assembly-boundaries-and-persistence-ownership.md`: `SM.Meta` content adapter, persistence ownership, asmdef 사전 점검 규칙
-- `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, RC1 동결 경로, BT1 role/migration/strict 판정, replay hash, Stage 4 진형 및 Stage 5 sunken solvability 산출물
-- `h100-headless-policy-contract.md`: H100 player-visible observation, 6개 production + Coverage QA 정책, no-cheat guard, policy witness 계약
+- `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, RC1 동결 경로, BT1 role/migration/strict 판정, player-visible fact ledger/EvidenceRef, replay hash, Stage 4 진형 및 Stage 5 sunken solvability 산출물
+- `h100-headless-policy-contract.md`: H100 player-visible observation, 6개 production + Coverage QA 정책, 최소 evidence 매핑, no-cheat guard, policy witness 계약
 - `h100-build-space-census-contract.md`: H100 495편성·360배치 pure census, 자동 medoid, Stage 4 placement 재사용, 소규모 screening 계약
 - `validation-and-acceptance-oracles.md`: feature closure, acceptance matrix, evidence 기록 기준
 - `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft

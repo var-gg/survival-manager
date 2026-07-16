@@ -28,7 +28,10 @@ public sealed class H100Bt1GateSpecTests
         Assert.That(spec.LegacySpecVersion, Is.EqualTo("h100-gates-v1"));
         Assert.That(spec.Gates.Select(gate => gate.Id), Is.EqualTo(Enumerable.Range(1, 10).Select(index => $"BT{index}")));
         Assert.That(spec.Gates, Has.All.Matches<H100Bt1GateSpec.GateDefinition>(gate => gate.Role == GateRole.Hard));
-        Assert.That(spec.Gates, Has.All.Matches<H100Bt1GateSpec.GateDefinition>(gate => !gate.EvaluableNow));
+        Assert.That(spec.Gates.Single(gate => gate.Id == "BT2").EvaluableNow, Is.True);
+        Assert.That(
+            spec.Gates.Where(gate => gate.Id != "BT2"),
+            Has.All.Matches<H100Bt1GateSpec.GateDefinition>(gate => !gate.EvaluableNow));
 
         var expectedDependencies = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
@@ -85,6 +88,24 @@ public sealed class H100Bt1GateSpecTests
     }
 
     [Test]
+    public void Bt2_ZeroAuditMetricsAreEvaluatedAndPass()
+    {
+        var spec = H100Bt1GateSpec.LoadFromFile(Bt1SpecPath);
+        var observations = ExpectedThresholds["BT2"]
+            .Select(signature => signature.Split('|')[0])
+            .Select(metricId => new H100GateEvaluator.ExternalObservation(metricId, 0d, 4, "fact ledger witness"))
+            .ToArray();
+
+        var report = H100Bt1GateEvaluator.Generate(spec, observations);
+        var bt2 = report.Gates.Single(gate => gate.GateId == "BT2");
+
+        Assert.That(bt2.Status, Is.EqualTo("pass"));
+        Assert.That(bt2.Pass, Is.True);
+        Assert.That(bt2.Thresholds, Has.All.Matches<H100Bt1GateReport.ThresholdResult>(
+            threshold => threshold.Observed && threshold.ObservedValue == 0d && threshold.Pass == true));
+    }
+
+    [Test]
     public void DiagnosticMissing_IsExplicitAndDoesNotBlockOverall()
     {
         var spec = H100Bt1GateSpec.LoadFromFile(Bt1SpecPath);
@@ -111,8 +132,11 @@ public sealed class H100Bt1GateSpecTests
 
         var report = H100Bt1GateEvaluator.Generate(spec, strictMode: true);
 
-        Assert.That(report.Gates, Has.All.Matches<H100Bt1GateReport.GateResult>(
-            gate => gate.Status == "not_yet_evaluable" && gate.Pass == false));
+        Assert.That(report.Gates.Single(gate => gate.GateId == "BT2").Status, Is.EqualTo("fail"));
+        Assert.That(
+            report.Gates.Where(gate => gate.GateId != "BT2"),
+            Has.All.Matches<H100Bt1GateReport.GateResult>(
+                gate => gate.Status == "not_yet_evaluable" && gate.Pass == false));
         Assert.That(report.OverallStatus, Is.EqualTo("fail"));
         Assert.That(report.OverallPass, Is.False);
     }

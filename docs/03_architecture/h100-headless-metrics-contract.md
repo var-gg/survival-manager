@@ -48,6 +48,31 @@
 
 새 지표를 추가할 때 authoritative sim/save truth를 바꾸지 않는다. 레코드는 기존 `BattleState`, `BattleResult`, `BattleActivityTelemetrySnapshot`, `CombatBeat`를 읽는 additive projection이어야 한다. `BattleHashCorpus` golden을 계측 편의를 위해 다시 기록하지 않는다.
 
+## Player-visible fact ledger와 BT2 provenance
+
+`PlayerVisibleFactRecord`는 정책 결정 전에 관측된 UI 의미를 `fact_id`, `observed_at`, `ui_source`, `subject`, `verb`, `target`, `condition`, `stack_or_threshold`, `acquisition_hint`, `source_text`, `content_hash`로 기록한다. `observed_at`은 wallclock이 아니라 `campaign_index`, `site_index`, `decision_index`로 구성한다. `fact_id`와 `content_hash`는 run id나 관측 시각을 제외한 의미 필드의 길이-prefix UTF-8 SHA-256에서 파생하므로 같은 observation 내용은 어느 재실행에서도 같은 fact id 집합을 만든다.
+
+허용 `ui_source`는 실제 또는 예정된 player-facing 의미를 고정한다.
+
+- `run_seed_display`, `campaign_map`, `squad_builder_formation`, `town_roster`
+- `roster_sheet_skill`, `roster_sheet_item`, `roster_sheet_passive`
+- `town_hud_wallet`, `run_augment_panel`
+- `squad_builder_synergy`, `compendium_synergy`
+- `encounter_preview`, `reward_card`
+
+`H100PlayerVisibleFactProjector`는 `HeadlessPolicyObservation`의 roster 기본 상태, skill/status mechanics, flex skill, item/affix/granted skill mechanics, passive node, wallet, temporary augment, synergy count/catalog, 현재 enemy preview, reward option/mechanics를 빠짐없이 fact로 투영한다. 이 adapter는 `SM.Editor.Validation`에 있고 `SM.HeadlessMetrics`와 `SM.HeadlessPolicies`를 함께 보는 유일한 조립층이다. fact record·hash·audit·writer는 `SM.HeadlessMetrics`에 남고 두 pure sibling asmdef 사이의 참조는 추가하지 않는다.
+
+`HeadlessDeploymentDecision`과 `HeadlessRewardDecision`은 additive `EvidenceFactIds`를 가진다. 정책은 observation에 조립된 문자열 fact-id index에서 실제 사용한 신호만 선택한다. `PlayerVisibleDecisionRecord`는 action, rationale, finite estimated value, `EvidenceRef` 목록을 fact와 같은 timeline에 기록한다. 빈 evidence, 존재하지 않는 fact, 결정 이후에만 존재하는 fact는 즉시 `PlayerVisibleProvenanceException`으로 실패한다. 정책 자체의 빈·중복 fact id도 `HeadlessPolicyGuard`가 fail closed한다.
+
+`PlayerVisibleFactLedgerAuditor`가 BT2의 네 지표를 공급한다.
+
+- `post_decision_information_reference_count`: `observed_at <= decided_at` join을 만족하지 못한 참조 수
+- `non_ui_semantic_internal_field_reference_count`: 허용 UI source 밖의 의미 또는 내부 전용 vocabulary 수
+- `oracle_or_truth_leak_count`: fact/decision의 evaluator-only 참조 수
+- `unsupported_certain_claim_count`: prior evidence로 해석되지 않는 certain decision 수
+
+캠페인 runner는 `player_visible_fact_ledger.jsonl`을 UTF-8 no-BOM과 stable timeline/fact id 순서로 기록한다. BT2는 E01 공급이 완료되어 `evaluable_now=true`이며 네 지표가 모두 관측된 0일 때만 PASS한다. 나머지 BT 게이트의 `not_yet_evaluable` 상태와 H100-RC1 산출물은 그대로 보존한다.
+
 ## 진형 Stage 4 계측
 
 `FormationEligibilityTracker`는 재실행 중 `BattleFormationConsequence`와 실제 HP/의도 상태를 읽어 측면·후방·차단·구출·후열 격파의 eligibility를 누적한다. fired는 `BattleMetricRecord`의 typed counter에서 읽으며, 측면 수는 후방을 포함한 `FlankStrikeCount`에서 `RearStrikeCount`를 빼서 중복을 제거한다. legible은 채널별 typed 설명이 존재할 때만 true다.
@@ -94,6 +119,8 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 - `campaign-metrics.jsonl`
 - `gate-report.json`
 - `run-manifest.json`
+- `player_visible_fact_ledger.jsonl`
+- `h100-bt1-gate-report.json`
 - 선택적으로 `battle-metrics.csv`, `campaign-metrics.csv`
 
 직렬화는 invariant culture, snake_case, 고정 property 순서를 사용한다. 레코드는 stable id 순서로, rule/count 컬렉션은 ordinal id 순서로 정렬한다. UTF-8 BOM과 실행 시각을 데이터 파일에 넣지 않는다. manifest hash는 정렬된 replay hash 열에서 계산한다.
@@ -111,7 +138,7 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 | 게이트 | 완료 정의 | 역할 | 현재 평가 | 공급 envelope |
 | --- | --- | --- | --- | --- |
 | BT1 | 결정성·리플레이 무결성 | hard | `not_yet_evaluable` | E07 |
-| BT2 | player-visible provenance | hard | `not_yet_evaluable` | E01 |
+| BT2 | player-visible provenance | hard | 네 provenance metric 실측 평가 | E01 |
 | BT3 | 정보 표면 완결성 | hard | `not_yet_evaluable` | E02 |
 | BT4 | 빌드 문법 유추 가능성 | hard | `not_yet_evaluable` | E02, E03, E07 |
 | BT5 | 욕구 형성·커밋 | hard | `not_yet_evaluable` | E04, E07 |

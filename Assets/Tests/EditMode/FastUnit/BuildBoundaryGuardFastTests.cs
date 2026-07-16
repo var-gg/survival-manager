@@ -116,6 +116,20 @@ public sealed class BuildBoundaryGuardFastTests
     }
 
     [Test]
+    public void HeadlessPolicySources_DoNotReferenceEvaluatorOnlySymbols()
+    {
+        var forbiddenPattern = @"\b(?:Oracle|Census|TruthGraph|BuildGrammarTruthGraph|FutureOffer|FutureNode|ResolvedEnemyStats?)\b";
+        var policyRoot = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "HeadlessPolicies");
+        foreach (var path in Directory.EnumerateFiles(policyRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            Assert.That(
+                Regex.IsMatch(ReadCodeText(path), forbiddenPattern, RegexOptions.IgnoreCase),
+                Is.False,
+                $"{path} must not reference evaluator-only graph, future-offer, or resolved-enemy symbols.");
+        }
+    }
+
+    [Test]
     public void GameSessionState_FacadeFileStaysBelowBoundaryBudget()
     {
         var path = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionState.cs");

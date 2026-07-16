@@ -32,10 +32,14 @@ public sealed class HeadlessPolicyPortfolioFastTests
             Assert.That(PlacementSignature(firstDeployment), Is.EqualTo(PlacementSignature(secondDeployment)), policyId);
             Assert.That(firstDeployment.EstimatedValue, Is.EqualTo(secondDeployment.EstimatedValue), policyId);
             Assert.That(firstDeployment.Rationale, Is.Not.Empty, policyId);
+            Assert.That(firstDeployment.EvidenceFactIds, Is.Not.Empty, policyId);
+            Assert.That(secondDeployment.EvidenceFactIds, Is.EqualTo(firstDeployment.EvidenceFactIds), policyId);
             Assert.That(firstReward.OptionIndex, Is.EqualTo(secondReward.OptionIndex), policyId);
             Assert.That(firstReward.EstimatedValue, Is.EqualTo(secondReward.EstimatedValue), policyId);
             Assert.That(firstReward.Rationale, Is.EqualTo(secondReward.Rationale), policyId);
             Assert.That(firstReward.Rationale, Is.Not.Empty, policyId);
+            Assert.That(firstReward.EvidenceFactIds, Is.Not.Empty, policyId);
+            Assert.That(secondReward.EvidenceFactIds, Is.EqualTo(firstReward.EvidenceFactIds), policyId);
         }
     }
 
@@ -268,8 +272,20 @@ public sealed class HeadlessPolicyPortfolioFastTests
                             new[] { new HeadlessStatModifierObservation("MaxHp", "Add", 10f, string.Empty) },
                             "team-rule-human"),
                     }),
-            });
+            },
+            EvidenceIndex());
     }
+
+    private static IReadOnlyDictionary<string, string> EvidenceIndex()
+        => new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            [HeadlessPolicyEvidence.DecisionSeedSignal] = "fact-decision-seed",
+            [HeadlessPolicyEvidence.CampaignContextSignal] = "fact-campaign-context",
+            [HeadlessPolicyEvidence.DeploymentSurfaceSignal] = "fact-deployment-surface",
+            [HeadlessPolicyEvidence.RosterSurfaceSignal] = "fact-roster-surface",
+            [HeadlessPolicyEvidence.EnemyPreviewSignal] = "fact-enemy-preview",
+            [HeadlessPolicyEvidence.RewardSurfaceSignal] = "fact-reward-surface",
+        };
 
     private static HeadlessHeroObservation Hero(
         string heroId,

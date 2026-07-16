@@ -34,8 +34,27 @@ internal static class H100SessionDriver
         IHeadlessPolicy policy,
         int decisionSeed,
         Action<string>? decisionLog = null)
+        => ApplyPolicyDeployment(
+            session,
+            lookup,
+            policy,
+            decisionSeed,
+            H100PolicyObservationBuilder.Build(session, lookup, decisionSeed),
+            decisionLog);
+
+    public static HeadlessDeploymentDecision ApplyPolicyDeployment(
+        GameSessionState session,
+        RuntimeCombatContentLookup lookup,
+        IHeadlessPolicy policy,
+        int decisionSeed,
+        HeadlessPolicyObservation observation,
+        Action<string>? decisionLog = null)
     {
-        var observation = H100PolicyObservationBuilder.Build(session, lookup, decisionSeed);
+        if (observation.DecisionSeed != decisionSeed)
+        {
+            throw new InvalidOperationException("Prepared deployment observation seed does not match the requested decision seed.");
+        }
+
         var decision = policy.DecideDeployment(observation);
         HeadlessPolicyGuard.ValidateDeploymentDecision(observation, decision);
         foreach (var anchor in session.DeploymentAnchors)
@@ -61,8 +80,27 @@ internal static class H100SessionDriver
         IHeadlessPolicy policy,
         int decisionSeed,
         Action<string>? decisionLog = null)
+        => ApplyPolicyReward(
+            session,
+            lookup,
+            policy,
+            decisionSeed,
+            H100PolicyObservationBuilder.Build(session, lookup, decisionSeed),
+            decisionLog);
+
+    public static HeadlessRewardDecision ApplyPolicyReward(
+        GameSessionState session,
+        RuntimeCombatContentLookup lookup,
+        IHeadlessPolicy policy,
+        int decisionSeed,
+        HeadlessPolicyObservation observation,
+        Action<string>? decisionLog = null)
     {
-        var observation = H100PolicyObservationBuilder.Build(session, lookup, decisionSeed);
+        if (observation.DecisionSeed != decisionSeed)
+        {
+            throw new InvalidOperationException("Prepared reward observation seed does not match the requested decision seed.");
+        }
+
         var decision = policy.DecideReward(observation);
         HeadlessPolicyGuard.ValidateRewardDecision(observation, decision);
         if (decision.OptionIndex >= 0 && !session.ApplyRewardChoice(decision.OptionIndex))

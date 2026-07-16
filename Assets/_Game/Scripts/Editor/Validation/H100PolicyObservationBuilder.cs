@@ -98,6 +98,7 @@ internal static class H100PolicyObservationBuilder
             temporaryAugments,
             BuildSynergyCounts(roster, snapshot),
             BuildSynergyCatalog(snapshot));
+        observation = H100PlayerVisibleFactProjector.AttachEvidenceIndex(observation);
         HeadlessPolicyGuard.ValidateObservation(observation);
         return observation;
     }

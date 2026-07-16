@@ -23,7 +23,7 @@
       "name_ko": "player-visible provenance",
       "measurement": "모든 정책 결정과 빌드 가설의 EvidenceRef 및 no-cheat provenance",
       "role": "hard",
-      "evaluable_now": false,
+      "evaluable_now": true,
       "depends_on_envelope": ["E01"],
       "legacy_gate_ids": [],
       "thresholds": [

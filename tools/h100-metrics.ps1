@@ -59,7 +59,14 @@ try {
     else {
         [IO.Path]::GetFullPath((Join-Path $projectRoot $OutputDirectory))
     }
-    $required = @('battle-metrics.jsonl', 'campaign-metrics.jsonl', 'gate-report.json', 'run-manifest.json')
+    $required = @(
+        'battle-metrics.jsonl',
+        'campaign-metrics.jsonl',
+        'gate-report.json',
+        'run-manifest.json',
+        'player_visible_fact_ledger.jsonl',
+        'h100-bt1-gate-report.json'
+    )
     foreach ($name in $required) {
         $path = Join-Path $resolvedOutput $name
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
@@ -74,8 +81,28 @@ try {
         throw 'H100 replay hash same-seed witness did not reach 100%.'
     }
 
+    $bt1Report = Get-Content -Raw -LiteralPath (Join-Path $resolvedOutput 'h100-bt1-gate-report.json') | ConvertFrom-Json
+    $bt2Gate = $bt1Report.gates | Where-Object { $_.gate_id -eq 'BT2' }
+    if ($null -eq $bt2Gate -or $bt2Gate.status -ne 'pass') {
+        throw "H100 BT2 provenance gate did not pass (status=$($bt2Gate.status))."
+    }
+    foreach ($threshold in $bt2Gate.thresholds) {
+        if (-not $threshold.observed -or [double]$threshold.observed_value -ne 0.0 -or -not $threshold.pass) {
+            throw "H100 BT2 metric failed: $($threshold.metric_id) observed=$($threshold.observed_value) pass=$($threshold.pass)."
+        }
+    }
+
+    $ledgerPath = Join-Path $resolvedOutput 'player_visible_fact_ledger.jsonl'
+    $ledgerLineCount = @(Get-Content -LiteralPath $ledgerPath).Count
+    if ($ledgerLineCount -le 0) {
+        throw 'H100 player-visible fact ledger is empty.'
+    }
+
     Write-Host "H100 metrics artifacts: $resolvedOutput (policy=$Policy)"
     Write-Host "Replay hash match rate: $($hashThreshold.observed_value) (groups=$($hashThreshold.sample_count))"
+    $bt2MetricSummary = ($bt2Gate.thresholds | ForEach-Object { "$($_.metric_id)=$($_.observed_value)" }) -join ', '
+    Write-Host "BT2 provenance metrics: $bt2MetricSummary"
+    Write-Host "Player-visible fact ledger lines: $ledgerLineCount"
     Write-Host "Overall H100 gate pass: $($gateReport.overall_pass) (smoke/sample-floor failures are expected for small N)"
 }
 finally {

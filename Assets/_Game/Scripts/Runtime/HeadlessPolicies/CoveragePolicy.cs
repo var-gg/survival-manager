@@ -41,7 +41,8 @@ public sealed class CoveragePolicy : IHeadlessPolicy
             placements,
             $"QA coverage only (not competent play); sample={ChannelIds[channelIndex]} healer={heroes.Any(IsHealer)} "
             + $"doctrine={HeadlessPolicyScoring.DoctrineScore(heroes):F1} roster={HeadlessPolicyScoring.HeroSignature(heroes)}",
-            HeadlessPolicyScoring.EvaluateDeployment(observation, heroes, placements));
+            HeadlessPolicyScoring.EvaluateDeployment(observation, heroes, placements),
+            HeadlessPolicyEvidence.ForDeployment(observation, usesDecisionSeed: true, usesCampaignContext: false));
     }
 
     public HeadlessRewardDecision DecideReward(HeadlessPolicyObservation observation)
@@ -49,7 +50,11 @@ public sealed class CoveragePolicy : IHeadlessPolicy
         HeadlessPolicyGuard.ValidateObservation(observation);
         if (observation.RewardOptions.Count == 0)
         {
-            return new HeadlessRewardDecision(-1, "QA coverage only; no visible reward options", 0d);
+            return new HeadlessRewardDecision(
+                -1,
+                "QA coverage only; no visible reward options",
+                0d,
+                HeadlessPolicyEvidence.ForReward(observation, false, false, true));
         }
 
         var option = observation.RewardOptions
@@ -64,7 +69,8 @@ public sealed class CoveragePolicy : IHeadlessPolicy
         return new HeadlessRewardDecision(
             option.Option.Index,
             $"QA coverage only; favor visible doctrine/protection/counter hook payload={option.Option.PayloadId}",
-            option.Score);
+            option.Score,
+            HeadlessPolicyEvidence.ForReward(observation, false, false, true));
     }
 
     private static double CoverageSelectionScore(IReadOnlyList<HeadlessHeroObservation> heroes)

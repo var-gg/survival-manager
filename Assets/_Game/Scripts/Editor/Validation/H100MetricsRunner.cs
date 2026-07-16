@@ -14,6 +14,7 @@ namespace SM.Editor.Validation;
 public static class H100MetricsRunner
 {
     private const string GateSpecRelativePath = "Assets/_Game/Scripts/Runtime/HeadlessMetrics/h100-gates-v1.json";
+    private const string Bt1GateSpecRelativePath = "Assets/_Game/Scripts/Runtime/HeadlessMetrics/h100-gates-bt1-v1.json";
     private static readonly UTF8Encoding Utf8WithoutBom = new(false);
 
     /// <summary>HUB 파이프라인 witness용 축소 실행(4 paired battles + 1 short campaign).</summary>
@@ -27,6 +28,7 @@ public static class H100MetricsRunner
         SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(H100MetricsRunner));
         var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
         var gateSpecPath = Path.GetFullPath(Path.Combine(projectRoot, GateSpecRelativePath));
+        var bt1GateSpecPath = Path.GetFullPath(Path.Combine(projectRoot, Bt1GateSpecRelativePath));
         var outputDirectory = ResolveOutputDirectory(projectRoot, settings.OutputDirectory);
         var spec = H100GateSpec.LoadFromFile(gateSpecPath);
         var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
@@ -41,11 +43,22 @@ public static class H100MetricsRunner
         var campaigns = campaignCorpus.Campaigns.ToArray();
         var gateReport = H100GateEvaluator.Generate(spec, battles, campaigns);
         var artifacts = HeadlessMetricArtifactWriter.Write(outputDirectory, battles, campaigns, gateReport, settings.WriteCsv);
+        PlayerVisibleFactLedgerArtifactWriter.Write(
+            outputDirectory,
+            campaignCorpus.Facts,
+            campaignCorpus.Decisions);
+        var bt1Spec = H100Bt1GateSpec.LoadFromFile(bt1GateSpecPath);
+        var bt1Report = H100Bt1GateEvaluator.Generate(
+            bt1Spec,
+            campaignCorpus.FactAudit.ToBt2Observations(),
+            legacyReport: gateReport);
+        H100Bt1GateReportWriter.Write(outputDirectory, bt1Report);
         WriteManifest(outputDirectory, settings, spec, artifacts, battles, campaigns, gateReport);
 
         Debug.Log(
             $"[H100Metrics] complete run={settings.RunId} battles={battles.Length} campaigns={campaigns.Length} "
-            + $"overallPass={gateReport.OverallPass} output={outputDirectory}");
+            + $"overallPass={gateReport.OverallPass} bt2={bt1Report.Gates.Single(gate => gate.GateId == "BT2").Status} "
+            + $"facts={campaignCorpus.Facts.Count} decisions={campaignCorpus.Decisions.Count} output={outputDirectory}");
     }
 
     private static string ResolveOutputDirectory(string projectRoot, string requested)

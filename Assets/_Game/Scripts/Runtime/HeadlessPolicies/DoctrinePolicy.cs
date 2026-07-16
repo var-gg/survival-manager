@@ -19,7 +19,8 @@ public sealed class DoctrinePolicy : IHeadlessPolicy
         return new HeadlessDeploymentDecision(
             placements,
             $"maximize visible race/class thresholds; roster={HeadlessPolicyScoring.HeroSignature(heroes)} doctrine={HeadlessPolicyScoring.DoctrineScore(heroes):F1}",
-            HeadlessPolicyScoring.EvaluateDeployment(observation, heroes, placements));
+            HeadlessPolicyScoring.EvaluateDeployment(observation, heroes, placements),
+            HeadlessPolicyEvidence.ForDeployment(observation, usesDecisionSeed: false, usesCampaignContext: false));
     }
 
     public HeadlessRewardDecision DecideReward(HeadlessPolicyObservation observation)
@@ -27,7 +28,11 @@ public sealed class DoctrinePolicy : IHeadlessPolicy
         HeadlessPolicyGuard.ValidateObservation(observation);
         if (observation.RewardOptions.Count == 0)
         {
-            return new HeadlessRewardDecision(-1, "no visible reward options", 0d);
+            return new HeadlessRewardDecision(
+                -1,
+                "no visible reward options",
+                0d,
+                HeadlessPolicyEvidence.ForReward(observation, false, false, true));
         }
 
         var option = observation.RewardOptions
@@ -42,6 +47,7 @@ public sealed class DoctrinePolicy : IHeadlessPolicy
         return new HeadlessRewardDecision(
             option.Option.Index,
             $"reward reinforces visible race/class thesis; payload={option.Option.PayloadId}",
-            option.Score);
+            option.Score,
+            HeadlessPolicyEvidence.ForReward(observation, false, false, true));
     }
 }

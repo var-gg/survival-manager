@@ -70,7 +70,8 @@ public sealed class SearchPlannerPolicy : IHeadlessPolicy
         return new HeadlessDeploymentDecision(
             bestPlacements,
             $"bounded visible-state search depth=1 candidates={evaluated}; roster={HeadlessPolicyScoring.HeroSignature(bestHeroes)}",
-            bestValue);
+            bestValue,
+            HeadlessPolicyEvidence.ForDeployment(observation, usesDecisionSeed: false, usesCampaignContext: false));
     }
 
     public HeadlessRewardDecision DecideReward(HeadlessPolicyObservation observation)
@@ -78,7 +79,11 @@ public sealed class SearchPlannerPolicy : IHeadlessPolicy
         HeadlessPolicyGuard.ValidateObservation(observation);
         if (observation.RewardOptions.Count == 0)
         {
-            return new HeadlessRewardDecision(-1, "no visible reward options", 0d);
+            return new HeadlessRewardDecision(
+                -1,
+                "no visible reward options",
+                0d,
+                HeadlessPolicyEvidence.ForReward(observation, false, false, true));
         }
 
         var option = observation.RewardOptions
@@ -93,6 +98,7 @@ public sealed class SearchPlannerPolicy : IHeadlessPolicy
         return new HeadlessRewardDecision(
             option.Option.Index,
             $"bounded visible reward evaluation options={observation.RewardOptions.Count}; payload={option.Option.PayloadId}",
-            option.Score);
+            option.Score,
+            HeadlessPolicyEvidence.ForReward(observation, false, false, true));
     }
 }

@@ -22,7 +22,8 @@ public sealed class HeadlessPolicyObservation
         HeadlessWalletObservation wallet = null,
         IReadOnlyList<HeadlessAugmentMechanicsObservation> temporaryAugments = null,
         IReadOnlyList<HeadlessSynergyCountObservation> synergyCounts = null,
-        IReadOnlyList<HeadlessSynergyObservation> synergyCatalog = null)
+        IReadOnlyList<HeadlessSynergyObservation> synergyCatalog = null,
+        IReadOnlyDictionary<string, string> evidenceFactIdsBySignal = null)
     {
         DecisionSeed = decisionSeed;
         DeployCapacity = deployCapacity;
@@ -36,6 +37,17 @@ public sealed class HeadlessPolicyObservation
         TemporaryAugments = temporaryAugments ?? Array.Empty<HeadlessAugmentMechanicsObservation>();
         SynergyCounts = synergyCounts ?? Array.Empty<HeadlessSynergyCountObservation>();
         SynergyCatalog = synergyCatalog ?? Array.Empty<HeadlessSynergyObservation>();
+        var sortedEvidenceFactIds = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        if (evidenceFactIdsBySignal != null)
+        {
+            foreach (var pair in evidenceFactIdsBySignal)
+            {
+                sortedEvidenceFactIds[pair.Key] = pair.Value;
+            }
+        }
+
+        EvidenceFactIdsBySignal = new System.Collections.ObjectModel.ReadOnlyDictionary<string, string>(
+            sortedEvidenceFactIds);
     }
 
     public int DecisionSeed { get; }
@@ -50,6 +62,24 @@ public sealed class HeadlessPolicyObservation
     public IReadOnlyList<HeadlessAugmentMechanicsObservation> TemporaryAugments { get; }
     public IReadOnlyList<HeadlessSynergyCountObservation> SynergyCounts { get; }
     public IReadOnlyList<HeadlessSynergyObservation> SynergyCatalog { get; }
+    public IReadOnlyDictionary<string, string> EvidenceFactIdsBySignal { get; }
+
+    public HeadlessPolicyObservation WithEvidenceFactIds(
+        IReadOnlyDictionary<string, string> evidenceFactIdsBySignal)
+        => new(
+            DecisionSeed,
+            DeployCapacity,
+            ChapterId,
+            SiteId,
+            Roster,
+            Anchors,
+            EnemyPreview,
+            RewardOptions,
+            Wallet,
+            TemporaryAugments,
+            SynergyCounts,
+            SynergyCatalog,
+            evidenceFactIdsBySignal);
 }
 
 /// <summary>roster UI에서 확인 가능한 영웅 identity, role, 현재 성장/상태의 순수 projection.</summary>
@@ -550,28 +580,37 @@ public sealed class HeadlessDeploymentDecision
     public HeadlessDeploymentDecision(
         IReadOnlyList<HeadlessPlacement> placements,
         string rationale,
-        double estimatedValue)
+        double estimatedValue,
+        IReadOnlyList<string> evidenceFactIds = null)
     {
         Placements = placements;
         Rationale = rationale;
         EstimatedValue = estimatedValue;
+        EvidenceFactIds = evidenceFactIds ?? Array.Empty<string>();
     }
 
     public IReadOnlyList<HeadlessPlacement> Placements { get; }
     public string Rationale { get; }
     public double EstimatedValue { get; }
+    public IReadOnlyList<string> EvidenceFactIds { get; }
 }
 
 public sealed class HeadlessRewardDecision
 {
-    public HeadlessRewardDecision(int optionIndex, string rationale, double estimatedValue)
+    public HeadlessRewardDecision(
+        int optionIndex,
+        string rationale,
+        double estimatedValue,
+        IReadOnlyList<string> evidenceFactIds = null)
     {
         OptionIndex = optionIndex;
         Rationale = rationale;
         EstimatedValue = estimatedValue;
+        EvidenceFactIds = evidenceFactIds ?? Array.Empty<string>();
     }
 
     public int OptionIndex { get; }
     public string Rationale { get; }
     public double EstimatedValue { get; }
+    public IReadOnlyList<string> EvidenceFactIds { get; }
 }

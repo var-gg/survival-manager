@@ -19,7 +19,8 @@ public sealed class FormationPolicy : IHeadlessPolicy
         return new HeadlessDeploymentDecision(
             placements,
             $"balance front/back and protect visible support; roster={HeadlessPolicyScoring.HeroSignature(heroes)}",
-            HeadlessPolicyScoring.EvaluateDeployment(observation, heroes, placements));
+            HeadlessPolicyScoring.EvaluateDeployment(observation, heroes, placements),
+            HeadlessPolicyEvidence.ForDeployment(observation, usesDecisionSeed: false, usesCampaignContext: false));
     }
 
     public HeadlessRewardDecision DecideReward(HeadlessPolicyObservation observation)
@@ -27,7 +28,11 @@ public sealed class FormationPolicy : IHeadlessPolicy
         HeadlessPolicyGuard.ValidateObservation(observation);
         if (observation.RewardOptions.Count == 0)
         {
-            return new HeadlessRewardDecision(-1, "no visible reward options", 0d);
+            return new HeadlessRewardDecision(
+                -1,
+                "no visible reward options",
+                0d,
+                HeadlessPolicyEvidence.ForReward(observation, false, false, false));
         }
 
         var option = observation.RewardOptions
@@ -42,6 +47,7 @@ public sealed class FormationPolicy : IHeadlessPolicy
         return new HeadlessRewardDecision(
             option.Option.Index,
             $"reward favors protection/healing formation value; payload={option.Option.PayloadId}",
-            option.Score);
+            option.Score,
+            HeadlessPolicyEvidence.ForReward(observation, false, false, false));
     }
 }

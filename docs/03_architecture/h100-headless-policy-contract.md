@@ -49,7 +49,21 @@
 
 네 유능 정책의 canonical ID는 `H100GateEvaluator`가 `competent` cohort로 집계할 수 있도록 `competent-` 접두사를 고정한다. `qa-formation-coverage-v1`은 production 정책 목록에서 제외하며 유능 플레이나 밸런스 가치를 주장하지 않는다. 짧은 별칭은 factory 입력에서만 허용하고 metric에는 canonical ID를 기록한다.
 
-모든 decision은 `Rationale`과 finite `EstimatedValue`를 반환한다. runner는 policy/kind/chapter/site/seed/value/reason을 단일 행 로그로 남긴다. `HeadlessPolicyGuard`는 observation과 action의 null, 중복, 범위, legal set, finite value를 fail closed한다.
+모든 decision은 `Rationale`, finite `EstimatedValue`, 하나 이상의 `EvidenceFactIds`를 반환한다. observation에는 `SM.Editor.Validation` projector가 만든 signal key→fact id index만 additive로 들어가며 fact schema나 ledger 구현은 정책 assembly에 노출되지 않는다. runner는 policy/kind/chapter/site/seed/value/reason을 단일 행 로그로 남기고 별도 fact ledger에 action과 evidence link를 기록한다. `HeadlessPolicyGuard`는 observation과 action의 null, 중복, 범위, legal set, finite value, 빈·중복 evidence id를 fail closed한다. fact 존재와 결정 시점은 `SM.HeadlessMetrics.PlayerVisibleFactLedgerAuditor`를 호출하는 Editor 조립층이 검증한다.
+
+정책별 최소 evidence 신호는 실제 선택·가치 계산 경로와 다음처럼 대응한다.
+
+| 정책 | deployment evidence | reward evidence |
+| --- | --- | --- |
+| `random-legal-v1` | seed, chapter/site context, roster, legal deployment surface, enemy preview | seed, chapter/site context, 현재 reward surface |
+| `greedy-v1` | roster order/role, legal deployment surface, enemy preview | 현재 reward surface |
+| `competent-doctrine-v1` | roster race/class/readiness, legal deployment surface, enemy preview | reward surface, deployed roster identity |
+| `competent-formation-v1` | roster role/anchor/readiness, legal deployment surface, enemy preview | reward surface의 protection/healing payload |
+| `competent-counter-adaptive-v1` | roster, legal deployment surface, 현재 enemy preview | reward surface의 counter payload |
+| `competent-search-planner-v1` | roster, legal deployment surface, 현재 enemy preview | reward surface, deployed roster identity |
+| `qa-formation-coverage-v1` | seed, roster role/class, legal deployment surface, enemy preview | reward surface, deployed roster identity |
+
+`random-legal-v1`의 무작위 선택도 외부 RNG state가 아니라 player-visible observation에 고정된 decision seed fact를 인용한다. 모든 reward option이 없는 결정도 빈 reward surface fact를 근거로 `option=-1`을 반환한다. 정책이 읽지 않은 wallet, item mechanics, synergy catalog 전체를 편의상 모두 인용하지 않는다.
 
 ## 실행과 검증
 

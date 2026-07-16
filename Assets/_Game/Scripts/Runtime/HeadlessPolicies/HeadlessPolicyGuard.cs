@@ -84,6 +84,8 @@ public static class HeadlessPolicyGuard
             throw new InvalidOperationException("Policy estimated value must be finite.");
         }
 
+        ValidateEvidenceFactIds(decision.EvidenceFactIds);
+
         var expectedCount = Math.Min(observation.DeployCapacity, observation.Roster.Count);
         if (decision.Placements.Count != expectedCount)
         {
@@ -117,6 +119,8 @@ public static class HeadlessPolicyGuard
         {
             throw new InvalidOperationException("Policy estimated value must be finite.");
         }
+
+        ValidateEvidenceFactIds(decision.EvidenceFactIds);
 
         if (observation.RewardOptions.Count == 0)
         {
@@ -157,6 +161,20 @@ public static class HeadlessPolicyGuard
             RequireText(unit.ArchetypeId, nameof(unit.ArchetypeId));
             RequireText(unit.RaceId, nameof(unit.RaceId));
             RequireText(unit.ClassId, nameof(unit.ClassId));
+        }
+    }
+
+    private static void ValidateEvidenceFactIds(IReadOnlyList<string> evidenceFactIds)
+    {
+        if (evidenceFactIds == null || evidenceFactIds.Count == 0)
+        {
+            throw new HeadlessPolicyEvidenceException("Every policy decision must cite at least one player-visible fact id.");
+        }
+
+        if (evidenceFactIds.Any(string.IsNullOrWhiteSpace)
+            || evidenceFactIds.Distinct(StringComparer.Ordinal).Count() != evidenceFactIds.Count)
+        {
+            throw new HeadlessPolicyEvidenceException("Policy evidence fact ids must be non-empty and distinct.");
         }
     }
 

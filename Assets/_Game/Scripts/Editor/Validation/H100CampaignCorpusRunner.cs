@@ -16,7 +16,10 @@ internal static class H100CampaignCorpusRunner
 
     internal sealed record Corpus(
         IReadOnlyList<BattleMetricRecord> Battles,
-        IReadOnlyList<CampaignMetricRecord> Campaigns);
+        IReadOnlyList<CampaignMetricRecord> Campaigns,
+        IReadOnlyList<PlayerVisibleFactRecord> Facts,
+        IReadOnlyList<PlayerVisibleDecisionRecord> Decisions,
+        PlayerVisibleFactAuditResult FactAudit);
 
     public static Corpus Run(
         RuntimeCombatContentLookup lookup,
@@ -27,6 +30,7 @@ internal static class H100CampaignCorpusRunner
     {
         var battles = new List<BattleMetricRecord>();
         var campaigns = new List<CampaignMetricRecord>(settings.CampaignCount);
+        var factLedger = new H100PlayerVisibleFactLedgerCollector(settings.RunId);
         for (var index = 0; index < settings.CampaignCount; index++)
         {
             if (observationHooks?.StopRequested?.Invoke() == true)
@@ -34,10 +38,24 @@ internal static class H100CampaignCorpusRunner
                 break;
             }
 
-            RunOne(lookup, settings, targetBattleSeconds, index, battles, campaigns, decisionLog, observationHooks);
+            RunOne(
+                lookup,
+                settings,
+                targetBattleSeconds,
+                index,
+                battles,
+                campaigns,
+                factLedger,
+                decisionLog,
+                observationHooks);
         }
 
-        return new Corpus(battles, campaigns);
+        return new Corpus(
+            battles,
+            campaigns,
+            factLedger.Facts,
+            factLedger.Decisions,
+            PlayerVisibleFactLedgerAuditor.Audit(factLedger.Facts, factLedger.Decisions));
     }
 
     private static void RunOne(
@@ -47,6 +65,7 @@ internal static class H100CampaignCorpusRunner
         int campaignIndex,
         ICollection<BattleMetricRecord> allBattles,
         ICollection<CampaignMetricRecord> allCampaigns,
+        H100PlayerVisibleFactLedgerCollector factLedger,
         Action<string>? decisionLog,
         H100CampaignObservationHooks? observationHooks)
     {
@@ -75,12 +94,26 @@ internal static class H100CampaignCorpusRunner
                 var deploymentSeed = H100SessionDriver.DeriveSeed(
                     $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|deployment",
                     campaignSeed + siteCount);
+                var deploymentObservation = factLedger.Observe(
+                    campaignId,
+                    campaignIndex,
+                    siteCount,
+                    decisionCount,
+                    H100PolicyObservationBuilder.Build(session, lookup, deploymentSeed));
                 var deploymentDecision = H100SessionDriver.ApplyPolicyDeployment(
                     session,
                     lookup,
                     policy,
                     deploymentSeed,
+                    deploymentObservation,
                     decisionLog);
+                factLedger.RecordDeployment(
+                    campaignId,
+                    campaignIndex,
+                    siteCount,
+                    decisionCount,
+                    policy.Id,
+                    deploymentDecision);
                 decisionCount++;
                 observationHooks?.SiteArrived?.Invoke(new H100SiteArrivalContext(
                     campaignId,
@@ -179,12 +212,26 @@ internal static class H100CampaignCorpusRunner
                         battleIndex,
                         rewardSeed,
                         session));
+                    var rewardObservation = factLedger.Observe(
+                        campaignId,
+                        campaignIndex,
+                        siteCount,
+                        decisionCount,
+                        H100PolicyObservationBuilder.Build(session, lookup, rewardSeed));
                     var rewardDecision = H100SessionDriver.ApplyPolicyReward(
                         session,
                         lookup,
                         policy,
                         rewardSeed,
+                        rewardObservation,
                         decisionLog);
+                    factLedger.RecordReward(
+                        campaignId,
+                        campaignIndex,
+                        siteCount,
+                        decisionCount,
+                        policy.Id,
+                        rewardDecision);
                     decisionCount++;
                     observationHooks?.RewardChosen?.Invoke(new H100RewardChosenContext(
                         campaignId,
@@ -210,7 +257,8 @@ internal static class H100CampaignCorpusRunner
                 truncated = true;
             }
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not HeadlessPolicyEvidenceException
+                                          && exception is not PlayerVisibleProvenanceException)
         {
             terminalReason = $"exception:{exception.GetType().Name}";
             crashCount++;
