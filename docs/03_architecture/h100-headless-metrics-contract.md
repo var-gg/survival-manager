@@ -12,6 +12,8 @@
   - `docs/04_decisions/adr-0030-h100-headless-metrics-boundary.md`
   - `docs/03_architecture/h100-headless-policy-contract.md`
   - `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
+  - `docs/03_architecture/h100-build-space-census-contract.md`
+  - `docs/04_decisions/adr-0032-h100-build-space-census-boundary.md`
 
 ## 목적
 
@@ -60,6 +62,23 @@ Stage 4 출력은 `Logs/h100-formation/` 아래 네 파일이다.
 - `formation-report.json`: Coverage 통과, Competent prevalence/impact/legibility, placement, healer, Q5 및 Stage 5 밸런스 신호
 
 Coverage가 다섯 채널을 모두 발동했지만 Competent Q5가 실패하면 `needs_stage_five_balance=true`로 기록한다. 힐러는 빈도를 고정하지 않고 marginal value가 양수인 상태에서 Competent가 선택했는지만 검사한다.
+
+## Sunken Stage 5 방향 진단
+
+`SunkenSolvabilityEvaluator`는 `site_sunken_bastion` 진입 직전의 캠페인 상태와 paired site replay 결과만 읽는 순수 판정기다. golden, 전투 수치, encounter authoring, save schema는 바꾸지 않는다. `SM.Editor.Validation` runner가 기존 6개 production policy로 실제 캠페인을 진행하면서 target site 진입 직전 roster·보유 archetype·배치·직전 reward를 캡처하고, `SM.HeadlessMetrics`에는 Unity/session 참조가 없는 record만 넘긴다.
+
+same-state oracle은 캡처 프로필을 후보마다 메모리에서 복원한 뒤 현재 보유 hero로 만들 수 있는 합법 4인 편성과 배치를 같은 site battle seed 수열로 재실행한다. 편성 공간은 Stage 3의 495개 `BuildCombination`을 보유 roster로 필터링하고, 배치는 Stage 3의 8개 자동 medoid를 재사용한다. 따라서 기본 진단은 보유 편성을 전수 검사하되 360개 전체 배치 대신 8개 medoid를 쓰는 right-size 방향 판별이며, 전체 배치 인증으로 해석하지 않는다.
+
+one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한 recruit 한 번을 분기하고, 각 분기에서 counter-family별 top-K 편성과 같은 medoid를 재실행한다. 출력 지표와 Pro 판정 칸은 다음과 같다.
+
+- `same_state_oracle_win_rate`: arrival 표본 중 같은 상태의 후보 하나라도 site를 완주한 비율
+- `selection_regret`: same-state oracle 승률에서 실제 policy 선택 승률을 뺀 값
+- `availability_gap`: recruit 추가 분기를 포함한 oracle과 same-state oracle의 차이
+- `one_site_lookback_oracle`: same-state 또는 직전 reward/recruit 분기에서 완주 가능한 표본 비율
+- `best_counter_family`: 표본별 최선 결과를 기준으로 가장 안정적인 counter family
+- 판정: same-state 60% 미만은 encounter wall, 60% 이상 75% 미만은 혼합, 75% 이상이면서 regret 20%p 이상은 policy 문제다. same-state가 60% 미만이어도 lookback이 75% 이상이면 horizon 문제로 우선 분류한다. oracle 승리가 하나의 편성·배치에 수렴하고 실제 policy가 그 해답을 놓치면 puzzle lock으로 분류한다.
+
+기본 출력 위치는 `Logs/h100-sunken-diagnosis/`이며 `arrival-snapshots.jsonl`, `oracle-candidates.jsonl`, `sunken-diagnosis.json`을 stable order와 UTF-8 no-BOM으로 기록한다. 실제 policy 선택은 한 번 더 재생해 seed 열과 replay manifest가 일치해야 하며, build/compose/예외 후보가 하나라도 있으면 runner는 실패한다.
 
 ## 재현 해시
 
@@ -117,9 +136,16 @@ pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 
 pwsh -File tools/h100-formation.ps1 -SeedCount 5 -CompetentPolicy competent-formation-v1
 ```
 
+Sunken Stage 5의 방향 판별 runner는 다음 명령으로 검증한다. 기본값은 policy당 seed 1개, 보유 편성 전수, 8개 medoid, lookback counter-family top-12다.
+
+```powershell
+pwsh -File tools/h100-sunken-diagnosis.ps1
+```
+
 ## 현재 한계와 후속
 
 - test-only `IPlaythroughDecisionPolicy`는 production이 참조하지 않는다. production-safe port는 ADR-0031의 `SM.HeadlessPolicies` + `SM.Editor.Validation` projection adapter로 분리됐으며 상세 observation/action 계약은 `h100-headless-policy-contract.md`가 소유한다.
 - tagged/subsystem RNG stream이 없어 공용 RNG를 보존하는 counterfactual ablation을 아직 보증하지 않는다.
 - posture는 현재 정책 action 축이 아니며 자세별 paired rollout은 후속 단계다.
 - `SM.HeadlessMetrics` 자체는 pure .NET으로 빌드 가능하지만 실제 콘텐츠/session composition은 Unity adapter에 남아 있다. 2M+ 전투용 pure dotnet CLI는 content snapshot과 campaign orchestration port를 분리한 뒤 추가한다.
+- Sunken Stage 5 기본 실행은 방향 판별용 small-N/medoid 표본이다. 다중 seed·360개 전체 배치·대규모 holdout 인증은 별도 실행 예산으로 남긴다.

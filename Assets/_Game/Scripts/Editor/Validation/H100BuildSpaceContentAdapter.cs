@@ -9,6 +9,12 @@ namespace SM.Editor.Validation;
 /// <summary>RuntimeCombatContentLookup canonical order를 authored-object-free census DTO로 투영한다.</summary>
 internal static class H100BuildSpaceContentAdapter
 {
+    private static readonly string[] CanonicalArchetypeIds =
+    {
+        "warden", "guardian", "slayer", "raider", "hunter", "scout",
+        "priest", "hexer", "bulwark", "reaver", "marksman", "shaman",
+    };
+
     public static IReadOnlyList<BuildArchetype> BuildCanonicalRoster(RuntimeCombatContentLookup lookup)
     {
         if (!lookup.TryGetCombatSnapshot(out var snapshot, out var error))
@@ -23,6 +29,17 @@ internal static class H100BuildSpaceContentAdapter
                 $"Canonical census roster must contain {BuildSpaceEnumerator.ArchetypeCount} archetypes (actual={canonicalIds.Length}).");
         }
 
+        return BuildCanonicalRosterFromSnapshot(snapshot, canonicalIds);
+    }
+
+    internal static IReadOnlyList<BuildArchetype> BuildCanonicalRosterFromSnapshot(
+        SM.Meta.Model.CombatContentSnapshot snapshot)
+        => BuildCanonicalRosterFromSnapshot(snapshot, CanonicalArchetypeIds);
+
+    private static IReadOnlyList<BuildArchetype> BuildCanonicalRosterFromSnapshot(
+        SM.Meta.Model.CombatContentSnapshot snapshot,
+        IReadOnlyList<string> canonicalIds)
+    {
         return canonicalIds.Select(id =>
         {
             if (!snapshot.Archetypes.TryGetValue(id, out var archetype))

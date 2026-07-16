@@ -1,0 +1,40 @@
+using System;
+using SM.HeadlessPolicies;
+using SM.Unity;
+
+namespace SM.Editor.Validation;
+
+/// <summary>기존 campaign runner의 truth 경로를 바꾸지 않고 진단 snapshot만 관찰하는 optional hook 묶음.</summary>
+internal sealed record H100CampaignObservationHooks(
+    Action<H100SiteArrivalContext>? SiteArrived = null,
+    Action<H100RewardOfferedContext>? RewardOffered = null,
+    Action<H100RewardChosenContext>? RewardChosen = null,
+    Func<bool>? StopRequested = null);
+
+internal sealed record H100SiteArrivalContext(
+    string CampaignId,
+    int CampaignIndex,
+    int CampaignSeed,
+    int SiteIndex,
+    int BattleStartIndex,
+    int DecisionSeed,
+    GameSessionState Session,
+    HeadlessDeploymentDecision Decision);
+
+internal sealed record H100RewardOfferedContext(
+    string CampaignId,
+    int CampaignIndex,
+    int CampaignSeed,
+    int SiteIndex,
+    int BattleIndex,
+    int DecisionSeed,
+    GameSessionState Session);
+
+internal sealed record H100RewardChosenContext(
+    string CampaignId,
+    int CampaignIndex,
+    int CampaignSeed,
+    int SiteIndex,
+    int BattleIndex,
+    GameSessionState Session,
+    HeadlessRewardDecision Decision);

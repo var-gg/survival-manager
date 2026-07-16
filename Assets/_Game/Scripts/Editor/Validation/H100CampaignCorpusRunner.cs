@@ -22,13 +22,19 @@ internal static class H100CampaignCorpusRunner
         RuntimeCombatContentLookup lookup,
         H100MetricsRunSettings settings,
         float targetBattleSeconds,
-        Action<string>? decisionLog = null)
+        Action<string>? decisionLog = null,
+        H100CampaignObservationHooks? observationHooks = null)
     {
         var battles = new List<BattleMetricRecord>();
         var campaigns = new List<CampaignMetricRecord>(settings.CampaignCount);
         for (var index = 0; index < settings.CampaignCount; index++)
         {
-            RunOne(lookup, settings, targetBattleSeconds, index, battles, campaigns, decisionLog);
+            if (observationHooks?.StopRequested?.Invoke() == true)
+            {
+                break;
+            }
+
+            RunOne(lookup, settings, targetBattleSeconds, index, battles, campaigns, decisionLog, observationHooks);
         }
 
         return new Corpus(battles, campaigns);
@@ -41,7 +47,8 @@ internal static class H100CampaignCorpusRunner
         int campaignIndex,
         ICollection<BattleMetricRecord> allBattles,
         ICollection<CampaignMetricRecord> allCampaigns,
-        Action<string>? decisionLog)
+        Action<string>? decisionLog,
+        H100CampaignObservationHooks? observationHooks)
     {
         var campaignId = $"campaign-{campaignIndex:D6}";
         var campaignSeed = H100SessionDriver.DeriveSeed("campaign", settings.SeedBase + campaignIndex);
@@ -68,8 +75,22 @@ internal static class H100CampaignCorpusRunner
                 var deploymentSeed = H100SessionDriver.DeriveSeed(
                     $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|deployment",
                     campaignSeed + siteCount);
-                H100SessionDriver.ApplyPolicyDeployment(session, lookup, policy, deploymentSeed, decisionLog);
+                var deploymentDecision = H100SessionDriver.ApplyPolicyDeployment(
+                    session,
+                    lookup,
+                    policy,
+                    deploymentSeed,
+                    decisionLog);
                 decisionCount++;
+                observationHooks?.SiteArrived?.Invoke(new H100SiteArrivalContext(
+                    campaignId,
+                    campaignIndex,
+                    campaignSeed,
+                    siteCount,
+                    battleIndex,
+                    deploymentSeed,
+                    session,
+                    deploymentDecision));
                 session.BeginNewExpedition();
                 var siteBattleCount = 0;
                 while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
@@ -150,8 +171,29 @@ internal static class H100CampaignCorpusRunner
                     var rewardSeed = H100SessionDriver.DeriveSeed(
                         $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|reward",
                         campaignSeed + siteCount);
-                    H100SessionDriver.ApplyPolicyReward(session, lookup, policy, rewardSeed, decisionLog);
+                    observationHooks?.RewardOffered?.Invoke(new H100RewardOfferedContext(
+                        campaignId,
+                        campaignIndex,
+                        campaignSeed,
+                        siteCount,
+                        battleIndex,
+                        rewardSeed,
+                        session));
+                    var rewardDecision = H100SessionDriver.ApplyPolicyReward(
+                        session,
+                        lookup,
+                        policy,
+                        rewardSeed,
+                        decisionLog);
                     decisionCount++;
+                    observationHooks?.RewardChosen?.Invoke(new H100RewardChosenContext(
+                        campaignId,
+                        campaignIndex,
+                        campaignSeed,
+                        siteCount,
+                        battleIndex,
+                        session,
+                        rewardDecision));
                 }
 
                 session.ReturnToTownAfterReward();
