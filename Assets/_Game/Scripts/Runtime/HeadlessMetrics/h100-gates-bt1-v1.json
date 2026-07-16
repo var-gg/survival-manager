@@ -1,0 +1,180 @@
+{
+  "schema_version": "h100-bt1-gate-spec-v1",
+  "spec_version": "h100-gates-bt1-v1",
+  "legacy_spec_version": "h100-gates-v1",
+  "threshold_policy_note": "H100-RC1은 동결 보존한다. H100-BT1은 AI 베타테스터 경험 루프의 10개 hard AND-gate이며, 미공급 지표는 not_yet_evaluable로 출력하고 최종 RC strict mode에서 실패로 취급한다.",
+  "gates": [
+    {
+      "id": "BT1",
+      "name_ko": "결정성·리플레이 무결성",
+      "measurement": "동일 입력의 독립 프로세스 재실행과 봉인된 LLM decision trace 재생",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E07"],
+      "legacy_gate_ids": ["integrity_reproducibility", "final_reproduction"],
+      "thresholds": [
+        { "metric_id": "independent_process_replay_count", "operator": "gte", "value": 3, "unit": "processes", "note": "동일 입력을 최소 3개 독립 프로세스에서 재실행" },
+        { "metric_id": "state_event_result_hash_match_rate", "operator": "eq", "value": 1.0, "unit": "ratio", "note": "상태·이벤트·결과 해시 100% 일치" },
+        { "metric_id": "sealed_llm_decision_trace_replay_match_rate", "operator": "eq", "value": 1.0, "unit": "ratio", "note": "LLM 관측·사고 보고·action을 봉인한 trace 재생 동일성" }
+      ]
+    },
+    {
+      "id": "BT2",
+      "name_ko": "player-visible provenance",
+      "measurement": "모든 정책 결정과 빌드 가설의 EvidenceRef 및 no-cheat provenance",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E01"],
+      "legacy_gate_ids": [],
+      "thresholds": [
+        { "metric_id": "post_decision_information_reference_count", "operator": "eq", "value": 0, "unit": "count", "note": "결정시각 이후 정보 참조 0" },
+        { "metric_id": "non_ui_semantic_internal_field_reference_count", "operator": "eq", "value": 0, "unit": "count", "note": "UI 의미와 대응되지 않는 내부 필드 참조 0" },
+        { "metric_id": "oracle_or_truth_leak_count", "operator": "eq", "value": 0, "unit": "count", "note": "oracle·census truth 유출 0" },
+        { "metric_id": "unsupported_certain_claim_count", "operator": "eq", "value": 0, "unit": "count", "note": "증거 없는 단정 0; uncertain 추측은 허용" }
+      ]
+    },
+    {
+      "id": "BT3",
+      "name_ko": "정보 표면 완결성",
+      "measurement": "현재 선택 가능한 build-shaping 오퍼의 의미·조건·중첩·획득 경로 정합성",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E02"],
+      "legacy_gate_ids": ["depth_causality", "formation_significance"],
+      "thresholds": [
+        { "metric_id": "actionable_offer_missing_semantics", "operator": "eq", "value": 0, "unit": "count", "note": "actionable build-shaping 오퍼 의미 누락 0" },
+        { "metric_id": "undefined_visible_token", "operator": "eq", "value": 0, "unit": "count", "note": "정의되지 않은 player-visible token 0" },
+        { "metric_id": "hidden_prerequisite", "operator": "eq", "value": 0, "unit": "count", "note": "숨은 prerequisite 0" },
+        { "metric_id": "description_behavior_mismatch_count", "operator": "eq", "value": 0, "unit": "count", "note": "설명과 실제 동작 불일치 0" }
+      ]
+    },
+    {
+      "id": "BT4",
+      "name_ko": "빌드 문법 유추 가능성",
+      "measurement": "냉시작 LLM이 진행도 30% 이내에 가시 정보로 유효 컨셉을 유추",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E02", "E03", "E07"],
+      "legacy_gate_ids": ["build_ecology", "effective_build_diversity", "decision_depth"],
+      "thresholds": [
+        { "metric_id": "cold_start_run_count", "operator": "eq", "value": 6, "unit": "runs", "note": "냉시작 LLM 6회" },
+        { "metric_id": "valid_concept_by_progress_0_30_count", "operator": "gte", "value": 5, "unit": "runs", "note": "2개 시스템 연결과 증거 2개 이상을 갖춘 유효 컨셉을 진행도 30% 이내 제안" },
+        { "metric_id": "grammar_family_precision_min", "operator": "gte", "value": 0.85, "unit": "ratio", "note": "노출된 핵심 문법군별 precision 최솟값" },
+        { "metric_id": "grammar_family_recall_min", "operator": "gte", "value": 0.70, "unit": "ratio", "note": "노출된 핵심 문법군별 recall 최솟값" }
+      ]
+    },
+    {
+      "id": "BT5",
+      "name_ko": "욕구 형성·커밋",
+      "measurement": "냉시작 LLM의 자발적 빌드 의도와 희소 자원 실투자",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E04", "E07"],
+      "legacy_gate_ids": ["decision_depth"],
+      "thresholds": [
+        { "metric_id": "cold_start_run_count", "operator": "eq", "value": 6, "unit": "runs", "note": "냉시작 LLM 6회" },
+        { "metric_id": "spontaneous_intent_run_count", "operator": "gte", "value": 5, "unit": "runs", "note": "특정 레시피 없이 기대 payoff·증거·다음 요소·대체재·pivot 조건을 포함한 의도 형성" },
+        { "metric_id": "scarce_resource_commit_run_count", "operator": "gte", "value": 4, "unit": "runs", "note": "영입·보상·Refit·패시브 예산을 의도에 실제 투자" }
+      ]
+    },
+    {
+      "id": "BT6",
+      "name_ko": "트랙 개방성·에이전시 연속성",
+      "measurement": "실제 오퍼열의 core/aspirational track oracle과 진척 drought",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E03", "E05"],
+      "legacy_gate_ids": ["campaign_completion", "effective_build_diversity", "decision_depth"],
+      "thresholds": [
+        { "metric_id": "core_track_realizability_rate", "operator": "gte", "value": 0.75, "unit": "ratio", "note": "core 컨셉 실현 가능률" },
+        { "metric_id": "core_track_realizability_lcb95", "operator": "gte", "value": 0.65, "unit": "ratio", "note": "core 컨셉 one-sided 95% LCB" },
+        { "metric_id": "aspirational_track_realizability_rate", "operator": "gte", "value": 0.35, "unit": "ratio", "note": "aspirational 컨셉 실현 가능률" },
+        { "metric_id": "aspirational_track_realizability_lcb95", "operator": "gte", "value": 0.25, "unit": "ratio", "note": "aspirational 컨셉 one-sided 95% LCB" },
+        { "metric_id": "core_first_progress_agency_window_p90", "operator": "lte", "value": 3, "unit": "agency_windows", "note": "core 첫 유효 진척 p90" },
+        { "metric_id": "aspirational_first_progress_agency_window_p90", "operator": "lte", "value": 5, "unit": "agency_windows", "note": "aspirational 첫 유효 진척 p90" },
+        { "metric_id": "starvation_run_rate", "operator": "lte", "value": 0.10, "unit": "ratio", "note": "4개 이상 연속 진척 선택이 없는 run" },
+        { "metric_id": "silent_dead_end_count", "operator": "eq", "value": 0, "unit": "count", "note": "돌이킬 수 없는 silent dead-end 0" }
+      ]
+    },
+    {
+      "id": "BT7",
+      "name_ko": "의도 실현·payoff runway",
+      "measurement": "owner-anchor별 conditional realization, 실현 시점, 사용 기회와 visible payoff",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E03", "E05"],
+      "legacy_gate_ids": ["effective_build_diversity", "formation_significance", "depth_causality"],
+      "thresholds": [
+        { "metric_id": "owner_anchor_realization_rate_min", "operator": "gte", "value": 0.70, "unit": "ratio", "note": "owner-anchor별 P(realized | track exists) 최솟값" },
+        { "metric_id": "owner_anchor_realization_lcb95_min", "operator": "gte", "value": 0.55, "unit": "ratio", "note": "owner-anchor별 one-sided 95% LCB 최솟값" },
+        { "metric_id": "owner_anchor_realized_before_final_20_percent_rate_min", "operator": "gte", "value": 0.70, "unit": "ratio", "note": "실현 run 중 캠페인 마지막 20% 이전 실현 비율 최솟값" },
+        { "metric_id": "owner_anchor_post_realization_battle_opportunity_min", "operator": "gte", "value": 2, "unit": "battles", "note": "실현 후 컨셉 사용 기회 전투 최솟값" },
+        { "metric_id": "owner_anchor_payoff_witness_count_min", "operator": "gte", "value": 1, "unit": "witnesses", "note": "owner-anchor별 player-visible payoff witness 최솟값" },
+        { "metric_id": "owner_anchor_failure_count", "operator": "eq", "value": 0, "unit": "anchors", "note": "owner-anchor 하나라도 실패하면 전체 FAIL" },
+        { "metric_id": "derived_medoid_pass_rate", "operator": "gte", "value": 0.75, "unit": "ratio", "note": "시스템 파생 medoid 통과율" }
+      ]
+    },
+    {
+      "id": "BT8",
+      "name_ko": "적응형 도달성",
+      "measurement": "ConceptAdaptivePolicy 완주와 oracle상 풀리는 blocker의 선택 regret",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E01", "E06"],
+      "legacy_gate_ids": ["campaign_completion"],
+      "thresholds": [
+        { "metric_id": "concept_adaptive_completion_rate", "operator": "gte", "value": 0.50, "unit": "ratio", "note": "ConceptAdaptivePolicy 캠페인 완주율" },
+        { "metric_id": "concept_adaptive_completion_lcb95", "operator": "gte", "value": 0.40, "unit": "ratio", "note": "완주율 one-sided 95% LCB" },
+        { "metric_id": "no_cheat_macro_family_completion_witness_min", "operator": "gte", "value": 1, "unit": "witnesses", "note": "시너지·독트린, 상태·아이템, 전술·진형 3개 family 각각의 최소 witness" },
+        { "metric_id": "oracle_0_8_blocker_chosen_win_rate", "operator": "gte", "value": 0.70, "unit": "ratio", "note": "oracle win 가능성 0.8 이상 blocker의 chosen win rate" },
+        { "metric_id": "oracle_0_8_blocker_selection_regret", "operator": "lte", "value": 0.25, "unit": "ratio", "note": "oracle win 가능성 0.8 이상 blocker의 selection regret" },
+        { "metric_id": "hard_wall_count", "operator": "eq", "value": 0, "unit": "count", "note": "oracle상 해법이 충분한 반복 hard wall 0" }
+      ]
+    },
+    {
+      "id": "BT9",
+      "name_ko": "함정 옵션·버그급 지배성 부재",
+      "measurement": "intended context의 기계 witness, paired counterfactual과 dominance 확인",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E08", "E09"],
+      "legacy_gate_ids": ["integrity_reproducibility", "build_ecology", "formation_significance", "depth_causality"],
+      "thresholds": [
+        { "metric_id": "confirmed_trap_count", "operator": "eq", "value": 0, "unit": "count", "note": "확정 함정 옵션 0" },
+        { "metric_id": "unresolved_mechanical_defect_count", "operator": "eq", "value": 0, "unit": "count", "note": "미해결 기계 결함 0" },
+        { "metric_id": "bug_grade_dominant_count", "operator": "eq", "value": 0, "unit": "count", "note": "명시적 trade-off 없는 버그급 지배 옵션 0" }
+      ]
+    },
+    {
+      "id": "BT10",
+      "name_ko": "베타테스터 재미·재시도 판정",
+      "measurement": "냉시작 LLM의 욕구·커밋·payoff·재시도와 owner two-key 승인",
+      "role": "hard",
+      "evaluable_now": false,
+      "depends_on_envelope": ["E04", "E05", "E07"],
+      "legacy_gate_ids": ["spectator_arc", "blind_fun_approval", "final_reproduction"],
+      "thresholds": [
+        { "metric_id": "cold_start_run_count", "operator": "eq", "value": 6, "unit": "runs", "note": "최종 냉시작 LLM 6회" },
+        { "metric_id": "desire_formed_run_count", "operator": "gte", "value": 5, "unit": "runs", "note": "사전에 빌드 욕구를 형성" },
+        { "metric_id": "evidence_grounded_commit_run_count", "operator": "gte", "value": 4, "unit": "runs", "note": "욕구와 관측 근거에 따른 실제 커밋" },
+        { "metric_id": "payoff_or_legible_near_miss_run_count", "operator": "gte", "value": 4, "unit": "runs", "note": "예상 payoff 또는 납득 가능한 near-miss 경험" },
+        { "metric_id": "next_concept_named_run_count", "operator": "gte", "value": 4, "unit": "runs", "note": "다음 run의 다른 구체적 컨셉 명명" },
+        { "metric_id": "complaint_repeated_twice_count", "operator": "eq", "value": 0, "unit": "complaints", "note": "같은 불투명한 막힘·starvation·무의미한 선택 불만 2회 반복 0" },
+        { "metric_id": "evaluation_sentence_telemetry_link_rate", "operator": "eq", "value": 1.0, "unit": "ratio", "note": "모든 핵심 평가 문장을 telemetry event ID에 연결" },
+        { "metric_id": "owner_approval", "operator": "eq", "value": 1, "unit": "boolean", "note": "기계 PASS와 별개인 owner approval 필수 two-key" }
+      ]
+    }
+  ],
+  "legacy_gate_migrations": [
+    { "legacy_gate_id": "integrity_reproducibility", "role": "hard", "bt_gate_ids": ["BT1", "BT9"], "rationale": "재현성 해시와 런타임 무결성은 hard로 유지하고 결정성·기계 결함 축으로 분리한다." },
+    { "legacy_gate_id": "campaign_completion", "role": "diagnostic", "bt_gate_ids": ["BT6", "BT8"], "rationale": "60~80% 완주 밴드는 diagnostic으로 내리고 track availability와 adaptive reachability를 hard로 승계한다." },
+    { "legacy_gate_id": "build_ecology", "role": "diagnostic", "bt_gate_ids": ["BT4", "BT9"], "rationale": "승률 평등성은 diagnostic이며 유추 가능한 문법과 trap·bug-grade dominance만 hard로 승계한다." },
+    { "legacy_gate_id": "effective_build_diversity", "role": "diagnostic", "bt_gate_ids": ["BT4", "BT6", "BT7"], "rationale": "동급 빌드 수와 점유율은 diagnostic이며 발견·트랙·실현 경험으로 분해한다." },
+    { "legacy_gate_id": "decision_depth", "role": "diagnostic", "bt_gate_ids": ["BT4", "BT5", "BT6"], "rationale": "선택 가치 분포는 diagnostic이며 가설·의도·진척 연속성으로 대체한다." },
+    { "legacy_gate_id": "formation_significance", "role": "diagnostic", "bt_gate_ids": ["BT3", "BT7", "BT9"], "rationale": "placement leverage 밴드는 diagnostic이며 visible promise, payoff, 기계 진실성만 hard다." },
+    { "legacy_gate_id": "spectator_arc", "role": "diagnostic", "bt_gate_ids": ["BT10"], "rationale": "전투 길이와 stomp 비율은 재미 판단의 진단 프록시로만 보존한다." },
+    { "legacy_gate_id": "depth_causality", "role": "diagnostic", "bt_gate_ids": ["BT3", "BT7", "BT9"], "rationale": "fired·causal prevalence는 diagnostic이며 설명-동작 정합, payoff witness, 기계 진실성으로 분리한다." },
+    { "legacy_gate_id": "blind_fun_approval", "role": "diagnostic", "bt_gate_ids": ["BT10"], "rationale": "legacy blind score는 diagnostic으로 보존하고 냉시작 desire→commit→payoff→retry와 owner two-key로 대체한다." },
+    { "legacy_gate_id": "final_reproduction", "role": "diagnostic", "bt_gate_ids": ["BT1", "BT10"], "rationale": "legacy 전체 게이트 재통과·archive 조건은 diagnostic으로 보존하고 결정성 및 최종 two-key RC로 승계한다." }
+  ]
+}

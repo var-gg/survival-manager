@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-17
 - 소스오브트루스: `docs/03_architecture/h100-headless-metrics-contract.md`
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
@@ -103,6 +103,49 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 `h100-gates-v1.json`은 H100 Q1의 열 개 게이트와 v1 권고 임계치를 보존한다. 기준선 측정 뒤 인증 holdout을 열기 전에 한 번만 조정할 수 있고, 인증 데이터를 확인한 뒤 임계치를 변경하지 않는다.
 
 `H100GateEvaluator`는 레코드에서 계산 가능한 관측치를 집계하고, blind review나 외부 severity처럼 별도 절차가 소유한 관측치는 explicit external observation으로만 받는다. 필요한 metric이 없으면 `metric unavailable`로 fail closed한다. 작은 smoke corpus나 Stage 1 runner 산출물이 전체 H100 통과를 주장해서는 안 된다.
+
+## H100-BT1 게이트 스펙
+
+`h100-gates-bt1-v1.json`은 AI 베타테스터 경험 루프의 완료 정의다. 기존 `h100-gates-v1.json`과 `gate-report.json`은 H100-RC1 동결 기준으로 byte 불변 유지하고, 새 스펙과 `h100-bt1-gate-report.json`은 별도 로드·평가·출력 경로를 사용한다. BT1 스펙의 열 개 게이트는 모두 hard AND-gate다.
+
+| 게이트 | 완료 정의 | 역할 | 현재 평가 | 공급 envelope |
+| --- | --- | --- | --- | --- |
+| BT1 | 결정성·리플레이 무결성 | hard | `not_yet_evaluable` | E07 |
+| BT2 | player-visible provenance | hard | `not_yet_evaluable` | E01 |
+| BT3 | 정보 표면 완결성 | hard | `not_yet_evaluable` | E02 |
+| BT4 | 빌드 문법 유추 가능성 | hard | `not_yet_evaluable` | E02, E03, E07 |
+| BT5 | 욕구 형성·커밋 | hard | `not_yet_evaluable` | E04, E07 |
+| BT6 | 트랙 개방성·에이전시 연속성 | hard | `not_yet_evaluable` | E03, E05 |
+| BT7 | 의도 실현·payoff runway | hard | `not_yet_evaluable` | E03, E05 |
+| BT8 | 적응형 도달성 | hard | `not_yet_evaluable` | E01, E06 |
+| BT9 | 함정 옵션·버그급 지배성 부재 | hard | `not_yet_evaluable` | E08, E09 |
+| BT10 | 베타테스터 재미·재시도 two-key | hard | `not_yet_evaluable` | E04, E05, E07 |
+
+`evaluable_now=false`는 게이트 임계치가 미정이라는 뜻이 아니다. 임계치는 스펙에 동결되어 있지만 해당 envelope가 아직 완전한 metric supplier를 제공하지 않았다는 뜻이다. 일반 모드에서는 `not_yet_evaluable`과 `pass=null`을 출력해 조기 PASS/FAIL을 주장하지 않는다. 최종 RC strict 모드에서는 이를 FAIL로 취급한다.
+
+role-aware 평가 의미는 다음과 같다.
+
+- hard metric 누락은 `status=fail`, `pass=false`로 fail closed한다.
+- diagnostic metric 누락은 `status=missing`, `pass=null`로 반드시 출력하며 전체 hard 판정을 막지 않는다.
+- 관측된 diagnostic 값과 PASS/FAIL은 삭제하지 않고 report에 보존하되 릴리스 블록에는 사용하지 않는다.
+- `owner_approval`은 BT10의 별도 boolean 임계치다. 기계 지표가 이를 대신할 수 없다.
+
+### H100-RC1 migration map
+
+| legacy gate id | BT1 역할 | 승계 BT 게이트 |
+| --- | --- | --- |
+| `integrity_reproducibility` | hard | BT1, BT9 |
+| `campaign_completion` | diagnostic | BT6, BT8 |
+| `build_ecology` | diagnostic | BT4, BT9 |
+| `effective_build_diversity` | diagnostic | BT4, BT6, BT7 |
+| `decision_depth` | diagnostic | BT4, BT5, BT6 |
+| `formation_significance` | diagnostic | BT3, BT7, BT9 |
+| `spectator_arc` | diagnostic | BT10 |
+| `depth_causality` | diagnostic | BT3, BT7, BT9 |
+| `blind_fun_approval` | diagnostic | BT10 |
+| `final_reproduction` | diagnostic | BT1, BT10 |
+
+기존 `integrity_reproducibility`만 legacy hard 판정을 유지한다. 나머지 RC1 임계치와 프록시는 경험 실패 분해를 위한 diagnostic으로 보존한다. 결정성, provenance, 도달성, 기계적 진실성의 hard 축은 각각 BT1, BT2, BT6·BT8, BT3·BT9로 승계한다.
 
 ## 실행과 검증
 

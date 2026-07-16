@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-17
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -21,7 +21,7 @@
 - `dependency-direction.md`: asmdef/context/layer 의존 허용·금지 규칙
 - `unity-boundaries.md`: `MonoBehaviour`, `ScriptableObject`, scene 책임 경계
 - `assembly-boundaries-and-persistence-ownership.md`: `SM.Meta` content adapter, persistence ownership, asmdef 사전 점검 규칙
-- `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, replay hash, Stage 4 진형 및 Stage 5 sunken solvability 산출물, fail-closed gate 계약
+- `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, RC1 동결 경로, BT1 role/migration/strict 판정, replay hash, Stage 4 진형 및 Stage 5 sunken solvability 산출물
 - `h100-headless-policy-contract.md`: H100 player-visible observation, 6개 production + Coverage QA 정책, no-cheat guard, policy witness 계약
 - `h100-build-space-census-contract.md`: H100 495편성·360배치 pure census, 자동 medoid, Stage 4 placement 재사용, 소규모 screening 계약
 - `validation-and-acceptance-oracles.md`: feature closure, acceptance matrix, evidence 기록 기준
@@ -126,7 +126,7 @@
 - `sim-sweep-and-balance-kpis.md`: deterministic sweep, KPI, artifact, review/fail 규칙
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
 - `deterministic-sim-and-fixed-point-migration.md`: float→fixed 결정론 마이그레이션 contract와 단계별 계획 (draft, ADR-0029)
-- `h100-headless-metrics-contract.md`: H100 record, replay hash, deterministic JSONL/CSV, Stage 4 진형과 Stage 5 sunken solvability report의 real-content runner 경계
+- `h100-headless-metrics-contract.md`: H100 record, RC1 byte 보존, BT1 hard/diagnostic migration, replay hash, deterministic JSONL/CSV, Stage 4 진형과 Stage 5 sunken solvability report의 real-content runner 경계
 - `h100-headless-policy-contract.md`: H100 6개 production + Coverage QA 정책, player-visible observation whitelist, no-cheat guard와 paired direction witness
 - `h100-build-space-census-contract.md`: H100 495편성·360배치 구조지도, role-labelled formation feature, 자동 medoid, Stage 4 placement leverage
 - `battle-actor-wrapper-and-asset-intake-seam.md`: battle wrapper prefab, socket surface, vendor intake seam
