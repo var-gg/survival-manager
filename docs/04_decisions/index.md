@@ -44,6 +44,7 @@
 - `adr-0029-deterministic-fixed-point-sim.md`: 결정론적 고정소수점 sim — float→fixed 마이그레이션(approach A). ingress(콘텐츠 float 저작→진입 양자화, 리플레이 raw fixed) + egress(read-model float, `SM.Unity` 무수정) 경계, 도메인 fixed 타입(`Fixed32`/`Score64`/`Hp64`, 범용 Wide 금지), 정수 틱 권위, `StatBlock` 결정적 순서, cross-platform golden hash(backend matrix). B(soft-float)·C(하이브리드) 기각. GPT Pro 검수(2026-06-07) 반영. 상세 계획 `docs/03_architecture/deterministic-sim-and-fixed-point-migration.md`
 - `adr-0030-h100-headless-metrics-boundary.md`: H100 계측을 `SM.Core` + `SM.Combat` 전용 pure `SM.HeadlessMetrics` asmdef로 분리하고, real-content/session 조립은 `SM.Editor.Validation`에 남기는 경계
 - `adr-0031-h100-headless-policy-boundary.md`: H100 정책을 `SM.Combat` 단일 참조 pure `SM.HeadlessPolicies`로 분리하고 player-visible projection은 `SM.Editor.Validation`이 소유하는 no-cheat 경계 (proposed, HUB 구조 승인 대기)
+- `adr-0032-h100-build-space-census-boundary.md`: H100 495편성·360 labelled 배치 census를 `SM.Core` + `SM.Combat` 전용 pure `SM.HeadlessCensus`로 분리하고 authored projection·screening은 `SM.Editor.Validation`에 남기는 경계 (proposed, HUB 구조 승인 대기)
 
 ## 운영 메모
 

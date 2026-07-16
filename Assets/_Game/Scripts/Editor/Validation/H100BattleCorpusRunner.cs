@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Combat.Services;
 using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
+using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -76,6 +78,143 @@ internal static class H100BattleCorpusRunner
         }
 
         return records;
+    }
+
+    /// <summary>
+    /// Stage 3 census가 선정한 build/medoid/seed 한정 corpus. 기존 real-content session composition과
+    /// BattleMetricProjector를 그대로 사용하며 full screening 규모나 pruning 판단은 수행하지 않는다.
+    /// </summary>
+    public static IReadOnlyList<BattleMetricRecord> RunScreening(
+        RuntimeCombatContentLookup lookup,
+        string runId,
+        string policyId,
+        IReadOnlyList<H100BattleScreeningCase> cases,
+        int maxBattleSteps,
+        float targetBattleSeconds)
+    {
+        var records = new List<BattleMetricRecord>(cases.Count);
+        foreach (var screeningCase in cases.OrderBy(value => value.CaseId, StringComparer.Ordinal))
+        {
+            try
+            {
+                var session = CreateScreeningSession(lookup, screeningCase);
+                session.BeginNewExpedition();
+                if (!session.TryBuildSelectedBattleState(out _, out var encounter, out var allySnapshot, out var buildError))
+                {
+                    records.Add(BattleMetricProjector.ProjectFailure(
+                        runId,
+                        string.Empty,
+                        screeningCase.CaseId,
+                        screeningCase.CaseId,
+                        0,
+                        "unavailable",
+                        policyId,
+                        screeningCase.Seed,
+                        $"build:{buildError}"));
+                    continue;
+                }
+
+                var scenarioId = H100SessionDriver.ScenarioId(encounter.Context);
+                var seededEncounter = encounter with
+                {
+                    Context = encounter.Context with { BattleSeed = screeningCase.Seed }
+                };
+                if (!session.TryComposeBattleState(allySnapshot, seededEncounter, out var state, out var composeError))
+                {
+                    records.Add(BattleMetricProjector.ProjectFailure(
+                        runId,
+                        string.Empty,
+                        screeningCase.CaseId,
+                        screeningCase.CaseId,
+                        0,
+                        scenarioId,
+                        policyId,
+                        screeningCase.Seed,
+                        $"compose:{composeError}"));
+                    continue;
+                }
+
+                var result = BattleResolver.Run(state, maxBattleSteps);
+                records.Add(BattleMetricProjector.Project(
+                    runId,
+                    string.Empty,
+                    screeningCase.CaseId,
+                    screeningCase.CaseId,
+                    0,
+                    scenarioId,
+                    policyId,
+                    state,
+                    result,
+                    maxBattleSteps,
+                    targetBattleSeconds));
+            }
+            catch (Exception exception)
+            {
+                records.Add(BattleMetricProjector.ProjectFailure(
+                    runId,
+                    string.Empty,
+                    screeningCase.CaseId,
+                    screeningCase.CaseId,
+                    0,
+                    "unavailable",
+                    policyId,
+                    screeningCase.Seed,
+                    $"exception:{exception.GetType().Name}"));
+            }
+        }
+
+        return records;
+    }
+
+    private static GameSessionState CreateScreeningSession(
+        RuntimeCombatContentLookup lookup,
+        H100BattleScreeningCase screeningCase)
+    {
+        var profile = new SaveProfile
+        {
+            ProfileId = $"h100-census-{screeningCase.CaseId}",
+            Heroes = new List<HeroInstanceRecord>(),
+        };
+        var heroIds = new List<string>(screeningCase.Members.Count);
+        for (var index = 0; index < screeningCase.Members.Count; index++)
+        {
+            var member = screeningCase.Members[index];
+            if (!lookup.TryGetArchetype(member.ArchetypeId, out var archetype))
+            {
+                throw new InvalidOperationException($"Screening archetype is unavailable: {member.ArchetypeId}");
+            }
+
+            var heroId = $"census-{index:D2}-{member.ArchetypeId}";
+            heroIds.Add(heroId);
+            profile.Heroes.Add(new HeroInstanceRecord
+            {
+                HeroId = heroId,
+                Name = member.ArchetypeId,
+                ArchetypeId = member.ArchetypeId,
+                RaceId = archetype.Race.Id,
+                ClassId = archetype.Class.Id,
+                FlexActiveId = archetype.Loadout?.FlexActive?.Id ?? string.Empty,
+                FlexPassiveId = archetype.Loadout?.FlexPassive?.Id ?? string.Empty,
+                RecruitTier = archetype.RecruitTier,
+            });
+        }
+
+        var session = H100SessionDriver.CreateSession(lookup, profile);
+        foreach (var anchor in session.DeploymentAnchors)
+        {
+            session.AssignHeroToAnchor(anchor, null);
+        }
+
+        for (var index = 0; index < screeningCase.Members.Count; index++)
+        {
+            if (!session.AssignHeroToAnchor(screeningCase.Members[index].Anchor, heroIds[index]))
+            {
+                throw new InvalidOperationException(
+                    $"Could not apply census placement: {heroIds[index]}@{screeningCase.Members[index].Anchor}");
+            }
+        }
+
+        return session;
     }
 
     private static void AppendBuildFailures(

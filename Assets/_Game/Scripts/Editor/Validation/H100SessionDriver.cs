@@ -13,9 +13,17 @@ namespace SM.Editor.Validation;
 internal static class H100SessionDriver
 {
     public static GameSessionState CreateSession(RuntimeCombatContentLookup lookup, string profileId)
+        => CreateSession(lookup, new SaveProfile { ProfileId = profileId });
+
+    public static GameSessionState CreateSession(RuntimeCombatContentLookup lookup, SaveProfile profile)
     {
+        if (profile == null)
+        {
+            throw new ArgumentNullException(nameof(profile));
+        }
+
         var session = new GameSessionState(lookup);
-        session.BindProfile(new SaveProfile { ProfileId = profileId });
+        session.BindProfile(profile);
         session.SetCurrentScene(SceneNames.Town);
         return session;
     }

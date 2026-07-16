@@ -22,6 +22,7 @@
 | `SM.Core` | 공통 primitive, id, result, stat, rng, content schema enum | 없음 |
 | `SM.Content` | ScriptableObject authored definition과 content 친화 모델 | `SM.Core` |
 | `SM.Combat` | 전투 규칙과 시뮬레이션 | `SM.Core` |
+| `SM.HeadlessCensus` | H100 build-space 열거, 시너지·역할·진형 feature, deterministic medoid와 census artifact | `SM.Core`, `SM.Combat` |
 | `SM.HeadlessMetrics` | H100 전투·캠페인 record, replay hash envelope, 결정적 artifact, gate 평가 | `SM.Core`, `SM.Combat` |
 | `SM.HeadlessPolicies` | H100 player-visible observation/decision, 6정책, deterministic search, no-cheat guard | `SM.Combat` |
 | `SM.Meta` | town, expedition, reward, progression 규칙과 pure runtime spec/model | `SM.Core`, `SM.Combat` |
@@ -37,6 +38,7 @@
 - `SM.Core` -> 다른 어떤 상위 계층도 금지
 - `SM.Content` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Combat` -> `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
+- `SM.HeadlessCensus` -> `SM.Content`, `SM.HeadlessMetrics`, `SM.HeadlessPolicies`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.HeadlessMetrics` -> `SM.Content`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.HeadlessPolicies` -> `SM.Content`, `SM.HeadlessMetrics`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Meta` -> `SM.Content`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
@@ -104,6 +106,7 @@
 - 실제 asmdef는 `SM.Tests.FastUnit`, `SM.Tests.EditMode`, `SM.Tests.EditMode.Integration`, `SM.Tests.PlayMode`다.
 - `SM.Tests.FastUnit`은 EditMode 실행을 위해 `Editor` platform target을 쓰지만 `SM.Editor`와 editor-only package 참조를 금지한다.
 - `SM.Tests.FastUnit`은 `SM.HeadlessMetrics`의 pure projection/hash/serialization/gate와 `SM.HeadlessPolicies`의 observation contract/6정책 결정론을 직접 검증할 수 있다. 실제 content/session corpus runner는 `SM.Editor` 경계이므로 이 lane에서 호출하지 않는다.
+- `SM.Tests.FastUnit`은 `SM.HeadlessCensus`의 495편성·360배치 열거, 구조 assertion, medoid, writer 결정론을 검증할 수 있다. `RuntimeCombatContentLookup` projection과 screening battle은 `SM.Editor` 경계이므로 이 lane에서 호출하지 않는다.
 - EditMode와 EditMode.Integration은 editor bootstrap과 validator 확인을 위해 `SM.Editor` 참조를 허용한다.
 - 현재 BatchOnly 테스트 일부는 `SM.Tests.EditMode` 루트에 category 기반으로 남아 있다.
 - EditMode.Integration은 asset pipeline이나 editor validation을 더 강하게 요구하는 BatchOnly 성격의 테스트를 점진 이동할 reserved lane이다.

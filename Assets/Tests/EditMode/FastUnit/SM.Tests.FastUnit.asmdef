@@ -5,6 +5,7 @@
     "SM.Core",
     "SM.Content",
     "SM.Combat",
+    "SM.HeadlessCensus",
     "SM.HeadlessMetrics",
     "SM.HeadlessPolicies",
     "SM.Meta",
