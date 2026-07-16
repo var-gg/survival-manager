@@ -6,6 +6,7 @@
 - 소스오브트루스: `docs/03_architecture/h100-headless-policy-contract.md`
 - 관련문서:
   - `docs/03_architecture/h100-headless-metrics-contract.md`
+  - `docs/03_architecture/h100-build-space-census-contract.md`
   - `docs/03_architecture/dependency-direction.md`
   - `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
 
@@ -65,6 +66,48 @@
 
 `random-legal-v1`의 무작위 선택도 외부 RNG state가 아니라 player-visible observation에 고정된 decision seed fact를 인용한다. 모든 reward option이 없는 결정도 빈 reward surface fact를 근거로 `option=-1`을 반환한다. 정책이 읽지 않은 wallet, item mechanics, synergy catalog 전체를 편의상 모두 인용하지 않는다.
 
+## 컨셉 의도 정책과 주입 경계
+
+`ConceptCommitPolicy`는 기존 여섯 production 정책 cohort와 `qa-formation-coverage-v1` factory 표면을 바꾸지 않는 별도 BT1 정책이다. `IHeadlessPolicy`의 배치·보상 시그니처를 그대로 구현하되, 한 campaign 동안 `IntentState`를 policy instance 내부에 보관하고 모든 결정에 `keep`, `advance`, `substitute`, `counter-adapt`, `pivot`, `abandon` 중 하나의 이유를 남긴다. 상태는 static global이 아니며 campaign마다 새 policy instance를 만든다.
+
+정책 assembly에는 evaluator 계약 대신 `HeadlessConceptIntent`만 존재한다. 이 DTO는 identity predicate, progress milestone, payoff witness ID, substitution, flex slot, counter affordance, availability tier, pivot condition 같은 정렬된 문자열만 운반한다. `SM.Editor.Validation.H100ConceptIntentProjector`가 E03 `ConceptContract` 하나를 이 DTO로 투영하며 `SM.HeadlessPolicies`는 `SM.HeadlessCensus`를 참조하지 않는다.
+
+`HeadlessConceptIntent`의 constructor injection은 session, content lookup, RNG service 주입이 아니라 순수 불변 데이터 주입이다. 따라서 ADR-0031의 constructor 금지는 그대로 유지하며 이 DTO 주입은 금지 대상이 아니다. `GameSessionState`, authored content, catalog, truth graph, 미래 offer provider는 constructor와 decision method 양쪽에서 계속 금지한다.
+
+두 실행 lane은 다음처럼 분리한다.
+
+| lane | 정책 입력 | 입증 범위 |
+| --- | --- | --- |
+| coverage | evaluator adapter가 E03 catalog에서 계약 한 개만 `HeadlessConceptIntent`로 투영해 주입 | 부여된 의도를 유지·진전·전환하는 agency/realization 경로. catalog 전체나 다른 계약은 정책에 비공개 |
+| discovery | constructor 주입 없음. 현재 배치 synergy count와 공개 threshold 중 roster로 도달 가능한 가장 가까운 다음 tier를 먼저 고르고, 없으면 공개 skill status motif, 마지막으로 roster tag motif를 안정 ID 순서로 선택 | catalog 없이 가시 fact에서 의도를 자체 형성하는 경로. catalog 매핑은 run 종료 후 evaluator 책임 |
+
+배치 selector는 가중합으로 컨셉·생존·대체를 섞지 않는다. 전멸 위험이면 counter safety, identity progress, milestone, substitution 순서로 비교하고, 평시에는 identity progress, milestone, substitution, 현재 배치 보존 순서로 비교한 뒤 hero/placement stable signature로 tie-break한다. 보상도 counter match가 필요한 경우를 먼저 분리한 뒤 공개 item/augment mechanics의 컨셉 동사·태그 일치, substitution, option index 순서로 고른다. 기존 `EstimatedValue`는 진단값일 뿐 컨셉 selector의 선택 기준이 아니다.
+
+| 이유 | 판정 규칙 |
+| --- | --- |
+| `keep` | 현재 선택이 직접 진전하지 않지만 가시 track을 포기할 근거가 아직 없음 |
+| `advance` | identity progress가 증가하거나 새 progress milestone을 완료하는 선택 |
+| `substitute` | primary identity unit/mechanics가 현재 legal set에 없고 명시된 substitution이 존재하는 선택 |
+| `counter-adapt` | 공개 threat skull 또는 공개 HP가 전멸 위험을 나타내어 identity를 최대한 보존한 counter 선택 |
+| `pivot` | 진전 없는 결정이 두 번째 이어져 선언된 pivot condition을 실행하는 선택 |
+| `abandon` | pivot 뒤에도 진전·유효 대체가 없어 현재 intent를 종료하는 선택 |
+
+## hypothesis, commit_t, intent trace
+
+`BuildHypothesis`는 action 선택 전에 생성한다. `ClaimedEdge`, E01 fact ID인 `EvidenceRefs`, `Confidence`, `OpenQuestion`, `ExpectedPayoff`, `NextAcquisitionPlan`, `FalsificationSignal`, 선언 decision index와 payoff 관측 decision index를 구조화해 보존한다. E04 정책 표면은 payoff를 관측하지 않으므로 관측 index는 `-1`이며, 후속 payoff collector가 생겨도 선언 index보다 앞선 payoff를 참조하면 commit 판정이 실패해야 한다.
+
+`commit_t`는 다음 다섯 조건을 모두 충족한 첫 decision index다.
+
+- 서로 다른 prior evidence fact가 2개 이상이다.
+- 기대 payoff가 비어 있지 않다.
+- 다음 acquisition plan이 비어 있지 않다.
+- 실제 action이 새 milestone을 진전시키거나 희소 자원을 intent에 투자한다.
+- 실패 시 pivot condition이 비어 있지 않다.
+
+추가로 hypothesis 선언이 payoff 관측보다 앞서야 한다. `IntentCommitEvaluator`는 각 조건을 독립 boolean으로 내보내고 AND로만 판정하며, 한 번 기록한 `CommitDecisionIndex`를 후속 선택이 덮어쓰지 않는다.
+
+정책 assembly의 `HeadlessIntentDecision`은 policy-side snapshot이다. `SM.Editor.Validation.H100IntentTraceCollector`가 이를 `SM.HeadlessMetrics.IntentTraceRecord`로 투영하고 `IntentTraceArtifactWriter`가 `intent_trace.jsonl`을 wallclock, GUID, BOM 없이 timeline/stable ID 순서로 기록한다. 각 행에는 이유, action, milestone/희소 자원 진전, hypothesis, intent state, commit 조건별 결과와 `is_commit`이 들어간다. fact ledger decision과 intent trace 행 수가 다르거나 provenance audit가 0이 아니면 runner는 fail closed한다.
+
 ## 실행과 검증
 
 정책 한 개의 campaign metric은 다음처럼 실행한다. 기본 정책은 `greedy-v1`이다.
@@ -96,8 +139,17 @@ pwsh -File tools/h100-policy-witness.ps1 -CampaignCount 8 -CampaignSiteSafety 32
 pwsh -File tools/h100-formation.ps1 -SeedCount 5 -CompetentPolicy competent-formation-v1
 ```
 
+BT1-E04 intent trace smoke는 동일한 real campaign/session 경로에서 coverage 단일 계약과 catalog-hidden discovery를 각각 실행한다.
+
+```powershell
+pwsh -File tools/h100-intent-trace.ps1 -SeedCount 8 -Lanes both -CoverageAnchorId anchor_iron_line
+```
+
+각 lane의 `intent_trace_summary.json`에서 `missing_trace_count=0`, `hidden_fact_use_count=0`, `campaigns_with_commit=8`을 요구한다. 같은 seed와 intent의 policy decision 및 JSONL은 byte-identical이어야 한다. 현재 action surface는 deployment와 reward 두 종류뿐이며 영입, node, Refit decision point 개방은 E07 범위다.
+
 ## deferred
 
 - SearchPlanner 깊은 lookahead/MCTS와 common-random counterfactual
 - posture 결정축과 자세별 paired rollout
+- 영입, node, Refit decision point와 beta-runner checkpoint 연결(E07)
 - content snapshot/campaign orchestration을 포함한 pure dotnet CLI

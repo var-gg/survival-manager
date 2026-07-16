@@ -19,6 +19,7 @@ internal static class H100CampaignCorpusRunner
         IReadOnlyList<CampaignMetricRecord> Campaigns,
         IReadOnlyList<PlayerVisibleFactRecord> Facts,
         IReadOnlyList<PlayerVisibleDecisionRecord> Decisions,
+        IReadOnlyList<IntentTraceRecord> IntentTraces,
         PlayerVisibleFactAuditResult FactAudit);
 
     public static Corpus Run(
@@ -26,11 +27,13 @@ internal static class H100CampaignCorpusRunner
         H100MetricsRunSettings settings,
         float targetBattleSeconds,
         Action<string>? decisionLog = null,
-        H100CampaignObservationHooks? observationHooks = null)
+        H100CampaignObservationHooks? observationHooks = null,
+        Func<int, IHeadlessPolicy>? policyFactory = null)
     {
         var battles = new List<BattleMetricRecord>();
         var campaigns = new List<CampaignMetricRecord>(settings.CampaignCount);
         var factLedger = new H100PlayerVisibleFactLedgerCollector(settings.RunId);
+        var intentTrace = new H100IntentTraceCollector(settings.RunId);
         for (var index = 0; index < settings.CampaignCount; index++)
         {
             if (observationHooks?.StopRequested?.Invoke() == true)
@@ -46,8 +49,10 @@ internal static class H100CampaignCorpusRunner
                 battles,
                 campaigns,
                 factLedger,
+                intentTrace,
                 decisionLog,
-                observationHooks);
+                observationHooks,
+                policyFactory);
         }
 
         return new Corpus(
@@ -55,6 +60,7 @@ internal static class H100CampaignCorpusRunner
             campaigns,
             factLedger.Facts,
             factLedger.Decisions,
+            intentTrace.Records,
             PlayerVisibleFactLedgerAuditor.Audit(factLedger.Facts, factLedger.Decisions));
     }
 
@@ -66,8 +72,10 @@ internal static class H100CampaignCorpusRunner
         ICollection<BattleMetricRecord> allBattles,
         ICollection<CampaignMetricRecord> allCampaigns,
         H100PlayerVisibleFactLedgerCollector factLedger,
+        H100IntentTraceCollector intentTrace,
         Action<string>? decisionLog,
-        H100CampaignObservationHooks? observationHooks)
+        H100CampaignObservationHooks? observationHooks,
+        Func<int, IHeadlessPolicy>? policyFactory)
     {
         var campaignId = $"campaign-{campaignIndex:D6}";
         var campaignSeed = H100SessionDriver.DeriveSeed("campaign", settings.SeedBase + campaignIndex);
@@ -84,7 +92,7 @@ internal static class H100CampaignCorpusRunner
 
         try
         {
-            var policy = HeadlessPolicyFactory.Create(settings.PolicyId);
+            var policy = policyFactory?.Invoke(campaignIndex) ?? HeadlessPolicyFactory.Create(settings.PolicyId);
             session = H100SessionDriver.CreateSession(lookup, settings.PairingProfileId(campaignId));
             while (!session.Profile.CampaignProgress.StoryCleared
                    && siteCount < settings.CampaignSiteSafety
@@ -114,6 +122,12 @@ internal static class H100CampaignCorpusRunner
                     decisionCount,
                     policy.Id,
                     deploymentDecision);
+                intentTrace.Record(
+                    campaignId,
+                    campaignIndex,
+                    siteCount,
+                    decisionCount,
+                    policy);
                 decisionCount++;
                 observationHooks?.SiteArrived?.Invoke(new H100SiteArrivalContext(
                     campaignId,
@@ -232,6 +246,12 @@ internal static class H100CampaignCorpusRunner
                         decisionCount,
                         policy.Id,
                         rewardDecision);
+                    intentTrace.Record(
+                        campaignId,
+                        campaignIndex,
+                        siteCount,
+                        decisionCount,
+                        policy);
                     decisionCount++;
                     observationHooks?.RewardChosen?.Invoke(new H100RewardChosenContext(
                         campaignId,
