@@ -2,7 +2,7 @@
 
 - 상태: proposed
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-17
 - 소스오브트루스: `docs/03_architecture/h100-build-space-census-contract.md`
 - 관련문서:
   - `docs/03_architecture/h100-headless-metrics-contract.md`
@@ -12,14 +12,14 @@
 
 ## 목적
 
-이 문서는 12개 canonical archetype에서 4명을 고르는 편성공간과 여섯 anchor에 네 role slot을 놓는 배치공간을 전투 없이 전수 열거하는 계약을 고정한다. census는 빌드공간의 구조적 누락, 자동 발동, dead zone, 상위 독트린 희소성의 기준선이며 승률이나 H100 통과를 선언하지 않는다.
+이 문서는 12개 canonical archetype에서 4명을 고르는 편성공간과 여섯 anchor에 네 role slot을 놓는 배치공간을 전투 없이 전수 열거하는 계약을 고정한다. 또한 같은 pure assembly에 두는 evaluator-only build grammar truth graph의 경계를 고정한다. census는 구조적 기준선을 제공하며 승률, player-visible audit, H100 통과를 선언하지 않는다.
 
 ## 소유 경계
 
 | 경계 | 책임 | 금지 |
 | --- | --- | --- |
 | `SM.Combat` | V1 시너지 breakpoint와 `TeamRuleSet` doctrine id, anchor·battlefield geometry, 실제 진형 predicate | census 파일 출력과 군집 결과 소유 |
-| `SM.HeadlessCensus` | pure roster DTO, C(12,4)·P(6,4) 열거, 시너지·역할·진형 feature, deterministic medoid, 구조 assertion과 산출물 | authored content, session, persistence, Unity/editor API, 전투 실행 |
+| `SM.HeadlessCensus` | pure roster DTO, C(12,4)·P(6,4) 열거, build grammar truth graph, 시너지·역할·진형 feature, deterministic medoid, 구조 assertion과 산출물 | authored content, player-visible audit, session, persistence, Unity/editor API, 전투 실행 |
 | `SM.Editor.Validation` | `RuntimeCombatContentLookup` canonical roster를 pure DTO로 투영하고 medoid screening을 실제 session/sim 경로로 실행 | census 구조값이나 시너지 rule id를 별도로 복제 |
 | `SM.HeadlessMetrics` | screening 전투 결과의 `BattleMetricRecord` projection과 replay hash | census 열거·군집·정적 구조 판정 |
 
@@ -39,6 +39,12 @@
 `BuildSpaceEnumerator`는 canonical 입력 순서를 보존해 4-combination을 열거하고, formation은 `Tank`, `Damage`, `Ranged`, `Healer` 순서의 labelled role slot을 여섯 anchor에 배정한다. 따라서 편성은 495개, 편성당 배치는 360개, Cartesian state 수는 178,200개다. 중복 역할 편성에 medoid를 적용할 때는 role 순서 뒤 canonical roster 순서를 tie-break로 사용한다.
 
 시너지 tier signature는 race count의 `@2/@4`, class count의 `@2/@3`을 ordinal id로 기록한다. doctrine id는 census가 switch를 복제하지 않고 최소 `BattleUnitLoadout`을 `SynergyService.BuildForTeam()`에 전달해 `CombatModifierPackage.GrantedTeamRuleId`에서 읽는다. 따라서 `TeamRuleSet`의 `rule.phalanx`, `rule.bloodrush`, `rule.deathtoll`, `rule.bulwark`, `rule.execute`, `rule.killzone`, `rule.resonance`가 전투 truth와 같은 경로에서 나온다.
+
+## Build grammar truth graph 보조 경계
+
+`BuildGrammarTruthGraph`는 편성 495×배치 360 열거 결과와 별개인 순수 evaluator 구조다. authored snapshot을 읽는 일은 `SM.Editor.Validation` adapter가 맡고, `SM.HeadlessCensus`에는 `SM.Core`·`SM.Combat` DTO만 들어온다. graph builder는 authored recruit, reward, refit, passive, synergy 후보에서 직접 확인되는 `produces`·`amplifies`·`requires`·`pays_off`·`conflicts`·`substitutes`·`acquired_by` 관계만 만든다.
+
+이 graph는 player-visible fact나 audit 결과를 알지 못한다. `SM.HeadlessMetrics`도 graph를 직접 참조하지 않으며 Editor adapter가 sibling DTO를 매핑한다. 이 분리는 정책 assembly로 evaluator truth가 새는 것을 막고 `BuildBoundaryGuardFastTests`의 exact asmdef allowlist를 유지한다. 세부 BT3 비교·artifact 계약은 `h100-headless-metrics-contract.md`가 소유한다.
 
 ## 진형 feature와 medoid
 

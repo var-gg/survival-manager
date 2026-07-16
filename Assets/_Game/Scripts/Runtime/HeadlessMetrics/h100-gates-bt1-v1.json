@@ -38,7 +38,7 @@
       "name_ko": "정보 표면 완결성",
       "measurement": "현재 선택 가능한 build-shaping 오퍼의 의미·조건·중첩·획득 경로 정합성",
       "role": "hard",
-      "evaluable_now": false,
+      "evaluable_now": true,
       "depends_on_envelope": ["E02"],
       "legacy_gate_ids": ["depth_causality", "formation_significance"],
       "thresholds": [

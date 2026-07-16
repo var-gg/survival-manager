@@ -103,7 +103,7 @@ internal static class H100PolicyObservationBuilder
         return observation;
     }
 
-    private static IReadOnlyList<HeadlessSkillObservation> BuildSkillCards(
+    internal static IReadOnlyList<HeadlessSkillObservation> BuildSkillCards(
         IReadOnlyList<BattleSkillSpec>? skills)
     {
         return (skills ?? Array.Empty<BattleSkillSpec>())
@@ -174,7 +174,7 @@ internal static class H100PolicyObservationBuilder
             .ToArray();
     }
 
-    private static HeadlessItemMechanicsObservation BuildItemMechanics(
+    internal static HeadlessItemMechanicsObservation BuildItemMechanics(
         string itemId,
         string itemInstanceId,
         IEnumerable<string>? affixIds,
@@ -205,7 +205,7 @@ internal static class H100PolicyObservationBuilder
             BuildSkillCards(grantedSkills));
     }
 
-    private static HeadlessAffixMechanicsObservation BuildAffixMechanics(
+    internal static HeadlessAffixMechanicsObservation BuildAffixMechanics(
         string affixId,
         CombatContentSnapshot snapshot)
     {
@@ -225,7 +225,7 @@ internal static class H100PolicyObservationBuilder
             BuildRuleModifiers(affix?.RulePackage));
     }
 
-    private static HeadlessAugmentMechanicsObservation BuildAugmentMechanics(
+    internal static HeadlessAugmentMechanicsObservation BuildAugmentMechanics(
         string augmentId,
         CombatContentSnapshot snapshot)
     {
@@ -286,7 +286,7 @@ internal static class H100PolicyObservationBuilder
             .ToArray();
     }
 
-    private static IReadOnlyList<HeadlessSynergyObservation> BuildSynergyCatalog(
+    internal static IReadOnlyList<HeadlessSynergyObservation> BuildSynergyCatalog(
         CombatContentSnapshot snapshot)
     {
         return snapshot.SynergyCatalog.Values

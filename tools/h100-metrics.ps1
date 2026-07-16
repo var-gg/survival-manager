@@ -65,6 +65,7 @@ try {
         'gate-report.json',
         'run-manifest.json',
         'player_visible_fact_ledger.jsonl',
+        'information_surface_audit.json',
         'h100-bt1-gate-report.json'
     )
     foreach ($name in $required) {
@@ -92,6 +93,17 @@ try {
         }
     }
 
+    $bt3Gate = $bt1Report.gates | Where-Object { $_.gate_id -eq 'BT3' }
+    if ($null -eq $bt3Gate) {
+        throw 'H100 BT3 information-surface gate is missing.'
+    }
+    foreach ($threshold in $bt3Gate.thresholds) {
+        if (-not $threshold.observed) {
+            throw "H100 BT3 metric was not observed: $($threshold.metric_id)."
+        }
+    }
+    $surfaceAudit = Get-Content -Raw -LiteralPath (Join-Path $resolvedOutput 'information_surface_audit.json') | ConvertFrom-Json
+
     $ledgerPath = Join-Path $resolvedOutput 'player_visible_fact_ledger.jsonl'
     $ledgerLineCount = @(Get-Content -LiteralPath $ledgerPath).Count
     if ($ledgerLineCount -le 0) {
@@ -102,6 +114,9 @@ try {
     Write-Host "Replay hash match rate: $($hashThreshold.observed_value) (groups=$($hashThreshold.sample_count))"
     $bt2MetricSummary = ($bt2Gate.thresholds | ForEach-Object { "$($_.metric_id)=$($_.observed_value)" }) -join ', '
     Write-Host "BT2 provenance metrics: $bt2MetricSummary"
+    $bt3MetricSummary = ($bt3Gate.thresholds | ForEach-Object { "$($_.metric_id)=$($_.observed_value)" }) -join ', '
+    Write-Host "BT3 information-surface metrics: $bt3MetricSummary (status=$($bt3Gate.status))"
+    Write-Host "Interaction feedback coverage: $($surfaceAudit.interaction_feedback_coverage) (target>=0.90)"
     Write-Host "Player-visible fact ledger lines: $ledgerLineCount"
     Write-Host "Overall H100 gate pass: $($gateReport.overall_pass) (smoke/sample-floor failures are expected for small N)"
 }

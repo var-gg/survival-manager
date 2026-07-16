@@ -28,9 +28,10 @@ public sealed class H100Bt1GateSpecTests
         Assert.That(spec.LegacySpecVersion, Is.EqualTo("h100-gates-v1"));
         Assert.That(spec.Gates.Select(gate => gate.Id), Is.EqualTo(Enumerable.Range(1, 10).Select(index => $"BT{index}")));
         Assert.That(spec.Gates, Has.All.Matches<H100Bt1GateSpec.GateDefinition>(gate => gate.Role == GateRole.Hard));
-        Assert.That(spec.Gates.Single(gate => gate.Id == "BT2").EvaluableNow, Is.True);
+        Assert.That(spec.Gates.Where(gate => gate.Id is "BT2" or "BT3"),
+            Has.All.Matches<H100Bt1GateSpec.GateDefinition>(gate => gate.EvaluableNow));
         Assert.That(
-            spec.Gates.Where(gate => gate.Id != "BT2"),
+            spec.Gates.Where(gate => gate.Id is not ("BT2" or "BT3")),
             Has.All.Matches<H100Bt1GateSpec.GateDefinition>(gate => !gate.EvaluableNow));
 
         var expectedDependencies = new Dictionary<string, string[]>(StringComparer.Ordinal)
@@ -132,9 +133,10 @@ public sealed class H100Bt1GateSpecTests
 
         var report = H100Bt1GateEvaluator.Generate(spec, strictMode: true);
 
-        Assert.That(report.Gates.Single(gate => gate.GateId == "BT2").Status, Is.EqualTo("fail"));
+        Assert.That(report.Gates.Where(gate => gate.GateId is "BT2" or "BT3"),
+            Has.All.Matches<H100Bt1GateReport.GateResult>(gate => gate.Status == "fail"));
         Assert.That(
-            report.Gates.Where(gate => gate.GateId != "BT2"),
+            report.Gates.Where(gate => gate.GateId is not ("BT2" or "BT3")),
             Has.All.Matches<H100Bt1GateReport.GateResult>(
                 gate => gate.Status == "not_yet_evaluable" && gate.Pass == false));
         Assert.That(report.OverallStatus, Is.EqualTo("fail"));

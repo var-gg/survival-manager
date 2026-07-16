@@ -24,7 +24,7 @@
 | 경계 | 책임 | 금지 |
 | --- | --- | --- |
 | `SM.Combat` | 전투 상태, 결과, 활동 telemetry, canonical state hash의 authoritative truth | H100 보고서나 파일 출력 소유 |
-| `SM.HeadlessMetrics` | 전투·캠페인 레코드, 순수 projection, replay hash 조합, 결정적 JSONL/CSV, 게이트 평가 | `SM.Unity`, authored content, session, persistence, editor API 참조 |
+| `SM.HeadlessMetrics` | 전투·캠페인 레코드, 정보 표면 audit DTO·판정, 순수 projection, replay hash 조합, 결정적 JSONL/CSV, 게이트 평가 | `SM.Unity`, authored content, session, persistence, editor API와 sibling `SM.HeadlessCensus` 참조 |
 | `SM.HeadlessPolicies` | player-visible observation/decision과 6개 production + 1개 QA deterministic 정책 | session/content/persistence/editor 참조, future RNG·미공개 node·resolved enemy stat 입력 |
 | `SM.Editor.Validation` | 실제 `RuntimeCombatContentLookup`과 `GameSessionState`를 조립해 전투·캠페인을 실행 | 계측 스키마나 판정 규칙을 별도로 복제 |
 
@@ -71,7 +71,37 @@
 - `oracle_or_truth_leak_count`: fact/decision의 evaluator-only 참조 수
 - `unsupported_certain_claim_count`: prior evidence로 해석되지 않는 certain decision 수
 
-캠페인 runner는 `player_visible_fact_ledger.jsonl`을 UTF-8 no-BOM과 stable timeline/fact id 순서로 기록한다. BT2는 E01 공급이 완료되어 `evaluable_now=true`이며 네 지표가 모두 관측된 0일 때만 PASS한다. 나머지 BT 게이트의 `not_yet_evaluable` 상태와 H100-RC1 산출물은 그대로 보존한다.
+캠페인 runner는 `player_visible_fact_ledger.jsonl`을 UTF-8 no-BOM과 stable timeline/fact id 순서로 기록한다. BT2는 E01 공급이 완료되어 `evaluable_now=true`이며 네 지표가 모두 관측된 0일 때만 PASS한다. BT3도 아래 E02 공급이 완료되어 실측 평가하며, 그 밖의 BT 게이트의 `not_yet_evaluable` 상태와 H100-RC1 산출물은 그대로 보존한다.
+
+## Build grammar truth graph와 BT3 정보 표면 audit
+
+`BuildGrammarTruthGraph`는 `SM.HeadlessCensus`가 소유하는 evaluator-only 순수 구조다. `SM.Editor.Validation`의 `H100BuildGrammarTruthProjector`가 실제 `CombatContentSnapshot`을 `BuildGrammarTruthSource`로 낮추고, 순수 builder는 `produces`, `amplifies`, `requires`, `pays_off`, `conflicts`, `substitutes`, `acquired_by` 관계만 ordinal 순서로 파생한다. edge id는 정렬된 관계열의 index에서 만들어지며 wallclock과 GUID를 쓰지 않는다.
+
+actionable 판정은 현재 선택이나 정상 플레이의 선택 표면에 직접 연결되는 authored 후보로 제한한다.
+
+| subject | authoritative 입력 | 획득·선택 표면 |
+| --- | --- | --- |
+| recruit archetype·candidate skill | `CombatArchetypeTemplate`의 recruitability, active/passive pool, skill spec | recruit |
+| reward item·granted skill | item package/catalog와 granted-skill catalog | reward card |
+| equipment affix | affix required/excluded tag, modifier/rule package | refit |
+| augment | augment family, exclusion tag, modifier/rule/trigger package | reward card |
+| passive node | prerequisite node, exclusion group, package, granted skill | level node |
+| synergy tier | `TeamSynergyTierRule`과 `SynergyService.BuildForTeam`이 낸 canonical team rule | squad composition |
+
+같은 slot·role·family처럼 선택 대체성이 명시된 경우만 `substitutes`를 만든다. passive board 전체, 계산 중간값, derived combat state, 승률·oracle 값은 edge로 만들지 않는다. 특히 synergy payoff는 별도 switch로 복제하지 않고 기존 `SynergyService` 결과를 사용한다.
+
+player-visible 쪽은 별도 UI 설명을 발명하지 않는다. `H100BuildGrammarCatalogObservationBuilder`가 실콘텐츠 catalog를 E01 observation으로 조립하고, `H100PlayerVisibleFactProjector`가 실제로 생성한 fact만 `H100BuildGrammarVisibleSurfaceProjector`가 audit DTO로 매핑한다. reward card·synergy compendium처럼 선택 전에 도달하는 fact만 `available_before_choice=true`이며 roster의 현재 장착·현재 passive처럼 선택 이후 상태인 fact는 pre-choice 증거로 세지 않는다. v1 discoverability는 E01 fact projection으로 정상 플레이 표면에 도달 가능한지를 근사하며 catalog별 unlock timing은 후속이다.
+
+`InformationSurfaceAuditor`와 결과는 `SM.HeadlessMetrics`에 있고 `SM.HeadlessCensus`를 참조하지 않는다. 두 sibling DTO의 매핑은 둘을 이미 참조하는 `SM.Editor.Validation`에서만 수행한다. BT3 hard metric은 다음 네 가지다.
+
+- `actionable_offer_missing_semantics`: actionable subject별로 pre-choice 의미가 하나 이상 빠진 offer 수
+- `undefined_visible_token`: 가시 status/tag/team-rule id 중 도달 가능한 정의가 없는 token 수
+- `hidden_prerequisite`: `requires` edge가 선택 전 표면에 없는 수
+- `description_behavior_mismatch_count`: 같은 관계의 visible 구조값과 runtime truth 구조값이 다른 수
+
+`interaction_feedback_coverage`는 hard threshold와 분리한 보조 지표이며, feedback이 필요한 edge 중 기존 combat telemetry·beat witness가 연결된 비율이다. 목표는 `>= 0.90`이다. gap은 자동 수정하지 않고 `kind`, `subject_id`, `missing`, `owner_content_candidate` 네 필드만 기록한다. 실콘텐츠 FAIL은 runner 실패가 아니라 후속 content/UI owner 입력이다.
+
+독립 E02 실행은 `Logs/h100-surface-audit/information_surface_audit.json`을 만들고, 통합 H100 실행은 같은 파일을 `Logs/h100-metrics/`에 함께 기록한다. artifact는 invariant snake_case, ordinal 정렬, UTF-8 no-BOM을 사용하며 wallclock과 GUID를 포함하지 않는다.
 
 ## 진형 Stage 4 계측
 
@@ -120,6 +150,7 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 - `gate-report.json`
 - `run-manifest.json`
 - `player_visible_fact_ledger.jsonl`
+- `information_surface_audit.json`
 - `h100-bt1-gate-report.json`
 - 선택적으로 `battle-metrics.csv`, `campaign-metrics.csv`
 
@@ -139,7 +170,7 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 | --- | --- | --- | --- | --- |
 | BT1 | 결정성·리플레이 무결성 | hard | `not_yet_evaluable` | E07 |
 | BT2 | player-visible provenance | hard | 네 provenance metric 실측 평가 | E01 |
-| BT3 | 정보 표면 완결성 | hard | `not_yet_evaluable` | E02 |
+| BT3 | 정보 표면 완결성 | hard | 네 surface audit metric 실측 평가 | E02 |
 | BT4 | 빌드 문법 유추 가능성 | hard | `not_yet_evaluable` | E02, E03, E07 |
 | BT5 | 욕구 형성·커밋 | hard | `not_yet_evaluable` | E04, E07 |
 | BT6 | 트랙 개방성·에이전시 연속성 | hard | `not_yet_evaluable` | E03, E05 |
@@ -148,7 +179,7 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 | BT9 | 함정 옵션·버그급 지배성 부재 | hard | `not_yet_evaluable` | E08, E09 |
 | BT10 | 베타테스터 재미·재시도 two-key | hard | `not_yet_evaluable` | E04, E05, E07 |
 
-`evaluable_now=false`는 게이트 임계치가 미정이라는 뜻이 아니다. 임계치는 스펙에 동결되어 있지만 해당 envelope가 아직 완전한 metric supplier를 제공하지 않았다는 뜻이다. 일반 모드에서는 `not_yet_evaluable`과 `pass=null`을 출력해 조기 PASS/FAIL을 주장하지 않는다. 최종 RC strict 모드에서는 이를 FAIL로 취급한다.
+아직 `evaluable_now=false`인 게이트는 임계치가 미정이라는 뜻이 아니다. 임계치는 스펙에 동결되어 있지만 해당 envelope가 아직 완전한 metric supplier를 제공하지 않았다는 뜻이다. 일반 모드에서는 `not_yet_evaluable`과 `pass=null`을 출력해 조기 PASS/FAIL을 주장하지 않는다. 최종 RC strict 모드에서는 이를 FAIL로 취급한다.
 
 role-aware 평가 의미는 다음과 같다.
 
@@ -182,6 +213,12 @@ role-aware 평가 의미는 다음과 같다.
 pwsh -File tools/h100-metrics.ps1 -Policy greedy-v1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 2
 ```
 
+E02 정보 표면만 실콘텐츠에서 빠르게 재측정할 때는 다음 명령을 쓴다. metric FAIL과 gap 존재는 출력하되 콘텐츠를 자동 수정하거나 명령을 실패시키지 않는다.
+
+```powershell
+pwsh -File tools/h100-surface-audit.ps1
+```
+
 대량 실행은 같은 명령에서 수를 명시한다. `BattleCount`는 같은 입력을 반복하는 replay group 수이며 실제 battle record 수는 replay copy 수만큼 증가한다.
 
 ```powershell
@@ -195,6 +232,7 @@ wrapper는 Unity batch execute-method로 실제 content/session/simulator 경로
 ```powershell
 pwsh -File tools/unity-bridge.ps1 test-batch-fast
 pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
+pwsh -File tools/h100-surface-audit.ps1
 pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 2
 ```
 
@@ -219,3 +257,4 @@ pwsh -File tools/h100-sunken-diagnosis.ps1
 - posture는 현재 정책 action 축이 아니며 자세별 paired rollout은 후속 단계다.
 - `SM.HeadlessMetrics` 자체는 pure .NET으로 빌드 가능하지만 실제 콘텐츠/session composition은 Unity adapter에 남아 있다. 2M+ 전투용 pure dotnet CLI는 content snapshot과 campaign orchestration port를 분리한 뒤 추가한다.
 - Sunken Stage 5 기본 실행은 방향 판별용 small-N/medoid 표본이다. 다중 seed·360개 전체 배치·대규모 holdout 인증은 별도 실행 예산으로 남긴다.
+- 정보 표면 v1은 E01 fact reachability를 정상 플레이 discoverability의 보수적 proxy로 사용한다. catalog unlock 시점과 실제 run별 offer 빈도는 E03 이후의 별도 표본이 필요하다.

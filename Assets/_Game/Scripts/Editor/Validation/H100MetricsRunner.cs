@@ -32,7 +32,7 @@ public static class H100MetricsRunner
         var outputDirectory = ResolveOutputDirectory(projectRoot, settings.OutputDirectory);
         var spec = H100GateSpec.LoadFromFile(gateSpecPath);
         var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
-        if (!lookup.TryGetCombatSnapshot(out _, out var contentError))
+        if (!lookup.TryGetCombatSnapshot(out var snapshot, out var contentError))
         {
             throw new InvalidOperationException($"combat snapshot unavailable: {contentError}");
         }
@@ -47,10 +47,11 @@ public static class H100MetricsRunner
             outputDirectory,
             campaignCorpus.Facts,
             campaignCorpus.Decisions);
+        var surfaceAudit = H100SurfaceAuditRunner.RunForSnapshot(snapshot, outputDirectory);
         var bt1Spec = H100Bt1GateSpec.LoadFromFile(bt1GateSpecPath);
         var bt1Report = H100Bt1GateEvaluator.Generate(
             bt1Spec,
-            campaignCorpus.FactAudit.ToBt2Observations(),
+            campaignCorpus.FactAudit.ToBt2Observations().Concat(surfaceAudit.ToBt3Observations()).ToArray(),
             legacyReport: gateReport);
         H100Bt1GateReportWriter.Write(outputDirectory, bt1Report);
         WriteManifest(outputDirectory, settings, spec, artifacts, battles, campaigns, gateReport);
@@ -58,6 +59,7 @@ public static class H100MetricsRunner
         Debug.Log(
             $"[H100Metrics] complete run={settings.RunId} battles={battles.Length} campaigns={campaigns.Length} "
             + $"overallPass={gateReport.OverallPass} bt2={bt1Report.Gates.Single(gate => gate.GateId == "BT2").Status} "
+            + $"bt3={bt1Report.Gates.Single(gate => gate.GateId == "BT3").Status} "
             + $"facts={campaignCorpus.Facts.Count} decisions={campaignCorpus.Decisions.Count} output={outputDirectory}");
     }
 
