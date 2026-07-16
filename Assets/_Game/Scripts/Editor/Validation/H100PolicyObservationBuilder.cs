@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
+using SM.Core.Stats;
 using SM.HeadlessPolicies;
 using SM.Meta.Model;
+using SM.Meta.Services;
+using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -28,6 +32,10 @@ internal static class H100PolicyObservationBuilder
             .Where(record => !string.IsNullOrWhiteSpace(record.HeroId))
             .GroupBy(record => record.HeroId, StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+        var loadoutByHero = session.Profile.HeroLoadouts
+            .Where(record => !string.IsNullOrWhiteSpace(record.HeroId))
+            .GroupBy(record => record.HeroId, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
         var rosterById = session.Profile.Heroes
             .Where(hero => !string.IsNullOrWhiteSpace(hero.HeroId))
             .GroupBy(hero => hero.HeroId, StringComparer.Ordinal)
@@ -38,13 +46,10 @@ internal static class H100PolicyObservationBuilder
             {
                 var hero = rosterById[heroId];
                 snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype);
-                var equippedItemCount = hero.EquippedItemIds
-                    .Concat(session.Profile.Inventory
-                        .Where(item => string.Equals(item.EquippedHeroId, hero.HeroId, StringComparison.Ordinal))
-                        .Select(item => item.ItemInstanceId))
-                    .Where(id => !string.IsNullOrWhiteSpace(id))
-                    .Distinct(StringComparer.Ordinal)
-                    .Count();
+                var equippedItems = BuildEquippedItems(hero, session.Profile.Inventory, snapshot);
+                var selectedPassiveNodeIds = loadoutByHero.TryGetValue(hero.HeroId, out var loadout)
+                    ? StableIds(loadout.SelectedPassiveNodeIds)
+                    : Array.Empty<string>();
                 return new HeadlessHeroObservation(
                     hero.HeroId,
                     hero.ArchetypeId,
@@ -54,10 +59,19 @@ internal static class H100PolicyObservationBuilder
                     progressionByHero.TryGetValue(hero.HeroId, out var progression) ? progression.Level : 1,
                     hero.CurrentHp,
                     hero.MaxHp,
-                    equippedItemCount,
+                    equippedItems.Count,
                     deployed.Contains(hero.HeroId),
-                    archetype?.DefaultAnchor ?? ResolveClassAnchor(hero.ClassId));
+                    archetype?.DefaultAnchor ?? ResolveClassAnchor(hero.ClassId),
+                    BuildSkillCards(archetype?.Skills),
+                    hero.FlexActiveId,
+                    hero.FlexPassiveId,
+                    equippedItems,
+                    selectedPassiveNodeIds);
             })
+            .ToArray();
+
+        var temporaryAugments = StableIds(session.Expedition.TemporaryAugmentIds)
+            .Select(id => BuildAugmentMechanics(id, snapshot))
             .ToArray();
 
         var observation = new HeadlessPolicyObservation(
@@ -75,10 +89,289 @@ internal static class H100PolicyObservationBuilder
                     option.PayloadId,
                     option.GoldAmount,
                     option.EchoAmount,
-                    option.PermanentSlotAmount))
-                .ToArray());
+                    option.PermanentSlotAmount,
+                    BuildRewardMechanics(option, snapshot)))
+                .ToArray(),
+            new HeadlessWalletObservation(
+                session.Profile.Currencies.Gold,
+                session.Profile.Currencies.Echo),
+            temporaryAugments,
+            BuildSynergyCounts(roster, snapshot),
+            BuildSynergyCatalog(snapshot));
         HeadlessPolicyGuard.ValidateObservation(observation);
         return observation;
+    }
+
+    private static IReadOnlyList<HeadlessSkillObservation> BuildSkillCards(
+        IReadOnlyList<BattleSkillSpec>? skills)
+    {
+        return (skills ?? Array.Empty<BattleSkillSpec>())
+            .Where(skill => skill != null && !string.IsNullOrWhiteSpace(skill.Id))
+            .GroupBy(skill => skill.Id, StringComparer.Ordinal)
+            .Select(group => group.First())
+            .OrderBy(skill => skill.Id, StringComparer.Ordinal)
+            .Select(BuildSkillCard)
+            .ToArray();
+    }
+
+    private static HeadlessSkillObservation BuildSkillCard(BattleSkillSpec skill)
+    {
+        var statuses = (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
+            .Where(status => status != null && !string.IsNullOrWhiteSpace(status.StatusId))
+            .OrderBy(status => status.StatusId, StringComparer.Ordinal)
+            .ThenBy(status => status.Id, StringComparer.Ordinal)
+            .Select(status => new HeadlessStatusApplicationObservation(
+                status.Id,
+                status.StatusId,
+                status.DurationSeconds,
+                status.Magnitude,
+                status.MaxStacks))
+            .ToArray();
+        return new HeadlessSkillObservation(
+            skill.Id,
+            skill.Kind,
+            CompiledSkillSlots.Normalize(skill.SlotKind),
+            skill.Power,
+            skill.Range,
+            skill.DamageType,
+            skill.PowerFlat,
+            skill.PhysCoeff,
+            skill.MagCoeff,
+            skill.HealCoeff,
+            skill.HealthCoeff,
+            skill.ManaCost,
+            skill.BaseCooldownSeconds,
+            skill.CastWindupSeconds,
+            skill.CanCrit,
+            skill.Delivery,
+            skill.TargetRule,
+            statuses);
+    }
+
+    private static IReadOnlyList<HeadlessItemMechanicsObservation> BuildEquippedItems(
+        HeroInstanceRecord hero,
+        IEnumerable<InventoryItemRecord> inventory,
+        CombatContentSnapshot snapshot)
+    {
+        var equippedIds = (hero.EquippedItemIds ?? new List<string>())
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.Ordinal);
+        return (inventory ?? Array.Empty<InventoryItemRecord>())
+            .Where(item => item != null
+                           && !string.IsNullOrWhiteSpace(item.ItemInstanceId)
+                           && (equippedIds.Contains(item.ItemInstanceId)
+                               || string.Equals(item.EquippedHeroId, hero.HeroId, StringComparison.Ordinal)))
+            .GroupBy(item => item.ItemInstanceId, StringComparer.Ordinal)
+            .Select(group => group.First())
+            .OrderBy(item => item.ItemBaseId, StringComparer.Ordinal)
+            .ThenBy(item => item.ItemInstanceId, StringComparer.Ordinal)
+            .Select(item => BuildItemMechanics(
+                item.ItemBaseId,
+                item.ItemInstanceId,
+                item.AffixIds,
+                snapshot))
+            .ToArray();
+    }
+
+    private static HeadlessItemMechanicsObservation BuildItemMechanics(
+        string itemId,
+        string itemInstanceId,
+        IEnumerable<string>? affixIds,
+        CombatContentSnapshot snapshot)
+    {
+        ItemTemplate? item = null;
+        if (snapshot.ItemCatalog != null)
+        {
+            snapshot.ItemCatalog.TryGetValue(itemId, out item);
+        }
+
+        snapshot.ItemPackages.TryGetValue(itemId, out var itemPackage);
+        IReadOnlyList<BattleSkillSpec>? grantedSkills = null;
+        if (snapshot.ItemGrantedSkills != null)
+        {
+            snapshot.ItemGrantedSkills.TryGetValue(itemId, out grantedSkills);
+        }
+
+        return new HeadlessItemMechanicsObservation(
+            itemId,
+            itemInstanceId,
+            StableIds(item?.CompileTags),
+            item?.WeaponFamilyTag ?? string.Empty,
+            BuildStatModifiers(itemPackage?.Modifiers),
+            StableIds(affixIds)
+                .Select(id => BuildAffixMechanics(id, snapshot))
+                .ToArray(),
+            BuildSkillCards(grantedSkills));
+    }
+
+    private static HeadlessAffixMechanicsObservation BuildAffixMechanics(
+        string affixId,
+        CombatContentSnapshot snapshot)
+    {
+        AffixTemplate? affix = null;
+        if (snapshot.AffixCatalog != null)
+        {
+            snapshot.AffixCatalog.TryGetValue(affixId, out affix);
+        }
+
+        snapshot.AffixPackages.TryGetValue(affixId, out var package);
+        return new HeadlessAffixMechanicsObservation(
+            affixId,
+            StableIds(affix?.CompileTags),
+            StableIds(affix?.RequiredTags),
+            StableIds(affix?.ExcludedTags),
+            BuildStatModifiers(package?.Modifiers),
+            BuildRuleModifiers(affix?.RulePackage));
+    }
+
+    private static HeadlessAugmentMechanicsObservation BuildAugmentMechanics(
+        string augmentId,
+        CombatContentSnapshot snapshot)
+    {
+        snapshot.AugmentCatalog.TryGetValue(augmentId, out var augment);
+        snapshot.AugmentPackages.TryGetValue(augmentId, out var package);
+        return new HeadlessAugmentMechanicsObservation(
+            augmentId,
+            augment?.Category ?? string.Empty,
+            augment?.FamilyId ?? string.Empty,
+            augment?.Tier ?? 0,
+            StableIds(augment?.Tags),
+            StableIds(augment?.BuildBiasTags),
+            BuildStatModifiers(package?.Modifiers),
+            BuildRuleModifiers(augment?.RulePackage),
+            BuildTriggeredEffects(augment?.TriggeredEffects));
+    }
+
+    private static HeadlessRewardMechanicsObservation BuildRewardMechanics(
+        RewardChoiceViewModel option,
+        CombatContentSnapshot snapshot)
+    {
+        return option.Kind switch
+        {
+            RewardChoiceKind.Item => new HeadlessRewardMechanicsObservation(
+                BuildItemMechanics(option.PayloadId, string.Empty, Array.Empty<string>(), snapshot),
+                null),
+            RewardChoiceKind.TemporaryAugment => new HeadlessRewardMechanicsObservation(
+                null,
+                BuildAugmentMechanics(option.PayloadId, snapshot)),
+            _ => HeadlessRewardMechanicsObservation.Empty,
+        };
+    }
+
+    private static IReadOnlyList<HeadlessSynergyCountObservation> BuildSynergyCounts(
+        IReadOnlyList<HeadlessHeroObservation> roster,
+        CombatContentSnapshot snapshot)
+    {
+        var deployedTags = roster
+            .Where(hero => hero.IsDeployed)
+            .OrderBy(hero => hero.HeroId, StringComparer.Ordinal)
+            .Select(hero =>
+            {
+                var tags = new List<string> { hero.RaceId, hero.ClassId };
+                if (snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype))
+                {
+                    tags.AddRange(archetype.RecruitPlanTags ?? Array.Empty<string>());
+                }
+
+                return (IReadOnlyList<string>)StableIds(tags);
+            })
+            .ToArray();
+        return SquadSynergyPreview.Evaluate(deployedTags, snapshot.SynergyCatalog)
+            .GroupBy(surface => surface.CountedTagId, StringComparer.Ordinal)
+            .OrderBy(group => group.Key, StringComparer.Ordinal)
+            .Select(group => new HeadlessSynergyCountObservation(
+                group.Key,
+                group.Max(surface => surface.CurrentCount)))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<HeadlessSynergyObservation> BuildSynergyCatalog(
+        CombatContentSnapshot snapshot)
+    {
+        return snapshot.SynergyCatalog.Values
+            .Where(template => template?.Rule != null
+                               && !string.IsNullOrWhiteSpace(template.Rule.SynergyId)
+                               && template.Rule.Threshold > 0)
+            .Select(template => template.Rule)
+            .GroupBy(rule => rule.SynergyId, StringComparer.Ordinal)
+            .OrderBy(group => group.Key, StringComparer.Ordinal)
+            .Select(group => new HeadlessSynergyObservation(
+                group.Key,
+                group.Select(rule => rule.CountedTagId)
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .OrderBy(id => id, StringComparer.Ordinal)
+                    .FirstOrDefault() ?? string.Empty,
+                group.OrderBy(rule => rule.Threshold)
+                    .ThenBy(rule => rule.GrantedTeamRuleId, StringComparer.Ordinal)
+                    .Select(rule => new HeadlessSynergyTierObservation(
+                        rule.Threshold,
+                        BuildStatModifiers(rule.Modifiers),
+                        rule.GrantedTeamRuleId))
+                    .ToArray()))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<HeadlessStatModifierObservation> BuildStatModifiers(
+        IEnumerable<StatModifier>? modifiers)
+    {
+        return (modifiers ?? Array.Empty<StatModifier>())
+            .Where(modifier => modifier != null)
+            .Select(modifier => new HeadlessStatModifierObservation(
+                modifier.Stat.ToString(),
+                modifier.Op.ToString(),
+                modifier.Value,
+                modifier.Tag?.Value ?? string.Empty))
+            .OrderBy(modifier => modifier.StatId, StringComparer.Ordinal)
+            .ThenBy(modifier => modifier.Operation, StringComparer.Ordinal)
+            .ThenBy(modifier => modifier.Value)
+            .ThenBy(modifier => modifier.TagId, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private static IReadOnlyList<HeadlessRuleModifierObservation> BuildRuleModifiers(
+        CombatRuleModifierPackage? package)
+    {
+        return (package?.Modifiers ?? Array.Empty<RuleModifier>())
+            .Where(modifier => modifier != null)
+            .Select(modifier => new HeadlessRuleModifierObservation(
+                modifier.Kind.ToString(),
+                modifier.Value,
+                modifier.Magnitude))
+            .OrderBy(modifier => modifier.Kind, StringComparer.Ordinal)
+            .ThenBy(modifier => modifier.Value, StringComparer.Ordinal)
+            .ThenBy(modifier => modifier.Magnitude)
+            .ToArray();
+    }
+
+    private static IReadOnlyList<HeadlessTriggeredEffectObservation> BuildTriggeredEffects(
+        IEnumerable<CombatTriggeredEffect>? effects)
+    {
+        return (effects ?? Array.Empty<CombatTriggeredEffect>())
+            .Where(effect => effect != null)
+            .Select(effect => new HeadlessTriggeredEffectObservation(
+                effect.Trigger.ToString(),
+                effect.Op.ToString(),
+                effect.Scope.ToString(),
+                effect.Magnitude,
+                effect.ThresholdRatio,
+                effect.StatusId,
+                effect.DurationSeconds,
+                effect.MaxStacks))
+            .OrderBy(effect => effect.Trigger, StringComparer.Ordinal)
+            .ThenBy(effect => effect.Operation, StringComparer.Ordinal)
+            .ThenBy(effect => effect.Scope, StringComparer.Ordinal)
+            .ThenBy(effect => effect.StatusId, StringComparer.Ordinal)
+            .ThenBy(effect => effect.Magnitude)
+            .ToArray();
+    }
+
+    private static string[] StableIds(IEnumerable<string>? ids)
+    {
+        return (ids ?? Array.Empty<string>())
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToArray();
     }
 
     private static HeadlessEnemyPreview BuildCurrentEnemyPreview(

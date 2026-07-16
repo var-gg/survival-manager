@@ -2,7 +2,7 @@
 
 - 상태: proposed
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-17
 - 소스오브트루스: `docs/03_architecture/h100-headless-policy-contract.md`
 - 관련문서:
   - `docs/03_architecture/h100-headless-metrics-contract.md`
@@ -19,14 +19,19 @@
 
 정책 observation에 허용되는 정보는 다음과 같다.
 
-- 현재 expedition squad의 hero/archetype/race/class/role, level, 현재 공개 HP, 장비 개수, 선호 anchor, 현재 배치 여부
+- 현재 expedition squad의 hero/archetype/race/class/role, level, 현재 공개 HP, 선호 anchor, 현재 배치 여부
+- 각 영웅의 공개 skill card mechanics, flex active/passive skill id, 장착 item과 확정 affix mechanics, 선택된 passive node id
 - 공개된 여섯 deployment anchor와 4-cap
 - 현재 선택 chapter/site id
 - 현재 선택 node 한 개의 enemy preview: archetype identity에서 알 수 있는 race/class/role/default anchor, faction, difficulty band, threat skull, 공개 boss/reward tag
-- reward 화면에 이미 제시된 option과 표시 금액/payload id
+- Squad Builder가 표시하는 현재 **배치 분대 기준** synergy count와 Compendium의 synergy threshold/effect catalog
+- Town HUD의 gold/echo wallet과 현재 run의 temporary augment mechanics
+- reward 화면에 이미 제시된 option의 표시 금액/payload id 및 item/temporary augment 공개 mechanics
 - 현재 결정을 위해 runner가 파생한 non-zero seed
 
-금지 정보는 미래 node 목록, unrevealed encounter, RNG state/다음 roll, resolved enemy base stat/trait/rule package, `BattleState`, `GameSessionState`, authored definition 참조다. `H100PolicyObservationBuilder`는 현재 `GetSelectedExpeditionNode()`만 투영하며 future node traversal을 하지 않는다.
+허용 여부는 필드 출처가 아니라 플레이어가 현재 화면에서 같은 의미를 읽을 수 있는지로 판단한다. builder는 ID와 mechanics collection을 ordinal 정렬하고, 정책에는 authored definition이나 snapshot을 전달하지 않는다.
+
+금지 정보는 미래 node 목록, unrevealed encounter, RNG state/다음 roll, resolved enemy base stat/trait/rule package, `BattleState`, `GameSessionState`, authored definition 참조다. reward item affix는 선택 적용 뒤 생성되므로 선택 전에는 공개 mechanics가 아니며 비워 둔다. `H100PolicyObservationBuilder`는 현재 `GetSelectedExpeditionNode()`만 투영하고 enemy preview vocabulary를 확장하거나 future node를 순회하지 않는다.
 
 ## 결정 표면과 정책
 

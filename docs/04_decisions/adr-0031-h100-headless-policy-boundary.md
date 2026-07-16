@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-17
 - 소스오브트루스: `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
 - 관련문서:
   - `docs/03_architecture/h100-headless-policy-contract.md`
@@ -22,9 +22,12 @@ Stage 2는 같은 player-visible 정보에서 여섯 정책을 교체 실행하�
 - 새 `SM.HeadlessPolicies` asmdef가 player-visible observation/decision DTO, `IHeadlessPolicy`, 여섯 정책, 결정적 heuristic/search, `HeadlessPolicyGuard`를 소유한다.
 - `SM.HeadlessPolicies`는 `SM.Combat`만 참조하고 `noEngineReferences=true`를 사용한다. `SM.Content`, `SM.HeadlessMetrics`, `SM.Meta`, persistence, `SM.Unity`, `SM.Editor`는 참조하지 않는다.
 - `IHeadlessPolicy`는 실제 대체 구현 여섯 개가 같은 runner에서 교체 실행되므로 interface 도입 기준을 충족한다. 정책 constructor에는 session/content/RNG service를 주입하지 않는다.
-- observation은 현재 roster, 공개 anchor, 현재 chapter/site, 현재 공개 enemy preview, 이미 제시된 reward option, 결정 seed만 담는다. 미래 node, RNG state, resolved enemy stat, encounter 내부 rule package는 담지 않는다.
+- observation의 허용 기준은 **UI-parity**다. 현재 화면에서 플레이어가 읽을 수 있는 자기 영웅의 skill card와 flex skill, 장착 item/affix mechanics, 선택 passive node, wallet, 보유 temporary augment, 배치 분대 synergy count와 공개 synergy tier 효과, 이미 제시된 reward payload mechanics를 빠짐없이 담되 화면 밖 정보는 담지 않는다.
+- reward item의 실제 affix는 선택 적용 뒤 결정적으로 생성되므로 제시 시점 observation에는 넣지 않는다. 이미 소유한 장비의 확정 affix만 투영한다.
+- 현재 chapter/site, 공개 anchor, 현재 공개 enemy preview, 결정 seed는 기존대로 유지한다. 미래 node, RNG state/다음 roll, resolved enemy stat, encounter 내부 rule package는 담지 않으며 enemy preview vocabulary도 확장하지 않는다.
 - `SM.Editor.Validation.H100PolicyObservationBuilder`가 `GameSessionState`와 content snapshot을 현재 player-facing preview와 같은 정보로 투영하는 유일한 adapter다. 정책에는 이 DTO만 전달한다.
-- `HeadlessPolicyGuard`가 observation 형태와 legal action을 fail closed한다. `BuildBoundaryGuardFastTests`가 asmdef exact reference를 고정하고 FastUnit이 observation vocabulary와 여섯 정책의 결정론을 검증한다.
+- builder는 모든 ID·mechanics collection을 ordinal 기준으로 정렬하고, synergy count는 Squad Builder UI와 같은 **현재 배치 영웅** 기준으로 계산한다.
+- `HeadlessPolicyGuard`가 observation 형태와 legal action을 fail closed한다. 신규 mechanics는 관측 전용이라 guard의 action 검증 규칙은 바꾸지 않는다. `BuildBoundaryGuardFastTests`가 asmdef exact reference를 고정하고 FastUnit이 observation vocabulary와 여섯 정책의 결정론을 검증한다.
 - `H100MetricsRunSettings.PolicyId`와 `SM_H100_POLICY`가 정책을 선택한다. 기본값은 `greedy-v1`이며 Stage 1 roster-order/front-back/reward-first 행동을 보존한다.
 - campaign profile identity에서 policy id를 제외해 같은 seed 비교가 reward/session context까지 같은 입력을 사용하게 한다.
 - posture는 Stage 2에 포함하지 않는다. 현재 campaign site 진행은 전 사이트 클리어가 필요한 선형 기계이므로 policy action이 아니라 runner orchestration으로 유지한다.
@@ -42,6 +45,8 @@ Stage 2는 같은 player-visible 정보에서 여섯 정책을 교체 실행하�
 ## 결과와 영향
 
 - `SM.Editor`와 `SM.Tests.FastUnit`이 `SM.HeadlessPolicies`를 소비하고 역방향 참조는 없다.
+- additive DTO 확장으로 `IHeadlessPolicy` 시그니처와 기존 여섯 정책 구현은 바뀌지 않는다. 정책은 확장된 observation에서도 같은 legal decision surface만 반환한다.
+- build-intent 정책은 자기 roster의 공개 skill/item/passive, 현재 경제와 augment, 배치 synergy breakpoint, reward mechanics를 조합해 빌드 진전을 판단할 수 있다.
 - `RandomLegalPolicy`도 observation seed에서 자체 deterministic stream을 매번 재구성한다. 같은 seed와 observation은 호출 순서와 무관하게 같은 결정을 만든다.
 - `SearchPlannerPolicy` v1은 공개 상태의 roster 조합과 legal anchor permutation을 최대 4,096개 평가하는 bounded 1-ply다. 깊은 lookahead/MCTS는 후속이다.
 - `H100PolicyWitnessRunner`는 같은 seed/profile identity로 Greedy와 SearchPlanner를 실행하고 completion 또는 battle win rate가 개선되지 않으면 실패한다. 작은 N smoke는 방향 witness이며 통계 인증이 아니다.

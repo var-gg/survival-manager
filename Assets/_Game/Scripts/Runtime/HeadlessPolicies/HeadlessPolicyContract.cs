@@ -18,7 +18,11 @@ public sealed class HeadlessPolicyObservation
         IReadOnlyList<HeadlessHeroObservation> roster,
         IReadOnlyList<DeploymentAnchorId> anchors,
         HeadlessEnemyPreview enemyPreview,
-        IReadOnlyList<HeadlessRewardOption> rewardOptions)
+        IReadOnlyList<HeadlessRewardOption> rewardOptions,
+        HeadlessWalletObservation wallet = null,
+        IReadOnlyList<HeadlessAugmentMechanicsObservation> temporaryAugments = null,
+        IReadOnlyList<HeadlessSynergyCountObservation> synergyCounts = null,
+        IReadOnlyList<HeadlessSynergyObservation> synergyCatalog = null)
     {
         DecisionSeed = decisionSeed;
         DeployCapacity = deployCapacity;
@@ -28,6 +32,10 @@ public sealed class HeadlessPolicyObservation
         Anchors = anchors;
         EnemyPreview = enemyPreview;
         RewardOptions = rewardOptions;
+        Wallet = wallet ?? HeadlessWalletObservation.Empty;
+        TemporaryAugments = temporaryAugments ?? Array.Empty<HeadlessAugmentMechanicsObservation>();
+        SynergyCounts = synergyCounts ?? Array.Empty<HeadlessSynergyCountObservation>();
+        SynergyCatalog = synergyCatalog ?? Array.Empty<HeadlessSynergyObservation>();
     }
 
     public int DecisionSeed { get; }
@@ -38,6 +46,10 @@ public sealed class HeadlessPolicyObservation
     public IReadOnlyList<DeploymentAnchorId> Anchors { get; }
     public HeadlessEnemyPreview EnemyPreview { get; }
     public IReadOnlyList<HeadlessRewardOption> RewardOptions { get; }
+    public HeadlessWalletObservation Wallet { get; }
+    public IReadOnlyList<HeadlessAugmentMechanicsObservation> TemporaryAugments { get; }
+    public IReadOnlyList<HeadlessSynergyCountObservation> SynergyCounts { get; }
+    public IReadOnlyList<HeadlessSynergyObservation> SynergyCatalog { get; }
 }
 
 /// <summary>roster UI에서 확인 가능한 영웅 identity, role, 현재 성장/상태의 순수 projection.</summary>
@@ -54,7 +66,12 @@ public sealed class HeadlessHeroObservation
         int maxHp,
         int equippedItemCount,
         bool isDeployed,
-        DeploymentAnchorId preferredAnchor)
+        DeploymentAnchorId preferredAnchor,
+        IReadOnlyList<HeadlessSkillObservation> skillCards = null,
+        string flexActiveSkillId = "",
+        string flexPassiveSkillId = "",
+        IReadOnlyList<HeadlessItemMechanicsObservation> equippedItems = null,
+        IReadOnlyList<string> selectedPassiveNodeIds = null)
     {
         HeroId = heroId;
         ArchetypeId = archetypeId;
@@ -67,6 +84,11 @@ public sealed class HeadlessHeroObservation
         EquippedItemCount = equippedItemCount;
         IsDeployed = isDeployed;
         PreferredAnchor = preferredAnchor;
+        SkillCards = skillCards ?? Array.Empty<HeadlessSkillObservation>();
+        FlexActiveSkillId = flexActiveSkillId;
+        FlexPassiveSkillId = flexPassiveSkillId;
+        EquippedItems = equippedItems ?? Array.Empty<HeadlessItemMechanicsObservation>();
+        SelectedPassiveNodeIds = selectedPassiveNodeIds ?? Array.Empty<string>();
     }
 
     public string HeroId { get; }
@@ -80,6 +102,309 @@ public sealed class HeadlessHeroObservation
     public int EquippedItemCount { get; }
     public bool IsDeployed { get; }
     public DeploymentAnchorId PreferredAnchor { get; }
+    public IReadOnlyList<HeadlessSkillObservation> SkillCards { get; }
+    public string FlexActiveSkillId { get; }
+    public string FlexPassiveSkillId { get; }
+    public IReadOnlyList<HeadlessItemMechanicsObservation> EquippedItems { get; }
+    public IReadOnlyList<string> SelectedPassiveNodeIds { get; }
+}
+
+/// <summary>전투 상세/도감 tooltip이 보여 주는 단일 skill의 공개 mechanics.</summary>
+public sealed class HeadlessSkillObservation
+{
+    public HeadlessSkillObservation(
+        string skillId,
+        SkillKind kind,
+        string slotKind,
+        float power,
+        float range,
+        DamageType damageType,
+        float powerFlat,
+        float physicalCoefficient,
+        float magicalCoefficient,
+        float healingCoefficient,
+        float healthCoefficient,
+        float manaCost,
+        float cooldownSeconds,
+        float windupSeconds,
+        bool canCrit,
+        SkillDelivery delivery,
+        SkillTargetRule targetRule,
+        IReadOnlyList<HeadlessStatusApplicationObservation> appliedStatuses)
+    {
+        SkillId = skillId;
+        Kind = kind;
+        SlotKind = slotKind;
+        Power = power;
+        Range = range;
+        DamageType = damageType;
+        PowerFlat = powerFlat;
+        PhysicalCoefficient = physicalCoefficient;
+        MagicalCoefficient = magicalCoefficient;
+        HealingCoefficient = healingCoefficient;
+        HealthCoefficient = healthCoefficient;
+        ManaCost = manaCost;
+        CooldownSeconds = cooldownSeconds;
+        WindupSeconds = windupSeconds;
+        CanCrit = canCrit;
+        Delivery = delivery;
+        TargetRule = targetRule;
+        AppliedStatuses = appliedStatuses ?? Array.Empty<HeadlessStatusApplicationObservation>();
+    }
+
+    public string SkillId { get; }
+    public SkillKind Kind { get; }
+    public string SlotKind { get; }
+    public float Power { get; }
+    public float Range { get; }
+    public DamageType DamageType { get; }
+    public float PowerFlat { get; }
+    public float PhysicalCoefficient { get; }
+    public float MagicalCoefficient { get; }
+    public float HealingCoefficient { get; }
+    public float HealthCoefficient { get; }
+    public float ManaCost { get; }
+    public float CooldownSeconds { get; }
+    public float WindupSeconds { get; }
+    public bool CanCrit { get; }
+    public SkillDelivery Delivery { get; }
+    public SkillTargetRule TargetRule { get; }
+    public IReadOnlyList<HeadlessStatusApplicationObservation> AppliedStatuses { get; }
+}
+
+public sealed class HeadlessStatusApplicationObservation
+{
+    public HeadlessStatusApplicationObservation(
+        string applicationId,
+        string statusId,
+        float durationSeconds,
+        float magnitude,
+        int maxStacks)
+    {
+        ApplicationId = applicationId;
+        StatusId = statusId;
+        DurationSeconds = durationSeconds;
+        Magnitude = magnitude;
+        MaxStacks = maxStacks;
+    }
+
+    public string ApplicationId { get; }
+    public string StatusId { get; }
+    public float DurationSeconds { get; }
+    public float Magnitude { get; }
+    public int MaxStacks { get; }
+}
+
+public sealed class HeadlessStatModifierObservation
+{
+    public HeadlessStatModifierObservation(string statId, string operation, float value, string tagId)
+    {
+        StatId = statId;
+        Operation = operation;
+        Value = value;
+        TagId = tagId;
+    }
+
+    public string StatId { get; }
+    public string Operation { get; }
+    public float Value { get; }
+    public string TagId { get; }
+}
+
+public sealed class HeadlessRuleModifierObservation
+{
+    public HeadlessRuleModifierObservation(string kind, string value, float magnitude)
+    {
+        Kind = kind;
+        Value = value;
+        Magnitude = magnitude;
+    }
+
+    public string Kind { get; }
+    public string Value { get; }
+    public float Magnitude { get; }
+}
+
+public sealed class HeadlessTriggeredEffectObservation
+{
+    public HeadlessTriggeredEffectObservation(
+        string trigger,
+        string operation,
+        string scope,
+        float magnitude,
+        float thresholdRatio,
+        string statusId,
+        float durationSeconds,
+        int maxStacks)
+    {
+        Trigger = trigger;
+        Operation = operation;
+        Scope = scope;
+        Magnitude = magnitude;
+        ThresholdRatio = thresholdRatio;
+        StatusId = statusId;
+        DurationSeconds = durationSeconds;
+        MaxStacks = maxStacks;
+    }
+
+    public string Trigger { get; }
+    public string Operation { get; }
+    public string Scope { get; }
+    public float Magnitude { get; }
+    public float ThresholdRatio { get; }
+    public string StatusId { get; }
+    public float DurationSeconds { get; }
+    public int MaxStacks { get; }
+}
+
+public sealed class HeadlessAffixMechanicsObservation
+{
+    public HeadlessAffixMechanicsObservation(
+        string affixId,
+        IReadOnlyList<string> compileTags,
+        IReadOnlyList<string> requiredTags,
+        IReadOnlyList<string> excludedTags,
+        IReadOnlyList<HeadlessStatModifierObservation> statModifiers,
+        IReadOnlyList<HeadlessRuleModifierObservation> ruleModifiers)
+    {
+        AffixId = affixId;
+        CompileTags = compileTags ?? Array.Empty<string>();
+        RequiredTags = requiredTags ?? Array.Empty<string>();
+        ExcludedTags = excludedTags ?? Array.Empty<string>();
+        StatModifiers = statModifiers ?? Array.Empty<HeadlessStatModifierObservation>();
+        RuleModifiers = ruleModifiers ?? Array.Empty<HeadlessRuleModifierObservation>();
+    }
+
+    public string AffixId { get; }
+    public IReadOnlyList<string> CompileTags { get; }
+    public IReadOnlyList<string> RequiredTags { get; }
+    public IReadOnlyList<string> ExcludedTags { get; }
+    public IReadOnlyList<HeadlessStatModifierObservation> StatModifiers { get; }
+    public IReadOnlyList<HeadlessRuleModifierObservation> RuleModifiers { get; }
+}
+
+public sealed class HeadlessItemMechanicsObservation
+{
+    public HeadlessItemMechanicsObservation(
+        string itemId,
+        string itemInstanceId,
+        IReadOnlyList<string> tags,
+        string weaponFamilyTag,
+        IReadOnlyList<HeadlessStatModifierObservation> statModifiers,
+        IReadOnlyList<HeadlessAffixMechanicsObservation> affixes,
+        IReadOnlyList<HeadlessSkillObservation> grantedSkills)
+    {
+        ItemId = itemId;
+        ItemInstanceId = itemInstanceId;
+        Tags = tags ?? Array.Empty<string>();
+        WeaponFamilyTag = weaponFamilyTag;
+        StatModifiers = statModifiers ?? Array.Empty<HeadlessStatModifierObservation>();
+        Affixes = affixes ?? Array.Empty<HeadlessAffixMechanicsObservation>();
+        GrantedSkills = grantedSkills ?? Array.Empty<HeadlessSkillObservation>();
+    }
+
+    public string ItemId { get; }
+    public string ItemInstanceId { get; }
+    public IReadOnlyList<string> Tags { get; }
+    public string WeaponFamilyTag { get; }
+    public IReadOnlyList<HeadlessStatModifierObservation> StatModifiers { get; }
+    public IReadOnlyList<HeadlessAffixMechanicsObservation> Affixes { get; }
+    public IReadOnlyList<HeadlessSkillObservation> GrantedSkills { get; }
+}
+
+public sealed class HeadlessAugmentMechanicsObservation
+{
+    public HeadlessAugmentMechanicsObservation(
+        string augmentId,
+        string category,
+        string familyId,
+        int tier,
+        IReadOnlyList<string> tags,
+        IReadOnlyList<string> buildBiasTags,
+        IReadOnlyList<HeadlessStatModifierObservation> statModifiers,
+        IReadOnlyList<HeadlessRuleModifierObservation> ruleModifiers,
+        IReadOnlyList<HeadlessTriggeredEffectObservation> triggeredEffects)
+    {
+        AugmentId = augmentId;
+        Category = category;
+        FamilyId = familyId;
+        Tier = tier;
+        Tags = tags ?? Array.Empty<string>();
+        BuildBiasTags = buildBiasTags ?? Array.Empty<string>();
+        StatModifiers = statModifiers ?? Array.Empty<HeadlessStatModifierObservation>();
+        RuleModifiers = ruleModifiers ?? Array.Empty<HeadlessRuleModifierObservation>();
+        TriggeredEffects = triggeredEffects ?? Array.Empty<HeadlessTriggeredEffectObservation>();
+    }
+
+    public string AugmentId { get; }
+    public string Category { get; }
+    public string FamilyId { get; }
+    public int Tier { get; }
+    public IReadOnlyList<string> Tags { get; }
+    public IReadOnlyList<string> BuildBiasTags { get; }
+    public IReadOnlyList<HeadlessStatModifierObservation> StatModifiers { get; }
+    public IReadOnlyList<HeadlessRuleModifierObservation> RuleModifiers { get; }
+    public IReadOnlyList<HeadlessTriggeredEffectObservation> TriggeredEffects { get; }
+}
+
+public sealed class HeadlessWalletObservation
+{
+    public HeadlessWalletObservation(int gold, int echo)
+    {
+        Gold = gold;
+        Echo = echo;
+    }
+
+    public static HeadlessWalletObservation Empty { get; } = new(0, 0);
+
+    public int Gold { get; }
+    public int Echo { get; }
+}
+
+public sealed class HeadlessSynergyCountObservation
+{
+    public HeadlessSynergyCountObservation(string countedTagId, int currentCount)
+    {
+        CountedTagId = countedTagId;
+        CurrentCount = currentCount;
+    }
+
+    public string CountedTagId { get; }
+    public int CurrentCount { get; }
+}
+
+public sealed class HeadlessSynergyObservation
+{
+    public HeadlessSynergyObservation(
+        string synergyId,
+        string countedTagId,
+        IReadOnlyList<HeadlessSynergyTierObservation> tiers)
+    {
+        SynergyId = synergyId;
+        CountedTagId = countedTagId;
+        Tiers = tiers ?? Array.Empty<HeadlessSynergyTierObservation>();
+    }
+
+    public string SynergyId { get; }
+    public string CountedTagId { get; }
+    public IReadOnlyList<HeadlessSynergyTierObservation> Tiers { get; }
+}
+
+public sealed class HeadlessSynergyTierObservation
+{
+    public HeadlessSynergyTierObservation(
+        int threshold,
+        IReadOnlyList<HeadlessStatModifierObservation> statModifiers,
+        string grantedTeamRuleId)
+    {
+        Threshold = threshold;
+        StatModifiers = statModifiers ?? Array.Empty<HeadlessStatModifierObservation>();
+        GrantedTeamRuleId = grantedTeamRuleId;
+    }
+
+    public int Threshold { get; }
+    public IReadOnlyList<HeadlessStatModifierObservation> StatModifiers { get; }
+    public string GrantedTeamRuleId { get; }
 }
 
 /// <summary>현재 공개된 encounter preview 한 개. 미공개 node 목록이나 전투 실수치는 포함하지 않는다.</summary>
@@ -171,7 +496,8 @@ public sealed class HeadlessRewardOption
         string payloadId,
         int goldAmount,
         int echoAmount,
-        int permanentSlotAmount)
+        int permanentSlotAmount,
+        HeadlessRewardMechanicsObservation mechanics = null)
     {
         Index = index;
         Kind = kind;
@@ -179,6 +505,7 @@ public sealed class HeadlessRewardOption
         GoldAmount = goldAmount;
         EchoAmount = echoAmount;
         PermanentSlotAmount = permanentSlotAmount;
+        Mechanics = mechanics ?? HeadlessRewardMechanicsObservation.Empty;
     }
 
     public int Index { get; }
@@ -187,6 +514,23 @@ public sealed class HeadlessRewardOption
     public int GoldAmount { get; }
     public int EchoAmount { get; }
     public int PermanentSlotAmount { get; }
+    public HeadlessRewardMechanicsObservation Mechanics { get; }
+}
+
+public sealed class HeadlessRewardMechanicsObservation
+{
+    public HeadlessRewardMechanicsObservation(
+        HeadlessItemMechanicsObservation item,
+        HeadlessAugmentMechanicsObservation temporaryAugment)
+    {
+        Item = item;
+        TemporaryAugment = temporaryAugment;
+    }
+
+    public static HeadlessRewardMechanicsObservation Empty { get; } = new(null, null);
+
+    public HeadlessItemMechanicsObservation Item { get; }
+    public HeadlessAugmentMechanicsObservation TemporaryAugment { get; }
 }
 
 public sealed class HeadlessPlacement

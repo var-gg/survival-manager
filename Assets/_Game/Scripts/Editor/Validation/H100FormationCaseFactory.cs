@@ -215,10 +215,14 @@ internal static class H100FormationCaseFactory
             source.DeployCapacity,
             source.ChapterId,
             source.SiteId,
-            roster,
-            source.Anchors,
-            source.EnemyPreview,
-            source.RewardOptions);
+             roster,
+             source.Anchors,
+             source.EnemyPreview,
+             source.RewardOptions,
+             source.Wallet,
+             source.TemporaryAugments,
+             source.SynergyCounts,
+             source.SynergyCatalog);
 
     private static IReadOnlyList<H100BattleScreeningMember> BuildMembers(
         IEnumerable<HeadlessPlacement> placements,

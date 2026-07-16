@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
 
 namespace SM.Tests.EditMode;
@@ -127,6 +128,57 @@ public sealed class HeadlessPolicyPortfolioFastTests
         }
     }
 
+    [Test]
+    public void EnrichedObservation_ExposesSeededBuildMechanicsWalletAndDeployedSynergyCounts()
+    {
+        var observation = CreateObservation();
+
+        foreach (var hero in observation.Roster)
+        {
+            Assert.That(
+                hero.SkillCards.Select(skill => skill.SkillId),
+                Is.EquivalentTo(new[] { $"{hero.ArchetypeId}-active", $"{hero.ArchetypeId}-passive" }),
+                hero.HeroId);
+            Assert.That(hero.FlexActiveSkillId, Is.EqualTo($"{hero.ArchetypeId}-active"), hero.HeroId);
+            Assert.That(hero.FlexPassiveSkillId, Is.EqualTo($"{hero.ArchetypeId}-passive"), hero.HeroId);
+        }
+
+        var itemReward = observation.RewardOptions.Single(option => option.Kind == HeadlessRewardKind.Item);
+        Assert.That(itemReward.Mechanics.Item, Is.Not.Null);
+        Assert.That(itemReward.Mechanics.Item!.Tags, Is.Not.Empty);
+        Assert.That(itemReward.Mechanics.Item.StatModifiers, Is.Not.Empty);
+        Assert.That(itemReward.Mechanics.Item.Affixes, Is.Empty, "Reward affixes are rolled only after the choice is applied.");
+
+        var augmentReward = observation.RewardOptions.Single(option => option.Kind == HeadlessRewardKind.TemporaryAugment);
+        Assert.That(augmentReward.Mechanics.TemporaryAugment, Is.Not.Null);
+        Assert.That(augmentReward.Mechanics.TemporaryAugment!.Tags, Is.Not.Empty);
+        Assert.That(augmentReward.Mechanics.TemporaryAugment.StatModifiers, Is.Not.Empty);
+        Assert.That(augmentReward.Mechanics.TemporaryAugment.TriggeredEffects, Is.Not.Empty);
+
+        Assert.That(observation.Wallet.Gold, Is.EqualTo(17));
+        Assert.That(observation.Wallet.Echo, Is.EqualTo(9));
+        Assert.That(
+            observation.SynergyCounts.ToDictionary(value => value.CountedTagId, value => value.CurrentCount, StringComparer.Ordinal),
+            Is.EquivalentTo(new Dictionary<string, int>(StringComparer.Ordinal)
+            {
+                ["human"] = 4,
+                ["vanguard"] = 1,
+                ["duelist"] = 1,
+                ["ranger"] = 1,
+                ["mystic"] = 1,
+            }));
+        Assert.That(observation.TemporaryAugments.Select(augment => augment.AugmentId), Is.EqualTo(new[] { "augment-ward" }));
+    }
+
+    [Test]
+    public void EnrichedObservation_SameSeedSerializesIdentically()
+    {
+        var first = HeadlessMetricJson.Serialize(CreateObservation(1701));
+        var second = HeadlessMetricJson.Serialize(CreateObservation(1701));
+
+        Assert.That(second, Is.EqualTo(first));
+    }
+
     private static string PlacementSignature(HeadlessDeploymentDecision decision)
         => string.Join("|", decision.Placements
             .OrderBy(value => value.Anchor)
@@ -136,13 +188,13 @@ public sealed class HeadlessPolicyPortfolioFastTests
     {
         var roster = new[]
         {
-            Hero("hero-1", "warden", "human", "vanguard", "anchor", DeploymentAnchorId.FrontCenter, itemCount: 1),
+            Hero("hero-1", "warden", "human", "vanguard", "anchor", DeploymentAnchorId.FrontCenter, itemCount: 1, isDeployed: true),
             Hero("hero-2", "guardian", "undead", "vanguard", "anchor", DeploymentAnchorId.FrontTop, itemCount: 1),
-            Hero("hero-3", "slayer", "human", "duelist", "bruiser", DeploymentAnchorId.FrontBottom, itemCount: 1),
+            Hero("hero-3", "slayer", "human", "duelist", "bruiser", DeploymentAnchorId.FrontBottom, itemCount: 1, isDeployed: true),
             Hero("hero-4", "raider", "beastkin", "duelist", "bruiser", DeploymentAnchorId.FrontTop, itemCount: 1),
-            Hero("hero-5", "hunter", "human", "ranger", "carry", DeploymentAnchorId.BackTop),
+            Hero("hero-5", "hunter", "human", "ranger", "carry", DeploymentAnchorId.BackTop, isDeployed: true),
             Hero("hero-6", "scout", "beastkin", "ranger", "carry", DeploymentAnchorId.BackBottom),
-            Hero("hero-7", "priest", "human", "mystic", "support", DeploymentAnchorId.BackCenter),
+            Hero("hero-7", "priest", "human", "mystic", "support", DeploymentAnchorId.BackCenter, isDeployed: true),
             Hero("hero-8", "hexer", "undead", "mystic", "controller", DeploymentAnchorId.BackCenter),
         };
         return new HeadlessPolicyObservation(
@@ -176,9 +228,46 @@ public sealed class HeadlessPolicyPortfolioFastTests
                 Array.Empty<string>()),
             new[]
             {
-                new HeadlessRewardOption(0, HeadlessRewardKind.Gold, string.Empty, 10, 0, 0),
-                new HeadlessRewardOption(1, HeadlessRewardKind.TemporaryAugment, "augment_guard_human", 0, 0, 0),
+                new HeadlessRewardOption(
+                    0,
+                    HeadlessRewardKind.Item,
+                    "item-iron-blade",
+                    0,
+                    0,
+                    0,
+                    new HeadlessRewardMechanicsObservation(Item("item-iron-blade"), null)),
+                new HeadlessRewardOption(
+                    1,
+                    HeadlessRewardKind.TemporaryAugment,
+                    "augment-ward",
+                    0,
+                    0,
+                    0,
+                    new HeadlessRewardMechanicsObservation(null, Augment("augment-ward"))),
                 new HeadlessRewardOption(2, HeadlessRewardKind.Echo, string.Empty, 0, 12, 0),
+            },
+            new HeadlessWalletObservation(17, 9),
+            new[] { Augment("augment-ward") },
+            new[]
+            {
+                new HeadlessSynergyCountObservation("duelist", 1),
+                new HeadlessSynergyCountObservation("human", 4),
+                new HeadlessSynergyCountObservation("mystic", 1),
+                new HeadlessSynergyCountObservation("ranger", 1),
+                new HeadlessSynergyCountObservation("vanguard", 1),
+            },
+            new[]
+            {
+                new HeadlessSynergyObservation(
+                    "synergy-human",
+                    "human",
+                    new[]
+                    {
+                        new HeadlessSynergyTierObservation(
+                            2,
+                            new[] { new HeadlessStatModifierObservation("MaxHp", "Add", 10f, string.Empty) },
+                            "team-rule-human"),
+                    }),
             });
     }
 
@@ -189,7 +278,8 @@ public sealed class HeadlessPolicyPortfolioFastTests
         string classId,
         string roleTag,
         DeploymentAnchorId preferredAnchor,
-        int itemCount = 0)
+        int itemCount = 0,
+        bool isDeployed = false)
         => new(
             heroId,
             archetypeId,
@@ -200,6 +290,80 @@ public sealed class HeadlessPolicyPortfolioFastTests
             100,
             100,
             itemCount,
-            false,
-            preferredAnchor);
+            isDeployed,
+            preferredAnchor,
+            new[]
+            {
+                Skill($"{archetypeId}-active", SkillKind.Strike, CompiledSkillSlots.CoreActive),
+                Skill($"{archetypeId}-passive", SkillKind.Buff, CompiledSkillSlots.Support),
+            },
+            $"{archetypeId}-active",
+            $"{archetypeId}-passive",
+            itemCount > 0 ? new[] { Item($"item-{archetypeId}", $"affix-{archetypeId}") } : Array.Empty<HeadlessItemMechanicsObservation>(),
+            new[] { $"passive-{archetypeId}" });
+
+    private static HeadlessSkillObservation Skill(string id, SkillKind kind, string slotKind)
+        => new(
+            id,
+            kind,
+            slotKind,
+            12f,
+            2.5f,
+            DamageType.Physical,
+            0f,
+            1f,
+            0f,
+            0f,
+            0f,
+            5f,
+            3f,
+            0.2f,
+            true,
+            SkillDelivery.Melee,
+            SkillTargetRule.NearestEnemy,
+            new[] { new HeadlessStatusApplicationObservation($"{id}-status", "marked", 2f, 1f, 1) });
+
+    private static HeadlessItemMechanicsObservation Item(string id, string affixId = "")
+        => new(
+            id,
+            $"{id}-instance",
+            new[] { "weapon", "physical" },
+            "weapon-sword",
+            new[] { new HeadlessStatModifierObservation("PhysicalPower", "Add", 2f, string.Empty) },
+            string.IsNullOrWhiteSpace(affixId)
+                ? Array.Empty<HeadlessAffixMechanicsObservation>()
+                : new[]
+                {
+                    new HeadlessAffixMechanicsObservation(
+                        affixId,
+                        new[] { "offense" },
+                        Array.Empty<string>(),
+                        Array.Empty<string>(),
+                        new[] { new HeadlessStatModifierObservation("AttackSpeed", "Add", 0.1f, string.Empty) },
+                        Array.Empty<HeadlessRuleModifierObservation>()),
+                },
+            Array.Empty<HeadlessSkillObservation>());
+
+    private static HeadlessAugmentMechanicsObservation Augment(string id)
+        => new(
+            id,
+            "run_utility",
+            "ward_line",
+            1,
+            new[] { "guard", "sustain" },
+            new[] { "frontline" },
+            new[] { new HeadlessStatModifierObservation("MaxHp", "Add", 8f, string.Empty) },
+            Array.Empty<HeadlessRuleModifierObservation>(),
+            new[]
+            {
+                new HeadlessTriggeredEffectObservation(
+                    "BattleStart",
+                    "ApplyStatus",
+                    "Team",
+                    1f,
+                    0f,
+                    "guarded",
+                    4f,
+                    1),
+            });
 }
