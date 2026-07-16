@@ -12,7 +12,7 @@ public static class CombatActionResolver
     private const string RangeMissNote = "miss_range";
 
     /// <summary>SaveMoment detector: 회복 직전 HP 비율이 이 값 미만이면 "구출"로 센다.</summary>
-    private const float SaveMomentHealthRatio = 0.25f;
+    public const float SaveMomentHealthRatio = 0.25f;
 
     /// <summary>BacklineDive detector: 다이브 커밋 만료 후에도 이 step 수 안의 후열 킬은 다이브에 귀속.
     /// 커밋 12 step + grace 38 = 다이브 시작 후 ~5초.</summary>

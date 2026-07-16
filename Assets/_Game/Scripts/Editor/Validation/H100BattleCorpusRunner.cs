@@ -4,7 +4,6 @@ using System.Linq;
 using SM.Combat.Services;
 using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
-using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -97,7 +96,7 @@ internal static class H100BattleCorpusRunner
         {
             try
             {
-                var session = CreateScreeningSession(lookup, screeningCase);
+                var session = H100ScreeningSessionFactory.Create(lookup, screeningCase.CaseId, screeningCase.Members);
                 session.BeginNewExpedition();
                 if (!session.TryBuildSelectedBattleState(out _, out var encounter, out var allySnapshot, out var buildError))
                 {
@@ -164,57 +163,6 @@ internal static class H100BattleCorpusRunner
         }
 
         return records;
-    }
-
-    private static GameSessionState CreateScreeningSession(
-        RuntimeCombatContentLookup lookup,
-        H100BattleScreeningCase screeningCase)
-    {
-        var profile = new SaveProfile
-        {
-            ProfileId = $"h100-census-{screeningCase.CaseId}",
-            Heroes = new List<HeroInstanceRecord>(),
-        };
-        var heroIds = new List<string>(screeningCase.Members.Count);
-        for (var index = 0; index < screeningCase.Members.Count; index++)
-        {
-            var member = screeningCase.Members[index];
-            if (!lookup.TryGetArchetype(member.ArchetypeId, out var archetype))
-            {
-                throw new InvalidOperationException($"Screening archetype is unavailable: {member.ArchetypeId}");
-            }
-
-            var heroId = $"census-{index:D2}-{member.ArchetypeId}";
-            heroIds.Add(heroId);
-            profile.Heroes.Add(new HeroInstanceRecord
-            {
-                HeroId = heroId,
-                Name = member.ArchetypeId,
-                ArchetypeId = member.ArchetypeId,
-                RaceId = archetype.Race.Id,
-                ClassId = archetype.Class.Id,
-                FlexActiveId = archetype.Loadout?.FlexActive?.Id ?? string.Empty,
-                FlexPassiveId = archetype.Loadout?.FlexPassive?.Id ?? string.Empty,
-                RecruitTier = archetype.RecruitTier,
-            });
-        }
-
-        var session = H100SessionDriver.CreateSession(lookup, profile);
-        foreach (var anchor in session.DeploymentAnchors)
-        {
-            session.AssignHeroToAnchor(anchor, null);
-        }
-
-        for (var index = 0; index < screeningCase.Members.Count; index++)
-        {
-            if (!session.AssignHeroToAnchor(screeningCase.Members[index].Anchor, heroIds[index]))
-            {
-                throw new InvalidOperationException(
-                    $"Could not apply census placement: {heroIds[index]}@{screeningCase.Members[index].Anchor}");
-            }
-        }
-
-        return session;
     }
 
     private static void AppendBuildFailures(

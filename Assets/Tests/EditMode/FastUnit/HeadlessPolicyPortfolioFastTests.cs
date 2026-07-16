@@ -11,10 +11,11 @@ namespace SM.Tests.EditMode;
 public sealed class HeadlessPolicyPortfolioFastTests
 {
     [Test]
-    public void Factory_ExecutesAllSixPoliciesDeterministicallyWithReasons()
+    public void Factory_ExecutesSixProductionPoliciesAndCoverageDeterministicallyWithReasons()
     {
         var observation = CreateObservation();
-        Assert.That(HeadlessPolicyFactory.AllPolicyIds.Count, Is.EqualTo(6));
+        Assert.That(HeadlessPolicyFactory.ProductionPolicyIds.Count, Is.EqualTo(6));
+        Assert.That(HeadlessPolicyFactory.AllPolicyIds.Count, Is.EqualTo(7));
 
         foreach (var policyId in HeadlessPolicyFactory.AllPolicyIds)
         {
@@ -35,6 +36,31 @@ public sealed class HeadlessPolicyPortfolioFastTests
             Assert.That(firstReward.Rationale, Is.EqualTo(secondReward.Rationale), policyId);
             Assert.That(firstReward.Rationale, Is.Not.Empty, policyId);
         }
+    }
+
+    [Test]
+    public void CoveragePolicy_SamplesFiveChannelsWithHealerAndDoctrineWithoutClaimingCompetence()
+    {
+        var policy = new CoveragePolicy();
+        var sampled = new HashSet<string>(StringComparer.Ordinal);
+        for (var seed = 1701; seed <= 1705; seed++)
+        {
+            var observation = CreateObservation(seed);
+            var decision = policy.DecideDeployment(observation);
+            HeadlessPolicyGuard.ValidateDeploymentDecision(observation, decision);
+            var selected = decision.Placements.Select(value => value.HeroId).ToHashSet(StringComparer.Ordinal);
+
+            Assert.That(selected, Does.Contain("hero-7"), "canonical coverage roster must include the visible healer/support");
+            Assert.That(selected, Is.EquivalentTo(new[] { "hero-1", "hero-3", "hero-5", "hero-7" }),
+                "same-race role-complete roster supplies healer, doctrine and all formation roles");
+            Assert.That(decision.Rationale, Does.Contain("QA coverage only (not competent play)"));
+            var sample = decision.Rationale.Split(' ')
+                .Single(token => token.StartsWith("sample=", StringComparison.Ordinal))
+                .Substring("sample=".Length);
+            sampled.Add(sample);
+        }
+
+        Assert.That(sampled, Is.EquivalentTo(new[] { "flank", "rear", "screen_block", "save", "backline_dive_kill" }));
     }
 
     [Test]

@@ -54,6 +54,8 @@ formation feature는 실제 전투 결과가 아니라 정적 eligibility proxy�
 
 8개 medoid는 다섯 feature를 각 축의 min/max로 정규화한 뒤 L1 distance를 사용한다. 첫 점은 전체 distance 합이 가장 작은 실제 배치, 후속 초기점은 nearest-medoid distance가 가장 큰 실제 배치로 고른다. cluster 내부 distance 합이 가장 작은 실제 배치로 최대 32회 refinement하며 모든 tie는 placement signature ordinal 순서로 끊는다. 수동 favorite 목록은 없다.
 
+Stage 4 placement leverage runner는 이 8개 medoid를 그대로 재사용한다. 같은 편성·적·seed에서 기본 배치와 medoid 배치를 실제 sim으로 실행해 최적 배치 승률에서 기본 배치 승률을 뺀다. `SM.HeadlessMetrics`가 medoid를 재선정하거나 360 배치 feature를 복제하지 않으며, `SM.Editor.Validation`만 `SM.HeadlessCensus` 결과와 실제 session을 조합한다.
+
 ## 산출물과 구조 assertion
 
 기본 출력은 `Logs/h100-build-space/`이며 다음 파일을 생성한다.
@@ -87,6 +89,12 @@ formation feature는 실제 전투 결과가 아니라 정적 eligibility proxy�
 
 ```powershell
 pwsh -File tools/h100-build-space.ps1
+```
+
+Stage 4에서 같은 medoid를 placement leverage에 재사용하는 integration은 별도 명령으로 확인한다.
+
+```powershell
+pwsh -File tools/h100-formation.ps1 -SeedCount 5
 ```
 
 빠른 pipeline 확인은 build와 seed 수를 줄일 수 있다.

@@ -15,7 +15,7 @@
 
 ## 경계와 observation whitelist
 
-`SM.HeadlessPolicies`는 `SM.Combat`만 참조하는 `noEngineReferences=true` asmdef다. 공개 API는 `IHeadlessPolicy`, observation/decision value contract, 여섯 정책, factory, guard다. session, content lookup, authored object, persistence, editor API를 constructor나 method로 받지 않는다.
+`SM.HeadlessPolicies`는 `SM.Combat`만 참조하는 `noEngineReferences=true` asmdef다. 공개 API는 `IHeadlessPolicy`, observation/decision value contract, 여섯 production 정책과 QA 전용 `CoveragePolicy`, factory, guard다. session, content lookup, authored object, persistence, editor API를 constructor나 method로 받지 않는다.
 
 정책 observation에 허용되는 정보는 다음과 같다.
 
@@ -40,8 +40,9 @@
 | `competent-formation-v1` | front/back 균형, support 보호, class coverage 우선 |
 | `competent-counter-adaptive-v1` | 현재 공개 enemy class/anchor preview에 대응하는 roster/배치 우선 |
 | `competent-search-planner-v1` | 공개 상태에서 상위 roster 조합과 legal anchor permutation을 최대 4,096개 평가하는 bounded 1-ply |
+| `qa-formation-coverage-v1` | 힐러·역할 완비·독트린·다섯 진형 채널용 anchor 조건을 결정적으로 표본화하는 발동 가능성 전용 QA 정책 |
 
-네 유능 정책의 canonical ID는 `H100GateEvaluator`가 `competent` cohort로 집계할 수 있도록 `competent-` 접두사를 고정한다. 짧은 별칭은 factory 입력에서만 허용하고 metric에는 canonical ID를 기록한다.
+네 유능 정책의 canonical ID는 `H100GateEvaluator`가 `competent` cohort로 집계할 수 있도록 `competent-` 접두사를 고정한다. `qa-formation-coverage-v1`은 production 정책 목록에서 제외하며 유능 플레이나 밸런스 가치를 주장하지 않는다. 짧은 별칭은 factory 입력에서만 허용하고 metric에는 canonical ID를 기록한다.
 
 모든 decision은 `Rationale`과 finite `EstimatedValue`를 반환한다. runner는 policy/kind/chapter/site/seed/value/reason을 단일 행 로그로 남긴다. `HeadlessPolicyGuard`는 observation과 action의 null, 중복, 범위, legal set, finite value를 fail closed한다.
 
@@ -69,6 +70,12 @@ pwsh -File tools/h100-policy-witness.ps1 -CampaignCount 8 -CampaignSiteSafety 32
 ```
 
 `policy-witness.json`의 `improved`는 SearchPlanner completion rate가 Greedy보다 높거나, completion이 같더라도 battle win rate가 높을 때만 true다. 통계적 유의성, Wilson interval, 1,000-seed holdout은 후속 campaign agency stage에서 닫는다.
+
+진형 Stage 4는 Coverage와 Competent를 분리해 실행한다. Coverage runner의 통제된 개전 접촉은 공개된 전투 상태를 구성한 뒤 production combat resolver를 통과하며, 산출물의 `coverage_probe_channel_id`로 명시된다. 이 표본은 발동 가능성만 증명하고 Competent의 자연 발생 prevalence/impact 집계에는 포함하지 않는다.
+
+```powershell
+pwsh -File tools/h100-formation.ps1 -SeedCount 5 -CompetentPolicy competent-formation-v1
+```
 
 ## deferred
 

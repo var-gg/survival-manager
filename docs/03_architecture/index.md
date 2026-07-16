@@ -21,9 +21,9 @@
 - `dependency-direction.md`: asmdef/context/layer 의존 허용·금지 규칙
 - `unity-boundaries.md`: `MonoBehaviour`, `ScriptableObject`, scene 책임 경계
 - `assembly-boundaries-and-persistence-ownership.md`: `SM.Meta` content adapter, persistence ownership, asmdef 사전 점검 규칙
-- `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, 결정적 산출물, replay hash, fail-closed gate 계약
-- `h100-headless-policy-contract.md`: H100 player-visible observation, 6정책, no-cheat guard, policy witness 계약
-- `h100-build-space-census-contract.md`: H100 495편성·360배치 pure census, 자동 medoid, 구조 assertion, 소규모 screening 계약
+- `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, replay hash, 진형 Stage 4 causal/placement/healer 산출물, fail-closed gate 계약
+- `h100-headless-policy-contract.md`: H100 player-visible observation, 6개 production + Coverage QA 정책, no-cheat guard, policy witness 계약
+- `h100-build-space-census-contract.md`: H100 495편성·360배치 pure census, 자동 medoid, Stage 4 placement 재사용, 소규모 screening 계약
 - `validation-and-acceptance-oracles.md`: feature closure, acceptance matrix, evidence 기록 기준
 - `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft
 
@@ -39,7 +39,7 @@
 | --- | --- | --- |
 | `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` | pure boundary로 닫힘 | `test-batch-fast`, exact asmdef allowlist, boundary guard |
 | `SM.HeadlessMetrics` | `SM.Core` + `SM.Combat`만 소비하는 pure 계측 boundary | `test-batch-fast`, exact asmdef allowlist, 결정적 writer/hash tests |
-| `SM.HeadlessPolicies` | `SM.Combat`만 소비하는 pure 정책 boundary | `test-batch-fast`, exact asmdef allowlist, 6정책 결정론/no-cheat contract tests |
+| `SM.HeadlessPolicies` | `SM.Combat`만 소비하는 pure 정책 boundary | `test-batch-fast`, exact asmdef allowlist, 6개 production + Coverage QA 결정론/no-cheat contract tests |
 | `SM.HeadlessCensus` | `SM.Core` + `SM.Combat`만 소비하는 pure build-space 지도 boundary | `test-batch-fast`, 495×360 구조 assertion, deterministic medoid/writer tests |
 | `FastUnit` test lane | `SM.Tests.FastUnit` 전용 asmdef에서 editor-free/resource-free/authored-object-free로 닫힘 | fake lookup, pure fixture, class-level category, dedicated folder/alias-wrapper guard |
 | `SM.Unity`, `GameSessionState`, runtime bootstrap/content lookup | boundary adapter로 유지 | `GameSessionRuntimeBootstrapProvider` production choke point, FastUnit 밖, 필요 시 focused session 또는 BatchOnly |
@@ -54,7 +54,7 @@
 | 변경 유형 | 소유 경계 | 첫 테스트/검증 | 에디터 의존 경계 |
 | --- | --- | --- | --- |
 | 전투 규칙, damage, targeting, movement, status | `SM.Combat` | `test-batch-fast`, combat focused tests | editor-free |
-| H100 record, replay hash envelope, gate evaluation | `SM.HeadlessMetrics` | `test-batch-fast`, `H100HeadlessMetricsTests` | editor-free; 실제 content/session corpus 실행은 `SM.Editor.Validation` |
+| H100 record, replay hash, formation causal/placement/healer, gate evaluation | `SM.HeadlessMetrics` | `test-batch-fast`, `H100HeadlessMetricsTests`, `h100-formation.ps1` | editor-free evaluation; 실제 content/session corpus 실행은 `SM.Editor.Validation` |
 | H100 player-visible observation과 정책 선택 | `SM.HeadlessPolicies` + `SM.Editor.Validation` projection adapter | `test-batch-fast`, 정책별 `h100-metrics.ps1`, `h100-policy-witness.ps1` | 정책은 editor-free; 실제 session projection/corpus는 editor-required |
 | H100 build-space census와 medoid | `SM.HeadlessCensus` + `SM.Editor.Validation` content/screening adapter | `test-batch-fast`, `h100-build-space.ps1` | census는 editor-free; authored roster projection과 실제 battle smoke는 editor-required |
 | 공통 id/stat/result/content schema enum | `SM.Core`, `SM.Core.Content` | `test-batch-fast` | editor-free |
@@ -126,9 +126,9 @@
 - `sim-sweep-and-balance-kpis.md`: deterministic sweep, KPI, artifact, review/fail 규칙
 - `replay-persistence-and-run-audit.md`: active run / replay / ledger persistence 기준
 - `deterministic-sim-and-fixed-point-migration.md`: float→fixed 결정론 마이그레이션 contract와 단계별 계획 (draft, ADR-0029)
-- `h100-headless-metrics-contract.md`: H100 record, replay hash, deterministic JSONL/CSV, gate report와 real-content runner 경계
-- `h100-headless-policy-contract.md`: H100 6정책, player-visible observation whitelist, no-cheat guard와 paired direction witness
-- `h100-build-space-census-contract.md`: H100 495편성·360배치 구조지도, role-labelled formation feature, 자동 medoid와 screening smoke
+- `h100-headless-metrics-contract.md`: H100 record, replay hash, deterministic JSONL/CSV, Stage 4 진형 report와 real-content runner 경계
+- `h100-headless-policy-contract.md`: H100 6개 production + Coverage QA 정책, player-visible observation whitelist, no-cheat guard와 paired direction witness
+- `h100-build-space-census-contract.md`: H100 495편성·360배치 구조지도, role-labelled formation feature, 자동 medoid, Stage 4 placement leverage
 - `battle-actor-wrapper-and-asset-intake-seam.md`: battle wrapper prefab, socket surface, vendor intake seam
 
 ## 내러티브 아키텍처 문서

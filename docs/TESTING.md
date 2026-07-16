@@ -92,6 +92,14 @@ pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 
 
 성공 조건은 필수 JSONL/report/manifest 파일 생성과 같은 replay group의 `replay_hash_match_rate == 1.0`이다. H100 전체 gate pass는 현재 측정되지 않는 paired, blind, external metric 때문에 별도 조건이며 smoke 성공과 동일하지 않다. 세부 계약은 `docs/03_architecture/h100-headless-metrics-contract.md`를 따른다.
 
+진형 Stage 4는 CoveragePolicy와 CompetentPolicy를 분리하고, 8개 census medoid placement 및 healer replacement pair를 실제 전투로 실행한다. 통제된 Coverage 접촉은 QA 발동 가능성 표본이며 Competent의 자연 발생 prevalence/impact와 분리된다.
+
+```powershell
+pwsh -File tools/h100-formation.ps1 -SeedCount 5 -CompetentPolicy competent-formation-v1
+```
+
+명령 성공 조건은 `formation-events.jsonl`, `placement-leverage.jsonl`, `healer-marginal-value.jsonl`, `formation-report.json` 생성과 event 행의 `eligible/fired/causal/legible` 계약 존재다. Coverage/Q5 gate 자체의 true/false는 진단 결과이며 command 성공 여부와 구분한다.
+
 ## CLI 명령어
 
 ### canonical / smoke / recovery verbs

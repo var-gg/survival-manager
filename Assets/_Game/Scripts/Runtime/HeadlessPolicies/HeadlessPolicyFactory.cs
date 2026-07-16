@@ -8,6 +8,7 @@ namespace SM.HeadlessPolicies;
 
 public static class HeadlessPolicyFactory
 {
+    public const string CoverageId = "qa-formation-coverage-v1";
     public const string RandomLegalId = "random-legal-v1";
     public const string GreedyId = "greedy-v1";
     public const string DoctrineId = "competent-doctrine-v1";
@@ -15,8 +16,20 @@ public static class HeadlessPolicyFactory
     public const string CounterAdaptiveId = "competent-counter-adaptive-v1";
     public const string SearchPlannerId = "competent-search-planner-v1";
 
+    /// <summary>H100 성능 비교 cohort. Coverage는 발동 가능성을 표본화하는 QA 정책이라 제외한다.</summary>
+    public static IReadOnlyList<string> ProductionPolicyIds { get; } = new[]
+    {
+        RandomLegalId,
+        GreedyId,
+        DoctrineId,
+        FormationId,
+        CounterAdaptiveId,
+        SearchPlannerId,
+    };
+
     public static IReadOnlyList<string> AllPolicyIds { get; } = new[]
     {
+        CoverageId,
         RandomLegalId,
         GreedyId,
         DoctrineId,
@@ -29,6 +42,7 @@ public static class HeadlessPolicyFactory
     {
         return NormalizePolicyId(policyId) switch
         {
+            CoverageId => new CoveragePolicy(),
             RandomLegalId => new RandomLegalPolicy(),
             GreedyId => new GreedyPolicy(),
             DoctrineId => new DoctrinePolicy(),
@@ -46,6 +60,7 @@ public static class HeadlessPolicyFactory
             : policyId.Trim().ToLowerInvariant();
         return value switch
         {
+            "coverage" or "formation-coverage" or CoverageId => CoverageId,
             "random" or "random-legal" or RandomLegalId => RandomLegalId,
             "greedy" or "scripted-player-view-v1" or GreedyId => GreedyId,
             "doctrine" or "doctrine-v1" or DoctrineId => DoctrineId,

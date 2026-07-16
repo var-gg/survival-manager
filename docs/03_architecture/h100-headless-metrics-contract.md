@@ -23,7 +23,7 @@
 | --- | --- | --- |
 | `SM.Combat` | 전투 상태, 결과, 활동 telemetry, canonical state hash의 authoritative truth | H100 보고서나 파일 출력 소유 |
 | `SM.HeadlessMetrics` | 전투·캠페인 레코드, 순수 projection, replay hash 조합, 결정적 JSONL/CSV, 게이트 평가 | `SM.Unity`, authored content, session, persistence, editor API 참조 |
-| `SM.HeadlessPolicies` | player-visible observation/decision과 6개 deterministic 정책 | session/content/persistence/editor 참조, future RNG·미공개 node·resolved enemy stat 입력 |
+| `SM.HeadlessPolicies` | player-visible observation/decision과 6개 production + 1개 QA deterministic 정책 | session/content/persistence/editor 참조, future RNG·미공개 node·resolved enemy stat 입력 |
 | `SM.Editor.Validation` | 실제 `RuntimeCombatContentLookup`과 `GameSessionState`를 조립해 전투·캠페인을 실행 | 계측 스키마나 판정 규칙을 별도로 복제 |
 
 `SM.HeadlessMetrics` asmdef는 `SM.Core`, `SM.Combat`만 참조하고 `noEngineReferences=true`를 유지한다. `SM.Content`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 참조는 금지한다. 실제 콘텐츠와 캠페인 세션은 Unity 경계이므로 `SM.Editor.Validation` runner가 실행하고, 순수 계측 레코드로 투영한 뒤에만 `SM.HeadlessMetrics`로 넘긴다.
@@ -45,6 +45,21 @@
 `CampaignMetricRecord`는 캠페인 종료·truncation 상태, 전투·승패·timeout·stomp 수, 정책과 결정 관측 가능 여부, macro/build family 분포, 무결성 카운터, replay manifest hash를 보존한다. 설정된 site safety에 도달한 축소 실행은 softlock으로 오인하지 않고 `Truncated=true`로 기록하며 end-to-end campaign 표본에서 제외한다. paired counterfactual이나 blind holdout처럼 현재 runner가 측정하지 않는 필드는 임의 값으로 통과시키지 않고 `DecisionMetricsAvailable=false` 또는 관측치 부재로 남긴다.
 
 새 지표를 추가할 때 authoritative sim/save truth를 바꾸지 않는다. 레코드는 기존 `BattleState`, `BattleResult`, `BattleActivityTelemetrySnapshot`, `CombatBeat`를 읽는 additive projection이어야 한다. `BattleHashCorpus` golden을 계측 편의를 위해 다시 기록하지 않는다.
+
+## 진형 Stage 4 계측
+
+`FormationEligibilityTracker`는 재실행 중 `BattleFormationConsequence`와 실제 HP/의도 상태를 읽어 측면·후방·차단·구출·후열 격파의 eligibility를 누적한다. fired는 `BattleMetricRecord`의 typed counter에서 읽으며, 측면 수는 후방을 포함한 `FlankStrikeCount`에서 `RearStrikeCount`를 빼서 중복을 제거한다. legible은 채널별 typed 설명이 존재할 때만 true다.
+
+`FormationCausalEvaluator` v1은 같은 seed·편성·적의 기본 배치와 census medoid 배치 전체 재실행을 비교한다. 채널 발동 유무가 달라지고 승패가 바뀌거나 정규화 최종 전력차가 0.10 이상 움직이면 event-bearing 실행을 causal로 기록한다. 이는 subsystem tagged RNG를 고정한 정밀 ablation이 아니라 `same-seed-full-rerun-placement-ablation-v1` best-effort 판정이다.
+
+Stage 4 출력은 `Logs/h100-formation/` 아래 네 파일이다.
+
+- `formation-events.jsonl`: eligible/fired/causal/legible와 QA probe 식별자
+- `placement-leverage.jsonl`: 같은 편성·적·seed에서 8개 census medoid와 기본 배치의 승률 차이
+- `healer-marginal-value.jsonl`: 힐러 포함/교체 pair의 승률·최종 전력차 marginal value와 Competent 선택 정렬
+- `formation-report.json`: Coverage 통과, Competent prevalence/impact/legibility, placement, healer, Q5 및 Stage 5 밸런스 신호
+
+Coverage가 다섯 채널을 모두 발동했지만 Competent Q5가 실패하면 `needs_stage_five_balance=true`로 기록한다. 힐러는 빈도를 고정하지 않고 marginal value가 양수인 상태에서 Competent가 선택했는지만 검사한다.
 
 ## 재현 해시
 
@@ -96,8 +111,15 @@ pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 
 
 실제 콘텐츠 runner는 Unity/editor 경계를 밟으므로 pure `FastUnit`만으로 실행 증거를 대체하지 않는다.
 
+진형 Stage 4의 축소 paired runner는 다음 명령으로 검증한다.
+
+```powershell
+pwsh -File tools/h100-formation.ps1 -SeedCount 5 -CompetentPolicy competent-formation-v1
+```
+
 ## 현재 한계와 후속
 
 - test-only `IPlaythroughDecisionPolicy`는 production이 참조하지 않는다. production-safe port는 ADR-0031의 `SM.HeadlessPolicies` + `SM.Editor.Validation` projection adapter로 분리됐으며 상세 observation/action 계약은 `h100-headless-policy-contract.md`가 소유한다.
 - tagged/subsystem RNG stream이 없어 공용 RNG를 보존하는 counterfactual ablation을 아직 보증하지 않는다.
+- posture는 현재 정책 action 축이 아니며 자세별 paired rollout은 후속 단계다.
 - `SM.HeadlessMetrics` 자체는 pure .NET으로 빌드 가능하지만 실제 콘텐츠/session composition은 Unity adapter에 남아 있다. 2M+ 전투용 pure dotnet CLI는 content snapshot과 campaign orchestration port를 분리한 뒤 추가한다.
