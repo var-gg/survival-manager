@@ -13,6 +13,7 @@
   - `docs/03_architecture/h100-headless-policy-contract.md`
   - `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
   - `docs/03_architecture/h100-build-space-census-contract.md`
+  - `docs/03_architecture/h100-tactical-attribution-contract.md`
   - `docs/04_decisions/adr-0032-h100-build-space-census-boundary.md`
   - `docs/04_decisions/adr-0033-h100-roster-decision-surface.md`
 
@@ -118,6 +119,10 @@ Stage 4 출력은 `Logs/h100-formation/` 아래 네 파일이다.
 - `formation-report.json`: Coverage 통과, Competent prevalence/impact/legibility, placement, healer, Q5 및 Stage 5 밸런스 신호
 
 Coverage가 다섯 채널을 모두 발동했지만 Competent Q5가 실패하면 `needs_stage_five_balance=true`로 기록한다. 힐러는 빈도를 고정하지 않고 marginal value가 양수인 상태에서 Competent가 선택했는지만 검사한다.
+
+## BT1-E09 tactical attribution
+
+`PlacementAttributionEvaluator`는 Stage 4 placement leverage를 typed 전술과 raw 거리·targeting·pathing으로 분해한다. 순수 DTO·판정·writer는 `SM.HeadlessMetrics`, concept catalog·실제 session·Stage 4/E05/E06 join은 `SM.Editor.Validation`이 소유한다. paired corpus, 임계값, Pro 4조건, formation non-use/trap 판정, 결정적 산출물의 상세 계약은 `h100-tactical-attribution-contract.md`가 소유한다. 측정 결과는 버그·trap 후보 판정만 하며 수치와 콘텐츠를 자동 수정하지 않는다.
 
 ## Sunken Stage 5 방향 진단
 
@@ -307,6 +312,12 @@ pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 
 
 ```powershell
 pwsh -File tools/h100-formation.ps1 -SeedCount 5 -CompetentPolicy competent-formation-v1
+```
+
+BT1-E09 tactical attribution은 Stage 4/E05/E06의 기존 report를 읽고 실제 8×3×2 paired corpus를 실행한다. 측정된 bug/trap 후보는 report 결과이며 wrapper 실패나 자동 밸런스 수정으로 바꾸지 않는다.
+
+```powershell
+pwsh -File tools/h100-tactical-attribution.ps1 -CompositionCount 8 -SeedCount 2
 ```
 
 Sunken Stage 5의 방향 판별 runner는 다음 명령으로 검증한다. 기본값은 policy당 seed 1개, 보유 편성 전수, 8개 medoid, lookback counter-family top-12다.

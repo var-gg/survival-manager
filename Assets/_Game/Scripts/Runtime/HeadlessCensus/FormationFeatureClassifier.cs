@@ -11,6 +11,17 @@ namespace SM.HeadlessCensus;
 /// </summary>
 public static class FormationFeatureClassifier
 {
+    /// <summary>동일 feature truth에서 concept catalog가 사용하는 canonical profile id를 반환한다.</summary>
+    public static string ClassifyProfile(FormationFeatures features)
+    {
+        if (features == null)
+        {
+            throw new ArgumentNullException(nameof(features));
+        }
+
+        return ConceptFormationProfile.Classify(features);
+    }
+
     public static FormationFeatures Classify(IEnumerable<DeploymentAnchorId> anchors)
     {
         var anchorsByRole = anchors.ToArray();

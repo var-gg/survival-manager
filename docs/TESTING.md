@@ -100,6 +100,14 @@ pwsh -File tools/h100-formation.ps1 -SeedCount 5 -CompetentPolicy competent-form
 
 명령 성공 조건은 `formation-events.jsonl`, `placement-leverage.jsonl`, `healer-marginal-value.jsonl`, `formation-report.json` 생성과 event 행의 `eligible/fired/causal/legible` 계약 존재다. Coverage/Q5 gate 자체의 true/false는 진단 결과이며 command 성공 여부와 구분한다.
 
+BT1-E09 tactical attribution은 8개 concept-medoid composition, 세 authored encounter family, paired seed를 실제 session/sim으로 실행하고 placement leverage를 typed tactical, contact geometry, targeting, pathing, unexplained raw로 귀속한다. 기존 Stage 4/E05/E06 report를 formation intended-context에 조인하며 수치나 콘텐츠를 수정하지 않는다.
+
+```powershell
+pwsh -File tools/h100-tactical-attribution.ps1 -CompositionCount 8 -SeedCount 2
+```
+
+명령 성공 조건은 `placement_attribution_report.json`의 `status=complete`, technical failure 0, 8 composition·3 family·요청 seed coverage, semantic feature invariant 위반 0, Pro 조건 4개·anchor 6개·formation channel 5개 행 존재다. bug/trap 후보 true/false는 측정 verdict이며 command 성공 여부와 구분한다. 결정성은 같은 인자로 output directory만 바꿔 두 번 실행한 report의 byte hash 일치로 검증한다.
+
 ## CLI 명령어
 
 ### canonical / smoke / recovery verbs
