@@ -14,6 +14,7 @@
   - `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
   - `docs/03_architecture/h100-build-space-census-contract.md`
   - `docs/04_decisions/adr-0032-h100-build-space-census-boundary.md`
+  - `docs/04_decisions/adr-0033-h100-roster-decision-surface.md`
 
 ## 목적
 
@@ -62,7 +63,7 @@
 
 `H100PlayerVisibleFactProjector`는 `HeadlessPolicyObservation`의 roster 기본 상태, skill/status mechanics, flex skill, item/affix/granted skill mechanics, passive node, wallet, temporary augment, synergy count/catalog, 현재 enemy preview, reward option/mechanics를 빠짐없이 fact로 투영한다. 이 adapter는 `SM.Editor.Validation`에 있고 `SM.HeadlessMetrics`와 `SM.HeadlessPolicies`를 함께 보는 유일한 조립층이다. fact record·hash·audit·writer는 `SM.HeadlessMetrics`에 남고 두 pure sibling asmdef 사이의 참조는 추가하지 않는다.
 
-`HeadlessDeploymentDecision`과 `HeadlessRewardDecision`은 additive `EvidenceFactIds`를 가진다. 정책은 observation에 조립된 문자열 fact-id index에서 실제 사용한 신호만 선택한다. `PlayerVisibleDecisionRecord`는 action, rationale, finite estimated value, `EvidenceRef` 목록을 fact와 같은 timeline에 기록한다. 빈 evidence, 존재하지 않는 fact, 결정 이후에만 존재하는 fact는 즉시 `PlayerVisibleProvenanceException`으로 실패한다. 정책 자체의 빈·중복 fact id도 `HeadlessPolicyGuard`가 fail closed한다.
+`HeadlessDeploymentDecision`, `HeadlessRewardDecision`과 opt-in Town의 영입·노드·Refit decision은 additive `EvidenceFactIds`를 가진다. 정책은 observation에 조립된 문자열 fact-id index에서 실제 사용한 신호만 선택한다. `PlayerVisibleDecisionRecord`는 action, rationale, finite estimated value, `EvidenceRef` 목록을 fact와 같은 timeline에 기록한다. 빈 evidence, 존재하지 않는 fact, 결정 이후에만 존재하는 fact는 즉시 `PlayerVisibleProvenanceException`으로 실패한다. 정책 자체의 빈·중복 fact id도 `HeadlessPolicyGuard` 또는 `HeadlessRosterPolicyGuard`가 fail closed한다.
 
 `PlayerVisibleFactLedgerAuditor`가 BT2의 네 지표를 공급한다.
 
@@ -211,7 +212,9 @@ role-aware 평가 의미는 다음과 같다.
 
 `SM.HeadlessCensus.IntentTrackEvaluator`는 정책에 노출되지 않는 evaluator-only 순수 탐색기다. 입력은 campaign 종료 뒤 `SM.Editor.Validation`이 실제 session에서 수집한 초기 roster/inventory 상태와 확정된 offer window DTO다. 탐색 목표는 승률 최대화가 아니라 E03 `ConceptContract.identity_predicates` 도달이며, 계약 관련 semantic만 상태 signature에 남기고 동일 상태당 최선 경로 하나를 memoize한다. `SM.HeadlessPolicies`는 `SM.HeadlessCensus`를 참조하지 않으며 미래 offer와 oracle 결과를 decision 시점에 읽을 수 없다.
 
-agency window는 플레이어 선택이 실제로 발생하는 한 지점이다. 현재 campaign 표면에서는 도달한 사이트마다 배치 선택 1회와 보상 선택 1회가 각각 한 window다. 전투 node 자체는 자동 진행이므로 window가 아니다. v1 lever는 `deployment`, `reward`이고 탐색 DTO와 CLI는 `recruit`, `level_node`, `refit` 식별자를 파라미터로 수용하지만, E07이 실제 선택점을 열기 전에는 해당 window를 생성하지 않는다. 닫힌 lever가 필요한 variant는 `lever_pending`으로 분리하여 future-lever 기대치로 기록하고, `agency_gap`이나 v1 track 성공에 포함하지 않는다.
+agency window는 플레이어 선택이 실제로 발생하는 한 지점이다. opt-in campaign은 도달한 사이트의 배치와 보상을 각각 한 window로 기록하고, 보상 뒤 다음 사이트로 떠나기 전 Town에서 영입→노드→Refit을 세 개의 순차 window로 기록한다. 각 Town 행동 뒤 현재 session observation을 다시 만들며 전투 node 자체는 자동 진행이므로 window가 아니다. CLI의 `-Levers`가 `deployment`, `reward`, `recruit`, `level_node`, `refit` 중 이번 측정에 포함할 축을 고른다. 비활성 lever가 필요한 variant만 `lever_pending`으로 남고, 다섯 축을 모두 활성화한 E07 재측정에서는 현재 offer horizon으로도 도달하지 못한 variant가 `true_unavailable` 후보가 된다.
+
+E04 trace의 `ScarceResourceInvested`는 실제 선택된 영입의 gold, 패시브 node budget, Refit echo 소비에서만 true다. 제시만 됐거나 guard가 거부한 선택은 투자로 세지 않는다. 이 값은 BT5 부분 공급이며 BT5 전체 통과를 단독 선언하지 않는다.
 
 run별 핵심 값은 `TrackAvailable`, `FirstProgressTime`, `OracleRealizationTime`, `MaxAgencyDrought`, `Starved`, `PolicyCaptureRate = P(realized | TrackAvailable)`, `FalseHopeRate`, `PayoffRunway`, `IdentityRetentionAfterCounter`다. drought는 진척 또는 명시된 유효 대체가 하나도 제시되지 않은 연속 window 수이며 정확히 4개부터 starvation으로 판정한다. track 자체가 horizon 안에 없을 때도 starved다. capture 분모에는 `TrackAvailable=true`인 run만 들어간다.
 
@@ -250,10 +253,11 @@ E02 정보 표면만 실콘텐츠에서 빠르게 재측정할 때는 다음 명
 pwsh -File tools/h100-surface-audit.ps1
 ```
 
-E05 기본 실측은 owner 10×16 seed와 system medoid 대표 8개를 같은 coverage campaign 경로에서 실행한다. BT6/BT7가 임계치에 못 미치면 wrapper는 측정 실패를 숨기지 않고 `status=fail`을 출력하되, artifact 생성 자체가 정상인 한 프로세스 오류로 바꾸지 않는다.
+E05 기본 실측은 owner 10×16 seed와 system medoid 대표 8개를 같은 coverage campaign 경로에서 실행한다. 기본 lever 인자는 기존 RC1 비교를 위해 deployment/reward를 유지한다. E07 Town 표면 재측정은 owner 10×16에 다섯 lever를 명시하며, BT6/BT7가 임계치에 못 미치면 wrapper는 측정 실패를 숨기지 않고 `status=fail`을 출력하되 artifact 생성 자체가 정상인 한 프로세스 오류로 바꾸지 않는다.
 
 ```powershell
 pwsh -File tools/h100-intent-track.ps1
+pwsh -File tools/h100-intent-track.ps1 -SeedCount 16 -SystemMedoidSampleCount 0 -Levers deployment,reward,recruit,level_node,refit
 ```
 
 64-seed RC 경로는 `-SeedCount 64`를 명시한다. 반복 결정성은 같은 인자로 별도 output directory에 두 번 실행한 `intent_track_report.json`의 byte hash 일치로 검증한다.

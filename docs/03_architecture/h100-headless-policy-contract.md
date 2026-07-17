@@ -9,6 +9,7 @@
   - `docs/03_architecture/h100-build-space-census-contract.md`
   - `docs/03_architecture/dependency-direction.md`
   - `docs/04_decisions/adr-0031-h100-headless-policy-boundary.md`
+  - `docs/04_decisions/adr-0033-h100-roster-decision-surface.md`
 
 ## 목적
 
@@ -29,14 +30,17 @@
 - Town HUD의 gold/echo wallet과 현재 run의 temporary augment mechanics
 - reward 화면에 이미 제시된 option의 표시 금액/payload id 및 item/temporary augment 공개 mechanics
 - 현재 결정을 위해 runner가 파생한 non-zero seed
+- opt-in Town 결정의 현재 로스터와 영입 오퍼 네 장: archetype/race/class/role, flex active/passive skill id, gold 비용, tier, plan-fit
+- opt-in Town 결정의 현재 passive board/node, 레벨별 active-node 예산, 선행 node, 상호배제와 keystone cap
+- opt-in Town 결정의 현재 inventory item, 확정 affix slot, Refit 가능 여부와 echo 비용
 
 허용 여부는 필드 출처가 아니라 플레이어가 현재 화면에서 같은 의미를 읽을 수 있는지로 판단한다. builder는 ID와 mechanics collection을 ordinal 정렬하고, 정책에는 authored definition이나 snapshot을 전달하지 않는다.
 
-금지 정보는 미래 node 목록, unrevealed encounter, RNG state/다음 roll, resolved enemy base stat/trait/rule package, `BattleState`, `GameSessionState`, authored definition 참조다. reward item affix는 선택 적용 뒤 생성되므로 선택 전에는 공개 mechanics가 아니며 비워 둔다. `H100PolicyObservationBuilder`는 현재 `GetSelectedExpeditionNode()`만 투영하고 enemy preview vocabulary를 확장하거나 future node를 순회하지 않는다.
+금지 정보는 미래 node 목록, 다음 영입 오퍼, Refit roll 결과, unrevealed encounter, RNG state/다음 roll, resolved enemy base stat/trait/rule package, `BattleState`, `GameSessionState`, authored definition 참조다. reward item affix와 Refit 새 affix는 선택 적용 뒤 생성되므로 선택 전에는 공개 mechanics가 아니다. `H100PolicyObservationBuilder`는 현재 `GetSelectedExpeditionNode()`만 투영하고 enemy preview vocabulary를 확장하거나 future node를 순회하지 않는다.
 
 ## 결정 표면과 정책
 
-현재 policy action은 deployment와 reward choice 두 축이다. campaign site는 전 사이트 클리어가 필요한 선형 진행이라 runner가 다음 미클리어 site로 이동한다. `TeamPostureType`은 실제 session surface에 있지만 Stage 2 범위에서 제외한다.
+기본 `IHeadlessPolicy` action은 deployment와 reward choice 두 축이며 시그니처를 동결한다. 별도 opt-in `IHeadlessRosterPolicy`는 Town의 `recruit`, `level_node`, `refit` 세 결정을 추가한다. campaign site는 전 사이트 클리어가 필요한 선형 진행이라 runner가 다음 미클리어 site로 이동한다. `TeamPostureType`은 실제 session surface에 있지만 Stage 2 범위에서 제외한다.
 
 | 정책 | 결정 규칙 |
 | --- | --- |
@@ -47,11 +51,12 @@
 | `competent-counter-adaptive-v1` | 현재 공개 enemy class/anchor preview에 대응하는 roster/배치 우선 |
 | `competent-search-planner-v1` | 공개 상태에서 상위 roster 조합과 legal anchor permutation을 최대 4,096개 평가하는 bounded 1-ply |
 | `qa-formation-coverage-v1` | 힐러·역할 완비·독트린·다섯 진형 채널용 anchor 조건을 결정적으로 표본화하는 발동 가능성 전용 QA 정책 |
+| `concept-commit-v1` | 주입된 컨셉 intent를 배치·보상과 현재 Town 영입→노드→Refit 순서로 진전시키는 opt-in coverage 정책 |
 | `concept-preview-grounded-v1` | 현재 enemy preview를 site 식별자 없이 threat profile로 파싱하고, 기존 컨셉을 보존하면서 가시 counter 증거가 있는 편성·배치를 선택하는 E06 정책 |
 
 네 유능 정책의 canonical ID는 `H100GateEvaluator`가 `competent` cohort로 집계할 수 있도록 `competent-` 접두사를 고정한다. `qa-formation-coverage-v1`과 `concept-preview-grounded-v1`은 production 정책 목록에서 제외하며 유능 cohort나 밸런스 가치를 주장하지 않는다. factory의 기존 `ProductionPolicyIds` 6개와 `AllPolicyIds` 7개는 byte·순서 호환을 보존하고, E06까지 포함하는 실행 표면은 `RegisteredPolicyIds`로 분리한다. 짧은 별칭은 factory 입력에서만 허용하고 metric에는 canonical ID를 기록한다.
 
-모든 decision은 `Rationale`, finite `EstimatedValue`, 하나 이상의 `EvidenceFactIds`를 반환한다. observation에는 `SM.Editor.Validation` projector가 만든 signal key→fact id index만 additive로 들어가며 fact schema나 ledger 구현은 정책 assembly에 노출되지 않는다. runner는 policy/kind/chapter/site/seed/value/reason을 단일 행 로그로 남기고 별도 fact ledger에 action과 evidence link를 기록한다. `HeadlessPolicyGuard`는 observation과 action의 null, 중복, 범위, legal set, finite value, 빈·중복 evidence id를 fail closed한다. fact 존재와 결정 시점은 `SM.HeadlessMetrics.PlayerVisibleFactLedgerAuditor`를 호출하는 Editor 조립층이 검증한다.
+모든 decision은 `Rationale`, finite `EstimatedValue`, 하나 이상의 `EvidenceFactIds`를 반환한다. observation에는 `SM.Editor.Validation` projector가 만든 signal key→fact id index만 additive로 들어가며 fact schema나 ledger 구현은 정책 assembly에 노출되지 않는다. runner는 policy/kind/chapter/site/seed/value/reason을 단일 행 로그로 남기고 별도 fact ledger에 action과 evidence link를 기록한다. `HeadlessPolicyGuard`와 `HeadlessRosterPolicyGuard`는 observation과 action의 null, 중복, 범위, legal set, affordability, roster/node/keystone/prerequisite 제한, finite value, 빈·중복 evidence id를 fail closed한다. fact 존재와 결정 시점은 `SM.HeadlessMetrics.PlayerVisibleFactLedgerAuditor`를 호출하는 Editor 조립층이 검증한다.
 
 정책별 최소 evidence 신호는 실제 선택·가치 계산 경로와 다음처럼 대응한다.
 
@@ -66,11 +71,15 @@
 | `qa-formation-coverage-v1` | seed, roster role/class, legal deployment surface, enemy preview | reward surface, deployed roster identity |
 | `concept-preview-grounded-v1` | 컨셉 intent/state, roster와 hero skill, legal deployment surface, 현재 enemy preview의 threat 신호와 연결된 hero skill 신호 | 기존 `ConceptCommitPolicy` reward evidence 계약 유지 |
 
+`concept-commit-v1`과 preview-grounded 모드의 Town 결정은 campaign context와 wallet을 공통으로 인용한다. 영입은 현재 offer surface와 선택 offer를, 노드는 현재 hero budget과 선택 node를, Refit은 현재 item/slot만 인용한다. 미래 offer나 새 affix 결과를 evidence로 만들 수 없다.
+
 `random-legal-v1`의 무작위 선택도 외부 RNG state가 아니라 player-visible observation에 고정된 decision seed fact를 인용한다. 모든 reward option이 없는 결정도 빈 reward surface fact를 근거로 `option=-1`을 반환한다. 정책이 읽지 않은 wallet, item mechanics, synergy catalog 전체를 편의상 모두 인용하지 않는다.
 
 ## 컨셉 의도 정책과 주입 경계
 
-`ConceptCommitPolicy`는 기존 여섯 production 정책 cohort와 `qa-formation-coverage-v1` factory 표면을 바꾸지 않는 별도 BT1 정책이다. `IHeadlessPolicy`의 배치·보상 시그니처를 그대로 구현하되, 한 campaign 동안 `IntentState`를 policy instance 내부에 보관하고 모든 결정에 `keep`, `advance`, `substitute`, `counter-adapt`, `pivot`, `abandon` 중 하나의 이유를 남긴다. 상태는 static global이 아니며 campaign마다 새 policy instance를 만든다.
+`ConceptCommitPolicy`는 기존 여섯 production 정책 cohort와 `qa-formation-coverage-v1` factory 표면을 바꾸지 않는 별도 BT1 정책이다. `IHeadlessPolicy`의 배치·보상 시그니처를 그대로 구현하고 `IHeadlessRosterPolicy`를 추가 구현한다. 한 campaign 동안 `IntentState`를 policy instance 내부에 보관하고 모든 결정에 `keep`, `advance`, `substitute`, `counter-adapt`, `pivot`, `abandon` 중 하나의 이유를 남긴다. 상태는 static global이 아니며 campaign마다 새 policy instance를 만든다.
+
+Town runner는 보상 정산 뒤 `ReturnToTownAfterReward()`가 완료된 사이트 사이에만 실행한다. 순서는 영입→노드→Refit이며 각 행동 뒤 현재 session에서 observation과 decision seed를 다시 만든다. 영입은 필요한 count tag와 직접 identity/substitution을 lexicographic으로 우선하고, 노드는 관련 target의 합법 선행 chain부터 채우며, Refit은 새 결과를 예측하지 않고 missing-affix intent가 있을 때 현재 합법 slot만 선택한다. 실행은 기존 `Recruit`, `SelectPassiveBoard`/`TogglePassiveNode`, `RefitItem` API를 호출하며 비용·cap·노드 합법성과 roll은 session이 최종 판정한다.
 
 정책 assembly에는 evaluator 계약 대신 `HeadlessConceptIntent`만 존재한다. 이 DTO는 identity predicate, progress milestone, payoff witness ID, substitution, flex slot, counter affordance, availability tier, pivot condition 같은 정렬된 문자열만 운반한다. `SM.Editor.Validation.H100ConceptIntentProjector`가 E03 `ConceptContract` 하나를 이 DTO로 투영하며 `SM.HeadlessPolicies`는 `SM.HeadlessCensus`를 참조하지 않는다.
 
@@ -170,9 +179,9 @@ BT1-E04 intent trace smoke는 동일한 real campaign/session 경로에서 cover
 pwsh -File tools/h100-intent-trace.ps1 -SeedCount 8 -Lanes both -CoverageAnchorId anchor_iron_line
 ```
 
-각 lane의 `intent_trace_summary.json`에서 `missing_trace_count=0`, `hidden_fact_use_count=0`, `campaigns_with_commit=8`을 요구한다. 같은 seed와 intent의 policy decision 및 JSONL은 byte-identical이어야 한다. 현재 action surface는 deployment와 reward 두 종류뿐이며 영입, node, Refit decision point 개방은 E07 범위다.
+각 lane의 `intent_trace_summary.json`에서 `missing_trace_count=0`, `hidden_fact_use_count=0`, `campaigns_with_commit=8`을 요구한다. 같은 seed와 intent의 policy decision 및 JSONL은 byte-identical이어야 한다. opt-in coverage campaign은 deployment, reward, recruit, level_node, refit trace를 기록하며 영입·노드·Refit의 실제 gold·node budget·echo 소비를 `ScarceResourceInvested`로 남긴다. 기존 여섯 production 정책은 `IHeadlessRosterPolicy`를 구현하지 않으므로 Town trace와 행동이 생기지 않는다.
 
-BT1-E05는 coverage lane을 E03 owner anchor별로 다시 실행하지만 정책 계약을 넓히지 않는다. 정책의 coverage intent는 첫 stable variant 하나로 고정하되, campaign 종료 후 oracle은 같은 offer stream에 anchor의 모든 E03 variant를 대조해 OR 개방성을 계산한다. `H100CampaignCorpusRunner`의 optional observer가 결정 전 배치·보상 표면과 전투 후 payoff만 복제하고, campaign 종료 뒤 Editor adapter가 순수 `IntentTrackEvaluator`에 DTO를 전달한다. 정책은 자기 `HeadlessConceptIntent`, 현재 player-visible observation, 누적 `IntentState`만 보며 oracle search result, 다른 선택지의 미래 결과, 이후 offer stream은 읽지 않는다. 기본 실측 진입점은 `pwsh -File tools/h100-intent-track.ps1`이다.
+BT1-E05는 coverage lane을 E03 owner anchor별로 다시 실행한다. 정책의 coverage intent는 첫 stable variant 하나로 고정하되, campaign 종료 후 oracle은 같은 확정 offer/window stream에 anchor의 모든 E03 variant를 대조해 OR 개방성을 계산한다. `H100CampaignCorpusRunner`의 optional observer가 결정 전 배치·보상과 opt-in Town 세 표면, 전투 후 payoff를 복제하고, campaign 종료 뒤 Editor adapter가 순수 `IntentTrackEvaluator`에 DTO를 전달한다. 정책은 자기 `HeadlessConceptIntent`, 현재 player-visible observation, 누적 `IntentState`만 보며 oracle search result, 다른 선택지의 미래 결과, 이후 offer stream은 읽지 않는다. E07 실측 진입점은 `pwsh -File tools/h100-intent-track.ps1 -Levers deployment,reward,recruit,level_node,refit`이다.
 
 BT1-E06 acceptance는 `SM.Editor.Validation`에서만 same-state replay와 oracle을 조립한다. 정책은 그 결과를 입력으로 받지 않는다. 기본 실측 진입점은 `pwsh -File tools/h100-preview-policy.ps1`이며 sunken chosen win rate 70% 이상, selection regret 25%p 이하, unsupported counter 0, 두 heldout site의 기존 정책 대비 최대 저하 10%p 이하, 불필요 full reset 20% 이하를 모두 요구한다. 산출물과 부분 BT8 공급 계약은 `h100-headless-metrics-contract.md`가 소유한다.
 
@@ -180,5 +189,5 @@ BT1-E06 acceptance는 `SM.Editor.Validation`에서만 same-state replay와 oracl
 
 - SearchPlanner 깊은 lookahead/MCTS와 common-random counterfactual
 - posture 결정축과 자세별 paired rollout
-- 영입, node, Refit decision point와 beta-runner checkpoint 연결(E07)
+- 영입 Reroll, Scout, Retrain, Dismiss와 beta-runner checkpoint 연결
 - content snapshot/campaign orchestration을 포함한 pure dotnet CLI

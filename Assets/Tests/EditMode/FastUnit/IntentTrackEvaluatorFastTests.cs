@@ -281,6 +281,8 @@ public sealed class IntentTrackEvaluatorFastTests
             0,
             0,
             0,
+            0,
+            0,
             Array.Empty<string>(),
             Array.Empty<IntentTrackTagCount>(),
             Array.Empty<string>(),

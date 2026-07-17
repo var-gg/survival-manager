@@ -39,6 +39,22 @@ internal sealed class H100PlayerVisibleFactLedgerCollector
         return projection.Observation;
     }
 
+    public HeadlessRosterPolicyObservation ObserveRoster(
+        string campaignId,
+        int campaignIndex,
+        int siteIndex,
+        int decisionIndex,
+        HeadlessRosterPolicyObservation observation)
+    {
+        var projection = H100RosterPlayerVisibleFactProjector.Project(
+            _runId,
+            campaignId,
+            new PlayerVisibleTimelinePoint(campaignIndex, siteIndex, decisionIndex),
+            observation);
+        _facts.AddRange(projection.Facts);
+        return projection.Observation;
+    }
+
     public void RecordDeployment(
         string campaignId,
         int campaignIndex,
@@ -82,6 +98,85 @@ internal sealed class H100PlayerVisibleFactLedgerCollector
             decision.EstimatedValue,
             decision.EvidenceFactIds));
     }
+
+    public void RecordRecruit(
+        string campaignId,
+        int campaignIndex,
+        int siteIndex,
+        int decisionIndex,
+        string policyId,
+        HeadlessRecruitDecision decision)
+        => RecordRosterDecision(
+            campaignId,
+            campaignIndex,
+            siteIndex,
+            decisionIndex,
+            policyId,
+            "recruit",
+            $"offer:{decision.OfferIndex.ToString(CultureInfo.InvariantCulture)}",
+            decision.Rationale,
+            decision.EstimatedValue,
+            decision.EvidenceFactIds);
+
+    public void RecordPassive(
+        string campaignId,
+        int campaignIndex,
+        int siteIndex,
+        int decisionIndex,
+        string policyId,
+        HeadlessPassiveDecision decision)
+        => RecordRosterDecision(
+            campaignId,
+            campaignIndex,
+            siteIndex,
+            decisionIndex,
+            policyId,
+            "level_node",
+            decision.IsNoOp ? "node:none" : $"node:{decision.HeroId}:{decision.NodeId}",
+            decision.Rationale,
+            decision.EstimatedValue,
+            decision.EvidenceFactIds);
+
+    public void RecordRefit(
+        string campaignId,
+        int campaignIndex,
+        int siteIndex,
+        int decisionIndex,
+        string policyId,
+        HeadlessRefitDecision decision)
+        => RecordRosterDecision(
+            campaignId,
+            campaignIndex,
+            siteIndex,
+            decisionIndex,
+            policyId,
+            "refit",
+            decision.IsNoOp ? "refit:none" : $"refit:{decision.ItemInstanceId}:{decision.AffixSlotIndex.ToString(CultureInfo.InvariantCulture)}",
+            decision.Rationale,
+            decision.EstimatedValue,
+            decision.EvidenceFactIds);
+
+    private void RecordRosterDecision(
+        string campaignId,
+        int campaignIndex,
+        int siteIndex,
+        int decisionIndex,
+        string policyId,
+        string decisionKind,
+        string action,
+        string rationale,
+        double estimatedValue,
+        IReadOnlyList<string> evidenceFactIds)
+        => Record(PlayerVisibleDecisionRecord.Create(
+            _runId,
+            campaignId,
+            new PlayerVisibleTimelinePoint(campaignIndex, siteIndex, decisionIndex),
+            policyId,
+            decisionKind,
+            action,
+            rationale,
+            estimatedValue,
+            evidenceFactIds));
 
     private void Record(PlayerVisibleDecisionRecord decision)
     {

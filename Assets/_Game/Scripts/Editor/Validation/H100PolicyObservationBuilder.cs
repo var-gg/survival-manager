@@ -20,7 +20,8 @@ internal static class H100PolicyObservationBuilder
     public static HeadlessPolicyObservation Build(
         GameSessionState session,
         RuntimeCombatContentLookup lookup,
-        int decisionSeed)
+        int decisionSeed,
+        bool includeTownRoster = false)
     {
         if (!lookup.TryGetCombatSnapshot(out var snapshot, out var error))
         {
@@ -40,7 +41,12 @@ internal static class H100PolicyObservationBuilder
             .Where(hero => !string.IsNullOrWhiteSpace(hero.HeroId))
             .GroupBy(hero => hero.HeroId, StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
-        var roster = session.ExpeditionSquadHeroIds
+        var visibleHeroIds = includeTownRoster
+            ? session.Profile.Heroes
+                .Where(hero => hero != null && !string.IsNullOrWhiteSpace(hero.HeroId))
+                .Select(hero => hero.HeroId)
+            : session.ExpeditionSquadHeroIds;
+        var roster = visibleHeroIds
             .Where(rosterById.ContainsKey)
             .Select(heroId =>
             {
@@ -312,7 +318,7 @@ internal static class H100PolicyObservationBuilder
             .ToArray();
     }
 
-    private static IReadOnlyList<HeadlessStatModifierObservation> BuildStatModifiers(
+    internal static IReadOnlyList<HeadlessStatModifierObservation> BuildStatModifiers(
         IEnumerable<StatModifier>? modifiers)
     {
         return (modifiers ?? Array.Empty<StatModifier>())
@@ -329,7 +335,7 @@ internal static class H100PolicyObservationBuilder
             .ToArray();
     }
 
-    private static IReadOnlyList<HeadlessRuleModifierObservation> BuildRuleModifiers(
+    internal static IReadOnlyList<HeadlessRuleModifierObservation> BuildRuleModifiers(
         CombatRuleModifierPackage? package)
     {
         return (package?.Modifiers ?? Array.Empty<RuleModifier>())

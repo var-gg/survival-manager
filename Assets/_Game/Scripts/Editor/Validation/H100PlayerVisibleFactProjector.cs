@@ -105,10 +105,10 @@ internal static class H100PlayerVisibleFactProjector
             drafts,
             HeadlessPolicyEvidence.RosterSurfaceSignal,
             PlayerVisibleUiSource.TownRoster,
-            "expedition_roster",
+            "visible_roster",
             "shows_ordered_heroes",
             rosterSummary,
-            "current expedition squad",
+            "current policy-visible roster",
             $"count={observation.Roster.Count.ToString(CultureInfo.InvariantCulture)}",
             "town roster",
             rosterSummary);

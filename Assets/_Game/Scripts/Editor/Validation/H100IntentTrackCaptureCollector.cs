@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.HeadlessCensus;
 using SM.Meta.Model;
+using SM.Unity;
 
 namespace SM.Editor.Validation;
 
@@ -11,23 +12,27 @@ internal sealed class H100IntentTrackCaptureCollector
 {
     private readonly IReadOnlyList<ConceptContract> _contracts;
     private readonly CombatContentSnapshot _snapshot;
+    private readonly RuntimeCombatContentLookup _lookup;
     private readonly IReadOnlyList<FormationPlacement> _formations;
     private readonly Dictionary<string, H100IntentTrackCampaignCapture> _captures = new(StringComparer.Ordinal);
 
     public H100IntentTrackCaptureCollector(
         IReadOnlyList<ConceptContract> contracts,
         CombatContentSnapshot snapshot,
+        RuntimeCombatContentLookup lookup,
         IReadOnlyList<FormationPlacement> formations)
     {
         _contracts = contracts == null || contracts.Count == 0
             ? throw new ArgumentException("Intent-track capture contracts are required.", nameof(contracts))
             : contracts;
         _snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
+        _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
         _formations = formations ?? throw new ArgumentNullException(nameof(formations));
         Hooks = new H100CampaignObservationHooks(
             RewardOffered: OnRewardOffered,
             DeploymentOffered: OnDeploymentOffered,
-            BattleCompleted: OnBattleCompleted);
+            BattleCompleted: OnBattleCompleted,
+            RosterDecisionOffered: OnRosterDecisionOffered);
     }
 
     public H100CampaignObservationHooks Hooks { get; }
@@ -78,6 +83,33 @@ internal sealed class H100IntentTrackCaptureCollector
         capture.AddBattle(new H100IntentTrackBattleCapture(
             context.BattleIndex,
             H100IntentTrackPayoffProjector.Project(context.Result)));
+    }
+
+    private void OnRosterDecisionOffered(H100RosterDecisionOfferedContext context)
+    {
+        var capture = GetOrCreate(context.CampaignId, context.CampaignIndex, context.CampaignSeed);
+        var choices = context.LeverId switch
+        {
+            IntentTrackLeverId.Recruit => H100RosterIntentTrackInputProjector.ProjectRecruitChoices(
+                context.Observation,
+                _contracts),
+            IntentTrackLeverId.LevelNode => H100RosterIntentTrackInputProjector.ProjectPassiveChoices(
+                context.Observation,
+                _contracts,
+                _snapshot),
+            IntentTrackLeverId.Refit => H100RosterIntentTrackInputProjector.ProjectRefitChoices(
+                context.Observation,
+                context.Session,
+                _lookup,
+                _contracts),
+            _ => throw new InvalidOperationException($"Unknown roster intent-track lever '{context.LeverId}'."),
+        };
+        capture.AddWindow(new IntentTrackAgencyWindow(
+            context.DecisionIndex,
+            context.LeverId,
+            $"{context.Session.SelectedCampaignChapterId}|{context.Session.SelectedCampaignSiteId}|town|{context.LeverId}|{context.DecisionSeed}",
+            context.BattleIndex,
+            choices));
     }
 
     private H100IntentTrackCampaignCapture GetOrCreate(string campaignId, int campaignIndex, int campaignSeed)

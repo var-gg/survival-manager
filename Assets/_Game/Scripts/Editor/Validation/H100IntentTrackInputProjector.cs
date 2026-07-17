@@ -7,7 +7,9 @@ using SM.Core.Stats;
 using SM.HeadlessCensus;
 using SM.HeadlessPolicies;
 using SM.Meta.Model;
+using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity;
 
 namespace SM.Editor.Validation;
 
@@ -45,11 +47,15 @@ internal static class H100IntentTrackInputProjector
         var activeMembers = selected.Select(ProjectMember).ToArray();
         return new IntentTrackState(
             roster,
+            MetaBalanceDefaults.TownRosterCap,
             inventory,
             roster.SelectMany(value => value.ComponentIds).Where(value => value.StartsWith("skill:", StringComparison.Ordinal)).ToArray(),
             roster.SelectMany(value => value.ComponentIds).Where(value => value.StartsWith("passive:", StringComparison.Ordinal)).ToArray(),
             owned,
-            observation.Roster.Sum(value => Math.Max(0, value.Level - 1 - value.SelectedPassiveNodeIds.Count)),
+            observation.Wallet.Gold,
+            observation.Roster.Sum(value => Math.Max(
+                0,
+                PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(value.Level) - value.SelectedPassiveNodeIds.Count)),
             observation.Wallet.Echo,
             selected.Select(value => value.HeroId).ToArray(),
             TagCounts(activeMembers),
@@ -75,7 +81,6 @@ internal static class H100IntentTrackInputProjector
         }
 
         var roster = observation.Roster.OrderBy(value => value.HeroId, StringComparer.Ordinal).ToArray();
-        var membersById = roster.ToDictionary(value => value.HeroId, ProjectMember, StringComparer.Ordinal);
         var capacity = Math.Min(observation.DeployCapacity, roster.Length);
         var formationPredicates = contracts.SelectMany(contract => contract.IdentityPredicates.Concat(contract.ProgressMilestones))
             .Where(value => value.StartsWith("formation.", StringComparison.Ordinal))
@@ -96,10 +101,18 @@ internal static class H100IntentTrackInputProjector
         var augmentComponents = observation.TemporaryAugments.Select(value => $"augment:{value.AugmentId}").ToArray();
         var augmentEffects = observation.TemporaryAugments.SelectMany(AugmentEffects).ToArray();
         var choices = new List<IntentTrackChoice>();
-        foreach (var selected in EnumerateCombinations(roster, capacity))
+        var rosterRepresentatives = EnumerateCombinations(roster, capacity)
+            .GroupBy(selected => RosterSemanticSignature(selected, contracts), StringComparer.Ordinal)
+            .Select(group => group.OrderBy(
+                    selected => string.Join("|", selected.Select(value => value.ArchetypeId).OrderBy(value => value, StringComparer.Ordinal)),
+                    StringComparer.Ordinal)
+                .First())
+            .OrderBy(selected => string.Join("|", selected.Select(value => value.ArchetypeId).OrderBy(value => value, StringComparer.Ordinal)), StringComparer.Ordinal)
+            .ToArray();
+        foreach (var selected in rosterRepresentatives)
         {
-            var memberIds = selected.Select(value => value.HeroId).OrderBy(value => value, StringComparer.Ordinal).ToArray();
-            var selectedMembers = memberIds.Select(value => membersById[value]).ToArray();
+            var selectedMembers = selected.Select(ProjectMember).ToArray();
+            var memberIds = selectedMembers.Select(value => value.MemberId).OrderBy(value => value, StringComparer.Ordinal).ToArray();
             foreach (var formation in representatives)
             {
                 var activeSynergies = ActiveSynergies(selected, observation.SynergyCatalog);
@@ -124,6 +137,8 @@ internal static class H100IntentTrackInputProjector
                     Array.Empty<string>(),
                     Array.Empty<string>(),
                     Array.Empty<string>(),
+                    0,
+                    0,
                     0,
                     0,
                     0,
@@ -185,6 +200,8 @@ internal static class H100IntentTrackInputProjector
                 ?? Array.Empty<string>(),
                 Array.Empty<string>(),
                 owned,
+                option.GoldAmount,
+                0,
                 0,
                 0,
                 option.EchoAmount,
@@ -215,7 +232,7 @@ internal static class H100IntentTrackInputProjector
         components.AddRange(hero.EquippedItems.SelectMany(value => value.GrantedSkills).Select(value => $"skill:{value.SkillId}"));
         var skills = hero.SkillCards.Concat(hero.EquippedItems.SelectMany(value => value.GrantedSkills)).ToArray();
         return new IntentTrackRosterMember(
-            hero.HeroId,
+            hero.ArchetypeId,
             new[] { hero.ArchetypeId, hero.RaceId, hero.ClassId, hero.RoleTag }
                 .Where(value => !string.IsNullOrWhiteSpace(value))
                 .Distinct(StringComparer.Ordinal)
@@ -228,7 +245,7 @@ internal static class H100IntentTrackInputProjector
             SkillEffects(skills));
     }
 
-    private static IReadOnlyList<string> SkillEffects(IEnumerable<HeadlessSkillObservation> skills)
+    internal static IReadOnlyList<string> SkillEffects(IEnumerable<HeadlessSkillObservation> skills)
     {
         var effects = new List<string>();
         foreach (var skill in skills)
@@ -331,6 +348,35 @@ internal static class H100IntentTrackInputProjector
            || string.Equals(hero.RaceId, tag, StringComparison.Ordinal)
            || string.Equals(hero.ClassId, tag, StringComparison.Ordinal)
            || string.Equals(hero.RoleTag, tag, StringComparison.Ordinal);
+
+    private static string RosterSemanticSignature(
+        IReadOnlyList<HeadlessHeroObservation> selected,
+        IReadOnlyList<ConceptContract> contracts)
+    {
+        var claims = contracts.SelectMany(contract => contract.IdentityPredicates
+                .Concat(contract.ProgressMilestones)
+                .Concat(contract.AllowedSubstitutions)
+                .Concat(contract.CounterAffordances))
+            .ToArray();
+        var members = selected.Select(ProjectMember).ToArray();
+        var tagCounts = members.SelectMany(value => value.Tags)
+            .Where(tag => claims.Any(claim => claim.Contains(tag, StringComparison.Ordinal)))
+            .GroupBy(value => value, StringComparer.Ordinal)
+            .OrderBy(group => group.Key, StringComparer.Ordinal)
+            .Select(group => $"{group.Key}:{group.Count()}");
+        var semantic = members.SelectMany(value => value.ComponentIds.Concat(value.EffectIds))
+            .Where(value => claims.Any(claim => claim.Contains(value, StringComparison.Ordinal)
+                                                || claim.Contains(SemanticTail(value), StringComparison.Ordinal)))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal);
+        return $"tags={string.Join(",", tagCounts)}|semantic={string.Join(",", semantic)}";
+    }
+
+    private static string SemanticTail(string value)
+    {
+        var separator = value.IndexOf(':');
+        return separator >= 0 && separator + 1 < value.Length ? value.Substring(separator + 1) : value;
+    }
 
     private static IReadOnlyList<HeadlessHeroObservation[]> EnumerateCombinations(
         IReadOnlyList<HeadlessHeroObservation> values,

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 
 namespace SM.HeadlessCensus;
 
@@ -285,25 +287,32 @@ public static class IntentTrackPredicateEvaluator
 
     internal sealed class IntentTrackPredicateEvaluationCache
     {
-        private readonly Dictionary<string, IntentTrackIdentityPredicateResult> _results = new(StringComparer.Ordinal);
+        private readonly ConcurrentDictionary<string, Lazy<IntentTrackIdentityPredicateResult>> _results =
+            new(StringComparer.Ordinal);
+        private int _evaluationCount;
+        private int _cacheHitCount;
 
-        public int EvaluationCount { get; private set; }
-        public int CacheHitCount { get; private set; }
+        public int EvaluationCount => Volatile.Read(ref _evaluationCount);
+        public int CacheHitCount => Volatile.Read(ref _cacheHitCount);
 
         public IntentTrackIdentityPredicateResult Evaluate(string predicate, IntentTrackState state)
         {
             var kind = RequireSupportedIdentityPredicate(predicate);
             var key = $"{predicate}\u001f{PredicateStateSignature(predicate, kind, state)}";
-            if (_results.TryGetValue(key, out var result))
+            var candidate = new Lazy<IntentTrackIdentityPredicateResult>(
+                () =>
+                {
+                    Interlocked.Increment(ref _evaluationCount);
+                    return new IntentTrackIdentityPredicateResult(predicate, kind, EvaluateCore(predicate, kind, state));
+                },
+                LazyThreadSafetyMode.ExecutionAndPublication);
+            var result = _results.GetOrAdd(key, candidate);
+            if (!ReferenceEquals(result, candidate))
             {
-                CacheHitCount++;
-                return result;
+                Interlocked.Increment(ref _cacheHitCount);
             }
 
-            result = new IntentTrackIdentityPredicateResult(predicate, kind, EvaluateCore(predicate, kind, state));
-            _results.Add(key, result);
-            EvaluationCount++;
-            return result;
+            return result.Value;
         }
 
         private static string PredicateStateSignature(string predicate, string kind, IntentTrackState state)

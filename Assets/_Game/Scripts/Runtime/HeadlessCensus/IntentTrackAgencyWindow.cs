@@ -22,6 +22,8 @@ public sealed record IntentTrackChoice(
     IReadOnlyList<string> AddedSkillIds,
     IReadOnlyList<string> AddedPassiveIds,
     IReadOnlyList<string> AddedOwnedComponentIds,
+    int RecruitResourceDelta,
+    int RecruitResourceCost,
     int PassiveBudgetDelta,
     int PassiveBudgetCost,
     int RefitResourceDelta,
@@ -48,6 +50,8 @@ public sealed record IntentTrackChoice(
         0,
         0,
         0,
+        0,
+        0,
         Array.Empty<string>(),
         Array.Empty<IntentTrackTagCount>(),
         Array.Empty<string>(),
@@ -58,7 +62,7 @@ public sealed record IntentTrackChoice(
         false);
 }
 
-/// <summary>플레이어 선택이 실제로 발생한 한 지점. 현재 campaign은 사이트당 deployment 1 + reward 1이다.</summary>
+/// <summary>플레이어 선택이 실제로 발생한 한 지점. opt-in roster policy는 Town phase의 세 subwindow도 기록한다.</summary>
 public sealed record IntentTrackAgencyWindow(
     int WindowIndex,
     string LeverId,

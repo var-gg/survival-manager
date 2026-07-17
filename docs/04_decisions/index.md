@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-17
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -45,6 +45,7 @@
 - `adr-0030-h100-headless-metrics-boundary.md`: H100 계측을 `SM.Core` + `SM.Combat` 전용 pure `SM.HeadlessMetrics` asmdef로 분리하고, real-content/session 조립은 `SM.Editor.Validation`에 남기는 경계
 - `adr-0031-h100-headless-policy-boundary.md`: H100 정책을 `SM.Combat` 단일 참조 pure `SM.HeadlessPolicies`로 분리하고 player-visible projection은 `SM.Editor.Validation`이 소유하는 no-cheat 경계 (active)
 - `adr-0032-h100-build-space-census-boundary.md`: H100 495편성·360 labelled 배치 census를 `SM.Core` + `SM.Combat` 전용 pure `SM.HeadlessCensus`로 분리하고 authored projection·screening은 `SM.Editor.Validation`에 남기는 경계 (active)
+- `adr-0033-h100-roster-decision-surface.md`: 기존 `IHeadlessPolicy`와 여섯 production 정책을 보존하면서 opt-in Town 영입·패시브 노드·Refit 결정 표면을 여는 경계 (active)
 
 ## 운영 메모
 

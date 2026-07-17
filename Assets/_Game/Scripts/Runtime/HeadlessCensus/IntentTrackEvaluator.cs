@@ -30,7 +30,12 @@ public static class IntentTrackEvaluator
             .ThenBy(window => window.SourceId, StringComparer.Ordinal)
             .Take(input.HorizonWindowCount)
             .ToArray();
-        var relevance = Relevance.Create(input.Contract, windows);
+        var relevance = Relevance.Create(input.Contract, input.InitialState, windows);
+        windows = windows.Select(window => window with
+            {
+                Choices = CompactChoices(window.Choices, input.Contract, relevance),
+            })
+            .ToArray();
         var initialState = NormalizeState(input.InitialState, relevance);
         var initialAssessment = Assess(input.Contract, initialState, predicateCache);
         initialState = initialState with { CompletedMilestones = initialAssessment.CompletedMilestones };
@@ -42,7 +47,8 @@ public static class IntentTrackEvaluator
             initialAssessment.IdentityRealized ? input.CommitWindowIndex - 1 : -1,
             0,
             0,
-            Array.Empty<string>());
+            SearchPath.Root,
+            0L);
         if (initialAssessment.IdentityRealized)
         {
             return ToResult(initialNode, agencyWindowCount: 0, trackAvailable: true);
@@ -51,9 +57,15 @@ public static class IntentTrackEvaluator
         var nodes = new[] { initialNode };
         SearchNode? bestRealized = null;
         var processed = 0;
+        var nextStableOrder = 1L;
         foreach (var window in windows)
         {
             processed++;
+            if (string.Equals(window.LeverId, IntentTrackLeverId.Deployment, StringComparison.Ordinal))
+            {
+                nodes = PruneBeforeDeployment(nodes, relevance);
+            }
+
             var expanded = new List<SearchNode>();
             foreach (var node in nodes)
             {
@@ -106,7 +118,6 @@ public static class IntentTrackEvaluator
                         realizationWindowIndex = window.WindowIndex;
                     }
 
-                    var path = node.ChoicePath.Append(projection.Choice.ChoiceId).ToArray();
                     var next = new SearchNode(
                         projection.State,
                         projection.Assessment,
@@ -115,7 +126,8 @@ public static class IntentTrackEvaluator
                         realizationWindowIndex,
                         drought,
                         maxDrought,
-                        path);
+                        node.Path.Append(projection.Choice.ChoiceId),
+                        nextStableOrder++);
                     expanded.Add(next);
                     if (projection.Assessment.IdentityRealized
                         && (bestRealized == null || CompareRealized(next, bestRealized) < 0))
@@ -126,18 +138,17 @@ public static class IntentTrackEvaluator
             }
 
             nodes = Prune(expanded, relevance);
-        }
-
-        if (bestRealized != null)
-        {
-            return ToResult(bestRealized, processed, trackAvailable: true);
+            if (bestRealized != null)
+            {
+                return ToResult(bestRealized, processed, trackAvailable: true);
+            }
         }
 
         var bestNearMiss = nodes
             .OrderByDescending(node => node.Assessment.IdentityScore)
             .ThenByDescending(node => node.Assessment.CompletedMilestones.Count)
             .ThenBy(node => node.MaxDrought)
-            .ThenBy(node => string.Join("|", node.ChoicePath), StringComparer.Ordinal)
+            .ThenBy(node => node.StableOrder)
             .FirstOrDefault() ?? initialNode;
         return ToResult(bestNearMiss, processed, trackAvailable: false);
     }
@@ -154,7 +165,7 @@ public static class IntentTrackEvaluator
             node.MaxDrought >= StarvationDroughtThreshold || !trackAvailable,
             node.Assessment.TargetIdentityScore,
             node.Assessment.IdentityScore,
-            node.ChoicePath,
+            node.Path.ToArray(),
             node.Assessment.IdentityPredicateResults);
 
     private static SearchNode[] Prune(IEnumerable<SearchNode> candidates, Relevance relevance)
@@ -169,7 +180,85 @@ public static class IntentTrackEvaluator
             }
         }
 
-        return byState.OrderBy(pair => pair.Key, StringComparer.Ordinal).Select(pair => pair.Value).ToArray();
+        return byState.OrderBy(pair => pair.Key, StringComparer.Ordinal)
+            .Select(pair => pair.Value)
+            .ToArray();
+    }
+
+    private static SearchNode[] PruneBeforeDeployment(
+        IEnumerable<SearchNode> candidates,
+        Relevance relevance)
+    {
+        var byPersistentState = new Dictionary<string, SearchNode>(StringComparer.Ordinal);
+        foreach (var candidate in candidates)
+        {
+            var state = candidate.State;
+            var signature = string.Join("|",
+                string.Join(",", state.Roster.Select(value => value.MemberId)),
+                string.Join(",", state.InventoryComponentIds),
+                string.Join(",", state.SkillIds),
+                string.Join(",", state.PassiveIds),
+                string.Join(",", state.OwnedComponentIds),
+                relevance.RecruitResourceCap > 0 ? state.RecruitResource.ToString(CultureInfo.InvariantCulture) : "-",
+                relevance.PassiveBudgetCap > 0 ? state.PassiveBudget.ToString(CultureInfo.InvariantCulture) : "-",
+                relevance.RefitResourceCap > 0 ? state.RefitResource.ToString(CultureInfo.InvariantCulture) : "-",
+                candidate.Assessment.IdentityScore.ToString(CultureInfo.InvariantCulture),
+                string.Join(",", candidate.Assessment.CompletedMilestones),
+                candidate.FirstProgressTime.ToString(CultureInfo.InvariantCulture),
+                candidate.CurrentDrought.ToString(CultureInfo.InvariantCulture),
+                candidate.MaxDrought.ToString(CultureInfo.InvariantCulture));
+            if (!byPersistentState.TryGetValue(signature, out var existing)
+                || candidate.StableOrder < existing.StableOrder)
+            {
+                byPersistentState[signature] = candidate;
+            }
+        }
+
+        return byPersistentState.OrderBy(pair => pair.Key, StringComparer.Ordinal)
+            .Select(pair => pair.Value)
+            .ToArray();
+    }
+
+    private static IReadOnlyList<IntentTrackChoice> CompactChoices(
+        IReadOnlyList<IntentTrackChoice> choices,
+        ConceptContract contract,
+        Relevance relevance)
+    {
+        var projectionBase = new IntentTrackState(
+            Array.Empty<IntentTrackRosterMember>(),
+            int.MaxValue,
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            relevance.RecruitResourceCap,
+            relevance.PassiveBudgetCap,
+            relevance.RefitResourceCap,
+            Array.Empty<string>(),
+            Array.Empty<IntentTrackTagCount>(),
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            null,
+            Array.Empty<string>());
+        return (choices ?? Array.Empty<IntentTrackChoice>())
+            .Where(choice => relevance.ShouldRetain(choice, contract))
+            .GroupBy(choice => string.Join("|",
+                    StateSignature(Apply(projectionBase, choice, relevance), relevance),
+                    string.Join(",", (choice.RequiredRosterMemberIds ?? Array.Empty<string>()).OrderBy(value => value, StringComparer.Ordinal)),
+                    string.Join(",", (choice.RequiredOwnedComponentIds ?? Array.Empty<string>()).OrderBy(value => value, StringComparer.Ordinal)),
+                    choice.RecruitResourceDelta.ToString(CultureInfo.InvariantCulture),
+                    choice.RecruitResourceCost.ToString(CultureInfo.InvariantCulture),
+                    choice.PassiveBudgetDelta.ToString(CultureInfo.InvariantCulture),
+                    choice.PassiveBudgetCost.ToString(CultureInfo.InvariantCulture),
+                    choice.RefitResourceDelta.ToString(CultureInfo.InvariantCulture),
+                    choice.RefitResourceCost.ToString(CultureInfo.InvariantCulture),
+                    OffersEffectiveSubstitution(contract, choice) ? "substitution" : "direct",
+                    choice.Irreversible ? "irreversible" : "reversible"),
+                StringComparer.Ordinal)
+            .Select(group => group.OrderBy(value => value.ChoiceId, StringComparer.Ordinal).First())
+            .OrderBy(value => value.ChoiceId, StringComparer.Ordinal)
+            .ToArray();
     }
 
     private static int ComparePathQuality(SearchNode left, SearchNode right)
@@ -178,7 +267,7 @@ public static class IntentTrackEvaluator
         if (first != 0) return first;
         var drought = left.MaxDrought.CompareTo(right.MaxDrought);
         if (drought != 0) return drought;
-        return string.CompareOrdinal(string.Join("|", left.ChoicePath), string.Join("|", right.ChoicePath));
+        return left.StableOrder.CompareTo(right.StableOrder);
     }
 
     private static int CompareRealized(SearchNode left, SearchNode right)
@@ -201,10 +290,12 @@ public static class IntentTrackEvaluator
         var hasDeployment = (choice.DeployedMemberIds?.Count ?? 0) > 0;
         return NormalizeState(new IntentTrackState(
             roster,
+            state.RosterCapacity,
             state.InventoryComponentIds.Concat(choice.AddedInventoryComponentIds ?? Array.Empty<string>()).ToArray(),
             state.SkillIds.Concat(choice.AddedSkillIds ?? Array.Empty<string>()).ToArray(),
             state.PassiveIds.Concat(choice.AddedPassiveIds ?? Array.Empty<string>()).ToArray(),
             state.OwnedComponentIds.Concat(choice.AddedOwnedComponentIds ?? Array.Empty<string>()).ToArray(),
+            state.RecruitResource + choice.RecruitResourceDelta - choice.RecruitResourceCost,
             state.PassiveBudget + choice.PassiveBudgetDelta - choice.PassiveBudgetCost,
             state.RefitResource + choice.RefitResourceDelta - choice.RefitResourceCost,
             hasDeployment ? choice.DeployedMemberIds : state.DeployedMemberIds,
@@ -220,18 +311,46 @@ public static class IntentTrackEvaluator
 
     private static bool IsLegal(IntentTrackState state, IntentTrackChoice choice)
     {
-        if (state.PassiveBudget < choice.PassiveBudgetCost || state.RefitResource < choice.RefitResourceCost)
+        if (state.RecruitResource < choice.RecruitResourceCost
+            || state.PassiveBudget < choice.PassiveBudgetCost
+            || state.RefitResource < choice.RefitResourceCost)
         {
             return false;
         }
 
         var rosterIds = state.Roster.Select(member => member.MemberId).ToHashSet(StringComparer.Ordinal);
+        if (state.Roster.Count + (choice.AddedRosterMembers?.Count ?? 0) > state.RosterCapacity)
+        {
+            return false;
+        }
+
+        if (choice.RecruitResourceCost > 0
+            && (choice.AddedRosterMembers?.Count ?? 0) > 0
+            && choice.AddedRosterMembers.All(member => rosterIds.Contains(member.MemberId)))
+        {
+            return false;
+        }
+
         if ((choice.RequiredRosterMemberIds ?? Array.Empty<string>()).Any(required => !rosterIds.Contains(required)))
         {
             return false;
         }
 
         var owned = IntentTrackPredicateEvaluator.OwnedComponents(state);
+        if (choice.PassiveBudgetCost > 0
+            && (choice.AddedPassiveIds?.Count ?? 0) > 0
+            && choice.AddedPassiveIds.All(owned.Contains))
+        {
+            return false;
+        }
+
+        if (choice.RefitResourceCost > 0
+            && (choice.AddedOwnedComponentIds?.Count ?? 0) > 0
+            && choice.AddedOwnedComponentIds.All(owned.Contains))
+        {
+            return false;
+        }
+
         return (choice.RequiredOwnedComponentIds ?? Array.Empty<string>()).All(owned.Contains);
     }
 
@@ -291,12 +410,14 @@ public static class IntentTrackEvaluator
                 })
                 .OrderBy(value => value.MemberId, StringComparer.Ordinal)
                 .ToArray(),
+            Math.Max(0, state.RosterCapacity),
             Relevant(state.InventoryComponentIds),
             Relevant(state.SkillIds),
             Relevant(state.PassiveIds),
             Relevant(state.OwnedComponentIds),
-            Math.Max(0, state.PassiveBudget),
-            Math.Max(0, state.RefitResource),
+            Math.Min(relevance.RecruitResourceCap, Math.Max(0, state.RecruitResource)),
+            Math.Min(relevance.PassiveBudgetCap, Math.Max(0, state.PassiveBudget)),
+            Math.Min(relevance.RefitResourceCap, Math.Max(0, state.RefitResource)),
             Stable(state.DeployedMemberIds),
             (state.DeployedTagCounts ?? Array.Empty<IntentTrackTagCount>())
                 .Where(value => value != null
@@ -326,8 +447,9 @@ public static class IntentTrackEvaluator
             string.Join(",", state.SkillIds),
             string.Join(",", state.PassiveIds),
             string.Join(",", state.OwnedComponentIds),
-            relevance.UsesPassiveBudget ? state.PassiveBudget.ToString(CultureInfo.InvariantCulture) : "-",
-            relevance.UsesRefitResource ? state.RefitResource.ToString(CultureInfo.InvariantCulture) : "-",
+            relevance.RecruitResourceCap > 0 ? state.RecruitResource.ToString(CultureInfo.InvariantCulture) : "-",
+            relevance.PassiveBudgetCap > 0 ? state.PassiveBudget.ToString(CultureInfo.InvariantCulture) : "-",
+            relevance.RefitResourceCap > 0 ? state.RefitResource.ToString(CultureInfo.InvariantCulture) : "-",
             tags,
             string.Join(",", state.ActiveComponentIds),
             string.Join(",", state.ActiveEffectIds),
@@ -376,7 +498,46 @@ public static class IntentTrackEvaluator
         int RealizationWindowIndex,
         int CurrentDrought,
         int MaxDrought,
-        IReadOnlyList<string> ChoicePath);
+        SearchPath Path,
+        long StableOrder);
+
+    private sealed class SearchPath
+    {
+        public static SearchPath Root { get; } = new(null, string.Empty, 0);
+
+        private SearchPath(SearchPath? parent, string choiceId, int depth)
+        {
+            Parent = parent;
+            ChoiceId = choiceId;
+            Depth = depth;
+        }
+
+        private SearchPath? Parent { get; }
+
+        private string ChoiceId { get; }
+
+        private int Depth { get; }
+
+        public SearchPath Append(string choiceId) => new(this, choiceId, Depth + 1);
+
+        public IReadOnlyList<string> ToArray()
+        {
+            if (Depth == 0)
+            {
+                return Array.Empty<string>();
+            }
+
+            var values = new string[Depth];
+            var cursor = this;
+            for (var index = Depth - 1; index >= 0; index--)
+            {
+                values[index] = cursor.ChoiceId;
+                cursor = cursor.Parent!;
+            }
+
+            return values;
+        }
+    }
 
     private sealed record ChoiceProjection(
         IntentTrackChoice Choice,
@@ -387,22 +548,25 @@ public static class IntentTrackEvaluator
         HashSet<string> SemanticIds,
         HashSet<string> BuildTags,
         HashSet<string> TeamRuleIds,
+        HashSet<string> RelevantRosterMemberIds,
         IReadOnlyList<string> FormationPredicates,
-        bool UsesPassiveBudget,
-        bool UsesRefitResource)
+        int RecruitResourceCap,
+        int PassiveBudgetCap,
+        int RefitResourceCap)
     {
         public static Relevance Create(
             ConceptContract contract,
+            IntentTrackState initialState,
             IReadOnlyList<IntentTrackAgencyWindow> windows)
         {
             var ids = new HashSet<string>(StringComparer.Ordinal);
             var buildTags = new HashSet<string>(StringComparer.Ordinal);
             var teamRuleIds = new HashSet<string>(StringComparer.Ordinal);
             var formationPredicates = new HashSet<string>(StringComparer.Ordinal);
+            var allChoices = windows.SelectMany(value => value.Choices ?? Array.Empty<IntentTrackChoice>())
+                .ToArray();
             foreach (var value in contract.IdentityPredicates
-                         .Concat(contract.ProgressMilestones)
-                         .Concat(contract.AllowedSubstitutions)
-                         .Concat(contract.CounterAffordances))
+                         .Concat(contract.ProgressMilestones))
             {
                 AddSemanticTail(ids, value, "owned:");
                 AddSemanticTail(ids, value, "acquire:");
@@ -423,16 +587,126 @@ public static class IntentTrackEvaluator
                 }
             }
 
+            var addedPrerequisite = true;
+            while (addedPrerequisite)
+            {
+                addedPrerequisite = false;
+                foreach (var choice in allChoices.Where(value => ProvidesSemantic(value, ids)))
+                {
+                    foreach (var required in choice.RequiredOwnedComponentIds ?? Array.Empty<string>())
+                    {
+                        if (!string.IsNullOrWhiteSpace(required) && ids.Add(required))
+                        {
+                            addedPrerequisite = true;
+                        }
+                    }
+                }
+            }
+
+            var formation = formationPredicates.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            var relevantRosterMemberIds = allChoices
+                .Where(choice => TouchesTargetState(choice, ids, buildTags, teamRuleIds, formation))
+                .SelectMany(choice => choice.RequiredRosterMemberIds ?? Array.Empty<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .ToHashSet(StringComparer.Ordinal);
             return new Relevance(
                 ids,
                 buildTags,
                 teamRuleIds,
-                formationPredicates.OrderBy(value => value, StringComparer.Ordinal).ToArray(),
-                windows.SelectMany(value => value.Choices ?? Array.Empty<IntentTrackChoice>())
-                    .Any(value => value.PassiveBudgetCost > 0),
-                windows.SelectMany(value => value.Choices ?? Array.Empty<IntentTrackChoice>())
-                    .Any(value => value.RefitResourceCost > 0));
+                relevantRosterMemberIds,
+                formation,
+                CalculateRecruitResourceCap(initialState, windows),
+                DistinctAcquisitionResourceCap(
+                    windows,
+                    value => value.AddedPassiveIds,
+                    value => value.PassiveBudgetCost),
+                DistinctAcquisitionResourceCap(
+                    windows,
+                    value => value.AddedOwnedComponentIds,
+                    value => value.RefitResourceCost));
         }
+
+        public bool ShouldRetain(IntentTrackChoice choice, ConceptContract contract)
+        {
+            if (!choice.Irreversible
+                || choice.RecruitResourceDelta > 0
+                || choice.PassiveBudgetDelta > 0
+                || choice.RefitResourceDelta > 0
+                || OffersEffectiveSubstitution(contract, choice))
+            {
+                return true;
+            }
+
+            if (TouchesTargetState(choice, SemanticIds, BuildTags, TeamRuleIds, FormationPredicates))
+            {
+                return true;
+            }
+
+            return (choice.AddedRosterMembers ?? Array.Empty<IntentTrackRosterMember>())
+                .Any(member => RelevantRosterMemberIds.Contains(member.MemberId));
+        }
+
+        private static bool ProvidesSemantic(IntentTrackChoice choice, ISet<string> semanticIds)
+            => (choice.AddedInventoryComponentIds ?? Array.Empty<string>())
+                   .Concat(choice.AddedSkillIds ?? Array.Empty<string>())
+                   .Concat(choice.AddedPassiveIds ?? Array.Empty<string>())
+                   .Concat(choice.AddedOwnedComponentIds ?? Array.Empty<string>())
+                   .Concat(choice.ActiveComponentIds ?? Array.Empty<string>())
+                   .Concat(choice.ActiveEffectIds ?? Array.Empty<string>())
+                   .Concat((choice.AddedRosterMembers ?? Array.Empty<IntentTrackRosterMember>())
+                       .SelectMany(member => (member.ComponentIds ?? Array.Empty<string>())
+                           .Concat(member.EffectIds ?? Array.Empty<string>())))
+                   .Any(semanticIds.Contains);
+
+        private static bool TouchesTargetState(
+            IntentTrackChoice choice,
+            ISet<string> semanticIds,
+            ISet<string> buildTags,
+            ISet<string> teamRuleIds,
+            IReadOnlyList<string> formationPredicates)
+            => ProvidesSemantic(choice, semanticIds)
+               || (choice.AddedRosterMembers ?? Array.Empty<IntentTrackRosterMember>())
+                   .SelectMany(member => member.Tags ?? Array.Empty<string>())
+                   .Any(buildTags.Contains)
+               || (choice.DeployedTagCounts ?? Array.Empty<IntentTrackTagCount>())
+                   .Any(value => buildTags.Contains(value.TagId))
+               || (choice.ActiveTeamRuleIds ?? Array.Empty<string>()).Any(teamRuleIds.Contains)
+               || (choice.Formation != null && formationPredicates.Any(predicate =>
+                   IntentTrackPredicateEvaluator.SatisfiesFormationPredicate(predicate, choice.Formation)));
+
+        private static int CalculateRecruitResourceCap(
+            IntentTrackState initialState,
+            IReadOnlyList<IntentTrackAgencyWindow> windows)
+        {
+            var availableSlots = Math.Max(0, initialState.RosterCapacity - initialState.Roster.Count);
+            if (availableSlots == 0)
+            {
+                return 0;
+            }
+
+            return windows.SelectMany(value => value.Choices ?? Array.Empty<IntentTrackChoice>())
+                .Where(value => value.RecruitResourceCost > 0
+                                && (value.AddedRosterMembers?.Count ?? 0) > 0)
+                .GroupBy(value => string.Join(",", value.AddedRosterMembers
+                        .Select(member => member.MemberId)
+                        .OrderBy(memberId => memberId, StringComparer.Ordinal)),
+                    StringComparer.Ordinal)
+                .Select(group => group.Max(value => value.RecruitResourceCost))
+                .OrderByDescending(value => value)
+                .Take(availableSlots)
+                .Sum();
+        }
+
+        private static int DistinctAcquisitionResourceCap(
+            IReadOnlyList<IntentTrackAgencyWindow> windows,
+            Func<IntentTrackChoice, IReadOnlyList<string>> acquiredIds,
+            Func<IntentTrackChoice, int> costSelector)
+            => windows.SelectMany(value => value.Choices ?? Array.Empty<IntentTrackChoice>())
+                .Where(value => costSelector(value) > 0 && (acquiredIds(value)?.Count ?? 0) > 0)
+                .GroupBy(value => string.Join(",", acquiredIds(value)
+                        .OrderBy(id => id, StringComparer.Ordinal)),
+                    StringComparer.Ordinal)
+                .Sum(group => group.Max(costSelector));
 
         private static void AddSemanticTail(ISet<string> ids, string value, string marker)
         {

@@ -9,6 +9,7 @@
   - `docs/03_architecture/h100-headless-policy-contract.md`
   - `docs/03_architecture/dependency-direction.md`
   - `docs/04_decisions/adr-0032-h100-build-space-census-boundary.md`
+  - `docs/04_decisions/adr-0033-h100-roster-decision-surface.md`
 
 ## 목적
 
@@ -78,11 +79,11 @@ FastUnit은 pure fixture로 byte-identical determinism, raw-stat-only 제외, �
 
 ## E05 intent track 탐색 경계
 
-`IntentTrackEvaluator`는 E03 계약을 실제 campaign offer stream에 대조하는 evaluator-only 순수 검색 책임이다. `IntentTrackState`, `IntentTrackAgencyWindow`, `IntentTrackChoice`는 authored object, session, content lookup을 포함하지 않는 DTO이며 roster, inventory, skill/passive, passive budget, Refit 자원, 배치, formation, milestone 상태만 운반한다. Editor adapter가 실제 배치와 보상 선택지를 delta DTO로 낮추고 campaign 종료 뒤 한 번에 넘긴다. synergy team rule은 authored tier 필드 원문이 아니라 runtime `SynergyService`가 적용하는 stable rule fallback까지 거친 결과를 투영해야 한다.
+`IntentTrackEvaluator`는 E03 계약을 실제 campaign offer stream에 대조하는 evaluator-only 순수 검색 책임이다. `IntentTrackState`, `IntentTrackAgencyWindow`, `IntentTrackChoice`는 authored object, session, content lookup을 포함하지 않는 DTO이며 roster/capacity, inventory, skill/passive, gold·passive budget·echo, 배치, formation, milestone 상태만 운반한다. Editor adapter가 실제 배치·보상과 opt-in Town 영입·노드·Refit의 현재 선택지를 delta DTO로 낮추고 campaign 종료 뒤 한 번에 넘긴다. synergy team rule은 authored tier 필드 원문이 아니라 runtime `SynergyService`가 적용하는 stable rule fallback까지 거친 결과를 투영해야 한다.
 
 variant 탐색은 `identity_predicates`를 모두 만족하는 합법 경로의 존재와 가장 이른 진척/실현 시점을 구한다. owner anchor의 `TrackAvailable`은 첫 variant 하나가 아니라 E03가 파생한 해당 anchor의 모든 variant에 대한 OR이다. variant별 결과는 보존하고, 같은 술어와 관련 상태를 variant 사이에서 memoize한다. identity 술어 parser는 catalog에 등장한 모든 종류를 실행 전에 전수 확인하며, 알 수 없거나 잘못된 술어는 false로 삼키지 않고 명시 오류로 측정을 중단한다.
 
-v1 결과는 variant별로 `v1_track`, `lever_pending`, `true_unavailable` 세 열로 분리한다. `v1_track`은 현재 열린 `deployment`와 `reward` window만으로 도달한 경로다. passive node, recruit, Refit처럼 계약이 요구하지만 아직 선택 window가 닫힌 축은 `lever_pending`과 대기 lever id로 기록하며, 이를 `true_unavailable` 또는 BT6 track 성공으로 합치지 않는다. `true_unavailable`만 현재 offer horizon과 명시된 future lever 어느 쪽으로도 설명되지 않은 진짜 agency-gap 후보다. 이는 정밀 최적화 인증기가 아니라 BT6/BT7 지표 공급기다. 정책 assembly가 이 타입을 참조하거나 미래 offer를 observation으로 받는 변경은 금지하며 `BuildBoundaryGuardFastTests`와 E05 witness가 이를 고정한다.
+v1 결과는 variant별로 `v1_track`, `lever_pending`, `true_unavailable` 세 열로 분리한다. `v1_track`은 CLI에서 활성화한 window만으로 도달한 경로다. 비활성화된 passive node, recruit, Refit 축이 계약에 필요하면 `lever_pending`과 대기 lever id로 기록하며, 이를 `true_unavailable` 또는 BT6 track 성공으로 합치지 않는다. 다섯 lever를 모두 활성화한 뒤에도 현재 확정 offer horizon에서 도달하지 못한 경우만 `true_unavailable` 후보다. Town 투영은 계약 관련 선택과 선행 passive chain을 유지하고, 같은 semantic state의 선택과 반복 구매·초과 자원을 결정적으로 memoize한다. 이는 정밀 최적화 인증기가 아니라 BT6/BT7 지표 공급기다. 정책 assembly가 이 타입을 참조하거나 미래 offer·Refit 결과를 observation으로 받는 변경은 금지하며 `BuildBoundaryGuardFastTests`와 E07 witness가 이를 고정한다.
 
 ## 진형 feature와 medoid
 

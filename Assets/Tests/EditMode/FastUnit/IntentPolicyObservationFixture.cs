@@ -12,9 +12,10 @@ internal static class IntentPolicyObservationFixture
     public static HeadlessPolicyObservation Create(
         int decisionSeed = 1701,
         int threatSkulls = 2,
-        IReadOnlyDictionary<string, string> evidence = null)
+        IReadOnlyDictionary<string, string> evidence = null,
+        IReadOnlyList<HeadlessHeroObservation> rosterOverride = null)
     {
-        var roster = new[]
+        var defaultRoster = new[]
         {
             Hero("hero-1", "warden", "human", "vanguard", "anchor", DeploymentAnchorId.FrontCenter, true),
             Hero("hero-2", "guardian", "undead", "vanguard", "anchor", DeploymentAnchorId.FrontTop, true),
@@ -25,6 +26,7 @@ internal static class IntentPolicyObservationFixture
             Hero("hero-7", "priest", "human", "mystic", "support", DeploymentAnchorId.BackCenter, false),
             Hero("hero-8", "hexer", "undead", "mystic", "controller", DeploymentAnchorId.BackCenter, false),
         };
+        var roster = rosterOverride ?? defaultRoster;
         return new HeadlessPolicyObservation(
             decisionSeed,
             4,
@@ -115,6 +117,18 @@ internal static class IntentPolicyObservationFixture
             },
             evidence ?? DummyEvidence());
     }
+
+    public static HeadlessPolicyObservation CreateRecruitBaseline(int decisionSeed = 1701)
+        => Create(
+            decisionSeed,
+            rosterOverride: new[]
+            {
+                Hero("hero-1", "warden", "human", "vanguard", "anchor", DeploymentAnchorId.FrontCenter, true),
+                Hero("hero-2", "guardian", "undead", "vanguard", "anchor", DeploymentAnchorId.FrontTop, true),
+                Hero("hero-3", "slayer", "human", "duelist", "bruiser", DeploymentAnchorId.FrontBottom, true),
+                Hero("hero-4", "priest", "human", "mystic", "support", DeploymentAnchorId.BackCenter, true),
+                Hero("hero-5", "raider", "beastkin", "duelist", "bruiser", DeploymentAnchorId.FrontTop, false),
+            });
 
     public static HeadlessPolicyObservation CreateWithAuditableFacts(
         out IReadOnlyList<PlayerVisibleFactRecord> facts,

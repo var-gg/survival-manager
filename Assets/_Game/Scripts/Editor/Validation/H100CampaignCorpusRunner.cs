@@ -107,7 +107,11 @@ internal static class H100CampaignCorpusRunner
                     campaignIndex,
                     siteCount,
                     decisionCount,
-                    H100PolicyObservationBuilder.Build(session, lookup, deploymentSeed));
+                    H100PolicyObservationBuilder.Build(
+                        session,
+                        lookup,
+                        deploymentSeed,
+                        includeTownRoster: policy is IHeadlessRosterPolicy));
                 observationHooks?.DeploymentOffered?.Invoke(new H100DeploymentOfferedContext(
                     campaignId,
                     campaignIndex,
@@ -240,7 +244,11 @@ internal static class H100CampaignCorpusRunner
                         campaignIndex,
                         siteCount,
                         decisionCount,
-                        H100PolicyObservationBuilder.Build(session, lookup, rewardSeed));
+                        H100PolicyObservationBuilder.Build(
+                            session,
+                            lookup,
+                            rewardSeed,
+                            includeTownRoster: policy is IHeadlessRosterPolicy));
                     observationHooks?.RewardOffered?.Invoke(new H100RewardOfferedContext(
                         campaignId,
                         campaignIndex,
@@ -283,6 +291,25 @@ internal static class H100CampaignCorpusRunner
                 }
 
                 session.ReturnToTownAfterReward();
+                if (!session.Profile.CampaignProgress.StoryCleared && policy is IHeadlessRosterPolicy rosterPolicy)
+                {
+                    decisionCount = H100RosterPolicyWindowRunner.Run(
+                        session,
+                        lookup,
+                        policy,
+                        rosterPolicy,
+                        campaignId,
+                        campaignIndex,
+                        campaignSeed,
+                        siteCount,
+                        battleIndex,
+                        decisionCount,
+                        factLedger,
+                        intentTrace,
+                        decisionLog,
+                        observationHooks);
+                }
+
                 siteCount++;
             }
 

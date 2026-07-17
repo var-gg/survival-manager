@@ -21,9 +21,9 @@ public static class H100IntentTrackRunner
     private const string GateSpecRelativePath = "Assets/_Game/Scripts/Runtime/HeadlessMetrics/h100-gates-v1.json";
     private const string Bt1GateSpecRelativePath = "Assets/_Game/Scripts/Runtime/HeadlessMetrics/h100-gates-bt1-v1.json";
     private const string AgencyWindowDefinition =
-        "A player choice point; v1 records one deployment choice and one reward choice per reached campaign site.";
+        "A player choice point; each reached site records deployment and offered reward, then an opt-in Town phase records recruit, level-node, and refit subwindows in that order.";
     private const string V1LeverCaveat =
-        "V1 exposes deployment and three-card reward choices only. Recruit, level-node, and refit requirements are reported as lever_pending until E07 instead of being folded into true agency gaps.";
+        "Recruit, level-node, and refit use current player-visible Town state only. Reroll, Scout, Retrain, and Dismiss remain outside the configured agency surface.";
     private const string RightSizeNote =
         "Owner TrackAvailable is the OR of every E03 variant in that anchor (87 total). Variant searches share identity-predicate memoization; the first stable variant remains the policy coverage intent only.";
 
@@ -145,6 +145,7 @@ public static class H100IntentTrackRunner
         var collector = new H100IntentTrackCaptureCollector(
             target.Variants.Select(value => value.Contract).ToArray(),
             snapshot,
+            lookup,
             formations);
         var runSettings = new H100MetricsRunSettings(
             BattleCount: 1,

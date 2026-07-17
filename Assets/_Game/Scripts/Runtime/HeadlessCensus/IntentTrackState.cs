@@ -18,10 +18,12 @@ public sealed record IntentTrackTagCount(string TagId, int Count);
 /// </summary>
 public sealed record IntentTrackState(
     IReadOnlyList<IntentTrackRosterMember> Roster,
+    int RosterCapacity,
     IReadOnlyList<string> InventoryComponentIds,
     IReadOnlyList<string> SkillIds,
     IReadOnlyList<string> PassiveIds,
     IReadOnlyList<string> OwnedComponentIds,
+    int RecruitResource,
     int PassiveBudget,
     int RefitResource,
     IReadOnlyList<string> DeployedMemberIds,
@@ -34,10 +36,12 @@ public sealed record IntentTrackState(
 {
     public static IntentTrackState Empty { get; } = new(
         Array.Empty<IntentTrackRosterMember>(),
+        0,
         Array.Empty<string>(),
         Array.Empty<string>(),
         Array.Empty<string>(),
         Array.Empty<string>(),
+        0,
         0,
         0,
         Array.Empty<string>(),

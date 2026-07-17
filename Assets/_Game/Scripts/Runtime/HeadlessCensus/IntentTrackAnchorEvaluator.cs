@@ -55,6 +55,8 @@ public static class IntentTrackAnchorEvaluator
         var cache = new IntentTrackPredicateEvaluator.IntentTrackPredicateEvaluationCache();
         var variants = input.Variants
             .OrderBy(value => value.VariantId, StringComparer.Ordinal)
+            .AsParallel()
+            .AsOrdered()
             .Select(variant =>
             {
                 var search = IntentTrackEvaluator.Evaluate(new IntentTrackSearchInput(

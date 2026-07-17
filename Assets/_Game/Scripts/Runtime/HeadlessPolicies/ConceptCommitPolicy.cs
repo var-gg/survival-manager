@@ -8,7 +8,7 @@ namespace SM.HeadlessPolicies;
 /// 순간 점수보다 선언된 build intent의 정체성·milestone·pivot 조건을 우선하는 결정적 정책.
 /// coverage intent는 순수 DTO constructor injection을 허용하고, null이면 가시 fact만으로 discovery intent를 만든다.
 /// </summary>
-public sealed class ConceptCommitPolicy : IHeadlessPolicy
+public sealed class ConceptCommitPolicy : IHeadlessPolicy, IHeadlessRosterPolicy
 {
     public const string PolicyId = "concept-commit-v1";
     public const string PreviewGroundedPolicyId = "concept-preview-grounded-v1";
@@ -146,6 +146,89 @@ public sealed class ConceptCommitPolicy : IHeadlessPolicy
             evidence);
     }
 
+    public HeadlessRecruitDecision DecideRecruit(HeadlessRosterPolicyObservation observation)
+    {
+        HeadlessRosterPolicyGuard.ValidateObservation(observation);
+        RequireIntentState();
+        var selection = ConceptRosterDecisionSelector.SelectRecruit(
+            _intent,
+            _state,
+            observation,
+            detail => detail);
+        HeadlessRosterPolicyGuard.ValidateRecruitDecision(observation, selection.Decision);
+        var reason = selection.Decision.IsNoOp
+            ? ConceptIntentSelector.NoProgressReason(_state)
+            : IntentDecisionReason.Advance;
+        var decision = selection.Decision.WithRationale(Rationale(reason, selection.Decision.Rationale));
+        RecordDecision(
+            "recruit",
+            $"offer:{decision.OfferIndex}",
+            reason,
+            selection.MilestoneAdvanced,
+            scarceResourceInvested: !decision.IsNoOp,
+            meaningfulProgress: !decision.IsNoOp,
+            selection.ProgressScore,
+            selection.CompletedMilestones,
+            DeclareHypothesis(decision.EvidenceFactIds));
+        return decision;
+    }
+
+    public HeadlessPassiveDecision DecidePassiveAllocation(HeadlessRosterPolicyObservation observation)
+    {
+        HeadlessRosterPolicyGuard.ValidateObservation(observation);
+        RequireIntentState();
+        var selection = ConceptRosterDecisionSelector.SelectPassive(
+            _intent,
+            _state,
+            observation,
+            detail => detail);
+        HeadlessRosterPolicyGuard.ValidatePassiveDecision(observation, selection.Decision);
+        var reason = selection.Decision.IsNoOp
+            ? ConceptIntentSelector.NoProgressReason(_state)
+            : IntentDecisionReason.Advance;
+        var decision = selection.Decision.WithOutcome(
+            Rationale(reason, selection.Decision.Rationale),
+            selection.Decision.EstimatedValue,
+            selection.Decision.EvidenceFactIds);
+        RecordDecision(
+            "level_node",
+            decision.IsNoOp ? "node:none" : $"node:{decision.HeroId}:{decision.NodeId}",
+            reason,
+            selection.MilestoneAdvanced,
+            scarceResourceInvested: !decision.IsNoOp,
+            meaningfulProgress: !decision.IsNoOp,
+            selection.ProgressScore,
+            selection.CompletedMilestones,
+            DeclareHypothesis(decision.EvidenceFactIds));
+        return decision;
+    }
+
+    public HeadlessRefitDecision DecideRefit(HeadlessRosterPolicyObservation observation)
+    {
+        HeadlessRosterPolicyGuard.ValidateObservation(observation);
+        RequireIntentState();
+        var selection = ConceptRosterDecisionSelector.SelectRefit(
+            _intent,
+            observation,
+            detail => detail);
+        HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, selection.Decision);
+        var reason = selection.Decision.IsNoOp
+            ? ConceptIntentSelector.NoProgressReason(_state)
+            : IntentDecisionReason.Advance;
+        var decision = selection.Decision.WithRationale(Rationale(reason, selection.Decision.Rationale));
+        RecordDecision(
+            "refit",
+            decision.IsNoOp ? "refit:none" : $"refit:{decision.ItemInstanceId}:{decision.AffixSlotIndex}",
+            reason,
+            milestoneAdvanced: false,
+            scarceResourceInvested: !decision.IsNoOp,
+            meaningfulProgress: !decision.IsNoOp,
+            _state.ProgressScore,
+            _state.CompletedMilestones,
+            DeclareHypothesis(decision.EvidenceFactIds));
+        return decision;
+    }
+
     private void EnsureIntentState(HeadlessPolicyObservation observation)
     {
         if (_state != null)
@@ -178,6 +261,15 @@ public sealed class ConceptCommitPolicy : IHeadlessPolicy
             progressScore: progress,
             completedMilestones: completed,
             hypothesis: EmptyHypothesis());
+    }
+
+    private void RequireIntentState()
+    {
+        if (_state == null || _intent == null)
+        {
+            throw new InvalidOperationException(
+                "Concept roster decisions require the campaign deployment observation to declare intent first.");
+        }
     }
 
     private BuildHypothesis DeclareHypothesis(IReadOnlyList<string> evidence)
