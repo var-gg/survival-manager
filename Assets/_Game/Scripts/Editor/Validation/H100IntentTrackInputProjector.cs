@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
+using SM.Combat.Services;
+using SM.Core.Stats;
 using SM.HeadlessCensus;
 using SM.HeadlessPolicies;
 using SM.Meta.Model;
@@ -55,27 +58,33 @@ internal static class H100IntentTrackInputProjector
                 .Concat(activeSynergies)
                 .ToArray(),
             activeMembers.SelectMany(value => value.EffectIds).Concat(temporaryAugmentEffects).ToArray(),
-            TeamRules(selected, observation.SynergyCatalog),
+            TeamRules(selected, snapshot),
             null,
             Array.Empty<string>());
     }
 
     public static IReadOnlyList<IntentTrackChoice> ProjectDeploymentChoices(
         HeadlessPolicyObservation observation,
-        ConceptContract contract,
-        IReadOnlyList<FormationPlacement> formations)
+        IReadOnlyList<ConceptContract> contracts,
+        IReadOnlyList<FormationPlacement> formations,
+        CombatContentSnapshot snapshot)
     {
+        if (contracts == null || contracts.Count == 0)
+        {
+            throw new ArgumentException("Intent-track deployment projection requires at least one contract.", nameof(contracts));
+        }
+
         var roster = observation.Roster.OrderBy(value => value.HeroId, StringComparer.Ordinal).ToArray();
         var membersById = roster.ToDictionary(value => value.HeroId, ProjectMember, StringComparer.Ordinal);
         var capacity = Math.Min(observation.DeployCapacity, roster.Length);
-        var formationPredicates = contract.IdentityPredicates.Concat(contract.ProgressMilestones)
+        var formationPredicates = contracts.SelectMany(contract => contract.IdentityPredicates.Concat(contract.ProgressMilestones))
             .Where(value => value.StartsWith("formation.", StringComparison.Ordinal))
             .Distinct(StringComparer.Ordinal)
             .OrderBy(value => value, StringComparer.Ordinal)
             .ToArray();
         var representatives = formations
             .GroupBy(value => string.Join(",", formationPredicates.Select(predicate =>
-                IntentTrackEvaluator.SatisfiesFormationPredicate(predicate, value.Features) ? "1" : "0")), StringComparer.Ordinal)
+                IntentTrackPredicateEvaluator.SatisfiesFormationPredicate(predicate, value.Features) ? "1" : "0")), StringComparer.Ordinal)
             .Select(group => group.OrderBy(value => value.Signature, StringComparer.Ordinal).First())
             .OrderBy(value => value.Signature, StringComparer.Ordinal)
             .ToArray();
@@ -105,7 +114,7 @@ internal static class H100IntentTrackInputProjector
                     .Distinct(StringComparer.Ordinal)
                     .OrderBy(value => value, StringComparer.Ordinal)
                     .ToArray();
-                var teamRules = TeamRules(selected, observation.SynergyCatalog);
+                var teamRules = TeamRules(selected, snapshot);
                 choices.Add(new IntentTrackChoice(
                     $"deploy:{string.Join("+", memberIds)}:{formation.Signature}",
                     memberIds,
@@ -277,11 +286,28 @@ internal static class H100IntentTrackInputProjector
 
     private static IReadOnlyList<string> TeamRules(
         IReadOnlyList<HeadlessHeroObservation> selected,
-        IReadOnlyList<HeadlessSynergyObservation> catalog)
+        CombatContentSnapshot snapshot)
     {
-        return catalog.SelectMany(synergy => synergy.Tiers
-                .Where(tier => selected.Count(hero => HeroHasTag(hero, synergy.CountedTagId)) >= tier.Threshold)
-                .Select(tier => tier.GrantedTeamRuleId))
+        var units = selected.OrderBy(hero => hero.HeroId, StringComparer.Ordinal)
+            .Select(hero => new BattleUnitLoadout(
+                hero.HeroId,
+                hero.HeroId,
+                hero.RaceId,
+                hero.ClassId,
+                hero.PreferredAnchor,
+                new Dictionary<StatKey, float>(),
+                Array.Empty<UnitRuleChain>(),
+                Array.Empty<BattleSkillSpec>(),
+                CompileTags: new[] { hero.RaceId, hero.ClassId, hero.RoleTag }))
+            .ToArray();
+        var rules = snapshot.SynergyCatalog.Values
+            .Where(value => value?.Rule != null)
+            .Select(value => value.Rule)
+            .OrderBy(value => value.SynergyId, StringComparer.Ordinal)
+            .ThenBy(value => value.Threshold)
+            .ToArray();
+        return SynergyService.BuildForTeam(units, rules)
+            .Select(package => package.GrantedTeamRuleId)
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .Distinct(StringComparer.Ordinal)
             .OrderBy(value => value, StringComparer.Ordinal)

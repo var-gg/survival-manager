@@ -60,6 +60,129 @@ public sealed class IntentTrackEvaluatorFastTests
     }
 
     [Test]
+    public void AnchorEvaluate_FirstVariantUnavailableSecondVariantAvailable_ReturnsAnchorAvailable()
+    {
+        var initial = IntentTrackState.Empty with
+        {
+            DeployedTagCounts = new[] { new IntentTrackTagCount("human", 1) },
+        };
+        var result = IntentTrackAnchorEvaluator.Evaluate(new IntentTrackAnchorSearchInput(
+            "anchor_or_witness",
+            new[]
+            {
+                new IntentTrackVariantSearchInput(
+                    "variant-01-unavailable",
+                    ContractWithIdentity("build.contains_tag:human", "owned:item:item_missing")),
+                new IntentTrackVariantSearchInput(
+                    "variant-02-available",
+                    ContractWithIdentity("build.contains_tag:human", "owned:item:item_goal")),
+            },
+            initial,
+            new[] { Window(0, GoalChoice()) },
+            new[] { IntentTrackLeverId.Deployment, IntentTrackLeverId.Reward },
+            0,
+            1));
+
+        Assert.That(result.TrackAvailable, Is.True);
+        Assert.That(result.SelectedVariantId, Is.EqualTo("variant-02-available"));
+        Assert.That(result.VariantResults.Single(value => value.VariantId == "variant-01-unavailable").AvailabilityKind,
+            Is.EqualTo(IntentTrackVariantAvailabilityKind.TrueUnavailable));
+        Assert.That(result.VariantResults.Single(value => value.VariantId == "variant-02-available").AvailabilityKind,
+            Is.EqualTo(IntentTrackVariantAvailabilityKind.V1Track));
+        Assert.That(result.PredicateCacheHitCount, Is.GreaterThan(0));
+    }
+
+    [Test]
+    public void AnchorEvaluate_PassiveRequiredWithClosedLevelNodeLever_IsLeverPending()
+    {
+        var contract = ContractWithIdentity("owned:passive:passive_future") with
+        {
+            PivotConditions = new[] { "acquisition_path_unavailable:level_node" },
+        };
+        var result = IntentTrackAnchorEvaluator.Evaluate(new IntentTrackAnchorSearchInput(
+            "anchor_pending_witness",
+            new[] { new IntentTrackVariantSearchInput("variant-passive", contract) },
+            IntentTrackState.Empty,
+            Array.Empty<IntentTrackAgencyWindow>(),
+            new[] { IntentTrackLeverId.Deployment, IntentTrackLeverId.Reward },
+            0,
+            0));
+
+        var variant = result.VariantResults.Single();
+        Assert.That(result.TrackAvailable, Is.False);
+        Assert.That(result.LeverPendingVariantCount, Is.EqualTo(1));
+        Assert.That(result.TrueUnavailableVariantCount, Is.Zero);
+        Assert.That(variant.AvailabilityKind, Is.EqualTo(IntentTrackVariantAvailabilityKind.LeverPending));
+        Assert.That(variant.PendingLeverIds, Is.EqualTo(new[] { IntentTrackLeverId.LevelNode }));
+    }
+
+    [Test]
+    public void PredicateEvaluator_AllIdentityKindsAreExplicitAndUnknownKindThrows()
+    {
+        var state = IntentTrackState.Empty with
+        {
+            DeployedTagCounts = new[] { new IntentTrackTagCount("human", 4) },
+            OwnedComponentIds = new[] { "item:item_goal" },
+            ActiveEffectIds = new[] { "status:slow" },
+            ActiveTeamRuleIds = new[] { "rule.phalanx" },
+            Formation = ExposureFormation(),
+        };
+        var predicates = new[]
+        {
+            "build.count_tag(human)>=4",
+            "build.contains_tag:human",
+            "owned:item:item_goal",
+            "effect.ready:status:slow",
+            "build.team_rule=rule.phalanx",
+            "formation.flank_rear_exposure_score>=4",
+        };
+        var results = predicates.Select(value => IntentTrackPredicateEvaluator.EvaluateIdentityPredicate(value, state)).ToArray();
+
+        Assert.That(results.All(value => value.Satisfied), Is.True);
+        Assert.That(results.Select(value => value.PredicateKind), Is.EquivalentTo(new[]
+        {
+            IntentTrackPredicateEvaluator.BuildTagCountKind,
+            IntentTrackPredicateEvaluator.BuildTagPresenceKind,
+            IntentTrackPredicateEvaluator.OwnedComponentKind,
+            IntentTrackPredicateEvaluator.EffectReadyKind,
+            IntentTrackPredicateEvaluator.TeamRuleKind,
+            IntentTrackPredicateEvaluator.FormationKind,
+        }));
+        Assert.Throws<NotSupportedException>(() =>
+            IntentTrackPredicateEvaluator.RequireSupportedIdentityPredicate("future.identity=true"));
+    }
+
+    [Test]
+    public void Evaluate_IronLineVariantOne_ReportsAllThreePredicatesSatisfied()
+    {
+        var state = IntentTrackState.Empty with
+        {
+            DeployedTagCounts = new[] { new IntentTrackTagCount("human", 4) },
+            ActiveTeamRuleIds = new[] { "rule.phalanx" },
+            Formation = ExposureFormation(),
+        };
+        var result = IntentTrackEvaluator.Evaluate(new IntentTrackSearchInput(
+            ContractWithIdentity(
+                "build.count_tag(human)>=4",
+                "build.team_rule=rule.phalanx",
+                "formation.flank_rear_exposure_score>=4"),
+            state,
+            Array.Empty<IntentTrackAgencyWindow>(),
+            new[] { IntentTrackLeverId.Deployment, IntentTrackLeverId.Reward },
+            0,
+            0));
+
+        Assert.That(result.TrackAvailable, Is.True);
+        Assert.That(result.IdentityPredicateResults.Select(value => value.Predicate), Is.EqualTo(new[]
+        {
+            "build.count_tag(human)>=4",
+            "build.team_rule=rule.phalanx",
+            "formation.flank_rear_exposure_score>=4",
+        }));
+        Assert.That(result.IdentityPredicateResults.All(value => value.Satisfied), Is.True);
+    }
+
+    [Test]
     public void Calculate_PolicyCaptureDenominator_ContainsOnlyTrackAvailableRuns()
     {
         var report = Calculate(new[]
@@ -75,20 +198,22 @@ public sealed class IntentTrackEvaluatorFastTests
         Assert.That(anchor.PolicyCaptureRate, Is.EqualTo(0.5d));
     }
 
-    [TestCase(false, false, false, false, IntentTrackGapKind.Agency)]
-    [TestCase(true, false, true, false, IntentTrackGapKind.Surface)]
-    [TestCase(true, false, false, false, IntentTrackGapKind.Policy)]
-    [TestCase(true, true, false, false, IntentTrackGapKind.Combat)]
-    [TestCase(true, true, true, true, IntentTrackGapKind.None)]
+    [TestCase(false, false, false, false, false, IntentTrackGapKind.Agency)]
+    [TestCase(false, true, false, false, false, IntentTrackGapKind.LeverPending)]
+    [TestCase(true, false, false, true, false, IntentTrackGapKind.Surface)]
+    [TestCase(true, false, false, false, false, IntentTrackGapKind.Policy)]
+    [TestCase(true, false, true, false, false, IntentTrackGapKind.Combat)]
+    [TestCase(true, false, true, true, true, IntentTrackGapKind.None)]
     public void GapClassifier_EmitsMutuallyExclusiveFailureKind(
         bool trackAvailable,
+        bool leverPending,
         bool policyRealized,
         bool relevantSurfaceGap,
         bool payoffWitnessed,
         string expected)
     {
         Assert.That(
-            IntentTrackGapClassifier.Classify(trackAvailable, policyRealized, relevantSurfaceGap, payoffWitnessed),
+            IntentTrackGapClassifier.Classify(trackAvailable, leverPending, policyRealized, relevantSurfaceGap, payoffWitnessed),
             Is.EqualTo(expected));
     }
 
@@ -165,6 +290,24 @@ public sealed class IntentTrackEvaluatorFastTests
             new[] { "item:item_goal" },
             true);
 
+    private static ConceptContract ContractWithIdentity(params string[] predicates)
+        => Contract with
+        {
+            IdentityPredicates = predicates,
+            ProgressMilestones = Array.Empty<string>(),
+            PivotConditions = Array.Empty<string>(),
+        };
+
+    private static FormationFeatures ExposureFormation()
+        => new(
+            FrontlineCount: 2,
+            ProtectedSlotCount: 0,
+            SideExposureCount: 2,
+            RearExposureCount: 1,
+            FlankRearExposureScore: 5d,
+            SupportDistance: 1d,
+            BacklineAccessibility: 1d);
+
     private static IntentTrackRunRecord Run(string runId, bool trackAvailable, bool policyRealized)
         => new()
         {
@@ -172,6 +315,8 @@ public sealed class IntentTrackEvaluatorFastTests
             ConceptId = "anchor_test",
             ConceptKind = "owner_anchor",
             AvailabilityTier = "core",
+            RepresentativeVariantId = "variant-a",
+            SelectedTrackVariantId = trackAvailable ? "variant-a" : string.Empty,
             AgencyWindowCount = 6,
             BattleCount = 4,
             TrackAvailable = trackAvailable,
@@ -188,6 +333,36 @@ public sealed class IntentTrackEvaluatorFastTests
             GapKind = policyRealized
                 ? IntentTrackGapKind.None
                 : trackAvailable ? IntentTrackGapKind.Policy : IntentTrackGapKind.Agency,
+            VariantCount = 1,
+            LeverPendingVariantCount = 0,
+            TrueUnavailableVariantCount = trackAvailable ? 0 : 1,
+            PredicateEvaluationCount = 1,
+            PredicateCacheHitCount = 0,
+            VariantResults = new[]
+            {
+                new IntentTrackVariantRunRecord(
+                    "variant-a",
+                    "core",
+                    trackAvailable
+                        ? IntentTrackVariantAvailabilityKind.V1Track
+                        : IntentTrackVariantAvailabilityKind.TrueUnavailable,
+                    Array.Empty<string>(),
+                    trackAvailable,
+                    trackAvailable ? 1 : -1,
+                    trackAvailable ? 2 : -1,
+                    trackAvailable ? 1 : 4,
+                    !trackAvailable,
+                    1,
+                    trackAvailable ? 1 : 0,
+                    Array.Empty<string>(),
+                    new[]
+                    {
+                        new IntentTrackPredicateDiagnosticRecord(
+                            "owned:item:item_goal",
+                            IntentTrackPredicateEvaluator.OwnedComponentKind,
+                            trackAvailable),
+                    }),
+            },
         };
 
     private static IntentTrackReport Calculate(IEnumerable<IntentTrackRunRecord> rows)
@@ -202,5 +377,11 @@ public sealed class IntentTrackEvaluatorFastTests
             agencyWindowDefinition: "test",
             v1LeverCaveat: "test",
             rightSizeNote: "test",
+            predicateCoverage: new IntentTrackPredicateCoverage(
+                OwnerVariantCount: 1,
+                SystemVariantCount: 0,
+                UniqueIdentityPredicateCount: 1,
+                PredicateKinds: new[] { IntentTrackPredicateEvaluator.OwnedComponentKind },
+                UnevaluablePredicateCount: 0),
             evaluatorVersion: IntentTrackSearchResult.CurrentEvaluatorVersion);
 }

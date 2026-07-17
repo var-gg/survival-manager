@@ -23,9 +23,9 @@ public static class H100IntentTrackRunner
     private const string AgencyWindowDefinition =
         "A player choice point; v1 records one deployment choice and one reward choice per reached campaign site.";
     private const string V1LeverCaveat =
-        "V1 exposes deployment and three-card reward choices only. Recruit, level-node, and refit levers remain parameterized but unobserved until E07, so agency gaps can be overstated.";
+        "V1 exposes deployment and three-card reward choices only. Recruit, level-node, and refit requirements are reported as lever_pending until E07 instead of being folded into true agency gaps.";
     private const string RightSizeNote =
-        "Owner coverage uses the E03-stable first variant for every anchor. Derived coverage samples the largest isomorphic medoid clusters first; search keeps contract-relevant state and one best path per memoized state.";
+        "Owner TrackAvailable is the OR of every E03 variant in that anchor (87 total). Variant searches share identity-predicate memoization; the first stable variant remains the policy coverage intent only.";
 
     public static void RunFromCli()
     {
@@ -47,6 +47,31 @@ public static class H100IntentTrackRunner
             throw new InvalidOperationException(
                 $"Intent-track owner coverage requires 10 anchors (anchors={catalog.OwnerAnchors.Count}, derivations={catalog.AnchorDerivations.Count}).");
         }
+
+        var ownerVariants = catalog.AnchorDerivations.SelectMany(value => value.Variants).ToArray();
+        if (ownerVariants.Length != 87)
+        {
+            throw new InvalidOperationException(
+                $"Intent-track owner variant coverage requires the canonical 87 variants (actual={ownerVariants.Length}).");
+        }
+
+        var systemVariants = catalog.SystemDerivedMedoids.ToArray();
+        var uniquePredicates = ownerVariants.Concat(systemVariants)
+            .SelectMany(value => value.Contract.IdentityPredicates)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
+        var predicateKinds = uniquePredicates
+            .Select(IntentTrackPredicateEvaluator.RequireSupportedIdentityPredicate)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
+        var predicateCoverage = new IntentTrackPredicateCoverage(
+            ownerVariants.Length,
+            systemVariants.Length,
+            uniquePredicates.Length,
+            predicateKinds,
+            UnevaluablePredicateCount: 0);
 
         var census = BuildSpaceEnumerator.Generate(H100BuildSpaceContentAdapter.BuildCanonicalRosterFromSnapshot(snapshot));
         var surfaceAudit = H100SurfaceAuditRunner.RunForSnapshot(snapshot, outputDirectory);
@@ -82,6 +107,7 @@ public static class H100IntentTrackRunner
             AgencyWindowDefinition,
             V1LeverCaveat,
             RightSizeNote,
+            predicateCoverage,
             IntentTrackSearchResult.CurrentEvaluatorVersion);
         var observations = CombineBt2(audits)
             .Concat(surfaceAudit.ToBt3Observations())
@@ -114,7 +140,12 @@ public static class H100IntentTrackRunner
         ICollection<PlayerVisibleFactAuditResult> audits,
         ICollection<IntentTraceRecord> allTraces)
     {
-        var collector = new H100IntentTrackCaptureCollector(target.Contract, snapshot, formations);
+        var representative = target.Variants.Single(value =>
+            string.Equals(value.VariantId, target.RepresentativeVariantId, StringComparison.Ordinal));
+        var collector = new H100IntentTrackCaptureCollector(
+            target.Variants.Select(value => value.Contract).ToArray(),
+            snapshot,
+            formations);
         var runSettings = new H100MetricsRunSettings(
             BattleCount: 1,
             CampaignCount: settings.SeedCount,
@@ -126,8 +157,8 @@ public static class H100IntentTrackRunner
             OutputDirectory: settings.OutputDirectory,
             PolicyId: ConceptCommitPolicy.PolicyId);
         var intent = H100ConceptIntentProjector.Project(
-            target.Contract,
-            $"coverage-{target.ConceptId}-{target.VariantId}");
+            representative.Contract,
+            $"coverage-{target.ConceptId}-{representative.VariantId}");
         var corpus = H100CampaignCorpusRunner.Run(
             lookup,
             runSettings,
@@ -147,10 +178,10 @@ public static class H100IntentTrackRunner
             .GroupBy(value => value.CampaignId, StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.OrderBy(value => value.DecidedAt.DecisionIndex).ToArray(), StringComparer.Ordinal);
         var relevantSurfaceGap = H100IntentTrackSurfaceJoin.HasRelevantGap(
-            target.Contract,
-            target.RecipeComponentIds,
+            representative.Contract,
+            representative.RecipeComponentIds,
             surfaceAudit.Gaps);
-        var policyTargetScore = PolicyTargetScore(target.Contract);
+        var policyTargetScore = PolicyTargetScore(representative.Contract);
         foreach (var campaign in corpus.Campaigns.OrderBy(value => value.CampaignId, StringComparer.Ordinal))
         {
             var capture = collector.Require(campaign.CampaignId);
@@ -160,14 +191,16 @@ public static class H100IntentTrackRunner
             var commit = campaignTraces.FirstOrDefault(value => value.IsCommit);
             var commitIndex = commit?.DecidedAt.DecisionIndex ?? 0;
             var windows = capture.Windows.OrderBy(value => value.WindowIndex).ToArray();
-            var input = new IntentTrackSearchInput(
-                target.Contract,
+            var input = new IntentTrackAnchorSearchInput(
+                target.ConceptId,
+                target.Variants.Select(value => new IntentTrackVariantSearchInput(value.VariantId, value.Contract)).ToArray(),
                 capture.InitialState!,
                 windows,
                 settings.EnabledLeverIds,
                 commitIndex,
                 windows.Count(value => value.WindowIndex >= commitIndex));
-            var search = IntentTrackEvaluator.Evaluate(input);
+            var anchorSearch = IntentTrackAnchorEvaluator.Evaluate(input);
+            var search = anchorSearch.SelectedSearch;
             var realizationTrace = campaignTraces.FirstOrDefault(value =>
                 value.DecidedAt.DecisionIndex >= commitIndex
                 && value.IntentState.ProgressScore >= policyTargetScore);
@@ -184,7 +217,7 @@ public static class H100IntentTrackRunner
             var payoffRunway = policyRealized ? Math.Max(0, campaign.BattleCount - realizationBattleStart) : 0;
             var payoffWitnessed = policyRealized && capture.Battles
                 .Where(value => value.BattleIndex >= realizationBattleStart)
-                .Any(value => value.PayoffWitnessIds.Contains(target.Contract.PayoffWitness, StringComparer.Ordinal));
+                .Any(value => value.PayoffWitnessIds.Contains(representative.Contract.PayoffWitness, StringComparer.Ordinal));
             var counterTraces = campaignTraces.Where(value =>
                     value.DecidedAt.DecisionIndex >= commitIndex
                     && string.Equals(value.Reason, IntentDecisionReason.CounterAdapt, StringComparison.Ordinal))
@@ -196,12 +229,13 @@ public static class H100IntentTrackRunner
             var irreversibleContinued = campaignTraces.Any(value =>
                 value.DecidedAt.DecisionIndex >= commitIndex
                 && string.Equals(value.DecisionKind, "reward", StringComparison.Ordinal));
-            var silentDeadEnd = !search.TrackAvailable
+            var silentDeadEnd = !anchorSearch.TrackAvailable
                                 && commit != null
                                 && irreversibleContinued
                                 && !warningIssued;
             var gap = IntentTrackGapClassifier.Classify(
-                search.TrackAvailable,
+                anchorSearch.TrackAvailable,
+                anchorSearch.LeverPendingVariantCount > 0,
                 policyRealized,
                 relevantSurfaceGap,
                 payoffWitnessed);
@@ -210,12 +244,14 @@ public static class H100IntentTrackRunner
                 RunId = $"{target.ConceptKind}:{target.ConceptId}:s{(settings.SeedBase + capture.CampaignIndex).ToString("D4", CultureInfo.InvariantCulture)}",
                 ConceptId = target.ConceptId,
                 ConceptKind = target.ConceptKind,
-                AvailabilityTier = target.Contract.AvailabilityTier,
+                AvailabilityTier = target.AvailabilityTier,
+                RepresentativeVariantId = target.RepresentativeVariantId,
+                SelectedTrackVariantId = anchorSearch.TrackAvailable ? anchorSearch.SelectedVariantId : string.Empty,
                 Seed = campaign.Seed,
                 AgencyWindowCount = windows.Length,
                 BattleCount = campaign.BattleCount,
                 OfferStreamHash = HashOfferStream(windows),
-                TrackAvailable = search.TrackAvailable,
+                TrackAvailable = anchorSearch.TrackAvailable,
                 FirstProgressTime = search.FirstProgressTime,
                 OracleRealizationTime = search.RealizationTime,
                 MaxAgencyDrought = search.MaxAgencyDrought,
@@ -232,6 +268,28 @@ public static class H100IntentTrackRunner
                 SilentDeadEnd = silentDeadEnd,
                 RelevantSurfaceGap = relevantSurfaceGap,
                 GapKind = gap,
+                VariantCount = anchorSearch.VariantResults.Count,
+                LeverPendingVariantCount = anchorSearch.LeverPendingVariantCount,
+                TrueUnavailableVariantCount = anchorSearch.TrueUnavailableVariantCount,
+                PredicateEvaluationCount = anchorSearch.PredicateEvaluationCount,
+                PredicateCacheHitCount = anchorSearch.PredicateCacheHitCount,
+                VariantResults = anchorSearch.VariantResults.Select(value => new IntentTrackVariantRunRecord(
+                    value.VariantId,
+                    value.AvailabilityTier,
+                    value.AvailabilityKind,
+                    value.PendingLeverIds,
+                    value.Search.TrackAvailable,
+                    value.Search.FirstProgressTime,
+                    value.Search.RealizationTime,
+                    value.Search.MaxAgencyDrought,
+                    value.Search.Starved,
+                    value.Search.TargetIdentityPredicateCount,
+                    value.Search.FinalIdentityPredicateCount,
+                    value.Search.ChoicePath,
+                    value.Search.IdentityPredicateResults.Select(predicate => new IntentTrackPredicateDiagnosticRecord(
+                        predicate.Predicate,
+                        predicate.PredicateKind,
+                        predicate.Satisfied)).ToArray())).ToArray(),
             });
         }
 
@@ -245,8 +303,12 @@ public static class H100IntentTrackRunner
         var targets = new List<H100IntentTrackTarget>();
         foreach (var derivation in catalog.AnchorDerivations.OrderBy(value => value.AnchorId, StringComparer.Ordinal))
         {
-            var variant = derivation.Variants.FirstOrDefault();
-            if (derivation.DerivationGap || variant == null)
+            var variants = derivation.Variants.Select(value => new H100IntentTrackVariantTarget(
+                    value.VariantId,
+                    value.Contract,
+                    value.MedoidRecipe.ComponentIds))
+                .ToArray();
+            if (derivation.DerivationGap || variants.Length == 0)
             {
                 throw new InvalidOperationException($"Owner anchor has no E05 representative: {derivation.AnchorId}");
             }
@@ -254,9 +316,11 @@ public static class H100IntentTrackRunner
             targets.Add(new H100IntentTrackTarget(
                 derivation.AnchorId,
                 "owner_anchor",
-                variant.VariantId,
-                variant.Contract,
-                variant.MedoidRecipe.ComponentIds));
+                variants[0].VariantId,
+                variants.Any(value => value.Contract.AvailabilityTier == ConceptAvailabilityTier.Core)
+                    ? ConceptAvailabilityTier.Core
+                    : ConceptAvailabilityTier.Aspirational,
+                variants));
         }
 
         foreach (var variant in catalog.SystemDerivedMedoids
@@ -268,8 +332,14 @@ public static class H100IntentTrackRunner
                 variant.VariantId,
                 "system_medoid",
                 variant.VariantId,
-                variant.Contract,
-                variant.MedoidRecipe.ComponentIds));
+                variant.Contract.AvailabilityTier,
+                new[]
+                {
+                    new H100IntentTrackVariantTarget(
+                        variant.VariantId,
+                        variant.Contract,
+                        variant.MedoidRecipe.ComponentIds),
+                }));
         }
 
         return targets;
@@ -323,6 +393,11 @@ public static class H100IntentTrackRunner
     private sealed record H100IntentTrackTarget(
         string ConceptId,
         string ConceptKind,
+        string RepresentativeVariantId,
+        string AvailabilityTier,
+        IReadOnlyList<H100IntentTrackVariantTarget> Variants);
+
+    private sealed record H100IntentTrackVariantTarget(
         string VariantId,
         ConceptContract Contract,
         IReadOnlyList<string> RecipeComponentIds);

@@ -6,7 +6,7 @@ namespace SM.HeadlessMetrics;
 /// <summary>BT6/BT7가 직접 소비할 수 있는 결정적 E05 report.</summary>
 public sealed record IntentTrackReport
 {
-    public const string CurrentSchemaVersion = "intent-track-report-bt1-v1";
+    public const string CurrentSchemaVersion = "intent-track-report-bt1-v2";
 
     public string SchemaVersion { get; init; } = CurrentSchemaVersion;
     public string EvaluatorVersion { get; init; } = string.Empty;
@@ -20,6 +20,7 @@ public sealed record IntentTrackReport
     public string AgencyWindowDefinition { get; init; } = string.Empty;
     public string V1LeverCaveat { get; init; } = string.Empty;
     public string RightSizeNote { get; init; } = string.Empty;
+    public IntentTrackPredicateCoverage PredicateCoverage { get; init; } = IntentTrackPredicateCoverage.Empty;
     public IReadOnlyList<IntentTrackTierSummary> TierSummaries { get; init; } = Array.Empty<IntentTrackTierSummary>();
     public IReadOnlyList<IntentTrackConceptSummary> OwnerAnchorSummaries { get; init; } = Array.Empty<IntentTrackConceptSummary>();
     public IReadOnlyList<IntentTrackConceptSummary> SystemMedoidSummaries { get; init; } = Array.Empty<IntentTrackConceptSummary>();
@@ -66,7 +67,45 @@ public sealed record IntentTrackConceptSummary(
     int CounterDecisionCount,
     double IdentityRetentionAfterCounter,
     IReadOnlyList<IntentTrackCount> GapDistribution,
-    bool Pass);
+    bool Pass,
+    int VariantCount,
+    int V1LeverTrackSeedCount,
+    int V1TrackVariantEvaluationCount,
+    int LeverPendingVariantEvaluationCount,
+    int TrueUnavailableVariantEvaluationCount,
+    IReadOnlyList<IntentTrackCount> LeverPendingByLever,
+    IReadOnlyList<IntentTrackVariantSummary> VariantSummaries);
+
+public sealed record IntentTrackVariantSummary(
+    string VariantId,
+    string AvailabilityTier,
+    int EvaluationCount,
+    int V1TrackCount,
+    int LeverPendingCount,
+    int TrueUnavailableCount,
+    IReadOnlyList<IntentTrackCount> LeverPendingByLever,
+    IReadOnlyList<IntentTrackPredicateSummary> IdentityPredicates);
+
+public sealed record IntentTrackPredicateSummary(
+    string Predicate,
+    string PredicateKind,
+    int EvaluationCount,
+    int SatisfiedCount);
+
+public sealed record IntentTrackPredicateCoverage(
+    int OwnerVariantCount,
+    int SystemVariantCount,
+    int UniqueIdentityPredicateCount,
+    IReadOnlyList<string> PredicateKinds,
+    int UnevaluablePredicateCount)
+{
+    public static IntentTrackPredicateCoverage Empty { get; } = new(
+        0,
+        0,
+        0,
+        Array.Empty<string>(),
+        0);
+}
 
 public sealed record IntentTrackCount(string Id, int Count);
 

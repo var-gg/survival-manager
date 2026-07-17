@@ -70,7 +70,7 @@ try {
 
     $reportPath = Join-Path $resolvedOutput 'intent_track_report.json'
     $report = Get-Content -Raw -LiteralPath $reportPath | ConvertFrom-Json
-    if ($report.schema_version -ne 'intent-track-report-bt1-v1') {
+    if ($report.schema_version -ne 'intent-track-report-bt1-v2') {
         throw "Unexpected intent-track report schema: $($report.schema_version)"
     }
     if ([int]$report.owner_anchor_count -ne 10 -or [int]$report.seed_count -ne $SeedCount) {
@@ -85,6 +85,10 @@ try {
     $expectedRuns = (10 + $SystemMedoidSampleCount) * $SeedCount
     if (@($report.runs).Count -ne $expectedRuns) {
         throw "Intent-track run matrix mismatch: $(@($report.runs).Count)/$expectedRuns."
+    }
+    if ([int]$report.predicate_coverage.owner_variant_count -ne 87 `
+        -or [int]$report.predicate_coverage.unevaluable_predicate_count -ne 0) {
+        throw "Intent-track predicate coverage mismatch: owner_variants=$($report.predicate_coverage.owner_variant_count), unevaluable=$($report.predicate_coverage.unevaluable_predicate_count)."
     }
 
     $gateReport = Get-Content -Raw -LiteralPath (Join-Path $resolvedOutput 'h100-bt1-gate-report.json') | ConvertFrom-Json
@@ -113,8 +117,10 @@ try {
             [double]$tier.track_available_lcb95, $tier.first_progress_p90, $tier.agency_drought_p90, [double]$tier.starvation_rate)
     }
     foreach ($anchor in @($report.owner_anchor_summaries)) {
-        Write-Host ("  anchor={0} track={1:N6} capture={2:N6} drought_p90={3} starvation={4:N6} pass={5}" -f `
-            $anchor.concept_id, [double]$anchor.track_available_rate, [double]$anchor.policy_capture_rate, `
+        Write-Host ("  anchor={0} track={1:N6} variants={2} v1_track_eval={3} lever_pending_eval={4} true_unavailable_eval={5} capture={6:N6} drought_p90={7} starvation={8:N6} pass={9}" -f `
+            $anchor.concept_id, [double]$anchor.track_available_rate, $anchor.variant_count, `
+            $anchor.v1_track_variant_evaluation_count, $anchor.lever_pending_variant_evaluation_count, `
+            $anchor.true_unavailable_variant_evaluation_count, [double]$anchor.policy_capture_rate, `
             $anchor.agency_drought_p90, [double]$anchor.starvation_rate, [bool]$anchor.pass)
     }
     $gapSummary = @($report.gap_distribution | ForEach-Object { "$($_.id):$($_.count)" }) -join ','

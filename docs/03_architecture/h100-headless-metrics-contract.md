@@ -192,13 +192,13 @@ role-aware 평가 의미는 다음과 같다.
 
 `SM.HeadlessCensus.IntentTrackEvaluator`는 정책에 노출되지 않는 evaluator-only 순수 탐색기다. 입력은 campaign 종료 뒤 `SM.Editor.Validation`이 실제 session에서 수집한 초기 roster/inventory 상태와 확정된 offer window DTO다. 탐색 목표는 승률 최대화가 아니라 E03 `ConceptContract.identity_predicates` 도달이며, 계약 관련 semantic만 상태 signature에 남기고 동일 상태당 최선 경로 하나를 memoize한다. `SM.HeadlessPolicies`는 `SM.HeadlessCensus`를 참조하지 않으며 미래 offer와 oracle 결과를 decision 시점에 읽을 수 없다.
 
-agency window는 플레이어 선택이 실제로 발생하는 한 지점이다. 현재 campaign 표면에서는 도달한 사이트마다 배치 선택 1회와 보상 선택 1회가 각각 한 window다. 전투 node 자체는 자동 진행이므로 window가 아니다. v1 lever는 `deployment`, `reward`이고 탐색 DTO와 CLI는 `recruit`, `level_node`, `refit` 식별자를 파라미터로 수용하지만, E07이 실제 선택점을 열기 전에는 해당 window를 생성하지 않는다. 따라서 현 결과의 `agency_gap`은 영입·노드·Refit이 닫힌 만큼 과대 측정될 수 있다.
+agency window는 플레이어 선택이 실제로 발생하는 한 지점이다. 현재 campaign 표면에서는 도달한 사이트마다 배치 선택 1회와 보상 선택 1회가 각각 한 window다. 전투 node 자체는 자동 진행이므로 window가 아니다. v1 lever는 `deployment`, `reward`이고 탐색 DTO와 CLI는 `recruit`, `level_node`, `refit` 식별자를 파라미터로 수용하지만, E07이 실제 선택점을 열기 전에는 해당 window를 생성하지 않는다. 닫힌 lever가 필요한 variant는 `lever_pending`으로 분리하여 future-lever 기대치로 기록하고, `agency_gap`이나 v1 track 성공에 포함하지 않는다.
 
 run별 핵심 값은 `TrackAvailable`, `FirstProgressTime`, `OracleRealizationTime`, `MaxAgencyDrought`, `Starved`, `PolicyCaptureRate = P(realized | TrackAvailable)`, `FalseHopeRate`, `PayoffRunway`, `IdentityRetentionAfterCounter`다. drought는 진척 또는 명시된 유효 대체가 하나도 제시되지 않은 연속 window 수이며 정확히 4개부터 starvation으로 판정한다. track 자체가 horizon 안에 없을 때도 starved다. capture 분모에는 `TrackAvailable=true`인 run만 들어간다.
 
-실패 원인은 상호배타적인 네 종류로 내린다. 경로 자체가 없으면 `agency_gap`, 경로가 있고 정책이 놓쳤으며 관련 E02 subject 위반이 있으면 `surface_gap`, 관련 위반이 없으면 `policy_gap`, 정책이 identity를 실현했지만 이후 전투 telemetry/beat에서 계약 payoff가 없으면 `combat_gap`이다. 실현과 payoff까지 있으면 `none`이다.
+run의 실패 원인은 상호배타적으로 내린다. v1 경로는 없지만 닫힌 future lever가 필요한 variant가 있으면 `lever_pending`, 그런 설명도 없으면 `agency_gap`이다. v1 경로가 있고 정책이 놓쳤으며 관련 E02 subject 위반이 있으면 `surface_gap`, 관련 위반이 없으면 `policy_gap`, 정책이 identity를 실현했지만 이후 전투 telemetry/beat에서 계약 payoff가 없으면 `combat_gap`이다. 실현과 payoff까지 있으면 `none`이다.
 
-비율 하한은 `z=1.6448536269514722`인 one-sided 95% Wilson score lower bound를 쓴다. 기본 owner 표본은 E03 결정 순서의 첫 variant를 대표 계약으로 삼은 10 anchor×16 seed이며 CLI에서 64 seed까지 허용한다. system medoid는 `isomorphic_recipe_count` 내림차순과 stable variant id로 고른 대표 N개만 v1에 포함한다. 출력 `intent_track_report.json`은 run, anchor, tier, gap 분포, BT6/BT7 공급 metric과 현재 PASS/FAIL을 invariant snake_case·ordinal order·UTF-8 no-BOM으로 기록하고 wallclock/GUID를 포함하지 않는다.
+비율 하한은 `z=1.6448536269514722`인 one-sided 95% Wilson score lower bound를 쓴다. 기본 owner 표본은 10 anchor×16 seed이며 각 run에서 E03 owner variant 87개 전체를 anchor별 OR로 평가한다. 첫 stable variant는 coverage policy intent로만 유지하고 oracle 개방성 정의에는 사용하지 않는다. system medoid는 `isomorphic_recipe_count` 내림차순과 stable variant id로 고른 대표 N개만 v1에 포함한다. 출력 `intent_track_report.json` schema v2는 run·anchor·variant별 술어 판정, `v1_track`/`lever_pending`/`true_unavailable` 분해, predicate coverage, tier, gap 분포, BT6/BT7 공급 metric과 현재 PASS/FAIL을 invariant snake_case·ordinal order·UTF-8 no-BOM으로 기록하고 wallclock/GUID를 포함하지 않는다.
 
 ### H100-RC1 migration map
 

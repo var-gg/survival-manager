@@ -9,17 +9,19 @@ namespace SM.Editor.Validation;
 /// <summary>실 campaign hook을 종료 후 oracle이 읽을 immutable 성격의 offer/battle capture로 투영한다.</summary>
 internal sealed class H100IntentTrackCaptureCollector
 {
-    private readonly ConceptContract _contract;
+    private readonly IReadOnlyList<ConceptContract> _contracts;
     private readonly CombatContentSnapshot _snapshot;
     private readonly IReadOnlyList<FormationPlacement> _formations;
     private readonly Dictionary<string, H100IntentTrackCampaignCapture> _captures = new(StringComparer.Ordinal);
 
     public H100IntentTrackCaptureCollector(
-        ConceptContract contract,
+        IReadOnlyList<ConceptContract> contracts,
         CombatContentSnapshot snapshot,
         IReadOnlyList<FormationPlacement> formations)
     {
-        _contract = contract ?? throw new ArgumentNullException(nameof(contract));
+        _contracts = contracts == null || contracts.Count == 0
+            ? throw new ArgumentException("Intent-track capture contracts are required.", nameof(contracts))
+            : contracts;
         _snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         _formations = formations ?? throw new ArgumentNullException(nameof(formations));
         Hooks = new H100CampaignObservationHooks(
@@ -52,7 +54,11 @@ internal sealed class H100IntentTrackCaptureCollector
             IntentTrackLeverId.Deployment,
             $"{context.Session.SelectedCampaignChapterId}|{context.Session.SelectedCampaignSiteId}|deployment|{context.DecisionSeed}",
             context.BattleStartIndex,
-            H100IntentTrackInputProjector.ProjectDeploymentChoices(context.Observation, _contract, _formations)));
+            H100IntentTrackInputProjector.ProjectDeploymentChoices(
+                context.Observation,
+                _contracts,
+                _formations,
+                _snapshot)));
     }
 
     private void OnRewardOffered(H100RewardOfferedContext context)

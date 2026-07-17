@@ -147,7 +147,7 @@ pwsh -File tools/h100-intent-trace.ps1 -SeedCount 8 -Lanes both -CoverageAnchorI
 
 각 lane의 `intent_trace_summary.json`에서 `missing_trace_count=0`, `hidden_fact_use_count=0`, `campaigns_with_commit=8`을 요구한다. 같은 seed와 intent의 policy decision 및 JSONL은 byte-identical이어야 한다. 현재 action surface는 deployment와 reward 두 종류뿐이며 영입, node, Refit decision point 개방은 E07 범위다.
 
-BT1-E05는 coverage lane을 E03 owner anchor별로 다시 실행하지만 정책 계약을 넓히지 않는다. `H100CampaignCorpusRunner`의 optional observer가 결정 전 배치·보상 표면과 전투 후 payoff만 복제하고, campaign 종료 뒤 Editor adapter가 순수 `IntentTrackEvaluator`에 DTO를 전달한다. 정책은 자기 `HeadlessConceptIntent`, 현재 player-visible observation, 누적 `IntentState`만 보며 oracle search result, 다른 선택지의 미래 결과, 이후 offer stream은 읽지 않는다. 기본 실측 진입점은 `pwsh -File tools/h100-intent-track.ps1`이다.
+BT1-E05는 coverage lane을 E03 owner anchor별로 다시 실행하지만 정책 계약을 넓히지 않는다. 정책의 coverage intent는 첫 stable variant 하나로 고정하되, campaign 종료 후 oracle은 같은 offer stream에 anchor의 모든 E03 variant를 대조해 OR 개방성을 계산한다. `H100CampaignCorpusRunner`의 optional observer가 결정 전 배치·보상 표면과 전투 후 payoff만 복제하고, campaign 종료 뒤 Editor adapter가 순수 `IntentTrackEvaluator`에 DTO를 전달한다. 정책은 자기 `HeadlessConceptIntent`, 현재 player-visible observation, 누적 `IntentState`만 보며 oracle search result, 다른 선택지의 미래 결과, 이후 offer stream은 읽지 않는다. 기본 실측 진입점은 `pwsh -File tools/h100-intent-track.ps1`이다.
 
 ## deferred
 

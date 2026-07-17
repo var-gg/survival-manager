@@ -14,11 +14,25 @@ public static class IntentTrackEvaluator
     public const int StarvationDroughtThreshold = 4;
 
     public static IntentTrackSearchResult Evaluate(IntentTrackSearchInput input)
+        => Evaluate(input, new IntentTrackPredicateEvaluator.IntentTrackPredicateEvaluationCache());
+
+    internal static IntentTrackSearchResult Evaluate(
+        IntentTrackSearchInput input,
+        IntentTrackPredicateEvaluator.IntentTrackPredicateEvaluationCache predicateCache)
     {
         Validate(input);
-        var relevance = Relevance.Create(input.Contract);
+        if (predicateCache == null) throw new ArgumentNullException(nameof(predicateCache));
+        var enabled = input.EnabledLeverIds.ToHashSet(StringComparer.Ordinal);
+        var windows = input.Windows
+            .Where(window => window.WindowIndex >= input.CommitWindowIndex && enabled.Contains(window.LeverId))
+            .OrderBy(window => window.WindowIndex)
+            .ThenBy(window => window.LeverId, StringComparer.Ordinal)
+            .ThenBy(window => window.SourceId, StringComparer.Ordinal)
+            .Take(input.HorizonWindowCount)
+            .ToArray();
+        var relevance = Relevance.Create(input.Contract, windows);
         var initialState = NormalizeState(input.InitialState, relevance);
-        var initialAssessment = Assess(input.Contract, initialState);
+        var initialAssessment = Assess(input.Contract, initialState, predicateCache);
         initialState = initialState with { CompletedMilestones = initialAssessment.CompletedMilestones };
         var initialNode = new SearchNode(
             initialState,
@@ -34,14 +48,6 @@ public static class IntentTrackEvaluator
             return ToResult(initialNode, agencyWindowCount: 0, trackAvailable: true);
         }
 
-        var enabled = input.EnabledLeverIds.ToHashSet(StringComparer.Ordinal);
-        var windows = input.Windows
-            .Where(window => window.WindowIndex >= input.CommitWindowIndex && enabled.Contains(window.LeverId))
-            .OrderBy(window => window.WindowIndex)
-            .ThenBy(window => window.LeverId, StringComparer.Ordinal)
-            .ThenBy(window => window.SourceId, StringComparer.Ordinal)
-            .Take(input.HorizonWindowCount)
-            .ToArray();
         var nodes = new[] { initialNode };
         SearchNode? bestRealized = null;
         var processed = 0;
@@ -60,17 +66,26 @@ public static class IntentTrackEvaluator
                     legal = new[] { IntentTrackChoice.NoOp($"unavailable:{window.WindowIndex.ToString(CultureInfo.InvariantCulture)}") };
                 }
 
-                var projections = legal.Select(choice =>
-                {
-                    var nextState = Apply(node.State, choice, relevance);
-                    var assessment = Assess(input.Contract, nextState);
-                    nextState = nextState with { CompletedMilestones = assessment.CompletedMilestones };
-                    return new ChoiceProjection(choice, nextState, assessment);
-                }).ToArray();
-                var progressOffered = projections.Any(projection =>
+                var substitutionOffered = legal.Any(choice => OffersEffectiveSubstitution(input.Contract, choice));
+                var projections = legal
+                    .Select(choice => new
+                    {
+                        Choice = choice,
+                        State = Apply(node.State, choice, relevance),
+                    })
+                    .GroupBy(value => StateSignature(value.State, relevance), StringComparer.Ordinal)
+                    .OrderBy(group => group.Key, StringComparer.Ordinal)
+                    .Select(group => group.OrderBy(value => value.Choice.ChoiceId, StringComparer.Ordinal).First())
+                    .Select(value =>
+                    {
+                        var assessment = Assess(input.Contract, value.State, predicateCache);
+                        var nextState = value.State with { CompletedMilestones = assessment.CompletedMilestones };
+                        return new ChoiceProjection(value.Choice, nextState, assessment);
+                    })
+                    .ToArray();
+                var progressOffered = substitutionOffered || projections.Any(projection =>
                     projection.Assessment.IdentityScore > node.Assessment.IdentityScore
-                    || projection.Assessment.CompletedMilestones.Count > node.Assessment.CompletedMilestones.Count
-                    || OffersEffectiveSubstitution(input.Contract, projection.Choice));
+                    || projection.Assessment.CompletedMilestones.Count > node.Assessment.CompletedMilestones.Count);
                 var drought = progressOffered ? 0 : node.CurrentDrought + 1;
                 var maxDrought = Math.Max(node.MaxDrought, drought);
                 foreach (var projection in projections)
@@ -139,7 +154,8 @@ public static class IntentTrackEvaluator
             node.MaxDrought >= StarvationDroughtThreshold || !trackAvailable,
             node.Assessment.TargetIdentityScore,
             node.Assessment.IdentityScore,
-            node.ChoicePath);
+            node.ChoicePath,
+            node.Assessment.IdentityPredicateResults);
 
     private static SearchNode[] Prune(IEnumerable<SearchNode> candidates, Relevance relevance)
     {
@@ -215,7 +231,7 @@ public static class IntentTrackEvaluator
             return false;
         }
 
-        var owned = OwnedComponents(state);
+        var owned = IntentTrackPredicateEvaluator.OwnedComponents(state);
         return (choice.RequiredOwnedComponentIds ?? Array.Empty<string>()).All(owned.Contains);
     }
 
@@ -228,159 +244,28 @@ public static class IntentTrackEvaluator
         return (contract.AllowedSubstitutions ?? Array.Empty<string>()).Any(offered.Contains);
     }
 
-    private static Assessment Assess(ConceptContract contract, IntentTrackState state)
+    private static Assessment Assess(
+        ConceptContract contract,
+        IntentTrackState state,
+        IntentTrackPredicateEvaluator.IntentTrackPredicateEvaluationCache predicateCache)
     {
-        var identity = (contract.IdentityPredicates ?? Array.Empty<string>())
-            .Count(predicate => PredicateSatisfied(predicate, state));
+        var identityPredicates = (contract.IdentityPredicates ?? Array.Empty<string>())
+            .Select(predicate => predicateCache.Evaluate(predicate, state))
+            .ToArray();
+        var identity = identityPredicates.Count(result => result.Satisfied);
         var milestones = (contract.ProgressMilestones ?? Array.Empty<string>())
-            .Where(milestone => MilestoneSatisfied(milestone, state))
+            .Where(milestone => IntentTrackPredicateEvaluator.MilestoneSatisfied(milestone, state))
             .Distinct(StringComparer.Ordinal)
             .OrderBy(value => value, StringComparer.Ordinal)
             .ToArray();
         var target = contract.IdentityPredicates?.Count ?? 0;
-        return new Assessment(identity, target, identity == target && target > 0, milestones);
+        return new Assessment(
+            identity,
+            target,
+            identity == target && target > 0,
+            milestones,
+            identityPredicates);
     }
-
-    private static bool PredicateSatisfied(string predicate, IntentTrackState state)
-    {
-        if (TryParseCountIdentity(predicate, out var tag, out var threshold))
-        {
-            return TagCount(state, tag) >= threshold;
-        }
-
-        const string containsTag = "build.contains_tag:";
-        if (predicate.StartsWith(containsTag, StringComparison.Ordinal))
-        {
-            return TagCount(state, predicate.Substring(containsTag.Length)) > 0;
-        }
-
-        const string owned = "owned:";
-        if (predicate.StartsWith(owned, StringComparison.Ordinal))
-        {
-            return OwnedComponents(state).Contains(predicate.Substring(owned.Length));
-        }
-
-        const string effectReady = "effect.ready:";
-        if (predicate.StartsWith(effectReady, StringComparison.Ordinal))
-        {
-            return state.ActiveEffectIds.Contains(predicate.Substring(effectReady.Length), StringComparer.Ordinal);
-        }
-
-        const string teamRule = "build.team_rule=";
-        if (predicate.StartsWith(teamRule, StringComparison.Ordinal))
-        {
-            return state.ActiveTeamRuleIds.Contains(predicate.Substring(teamRule.Length), StringComparer.Ordinal);
-        }
-
-        return predicate.StartsWith("formation.", StringComparison.Ordinal)
-               && SatisfiesFormationPredicate(predicate, state.Formation);
-    }
-
-    private static bool MilestoneSatisfied(string milestone, IntentTrackState state)
-    {
-        if (TryParseCountMilestone(milestone, out var tag, out var required))
-        {
-            return TagCount(state, tag) >= required;
-        }
-
-        const string acquire = "acquire:";
-        if (milestone.StartsWith(acquire, StringComparison.Ordinal))
-        {
-            return OwnedComponents(state).Contains(milestone.Substring(acquire.Length));
-        }
-
-        const string activate = "activate:";
-        if (milestone.StartsWith(activate, StringComparison.Ordinal))
-        {
-            return state.ActiveEffectIds.Contains(milestone.Substring(activate.Length), StringComparer.Ordinal);
-        }
-
-        const string deployStatus = "deploy.status:";
-        if (milestone.StartsWith(deployStatus, StringComparison.Ordinal))
-        {
-            return state.ActiveEffectIds.Contains($"status:{milestone.Substring(deployStatus.Length)}", StringComparer.Ordinal);
-        }
-
-        if (milestone.StartsWith("build.team_rule=", StringComparison.Ordinal))
-        {
-            return state.ActiveTeamRuleIds.Contains(milestone.Substring("build.team_rule=".Length), StringComparer.Ordinal);
-        }
-
-        return milestone.StartsWith("formation.", StringComparison.Ordinal)
-               && SatisfiesFormationPredicate(milestone, state.Formation);
-    }
-
-    public static bool SatisfiesFormationPredicate(string predicate, FormationFeatures? features)
-    {
-        if (features == null)
-        {
-            return false;
-        }
-
-        foreach (var clause in predicate.Split(new[] { " and " }, StringSplitOptions.RemoveEmptyEntries))
-        {
-            var value = clause.Trim();
-            if (TryCompare(value, "formation.frontline_count", features.FrontlineCount)
-                || TryCompare(value, "formation.protected_slot_count", features.ProtectedSlotCount)
-                || TryCompare(value, "formation.flank_rear_exposure_score", features.FlankRearExposureScore)
-                || TryCompare(value, "formation.backline_accessibility", features.BacklineAccessibility))
-            {
-                continue;
-            }
-
-            const string profile = "formation.profile=";
-            if (value.StartsWith(profile, StringComparison.Ordinal)
-                && string.Equals(
-                    ConceptFormationProfile.Classify(features),
-                    value.Substring(profile.Length),
-                    StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private static bool TryCompare(string expression, string key, double actual)
-    {
-        if (!expression.StartsWith(key, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        var suffix = expression.Substring(key.Length);
-        var operators = new[] { ">=", "<=", ">", "<", "=" };
-        var operation = operators.FirstOrDefault(value => suffix.StartsWith(value, StringComparison.Ordinal));
-        if (operation == null
-            || !double.TryParse(suffix.Substring(operation.Length), NumberStyles.Float, CultureInfo.InvariantCulture, out var expected))
-        {
-            return false;
-        }
-
-        return operation switch
-        {
-            ">=" => actual >= expected,
-            "<=" => actual <= expected,
-            ">" => actual > expected,
-            "<" => actual < expected,
-            "=" => Math.Abs(actual - expected) <= 1e-9d,
-            _ => false,
-        };
-    }
-
-    private static int TagCount(IntentTrackState state, string tag)
-        => state.DeployedTagCounts.FirstOrDefault(value => string.Equals(value.TagId, tag, StringComparison.Ordinal))?.Count ?? 0;
-
-    private static HashSet<string> OwnedComponents(IntentTrackState state)
-        => state.OwnedComponentIds
-            .Concat(state.InventoryComponentIds)
-            .Concat(state.SkillIds)
-            .Concat(state.PassiveIds)
-            .Concat(state.ActiveComponentIds)
-            .ToHashSet(StringComparer.Ordinal);
 
     private static IntentTrackState NormalizeState(IntentTrackState state, Relevance relevance)
     {
@@ -414,14 +299,17 @@ public static class IntentTrackEvaluator
             Math.Max(0, state.RefitResource),
             Stable(state.DeployedMemberIds),
             (state.DeployedTagCounts ?? Array.Empty<IntentTrackTagCount>())
-                .Where(value => value != null && !string.IsNullOrWhiteSpace(value.TagId) && value.Count > 0)
+                .Where(value => value != null
+                                && !string.IsNullOrWhiteSpace(value.TagId)
+                                && value.Count > 0
+                                && relevance.BuildTags.Contains(value.TagId))
                 .GroupBy(value => value.TagId, StringComparer.Ordinal)
                 .Select(group => new IntentTrackTagCount(group.Key, group.Max(value => value.Count)))
                 .OrderBy(value => value.TagId, StringComparer.Ordinal)
                 .ToArray(),
             Relevant(state.ActiveComponentIds),
             Relevant(state.ActiveEffectIds),
-            Stable(state.ActiveTeamRuleIds),
+            Stable(state.ActiveTeamRuleIds).Where(relevance.TeamRuleIds.Contains).ToArray(),
             state.Formation,
             Stable(state.CompletedMilestones));
     }
@@ -430,52 +318,22 @@ public static class IntentTrackEvaluator
     {
         var roster = string.Join(",", state.Roster.Select(member => member.MemberId));
         var tags = string.Join(",", state.DeployedTagCounts.Select(value => $"{value.TagId}:{value.Count.ToString(CultureInfo.InvariantCulture)}"));
-        var formation = state.Formation == null
-            ? "-"
-            : string.Join(",",
-                state.Formation.FrontlineCount.ToString(CultureInfo.InvariantCulture),
-                state.Formation.ProtectedSlotCount.ToString(CultureInfo.InvariantCulture),
-                state.Formation.FlankRearExposureScore.ToString("R", CultureInfo.InvariantCulture),
-                state.Formation.BacklineAccessibility.ToString("R", CultureInfo.InvariantCulture));
+        var formation = string.Join(",", relevance.FormationPredicates.Select(predicate =>
+            IntentTrackPredicateEvaluator.SatisfiesFormationPredicate(predicate, state.Formation) ? "1" : "0"));
         return string.Join("|",
             roster,
             string.Join(",", state.InventoryComponentIds),
             string.Join(",", state.SkillIds),
             string.Join(",", state.PassiveIds),
             string.Join(",", state.OwnedComponentIds),
-            state.PassiveBudget.ToString(CultureInfo.InvariantCulture),
-            state.RefitResource.ToString(CultureInfo.InvariantCulture),
-            string.Join(",", state.DeployedMemberIds),
+            relevance.UsesPassiveBudget ? state.PassiveBudget.ToString(CultureInfo.InvariantCulture) : "-",
+            relevance.UsesRefitResource ? state.RefitResource.ToString(CultureInfo.InvariantCulture) : "-",
             tags,
             string.Join(",", state.ActiveComponentIds),
             string.Join(",", state.ActiveEffectIds),
             string.Join(",", state.ActiveTeamRuleIds),
             formation,
             string.Join(",", state.CompletedMilestones));
-    }
-
-    private static bool TryParseCountIdentity(string value, out string tag, out int threshold)
-    {
-        tag = string.Empty;
-        threshold = 0;
-        const string prefix = "build.count_tag(";
-        if (!value.StartsWith(prefix, StringComparison.Ordinal)) return false;
-        var close = value.IndexOf(')', prefix.Length);
-        if (close < 0 || !value.Substring(close + 1).StartsWith(">=", StringComparison.Ordinal)) return false;
-        tag = value.Substring(prefix.Length, close - prefix.Length);
-        return int.TryParse(value.Substring(close + 3), NumberStyles.Integer, CultureInfo.InvariantCulture, out threshold);
-    }
-
-    private static bool TryParseCountMilestone(string value, out string tag, out int required)
-    {
-        tag = string.Empty;
-        required = 0;
-        const string prefix = "build.count_tag(";
-        if (!value.StartsWith(prefix, StringComparison.Ordinal)) return false;
-        var close = value.IndexOf(')', prefix.Length);
-        if (close < 0 || close + 1 >= value.Length || value[close + 1] != '=') return false;
-        tag = value.Substring(prefix.Length, close - prefix.Length);
-        return int.TryParse(value.Substring(close + 2).Split('/')[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out required);
     }
 
     private static void Validate(IntentTrackSearchInput input)
@@ -486,6 +344,8 @@ public static class IntentTrackEvaluator
         {
             throw new ArgumentException("Track identity predicates are required.", nameof(input));
         }
+
+        IntentTrackPredicateEvaluator.RequireSupportedIdentityPredicates(input.Contract.IdentityPredicates);
 
         if (input.CommitWindowIndex < 0 || input.HorizonWindowCount < 0)
         {
@@ -505,7 +365,8 @@ public static class IntentTrackEvaluator
         int IdentityScore,
         int TargetIdentityScore,
         bool IdentityRealized,
-        IReadOnlyList<string> CompletedMilestones);
+        IReadOnlyList<string> CompletedMilestones,
+        IReadOnlyList<IntentTrackIdentityPredicateResult> IdentityPredicateResults);
 
     private sealed record SearchNode(
         IntentTrackState State,
@@ -522,11 +383,22 @@ public static class IntentTrackEvaluator
         IntentTrackState State,
         Assessment Assessment);
 
-    private sealed record Relevance(HashSet<string> SemanticIds)
+    private sealed record Relevance(
+        HashSet<string> SemanticIds,
+        HashSet<string> BuildTags,
+        HashSet<string> TeamRuleIds,
+        IReadOnlyList<string> FormationPredicates,
+        bool UsesPassiveBudget,
+        bool UsesRefitResource)
     {
-        public static Relevance Create(ConceptContract contract)
+        public static Relevance Create(
+            ConceptContract contract,
+            IReadOnlyList<IntentTrackAgencyWindow> windows)
         {
             var ids = new HashSet<string>(StringComparer.Ordinal);
+            var buildTags = new HashSet<string>(StringComparer.Ordinal);
+            var teamRuleIds = new HashSet<string>(StringComparer.Ordinal);
+            var formationPredicates = new HashSet<string>(StringComparer.Ordinal);
             foreach (var value in contract.IdentityPredicates
                          .Concat(contract.ProgressMilestones)
                          .Concat(contract.AllowedSubstitutions)
@@ -536,6 +408,13 @@ public static class IntentTrackEvaluator
                 AddSemanticTail(ids, value, "acquire:");
                 AddSemanticTail(ids, value, "effect.ready:");
                 AddSemanticTail(ids, value, "activate:");
+                AddBuildTag(buildTags, value);
+                AddSemanticTail(teamRuleIds, value, "build.team_rule=");
+                if (value.StartsWith("formation.", StringComparison.Ordinal))
+                {
+                    formationPredicates.Add(value);
+                }
+
                 if (value.IndexOf(':') >= 0
                     && !value.StartsWith("build.", StringComparison.Ordinal)
                     && !value.StartsWith("formation.", StringComparison.Ordinal))
@@ -544,7 +423,15 @@ public static class IntentTrackEvaluator
                 }
             }
 
-            return new Relevance(ids);
+            return new Relevance(
+                ids,
+                buildTags,
+                teamRuleIds,
+                formationPredicates.OrderBy(value => value, StringComparer.Ordinal).ToArray(),
+                windows.SelectMany(value => value.Choices ?? Array.Empty<IntentTrackChoice>())
+                    .Any(value => value.PassiveBudgetCost > 0),
+                windows.SelectMany(value => value.Choices ?? Array.Empty<IntentTrackChoice>())
+                    .Any(value => value.RefitResourceCost > 0));
         }
 
         private static void AddSemanticTail(ISet<string> ids, string value, string marker)
@@ -553,6 +440,28 @@ public static class IntentTrackEvaluator
             if (index >= 0)
             {
                 ids.Add(value.Substring(index + marker.Length));
+            }
+        }
+
+        private static void AddBuildTag(ISet<string> tags, string value)
+        {
+            const string presencePrefix = "build.contains_tag:";
+            if (value.StartsWith(presencePrefix, StringComparison.Ordinal))
+            {
+                tags.Add(value.Substring(presencePrefix.Length));
+                return;
+            }
+
+            const string countPrefix = "build.count_tag(";
+            if (!value.StartsWith(countPrefix, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            var close = value.IndexOf(')', countPrefix.Length);
+            if (close > countPrefix.Length)
+            {
+                tags.Add(value.Substring(countPrefix.Length, close - countPrefix.Length));
             }
         }
     }

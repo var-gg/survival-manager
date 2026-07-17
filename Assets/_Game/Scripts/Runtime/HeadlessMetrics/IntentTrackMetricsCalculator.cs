@@ -21,6 +21,7 @@ public static class IntentTrackMetricsCalculator
         string agencyWindowDefinition,
         string v1LeverCaveat,
         string rightSizeNote,
+        IntentTrackPredicateCoverage predicateCoverage,
         string evaluatorVersion)
     {
         var runs = (runRecords ?? Array.Empty<IntentTrackRunRecord>())
@@ -90,6 +91,7 @@ public static class IntentTrackMetricsCalculator
             AgencyWindowDefinition = agencyWindowDefinition ?? string.Empty,
             V1LeverCaveat = v1LeverCaveat ?? string.Empty,
             RightSizeNote = rightSizeNote ?? string.Empty,
+            PredicateCoverage = predicateCoverage ?? IntentTrackPredicateCoverage.Empty,
             TierSummaries = tiers,
             OwnerAnchorSummaries = owner,
             SystemMedoidSummaries = medoids,
@@ -155,6 +157,33 @@ public static class IntentTrackMetricsCalculator
         var payoffWitnessCount = realized.Count(value => value.PayoffWitnessed);
         var counterCount = runs.Sum(value => value.CounterDecisionCount);
         var retained = runs.Sum(value => value.IdentityRetainedCounterDecisionCount);
+        var variantRuns = runs.SelectMany(value => value.VariantResults).ToArray();
+        var variantSummaries = variantRuns
+            .GroupBy(value => value.VariantId, StringComparer.Ordinal)
+            .OrderBy(group => group.Key, StringComparer.Ordinal)
+            .Select(group =>
+            {
+                var values = group.ToArray();
+                var predicates = values.SelectMany(value => value.IdentityPredicates)
+                    .GroupBy(value => value.Predicate, StringComparer.Ordinal)
+                    .OrderBy(predicateGroup => predicateGroup.Key, StringComparer.Ordinal)
+                    .Select(predicateGroup => new IntentTrackPredicateSummary(
+                        predicateGroup.Key,
+                        predicateGroup.Select(value => value.PredicateKind).Distinct(StringComparer.Ordinal).Single(),
+                        predicateGroup.Count(),
+                        predicateGroup.Count(value => value.Satisfied)))
+                    .ToArray();
+                return new IntentTrackVariantSummary(
+                    group.Key,
+                    values.Select(value => value.AvailabilityTier).Distinct(StringComparer.Ordinal).Single(),
+                    values.Length,
+                    values.Count(value => value.AvailabilityKind == "v1_track"),
+                    values.Count(value => value.AvailabilityKind == "lever_pending"),
+                    values.Count(value => value.AvailabilityKind == "true_unavailable"),
+                    CountById(values.SelectMany(value => value.PendingLeverIds)),
+                    predicates);
+            })
+            .ToArray();
         var pass = captureRate >= 0.70d
                    && captureLcb >= 0.55d
                    && beforeRate >= 0.70d
@@ -182,7 +211,14 @@ public static class IntentTrackMetricsCalculator
             counterCount,
             Rate(retained, counterCount),
             CountById(runs.Select(value => value.GapKind)),
-            pass);
+            pass,
+            variantSummaries.Length,
+            track.Length,
+            variantRuns.Count(value => value.AvailabilityKind == "v1_track"),
+            variantRuns.Count(value => value.AvailabilityKind == "lever_pending"),
+            variantRuns.Count(value => value.AvailabilityKind == "true_unavailable"),
+            CountById(variantRuns.SelectMany(value => value.PendingLeverIds)),
+            variantSummaries);
     }
 
     private static IntentTrackTierSummary EmptyTier(string tier)
@@ -219,10 +255,32 @@ public static class IntentTrackMetricsCalculator
         if (medoidSampleCount < 0) throw new ArgumentOutOfRangeException(nameof(medoidSampleCount));
         if (runs.Any(value => string.IsNullOrWhiteSpace(value.RunId)
                               || string.IsNullOrWhiteSpace(value.ConceptId)
+                              || string.IsNullOrWhiteSpace(value.RepresentativeVariantId)
                               || value.AgencyWindowCount < 0
-                              || value.MaxAgencyDrought < 0))
+                              || value.MaxAgencyDrought < 0
+                              || value.VariantCount <= 0
+                              || value.VariantResults == null
+                              || value.VariantResults.Count != value.VariantCount))
         {
             throw new ArgumentException("Intent track run row is invalid.", nameof(runs));
+        }
+
+        foreach (var run in runs)
+        {
+            var duplicateVariant = run.VariantResults.GroupBy(value => value.VariantId, StringComparer.Ordinal)
+                .FirstOrDefault(group => group.Count() > 1);
+            var v1TrackCount = run.VariantResults.Count(value => value.AvailabilityKind == "v1_track");
+            var pendingCount = run.VariantResults.Count(value => value.AvailabilityKind == "lever_pending");
+            var unavailableCount = run.VariantResults.Count(value => value.AvailabilityKind == "true_unavailable");
+            if (duplicateVariant != null
+                || v1TrackCount + pendingCount + unavailableCount != run.VariantCount
+                || pendingCount != run.LeverPendingVariantCount
+                || unavailableCount != run.TrueUnavailableVariantCount
+                || run.TrackAvailable != (v1TrackCount > 0)
+                || run.TrackAvailable && string.IsNullOrWhiteSpace(run.SelectedTrackVariantId))
+            {
+                throw new ArgumentException($"Intent track variant breakdown is invalid: {run.RunId}", nameof(runs));
+            }
         }
 
         var duplicate = runs.GroupBy(value => value.RunId, StringComparer.Ordinal).FirstOrDefault(group => group.Count() > 1);
@@ -245,6 +303,17 @@ public static class IntentTrackMetricsCalculator
         if (runs.GroupBy(value => (value.ConceptKind, value.ConceptId)).Any(group => group.Count() != seedCount))
         {
             throw new ArgumentException($"Every intent track concept must have exactly {seedCount} seed runs.", nameof(runs));
+        }
+
+
+        if (runs.GroupBy(value => (value.ConceptKind, value.ConceptId)).Any(group =>
+                group.Select(value => string.Join("|", value.VariantResults
+                        .Select(variant => variant.VariantId)
+                        .OrderBy(value => value, StringComparer.Ordinal)))
+                    .Distinct(StringComparer.Ordinal)
+                    .Count() != 1))
+        {
+            throw new ArgumentException("Intent track variant coverage changed across seeds.", nameof(runs));
         }
     }
 }

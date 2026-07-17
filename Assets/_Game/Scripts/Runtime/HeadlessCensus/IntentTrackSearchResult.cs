@@ -15,7 +15,14 @@ public sealed record IntentTrackSearchResult(
     bool Starved,
     int TargetIdentityPredicateCount,
     int FinalIdentityPredicateCount,
-    IReadOnlyList<string> ChoicePath)
+    IReadOnlyList<string> ChoicePath,
+    IReadOnlyList<IntentTrackIdentityPredicateResult> IdentityPredicateResults)
 {
-    public const string CurrentEvaluatorVersion = "intent-track-oracle-bt1-v1";
+    public const string CurrentEvaluatorVersion = "intent-track-oracle-bt1-v2";
 }
+
+/// <summary>선택된 실현 경로 또는 최선 near-miss 상태에서의 identity 술어별 명시 판정.</summary>
+public sealed record IntentTrackIdentityPredicateResult(
+    string Predicate,
+    string PredicateKind,
+    bool Satisfied);

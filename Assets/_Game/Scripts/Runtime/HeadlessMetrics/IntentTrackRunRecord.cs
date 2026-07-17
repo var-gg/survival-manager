@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace SM.HeadlessMetrics;
 
 /// <summary>한 concept×seed campaign의 oracle·policy·payoff 결합 결과.</summary>
@@ -7,6 +10,8 @@ public sealed record IntentTrackRunRecord
     public string ConceptId { get; init; } = string.Empty;
     public string ConceptKind { get; init; } = string.Empty;
     public string AvailabilityTier { get; init; } = string.Empty;
+    public string RepresentativeVariantId { get; init; } = string.Empty;
+    public string SelectedTrackVariantId { get; init; } = string.Empty;
     public int Seed { get; init; }
     public int AgencyWindowCount { get; init; }
     public int BattleCount { get; init; }
@@ -28,4 +33,30 @@ public sealed record IntentTrackRunRecord
     public bool SilentDeadEnd { get; init; }
     public bool RelevantSurfaceGap { get; init; }
     public string GapKind { get; init; } = IntentTrackGapKind.None;
+    public int VariantCount { get; init; }
+    public int LeverPendingVariantCount { get; init; }
+    public int TrueUnavailableVariantCount { get; init; }
+    public int PredicateEvaluationCount { get; init; }
+    public int PredicateCacheHitCount { get; init; }
+    public IReadOnlyList<IntentTrackVariantRunRecord> VariantResults { get; init; } = Array.Empty<IntentTrackVariantRunRecord>();
 }
+
+public sealed record IntentTrackVariantRunRecord(
+    string VariantId,
+    string AvailabilityTier,
+    string AvailabilityKind,
+    IReadOnlyList<string> PendingLeverIds,
+    bool TrackAvailable,
+    int FirstProgressTime,
+    int OracleRealizationTime,
+    int MaxAgencyDrought,
+    bool Starved,
+    int TargetIdentityPredicateCount,
+    int FinalIdentityPredicateCount,
+    IReadOnlyList<string> ChoicePath,
+    IReadOnlyList<IntentTrackPredicateDiagnosticRecord> IdentityPredicates);
+
+public sealed record IntentTrackPredicateDiagnosticRecord(
+    string Predicate,
+    string PredicateKind,
+    bool Satisfied);

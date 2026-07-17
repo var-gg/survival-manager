@@ -96,6 +96,35 @@ public sealed class ConceptCatalogDeriverFastTests
     }
 
     [Test]
+    public void Derive_AllCatalogIdentityPredicateKindsAreExplicitlyEvaluable()
+    {
+        var catalog = ConceptCatalogDeriver.Derive(
+            OwnerConceptAnchorCatalog.CreateRatificationPendingDraft(),
+            _census,
+            HandBuiltGraph(),
+            ObservableWitnesses);
+        var predicates = AllVariants(catalog)
+            .SelectMany(value => value.Contract.IdentityPredicates)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.That(predicates, Is.Not.Empty);
+        var kinds = IntentTrackPredicateEvaluator.RequireSupportedIdentityPredicates(predicates);
+        Assert.That(kinds, Is.SubsetOf(new[]
+        {
+            IntentTrackPredicateEvaluator.BuildTagCountKind,
+            IntentTrackPredicateEvaluator.BuildTagPresenceKind,
+            IntentTrackPredicateEvaluator.OwnedComponentKind,
+            IntentTrackPredicateEvaluator.EffectReadyKind,
+            IntentTrackPredicateEvaluator.TeamRuleKind,
+            IntentTrackPredicateEvaluator.FormationKind,
+        }));
+        Assert.That(
+            predicates.Select(IntentTrackPredicateEvaluator.RequireSupportedIdentityPredicate).Count(),
+            Is.EqualTo(predicates.Length));
+    }
+
+    [Test]
     public void Derive_FailsClosedForUnobservablePayoffWitness()
     {
         var edges = HandBuiltGraph().Edges.Concat(new[]
