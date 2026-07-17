@@ -196,7 +196,7 @@ full reset은 직전 deployment의 모든 hero가 선택 deployment에서 빠진
 | BT6 | 트랙 개방성·에이전시 연속성 | hard | E05 track oracle 실측 평가 | E03, E05 |
 | BT7 | 의도 실현·payoff runway | hard | E05 conditional realization 실측 평가 | E03, E05 |
 | BT8 | 적응형 도달성 | hard | E06 chosen/regret 실측 보존, E07 완결 전 나머지는 `not_yet_evaluable` | E01, E06 |
-| BT9 | 함정 옵션·버그급 지배성 부재 | hard | `not_yet_evaluable` | E08, E09 |
+| BT9 | 함정 옵션·버그급 지배성 부재 | hard | E08 option trap oracle 세 metric 실측 평가 | E08, E09 |
 | BT10 | 베타테스터 재미·재시도 two-key | hard | `not_yet_evaluable` | E04, E05, E07 |
 
 아직 `evaluable_now=false`인 게이트는 임계치가 미정이라는 뜻이 아니다. 임계치는 스펙에 동결되어 있지만 해당 envelope가 아직 완전한 metric supplier를 제공하지 않았다는 뜻이다. 일반 모드에서는 `not_yet_evaluable`과 `pass=null`을 출력해 조기 PASS/FAIL을 주장하지 않는다. 최종 RC strict 모드에서는 이를 FAIL로 취급한다.
@@ -221,6 +221,21 @@ run별 핵심 값은 `TrackAvailable`, `FirstProgressTime`, `OracleRealizationTi
 run의 실패 원인은 상호배타적으로 내린다. v1 경로는 없지만 닫힌 future lever가 필요한 variant가 있으면 `lever_pending`, 그런 설명도 없으면 `agency_gap`이다. v1 경로가 있고 정책이 놓쳤으며 관련 E02 subject 위반이 있으면 `surface_gap`, 관련 위반이 없으면 `policy_gap`, 정책이 identity를 실현했지만 이후 전투 telemetry/beat에서 계약 payoff가 없으면 `combat_gap`이다. 실현과 payoff까지 있으면 `none`이다.
 
 비율 하한은 `z=1.6448536269514722`인 one-sided 95% Wilson score lower bound를 쓴다. 기본 owner 표본은 10 anchor×16 seed이며 각 run에서 E03 owner variant 87개 전체를 anchor별 OR로 평가한다. 첫 stable variant는 coverage policy intent로만 유지하고 oracle 개방성 정의에는 사용하지 않는다. system medoid는 `isomorphic_recipe_count` 내림차순과 stable variant id로 고른 대표 N개만 v1에 포함한다. 출력 `intent_track_report.json` schema v2는 run·anchor·variant별 술어 판정, `v1_track`/`lever_pending`/`true_unavailable` 분해, predicate coverage, tier, gap 분포, BT6/BT7 공급 metric과 현재 PASS/FAIL을 invariant snake_case·ordinal order·UTF-8 no-BOM으로 기록하고 wallclock/GUID를 포함하지 않는다.
+
+### BT1-E08 option trap oracle
+
+`SM.HeadlessCensus.OptionWitnessContractDeriver`는 E02 truth graph의 actionable 스킬·아이템·어픽스·패시브 노드·어그먼트 source에서 `produces`, `amplifies`, `pays_off` promise와 `requires`, `acquired_by`, 동급 comparator를 자동 파생한다. 수동 옵션 카탈로그나 별도 밸런스 수치를 두지 않는다. 순수 계약·판정·결정적 writer는 `SM.HeadlessCensus`에, authored snapshot 투영과 실제 `GameSessionState`/`BattleResolver` 실행은 `SM.Editor.Validation`에 둔다. 새 asmdef나 참조 방향은 추가하지 않는다.
+
+판정은 다음 네 단계를 순서대로 수행한다.
+
+1. Stage A는 전체 옵션을 대상으로 strongly typed authored payload, 합법 prerequisite/tag 문맥, promise 방향과 실제 상태 변경 가능성을 대조한다. 조건 충족 상태에서 fired/effect가 전수 0, 부호 반전, 비용 소비 뒤 상태 hash 동일, 영구 도달 불가능 prerequisite는 기계 결함 후보이며 오너 큐로 올린다.
+2. Stage B는 Stage A 후보와 고정 seed SHA-256 순서로 뽑은 건강 표본 12종에 대해 같은 build·placement·enemy·seed에서 옵션 source 하나만 바꾼다. 빈 슬롯·미선택·예산 보존·skip baseline과 동급 sibling 하나를 각각 comparator로 실행한다. 결과는 승패, 잔존 HP, 잔존 자원, concept milestone, 고유 payoff witness, continuation의 여섯 독립 차원으로 보존하며 단일 가중합을 만들지 않는다.
+3. Stage C는 옵션의 `requires` predicate를 양쪽 pair에 동일하게 만족시킨 intended context에서만 비교한다. 기본 screening은 census medoid 8개와 설정 seed만 사용한다. screening이 trap 또는 dominant 임계치에 도달한 후보만 한 build의 360개 전체 배치로 재실행한다.
+4. Stage D는 후보에만 기존 `IntentTrackEvaluator`를 호출해 option/comparator의 최선 합법 continuation을 비교한다. 고유 후속 이점이 있으면 당장 약한 enabler를 trap으로 확정하지 않는다.
+
+`confirmed_trap`은 고유 도달 가능 concept unlock이 0이고, intended pair의 95% 이상에서 comparator가 non-worse이며 50% 이상에서 핵심 차원 하나 이상 strictly better이고, 후보 전용 full census에 option positive witness가 없고, continuation 고유 이점도 없을 때만 true다. 기계 결함의 자동 확정급 표시는 이 보수적 confirmed 규칙을 우회하지 않으며 owner review 우선순위만 높인다. 대칭 `bug_grade_dominant`는 동급 대안 대비 95% 이상 non-worse, 80% 이상 strictly better, median paired win uplift 25%p 이상, 명시적 trade-off 없음일 때 오너 정밀검사 trigger로만 기록한다.
+
+`option_trap_report.json`은 `TrapOptionEvidence`, 표본 계획, owner verdict queue와 report 본문 SHA-256 재현 hash를 invariant snake_case·ordinal order·UTF-8 no-BOM으로 기록한다. BT9에는 `confirmed_trap_count`, `unresolved_mechanical_defect_count`, `bug_grade_dominant_count`만 공급한다. runner와 wrapper는 후보를 콘텐츠나 수치에 반영하지 않으며, 수정은 오너 verdict 뒤 별도 patch 작업에서만 가능하다.
 
 ### H100-RC1 migration map
 
@@ -260,6 +275,12 @@ pwsh -File tools/h100-intent-track.ps1
 pwsh -File tools/h100-intent-track.ps1 -SeedCount 16 -SystemMedoidSampleCount 0 -Levers deployment,reward,recruit,level_node,refit
 ```
 
+E08 option trap 실측은 전체 Stage A 뒤 후보와 건강 표본만 medoid pair로 실행한다. 확인 후보가 생길 때만 360개 전체 배치가 추가된다. BT9의 측정 FAIL은 리포트하되 wrapper 실패나 자동 튜닝으로 바꾸지 않는다.
+
+```powershell
+pwsh -File tools/h100-trap-oracle.ps1 -SeedCount 2 -MedoidCount 8 -HealthySampleCount 12
+```
+
 64-seed RC 경로는 `-SeedCount 64`를 명시한다. 반복 결정성은 같은 인자로 별도 output directory에 두 번 실행한 `intent_track_report.json`의 byte hash 일치로 검증한다.
 
 대량 실행은 같은 명령에서 수를 명시한다. `BattleCount`는 같은 입력을 반복하는 replay group 수이며 실제 battle record 수는 replay copy 수만큼 증가한다.
@@ -276,6 +297,7 @@ wrapper는 Unity batch execute-method로 실제 content/session/simulator 경로
 pwsh -File tools/unity-bridge.ps1 test-batch-fast
 pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 pwsh -File tools/h100-surface-audit.ps1
+pwsh -File tools/h100-trap-oracle.ps1
 pwsh -File tools/h100-metrics.ps1 -BattleCount 4 -CampaignCount 1 -ReplayCopies 2
 ```
 

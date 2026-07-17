@@ -21,7 +21,10 @@ public sealed record BuildGrammarTruthSource(
     CombatModifierPackage? ModifierPackage = null,
     CombatRuleModifierPackage? RulePackage = null,
     IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null,
-    TeamSynergyTierRule? SynergyRule = null);
+    TeamSynergyTierRule? SynergyRule = null,
+    string ComparatorGroupId = "",
+    string BudgetBand = "",
+    bool HasVisibleTradeoff = false);
 
 public static class BuildGrammarSubjectKind
 {

@@ -136,7 +136,7 @@
       "name_ko": "함정 옵션·버그급 지배성 부재",
       "measurement": "intended context의 기계 witness, paired counterfactual과 dominance 확인",
       "role": "hard",
-      "evaluable_now": false,
+      "evaluable_now": true,
       "depends_on_envelope": ["E08", "E09"],
       "legacy_gate_ids": ["integrity_reproducibility", "build_ecology", "formation_significance", "depth_causality"],
       "thresholds": [

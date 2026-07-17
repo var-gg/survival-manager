@@ -11,6 +11,9 @@ namespace SM.Editor.Validation;
 internal static class H100BuildGrammarTruthProjector
 {
     public static BuildGrammarTruthGraph Project(CombatContentSnapshot snapshot)
+        => BuildGrammarTruthGraphBuilder.Build(ProjectSources(snapshot));
+
+    internal static IReadOnlyList<BuildGrammarTruthSource> ProjectSources(CombatContentSnapshot snapshot)
     {
         if (snapshot == null)
         {
@@ -33,8 +36,13 @@ internal static class H100BuildGrammarTruthProjector
                 value.AcquisitionPaths.Count > 0,
                 SlotId: CompiledSkillSlots.Normalize(value.Skill.SlotKind),
                 AcquisitionPaths: value.AcquisitionPaths.OrderBy(path => path, StringComparer.Ordinal).ToArray(),
-                Skill: value.Skill)));
-        return BuildGrammarTruthGraphBuilder.Build(sources);
+                Skill: value.Skill,
+                ComparatorGroupId: $"skill:{CompiledSkillSlots.Normalize(value.Skill.SlotKind)}",
+                BudgetBand: $"slot:{CompiledSkillSlots.Normalize(value.Skill.SlotKind)}")));
+        return sources
+            .OrderBy(source => source.SubjectKind, StringComparer.Ordinal)
+            .ThenBy(source => source.SubjectId, StringComparer.Ordinal)
+            .ToArray();
     }
 
     private static void AddArchetypes(
@@ -93,7 +101,9 @@ internal static class H100BuildGrammarTruthProjector
                     .Append(item?.WeaponFamilyTag ?? string.Empty)),
                 AcquisitionPaths: new[] { "reward" },
                 GrantedSkillIds: granted.Select(skill => skill.Id).ToArray(),
-                ModifierPackage: package));
+                ModifierPackage: package,
+                ComparatorGroupId: $"item:{ResolveItemSlot(itemId, item)}",
+                BudgetBand: "same-runtime-rarity"));
             foreach (var skill in granted)
             {
                 AddSkill(skills, skill, "reward");
@@ -124,7 +134,9 @@ internal static class H100BuildGrammarTruthProjector
                 ExcludedTags: StableIds(affix?.ExcludedTags),
                 AcquisitionPaths: new[] { "refit" },
                 ModifierPackage: package,
-                RulePackage: affix?.RulePackage));
+                RulePackage: affix?.RulePackage,
+                ComparatorGroupId: "affix:single-slot",
+                BudgetBand: "authored-single-affix"));
         }
     }
 
@@ -152,7 +164,10 @@ internal static class H100BuildGrammarTruthProjector
                 AcquisitionPaths: new[] { "reward" },
                 ModifierPackage: package,
                 RulePackage: augment?.RulePackage,
-                TriggeredEffects: augment?.TriggeredEffects));
+                TriggeredEffects: augment?.TriggeredEffects,
+                ComparatorGroupId: $"augment:{augment?.FamilyId ?? "unclassified"}:{(augment?.IsPermanent == true ? "permanent" : "temporary")}",
+                BudgetBand: $"tier:{augment?.Tier ?? 0}",
+                HasVisibleTradeoff: HasExplicitRiskRewardTradeoff(augment?.RiskRewardClass)));
         }
     }
 
@@ -178,7 +193,9 @@ internal static class H100BuildGrammarTruthProjector
                 AcquisitionPaths: new[] { "level_node" },
                 GrantedSkillIds: grantedSkillIds,
                 ModifierPackage: passive.Package,
-                RulePackage: passive.RulePackage));
+                RulePackage: passive.RulePackage,
+                ComparatorGroupId: $"passive:{passive.BoardId}:{passive.NodeKind}",
+                BudgetBand: $"depth:{passive.BoardDepth}"));
             if (!string.IsNullOrWhiteSpace(passive.GrantedSkillId)
                 && snapshot.SkillCatalog.TryGetValue(passive.GrantedSkillId, out var grantedSkill))
             {
@@ -259,6 +276,22 @@ internal static class H100BuildGrammarTruthProjector
             .Distinct(StringComparer.Ordinal)
             .OrderBy(id => id, StringComparer.Ordinal)
             .ToArray();
+
+    private static bool HasExplicitRiskRewardTradeoff(string? riskRewardClass)
+        => !string.IsNullOrWhiteSpace(riskRewardClass)
+           && riskRewardClass.IndexOf("risk", StringComparison.OrdinalIgnoreCase) >= 0;
+
+    private static string ResolveItemSlot(string itemId, ItemTemplate? item)
+    {
+        if (!string.IsNullOrWhiteSpace(item?.WeaponFamilyTag)) return "weapon";
+        if (itemId.IndexOf("armor", StringComparison.OrdinalIgnoreCase) >= 0
+            || itemId.IndexOf("plate", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return "armor";
+        }
+
+        return "trinket";
+    }
 
     private sealed class SkillSourceAccumulator
     {
