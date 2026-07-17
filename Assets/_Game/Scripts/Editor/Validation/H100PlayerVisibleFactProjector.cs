@@ -195,7 +195,7 @@ internal static class H100PlayerVisibleFactProjector
             var mechanics = H100PlayerVisibleMechanicsFactFormatter.EnemyUnit(unit);
             Add(
                 drafts,
-                $"enemy.unit.{index.ToString(CultureInfo.InvariantCulture)}",
+                HeadlessPolicyEvidence.EnemyUnitSignal(index),
                 PlayerVisibleUiSource.EncounterPreview,
                 unit.ArchetypeId,
                 "shows_role_and_anchor",
@@ -244,7 +244,7 @@ internal static class H100PlayerVisibleFactProjector
         var summary = H100PlayerVisibleMechanicsFactFormatter.Hero(hero);
         Add(
             drafts,
-            $"hero.{hero.HeroId}",
+            HeadlessPolicyEvidence.HeroSignal(hero.HeroId),
             PlayerVisibleUiSource.TownRoster,
             hero.HeroId,
             "shows_roster_state",
@@ -258,7 +258,7 @@ internal static class H100PlayerVisibleFactProjector
             var mechanics = H100PlayerVisibleMechanicsFactFormatter.Skill(skill);
             Add(
                 drafts,
-                $"hero.{hero.HeroId}.skill.{skill.SkillId}",
+                HeadlessPolicyEvidence.HeroSkillSignal(hero.HeroId, skill.SkillId),
                 PlayerVisibleUiSource.RosterSheetSkill,
                 skill.SkillId,
                 "describes_mechanics",

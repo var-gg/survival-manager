@@ -77,7 +77,7 @@ internal static class H100SunkenOracleCaseFactory
         return cases;
     }
 
-    private static H100SunkenOracleCase BuildPolicyChoice(
+    internal static H100SunkenOracleCase BuildPolicyChoice(
         SaveProfile profile,
         CombatContentSnapshot combatSnapshot,
         HeadlessDeploymentDecision decision,

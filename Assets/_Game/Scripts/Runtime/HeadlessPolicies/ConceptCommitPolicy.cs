@@ -11,21 +11,38 @@ namespace SM.HeadlessPolicies;
 public sealed class ConceptCommitPolicy : IHeadlessPolicy
 {
     public const string PolicyId = "concept-commit-v1";
+    public const string PreviewGroundedPolicyId = "concept-preview-grounded-v1";
 
     private readonly HeadlessConceptIntent _injectedIntent;
+    private readonly string _policyId;
+    private readonly bool _usesPreviewGroundedSelection;
     private readonly List<HeadlessIntentDecision> _decisionTrace = new();
     private HeadlessConceptIntent _intent;
     private IntentState _state;
 
     public ConceptCommitPolicy(HeadlessConceptIntent coverageIntent = null)
+        : this(coverageIntent, PolicyId, usesPreviewGroundedSelection: false)
     {
-        _injectedIntent = coverageIntent;
     }
 
-    public string Id => PolicyId;
+    private ConceptCommitPolicy(
+        HeadlessConceptIntent coverageIntent,
+        string policyId,
+        bool usesPreviewGroundedSelection)
+    {
+        _injectedIntent = coverageIntent;
+        _policyId = policyId;
+        _usesPreviewGroundedSelection = usesPreviewGroundedSelection;
+    }
+
+    public static ConceptCommitPolicy CreatePreviewGrounded(HeadlessConceptIntent coverageIntent = null)
+        => new(coverageIntent, PreviewGroundedPolicyId, usesPreviewGroundedSelection: true);
+
+    public string Id => _policyId;
     public HeadlessConceptIntent CurrentIntent => _intent;
     public IntentState CurrentState => _state;
     public IReadOnlyList<HeadlessIntentDecision> DecisionTrace => _decisionTrace;
+    public PreviewGroundedDecisionTrace LastPreviewDecision { get; private set; }
 
     public HeadlessIntentDecision LastIntentDecision
         => _decisionTrace.Count == 0
@@ -43,11 +60,22 @@ public sealed class ConceptCommitPolicy : IHeadlessPolicy
 
         // 반드시 action 선택 전에 hypothesis를 선언한다. payoff 관측 index는 이 정책 표면에 없으므로 -1이다.
         var hypothesis = DeclareHypothesis(evidence);
-        var selection = ConceptIntentSelector.SelectDeployment(_intent, _state, observation);
+        var previewSelection = _usesPreviewGroundedSelection
+            ? PreviewGroundedConceptSelector.Select(_intent, _state, observation)
+            : null;
+        var selection = previewSelection?.Deployment
+                        ?? ConceptIntentSelector.SelectDeployment(_intent, _state, observation);
+        if (previewSelection != null)
+        {
+            LastPreviewDecision = previewSelection.Trace;
+            evidence = HeadlessPolicyEvidence.ForSignals(observation, previewSelection.EvidenceSignalKeys);
+        }
+
         var action = HeadlessPolicyScoring.PlacementSignature(selection.Placements);
-        var rationale = Rationale(
-            selection.Reason,
-            $"progress={selection.ProgressScore};milestones={selection.CompletedMilestones.Count}");
+        var detail = previewSelection == null
+            ? $"progress={selection.ProgressScore};milestones={selection.CompletedMilestones.Count}"
+            : PreviewRationale(selection, previewSelection.Trace);
+        var rationale = Rationale(selection.Reason, detail);
         RecordDecision(
             "deployment",
             action,
@@ -234,6 +262,17 @@ public sealed class ConceptCommitPolicy : IHeadlessPolicy
 
     private string Rationale(string reason, string detail)
         => $"intent_reason={reason};intent={_intent.IntentId};lane={_intent.SourceLane};{detail}";
+
+    private static string PreviewRationale(
+        ConceptDeploymentSelection selection,
+        PreviewGroundedDecisionTrace trace)
+        => $"progress={selection.ProgressScore};milestones={selection.CompletedMilestones.Count}"
+           + $";threats={string.Join(",", trace.ThreatTags)}"
+           + $";counter_links={trace.CounterConnections.Count}"
+           + $";formation_rule={trace.FormationRule}"
+           + $";identity_preserved={trace.CoreIdentityPreserved.ToString().ToLowerInvariant()}"
+           + $";replacements={trace.ReplacementCount}"
+           + $";full_reset={trace.IsFullReset.ToString().ToLowerInvariant()}";
 
     private static void ValidateIntent(HeadlessConceptIntent intent)
     {

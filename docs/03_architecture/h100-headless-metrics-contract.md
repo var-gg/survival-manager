@@ -135,6 +135,25 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 
 기본 출력 위치는 `Logs/h100-sunken-diagnosis/`이며 `arrival-snapshots.jsonl`, `oracle-candidates.jsonl`, `sunken-diagnosis.json`을 stable order와 UTF-8 no-BOM으로 기록한다. 실제 policy 선택은 한 번 더 재생해 seed 열과 replay manifest가 일치해야 하며, build/compose/예외 후보가 하나라도 있으면 runner는 실패한다.
 
+## E06 preview policy acceptance
+
+`H100PreviewPolicyAcceptanceRunner`는 기존 production 정책 6개로 `site_ashen_gate`, `site_wolfpine_trail`, `site_sunken_bastion` 진입 직전 상태를 각각 캡처한다. 캡처마다 preview-grounded 정책을 현재 가시 observation으로 한 번 선택하고, 그 뒤에만 evaluator가 같은 state·battle seed로 paired replay를 실행한다. 정책 assembly는 site ID, replay 결과, oracle 후보, census 결과를 읽지 않는다.
+
+sunken은 보유 roster에서 가능한 합법 4인 편성 전수와 Stage 3의 8개 placement medoid를 oracle 후보로 재생하고 preview 정책 선택을 같은 seed에 대조한다. 두 heldout site는 해당 arrival을 만든 기존 정책 선택과 preview 정책 선택의 completion을 paired 비교한다. evidence 검사는 모든 `counter-adapt` 연결의 enemy preview signal과 hero skill signal이 decision 이전 fact index에 있고 실제 `EvidenceFactIds`로 인용됐는지 확인한다.
+
+acceptance는 다음 hard AND다.
+
+- sunken chosen win rate 70% 이상
+- sunken oracle 대비 selection regret 25%p 이하
+- unsupported counter decision 0
+- heldout site 2개 이상이며 각 site의 기존 정책 대비 completion 저하 최대 10%p
+- identity-preserving 후보가 있던 결정의 불필요 full reset rate 20% 이하
+- technical failure 0
+
+full reset은 직전 deployment의 모든 hero가 선택 deployment에서 빠진 경우다. `replacement_count`는 빠진 기존 hero 수이고, 직전 deployment가 비어 있으면 full reset으로 세지 않는다. 기본 출력은 `Logs/h100-preview-policy/preview-policy-arrivals.jsonl`, `preview-policy-sunken-candidates.jsonl`, `preview-policy-pairs.jsonl`, `preview-policy-acceptance.json`이다. 각 paired row는 baseline/preview build와 placement, 선택 hero ID, formation rule, threat tags, counter evidence 판정, replacement/full reset을 보존한다.
+
+`preview-policy-acceptance.json`은 BT8의 `oracle_0_8_blocker_chosen_win_rate`와 `oracle_0_8_blocker_selection_regret` 두 metric을 실제 관측치로 공급한다. `H100Bt1GateEvaluator`는 `evaluable_now=false` 게이트에서도 공급된 임계치를 평가·보존한다. 관측 실패는 즉시 gate FAIL이지만, 두 metric이 PASS해도 completion·LCB·family witness·hard wall 공급이 끝나기 전 BT8 전체는 `not_yet_evaluable`, `pass=null`을 유지한다.
+
 ## 재현 해시
 
 `ReplayHash`는 새 전투 상태 정규화를 만들지 않는다. 기존 `BattleStateCanonicalHash.Compute(finalState)` 결과와 기존 activity telemetry replay hash를 길이-prefix된 UTF-8 바이트로 결합해 `H100ReplayHashV1`을 계산한다.
@@ -175,7 +194,7 @@ one-site lookback oracle은 직전 site의 reward option과 그 직후 가능한
 | BT5 | 욕구 형성·커밋 | hard | `not_yet_evaluable` | E04, E07 |
 | BT6 | 트랙 개방성·에이전시 연속성 | hard | E05 track oracle 실측 평가 | E03, E05 |
 | BT7 | 의도 실현·payoff runway | hard | E05 conditional realization 실측 평가 | E03, E05 |
-| BT8 | 적응형 도달성 | hard | `not_yet_evaluable` | E01, E06 |
+| BT8 | 적응형 도달성 | hard | E06 chosen/regret 실측 보존, E07 완결 전 나머지는 `not_yet_evaluable` | E01, E06 |
 | BT9 | 함정 옵션·버그급 지배성 부재 | hard | `not_yet_evaluable` | E08, E09 |
 | BT10 | 베타테스터 재미·재시도 two-key | hard | `not_yet_evaluable` | E04, E05, E07 |
 
@@ -268,6 +287,12 @@ Sunken Stage 5의 방향 판별 runner는 다음 명령으로 검증한다. 기�
 
 ```powershell
 pwsh -File tools/h100-sunken-diagnosis.ps1
+```
+
+E06 preview policy는 arrival capture, sunken oracle, 두 heldout paired replay, evidence와 reset 판정을 한 번에 실측한다. metric이 기준 미달이면 report에는 `status=fail`을 정직하게 남기되 정상적인 측정 완료 자체를 wrapper 오류로 바꾸지 않는다.
+
+```powershell
+pwsh -File tools/h100-preview-policy.ps1
 ```
 
 ## 현재 한계와 후속

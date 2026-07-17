@@ -16,7 +16,7 @@
 
 ## 경계와 observation whitelist
 
-`SM.HeadlessPolicies`는 `SM.Combat`만 참조하는 `noEngineReferences=true` asmdef다. 공개 API는 `IHeadlessPolicy`, observation/decision value contract, 여섯 production 정책과 QA 전용 `CoveragePolicy`, factory, guard다. session, content lookup, authored object, persistence, editor API를 constructor나 method로 받지 않는다.
+`SM.HeadlessPolicies`는 `SM.Combat`만 참조하는 `noEngineReferences=true` asmdef다. 공개 API는 `IHeadlessPolicy`, observation/decision value contract, 여섯 production 정책, QA 전용 `CoveragePolicy`, BT1 컨셉 정책, factory, guard다. session, content lookup, authored object, persistence, editor API를 constructor나 method로 받지 않는다.
 
 정책 observation에 허용되는 정보는 다음과 같다.
 
@@ -47,8 +47,9 @@
 | `competent-counter-adaptive-v1` | 현재 공개 enemy class/anchor preview에 대응하는 roster/배치 우선 |
 | `competent-search-planner-v1` | 공개 상태에서 상위 roster 조합과 legal anchor permutation을 최대 4,096개 평가하는 bounded 1-ply |
 | `qa-formation-coverage-v1` | 힐러·역할 완비·독트린·다섯 진형 채널용 anchor 조건을 결정적으로 표본화하는 발동 가능성 전용 QA 정책 |
+| `concept-preview-grounded-v1` | 현재 enemy preview를 site 식별자 없이 threat profile로 파싱하고, 기존 컨셉을 보존하면서 가시 counter 증거가 있는 편성·배치를 선택하는 E06 정책 |
 
-네 유능 정책의 canonical ID는 `H100GateEvaluator`가 `competent` cohort로 집계할 수 있도록 `competent-` 접두사를 고정한다. `qa-formation-coverage-v1`은 production 정책 목록에서 제외하며 유능 플레이나 밸런스 가치를 주장하지 않는다. 짧은 별칭은 factory 입력에서만 허용하고 metric에는 canonical ID를 기록한다.
+네 유능 정책의 canonical ID는 `H100GateEvaluator`가 `competent` cohort로 집계할 수 있도록 `competent-` 접두사를 고정한다. `qa-formation-coverage-v1`과 `concept-preview-grounded-v1`은 production 정책 목록에서 제외하며 유능 cohort나 밸런스 가치를 주장하지 않는다. factory의 기존 `ProductionPolicyIds` 6개와 `AllPolicyIds` 7개는 byte·순서 호환을 보존하고, E06까지 포함하는 실행 표면은 `RegisteredPolicyIds`로 분리한다. 짧은 별칭은 factory 입력에서만 허용하고 metric에는 canonical ID를 기록한다.
 
 모든 decision은 `Rationale`, finite `EstimatedValue`, 하나 이상의 `EvidenceFactIds`를 반환한다. observation에는 `SM.Editor.Validation` projector가 만든 signal key→fact id index만 additive로 들어가며 fact schema나 ledger 구현은 정책 assembly에 노출되지 않는다. runner는 policy/kind/chapter/site/seed/value/reason을 단일 행 로그로 남기고 별도 fact ledger에 action과 evidence link를 기록한다. `HeadlessPolicyGuard`는 observation과 action의 null, 중복, 범위, legal set, finite value, 빈·중복 evidence id를 fail closed한다. fact 존재와 결정 시점은 `SM.HeadlessMetrics.PlayerVisibleFactLedgerAuditor`를 호출하는 Editor 조립층이 검증한다.
 
@@ -63,6 +64,7 @@
 | `competent-counter-adaptive-v1` | roster, legal deployment surface, 현재 enemy preview | reward surface의 counter payload |
 | `competent-search-planner-v1` | roster, legal deployment surface, 현재 enemy preview | reward surface, deployed roster identity |
 | `qa-formation-coverage-v1` | seed, roster role/class, legal deployment surface, enemy preview | reward surface, deployed roster identity |
+| `concept-preview-grounded-v1` | 컨셉 intent/state, roster와 hero skill, legal deployment surface, 현재 enemy preview의 threat 신호와 연결된 hero skill 신호 | 기존 `ConceptCommitPolicy` reward evidence 계약 유지 |
 
 `random-legal-v1`의 무작위 선택도 외부 RNG state가 아니라 player-visible observation에 고정된 decision seed fact를 인용한다. 모든 reward option이 없는 결정도 빈 reward surface fact를 근거로 `option=-1`을 반환한다. 정책이 읽지 않은 wallet, item mechanics, synergy catalog 전체를 편의상 모두 인용하지 않는다.
 
@@ -91,6 +93,29 @@
 | `counter-adapt` | 공개 threat skull 또는 공개 HP가 전멸 위험을 나타내어 identity를 최대한 보존한 counter 선택 |
 | `pivot` | 진전 없는 결정이 두 번째 이어져 선언된 pivot condition을 실행하는 선택 |
 | `abandon` | pivot 뒤에도 진전·유효 대체가 없어 현재 intent를 종료하는 선택 |
+
+## E06 preview-grounded 적응 계약
+
+`EnemyThreatObservation`은 현재 preview에서 읽을 수 있는 unit별 `visible_index`, archetype/race/class/role/default anchor, threat skull, boss aura·utility tag, difficulty band만 운반한다. encounter ID와 site ID 필드는 DTO에 존재하지 않으며 parser와 selector는 campaign snapshot, future node, simulator, census·oracle 결과를 받지 않는다. 원본 observation의 chapter/site id는 provenance 기록에 남을 수 있지만 threat 해석이나 선택 키에는 참여하지 않는다.
+
+parser가 생성하는 threat 어휘와 허용 counter 연결은 다음과 같다. 왼쪽 위협을 만든 preview fact와 오른쪽 capability를 입증한 hero skill fact가 함께 존재해야 한 연결로 인정한다.
+
+| threat tag | 가시 판정 | counter capability | hero 쪽 가시 근거 |
+| --- | --- | --- | --- |
+| `backline_firepower` | 후열 firepower unit 2개 이상 | `priority_access` | `LowestHpEnemy`/`MostExposedEnemy` target과 사거리·ranged/projectile delivery 또는 duelist class |
+| `sustain_engine` | support/healer 계열 unit 또는 heal/regen/sustain/recovery boss tag | `sustain_disruption` | silence/bleed/wound status 또는 self가 아닌 debuff |
+| `frontline_wall` | 전열 wall unit 2개 이상 또는 guard/shield/barrier/bulwark/fortress boss tag | `wall_break` | sunder/exposed/armor_break status |
+| `high_pressure` | threat skull 4 이상 또는 lethal/deadly/boss/extreme difficulty | `protection` | heal/shield skill 또는 guarded/barrier/shield status |
+| `control_pressure` | controller/disruptor/hexer unit 또는 control/stun/root/snare/silence boss tag | `control_resistance` | unstoppable/cleanse/immunity status |
+| `swarm_pressure` | preview unit 5개 이상 | `area_pressure` | nova/zone/trap delivery |
+
+selector는 가중합이나 전투 rollout을 쓰지 않는다. 먼저 threat tag와 그 evidence를 고정하고, core identity를 유지할 수 있는 후보가 하나라도 있으면 그 후보군만 남긴다. 그 안에서 위협 coverage와 threat-to-capability 연결 강도를 비교하고, 역할 붕괴·생존 불가능 후보는 역할 가능한 후보가 있을 때 hard scope에서 제거한다. 그 다음 이미 달성한 milestone을 더 많이 보존하는 후보, 이전 배치 hero 교체 수가 적은 후보, 포기 투자량이 적은 후보, hero stable ID, placement stable ID 순으로 결정한다. 새 milestone의 총량이 아니라 이전 `IntentState`와 교집합인 보존 milestone만 이 순서에 참여한다.
+
+identity-preserving 후보가 없을 때만 기존 E04 reason vocabulary의 `pivot`을 사용한다. counter를 주장하는 `counter-adapt`는 threat fact→capability 판정→hero skill fact 연결이 하나 이상 없으면 `PreviewGroundedEvidenceGuard`가 fail closed한다. rationale과 decision trace에는 threat tags, counter 연결, formation rule, identity 보존 가능 여부, 교체 수, full reset 여부를 남긴다.
+
+formation은 site별 해답을 하드코딩하지 않고 같은 가시 profile과 hero capability에만 의존한다. 기본 role row 외에 backline+sustain의 stable priority screen과 backline+wall+sustain의 protected breaker, center break, durable multi-entry 규칙을 제공하며, HP는 공개 band 선택에만 사용한다.
+
+E06에서 `replacement_count`는 직전 deployment에 있었으나 새 deployment에서 빠진 hero 수다. `full_reset`은 직전 deployment가 비어 있지 않고 그 hero 전원이 새 deployment에서 빠진 경우, 즉 `replacement_count == previous_deployment_count`일 때만 true다. identity-preserving 후보가 있던 결정만 불필요 full reset 분모에 포함한다.
 
 ## hypothesis, commit_t, intent trace
 
@@ -148,6 +173,8 @@ pwsh -File tools/h100-intent-trace.ps1 -SeedCount 8 -Lanes both -CoverageAnchorI
 각 lane의 `intent_trace_summary.json`에서 `missing_trace_count=0`, `hidden_fact_use_count=0`, `campaigns_with_commit=8`을 요구한다. 같은 seed와 intent의 policy decision 및 JSONL은 byte-identical이어야 한다. 현재 action surface는 deployment와 reward 두 종류뿐이며 영입, node, Refit decision point 개방은 E07 범위다.
 
 BT1-E05는 coverage lane을 E03 owner anchor별로 다시 실행하지만 정책 계약을 넓히지 않는다. 정책의 coverage intent는 첫 stable variant 하나로 고정하되, campaign 종료 후 oracle은 같은 offer stream에 anchor의 모든 E03 variant를 대조해 OR 개방성을 계산한다. `H100CampaignCorpusRunner`의 optional observer가 결정 전 배치·보상 표면과 전투 후 payoff만 복제하고, campaign 종료 뒤 Editor adapter가 순수 `IntentTrackEvaluator`에 DTO를 전달한다. 정책은 자기 `HeadlessConceptIntent`, 현재 player-visible observation, 누적 `IntentState`만 보며 oracle search result, 다른 선택지의 미래 결과, 이후 offer stream은 읽지 않는다. 기본 실측 진입점은 `pwsh -File tools/h100-intent-track.ps1`이다.
+
+BT1-E06 acceptance는 `SM.Editor.Validation`에서만 same-state replay와 oracle을 조립한다. 정책은 그 결과를 입력으로 받지 않는다. 기본 실측 진입점은 `pwsh -File tools/h100-preview-policy.ps1`이며 sunken chosen win rate 70% 이상, selection regret 25%p 이하, unsupported counter 0, 두 heldout site의 기존 정책 대비 최대 저하 10%p 이하, 불필요 full reset 20% 이하를 모두 요구한다. 산출물과 부분 BT8 공급 계약은 `h100-headless-metrics-contract.md`가 소유한다.
 
 ## deferred
 

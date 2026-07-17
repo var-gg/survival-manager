@@ -144,6 +144,38 @@ public sealed class H100Bt1GateSpecTests
     }
 
     [Test]
+    public void Bt8PendingGate_PreservesSuppliedBlockerMetricsAndLeavesE07MetricsPending()
+    {
+        var spec = H100Bt1GateSpec.LoadFromFile(Bt1SpecPath);
+        var observations = new[]
+        {
+            new H100GateEvaluator.ExternalObservation(
+                "oracle_0_8_blocker_chosen_win_rate",
+                0.75d,
+                8,
+                "E06 preview-policy acceptance"),
+            new H100GateEvaluator.ExternalObservation(
+                "oracle_0_8_blocker_selection_regret",
+                0.25d,
+                8,
+                "E06 preview-policy acceptance"),
+        };
+
+        var report = H100Bt1GateEvaluator.Generate(spec, observations);
+        var bt8 = report.Gates.Single(gate => gate.GateId == "BT8");
+        var supplied = bt8.Thresholds.Where(threshold => observations.Any(value => value.MetricId == threshold.MetricId)).ToArray();
+        var pending = bt8.Thresholds.Except(supplied).ToArray();
+
+        Assert.That(bt8.EvaluableNow, Is.False);
+        Assert.That(bt8.Status, Is.EqualTo("not_yet_evaluable"));
+        Assert.That(bt8.Pass, Is.Null);
+        Assert.That(supplied, Has.All.Matches<H100Bt1GateReport.ThresholdResult>(
+            threshold => threshold.Observed && threshold.Status == "pass" && threshold.Pass == true));
+        Assert.That(pending, Has.All.Matches<H100Bt1GateReport.ThresholdResult>(
+            threshold => !threshold.Observed && threshold.Status == "not_yet_evaluable" && threshold.Pass == null));
+    }
+
+    [Test]
     public void LegacyDiagnosticReport_PreservesObservedValueAndMissingStatus()
     {
         var spec = H100Bt1GateSpec.LoadFromFile(Bt1SpecPath);

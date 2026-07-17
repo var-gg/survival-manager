@@ -36,10 +36,10 @@ internal static class H100SunkenSiteRunner
             var session = lookbackVariant == null
                 ? H100SessionDriver.CreateSession(lookup, H100ProfileSnapshotCodec.Restore(profileSnapshot))
                 : RebuildLookbackSession(lookup, lookbackVariant);
-            if (!string.Equals(session.SelectedCampaignSiteId, H100SunkenDiagnosisSettings.TargetSiteId, StringComparison.Ordinal))
+            if (!string.Equals(session.SelectedCampaignSiteId, arrival.Snapshot.SiteId, StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    $"Profile selected site is '{session.SelectedCampaignSiteId}', expected '{H100SunkenDiagnosisSettings.TargetSiteId}'.");
+                    $"Profile selected site is '{session.SelectedCampaignSiteId}', expected '{arrival.Snapshot.SiteId}'.");
             }
 
             ApplyDeployment(session, oracleCase);

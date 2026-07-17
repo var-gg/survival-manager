@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SM.HeadlessPolicies;
 
@@ -15,6 +16,15 @@ public static class HeadlessPolicyEvidence
     public const string RosterSurfaceSignal = "roster.surface";
     public const string EnemyPreviewSignal = "enemy.preview";
     public const string RewardSurfaceSignal = "reward.surface";
+
+    public static string EnemyUnitSignal(int visibleIndex)
+        => $"enemy.unit.{visibleIndex.ToString(CultureInfo.InvariantCulture)}";
+
+    public static string HeroSignal(string heroId)
+        => $"hero.{heroId}";
+
+    public static string HeroSkillSignal(string heroId, string skillId)
+        => $"hero.{heroId}.skill.{skillId}";
 
     internal static IReadOnlyList<string> ForDeployment(
         HeadlessPolicyObservation observation,
@@ -64,6 +74,11 @@ public static class HeadlessPolicyEvidence
 
         return Resolve(observation, keys);
     }
+
+    internal static IReadOnlyList<string> ForSignals(
+        HeadlessPolicyObservation observation,
+        IReadOnlyList<string> signalKeys)
+        => Resolve(observation, signalKeys);
 
     private static IReadOnlyList<string> Resolve(
         HeadlessPolicyObservation observation,

@@ -70,24 +70,16 @@ public static class H100Bt1GateEvaluator
     {
         if (!gate.EvaluableNow)
         {
-            var pendingThresholds = gate.Thresholds.Select(threshold => new H100Bt1GateReport.ThresholdResult(
-                threshold.MetricId,
-                threshold.Operator,
-                threshold.Value,
-                threshold.MinValue,
-                threshold.MaxValue,
-                threshold.Unit,
-                GateEvaluationStatusWire.NotYetEvaluable,
-                false,
-                null,
-                0,
-                strictMode ? false : null,
-                $"metric supplier pending: {string.Join(",", gate.DependsOnEnvelope)}",
-                threshold.Note)).ToArray();
+            var pendingThresholds = gate.Thresholds.Select(threshold =>
+                metrics.ContainsKey(threshold.MetricId)
+                    ? EvaluateThreshold(threshold, gate.Role, metrics)
+                    : PendingThreshold(threshold, gate, strictMode)).ToArray();
+            var observedFailure = pendingThresholds.Any(threshold =>
+                threshold.Observed && threshold.Pass == false);
             return BuildGateResult(
                 gate,
-                GateEvaluationStatusWire.NotYetEvaluable,
-                strictMode ? false : null,
+                observedFailure ? GateEvaluationStatusWire.Fail : GateEvaluationStatusWire.NotYetEvaluable,
+                observedFailure ? false : strictMode ? false : null,
                 pendingThresholds);
         }
 
@@ -170,6 +162,25 @@ public static class H100Bt1GateEvaluator
             observed.Evidence ?? string.Empty,
             threshold.Note);
     }
+
+    private static H100Bt1GateReport.ThresholdResult PendingThreshold(
+        H100Bt1GateSpec.ThresholdDefinition threshold,
+        H100Bt1GateSpec.GateDefinition gate,
+        bool strictMode)
+        => new(
+            threshold.MetricId,
+            threshold.Operator,
+            threshold.Value,
+            threshold.MinValue,
+            threshold.MaxValue,
+            threshold.Unit,
+            GateEvaluationStatusWire.NotYetEvaluable,
+            false,
+            null,
+            0,
+            strictMode ? false : null,
+            $"metric supplier pending: {string.Join(",", gate.DependsOnEnvelope)}",
+            threshold.Note);
 
     private static H100Bt1GateReport.LegacyGateResult EvaluateLegacyGate(
         H100Bt1GateSpec.LegacyGateMigration migration,
