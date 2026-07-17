@@ -68,14 +68,36 @@ internal static class ConceptIntentSelector
         HeadlessPolicyObservation observation)
     {
         var annihilationRisk = ConceptIntentPredicateMatcher.IsAnnihilationRisk(observation);
-        var candidates = HeadlessPolicyScoring.EnumerateCombinations(observation.Roster, observation.DeployCapacity)
-            .Select(heroes =>
+
+        // formation.* predicate만 배치에 의존하고 나머지 identity 항은 배치 불변이다. 각 조합의 배치 불변(combo-fixed)
+        // 진척을 먼저 구해 상위권만 앵커 순열을 탐색하면, 우승 후보를 놓치지 않으면서 탐색 비용을 유한하게 묶는다.
+        var formationPredicateCount = intent.IdentityPredicates.Count(PolicyFormationEvaluator.IsFormationPredicate);
+        var combos = HeadlessPolicyScoring.EnumerateCombinations(observation.Roster, observation.DeployCapacity)
+            .Select(heroes => (
+                Heroes: heroes,
+                FixedProgress: ConceptIntentPredicateMatcher.IdentityProgress(intent, heroes, observation, Array.Empty<HeadlessPlacement>())))
+            .ToArray();
+        var searchFloor = (combos.Length == 0 ? 0 : combos.Max(value => value.FixedProgress)) - formationPredicateCount;
+        var candidates = combos
+            .Select(combo =>
             {
-                var placements = HeadlessPolicyScoring.PlaceFormation(heroes, observation.Anchors);
+                var heroes = combo.Heroes;
+                IReadOnlyList<HeadlessPlacement> placements;
+                int progress;
+                if (formationPredicateCount > 0 && combo.FixedProgress >= searchFloor)
+                {
+                    (placements, progress) = SearchBestFormationPlacement(intent, heroes, observation);
+                }
+                else
+                {
+                    placements = HeadlessPolicyScoring.PlaceFormation(heroes, observation.Anchors);
+                    progress = ConceptIntentPredicateMatcher.IdentityProgress(intent, heroes, observation, placements);
+                }
+
                 return new DeploymentCandidate(
                     heroes,
                     placements,
-                    ConceptIntentPredicateMatcher.IdentityProgress(intent, heroes, observation, placements),
+                    progress,
                     ConceptIntentPredicateMatcher.CompletedMilestones(intent, heroes, observation, placements),
                     ConceptIntentPredicateMatcher.SubstitutionMatches(intent, heroes),
                     ConceptIntentPredicateMatcher.CounterSafety(heroes, observation.EnemyPreview),
@@ -195,6 +217,34 @@ internal static class ConceptIntentSelector
         return state.ConsecutiveNoProgressDecisions >= 1
             ? IntentDecisionReason.Pivot
             : IntentDecisionReason.Keep;
+    }
+
+    // 조합은 고정하고 앵커 순열만 바꿔 formation identity 술어까지 겨냥하는 최고 진척 배치를 결정적으로 고른다.
+    private static (IReadOnlyList<HeadlessPlacement> Placements, int Progress) SearchBestFormationPlacement(
+        HeadlessConceptIntent intent,
+        IReadOnlyList<HeadlessHeroObservation> heroes,
+        HeadlessPolicyObservation observation)
+    {
+        IReadOnlyList<HeadlessPlacement> best = null;
+        var bestProgress = -1;
+        string bestSignature = null;
+        foreach (var placements in HeadlessPolicyScoring.EnumeratePlacements(heroes, observation.Anchors))
+        {
+            var progress = ConceptIntentPredicateMatcher.IdentityProgress(intent, heroes, observation, placements);
+            var signature = HeadlessPolicyScoring.PlacementSignature(placements);
+            if (best == null
+                || progress > bestProgress
+                || (progress == bestProgress && string.CompareOrdinal(signature, bestSignature) < 0))
+            {
+                best = placements;
+                bestProgress = progress;
+                bestSignature = signature;
+            }
+        }
+
+        return best == null
+            ? (HeadlessPolicyScoring.PlaceFormation(heroes, observation.Anchors), 0)
+            : (best, bestProgress);
     }
 
     private sealed class DeploymentCandidate

@@ -313,7 +313,8 @@ internal static class H100PolicyObservationBuilder
                     .Select(rule => new HeadlessSynergyTierObservation(
                         rule.Threshold,
                         BuildStatModifiers(rule.Modifiers),
-                        rule.GrantedTeamRuleId))
+                        SM.Combat.Services.SynergyService.ResolveGrantedTeamRuleId(
+                            rule.CountedTagId, rule.Threshold, rule.GrantedTeamRuleId)))
                     .ToArray()))
             .ToArray();
     }

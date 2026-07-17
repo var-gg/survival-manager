@@ -74,7 +74,9 @@ public static class SynergyService
     // Move 4/후속 class@3 code-SoT overlay. TeamSynergyTierRule asset은 아직 GrantedTeamRuleId를 저작하지 않으므로,
     // 안정 신원(CountedTagId + Threshold)으로 상위 race/class tier 규칙을 실어 authored/fallback 양쪽의
     // CombatModifierPackage가 같은 규칙 id를 운반하게 한다. 미등록 tier는 authored 값을 그대로 보존한다.
-    private static string ResolveGrantedTeamRuleId(string countedTagId, int threshold, string authoredRuleId)
+    // public: player-visible synergy observation projector(H100PolicyObservationBuilder)가 오라클과 동일한
+    // team-rule id를 tier에 실어야 하므로 이 SoT 오버레이를 공유한다.
+    public static string ResolveGrantedTeamRuleId(string countedTagId, int threshold, string authoredRuleId)
     {
         if (threshold == 4)
         {

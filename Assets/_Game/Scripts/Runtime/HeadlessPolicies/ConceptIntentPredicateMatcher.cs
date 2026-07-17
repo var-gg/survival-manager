@@ -156,9 +156,9 @@ internal static class ConceptIntentPredicateMatcher
             return TeamRuleSatisfied(predicate.Substring(teamRule.Length), heroes, observation) ? 1 : 0;
         }
 
-        if (predicate.StartsWith("formation.", StringComparison.Ordinal))
+        if (PolicyFormationEvaluator.IsFormationPredicate(predicate))
         {
-            return FormationPredicateSatisfied(predicate, placements) ? 1 : 0;
+            return PolicyFormationEvaluator.Satisfies(predicate, heroes, placements) ? 1 : 0;
         }
 
         return 0;
@@ -190,9 +190,9 @@ internal static class ConceptIntentPredicateMatcher
             return heroes.Any(hero => HeroHasStatus(hero, milestone.Substring("deploy.status:".Length)));
         }
 
-        if (milestone.StartsWith("formation.", StringComparison.Ordinal))
+        if (PolicyFormationEvaluator.IsFormationPredicate(milestone))
         {
-            return FormationPredicateSatisfied(milestone, placements);
+            return PolicyFormationEvaluator.Satisfies(milestone, heroes, placements);
         }
 
         // activate:*는 전투 payoff 이후에만 참이 될 수 있으므로 선택 시점에는 완료로 추정하지 않는다.
@@ -206,48 +206,6 @@ internal static class ConceptIntentPredicateMatcher
         => observation.SynergyCatalog.Any(synergy =>
             synergy.Tiers.Any(tier => string.Equals(tier.GrantedTeamRuleId, ruleId, StringComparison.Ordinal)
                                       && heroes.Count(hero => HasTag(hero, synergy.CountedTagId)) >= tier.Threshold));
-
-    private static bool FormationPredicateSatisfied(
-        string predicate,
-        IReadOnlyList<HeadlessPlacement> placements)
-    {
-        if (predicate.Contains("frontline_count>=", StringComparison.Ordinal))
-        {
-            var threshold = ParseTrailingInteger(predicate, "frontline_count>=");
-            return placements.Count(value => value.Anchor.IsFrontRow()) >= threshold;
-        }
-
-        if (predicate.Contains("protected_slot_count>=", StringComparison.Ordinal))
-        {
-            var threshold = ParseTrailingInteger(predicate, "protected_slot_count>=");
-            return Math.Min(placements.Count(value => value.Anchor.IsFrontRow()), placements.Count(value => value.Anchor.IsBackRow())) >= threshold;
-        }
-
-        if (predicate.Contains("flank_rear_exposure_score>=", StringComparison.Ordinal))
-        {
-            var threshold = ParseTrailingInteger(predicate, "flank_rear_exposure_score>=");
-            var exposed = placements.Count(value => value.Anchor is DeploymentAnchorId.FrontTop
-                or DeploymentAnchorId.FrontBottom
-                or DeploymentAnchorId.BackTop
-                or DeploymentAnchorId.BackBottom);
-            return exposed >= threshold;
-        }
-
-        return predicate.Contains("formation:any_legal", StringComparison.Ordinal) && placements.Count > 0;
-    }
-
-    private static int ParseTrailingInteger(string value, string marker)
-    {
-        var start = value.IndexOf(marker, StringComparison.Ordinal);
-        if (start < 0)
-        {
-            return int.MaxValue;
-        }
-
-        start += marker.Length;
-        var digits = new string(value.Skip(start).TakeWhile(char.IsDigit).ToArray());
-        return int.TryParse(digits, out var result) ? result : int.MaxValue;
-    }
 
     private static bool TryParseCountIdentity(string value, out string tag, out int threshold)
     {
