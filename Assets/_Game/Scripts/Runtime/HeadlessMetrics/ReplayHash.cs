@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text;
 using SM.Combat.Model;
 using SM.Combat.Services;
 
@@ -24,48 +23,22 @@ public static class ReplayHash
 
     public static string Compute(string canonicalStateHash, string activityReplayHash)
     {
-        var payload = new StringBuilder();
-        AppendPart(payload, SchemaVersion);
-        AppendPart(payload, canonicalStateHash);
-        AppendPart(payload, activityReplayHash);
-        return StableHash(payload.ToString());
+        using var payload = new MemoryStream();
+        LengthPrefixedStableHash.AppendPart(payload, SchemaVersion);
+        LengthPrefixedStableHash.AppendPart(payload, canonicalStateHash ?? string.Empty);
+        LengthPrefixedStableHash.AppendPart(payload, activityReplayHash ?? string.Empty);
+        return LengthPrefixedStableHash.Compute(payload.ToArray());
     }
 
     public static string ComputeManifest(IEnumerable<string> replayHashes)
     {
-        var payload = new StringBuilder();
-        AppendPart(payload, "H100ReplayManifestV1");
+        using var payload = new MemoryStream();
+        LengthPrefixedStableHash.AppendPart(payload, "H100ReplayManifestV1");
         foreach (var replayHash in replayHashes.OrderBy(value => value, System.StringComparer.Ordinal))
         {
-            AppendPart(payload, replayHash ?? string.Empty);
+            LengthPrefixedStableHash.AppendPart(payload, replayHash ?? string.Empty);
         }
 
-        return StableHash(payload.ToString());
-    }
-
-    private static void AppendPart(StringBuilder builder, string value)
-    {
-        var normalized = value ?? string.Empty;
-        builder.Append(Encoding.UTF8.GetByteCount(normalized).ToString(CultureInfo.InvariantCulture))
-            .Append(':')
-            .Append(normalized)
-            .Append('|');
-    }
-
-    private static string StableHash(string input)
-    {
-        unchecked
-        {
-            const ulong offset = 14695981039346656037UL;
-            const ulong prime = 1099511628211UL;
-            var hash = offset;
-            foreach (var value in Encoding.UTF8.GetBytes(input))
-            {
-                hash ^= value;
-                hash *= prime;
-            }
-
-            return hash.ToString("x16", CultureInfo.InvariantCulture);
-        }
+        return LengthPrefixedStableHash.Compute(payload.ToArray());
     }
 }
