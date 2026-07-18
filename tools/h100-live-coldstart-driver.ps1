@@ -3,6 +3,7 @@ param(
     [string]$ConfigPath = (Join-Path $PSScriptRoot 'h100-live-coldstart.config.json'),
     [string]$OutputDirectory = 'Logs/h100-live-coldstart',
     [switch]$DryRunSmoke,
+    [switch]$LiveSmoke,
     [string]$OwnerApprovalPath = ''
 )
 
@@ -238,7 +239,8 @@ function Start-CapturedProcess {
         [Parameter(Mandatory = $true)][string]$WorkingDirectory,
         [Parameter(Mandatory = $true)][string]$StdoutPath,
         [Parameter(Mandatory = $true)][string]$StderrPath,
-        [switch]$CloseStandardInput
+        [switch]$CloseStandardInput,
+        [string]$StandardInputText
     )
 
     $startInfo = [Diagnostics.ProcessStartInfo]::new()
@@ -248,7 +250,7 @@ function Start-CapturedProcess {
     $startInfo.CreateNoWindow = $true
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
-    $startInfo.RedirectStandardInput = $CloseStandardInput.IsPresent
+    $startInfo.RedirectStandardInput = $CloseStandardInput.IsPresent -or -not [string]::IsNullOrEmpty($StandardInputText)
     foreach ($argument in $Arguments) {
         $startInfo.ArgumentList.Add($argument)
     }
@@ -258,14 +260,22 @@ function Start-CapturedProcess {
     if (-not $process.Start()) {
         throw "Failed to start process: $FilePath"
     }
-    if ($CloseStandardInput) {
+    # Drain stdout/stderr asynchronously BEFORE writing the (large) stdin payload so a full stdout
+    # pipe cannot deadlock against a blocking stdin write.
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
+    if (-not [string]::IsNullOrEmpty($StandardInputText)) {
+        $process.StandardInput.Write($StandardInputText)
+        $process.StandardInput.Close()
+    }
+    elseif ($CloseStandardInput) {
         $process.StandardInput.Close()
     }
 
     return [pscustomobject]@{
         Process = $process
-        StdoutTask = $process.StandardOutput.ReadToEndAsync()
-        StderrTask = $process.StandardError.ReadToEndAsync()
+        StdoutTask = $stdoutTask
+        StderrTask = $stderrTask
         StdoutPath = $StdoutPath
         StderrPath = $StderrPath
     }
@@ -570,14 +580,16 @@ function Invoke-CodexAdapter {
         '-o', $responsePath
     )
     $arguments = if ([string]::IsNullOrWhiteSpace([string]$SessionState.SessionId)) {
-        @('exec', '-C', $SandboxDirectory, '-s', [string]$Binding.sandbox) + $common + @($Prompt)
+        @('exec', '-C', $SandboxDirectory, '-s', [string]$Binding.sandbox) + $common
     }
     else {
-        @('exec', 'resume', [string]$SessionState.SessionId) + $common + @($Prompt)
+        @('exec', 'resume', [string]$SessionState.SessionId) + $common
     }
 
+    # Observation prompts exceed the ~32KB Windows command-line limit, so the prompt is delivered on
+    # stdin. codex reads instructions from stdin when no positional PROMPT argument is supplied.
     $handle = Start-CapturedProcess -FilePath $codexPath -Arguments $arguments -WorkingDirectory $SandboxDirectory `
-        -StdoutPath $eventsPath -StderrPath $stderrPath -CloseStandardInput
+        -StdoutPath $eventsPath -StderrPath $stderrPath -StandardInputText $Prompt
     $result = Complete-CapturedProcess -Handle $handle -TimeoutMilliseconds ($TimeoutSeconds * 1000) `
         -TimeoutLabel "codex $Prefix attempt $Attempt"
     if ($result.ExitCode -ne 0) {
@@ -1218,7 +1230,7 @@ try {
         -PromptTemplate $promptTemplate -ColdStartBriefing $coldStartBriefing `
         -ModelSnapshotId $modelSnapshotId -DecodingConfig $decodingConfig
 
-    $cohortId = if ($DryRunSmoke) { "$($config.cohort_id)-dryrun" } else { [string]$config.cohort_id }
+    $cohortId = if ($DryRunSmoke) { "$($config.cohort_id)-dryrun" } elseif ($LiveSmoke) { "$($config.cohort_id)-livesmoke" } else { [string]$config.cohort_id }
     $outputRoot = Resolve-ProjectPath -Path $OutputDirectory
     $cohortDirectory = Join-Path $outputRoot $cohortId
     if (Test-Path -LiteralPath $cohortDirectory) {
@@ -1234,12 +1246,12 @@ try {
             live_run_id = "$cohortId-slot-$($slot.ToString('D2', $invariantCulture))"
         }
     }
-    $executionSlotMap = if ($DryRunSmoke) { @($slotMap[0]) } else { @($slotMap) }
+    $executionSlotMap = if ($DryRunSmoke -or $LiveSmoke) { @($slotMap[0]) } else { @($slotMap) }
     $cohortManifestPath = Join-Path $cohortDirectory 'cohort-manifest.json'
     Write-JsonAtomic -Path $cohortManifestPath -Immutable -Value ([ordered]@{
         schema_version = 'H100LiveColdStartCohortManifestV1'
         cohort_id = $cohortId
-        mode = if ($DryRunSmoke) { 'dry-run-smoke' } else { 'live' }
+        mode = if ($DryRunSmoke) { 'dry-run-smoke' } elseif ($LiveSmoke) { 'live-smoke' } else { 'live' }
         prompt_template_id = [string]$config.prompt_manifest.prompt_template_id
         prompt_template_file = Convert-ToProjectRelativePath $promptTemplatePath
         prompt_template_sha256 = Get-FileSha256 $promptTemplatePath
@@ -1306,7 +1318,19 @@ try {
     for ($index = 0; $index -lt $acceptedRuns.Count; $index++) {
         $bt1Results += Invoke-Bt1AndProvenance -Run $acceptedRuns[$index] -Slot ($index + 1) -Runtime $runtime
     }
-    $post = Invoke-CohortScorers -Runs $acceptedRuns -Bt1Results $bt1Results -Runtime $runtime
+    $post = if ($LiveSmoke) {
+        # 1-campaign live smoke: BT1 (replay determinism on the single live trace) runs above; the
+        # BT5/BT10 cohort scorers require the full 6-run cohort, so they are intentionally skipped here.
+        [pscustomobject]@{
+            ManifestPath = ''
+            Bt5Status = 'skipped-live-smoke'
+            Bt10Status = 'skipped-live-smoke'
+            OwnerApprovalDraftPath = ''
+        }
+    }
+    else {
+        Invoke-CohortScorers -Runs $acceptedRuns -Bt1Results $bt1Results -Runtime $runtime
+    }
     Write-JsonAtomic -Path (Join-Path $cohortDirectory 'cohort-run-manifest.json') -Value ([ordered]@{
         schema_version = 'H100LiveColdStartCohortRunV1'
         cohort_manifest = $cohortManifestPath
