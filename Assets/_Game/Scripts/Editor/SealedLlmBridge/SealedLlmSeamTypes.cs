@@ -6,7 +6,8 @@ public static class SealedLlmSeamTypes
     public const string Deployment = "deployment";
     public const string Reward = "reward";
     public const string Recruit = "recruit";
-    public const string Passive = "passive";
+    public const string LevelNode = "level_node";
+    public const string Passive = LevelNode;
     public const string Refit = "refit";
     public const string RunReport = "run_report";
 }

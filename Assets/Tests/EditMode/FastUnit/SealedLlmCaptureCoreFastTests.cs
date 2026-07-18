@@ -106,9 +106,11 @@ public sealed class SealedLlmCaptureCoreFastTests
         var harness = CreateHarness(new FixedDecisionSource("99"));
         var observation = IntentPolicyObservationFixture.CreateRecruitBaseline();
 
-        var failure = Assert.Throws<SealedLlmActionDecodeException>(
+        var failure = Assert.Throws<SealedLlmTerminalFailureException>(
             () => harness.Bridge.DecideReward(observation));
-        Assert.That(failure.Reason, Is.EqualTo(SealedLlmActionDecodeReason.OffMenu));
+        var decodeFailure = failure.InnerException as SealedLlmActionDecodeException;
+        Assert.That(decodeFailure, Is.Not.Null);
+        Assert.That(decodeFailure.Reason, Is.EqualTo(SealedLlmActionDecodeReason.OffMenu));
         Assert.That(harness.Builder.PendingTerminalFailure, Is.True);
         var failedKey = harness.Builder.PendingSeamKey;
         Assert.That(failedKey, Is.Not.Null);

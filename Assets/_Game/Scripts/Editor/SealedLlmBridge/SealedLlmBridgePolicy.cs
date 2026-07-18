@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
 
@@ -160,19 +161,62 @@ public sealed class SealedLlmBridgePolicy : IHeadlessPolicy, IHeadlessRosterPoli
 
         try
         {
-            var decision = decode(observation, response.SelectedAction);
+            var decision = AttachDeclaredEvidence(
+                decode(observation, response.SelectedAction),
+                response.DeclaredIntent?.EvidenceFactIds);
             validate(observation, decision);
             return decision;
         }
-        catch (SealedLlmActionDecodeException)
+        catch (SealedLlmActionDecodeException exception)
         {
             _builder.MarkTerminalFailure(request.SeamKey);
-            throw;
+            throw new SealedLlmTerminalFailureException(request.SeamKey, exception);
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException exception)
         {
             _builder.MarkTerminalFailure(request.SeamKey);
-            throw;
+            throw new SealedLlmTerminalFailureException(request.SeamKey, exception);
         }
+    }
+
+    private static TDecision AttachDeclaredEvidence<TDecision>(
+        TDecision decision,
+        IReadOnlyList<string> evidenceFactIds)
+    {
+        var evidence = evidenceFactIds ?? Array.Empty<string>();
+        object result = decision switch
+        {
+            HeadlessDeploymentDecision value => new HeadlessDeploymentDecision(
+                value.Placements,
+                value.Rationale,
+                value.EstimatedValue,
+                evidence),
+            HeadlessRewardDecision value => new HeadlessRewardDecision(
+                value.OptionIndex,
+                value.Rationale,
+                value.EstimatedValue,
+                evidence),
+            HeadlessRecruitDecision value => new HeadlessRecruitDecision(
+                value.OfferIndex,
+                value.Rationale,
+                value.EstimatedValue,
+                evidence),
+            HeadlessPassiveDecision value => new HeadlessPassiveDecision(
+                value.HeroId,
+                value.BoardId,
+                value.NodeId,
+                value.Rationale,
+                value.EstimatedValue,
+                evidence),
+            HeadlessRefitDecision value => new HeadlessRefitDecision(
+                value.ItemInstanceId,
+                value.AffixSlotIndex,
+                value.Rationale,
+                value.EstimatedValue,
+                evidence),
+            _ => throw new InvalidOperationException(
+                $"Unsupported sealed LLM decision type '{typeof(TDecision).FullName}'."),
+        };
+        return (TDecision)result;
     }
 }

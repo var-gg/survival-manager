@@ -14,7 +14,16 @@ internal sealed record H100CampaignObservationHooks(
     Func<bool>? StopRequested = null,
     Action<H100DeploymentOfferedContext>? DeploymentOffered = null,
     Action<H100BattleCompletedContext>? BattleCompleted = null,
-    Action<H100RosterDecisionOfferedContext>? RosterDecisionOffered = null);
+    Action<H100RosterDecisionOfferedContext>? RosterDecisionOffered = null,
+    Action<H100DecisionAppliedContext>? DecisionApplied = null);
+
+internal sealed record H100DecisionAppliedContext(
+    int DecisionIndex,
+    string SeamType,
+    int Ordinal,
+    GameSessionState Session,
+    string AppliedActionDescriptor,
+    string ResultMarker);
 
 internal sealed record H100DeploymentOfferedContext(
     string CampaignId,

@@ -3,9 +3,11 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using SM.Combat.Model;
+using SM.HeadlessCensus;
 using SM.HeadlessPolicies;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
+using SM.SealedLlmBridge;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -53,7 +55,9 @@ internal static class H100SessionDriver
         IHeadlessPolicy policy,
         int decisionSeed,
         HeadlessPolicyObservation observation,
-        Action<string>? decisionLog = null)
+        Action<string>? decisionLog = null,
+        int decisionIndex = -1,
+        Action<H100DecisionAppliedContext>? decisionApplied = null)
     {
         if (observation.DecisionSeed != decisionSeed)
         {
@@ -77,6 +81,18 @@ internal static class H100SessionDriver
         }
 
         decisionLog?.Invoke(FormatDecisionLog(policy.Id, "deployment", observation, decision.Rationale, decision.EstimatedValue));
+        if (decisionApplied != null)
+        {
+            RequireDecisionIndex(decisionIndex);
+            decisionApplied(new H100DecisionAppliedContext(
+                decisionIndex,
+                IntentTrackLeverId.Deployment,
+                0,
+                session,
+                SealedLlmActionCodec.EncodeDeployment(decision),
+                "success"));
+        }
+
         return decision;
     }
 
@@ -177,7 +193,9 @@ internal static class H100SessionDriver
         IHeadlessPolicy policy,
         int decisionSeed,
         HeadlessPolicyObservation observation,
-        Action<string>? decisionLog = null)
+        Action<string>? decisionLog = null,
+        int decisionIndex = -1,
+        Action<H100DecisionAppliedContext>? decisionApplied = null)
     {
         if (observation.DecisionSeed != decisionSeed)
         {
@@ -192,6 +210,18 @@ internal static class H100SessionDriver
         }
 
         decisionLog?.Invoke(FormatDecisionLog(policy.Id, "reward", observation, decision.Rationale, decision.EstimatedValue));
+        if (decisionApplied != null)
+        {
+            RequireDecisionIndex(decisionIndex);
+            decisionApplied(new H100DecisionAppliedContext(
+                decisionIndex,
+                IntentTrackLeverId.Reward,
+                0,
+                session,
+                SealedLlmActionCodec.EncodeReward(decision),
+                "success"));
+        }
+
         return decision;
     }
 
@@ -229,6 +259,17 @@ internal static class H100SessionDriver
 
             var result = (int)(hash & 0x7fffffffu);
             return result == 0 ? 1 : result;
+        }
+    }
+
+    private static void RequireDecisionIndex(int decisionIndex)
+    {
+        if (decisionIndex < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(decisionIndex),
+                decisionIndex,
+                "DecisionApplied requires a non-negative decision index.");
         }
     }
 

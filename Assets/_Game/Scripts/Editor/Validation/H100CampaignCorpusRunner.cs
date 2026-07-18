@@ -5,6 +5,7 @@ using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
+using SM.SealedLlmBridge;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -128,7 +129,9 @@ internal static class H100CampaignCorpusRunner
                     policy,
                     deploymentSeed,
                     deploymentObservation,
-                    decisionLog);
+                    decisionLog,
+                    decisionIndex: decisionCount,
+                    decisionApplied: observationHooks?.DecisionApplied);
                 factLedger.RecordDeployment(
                     campaignId,
                     campaignIndex,
@@ -265,7 +268,9 @@ internal static class H100CampaignCorpusRunner
                         policy,
                         rewardSeed,
                         rewardObservation,
-                        decisionLog);
+                        decisionLog,
+                        decisionIndex: decisionCount,
+                        decisionApplied: observationHooks?.DecisionApplied);
                     factLedger.RecordReward(
                         campaignId,
                         campaignIndex,
@@ -322,6 +327,10 @@ internal static class H100CampaignCorpusRunner
                 terminalReason = "site-safety-exhausted";
                 truncated = true;
             }
+        }
+        catch (SealedLlmTerminalFailureException)
+        {
+            throw;
         }
         catch (Exception exception) when (exception is not HeadlessPolicyEvidenceException
                                           && exception is not PlayerVisibleProvenanceException)

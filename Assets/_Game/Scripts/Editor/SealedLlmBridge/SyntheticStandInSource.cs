@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
 
@@ -47,25 +49,67 @@ public sealed class SyntheticStandInSource : ISealedDecisionSource
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
 
-        var selectedAction = request.SeamKey.SeamType switch
+        string selectedAction;
+        IReadOnlyList<string> evidenceFactIds;
+        switch (request.SeamKey.SeamType)
         {
-            SealedLlmSeamTypes.Deployment => SealedLlmActionCodec.EncodeDeployment(
-                _referencePolicy.DecideDeployment(RequirePolicyObservation(request))),
-            SealedLlmSeamTypes.Reward => SealedLlmActionCodec.EncodeReward(
-                _referencePolicy.DecideReward(RequirePolicyObservation(request))),
-            SealedLlmSeamTypes.Recruit => SealedLlmActionCodec.EncodeRecruit(
-                _referenceRosterPolicy.DecideRecruit(RequireRosterObservation(request))),
-            SealedLlmSeamTypes.Passive => SealedLlmActionCodec.EncodePassive(
-                _referenceRosterPolicy.DecidePassiveAllocation(RequireRosterObservation(request))),
-            SealedLlmSeamTypes.Refit => SealedLlmActionCodec.EncodeRefit(
-                _referenceRosterPolicy.DecideRefit(RequireRosterObservation(request))),
-            _ => throw new InvalidOperationException(
-                $"Synthetic stand-in does not recognize seam '{request.SeamKey.SeamType}'."),
-        };
+            case SealedLlmSeamTypes.Deployment:
+            {
+                var decision = _referencePolicy.DecideDeployment(RequirePolicyObservation(request));
+                selectedAction = SealedLlmActionCodec.EncodeDeployment(decision);
+                evidenceFactIds = decision.EvidenceFactIds;
+                break;
+            }
+            case SealedLlmSeamTypes.Reward:
+            {
+                var decision = _referencePolicy.DecideReward(RequirePolicyObservation(request));
+                selectedAction = SealedLlmActionCodec.EncodeReward(decision);
+                evidenceFactIds = decision.EvidenceFactIds;
+                break;
+            }
+            case SealedLlmSeamTypes.Recruit:
+            {
+                var decision = _referenceRosterPolicy.DecideRecruit(RequireRosterObservation(request));
+                selectedAction = SealedLlmActionCodec.EncodeRecruit(decision);
+                evidenceFactIds = decision.EvidenceFactIds;
+                break;
+            }
+            case SealedLlmSeamTypes.Passive:
+            {
+                var decision = _referenceRosterPolicy.DecidePassiveAllocation(RequireRosterObservation(request));
+                selectedAction = SealedLlmActionCodec.EncodePassive(decision);
+                evidenceFactIds = decision.EvidenceFactIds;
+                break;
+            }
+            case SealedLlmSeamTypes.Refit:
+            {
+                var decision = _referenceRosterPolicy.DecideRefit(RequireRosterObservation(request));
+                selectedAction = SealedLlmActionCodec.EncodeRefit(decision);
+                evidenceFactIds = decision.EvidenceFactIds;
+                break;
+            }
+            default:
+                throw new InvalidOperationException(
+                    $"Synthetic stand-in does not recognize seam '{request.SeamKey.SeamType}'.");
+        }
+
+        var declaredIntent = new LlmDeclaredIntentV1(
+            FixedDeclaredIntent.IntentId,
+            FixedDeclaredIntent.TrackTokenIds,
+            FixedDeclaredIntent.ExpectedPayoff,
+            (evidenceFactIds ?? Array.Empty<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(value => value, StringComparer.Ordinal)
+                .ToArray(),
+            FixedDeclaredIntent.NextAcquisitionPlan,
+            FixedDeclaredIntent.AllowedSubstitutions,
+            FixedDeclaredIntent.PivotConditions,
+            FixedDeclaredIntent.Confidence);
 
         return new LlmDecisionResponseV1(
             selectedAction,
-            FixedDeclaredIntent,
+            declaredIntent,
             IntentReference,
             Array.Empty<LlmBuildHypothesisV1>());
     }

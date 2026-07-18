@@ -1,6 +1,7 @@
 using System;
 using SM.HeadlessCensus;
 using SM.HeadlessPolicies;
+using SM.SealedLlmBridge;
 using SM.Unity;
 
 namespace SM.Editor.Validation;
@@ -37,6 +38,13 @@ internal static class H100RosterPolicyWindowRunner
             factLedger,
             observationHooks);
         var recruit = H100SessionDriver.ApplyPolicyRecruit(session, rosterPolicy, recruitObservation, decisionLog);
+        observationHooks?.DecisionApplied?.Invoke(new H100DecisionAppliedContext(
+            decisionIndex,
+            IntentTrackLeverId.Recruit,
+            0,
+            session,
+            SealedLlmActionCodec.EncodeRecruit(recruit),
+            "success"));
         factLedger.RecordRecruit(campaignId, campaignIndex, siteIndex, decisionIndex, policy.Id, recruit);
         intentTrace.Record(campaignId, campaignIndex, siteIndex, decisionIndex, policy);
         decisionIndex++;
@@ -54,6 +62,13 @@ internal static class H100RosterPolicyWindowRunner
             factLedger,
             observationHooks);
         var passive = H100SessionDriver.ApplyPolicyPassive(session, rosterPolicy, passiveObservation, decisionLog);
+        observationHooks?.DecisionApplied?.Invoke(new H100DecisionAppliedContext(
+            decisionIndex,
+            IntentTrackLeverId.LevelNode,
+            0,
+            session,
+            SealedLlmActionCodec.EncodePassive(passive),
+            "success"));
         factLedger.RecordPassive(campaignId, campaignIndex, siteIndex, decisionIndex, policy.Id, passive);
         intentTrace.Record(campaignId, campaignIndex, siteIndex, decisionIndex, policy);
         decisionIndex++;
@@ -71,6 +86,13 @@ internal static class H100RosterPolicyWindowRunner
             factLedger,
             observationHooks);
         var refit = H100SessionDriver.ApplyPolicyRefit(session, rosterPolicy, refitObservation, decisionLog);
+        observationHooks?.DecisionApplied?.Invoke(new H100DecisionAppliedContext(
+            decisionIndex,
+            IntentTrackLeverId.Refit,
+            0,
+            session,
+            SealedLlmActionCodec.EncodeRefit(refit),
+            "success"));
         factLedger.RecordRefit(campaignId, campaignIndex, siteIndex, decisionIndex, policy.Id, refit);
         intentTrace.Record(campaignId, campaignIndex, siteIndex, decisionIndex, policy);
         return decisionIndex + 1;
