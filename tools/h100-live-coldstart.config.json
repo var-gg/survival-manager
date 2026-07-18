@@ -1,0 +1,33 @@
+{
+  "schema_version": "H100LiveColdStartDriverConfigV1",
+  "cohort_id": "h100-e11-codex-gpt-5-6-sol-v1",
+  "active_binding": "codex",
+  "bindings": {
+    "codex": {
+      "mechanism": "codex-exec",
+      "model": "gpt-5.6-sol",
+      "sandbox": "read-only",
+      "reasoning_effort": "high",
+      "agent_kind": "codex-exec"
+    }
+  },
+  "prompt_manifest": {
+    "prompt_template_id": "h100-live-coldstart-ratified-v1",
+    "prompt_template_file": "tools/h100-live-prompt/prompt-template.md",
+    "cold_start_briefing_file": "tools/h100-live-prompt/cold-start-briefing.md"
+  },
+  "campaign": {
+    "seeds": [1701, 1702, 1703, 1704, 1705, 1706],
+    "site_safety": 32,
+    "max_battle_steps": 300,
+    "policy_id": "greedy-v1"
+  },
+  "constants": {
+    "decision_timeout_seconds": 900,
+    "run_report_timeout_seconds": 1200,
+    "attempt_limit": 3,
+    "harness_rerun_cap_per_slot": 2,
+    "cohort_watchdog_seconds": 43200,
+    "poll_interval_ms": 500
+  }
+}
