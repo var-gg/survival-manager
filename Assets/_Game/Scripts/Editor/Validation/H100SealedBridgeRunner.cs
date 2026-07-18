@@ -68,6 +68,46 @@ public static class H100SealedBridgeRunner
             + $"trace={result.TracePath}");
     }
 
+    /// <summary>SM_H100_TRACE_PATH의 sealed trace를 fresh campaign으로 재도출하고 exact manifest를 검증한다.</summary>
+    public static void RunReplayFromCli()
+    {
+        SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(H100SealedBridgeRunner));
+        var requestedTracePath = Environment.GetEnvironmentVariable("SM_H100_TRACE_PATH");
+        if (string.IsNullOrWhiteSpace(requestedTracePath))
+        {
+            throw new InvalidOperationException("SM_H100_TRACE_PATH must identify a sealed decision trace.");
+        }
+
+        var tracePath = Path.GetFullPath(
+            Path.IsPathRooted(requestedTracePath)
+                ? requestedTracePath
+                : Path.Combine(ProjectRoot(), requestedTracePath));
+        if (!File.Exists(tracePath))
+        {
+            throw new FileNotFoundException("Sealed decision trace does not exist.", tracePath);
+        }
+
+        var sealedTrace = HeadlessMetricJson.Deserialize<SealedDecisionTraceV1>(File.ReadAllText(tracePath));
+        var result = Replay(
+            CreateLookup(),
+            ResolveSettings(),
+            ResolveTargetBattleSeconds(),
+            sealedTrace);
+        if (!result.Passed)
+        {
+            throw new InvalidOperationException(
+                "H100 sealed replay diverged: "
+                + $"reason={result.Verification.FirstDivergenceReason} "
+                + $"detail={result.Verification.FirstDivergenceDetail} "
+                + $"manifest_equal={result.ManifestEqual}");
+        }
+
+        Debug.Log(
+            $"[H100SealedBridge] replay PASS verification=true manifest_equal=true "
+            + $"entries={result.RebuiltTrace.Entries.Count.ToString(CultureInfo.InvariantCulture)} "
+            + $"manifest={result.RebuiltManifestHash} trace={tracePath}");
+    }
+
     /// <summary>bare factory policy와 byte-transparent stand-in bridge를 같은 seed의 real corpus로 대조한다.</summary>
     public static void RunPairedWitnessFromCli()
     {
@@ -118,7 +158,7 @@ public static class H100SealedBridgeRunner
             + $"campaigns=2 fields={string.Join(",", ComparedCampaignMetricFields)} artifact={witnessPath}");
     }
 
-    private static CaptureResult Capture(
+    internal static CaptureResult Capture(
         RuntimeCombatContentLookup lookup,
         H100MetricsRunSettings settings,
         float targetBattleSeconds)
@@ -180,6 +220,273 @@ public static class H100SealedBridgeRunner
         return new CaptureResult(trace, corpus, terminalFailure, tracePath);
     }
 
+    /// <summary>
+    /// Re-runs the real campaign with sealed responses while rebuilding every observation and state hash locally.
+    /// Only stable run identity is carried from the seal; environment/configuration hashes are recomputed here.
+    /// </summary>
+    internal static ReplayResult Replay(
+        RuntimeCombatContentLookup lookup,
+        H100MetricsRunSettings settings,
+        float targetBattleSeconds,
+        SealedDecisionTraceV1 sealedTrace)
+    {
+        if (lookup == null) throw new ArgumentNullException(nameof(lookup));
+        if (settings == null) throw new ArgumentNullException(nameof(settings));
+        if (sealedTrace == null) throw new ArgumentNullException(nameof(sealedTrace));
+        var sealedHeader = sealedTrace.Header
+                           ?? throw new ArgumentException("Sealed trace header is required.", nameof(sealedTrace));
+
+        var replayCampaignSeed = H100SessionDriver.DeriveSeed("campaign", settings.SeedBase);
+        if (replayCampaignSeed != sealedHeader.CampaignSeed)
+        {
+            throw new InvalidOperationException(
+                "Replay settings do not derive the sealed campaign seed: "
+                + $"sealed={sealedHeader.CampaignSeed.ToString(CultureInfo.InvariantCulture)} "
+                + $"replayed={replayCampaignSeed.ToString(CultureInfo.InvariantCulture)}.");
+        }
+
+        var promptManifest = CreatePromptManifest();
+        var builder = new SealedDecisionTraceBuilder(
+            sealedHeader.RunId,
+            sealedHeader.ScenarioId,
+            sealedHeader.CampaignSeed,
+            ComputeBuildManifestHash(settings, targetBattleSeconds),
+            ComputeContentManifestHash(lookup),
+            ComputeVisibleSurfaceHash(promptManifest),
+            promptManifest.PromptSchemaHash,
+            ComputeScorerConfigHash(settings),
+            sealedHeader.CaptureSource);
+        var source = new SealedTraceSource(sealedTrace);
+        var bridgePolicy = new SealedLlmBridgePolicy(source, builder, promptManifest);
+        var coordinator = new CaptureCoordinator(builder);
+        H100CampaignCorpusRunner.Corpus? corpus = null;
+        var terminalFailure = false;
+
+        try
+        {
+            corpus = H100CampaignCorpusRunner.Run(
+                lookup,
+                settings,
+                targetBattleSeconds,
+                observationHooks: coordinator.Hooks,
+                policyFactory: _ => bridgePolicy);
+        }
+        catch (SealedLlmTerminalFailureException exception)
+        {
+            coordinator.CompleteTerminalFailure(exception);
+            terminalFailure = true;
+        }
+
+        var finalSession = coordinator.LastSession
+                           ?? throw new InvalidOperationException("Replay run never exposed a campaign session.");
+        if (builder.PendingSeamKey != null)
+        {
+            if (source.LastDivergence != null)
+            {
+                throw source.LastDivergence;
+            }
+
+            throw new InvalidOperationException("Replay run ended with an unsealed decision exchange.");
+        }
+
+        var finalStateHash = H100SessionStateCanonicalHash.Compute(finalSession);
+        bridgePolicy.SealRunReport(
+            BuildRunReportRequest(settings, corpus, terminalFailure),
+            finalStateHash);
+        source.EnsureFullyConsumed();
+
+        var rebuilt = builder.Build();
+        var verification = SealedDecisionTraceReplayVerifier.Verify(sealedTrace, rebuilt);
+        var sealedManifestHash = SealedDecisionTraceHash.ComputeManifest(sealedTrace);
+        var rebuiltManifestHash = SealedDecisionTraceHash.ComputeManifest(rebuilt);
+        return new ReplayResult(
+            rebuilt,
+            verification,
+            sealedManifestHash,
+            rebuiltManifestHash);
+    }
+
+    internal static ReplayWitnessResult RunInProcessReplayWitness(
+        RuntimeCombatContentLookup captureLookup,
+        RuntimeCombatContentLookup replayLookup,
+        H100MetricsRunSettings settings,
+        float targetBattleSeconds)
+    {
+        var capture = Capture(captureLookup, settings, targetBattleSeconds);
+        if (capture.TerminalFailure)
+        {
+            throw new InvalidOperationException("Replay witness requires a normally completed capture.");
+        }
+
+        var replay = Replay(replayLookup, settings, targetBattleSeconds, capture.Trace);
+        return new ReplayWitnessResult(
+            replay.VerificationPassed,
+            replay.ManifestEqual,
+            replay.SealedManifestHash,
+            replay.RebuiltManifestHash,
+            replay.RebuiltTrace.Entries.Count,
+            capture.TracePath,
+            replay.Verification.FirstDivergenceReason.ToString(),
+            replay.Verification.FirstDivergenceDetail);
+    }
+
+    internal static TamperWitnessResult RunTamperWitness(
+        RuntimeCombatContentLookup captureLookup,
+        Func<RuntimeCombatContentLookup> replayLookupFactory,
+        H100MetricsRunSettings settings,
+        float targetBattleSeconds)
+    {
+        if (replayLookupFactory == null) throw new ArgumentNullException(nameof(replayLookupFactory));
+        var capture = Capture(captureLookup, settings, targetBattleSeconds);
+        if (capture.TerminalFailure)
+        {
+            throw new InvalidOperationException("Tamper witness requires a normally completed capture.");
+        }
+
+        var decisionIndex = FirstDecisionEntryIndex(capture.Trace);
+        var observationTampered = MutateEntryBytes(capture.Trace, decisionIndex, response: false);
+        var observationReplay = Replay(
+            replayLookupFactory(),
+            settings,
+            targetBattleSeconds,
+            observationTampered);
+        var observationResult = new SingleTamperResult(
+            ReplayFailed: !observationReplay.Passed,
+            observationReplay.Verification.FirstDivergenceReason.ToString(),
+            observationReplay.Verification.FirstDivergenceDetail);
+
+        var responseTampered = MutateEntryBytes(capture.Trace, decisionIndex, response: true);
+        SingleTamperResult responseResult;
+        try
+        {
+            var responseReplay = Replay(
+                replayLookupFactory(),
+                settings,
+                targetBattleSeconds,
+                responseTampered);
+            responseResult = new SingleTamperResult(
+                ReplayFailed: !responseReplay.Passed,
+                responseReplay.Verification.FirstDivergenceReason.ToString(),
+                responseReplay.Verification.FirstDivergenceDetail);
+        }
+        catch (SealedTraceSource.DivergenceException exception)
+        {
+            responseResult = new SingleTamperResult(
+                ReplayFailed: true,
+                exception.Reason.ToString(),
+                exception.Detail);
+        }
+
+        var headerTampered = MutateHeaderHash(capture.Trace);
+        var headerReplay = Replay(
+            replayLookupFactory(),
+            settings,
+            targetBattleSeconds,
+            headerTampered);
+        var headerResult = new SingleTamperResult(
+            ReplayFailed: !headerReplay.Passed,
+            headerReplay.Verification.FirstDivergenceReason.ToString(),
+            headerReplay.Verification.FirstDivergenceDetail);
+
+        return new TamperWitnessResult(
+            decisionIndex,
+            observationResult,
+            responseResult,
+            headerResult,
+            capture.TracePath);
+    }
+
+    private static int FirstDecisionEntryIndex(SealedDecisionTraceV1 trace)
+    {
+        for (var index = 0; index < trace.Entries.Count; index++)
+        {
+            if (!string.Equals(
+                    trace.Entries[index].SeamKey.SeamType,
+                    SealedLlmSeamTypes.RunReport,
+                    StringComparison.Ordinal))
+            {
+                return index;
+            }
+        }
+
+        throw new InvalidOperationException("Captured trace has no normal decision entry to tamper.");
+    }
+
+    private static SealedDecisionTraceV1 MutateEntryBytes(
+        SealedDecisionTraceV1 trace,
+        int entryIndex,
+        bool response)
+    {
+        var entries = trace.Entries.Select(CloneTraceEntry).ToArray();
+        var entry = entries[entryIndex];
+        var original = response
+            ? entry.ResponseCanonicalBytes
+            : entry.ObservationCanonicalBytes;
+        if (original == null || original.Length == 0)
+        {
+            throw new InvalidOperationException("Tamper witness requires a non-empty canonical payload.");
+        }
+
+        var mutated = (byte[])original.Clone();
+        mutated[mutated.Length / 2] ^= 0x01;
+        RequireSingleByteDifference(original, mutated);
+        entries[entryIndex] = response
+            ? entry with { ResponseCanonicalBytes = mutated }
+            : entry with { ObservationCanonicalBytes = mutated };
+        return new SealedDecisionTraceV1(trace.Header with { }, entries);
+    }
+
+    private static SealedDecisionTraceV1 MutateHeaderHash(SealedDecisionTraceV1 trace)
+    {
+        var original = trace.Header.BuildManifestHash;
+        if (string.IsNullOrEmpty(original))
+        {
+            throw new InvalidOperationException("Tamper witness requires a non-empty build manifest hash.");
+        }
+
+        var characters = original.ToCharArray();
+        characters[0] = characters[0] == '0' ? '1' : '0';
+        var mutated = new string(characters);
+        RequireSingleByteDifference(
+            Utf8WithoutBom.GetBytes(original),
+            Utf8WithoutBom.GetBytes(mutated));
+        return new SealedDecisionTraceV1(
+            trace.Header with { BuildManifestHash = mutated },
+            trace.Entries.Select(CloneTraceEntry).ToArray());
+    }
+
+    private static SealedDecisionEntry CloneTraceEntry(SealedDecisionEntry entry)
+        => entry with
+        {
+            SeamKey = entry.SeamKey with { },
+            ObservationCanonicalBytes = (byte[])entry.ObservationCanonicalBytes.Clone(),
+            RequestCanonicalBytes = (byte[])entry.RequestCanonicalBytes.Clone(),
+            ResponseCanonicalBytes = (byte[])entry.ResponseCanonicalBytes.Clone(),
+        };
+
+    private static void RequireSingleByteDifference(byte[] original, byte[] mutated)
+    {
+        if (original.Length != mutated.Length)
+        {
+            throw new InvalidOperationException("Tamper witness changed the payload length.");
+        }
+
+        var differenceCount = 0;
+        for (var index = 0; index < original.Length; index++)
+        {
+            if (original[index] != mutated[index])
+            {
+                differenceCount++;
+            }
+        }
+
+        if (differenceCount != 1)
+        {
+            throw new InvalidOperationException(
+                $"Tamper witness must flip exactly one byte (actual={differenceCount}).");
+        }
+    }
+
     private static H100MetricsRunSettings ResolveSettings()
     {
         var requested = H100MetricsRunSettings.FromEnvironment();
@@ -192,7 +499,7 @@ public static class H100SealedBridgeRunner
         };
     }
 
-    private static float ResolveTargetBattleSeconds()
+    internal static float ResolveTargetBattleSeconds()
     {
         var projectRoot = ProjectRoot();
         var specPath = Path.GetFullPath(Path.Combine(projectRoot, GateSpecRelativePath));
@@ -548,11 +855,56 @@ public static class H100SealedBridgeRunner
 
     private sealed record OfferedState(string SeamType, string PreStateHash);
 
-    private sealed record CaptureResult(
+    internal sealed record CaptureResult(
         SealedDecisionTraceV1 Trace,
         H100CampaignCorpusRunner.Corpus? Corpus,
         bool TerminalFailure,
         string TracePath);
+
+    internal sealed record ReplayResult(
+        SealedDecisionTraceV1 RebuiltTrace,
+        SealedDecisionTraceReplayResult Verification,
+        string SealedManifestHash,
+        string RebuiltManifestHash)
+    {
+        public bool VerificationPassed => Verification.VerificationPassed;
+
+        public bool ManifestEqual
+            => string.Equals(SealedManifestHash, RebuiltManifestHash, StringComparison.Ordinal);
+
+        public bool Passed => VerificationPassed && ManifestEqual;
+    }
+
+    internal sealed record ReplayWitnessResult(
+        bool VerificationPassed,
+        bool ManifestEqual,
+        string SealedManifestHash,
+        string RebuiltManifestHash,
+        int EntryCount,
+        string TracePath,
+        string FirstDivergenceReason,
+        string FirstDivergenceDetail)
+    {
+        public bool Passed => VerificationPassed && ManifestEqual;
+    }
+
+    internal sealed record SingleTamperResult(
+        bool ReplayFailed,
+        string DivergenceReason,
+        string DivergenceDetail);
+
+    internal sealed record TamperWitnessResult(
+        int TamperedEntryIndex,
+        SingleTamperResult Observation,
+        SingleTamperResult Response,
+        SingleTamperResult HeaderHash,
+        string TracePath)
+    {
+        public bool AllDetected
+            => Observation.ReplayFailed
+               && Response.ReplayFailed
+               && HeaderHash.ReplayFailed;
+    }
 
     private sealed record PairedWitnessArtifact(
         string SchemaVersion,
