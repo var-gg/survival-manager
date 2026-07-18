@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Core.Stats;
 using SM.HeadlessPolicies;
 using SM.Meta.Model;
 using SM.Meta.Services;
@@ -27,7 +28,10 @@ internal static class H100RosterPolicyObservationBuilder
             lookup,
             decisionSeed,
             includeTownRoster: true);
-        var rosterArchetypes = policyObservation.Roster.Select(value => value.ArchetypeId)
+        var roster = policyObservation.Roster
+            .Select(hero => ProjectRosterHealth(session, hero))
+            .ToArray();
+        var rosterArchetypes = roster.Select(value => value.ArchetypeId)
             .ToHashSet(StringComparer.Ordinal);
         var recruitOffers = session.RecruitOffers.Select((offer, index) =>
         {
@@ -63,7 +67,7 @@ internal static class H100RosterPolicyObservationBuilder
             .Where(value => value != null && !string.IsNullOrWhiteSpace(value.HeroId))
             .GroupBy(value => value.HeroId, StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
-        var passiveHeroes = policyObservation.Roster.Select(hero =>
+        var passiveHeroes = roster.Select(hero =>
         {
             loadoutByHero.TryGetValue(hero.HeroId, out var loadout);
             return new HeadlessPassiveHeroObservation(
@@ -108,7 +112,7 @@ internal static class H100RosterPolicyObservationBuilder
             session.SelectedCampaignChapterId,
             session.SelectedCampaignSiteId,
             MetaBalanceDefaults.TownRosterCap,
-            policyObservation.Roster,
+            roster,
             policyObservation.Wallet,
             recruitOffers,
             passiveHeroes,
@@ -116,6 +120,46 @@ internal static class H100RosterPolicyObservationBuilder
         observation = H100RosterPlayerVisibleFactProjector.AttachEvidenceIndex(observation);
         HeadlessRosterPolicyGuard.ValidateObservation(observation);
         return observation;
+    }
+
+    private static HeadlessHeroObservation ProjectRosterHealth(
+        GameSessionState session,
+        HeadlessHeroObservation hero)
+    {
+        // HeroInstanceRecord의 0/0은 fresh hero의 "전투 데이터 없음" sentinel이다. 배치 영웅과
+        // 실제 battle aftermath가 있는 reserve는 그대로 두고, 아직 싸우지 않은 reserve만 전투와
+        // 동일한 개인 loadout stat 경로로 표시용 HP를 보충한다.
+        if (hero.IsDeployed || hero.MaxHp > 0)
+        {
+            return hero;
+        }
+
+        var preview = session.TryBuildHeroStatPreview(hero.HeroId);
+        var maxHealth = HeroEffectiveStatPreview.Resolve(preview, new[] { StatKey.MaxHealth })
+            .FirstOrDefault()?.EffectiveValue ?? 0f;
+        if (maxHealth <= 0f || float.IsNaN(maxHealth) || float.IsInfinity(maxHealth))
+        {
+            return hero;
+        }
+
+        var effectiveMaxHp = (int)Math.Max(1, Math.Round(maxHealth));
+        return new HeadlessHeroObservation(
+            hero.HeroId,
+            hero.ArchetypeId,
+            hero.RaceId,
+            hero.ClassId,
+            hero.RoleTag,
+            hero.Level,
+            effectiveMaxHp,
+            effectiveMaxHp,
+            hero.EquippedItemCount,
+            hero.IsDeployed,
+            hero.PreferredAnchor,
+            hero.SkillCards,
+            hero.FlexActiveSkillId,
+            hero.FlexPassiveSkillId,
+            hero.EquippedItems,
+            hero.SelectedPassiveNodeIds);
     }
 
     private static HeadlessPassiveNodeObservation BuildPassiveNode(PassiveNodeTemplate node)
