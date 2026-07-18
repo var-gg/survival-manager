@@ -30,7 +30,8 @@ public static class H100BuildGrammarInferenceRunner
             truthGraph,
             surface,
             new[] { baseline },
-            progressCutoffDecisionIndex: int.MaxValue);
+            progressCutoffDecisionIndex: int.MaxValue,
+            captureSource: BuildGrammarInferenceCaptureSource.SyntheticStandIn);
         var result = BuildGrammarInferenceScorer.Score(input);
 
         // 정합성 assert: 실 truth graph가 서고, no-cheat baseline은 guard를 깨지 않아야(projector의 VisibleTokens/
@@ -53,6 +54,13 @@ public static class H100BuildGrammarInferenceRunner
                 + $"first={result.GuardViolations.FirstOrDefault()}");
         }
 
+        if (result.CaptureSource != BuildGrammarInferenceCaptureSource.SyntheticStandIn
+            || result.CertificationEligible)
+        {
+            throw new InvalidOperationException(
+                "BT4 real-data smoke: visible-semantic baseline must remain a certification-ineligible SyntheticStandIn.");
+        }
+
         var exposedFamilies = result.FamilyScores.Count(score => score.Exposed);
         var families = string.Join(
             " ",
@@ -68,6 +76,7 @@ public static class H100BuildGrammarInferenceRunner
         Debug.Log(
             $"[H100BuildGrammarInference] truthEdges={truthGraph.Edges.Count} visibleTokens={surface.VisibleTokens.Count} "
             + $"baselineClaims={baseline.Claims.Count} admissible={result.AdmissibleClaimCount} guardViolations={result.GuardViolationCount} "
+            + $"captureSource={result.CaptureSource} certificationEligible={result.CertificationEligible} "
             + $"exposedFamilies={exposedFamilies} precisionMin={result.PrecisionMin:F4} recallMin={result.RecallMin:F4} "
             + $"validConcepts={result.ValidConceptCount}");
         Debug.Log($"[H100BuildGrammarInference] families: {families}");

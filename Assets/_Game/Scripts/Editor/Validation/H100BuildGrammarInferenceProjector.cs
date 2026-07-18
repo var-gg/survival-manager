@@ -17,7 +17,8 @@ internal static class H100BuildGrammarInferenceProjector
         BuildGrammarTruthGraph truthGraph,
         InformationSurfaceAuditInput surface,
         IReadOnlyList<BuildConceptProposal> proposals,
-        int progressCutoffDecisionIndex)
+        int progressCutoffDecisionIndex,
+        BuildGrammarInferenceCaptureSource captureSource)
     {
         if (truthGraph == null) throw new ArgumentNullException(nameof(truthGraph));
         if (surface == null) throw new ArgumentNullException(nameof(surface));
@@ -29,7 +30,8 @@ internal static class H100BuildGrammarInferenceProjector
             visibleTokens,
             KnownFactRefs(surface),
             DeriveExposedConceptEdges(truthGraph, visibleTokens),
-            progressCutoffDecisionIndex);
+            progressCutoffDecisionIndex,
+            captureSource);
     }
 
     /// <summary>

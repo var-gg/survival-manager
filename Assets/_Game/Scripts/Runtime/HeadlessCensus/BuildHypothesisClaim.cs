@@ -25,7 +25,8 @@ public sealed record BuildHypothesisClaim(
 }
 
 /// <summary>
-/// 하나의 build 컨셉으로 묶인 가설 edge 집합. 유효 컨셉 판정(≥2 시스템 연결·증거≥2·payoff 전 선언·진행도 30% 이내)의 단위.
+/// 하나의 build 컨셉으로 묶인 가설 edge 집합. 유효 컨셉 판정(distinct truth match ≥2·연결된 subgraph·
+/// gameplay system family ≥2·관련 증거 ≥2·payoff 전 선언·진행도 cutoff 이내)의 단위.
 /// </summary>
 public sealed record BuildConceptProposal(
     string ProposalId,

@@ -4,6 +4,13 @@ using System.Linq;
 
 namespace SM.HeadlessCensus;
 
+/// <summary>BT4 추론 capture의 인증 출처. 기본값은 비인증 synthetic 경로로 fail closed한다.</summary>
+public enum BuildGrammarInferenceCaptureSource
+{
+    SyntheticStandIn = 0,
+    LiveColdStartLlm = 1,
+}
+
 /// <summary>BT4 빌드 문법 유추 채점 입력. 모든 truth는 evaluator-only이며 정책에 비노출.</summary>
 public sealed record BuildGrammarInferenceInput(
     IReadOnlyList<BuildConceptProposal> Proposals,
@@ -11,7 +18,8 @@ public sealed record BuildGrammarInferenceInput(
     IReadOnlyCollection<string> VisibleTokens,
     IReadOnlyCollection<string> KnownFactRefs,
     IReadOnlyCollection<string> ExposedConceptEdgeKeys,
-    int ProgressCutoffDecisionIndex);
+    int ProgressCutoffDecisionIndex,
+    BuildGrammarInferenceCaptureSource CaptureSource);
 
 /// <summary>relation(문법군)별 precision/recall 스코어.</summary>
 public sealed record BuildGrammarFamilyScore(
@@ -33,12 +41,19 @@ public sealed record BuildGrammarInferenceResult(
     IReadOnlyList<BuildGrammarFamilyScore> FamilyScores,
     double PrecisionMin,
     double RecallMin,
-    int ValidConceptCount);
+    int ValidConceptCount,
+    BuildGrammarInferenceCaptureSource CaptureSource)
+{
+    /// <summary>Synthetic stand-in 점수가 BT1/BT4/BT5/BT10 인증 집계에 섞이지 않게 하는 hard lock.</summary>
+    public bool CertificationEligible
+        => CaptureSource == BuildGrammarInferenceCaptureSource.LiveColdStartLlm;
+}
 
 /// <summary>
 /// 냉시작 LLM의 build 가설을 <see cref="BuildGrammarTruthGraph"/>에 대조해 문법군별 precision/recall과
 /// 유효 컨셉 수를 결정적으로 산출한다. no-cheat 계약: player-visible token 밖 endpoint나 미해결 증거를 인용한
-/// claim은 guard 위반으로 채점에서 배제(환각/치팅 거부). 매칭은 정확 (kind:id) token-pair — fuzzy 금지.
+/// claim은 guard 위반으로 채점에서 배제한다. visible endpoint 위의 well-formed 환각은 배제하지 않고 precision FP로
+/// 보존한다. 매칭은 정확 (kind:id) token-pair — fuzzy/역방향/전이 추론 금지.
 /// </summary>
 public static class BuildGrammarInferenceScorer
 {
@@ -51,10 +66,14 @@ public static class BuildGrammarInferenceScorer
         BuildGrammarRelation.PaysOff,
     };
 
-    private static readonly HashSet<string> SystemKinds = new(StringComparer.Ordinal)
+    private enum GrammarSystemFamily
     {
-        "skill", "status", "stat", "tag", "team_rule", "passive_node", "combat_effect",
-    };
+        Other = 0,
+        StatusCombat = 1,
+        Scaling = 2,
+        Synergy = 3,
+        Progression = 4,
+    }
 
     public static BuildGrammarInferenceResult Score(BuildGrammarInferenceInput input)
     {
@@ -169,7 +188,8 @@ public static class BuildGrammarInferenceScorer
             familyScores,
             precisionMin,
             recallMin,
-            validConceptCount);
+            validConceptCount,
+            input.CaptureSource);
     }
 
     private static string EdgeKey(BuildGrammarTruthEdge edge)
@@ -229,8 +249,28 @@ public static class BuildGrammarInferenceScorer
             return false;
         }
 
-        // (b) 실 fact로 resolve된 증거 ≥2(guard 통과 claim의 증거만 집계).
-        var evidenceCount = admissible
+        // 유효 컨셉은 constructive relation의 distinct exact truth match가 최소 두 개여야 한다.
+        // well-formed 환각 claim은 precision FP로 남지만 컨셉 성립 근거에는 포함하지 않는다.
+        var matched = admissible
+            .Where(claim => trueEdgeKeysByRelation.TryGetValue(claim.Relation, out var trueSet)
+                            && trueSet.Contains(claim.EdgeKey))
+            .GroupBy(claim => claim.EdgeKey, StringComparer.Ordinal)
+            .Select(group => group.First())
+            .ToArray();
+        if (matched.Length < 2)
+        {
+            return false;
+        }
+
+        // 흩어진 정답 edge를 하나의 컨셉으로 합치지 않는다. 방향은 매칭에 보존하되 연결성은 undirected다.
+        if (!FormsConnectedSubgraph(matched))
+        {
+            return false;
+        }
+
+        // 실 fact로 resolve된 distinct 증거 ≥2. 환각 claim에 붙은 unrelated fact로 문턱을 채울 수 없도록
+        // truth-matched claim의 증거만 집계한다.
+        var evidenceCount = matched
             .SelectMany(claim => claim.EvidenceRefs ?? Array.Empty<string>())
             .Distinct(StringComparer.Ordinal)
             .Count();
@@ -239,30 +279,69 @@ public static class BuildGrammarInferenceScorer
             return false;
         }
 
-        // (a) ≥2 distinct 시스템 연결(claim endpoint kind 합집합).
-        var systems = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var claim in admissible)
+        // ontology kind 수가 아니라 gameplay system family 수를 센다. 이 first-cut map은 콘텐츠 grammar가
+        // 정교해질 때 refinable하지만, kind→family 결과와 Other 제외 규칙은 항상 결정적이어야 한다.
+        var systemFamilies = new HashSet<GrammarSystemFamily>();
+        foreach (var claim in matched)
         {
-            if (SystemKinds.Contains(claim.SubjectKind))
+            var subjectFamily = GrammarSystemFamilyForKind(claim.SubjectKind);
+            if (subjectFamily != GrammarSystemFamily.Other)
             {
-                systems.Add(claim.SubjectKind);
+                systemFamilies.Add(subjectFamily);
             }
 
-            if (SystemKinds.Contains(claim.TargetKind))
+            var targetFamily = GrammarSystemFamilyForKind(claim.TargetKind);
+            if (targetFamily != GrammarSystemFamily.Other)
             {
-                systems.Add(claim.TargetKind);
+                systemFamilies.Add(targetFamily);
             }
         }
 
-        if (systems.Count < 2)
+        return systemFamilies.Count >= 2;
+    }
+
+    private static GrammarSystemFamily GrammarSystemFamilyForKind(string kind)
+        => kind switch
         {
-            return false;
+            "skill" => GrammarSystemFamily.StatusCombat,
+            "status" => GrammarSystemFamily.StatusCombat,
+            "combat_effect" => GrammarSystemFamily.StatusCombat,
+            "cleanse_profile" => GrammarSystemFamily.StatusCombat,
+            "stat" => GrammarSystemFamily.Scaling,
+            "rule_modifier" => GrammarSystemFamily.Scaling,
+            "tag" => GrammarSystemFamily.Synergy,
+            "team_rule" => GrammarSystemFamily.Synergy,
+            "passive_node" => GrammarSystemFamily.Progression,
+            "acquisition" => GrammarSystemFamily.Progression,
+            _ => GrammarSystemFamily.Other,
+        };
+
+    private static bool FormsConnectedSubgraph(IReadOnlyList<BuildHypothesisClaim> matched)
+    {
+        var connectedTokens = new HashSet<string>(StringComparer.Ordinal)
+        {
+            matched[0].SubjectToken,
+            matched[0].TargetToken,
+        };
+
+        var expanded = true;
+        while (expanded)
+        {
+            expanded = false;
+            foreach (var claim in matched)
+            {
+                if (!connectedTokens.Contains(claim.SubjectToken)
+                    && !connectedTokens.Contains(claim.TargetToken))
+                {
+                    continue;
+                }
+
+                expanded |= connectedTokens.Add(claim.SubjectToken);
+                expanded |= connectedTokens.Add(claim.TargetToken);
+            }
         }
 
-        // (e) 순수 환각이 아님 — 최소 1개 admissible claim이 실 truth edge(노출 컨셉이면 가산점 아님, 진위만).
-        var anyTrue = admissible.Any(claim =>
-            trueEdgeKeysByRelation.TryGetValue(claim.Relation, out var trueSet)
-            && trueSet.Contains(claim.EdgeKey));
-        return anyTrue;
+        return matched.All(claim => connectedTokens.Contains(claim.SubjectToken)
+                                    && connectedTokens.Contains(claim.TargetToken));
     }
 }
