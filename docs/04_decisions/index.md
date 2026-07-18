@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-17
+- 최종수정일: 2026-07-18
 - 소스오브트루스: `docs/04_decisions/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -46,6 +46,7 @@
 - `adr-0031-h100-headless-policy-boundary.md`: H100 정책을 `SM.Combat` 단일 참조 pure `SM.HeadlessPolicies`로 분리하고 player-visible projection은 `SM.Editor.Validation`이 소유하는 no-cheat 경계 (active)
 - `adr-0032-h100-build-space-census-boundary.md`: H100 495편성·360 labelled 배치 census를 `SM.Core` + `SM.Combat` 전용 pure `SM.HeadlessCensus`로 분리하고 authored projection·screening은 `SM.Editor.Validation`에 남기는 경계 (active)
 - `adr-0033-h100-roster-decision-surface.md`: 기존 `IHeadlessPolicy`와 여섯 production 정책을 보존하면서 opt-in Town 영입·패시브 노드·Refit 결정 표면을 여는 경계 (active)
+- `adr-0034-sealed-llm-bridge-boundary.md`: BT1 E07b 봉인 LLM wire codec(관측 canonical bytes·legal action descriptor·strict selected_action codec·request preimage)을 engine-free Editor `SM.SealedLlmBridge` asmdef로 분리 — `SM.HeadlessMetrics`+`SM.HeadlessPolicies` 조립 + FastUnit 검증 + `SM.Editor.Validation` namespace 소유 분리 (active)
 
 ## 운영 메모
 

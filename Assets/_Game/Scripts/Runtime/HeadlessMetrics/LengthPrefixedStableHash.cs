@@ -9,7 +9,7 @@ namespace SM.HeadlessMetrics;
 /// UTF-8 payload를 <c>{byteCount}:{value}|</c> frame으로 결합하고 FNV-1a 64-bit로 해시한다.
 /// <see cref="ReplayHash"/>와 sealed decision trace가 같은 byte contract를 공유하는 내부 codec이다.
 /// </summary>
-internal static class LengthPrefixedStableHash
+public static class LengthPrefixedStableHash
 {
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
 

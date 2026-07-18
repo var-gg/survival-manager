@@ -8,6 +8,7 @@
     "SM.HeadlessCensus",
     "SM.HeadlessMetrics",
     "SM.HeadlessPolicies",
+    "SM.SealedLlmBridge",
     "SM.Meta",
     "SM.Atlas",
     "SM.Persistence.Abstractions",

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-17
+- 최종수정일: 2026-07-18
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -42,6 +42,7 @@
 | `SM.Core`, `SM.Combat`, `SM.Meta`, `SM.Meta.Serialization`, `SM.Persistence.Abstractions` | pure boundary로 닫힘 | `test-batch-fast`, exact asmdef allowlist, boundary guard |
 | `SM.HeadlessMetrics` | `SM.Core` + `SM.Combat`만 소비하는 pure 계측 boundary | `test-batch-fast`, exact asmdef allowlist, 결정적 writer/hash tests |
 | `SM.HeadlessPolicies` | `SM.Combat`만 소비하는 pure 정책 boundary | `test-batch-fast`, exact asmdef allowlist, 6개 production + Coverage QA + E06 preview + opt-in E07 Town 정책의 결정론/no-cheat contract tests |
+| sealed LLM `SM.SealedLlmBridge` codec | `SM.HeadlessMetrics` + `SM.HeadlessPolicies`를 조립하는 Editor-platform, engine-free 결정 함수 boundary | `test-batch-fast`, full observation field coverage, strict five-seam action round-trip/guard tests |
 | `SM.HeadlessCensus` | `SM.Core` + `SM.Combat`만 소비하는 pure build-space 지도·BT1 컨셉 카탈로그 boundary | `test-batch-fast`, 495×360 구조 assertion, deterministic medoid/catalog writer tests |
 | `FastUnit` test lane | `SM.Tests.FastUnit` 전용 asmdef에서 editor-free/resource-free/authored-object-free로 닫힘 | fake lookup, pure fixture, class-level category, dedicated folder/alias-wrapper guard |
 | `SM.Unity`, `GameSessionState`, runtime bootstrap/content lookup | boundary adapter로 유지 | `GameSessionRuntimeBootstrapProvider` production choke point, FastUnit 밖, 필요 시 focused session 또는 BatchOnly |
@@ -57,7 +58,7 @@
 | --- | --- | --- | --- |
 | 전투 규칙, damage, targeting, movement, status | `SM.Combat` | `test-batch-fast`, combat focused tests | editor-free |
 | H100 record, BT3 정보 표면 audit, E05 track 집계, E08 option trap·dominant 판정, BT1-E09 placement tactical attribution·formation non-use join, replay hash, formation causal/placement/healer, sunken solvability, E06 acceptance·BT8 부분 공급, gate evaluation | `SM.HeadlessMetrics`·`SM.HeadlessCensus` | `test-batch-fast`, `InformationSurfaceAuditorFastTests`, `IntentTrackEvaluatorFastTests`, `OptionTrapOracleFastTests`, `PlacementAttributionEvaluatorFastTests`, `h100-intent-track.ps1`, `h100-trap-oracle.ps1`, `h100-surface-audit.ps1`, `h100-formation.ps1`, `h100-tactical-attribution.ps1`, `h100-sunken-diagnosis.ps1`, `h100-preview-policy.ps1` | editor-free evaluation; 실제 content/session corpus 실행은 `SM.Editor.Validation` |
-| H100 player-visible observation과 정책 선택, BT1 의도 trace, E06 preview-grounded 적응, E07 Town agency | `SM.HeadlessPolicies` + `SM.HeadlessMetrics` trace + `SM.Editor.Validation` projection adapter | `test-batch-fast`, 정책별 `h100-metrics.ps1`, `h100-policy-witness.ps1`, `h100-intent-trace.ps1`, `h100-preview-policy.ps1` | 정책·trace schema는 editor-free sibling; 실제 session projection/corpus, E03 계약 주입, Town session API 실행, paired acceptance는 editor-required |
+| H100 player-visible observation과 정책 선택, BT1 의도 trace, E06 preview-grounded 적응, E07 Town agency | `SM.HeadlessPolicies` + `SM.HeadlessMetrics` trace + sealed LLM `SM.SealedLlmBridge` codec + 기존 `SM.Editor` projection adapter | `test-batch-fast`, 정책별 `h100-metrics.ps1`, `h100-policy-witness.ps1`, `h100-intent-trace.ps1`, `h100-preview-policy.ps1` | 정책·trace schema와 codec 함수는 engine-free; 실제 session projection/corpus, E03 계약 주입, Town session API 실행, paired acceptance는 editor-required |
 | H100 build-space census, build grammar truth graph, medoid, BT1 컨셉 카탈로그와 다섯 lever intent-track oracle | `SM.HeadlessCensus` + `SM.Editor.Validation` content/screening/offer adapter | `test-batch-fast`, `h100-build-space.ps1`, `h100-concept-catalog.ps1`, `h100-intent-track.ps1`, `h100-surface-audit.ps1` | census/graph/catalog/oracle는 editor-free; authored content와 실제 campaign/Town offer projection은 editor-required |
 | 공통 id/stat/result/content schema enum | `SM.Core`, `SM.Core.Content` | `test-batch-fast` | editor-free |
 | reward, passive, loot, expedition progression rule | `SM.Meta` pure model/service | `test-batch-fast`, `MetaRewardPickTests` | editor-free unless session/UI application is in scope |

@@ -22,6 +22,7 @@ public sealed class BuildBoundaryGuardFastTests
         AssertNoEngineReference(assemblies, "SM.HeadlessCensus");
         AssertNoEngineReference(assemblies, "SM.HeadlessMetrics");
         AssertNoEngineReference(assemblies, "SM.HeadlessPolicies");
+        AssertNoEngineReference(assemblies, "SM.SealedLlmBridge");
         AssertNoEngineReference(assemblies, "SM.Persistence.Abstractions");
 
         AssertAssemblyReferences(assemblies, "SM.Meta", "SM.Core", "SM.Combat");
@@ -29,6 +30,12 @@ public sealed class BuildBoundaryGuardFastTests
         AssertAssemblyReferences(assemblies, "SM.HeadlessCensus", "SM.Core", "SM.Combat");
         AssertAssemblyReferences(assemblies, "SM.HeadlessMetrics", "SM.Core", "SM.Combat");
         AssertAssemblyReferences(assemblies, "SM.HeadlessPolicies", "SM.Combat");
+        AssertAssemblyReferences(
+            assemblies,
+            "SM.SealedLlmBridge",
+            "SM.Combat",
+            "SM.HeadlessMetrics",
+            "SM.HeadlessPolicies");
         AssertAssemblyReferences(assemblies, "SM.Persistence.Abstractions", "SM.Core", "SM.Meta");
         AssertNoReferences(
             assemblies,
@@ -80,6 +87,7 @@ public sealed class BuildBoundaryGuardFastTests
             "SM.Editor");
         Assert.That(assemblies["SM.Persistence.Json"].References, Does.Not.Contain("SM.Content"));
         Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("SM.Editor"));
+        Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Contain("SM.SealedLlmBridge"));
         Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("Unity.Localization.Editor"));
         Assert.That(assemblies["SM.Tests.FastUnit"].References, Does.Not.Contain("SM.Tests.EditMode"));
         Assert.That(assemblies["SM.Tests.EditMode"].References, Does.Contain("SM.Tests.FastUnit"));

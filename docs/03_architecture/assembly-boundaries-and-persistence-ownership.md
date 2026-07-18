@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-18
 - 소스오브트루스: `docs/03_architecture/assembly-boundaries-and-persistence-ownership.md`
 - 관련문서:
   - `docs/03_architecture/dependency-direction.md`
@@ -22,6 +22,7 @@
 | `SM.Meta` | town, expedition, encounter, reward, progression, arena 같은 비즈니스 상태 변화와 pure runtime spec/model | authored `ScriptableObject` 타입 참조, `SM.Content` 직접 참조, persistence record 타입 참조, Unity scene/component 타입 참조, repository concrete 생성 |
 | `SM.HeadlessMetrics` | H100 record, 기존 combat truth의 pure projection, replay hash envelope, intent trace, deterministic artifact와 gate 평가 | authored content/session/persistence/UI/editor ownership, sim/save truth 변경 |
 | `SM.HeadlessPolicies` | player-visible policy DTO, 6정책, 컨셉 의도 DTO·상태·정책, deterministic selector, no-cheat/legal-action guard | session/content lookup/RNG service 직접 접근, E03 catalog 직접 참조, future node나 resolved enemy stat 소유 |
+| `SM.SealedLlmBridge` | sealed LLM observation canonical bytes, legal action descriptor, strict selected_action codec, request preimage | session/content projection, HTTP/LLM transport, trace assembly, Unity object 접근 |
 | `SM.HeadlessCensus` | build-space pure DTO, C(12,4)·P(6,4) 열거, 정적 formation feature, deterministic medoid와 구조 artifact | authored content/session/persistence/UI/editor ownership, 전투 결과나 pruning/optimizer 소유 |
 | `SM.Unity` | Boot, scene flow, session orchestration, runtime composition root, UI/controller 진입점, authored content conversion | editor-only logic 소유, persistence ownership을 Meta로 밀어 넣는 일 |
 | `SM.Persistence.Abstractions` | save contract, record 모델, repository port, persistence-facing DTO | gameplay 규칙 결정, Unity scene 진입점 소유, concrete serializer 구현 |
@@ -66,6 +67,7 @@
 - persistence ownership closure는 `SM.Meta`가 persistence record/repository concrete를 알지 않는다는 뜻이지, `SM.Unity` runtime adapter가 사라졌다는 뜻이 아니다.
 - `SM.HeadlessMetrics`는 `SM.Core`, `SM.Combat`만 참조하는 pure boundary다. 실제 content/session execution은 `SM.Editor.Validation` adapter에 남고, record로 투영된 뒤에만 계측 core로 들어간다.
 - `SM.HeadlessPolicies`는 `SM.Combat`만 참조하는 pure boundary다. `SM.Editor.Validation.H100PolicyObservationBuilder`가 현재 session/player preview를 순수 observation으로 투영하고, coverage lane의 `H100ConceptIntentProjector`가 E03 계약 하나만 문자열 intent DTO로 낮춘다. 순수 intent DTO constructor injection은 허용하지만 catalog/session/content/RNG service 주입은 금지한다.
+- sealed LLM codec 전용 `SM.SealedLlmBridge` asmdef는 `Assets/_Game/Scripts/Editor/SealedLlmBridge/**`에 한정한다. 기존 `SM.Editor`의 `SM.Editor.Validation` projection/runner와 assembly identity 및 namespace를 분리하며, `SM.HeadlessMetrics`와 `SM.HeadlessPolicies`를 함께 참조하되 `noEngineReferences: true`를 유지한다. `SM.Editor`와 `SM.Tests.FastUnit`의 참조도 이 좁은 asmdef에만 적용한다.
 - `SM.HeadlessCensus`는 `SM.Core`, `SM.Combat`만 참조하는 pure boundary다. `SM.Editor.Validation.H100BuildSpaceContentAdapter`가 canonical authored roster를 pure DTO로 투영하고 실제 medoid battle smoke는 기존 corpus/metrics 경로를 사용한다.
 
 ## asmdef cycle 사전 점검 규칙

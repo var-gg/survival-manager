@@ -1,0 +1,20 @@
+{
+  "name": "SM.SealedLlmBridge",
+  "rootNamespace": "SM.SealedLlmBridge",
+  "references": [
+    "SM.Combat",
+    "SM.HeadlessMetrics",
+    "SM.HeadlessPolicies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

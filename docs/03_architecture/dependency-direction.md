@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-18
 - 소스오브트루스: `docs/03_architecture/dependency-direction.md`
 - 관련문서:
   - `docs/03_architecture/coding-principles.md`
@@ -25,6 +25,7 @@
 | `SM.HeadlessCensus` | H100 build-space 열거, 시너지·역할·진형 feature, deterministic medoid와 census artifact | `SM.Core`, `SM.Combat` |
 | `SM.HeadlessMetrics` | H100 전투·캠페인 record, replay hash envelope, intent trace, 결정적 artifact, gate 평가 | `SM.Core`, `SM.Combat` |
 | `SM.HeadlessPolicies` | H100 player-visible observation/decision, 6정책, 컨셉 의도 DTO·상태·정책, deterministic selector, no-cheat guard | `SM.Combat` |
+| `SM.SealedLlmBridge` | sealed LLM observation/action/request codec의 engine-free Editor 조립 경계 | `SM.Combat`, `SM.HeadlessMetrics`, `SM.HeadlessPolicies` |
 | `SM.Meta` | town, expedition, reward, progression 규칙과 pure runtime spec/model | `SM.Core`, `SM.Combat` |
 | `SM.Meta.Serialization` | Meta snapshot serialization helper와 pure DTO 변환 | `SM.Core`, `SM.Combat`, `SM.Meta` |
 | `SM.Persistence.Abstractions` | save contract, repository port, save model | `SM.Core`, `SM.Meta` |
@@ -41,6 +42,7 @@
 - `SM.HeadlessCensus` -> `SM.Content`, `SM.HeadlessMetrics`, `SM.HeadlessPolicies`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.HeadlessMetrics` -> `SM.Content`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.HeadlessPolicies` -> `SM.Content`, `SM.HeadlessMetrics`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
+- `SM.SealedLlmBridge` -> `SM.Core`, `SM.Content`, `SM.HeadlessCensus`, `SM.Meta`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor`, Unity engine/editor package 금지
 - `SM.Meta` -> `SM.Content`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Meta.Serialization` -> `SM.Content`, `SM.Persistence.*`, `SM.Unity`, `SM.Editor` 금지
 - `SM.Persistence.Abstractions` -> `SM.Persistence.Json`, `SM.Unity`, `SM.Editor` 금지
@@ -84,6 +86,7 @@
 - `No Engine References`와 forbidden dependency guard로 닫는 대상은 pure asmdef와 `FastUnit` lane이다.
 - `SM.Unity`는 `SM.Content`, `SM.Meta`, persistence adapter를 조립하는 runtime boundary adapter이므로 editor-free pure lane으로 분류하지 않는다.
 - `RuntimeCombatContentLookup`, `GameSessionRuntimeBootstrapProvider`, `NarrativeRuntimeBootstrap.LoadFromResources()`, content conversion, UI/controller/scene 경로는 FastUnit 밖에서 검증한다. production narrative `Resources` bootstrap은 `GameSessionRuntimeBootstrapProvider`가 소유하고, `GameSessionState` 본 파일은 그 provider로 위임한다.
+- `Assets/_Game/Scripts/Editor/SealedLlmBridge/**`의 `SM.SealedLlmBridge` asmdef는 sealed LLM pure codec만 소유한다. `includePlatforms: Editor`이지만 `noEngineReferences: true`이고 서로 분리된 `SM.HeadlessMetrics`·`SM.HeadlessPolicies`를 조립하는 결정 함수만 둔다. 기존 `SM.Editor.Validation` namespace의 projection/runner는 `SM.Editor`에 남는다.
 - `SM.Tests.PlayMode -> SM.Editor` 금지는 필요조건일 뿐이며, PlayMode를 FastUnit/pure lane으로 승격한다는 뜻은 아니다.
 
 ## composition root 위치
@@ -105,6 +108,7 @@
 - 문서에서는 `SM.Tests`를 테스트 어셈블리 그룹의 약칭으로 쓴다.
 - 실제 asmdef는 `SM.Tests.FastUnit`, `SM.Tests.EditMode`, `SM.Tests.EditMode.Integration`, `SM.Tests.PlayMode`다.
 - `SM.Tests.FastUnit`은 EditMode 실행을 위해 `Editor` platform target을 쓰지만 `SM.Editor`와 editor-only package 참조를 금지한다.
+- `SM.Tests.FastUnit`은 sealed LLM codec 검증을 위해 engine-free `SM.SealedLlmBridge` asmdef만 직접 참조할 수 있다. 이 예외는 넓은 `SM.Editor` asmdef, authored/session projection adapter, UnityEditor package 참조를 허용하지 않는다.
 - `SM.Tests.FastUnit`은 `SM.HeadlessMetrics`의 pure projection/hash/serialization/gate/intent writer와 `SM.HeadlessPolicies`의 observation contract/6정책/컨셉 의도 결정론을 직접 검증할 수 있다. 실제 content/session corpus runner와 E03 계약 투영은 `SM.Editor` 경계이므로 이 lane에서 호출하지 않는다.
 - `SM.Tests.FastUnit`은 `SM.HeadlessCensus`의 495편성·360배치 열거, 구조 assertion, medoid, writer 결정론을 검증할 수 있다. `RuntimeCombatContentLookup` projection과 screening battle은 `SM.Editor` 경계이므로 이 lane에서 호출하지 않는다.
 - EditMode와 EditMode.Integration은 editor bootstrap과 validator 확인을 위해 `SM.Editor` 참조를 허용한다.
