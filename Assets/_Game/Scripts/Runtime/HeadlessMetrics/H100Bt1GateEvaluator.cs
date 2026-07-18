@@ -76,10 +76,15 @@ public static class H100Bt1GateEvaluator
                     : PendingThreshold(threshold, gate, strictMode)).ToArray();
             var observedFailure = pendingThresholds.Any(threshold =>
                 threshold.Observed && threshold.Pass == false);
+            var allObserved = pendingThresholds.All(threshold => threshold.Observed);
             return BuildGateResult(
                 gate,
-                observedFailure ? GateEvaluationStatusWire.Fail : GateEvaluationStatusWire.NotYetEvaluable,
-                observedFailure ? false : strictMode ? false : null,
+                observedFailure
+                    ? GateEvaluationStatusWire.Fail
+                    : allObserved
+                        ? GateEvaluationStatusWire.Pass
+                        : GateEvaluationStatusWire.NotYetEvaluable,
+                observedFailure ? false : allObserved ? true : strictMode ? false : null,
                 pendingThresholds);
         }
 

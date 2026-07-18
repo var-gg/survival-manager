@@ -17,8 +17,12 @@ namespace SM.Editor.Validation;
 public static class H100SealedBridgeRunner
 {
     private const string GateSpecRelativePath = "Assets/_Game/Scripts/Runtime/HeadlessMetrics/h100-gates-v1.json";
+    private const string Bt1GateSpecRelativePath = "Assets/_Game/Scripts/Runtime/HeadlessMetrics/h100-gates-bt1-v1.json";
     private const string DefaultOutputDirectory = "Logs/h100-sealed-bridge";
     private const string TraceFileName = "sealed-decision-trace-v1.json";
+    private const string RebuiltTraceFileName = "rebuilt-trace.json";
+    private const string ReplayEnvironmentFileName = "replay-env.json";
+    private const string Bt1ReplayWitnessFileName = "bt1-replay-witness.json";
     private const string PairedWitnessFileName = "paired-witness.json";
     private static readonly UTF8Encoding Utf8WithoutBom = new(false);
 
@@ -71,6 +75,16 @@ public static class H100SealedBridgeRunner
     /// <summary>SM_H100_TRACE_PATH의 sealed trace를 fresh campaign으로 재도출하고 exact manifest를 검증한다.</summary>
     public static void RunReplayFromCli()
     {
+        var forceCulture = Environment.GetEnvironmentVariable("SM_H100_FORCE_CULTURE");
+        if (!string.IsNullOrWhiteSpace(forceCulture))
+        {
+            var culture = CultureInfo.GetCultureInfo(forceCulture);
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+        }
+
         SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(H100SealedBridgeRunner));
         var requestedTracePath = Environment.GetEnvironmentVariable("SM_H100_TRACE_PATH");
         if (string.IsNullOrWhiteSpace(requestedTracePath))
@@ -106,6 +120,94 @@ public static class H100SealedBridgeRunner
             $"[H100SealedBridge] replay PASS verification=true manifest_equal=true "
             + $"entries={result.RebuiltTrace.Entries.Count.ToString(CultureInfo.InvariantCulture)} "
             + $"manifest={result.RebuiltManifestHash} trace={tracePath}");
+
+        var replayResultDirectory = Environment.GetEnvironmentVariable("SM_H100_REPLAY_RESULT_DIR");
+        if (!string.IsNullOrWhiteSpace(replayResultDirectory))
+        {
+            WriteReplayArtifacts(replayResultDirectory, result, forceCulture);
+        }
+    }
+
+    /// <summary>persisted capture/replay bytes를 다시 읽어 BT1 세 metric과 gate report를 생성한다.</summary>
+    public static void RunBt1GateFromCli()
+    {
+        var requestedTracePath = RequireEnvironment("SM_H100_TRACE_PATH");
+        var tracePath = Path.GetFullPath(
+            Path.IsPathRooted(requestedTracePath)
+                ? requestedTracePath
+                : Path.Combine(ProjectRoot(), requestedTracePath));
+        if (!File.Exists(tracePath))
+        {
+            throw new FileNotFoundException("Sealed decision trace does not exist.", tracePath);
+        }
+
+        var replayResultDirectories = RequireEnvironment("SM_H100_REPLAY_RESULT_DIRS")
+            .Split(';')
+            .Select(value => value.Trim())
+            .Where(value => value.Length > 0)
+            .ToArray();
+        if (replayResultDirectories.Length == 0)
+        {
+            throw new InvalidOperationException("SM_H100_REPLAY_RESULT_DIRS must identify at least one replay directory.");
+        }
+
+        var outputDirectory = ResolveOutputDirectory(RequireEnvironment("SM_H100_SEALED_OUTPUT"));
+        var sealedTraceBytes = File.ReadAllBytes(tracePath);
+        var sealedTrace = HeadlessMetricJson.Deserialize<SealedDecisionTraceV1>(
+            Utf8WithoutBom.GetString(sealedTraceBytes));
+        var inputs = replayResultDirectories.Select(ReadReplayInput).ToArray();
+        var aggregate = Bt1ReplayAggregate.Aggregate(sealedTrace, sealedTraceBytes, inputs);
+        var specPath = Path.GetFullPath(Path.Combine(ProjectRoot(), Bt1GateSpecRelativePath));
+        var spec = H100Bt1GateSpec.LoadFromFile(specPath);
+        var report = H100Bt1GateEvaluator.Generate(
+            spec,
+            aggregate.ToBt1Observations().ToArray(),
+            legacyReport: null);
+        var reportPath = H100Bt1GateReportWriter.Write(outputDirectory, report);
+        var witnessPath = Path.Combine(outputDirectory, Bt1ReplayWitnessFileName);
+        File.WriteAllText(
+            witnessPath,
+            HeadlessMetricJson.Serialize(aggregate) + "\n",
+            Utf8WithoutBom);
+
+        var bt1 = report.Gates.SingleOrDefault(gate =>
+            string.Equals(gate.GateId, "BT1", StringComparison.Ordinal));
+        if (bt1 == null)
+        {
+            throw new InvalidOperationException("H100 BT1 gate report does not contain BT1.");
+        }
+
+        if (!string.Equals(bt1.Status, "pass", StringComparison.Ordinal))
+        {
+            var firstDivergence = aggregate.PerReplay.FirstOrDefault(replay =>
+                !replay.VerificationPassed || !replay.ByteIdentical);
+            var divergence = firstDivergence == null
+                ? "none"
+                : string.Format(
+                    CultureInfo.InvariantCulture,
+                    "pid={0} reason={1} detail={2} byte_identical={3}",
+                    firstDivergence.Fingerprint.ProcessId,
+                    firstDivergence.FirstDivergenceReason,
+                    firstDivergence.FirstDivergenceDetail,
+                    firstDivergence.ByteIdentical);
+            throw new InvalidOperationException(string.Format(
+                CultureInfo.InvariantCulture,
+                "H100 BT1 replay gate failed: independent_process_replay_count={0} "
+                + "sealed_llm_decision_trace_replay_match_rate={1:R} "
+                + "state_event_result_hash_match_rate={2:R} first_divergence={3}",
+                aggregate.IndependentProcessReplayCount,
+                aggregate.SealedLlmDecisionTraceReplayMatchRate,
+                aggregate.StateEventResultHashMatchRate,
+                divergence));
+        }
+
+        Debug.Log(
+            $"[H100SealedBridge] BT1_GATE pass "
+            + $"count={aggregate.IndependentProcessReplayCount.ToString(CultureInfo.InvariantCulture)} "
+            + $"match={aggregate.SealedLlmDecisionTraceReplayMatchRate.ToString("R", CultureInfo.InvariantCulture)} "
+            + $"state_event={aggregate.StateEventResultHashMatchRate.ToString("R", CultureInfo.InvariantCulture)} "
+            + $"distinct_culture={aggregate.DistinctAppliedCultureCount.ToString(CultureInfo.InvariantCulture)} "
+            + $"report={reportPath}");
     }
 
     /// <summary>bare factory policy와 byte-transparent stand-in bridge를 같은 seed의 real corpus로 대조한다.</summary>
@@ -591,6 +693,54 @@ public static class H100SealedBridgeRunner
         return payload.ToArray();
     }
 
+    private static void WriteReplayArtifacts(
+        string requestedOutputDirectory,
+        ReplayResult result,
+        string? forceCulture)
+    {
+        var outputDirectory = ResolveOutputDirectory(requestedOutputDirectory);
+        Directory.CreateDirectory(outputDirectory);
+        File.WriteAllText(
+            Path.Combine(outputDirectory, RebuiltTraceFileName),
+            HeadlessMetricJson.Serialize(result.RebuiltTrace) + "\n",
+            Utf8WithoutBom);
+        var fingerprint = new Bt1ReplayEnvFingerprint(
+            string.IsNullOrWhiteSpace(forceCulture) ? CultureInfo.CurrentCulture.Name : forceCulture,
+            TimeZoneInfo.Local.Id,
+            Directory.GetCurrentDirectory(),
+            System.Diagnostics.Process.GetCurrentProcess().Id,
+            Environment.MachineName,
+            result.SealedManifestHash,
+            result.RebuiltManifestHash);
+        File.WriteAllText(
+            Path.Combine(outputDirectory, ReplayEnvironmentFileName),
+            HeadlessMetricJson.Serialize(fingerprint) + "\n",
+            Utf8WithoutBom);
+    }
+
+    private static Bt1ReplayInput ReadReplayInput(string requestedReplayDirectory)
+    {
+        var replayDirectory = ResolveOutputDirectory(requestedReplayDirectory);
+        var rebuiltTracePath = Path.Combine(replayDirectory, RebuiltTraceFileName);
+        var environmentPath = Path.Combine(replayDirectory, ReplayEnvironmentFileName);
+        if (!File.Exists(rebuiltTracePath))
+        {
+            throw new FileNotFoundException("Rebuilt replay trace does not exist.", rebuiltTracePath);
+        }
+
+        if (!File.Exists(environmentPath))
+        {
+            throw new FileNotFoundException("Replay environment fingerprint does not exist.", environmentPath);
+        }
+
+        var rebuiltTraceBytes = File.ReadAllBytes(rebuiltTracePath);
+        var rebuiltTrace = HeadlessMetricJson.Deserialize<SealedDecisionTraceV1>(
+            Utf8WithoutBom.GetString(rebuiltTraceBytes));
+        var fingerprint = HeadlessMetricJson.Deserialize<Bt1ReplayEnvFingerprint>(
+            File.ReadAllText(environmentPath, Utf8WithoutBom));
+        return new Bt1ReplayInput(rebuiltTrace, rebuiltTraceBytes, fingerprint);
+    }
+
     private static string WriteTrace(string requestedOutputDirectory, SealedDecisionTraceV1 trace)
     {
         var outputDirectory = ResolveOutputDirectory(requestedOutputDirectory);
@@ -636,6 +786,17 @@ public static class H100SealedBridgeRunner
     {
         var value = Environment.GetEnvironmentVariable(name);
         return string.IsNullOrWhiteSpace(value) ? fallback : value;
+    }
+
+    private static string RequireEnvironment(string name)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidOperationException($"{name} is required.");
+        }
+
+        return value;
     }
 
     private static void AddKeys(List<string> parts, string prefix, IEnumerable<string>? keys)
