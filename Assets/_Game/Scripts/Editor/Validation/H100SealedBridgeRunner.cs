@@ -263,22 +263,49 @@ public static class H100SealedBridgeRunner
     internal static CaptureResult Capture(
         RuntimeCombatContentLookup lookup,
         H100MetricsRunSettings settings,
-        float targetBattleSeconds)
+        float targetBattleSeconds,
+        Func<LlmPromptManifestV1, ISealedDecisionSource>? sourceFactory = null,
+        SealedDecisionTraceCaptureSource captureSource = SealedDecisionTraceCaptureSource.SyntheticStandIn,
+        H100LiveCaptureIdentity? identity = null,
+        H100PlayerVisibleFactLedgerCollector? externalFactLedger = null,
+        LlmPromptManifestV1? promptManifestOverride = null)
     {
-        var promptManifest = CreatePromptManifest();
+        if (lookup == null) throw new ArgumentNullException(nameof(lookup));
+        if (settings == null) throw new ArgumentNullException(nameof(settings));
+        if (captureSource == SealedDecisionTraceCaptureSource.LiveColdStartLlm && identity == null)
+        {
+            throw new ArgumentException("Live capture requires an explicit cohort-stable identity.", nameof(identity));
+        }
+
+        if (captureSource == SealedDecisionTraceCaptureSource.LiveColdStartLlm && sourceFactory == null)
+        {
+            throw new ArgumentException("Live capture requires an explicit decision source factory.", nameof(sourceFactory));
+        }
+
+        var promptManifest = promptManifestOverride ?? CreatePromptManifest();
         var campaignSeed = H100SessionDriver.DeriveSeed("campaign", settings.SeedBase);
         var builder = new SealedDecisionTraceBuilder(
             settings.RunId,
             "h100-real-campaign-capture-v1",
             campaignSeed,
-            ComputeBuildManifestHash(settings, targetBattleSeconds),
+            identity?.BuildManifestHash ?? ComputeBuildManifestHash(settings, targetBattleSeconds),
             ComputeContentManifestHash(lookup),
             ComputeVisibleSurfaceHash(promptManifest),
             promptManifest.PromptSchemaHash,
-            ComputeScorerConfigHash(settings),
-            SealedDecisionTraceCaptureSource.SyntheticStandIn);
-        var referencePolicy = CreateReferencePolicy(settings.PolicyId);
-        var source = new SyntheticStandInSource(referencePolicy, referencePolicy);
+            identity?.ScorerConfigHash ?? ComputeScorerConfigHash(settings),
+            captureSource);
+        ISealedDecisionSource source;
+        if (sourceFactory == null)
+        {
+            var referencePolicy = CreateReferencePolicy(settings.PolicyId);
+            source = new SyntheticStandInSource(referencePolicy, referencePolicy);
+        }
+        else
+        {
+            source = sourceFactory(promptManifest)
+                     ?? throw new InvalidOperationException("Decision source factory returned null.");
+        }
+
         var bridgePolicy = new SealedLlmBridgePolicy(source, builder, promptManifest);
         var coordinator = new CaptureCoordinator(builder);
         H100CampaignCorpusRunner.Corpus? corpus = null;
@@ -291,7 +318,8 @@ public static class H100SealedBridgeRunner
                 settings,
                 targetBattleSeconds,
                 observationHooks: coordinator.Hooks,
-                policyFactory: _ => bridgePolicy);
+                policyFactory: _ => bridgePolicy,
+                externalFactLedger: externalFactLedger);
         }
         catch (SealedLlmTerminalFailureException exception)
         {
@@ -309,7 +337,8 @@ public static class H100SealedBridgeRunner
         var finalStateHash = H100SessionStateCanonicalHash.Compute(finalSession);
         bridgePolicy.SealRunReport(
             BuildRunReportRequest(settings, corpus, terminalFailure),
-            finalStateHash);
+            finalStateHash,
+            terminalFailure ? "terminal_failure" : "completed");
         var trace = builder.Build();
         var verification = SealedDecisionTraceReplayVerifier.Verify(trace, trace);
         if (!verification.VerificationPassed)
@@ -337,8 +366,11 @@ public static class H100SealedBridgeRunner
         if (sealedTrace == null) throw new ArgumentNullException(nameof(sealedTrace));
         var sealedHeader = sealedTrace.Header
                            ?? throw new ArgumentException("Sealed trace header is required.", nameof(sealedTrace));
+        var replaySettings = sealedHeader.CaptureSource == SealedDecisionTraceCaptureSource.LiveColdStartLlm
+            ? settings with { RunIdOverride = sealedHeader.RunId }
+            : settings;
 
-        var replayCampaignSeed = H100SessionDriver.DeriveSeed("campaign", settings.SeedBase);
+        var replayCampaignSeed = H100SessionDriver.DeriveSeed("campaign", replaySettings.SeedBase);
         if (replayCampaignSeed != sealedHeader.CampaignSeed)
         {
             throw new InvalidOperationException(
@@ -348,17 +380,34 @@ public static class H100SealedBridgeRunner
         }
 
         var promptManifest = CreatePromptManifest();
+        var liveIdentity = sealedHeader.CaptureSource == SealedDecisionTraceCaptureSource.LiveColdStartLlm
+            ? H100LiveCaptureIdentity.Create(
+                replaySettings.CampaignSiteSafety,
+                replaySettings.MaxBattleSteps,
+                targetBattleSeconds,
+                replaySettings.PolicyId)
+            : null;
         var builder = new SealedDecisionTraceBuilder(
             sealedHeader.RunId,
             sealedHeader.ScenarioId,
             sealedHeader.CampaignSeed,
-            ComputeBuildManifestHash(settings, targetBattleSeconds),
+            liveIdentity?.BuildManifestHash ?? ComputeBuildManifestHash(replaySettings, targetBattleSeconds),
             ComputeContentManifestHash(lookup),
             ComputeVisibleSurfaceHash(promptManifest),
             promptManifest.PromptSchemaHash,
-            ComputeScorerConfigHash(settings),
+            liveIdentity?.ScorerConfigHash ?? ComputeScorerConfigHash(replaySettings),
             sealedHeader.CaptureSource);
-        var source = new SealedTraceSource(sealedTrace);
+        var traceSource = new SealedTraceSource(sealedTrace);
+        ISealedDecisionSource source = traceSource;
+        var requestedPromptArchive = Environment.GetEnvironmentVariable("SM_H100_PROMPT_ARCHIVE_DIR");
+        if (!string.IsNullOrWhiteSpace(requestedPromptArchive))
+        {
+            source = new PromptArchiveVerifyingSource(
+                traceSource,
+                promptManifest,
+                ResolveOutputDirectory(requestedPromptArchive));
+        }
+
         var bridgePolicy = new SealedLlmBridgePolicy(source, builder, promptManifest);
         var coordinator = new CaptureCoordinator(builder);
         H100CampaignCorpusRunner.Corpus? corpus = null;
@@ -368,7 +417,7 @@ public static class H100SealedBridgeRunner
         {
             corpus = H100CampaignCorpusRunner.Run(
                 lookup,
-                settings,
+                replaySettings,
                 targetBattleSeconds,
                 observationHooks: coordinator.Hooks,
                 policyFactory: _ => bridgePolicy);
@@ -383,9 +432,9 @@ public static class H100SealedBridgeRunner
                            ?? throw new InvalidOperationException("Replay run never exposed a campaign session.");
         if (builder.PendingSeamKey != null)
         {
-            if (source.LastDivergence != null)
+            if (traceSource.LastDivergence != null)
             {
-                throw source.LastDivergence;
+                throw traceSource.LastDivergence;
             }
 
             throw new InvalidOperationException("Replay run ended with an unsealed decision exchange.");
@@ -393,9 +442,10 @@ public static class H100SealedBridgeRunner
 
         var finalStateHash = H100SessionStateCanonicalHash.Compute(finalSession);
         bridgePolicy.SealRunReport(
-            BuildRunReportRequest(settings, corpus, terminalFailure),
-            finalStateHash);
-        source.EnsureFullyConsumed();
+            BuildRunReportRequest(replaySettings, corpus, terminalFailure),
+            finalStateHash,
+            terminalFailure ? "terminal_failure" : "completed");
+        traceSource.EnsureFullyConsumed();
 
         var rebuilt = builder.Build();
         var verification = SealedDecisionTraceReplayVerifier.Verify(sealedTrace, rebuilt);
@@ -589,7 +639,7 @@ public static class H100SealedBridgeRunner
         }
     }
 
-    private static H100MetricsRunSettings ResolveSettings()
+    internal static H100MetricsRunSettings ResolveSettings(string? runIdOverride = null)
     {
         var requested = H100MetricsRunSettings.FromEnvironment();
         return requested with
@@ -598,6 +648,7 @@ public static class H100SealedBridgeRunner
             CampaignCount = 1,
             OutputDirectory = Environment.GetEnvironmentVariable("SM_H100_SEALED_OUTPUT")
                               ?? DefaultOutputDirectory,
+            RunIdOverride = runIdOverride ?? requested.RunIdOverride,
         };
     }
 
@@ -608,7 +659,7 @@ public static class H100SealedBridgeRunner
         return H100GateSpec.LoadFromFile(specPath).TargetBattleSeconds;
     }
 
-    private static RuntimeCombatContentLookup CreateLookup()
+    internal static RuntimeCombatContentLookup CreateLookup()
     {
         var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         if (!lookup.TryGetCombatSnapshot(out _, out var error))
@@ -622,17 +673,30 @@ public static class H100SealedBridgeRunner
     private static ScriptedReferencePolicy CreateReferencePolicy(string policyId)
         => new(HeadlessPolicyFactory.Create(policyId));
 
-    private static LlmPromptManifestV1 CreatePromptManifest()
+    internal static LlmPromptManifestV1 CreatePromptManifest(bool requireExplicit = false)
         => new(
-            ReadEnvironment("SM_H100_PROMPT_TEMPLATE_ID", "h100-sealed-synthetic-v1"),
             ReadEnvironment(
+                "SM_H100_PROMPT_TEMPLATE_ID",
+                "h100-sealed-synthetic-v1",
+                requireExplicit),
+            ReadEnvironmentOrFile(
                 "SM_H100_PROMPT_TEMPLATE",
-                "Choose exactly one canonical selected_action from the supplied player-visible legal menu."),
-            ReadEnvironment(
+                "SM_H100_PROMPT_TEMPLATE_FILE",
+                "Choose exactly one canonical selected_action from the supplied player-visible legal menu.",
+                requireExplicit),
+            ReadEnvironmentOrFile(
                 "SM_H100_COLD_START_BRIEFING",
-                "Synthetic stand-in paired witness; no hidden state or inference is available."),
-            ReadEnvironment("SM_H100_MODEL_SNAPSHOT", "synthetic-stand-in-v1"),
-            ReadEnvironment("SM_H100_DECODING_CONFIG", "temperature=0;top_p=1;synthetic=true"));
+                "SM_H100_COLD_START_BRIEFING_FILE",
+                "Synthetic stand-in paired witness; no hidden state or inference is available.",
+                requireExplicit),
+            ReadEnvironment(
+                "SM_H100_MODEL_SNAPSHOT",
+                "synthetic-stand-in-v1",
+                requireExplicit),
+            ReadEnvironment(
+                "SM_H100_DECODING_CONFIG",
+                "temperature=0;top_p=1;synthetic=true",
+                requireExplicit));
 
     private static string ComputeBuildManifestHash(H100MetricsRunSettings settings, float targetBattleSeconds)
         => HashParts(
@@ -750,7 +814,7 @@ public static class H100SealedBridgeRunner
         return tracePath;
     }
 
-    private static string ResolveOutputDirectory(string requested)
+    internal static string ResolveOutputDirectory(string requested)
     {
         var projectRoot = ProjectRoot();
         var candidate = Path.GetFullPath(
@@ -782,10 +846,60 @@ public static class H100SealedBridgeRunner
         return corpus.Campaigns[0];
     }
 
-    private static string ReadEnvironment(string name, string fallback)
+    private static string ReadEnvironment(string name, string fallback, bool required = false)
     {
         var value = Environment.GetEnvironmentVariable(name);
-        return string.IsNullOrWhiteSpace(value) ? fallback : value;
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        if (required)
+        {
+            throw new InvalidOperationException($"{name} is required for live capture.");
+        }
+
+        return fallback;
+    }
+
+    private static string ReadEnvironmentOrFile(
+        string inlineName,
+        string fileName,
+        string fallback,
+        bool required)
+    {
+        var inlineValue = Environment.GetEnvironmentVariable(inlineName);
+        var requestedFile = Environment.GetEnvironmentVariable(fileName);
+        if (!string.IsNullOrWhiteSpace(inlineValue) && !string.IsNullOrWhiteSpace(requestedFile))
+        {
+            throw new InvalidOperationException($"Set exactly one of {inlineName} or {fileName}, not both.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(inlineValue))
+        {
+            return inlineValue;
+        }
+
+        if (!string.IsNullOrWhiteSpace(requestedFile))
+        {
+            var path = Path.GetFullPath(
+                Path.IsPathRooted(requestedFile)
+                    ? requestedFile
+                    : Path.Combine(ProjectRoot(), requestedFile));
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException($"Prompt manifest input {fileName} does not exist.", path);
+            }
+
+            return File.ReadAllText(path, Utf8WithoutBom);
+        }
+
+        if (required)
+        {
+            throw new InvalidOperationException($"{inlineName} or {fileName} is required for live capture.");
+        }
+
+        return fallback;
     }
 
     private static string RequireEnvironment(string name)
@@ -823,6 +937,86 @@ public static class H100SealedBridgeRunner
 
     private static void AppendPart(Stream payload, string value)
         => LengthPrefixedStableHash.AppendPart(payload, value ?? string.Empty);
+
+    private sealed class PromptArchiveVerifyingSource : ISealedDecisionSource
+    {
+        private readonly ISealedDecisionSource _inner;
+        private readonly LlmPromptManifestV1 _manifest;
+        private readonly string _archiveDirectory;
+
+        public PromptArchiveVerifyingSource(
+            ISealedDecisionSource inner,
+            LlmPromptManifestV1 manifest,
+            string archiveDirectory)
+        {
+            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+            _manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
+            _archiveDirectory = archiveDirectory
+                                ?? throw new ArgumentNullException(nameof(archiveDirectory));
+        }
+
+        public LlmDecisionResponseV1 RequestDecision(SealedLlmDecisionRequest request)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            IReadOnlyList<string> legalKeys;
+            string prompt;
+            if (request.PolicyObservation != null)
+            {
+                legalKeys = SealedLlmPromptRenderer.LegalActionKeys(
+                    request.SeamKey,
+                    request.PolicyObservation);
+                prompt = SealedLlmPromptRenderer.Render(
+                    request.SeamKey,
+                    request.PolicyObservation,
+                    legalKeys,
+                    _manifest);
+            }
+            else
+            {
+                legalKeys = SealedLlmPromptRenderer.LegalActionKeys(
+                    request.SeamKey,
+                    request.RosterObservation);
+                prompt = SealedLlmPromptRenderer.Render(
+                    request.SeamKey,
+                    request.RosterObservation,
+                    legalKeys,
+                    _manifest);
+            }
+
+            RequireArchivedPrompt("d", request.SeamKey.DecisionIndex, prompt);
+            return _inner.RequestDecision(request);
+        }
+
+        public LlmRunReportResponseV1 RequestRunReport(SealedLlmRunReportRequest request)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            var prompt = SealedLlmPromptRenderer.RenderRunReport(
+                request.SeamKey,
+                request.StatusToken,
+                _manifest);
+            RequireArchivedPrompt("r", request.SeamKey.DecisionIndex, prompt);
+            return _inner.RequestRunReport(request);
+        }
+
+        private void RequireArchivedPrompt(string kind, int decisionIndex, string rendered)
+        {
+            var fileName = kind + decisionIndex.ToString("D3", CultureInfo.InvariantCulture) + ".prompt.md";
+            var path = Path.Combine(_archiveDirectory, fileName);
+            if (!File.Exists(path))
+            {
+                throw new PlayerVisibleProvenanceException(
+                    $"Archived prompt witness does not exist: {path}");
+            }
+
+            var archivedBytes = File.ReadAllBytes(path);
+            var renderedBytes = Utf8WithoutBom.GetBytes(rendered);
+            if (!archivedBytes.AsSpan().SequenceEqual(renderedBytes.AsSpan()))
+            {
+                throw new PlayerVisibleProvenanceException(
+                    $"Archived prompt byte mismatch for decision {decisionIndex.ToString(CultureInfo.InvariantCulture)} ({fileName}).");
+            }
+        }
+    }
 
     private sealed class CaptureCoordinator
     {

@@ -15,7 +15,11 @@ internal sealed record H100MetricsRunSettings(
     string OutputDirectory,
     string PolicyId)
 {
-    public string RunId => $"h100-stage2-{PolicyId}-s{SeedBase}-b{BattleCount}-c{CampaignCount}-r{ReplayCopies}-m{MaxBattleSteps}-sites{CampaignSiteSafety}";
+    public string RunIdOverride { get; init; } = string.Empty;
+
+    public string RunId => string.IsNullOrWhiteSpace(RunIdOverride)
+        ? $"h100-stage2-{PolicyId}-s{SeedBase}-b{BattleCount}-c{CampaignCount}-r{ReplayCopies}-m{MaxBattleSteps}-sites{CampaignSiteSafety}"
+        : RunIdOverride;
 
     /// <summary>정책 비교에서도 sim/reward identity가 같도록 policy id를 제외한 profile id를 만든다.</summary>
     public string PairingProfileId(string corpusId) => $"h100-paired-s{SeedBase}-{corpusId}";

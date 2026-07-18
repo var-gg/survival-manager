@@ -12,6 +12,7 @@
     "SM.Persistence.Json",
     "SM.Unity",
     "SM.Editor",
+    "SM.SealedLlmBridge",
     "SM.Tests.FastUnit",
     "SM.Meta.Serialization",
     "Unity.Localization",

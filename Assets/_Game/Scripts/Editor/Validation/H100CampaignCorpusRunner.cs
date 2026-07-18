@@ -29,11 +29,12 @@ internal static class H100CampaignCorpusRunner
         float targetBattleSeconds,
         Action<string>? decisionLog = null,
         H100CampaignObservationHooks? observationHooks = null,
-        Func<int, IHeadlessPolicy>? policyFactory = null)
+        Func<int, IHeadlessPolicy>? policyFactory = null,
+        H100PlayerVisibleFactLedgerCollector? externalFactLedger = null)
     {
         var battles = new List<BattleMetricRecord>();
         var campaigns = new List<CampaignMetricRecord>(settings.CampaignCount);
-        var factLedger = new H100PlayerVisibleFactLedgerCollector(settings.RunId);
+        var factLedger = externalFactLedger ?? new H100PlayerVisibleFactLedgerCollector(settings.RunId);
         var intentTrace = new H100IntentTraceCollector(settings.RunId);
         for (var index = 0; index < settings.CampaignCount; index++)
         {

@@ -79,12 +79,16 @@ public sealed class SealedLlmBridgePolicy : IHeadlessPolicy, IHeadlessRosterPoli
     /// Requests and seals the terminal report. The caller supplies the canonical report-request bytes and the final
     /// game-state hash; no live transport or report-request codec is introduced by the capture core.
     /// </summary>
-    public LlmRunReportResponseV1 SealRunReport(byte[] requestCanonicalBytes, string finalStateHash)
+    public LlmRunReportResponseV1 SealRunReport(
+        byte[] requestCanonicalBytes,
+        string finalStateHash,
+        string statusToken = "completed")
     {
         if (requestCanonicalBytes == null) throw new ArgumentNullException(nameof(requestCanonicalBytes));
         var request = new SealedLlmRunReportRequest(
             _builder.NextRunReportSeamKey(),
-            requestCanonicalBytes);
+            requestCanonicalBytes,
+            statusToken);
         var response = _source.RequestRunReport(request)
                        ?? throw new InvalidOperationException("Decision source returned a null run report.");
         var responseBytes = LlmWireCanonicalSerializer.CanonicalBytes(response);
