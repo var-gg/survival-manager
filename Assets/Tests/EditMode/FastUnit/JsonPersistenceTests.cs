@@ -18,6 +18,8 @@ public class JsonPersistenceTests
             var repo = new JsonSaveRepository(root);
             var profile = repo.LoadOrCreate("default");
             profile.DisplayName = "Player";
+            profile.HeroInstanceCounter = 17;
+            profile.ItemInstanceCounter = 29;
             profile.Currencies.Gold = 12;
             profile.UnlockedPermanentAugmentIds.Add("augment_perm_legacy_blade");
             profile.ActiveBlueprintId = "blueprint.default";
@@ -106,6 +108,8 @@ public class JsonPersistenceTests
             var loaded = repo.LoadOrCreate("default");
 
             Assert.That(loaded.Currencies.Gold, Is.EqualTo(12));
+            Assert.That(loaded.HeroInstanceCounter, Is.EqualTo(17));
+            Assert.That(loaded.ItemInstanceCounter, Is.EqualTo(29));
             Assert.That(loaded.UnlockedPermanentAugmentIds, Has.Count.EqualTo(1));
             Assert.That(loaded.ActiveRun.RunId, Is.EqualTo("run_active_001"));
             Assert.That(loaded.HeroLoadouts, Has.Count.EqualTo(1));

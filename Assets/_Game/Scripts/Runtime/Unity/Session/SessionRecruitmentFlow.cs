@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Content;
@@ -353,7 +354,8 @@ public sealed partial class GameSessionState
             return true;
         }
 
-        var heroId = $"hero-{Guid.NewGuid():N}";
+        Profile.HeroInstanceCounter = checked(Profile.HeroInstanceCounter + 1L);
+        var heroId = $"hero-c{Profile.HeroInstanceCounter.ToString(CultureInfo.InvariantCulture)}";
         Profile.Heroes.Add(new HeroInstanceRecord
         {
             HeroId = heroId,

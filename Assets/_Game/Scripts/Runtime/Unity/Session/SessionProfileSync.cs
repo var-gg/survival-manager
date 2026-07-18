@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Content;
@@ -242,7 +243,8 @@ public sealed partial class GameSessionState
             item.AffixIds ??= new List<string>();
             if (string.IsNullOrWhiteSpace(item.ItemInstanceId))
             {
-                item.ItemInstanceId = $"inventory-{Guid.NewGuid():N}";
+                Profile.ItemInstanceCounter = checked(Profile.ItemInstanceCounter + 1L);
+                item.ItemInstanceId = $"inventory-i{Profile.ItemInstanceCounter.ToString(CultureInfo.InvariantCulture)}";
             }
 
             item.ItemBaseId = _combatContentLookup.NormalizeItemBaseId(item.ItemBaseId, i);

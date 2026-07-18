@@ -179,6 +179,8 @@ public sealed partial class GameSessionState
 
             Profile.Currencies ??= new CurrencyRecord();
             Profile.Inventory ??= new List<InventoryItemRecord>();
+            Profile.HeroInstanceCounter = Math.Max(Profile.HeroInstanceCounter, Profile.Heroes.Count);
+            Profile.ItemInstanceCounter = Math.Max(Profile.ItemInstanceCounter, Profile.Inventory.Count);
             Profile.UnlockedPermanentAugmentIds ??= new List<string>();
             Profile.CampaignProgress ??= new CampaignProgressRecord();
             Profile.HeroLoadouts ??= new List<HeroLoadoutRecord>();

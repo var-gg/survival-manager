@@ -9,6 +9,8 @@ public sealed class SaveProfile
 {
     public string ProfileId = "default";
     public string DisplayName = "Player";
+    public long HeroInstanceCounter = 0;
+    public long ItemInstanceCounter = 0;
     public List<HeroInstanceRecord> Heroes = new();
     public List<InventoryItemRecord> Inventory = new();
     public CurrencyRecord Currencies = new();
