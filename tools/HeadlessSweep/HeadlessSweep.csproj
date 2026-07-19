@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../Assets/_Game/Scripts/Runtime/Core/**/*.cs"
+             Link="SM.Core/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../Assets/_Game/Scripts/Runtime/Combat/**/*.cs"
+             Link="SM.Combat/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../Assets/_Game/Scripts/Runtime/Meta/**/*.cs"
+             Exclude="../../Assets/_Game/Scripts/Runtime/Meta/Serialization/**/*.cs"
+             Link="SM.Meta/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
