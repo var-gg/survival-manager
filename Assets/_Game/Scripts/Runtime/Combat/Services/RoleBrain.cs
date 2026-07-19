@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
@@ -47,7 +48,6 @@ public static class RoleBrain
     private const int DiveCommitSteps = 12;             // 1.2s commit
     private const int DiveScoreThreshold = 70;          // requires a real backline objective
     private const int DiveContinueScoreThreshold = 50;  // 진행 중 다이브 지속 문턱 — 진입보다 관대(히스테리시스)
-    private const int MaxConcurrentDivesPerTeam = 1;    // one diver at a time — no step-1 backline wipe
     private const float DiveSupportRadius = 4.0f;       // "not alone": allied frontliner nearby
     private const float LaneEngagedBuffer = 0.8f;       // "own front engages enemy front" proxy
     private const float DiveLowHpTargetRatio = 0.45f;   // bonus for a low-HP backline target
@@ -251,22 +251,14 @@ public static class RoleBrain
             return false;
         }
 
-        var best = state.GetOpponents(actor.Side)
-            .Where(e => e.IsAlive && IsDiveCandidateUnderPosture(state, actor, e))
-            .Select(e => new { Target = e, Score = ScoreDiveTarget(state, actor, e) })
-            .Where(x => x.Score >= DiveScoreThreshold)
-            .OrderByDescending(x => x.Score)
-            .ThenBy(x => x.Target.HealthRatio)
-            .ThenBy(x => actor.Position.DistanceTo(x.Target.Position))
-            .ThenBy(x => x.Target.Id.Value, StringComparer.Ordinal)
-            .FirstOrDefault();
-        if (best == null)
+        var selection = ResolveDistinctDiveTarget(state, actor);
+        if (selection == null)
         {
             return false;
         }
 
-        intent = new CombatIntent(CombatIntentType.Dive, best.Target.Id, null,
-            MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + DiveCommitSteps, best.Score);
+        intent = new CombatIntent(CombatIntentType.Dive, selection.Value.Target.Id, null,
+            MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + DiveCommitSteps, selection.Value.Score);
         return true;
     }
 
@@ -309,8 +301,9 @@ public static class RoleBrain
             .Any(e => e.IsAlive && IsDiveCandidateUnderPosture(state, actor, e) && ScoreDiveTarget(state, actor, e) >= DiveScoreThreshold);
     }
 
-    // Limit concurrent divers per team deterministically (no actor-order artifact): enter if already diving, or a
-    // free slot exists AND this actor is the lowest-stableId eligible duelist this step.
+    // The concurrency ceiling is the number of living duelists that are either continuing a Dive or currently pass
+    // the entry gates. Admission is derived deterministically from battle state, so authored duelist count is the
+    // pressure lever instead of a hard-coded team cap.
     private static bool CanEnterTeamDiveSlot(BattleState state, UnitSnapshot actor)
     {
         var activeDivers = state.GetTeam(actor.Side)
@@ -321,16 +314,81 @@ public static class RoleBrain
             return true;
         }
 
-        if (activeDivers.Count >= MaxConcurrentDivesPerTeam)
+        var eligibleDivers = GetOrderedDiveParticipants(state, actor.Side);
+        var maxConcurrentDives = eligibleDivers.Count;
+        if (activeDivers.Count >= maxConcurrentDives)
         {
             return false;
         }
 
-        var primary = state.GetTeam(actor.Side)
-            .Where(a => a.IsAlive && a.Definition.ClassId == "duelist" && IsDiveEntryEligibleIgnoringSlot(state, a))
-            .OrderBy(a => a.Id.Value, StringComparer.Ordinal)
-            .FirstOrDefault();
-        return primary != null && primary.Id == actor.Id;
+        return eligibleDivers
+            .Take(maxConcurrentDives)
+            .Any(eligible => eligible.Id == actor.Id);
+    }
+
+    // Rebuild the whole diver->target matching on every entry decision. Divers are traversed by stable id; each
+    // diver ranks candidates by integer score, HP ratio, distance, then stable target id and takes the first target
+    // not already claimed. Existing committed Dive targets are reserved before new assignments. The HashSet is used
+    // only for membership, never iteration: matching is a pure deterministic function of battle state. In the common
+    // symmetric case it is also independent of act order; when divers outnumber reachable targets, candidates[0]
+    // resolves through deterministic act order and remains reproducible without RNG.
+    private static (UnitSnapshot Target, int Score)? ResolveDistinctDiveTarget(BattleState state, UnitSnapshot actor)
+    {
+        var eligibleDivers = GetOrderedDiveParticipants(state, actor.Side);
+        var claimedTargetIds = new HashSet<EntityId>();
+        foreach (var diver in eligibleDivers)
+        {
+            if (diver.CurrentCombatIntent.Type == CombatIntentType.Dive
+                && diver.CurrentCombatIntent.TargetId is { } committedTargetId
+                && LivingUnit(state, committedTargetId) is { } committedTarget
+                && committedTarget.Side != diver.Side)
+            {
+                claimedTargetIds.Add(committedTarget.Id);
+            }
+        }
+
+        foreach (var diver in eligibleDivers)
+        {
+            if (diver.CurrentCombatIntent.Type == CombatIntentType.Dive)
+            {
+                continue;
+            }
+
+            var candidates = state.GetOpponents(diver.Side)
+                .Where(enemy => enemy.IsAlive && IsDiveCandidateUnderPosture(state, diver, enemy))
+                .Select(enemy => new { Target = enemy, Score = ScoreDiveTarget(state, diver, enemy) })
+                .Where(candidate => candidate.Score >= DiveScoreThreshold)
+                .OrderByDescending(candidate => candidate.Score)
+                .ThenBy(candidate => candidate.Target.HealthRatio)
+                .ThenBy(candidate => diver.Position.DistanceTo(candidate.Target.Position))
+                .ThenBy(candidate => candidate.Target.Id.Value, StringComparer.Ordinal)
+                .ToList();
+            if (candidates.Count == 0)
+            {
+                continue;
+            }
+
+            var selection = candidates.FirstOrDefault(candidate => !claimedTargetIds.Contains(candidate.Target.Id))
+                            ?? candidates[0];
+            claimedTargetIds.Add(selection.Target.Id);
+            if (diver.Id == actor.Id)
+            {
+                return (selection.Target, selection.Score);
+            }
+        }
+
+        return null;
+    }
+
+    private static List<UnitSnapshot> GetOrderedDiveParticipants(BattleState state, TeamSide side)
+    {
+        return state.GetTeam(side)
+            .Where(unit => unit.IsAlive
+                           && unit.Definition.ClassId == "duelist"
+                           && (unit.CurrentCombatIntent.Type == CombatIntentType.Dive
+                               || IsDiveEntryEligibleIgnoringSlot(state, unit)))
+            .OrderBy(unit => unit.Id.Value, StringComparer.Ordinal)
+            .ToList();
     }
 
     private static int ScoreDiveTarget(BattleState state, UnitSnapshot actor, UnitSnapshot target)

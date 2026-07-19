@@ -14,7 +14,7 @@ namespace SM.Editor.Validation;
 /// Phase B 480-cell two-arm campaign measurement. 실 session/content composition을 사용하되
 /// gameplay/content 자산은 수정하지 않고 측정 입력의 build/roster/enemy placement만 투영한다.
 /// </summary>
-internal static class CampaignTwoArmSweepRunner
+internal static partial class CampaignTwoArmSweepRunner
 {
     internal static CampaignTwoArmNodeReport RunBossLearningProbe(
         string encounterId,
@@ -121,7 +121,8 @@ internal static class CampaignTwoArmSweepRunner
         CampaignBalanceArmSpec arm,
         CampaignBalanceGridCell cell,
         CampaignTwoArmSweepAccumulator accumulator,
-        string stopAfterEncounterId = "")
+        string stopAfterEncounterId = "",
+        Func<BattleState, ResolvedEncounterContext, BattleResult>? battleRunner = null)
     {
         // arm id를 hero/profile identity에 넣지 않는다. 두 팔의 unit-id tie break까지 paired 상태로 유지한다.
         var cellTag = CellTag(cell);
@@ -241,7 +242,9 @@ internal static class CampaignTwoArmSweepRunner
                         $"two-arm battle compose failed({cell.CellId}/{arm.ArmId}/{node.Id}): {composeError}");
                 }
 
-                var measured = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
+                var measured = battleRunner != null
+                    ? battleRunner(state, measuredEncounter)
+                    : BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
                 var won = measured.Winner == TeamSide.Ally;
                 siteFirstVisitClear &= won;
                 var identity = new CampaignNodeIdentity(

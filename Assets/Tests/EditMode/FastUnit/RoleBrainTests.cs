@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
@@ -445,6 +446,111 @@ public sealed class RoleBrainTests
         Assert.That(er.IsAlive, Is.False, "다이버가 무방비 후열을 처치해야 한다");
         Assert.That(state.ActivityTelemetry.BacklineDiveKillCount, Is.EqualTo(1),
             "다이브로 들어간 후열 킬이 BacklineDiveKill로 귀속돼야 한다");
+    }
+
+    [Test]
+    public void MultiDive_FixedSeedReplay_IsByteIdentical_AndAssignsDistinctBacklineTargets()
+    {
+        (string HashStream, string FinalHash, string[] Assignments) RunOnce()
+        {
+            // The faster, higher-id duelist acts first. Stable-id joint matching must still reserve the best target
+            // for the lower-id duelist and give this actor the next unclaimed backliner instead of clumping.
+            var fastHighIdDuelist = CombatTestFactory.CreateUnit(
+                "ally_duelist_z", classId: "duelist", anchor: DeploymentAnchorId.FrontTop,
+                hp: 100f, attack: 8f, speed: 4f, moveSpeed: 2.4f, attackRange: 1.2f, attackCooldown: 0.7f);
+            var slowLowIdDuelist = CombatTestFactory.CreateUnit(
+                "ally_duelist_a", classId: "duelist", anchor: DeploymentAnchorId.FrontBottom,
+                hp: 100f, attack: 8f, speed: 2f, moveSpeed: 1.8f, attackRange: 1.2f, attackCooldown: 0.7f);
+            var allyVanguard = CombatTestFactory.CreateUnit(
+                "ally_vanguard", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter,
+                hp: 180f, attack: 4f, moveSpeed: 1.6f, attackRange: 1.2f, attackCooldown: 0.9f);
+            var enemyVanguard = CombatTestFactory.CreateUnit(
+                "enemy_vanguard", race: "undead", classId: "vanguard", anchor: DeploymentAnchorId.FrontCenter,
+                hp: 240f, attack: 3f, moveSpeed: 0f, attackRange: 1.2f, attackCooldown: 0.9f);
+            var enemyRanger = CombatTestFactory.CreateUnit(
+                "enemy_ranger", race: "undead", classId: "ranger", anchor: DeploymentAnchorId.BackTop,
+                hp: 100f, attack: 4f, moveSpeed: 0f, attackRange: 5f, attackCooldown: 0.8f);
+            var enemyMystic = CombatTestFactory.CreateUnit(
+                "enemy_mystic", race: "undead", classId: "mystic", anchor: DeploymentAnchorId.BackBottom,
+                hp: 100f, attack: 3f, moveSpeed: 0f, attackRange: 2.6f, attackCooldown: 0.8f);
+
+            var state = CombatTestFactory.CreateBattleState(
+                new[] { slowLowIdDuelist, fastHighIdDuelist, allyVanguard },
+                new[] { enemyVanguard, enemyRanger, enemyMystic },
+                allyPosture: TeamPostureType.AllInBackline,
+                enemyPosture: TeamPostureType.StandardAdvance,
+                seed: 1729);
+
+            var slow = state.Allies[0];   // lower stable snapshot id despite acting after the faster duelist
+            var fast = state.Allies[1];
+            var support = state.Allies[2];
+            var enemyFront = state.Enemies[0];
+            var ranger = state.Enemies[1];
+            var mystic = state.Enemies[2];
+            fast.SetPosition(new CombatVector2(0f, 0.6f));
+            slow.SetPosition(new CombatVector2(0f, -0.6f));
+            support.SetPosition(new CombatVector2(-0.8f, 0f));
+            enemyFront.SetPosition(new CombatVector2(2.0f, 0f));
+            ranger.SetPosition(new CombatVector2(4.5f, 0.7f));
+            mystic.SetPosition(new CombatVector2(4.4f, -0.7f));
+            foreach (var unit in state.AllUnits)
+            {
+                unit.SetActionState(CombatActionState.AcquireTarget);
+            }
+
+            var simulator = new BattleSimulator(state, 50);
+            var hashStream = new StringBuilder();
+            string[]? assignments = null;
+            hashStream.Append(state.StepIndex).Append(':').Append(BattleStateCanonicalHash.Compute(state)).Append('\n');
+            for (var step = 0; step < 50 && !simulator.IsFinished; step++)
+            {
+                simulator.Step();
+                hashStream.Append(state.StepIndex).Append(':').Append(BattleStateCanonicalHash.Compute(state)).Append('\n');
+                var dives = state.Allies
+                    .Where(unit => unit.IsAlive
+                                   && unit.CurrentCombatIntent.Type == CombatIntentType.Dive
+                                   && unit.CurrentCombatIntent.TargetId.HasValue)
+                    .OrderBy(unit => unit.Id.Value, System.StringComparer.Ordinal)
+                    .ToArray();
+                if (assignments == null
+                    && dives.Length >= 2
+                    && dives.Select(unit => unit.CurrentCombatIntent.TargetId!.Value.Value).Distinct().Count() >= 2)
+                {
+                    assignments = dives
+                        .Select(unit => $"{unit.Id.Value}->{unit.CurrentCombatIntent.TargetId!.Value.Value}")
+                        .ToArray();
+                }
+            }
+
+            return (
+                hashStream.ToString(),
+                BattleStateCanonicalHash.Compute(state),
+                assignments ?? System.Array.Empty<string>());
+        }
+
+        var first = RunOnce();
+        var second = RunOnce();
+
+        CollectionAssert.AreEqual(
+            Encoding.UTF8.GetBytes(first.HashStream),
+            Encoding.UTF8.GetBytes(second.HashStream),
+            "fixed-seed multi-dive replays must produce a byte-identical canonical hash stream");
+        Assert.That(second.FinalHash, Is.EqualTo(first.FinalHash),
+            "the final canonical battle-state hash must be identical across fresh fixed-seed runs");
+        Assert.That(first.Assignments, Has.Length.GreaterThanOrEqualTo(2),
+            "at the multi-dive witness tick at least two duelists must hold Dive intents");
+        Assert.That(
+            first.Assignments.Select(assignment => assignment.Split('>')[1]).Distinct().Count(),
+            Is.GreaterThanOrEqualTo(2),
+            "the concurrent divers must pressure distinct backline target ids");
+        CollectionAssert.AreEqual(
+            new[]
+            {
+                "ally_0_ally_duelist_a->enemy_2_enemy_mystic",
+                "ally_1_ally_duelist_z->enemy_1_enemy_ranger",
+            },
+            first.Assignments,
+            "stable-id matching must reserve the higher-scored mystic for the lower-id slow diver even though it acts second");
     }
 
     [Test]
