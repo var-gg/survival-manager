@@ -68,6 +68,10 @@ Assets/Tests/EditMode/Temp.meta
 art-pipeline/output/
 art-pipeline/**/__pycache__/
 
+# Authored ScriptableObject content에서 재생성하는 headless snapshot
+/Assets/Resources/_Game/Content/content-snapshot.json
+/Assets/Resources/_Game/Content/content-snapshot.json.meta
+
 # Narrative wiki dump — SoT는 pindoc, raw-wiki는 재생성 가능한 중간 산출물
 tools/raw-wiki/
 

@@ -1,35 +1,99 @@
 using System.Text;
 using SM.Combat.Services;
+using SM.Meta.Serialization;
 
 const string goldenRelativePath = "Assets/Tests/EditMode/FastUnit/Golden/battle-hash-corpus.golden.txt";
+const string snapshotRelativePath = "Assets/Resources/_Game/Content/content-snapshot.json";
 
-try
+if (args.Length == 0)
 {
-    var repositoryRoot = FindRepositoryRoot();
-    var goldenPath = Path.Combine(repositoryRoot, goldenRelativePath.Replace('/', Path.DirectorySeparatorChar));
-    var golden = NormalizeLineEndings(File.ReadAllText(goldenPath));
-    var net8 = NormalizeLineEndings(BattleHashCorpus.Generate());
+    return RunDeterminismGate();
+}
 
-    var goldenBytes = Encoding.UTF8.GetBytes(golden);
-    var net8Bytes = Encoding.UTF8.GetBytes(net8);
-    if (goldenBytes.AsSpan().SequenceEqual(net8Bytes))
+if (args.Length == 1 && string.Equals(args[0], "snapshot-load", StringComparison.Ordinal))
+{
+    return RunSnapshotLoad();
+}
+
+Console.Error.WriteLine("Usage: HeadlessSweep [snapshot-load]");
+return 2;
+
+static int RunDeterminismGate()
+{
+    try
     {
-        Console.WriteLine($"headless-sweep MATCH ({CountLines(golden)} lines): .NET 8 == Unity golden");
+        var repositoryRoot = FindRepositoryRoot();
+        var goldenPath = Path.Combine(repositoryRoot, goldenRelativePath.Replace('/', Path.DirectorySeparatorChar));
+        var golden = NormalizeLineEndings(File.ReadAllText(goldenPath));
+        var net8 = NormalizeLineEndings(BattleHashCorpus.Generate());
+
+        var goldenBytes = Encoding.UTF8.GetBytes(golden);
+        var net8Bytes = Encoding.UTF8.GetBytes(net8);
+        if (goldenBytes.AsSpan().SequenceEqual(net8Bytes))
+        {
+            Console.WriteLine($"headless-sweep MATCH ({CountLines(golden)} lines): .NET 8 == Unity golden");
+            return 0;
+        }
+
+        var divergence = FindFirstDivergence(golden, net8);
+        Console.Error.WriteLine("== headless-sweep DIVERGENCE ==");
+        Console.Error.WriteLine($"  context : {divergence.SeedContext}");
+        Console.Error.WriteLine($"  line    : {divergence.LineNumber}");
+        Console.Error.WriteLine($"  golden  : {divergence.Golden}");
+        Console.Error.WriteLine($"  net8    : {divergence.Net8}");
+        return 1;
+    }
+    catch (Exception exception)
+    {
+        Console.Error.WriteLine($"headless-sweep ERROR: {exception.Message}");
+        return 2;
+    }
+}
+
+static int RunSnapshotLoad()
+{
+    try
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var snapshotPath = Path.Combine(repositoryRoot, snapshotRelativePath.Replace('/', Path.DirectorySeparatorChar));
+        if (!File.Exists(snapshotPath))
+        {
+            throw new FileNotFoundException(
+                $"Content snapshot not found. Export it with SM.Editor.Validation.ContentSnapshotExporter.ExportSnapshot: {snapshotPath}",
+                snapshotPath);
+        }
+
+        var snapshot = ContentSnapshotJsonSerializer.Deserialize(File.ReadAllText(snapshotPath));
+        var itemCatalog = snapshot.ItemCatalog?.Values ?? Array.Empty<SM.Meta.Model.ItemTemplate>();
+        var affixCatalog = snapshot.AffixCatalog?.Values ?? Array.Empty<SM.Meta.Model.AffixTemplate>();
+        var itemWithSlotTypeCount = itemCatalog.Count(item => !string.IsNullOrWhiteSpace(item.SlotType));
+        var itemWithAllowedClassCount = itemCatalog.Count(item => item.AllowedClassIds is { Count: > 0 });
+        var affixWithAllowedSlotCount = affixCatalog.Count(affix => affix.AllowedSlotTypes is { Count: > 0 });
+        var affixWithBudgetCount = affixCatalog.Count(affix => affix.BudgetScore != 0f);
+        var affixWithSpawnWeightCount = affixCatalog.Count(affix => affix.SpawnWeight > 0f);
+
+        if (snapshot.Archetypes.Count == 0
+            || itemWithSlotTypeCount == 0
+            || itemWithAllowedClassCount == 0
+            || affixWithAllowedSlotCount == 0
+            || affixWithBudgetCount == 0
+            || affixWithSpawnWeightCount == 0)
+        {
+            throw new InvalidDataException(
+                "Content snapshot loaded, but one or more required headless sweep metadata fields were empty.");
+        }
+
+        Console.WriteLine(
+            $"headless-snapshot LOAD archetypes={snapshot.Archetypes.Count} "
+            + $"items_with_slot_type={itemWithSlotTypeCount} "
+            + $"affixes_with_budget={affixWithBudgetCount}");
         return 0;
     }
-
-    var divergence = FindFirstDivergence(golden, net8);
-    Console.Error.WriteLine("== headless-sweep DIVERGENCE ==");
-    Console.Error.WriteLine($"  context : {divergence.SeedContext}");
-    Console.Error.WriteLine($"  line    : {divergence.LineNumber}");
-    Console.Error.WriteLine($"  golden  : {divergence.Golden}");
-    Console.Error.WriteLine($"  net8    : {divergence.Net8}");
-    return 1;
-}
-catch (Exception exception)
-{
-    Console.Error.WriteLine($"headless-sweep ERROR: {exception.Message}");
-    return 2;
+    catch (Exception exception)
+    {
+        Console.Error.WriteLine($"headless-snapshot ERROR: {exception.Message}");
+        return 2;
+    }
 }
 
 static string FindRepositoryRoot()

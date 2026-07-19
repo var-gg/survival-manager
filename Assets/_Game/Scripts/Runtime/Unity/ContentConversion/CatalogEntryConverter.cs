@@ -80,7 +80,9 @@ internal static class CatalogEntryConverter
         return new ItemTemplate(
             definition.Id,
             Enumerate(definition.CompileTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
-            definition.WeaponFamilyTag ?? string.Empty);
+            definition.WeaponFamilyTag ?? string.Empty,
+            definition.SlotType.ToString(),
+            Enumerate(definition.AllowedClassTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
     }
 
     internal static AffixTemplate BuildAffixTemplate(AffixDefinition definition)
@@ -90,7 +92,10 @@ internal static class CatalogEntryConverter
             Enumerate(definition.CompileTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             Enumerate(definition.RequiredTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             Enumerate(definition.ExcludedTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
-            BuildRulePackage(definition.Id, ModifierSource.Item, definition.RuleModifierTags));
+            BuildRulePackage(definition.Id, ModifierSource.Item, definition.RuleModifierTags),
+            Enumerate(definition.AllowedSlotTypes).Select(slot => slot.ToString()).ToList(),
+            definition.BudgetScore,
+            definition.SpawnWeight);
     }
 
     internal static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)

@@ -283,26 +283,33 @@ public sealed record TraitTokenTemplate(
     RewardType RewardType);
 
 /// <summary>
-/// 아이템의 non-numeric 계약(CompileTags/무기 family 태그). 수치는 기존 ItemPackages가 소유하고,
-/// 이 템플릿은 유닛 태그 전파(→ affix 조건·서포트 젬 무기 게이트의 판정 재료)를 담당한다.
+/// 아이템의 non-numeric 계약(CompileTags/무기 family 태그/장착 허용 메타). 수치는 기존 ItemPackages가 소유하고,
+/// 이 템플릿은 유닛 태그 전파(→ affix 조건·서포트 젬 무기 게이트의 판정 재료)와
+/// Unity 밖 sweep이 사용할 slot/class 제약을 담당한다.
 /// 과거에는 수치만 변환돼 무기 게이트가 영구 무력이었다.
 /// </summary>
 public sealed record ItemTemplate(
     string Id,
     IReadOnlyList<string> CompileTags,
-    string WeaponFamilyTag);
+    string WeaponFamilyTag,
+    string SlotType = "",
+    IReadOnlyList<string>? AllowedClassIds = null);
 
 /// <summary>
-/// affix의 non-numeric 계약(태그/조건/rule). 수치는 기존 AffixPackages가 계속 소유하고,
+/// affix의 non-numeric 계약(태그/조건/rule/저작 spawn 메타). 수치는 기존 AffixPackages가 계속 소유하고,
 /// 이 템플릿은 CompileTags 전파·RequiredTags/ExcludedTags 조건 게이트·RuleModifierTags를
-/// 컴파일까지 실어나른다. 과거에는 ModifierPackageConverter가 수치만 변환해 전부 드롭됐다.
+/// 컴파일까지 실어나르며 Unity 밖 sweep에는 slot/budget/weight를 제공한다.
+/// 과거에는 ModifierPackageConverter가 수치만 변환해 전부 드롭됐다.
 /// </summary>
 public sealed record AffixTemplate(
     string Id,
     IReadOnlyList<string> CompileTags,
     IReadOnlyList<string> RequiredTags,
     IReadOnlyList<string> ExcludedTags,
-    CombatRuleModifierPackage? RulePackage)
+    CombatRuleModifierPackage? RulePackage,
+    IReadOnlyList<string>? AllowedSlotTypes = null,
+    float BudgetScore = 0f,
+    float SpawnWeight = 0f)
 {
     public bool IsConditional => RequiredTags.Count > 0 || ExcludedTags.Count > 0;
 }

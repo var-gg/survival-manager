@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="../../Assets/_Game/Scripts/Runtime/Core/**/*.cs"
              Link="SM.Core/%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="../../Assets/_Game/Scripts/Runtime/Combat/**/*.cs"
@@ -15,5 +19,7 @@
     <Compile Include="../../Assets/_Game/Scripts/Runtime/Meta/**/*.cs"
              Exclude="../../Assets/_Game/Scripts/Runtime/Meta/Serialization/**/*.cs"
              Link="SM.Meta/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../Assets/_Game/Scripts/Runtime/Meta/Serialization/**/*.cs"
+             Link="SM.Meta.Serialization/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>
