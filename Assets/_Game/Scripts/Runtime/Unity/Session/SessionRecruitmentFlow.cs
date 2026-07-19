@@ -156,7 +156,7 @@ public sealed partial class GameSessionState
             return Result.Fail("유닛을 찾을 수 없습니다.");
         }
 
-        if (!_combatContentLookup.Snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype))
+        if (!_sessionContentLookup.Snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype))
         {
             return Result.Fail($"Archetype '{hero.ArchetypeId}'를 찾을 수 없습니다.");
         }
@@ -230,7 +230,7 @@ public sealed partial class GameSessionState
 
     private Result GrantHeroDirectCore(string archetypeId, RecruitOfferSource source = RecruitOfferSource.DirectGrant)
     {
-        if (!_combatContentLookup.Snapshot.Archetypes.TryGetValue(archetypeId, out var template))
+        if (!_sessionContentLookup.Snapshot.Archetypes.TryGetValue(archetypeId, out var template))
         {
             return Result.Fail($"Archetype '{archetypeId}'를 찾을 수 없습니다.");
         }
@@ -267,7 +267,7 @@ public sealed partial class GameSessionState
             return;
         }
 
-        var snapshot = _combatContentLookup.Snapshot;
+        var snapshot = _sessionContentLookup.Snapshot;
         if (snapshot.Archetypes.Count == 0)
         {
             return;
@@ -305,7 +305,7 @@ public sealed partial class GameSessionState
 
     private TeamPlanProfile BuildTeamPlanProfile()
     {
-        var snapshot = _combatContentLookup.Snapshot;
+        var snapshot = _sessionContentLookup.Snapshot;
         var permanentAugments = ToPermanentAugmentLoadout(
                 Profile,
                 string.IsNullOrWhiteSpace(Profile.ActiveBlueprintId) ? "blueprint.default" : Profile.ActiveBlueprintId)

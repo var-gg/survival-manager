@@ -13,6 +13,7 @@ using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Results;
 using SM.Editor.SeedData;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -1084,6 +1085,27 @@ public static class CampaignBalanceSweepRunner
         return index;
     }
 
+    internal static IReadOnlyDictionary<string, ItemMeta> BuildItemMetaIndex(CombatContentSnapshot content)
+    {
+        var index = new Dictionary<string, ItemMeta>(StringComparer.Ordinal);
+        foreach (var template in content.ItemCatalog?.Values ?? Array.Empty<ItemTemplate>())
+        {
+            if (string.IsNullOrWhiteSpace(template.Id)
+                || !Enum.TryParse<ItemSlotType>(template.SlotType, out var slotType)
+                || index.ContainsKey(template.Id))
+            {
+                continue;
+            }
+
+            index[template.Id] = new ItemMeta(
+                template.Id,
+                slotType,
+                template.AllowedClassIds ?? Array.Empty<string>());
+        }
+
+        return index;
+    }
+
     internal static bool CanWear(
         GameSessionState session,
         IReadOnlyDictionary<string, ItemMeta> itemIndex,
@@ -1113,7 +1135,7 @@ public static class CampaignBalanceSweepRunner
 
     internal static void AuthorSquad(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         string squadTag,
         string[] archetypes,
         IReadOnlyDictionary<string, ItemMeta> itemIndex,
@@ -1160,7 +1182,7 @@ public static class CampaignBalanceSweepRunner
     /// </summary>
     private static void GrantDeterministicHero(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         CombatContentSnapshot content,
         string squadTag,
         string archetypeId,
@@ -1264,7 +1286,7 @@ public static class CampaignBalanceSweepRunner
     /// 얕은 노드부터(보드 depth → id ordinal) 예산이 허용하는 만큼 토글 — "일반 플레이어"의 성장 근사.
     /// 예산 계단(레벨 5→8)은 세션 validator가 소유하므로 여기서는 Result만 소비한다.
     /// </summary>
-    internal static void GreedyGrowPassives(GameSessionState session, RuntimeCombatContentLookup lookup)
+    internal static void GreedyGrowPassives(GameSessionState session, ISessionContentLookup lookup)
     {
         if (!lookup.TryGetCombatSnapshot(out var content, out _))
         {

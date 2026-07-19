@@ -293,7 +293,9 @@ public sealed record ItemTemplate(
     IReadOnlyList<string> CompileTags,
     string WeaponFamilyTag,
     string SlotType = "",
-    IReadOnlyList<string>? AllowedClassIds = null);
+    IReadOnlyList<string>? AllowedClassIds = null,
+    ItemRarityTierValue RarityTier = ItemRarityTierValue.Common,
+    ItemIdentityValue IdentityKind = ItemIdentityValue.Baseline);
 
 /// <summary>
 /// affix의 non-numeric 계약(태그/조건/rule/저작 spawn 메타). 수치는 기존 AffixPackages가 계속 소유하고,
@@ -309,10 +311,34 @@ public sealed record AffixTemplate(
     CombatRuleModifierPackage? RulePackage,
     IReadOnlyList<string>? AllowedSlotTypes = null,
     float BudgetScore = 0f,
-    float SpawnWeight = 0f)
+    float SpawnWeight = 0f,
+    string Tier = "",
+    int ItemLevelMin = 0,
+    string ExclusiveGroupId = "")
 {
     public bool IsConditional => RequiredTags.Count > 0 || ExcludedTags.Count > 0;
 }
+
+/// <summary>
+/// 세션이 영웅의 trait id를 결정적으로 정규화할 때 필요한 archetype별 저작 순서.
+/// EncounterTraits는 적 전용이므로 이 player roster pool에는 포함하지 않는다.
+/// </summary>
+public sealed record ArchetypeTraitPoolTemplate(
+    IReadOnlyList<string> PositiveTraitIds,
+    IReadOnlyList<string> NegativeTraitIds);
+
+/// <summary>
+/// RuntimeCombatContentLookup의 canonical fallback 순서를 Unity 밖에서도 그대로 재현하는 순수 snapshot.
+/// 정렬 가능한 catalog dictionary만으로는 legacy 우선순위를 복원할 수 없으므로 순서를 명시적으로 보존한다.
+/// </summary>
+public sealed record SessionContentOrder(
+    IReadOnlyList<string> ArchetypeIds,
+    IReadOnlyList<string> ItemIds,
+    IReadOnlyList<string> AffixIds,
+    IReadOnlyList<string> TemporaryAugmentIds,
+    IReadOnlyList<string> PermanentAugmentIds,
+    IReadOnlyList<string> PassiveBoardIds,
+    IReadOnlyList<string> SynergyFamilyIds);
 
 public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, CombatArchetypeTemplate> Archetypes,
@@ -342,7 +368,9 @@ public sealed record CombatContentSnapshot(
     FirstPlayableSliceDefinition? FirstPlayableSlice = null,
     IReadOnlyDictionary<string, CharacterTemplate>? Characters = null,
     IReadOnlyDictionary<string, AffixTemplate>? AffixCatalog = null,
-    IReadOnlyDictionary<string, ItemTemplate>? ItemCatalog = null);
+    IReadOnlyDictionary<string, ItemTemplate>? ItemCatalog = null,
+    IReadOnlyDictionary<string, ArchetypeTraitPoolTemplate>? ArchetypeTraitPools = null,
+    SessionContentOrder? SessionContentOrder = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

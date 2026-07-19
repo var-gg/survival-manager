@@ -198,8 +198,15 @@ public sealed class BuildBoundaryGuardFastTests
 
         var resolutionPath = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Unity", "GameSessionState.BattleResolution.cs");
         var resolutionCode = ReadCodeText(resolutionPath);
-        Assert.That(resolutionCode, Does.Contain("ApplyBattleBootstrap"),
-            $"{resolutionPath} 합성 단일 소스에서 인카운터 bootstrap이 사라졌다 — 보스 overlay가 모든 소비자에서 침묵한다.");
+        Assert.That(resolutionCode, Does.Contain("SessionBattleStateComposer.TryCompose"),
+            $"{resolutionPath} 가 pure 전투 합성 단일 소스(SessionBattleStateComposer)를 우회한다.");
+
+        var composerPath = Path.Combine("Assets", "_Game", "Scripts", "Runtime", "Meta", "Services", "SessionBattleStateComposer.cs");
+        var composerCode = ReadCodeText(composerPath);
+        Assert.That(composerCode, Does.Contain(string.Concat("BattleFactory", ".Create")),
+            $"{composerPath} 에서 BattleState 합성이 사라졌다 — 세션과 headless가 같은 전투 truth를 만들 수 없다.");
+        Assert.That(composerCode, Does.Contain("ApplyBattleBootstrap"),
+            $"{composerPath} 합성 단일 소스에서 인카운터 bootstrap이 사라졌다 — 보스 overlay가 모든 소비자에서 침묵한다.");
     }
 
     [Test]

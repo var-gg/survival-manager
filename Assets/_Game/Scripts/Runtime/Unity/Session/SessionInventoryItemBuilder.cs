@@ -4,6 +4,9 @@ using System.Globalization;
 using System.Linq;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Meta;
+using SM.Meta.Model;
+using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 
 namespace SM.Unity;
@@ -11,11 +14,13 @@ namespace SM.Unity;
 internal sealed class SessionInventoryItemBuilder
 {
     private readonly ICombatContentLookup _lookup;
+    private readonly ISessionContentLookup _sessionLookup;
     private readonly Func<string, int, int> _buildStableSeed;
 
     internal SessionInventoryItemBuilder(ICombatContentLookup lookup, Func<string, int, int> buildStableSeed)
     {
         _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
+        _sessionLookup = lookup;
         _buildStableSeed = buildStableSeed ?? throw new ArgumentNullException(nameof(buildStableSeed));
     }
 
@@ -44,7 +49,7 @@ internal sealed class SessionInventoryItemBuilder
             ItemInstanceId = resolvedInstanceId,
             ItemBaseId = itemBaseId,
             EquippedHeroId = equippedHeroId,
-            AffixIds = BuildGeneratedAffixIds(itemBaseId, seed),
+            AffixIds = GeneratedItemAffixSelector.Select(_sessionLookup, itemBaseId, seed).ToList(),
         };
     }
 
@@ -97,48 +102,6 @@ internal sealed class SessionInventoryItemBuilder
                 existing.Add(candidate);
             }
         }
-    }
-
-    private List<string> BuildGeneratedAffixIds(string itemBaseId, int seed)
-    {
-        if (!_lookup.TryGetItemDefinition(itemBaseId, out var itemDefinition))
-        {
-            return new List<string>();
-        }
-
-        var tiers = new List<AffixTierValue>
-        {
-            AffixTierValue.Implicit,
-            AffixTierValue.Prefix,
-        };
-
-        if (itemDefinition.RarityTier >= ItemRarityTierValue.Rare || itemDefinition.IdentityKind != ItemIdentityValue.Baseline)
-        {
-            tiers.Add(AffixTierValue.Suffix);
-        }
-
-        if (itemDefinition.RarityTier >= ItemRarityTierValue.Epic || itemDefinition.IdentityKind == ItemIdentityValue.Unique)
-        {
-            tiers.Add(AffixTierValue.Prefix);
-        }
-
-        var rng = new Random(seed);
-        var selected = new List<string>();
-        foreach (var tier in tiers)
-        {
-            var candidates = _lookup.GetCanonicalAffixIds()
-                .Where(candidateId => IsGeneratedAffixCandidate(itemDefinition, tier, candidateId, selected))
-                .OrderBy(id => id, StringComparer.Ordinal)
-                .ToList();
-            if (candidates.Count == 0)
-            {
-                continue;
-            }
-
-            selected.Add(candidates[rng.Next(candidates.Count)]);
-        }
-
-        return selected;
     }
 
     private bool IsRefitCandidate(
@@ -212,4 +175,5 @@ internal sealed class SessionInventoryItemBuilder
 
         return false;
     }
+
 }

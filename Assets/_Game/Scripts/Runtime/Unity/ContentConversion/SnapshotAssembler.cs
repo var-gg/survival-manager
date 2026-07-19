@@ -20,6 +20,7 @@ internal sealed class SnapshotAssembler
     private readonly IReadOnlyDictionary<string, CharacterDefinition> _characterDefinitions;
     private readonly IReadOnlyDictionary<string, TeamTacticDefinition> _teamTacticDefinitions;
     private readonly IReadOnlyDictionary<string, RoleInstructionDefinition> _roleInstructionDefinitions;
+    private readonly IReadOnlyDictionary<string, PassiveBoardDefinition> _passiveBoardDefinitions;
     private readonly IReadOnlyDictionary<string, PassiveNodeDefinition> _passiveNodeDefinitions;
     private readonly IReadOnlyDictionary<string, SynergyDefinition> _synergyDefinitions;
     private readonly IReadOnlyDictionary<string, CampaignChapterDefinition> _campaignChapterDefinitions;
@@ -47,6 +48,7 @@ internal sealed class SnapshotAssembler
         _characterDefinitions = registry.CharacterDefinitions;
         _teamTacticDefinitions = registry.TeamTacticDefinitions;
         _roleInstructionDefinitions = registry.RoleInstructionDefinitions;
+        _passiveBoardDefinitions = registry.PassiveBoardDefinitions;
         _passiveNodeDefinitions = registry.PassiveNodeDefinitions;
         _synergyDefinitions = registry.SynergyDefinitions;
         _campaignChapterDefinitions = registry.CampaignChapterDefinitions;
@@ -77,6 +79,19 @@ internal sealed class SnapshotAssembler
                 .SelectMany(pool => Enumerate(pool.PositiveTraits).Concat(Enumerate(pool.NegativeTraits)).Concat(Enumerate(pool.EncounterTraits)))
                 .Where(entry => !string.IsNullOrWhiteSpace(entry.Id))
                 .ToDictionary(entry => entry.Id, entry => ModifierPackageConverter.BuildTraitPackage(entry), StringComparer.Ordinal));
+        var archetypeTraitPools = BuildSection("archetype trait pools", () =>
+            _traitPools.ToDictionary(
+                pair => pair.Key,
+                pair => new ArchetypeTraitPoolTemplate(
+                    Enumerate(pair.Value.PositiveTraits)
+                        .Where(entry => !string.IsNullOrWhiteSpace(entry.Id))
+                        .Select(entry => entry.Id)
+                        .ToList(),
+                    Enumerate(pair.Value.NegativeTraits)
+                        .Where(entry => !string.IsNullOrWhiteSpace(entry.Id))
+                        .Select(entry => entry.Id)
+                        .ToList()),
+                StringComparer.Ordinal));
         var itemPackages = BuildSection("item packages", () =>
             _itemDefinitions.Values.ToDictionary(item => item.Id, item => ModifierPackageConverter.BuildItemPackage(item), StringComparer.Ordinal));
         var affixPackages = BuildSection("affix packages", () =>
@@ -135,6 +150,15 @@ internal sealed class SnapshotAssembler
             _lootBundleDefinitions.Values.ToDictionary(definition => definition.Id, RewardConverter.BuildLootBundleTemplate, StringComparer.Ordinal));
         var traitTokenCatalog = BuildSection("trait tokens", () =>
             _traitTokenDefinitions.Values.ToDictionary(definition => definition.Id, RewardConverter.BuildTraitTokenTemplate, StringComparer.Ordinal));
+        var sessionContentOrder = BuildSection("session content order", () =>
+            SessionContentOrderConverter.Build(
+                _archetypeDefinitions,
+                _itemDefinitions,
+                _affixDefinitions,
+                _augmentDefinitions,
+                _passiveBoardDefinitions,
+                _synergyDefinitions,
+                _firstPlayableSlice));
 
         return new CombatContentSnapshot(
             archetypeTemplates,
@@ -164,6 +188,8 @@ internal sealed class SnapshotAssembler
             _firstPlayableSlice,
             characterCatalog,
             affixCatalog,
-            itemCatalog);
+            itemCatalog,
+            archetypeTraitPools,
+            sessionContentOrder);
     }
 }

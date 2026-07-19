@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Meta.Model;
+using SM.Meta.Services;
 using SM.Unity.ContentConversion;
 using UnityEngine;
 using Unity.Profiling;
@@ -16,6 +17,7 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
 
     private readonly ContentDefinitionRegistry _registry;
     private CombatContentSnapshot? _snapshot;
+    private SnapshotSessionContentLookup? _sessionContentLookup;
 
     public RuntimeCombatContentLookup(bool allowEditorRecoveryFallback = false)
     {
@@ -64,110 +66,49 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
     public IReadOnlyList<string> GetCanonicalArchetypeIds()
     {
         EnsureLoaded();
-        var resolved = ContentFallbackData.CanonicalArchetypeOrder.Where(id => _registry.ArchetypeDefinitions.ContainsKey(id)).ToList();
-        if (resolved.Count > 0)
-        {
-            return resolved;
-        }
-
-        return _registry.ArchetypeDefinitions.Keys.OrderBy(id => id, StringComparer.Ordinal).ToList();
+        return _sessionContentLookup!.GetCanonicalArchetypeIds();
     }
 
     public IReadOnlyList<string> GetCanonicalItemIds()
     {
         EnsureLoaded();
-        var ordered = ContentFallbackData.LegacyItemFallbackOrder.Where(id => _registry.ItemDefinitions.ContainsKey(id)).ToList();
-        ordered.AddRange(_registry.ItemDefinitions.Keys.Where(id => !ordered.Contains(id)).OrderBy(id => id, StringComparer.Ordinal));
-        return ordered;
+        return _sessionContentLookup!.GetCanonicalItemIds();
     }
 
     public IReadOnlyList<string> GetCanonicalAffixIds()
     {
         EnsureLoaded();
-        if (_registry.FirstPlayableSlice?.AffixIds.Count > 0)
-        {
-            return _registry.FirstPlayableSlice.AffixIds
-                .Where(id => _registry.AffixDefinitions.ContainsKey(id))
-                .OrderBy(id => id, StringComparer.Ordinal)
-                .ToList();
-        }
-
-        return _registry.AffixDefinitions.Keys.OrderBy(id => id, StringComparer.Ordinal).ToList();
+        return _sessionContentLookup!.GetCanonicalAffixIds();
     }
 
     public IReadOnlyList<string> GetCanonicalTemporaryAugmentIds()
     {
         EnsureLoaded();
-        var ordered = ContentFallbackData.LegacyAugmentFallbackOrder
-            .Where(id => _registry.AugmentDefinitions.TryGetValue(id, out var augment) && !augment.IsPermanent).ToList();
-        ordered.AddRange(_registry.AugmentDefinitions.Values
-            .Where(augment => !augment.IsPermanent && !ordered.Contains(augment.Id))
-            .OrderBy(augment => augment.Id, StringComparer.Ordinal)
-            .Select(augment => augment.Id));
-        if (_registry.FirstPlayableSlice?.AugmentIds.Count > 0)
-        {
-            return ordered
-                .Where(id => _registry.FirstPlayableSlice.AugmentIds.Contains(id, StringComparer.Ordinal))
-                .ToList();
-        }
-
-        return ordered;
+        return _sessionContentLookup!.GetCanonicalTemporaryAugmentIds();
     }
 
     public IReadOnlyList<string> GetCanonicalPermanentAugmentIds()
     {
         EnsureLoaded();
-        if (_registry.FirstPlayableSlice?.PermanentAugmentIds.Count > 0)
-        {
-            return _registry.FirstPlayableSlice.PermanentAugmentIds
-                .Where(id => _registry.AugmentDefinitions.TryGetValue(id, out var augment) && augment.IsPermanent)
-                .OrderBy(id => id, StringComparer.Ordinal)
-                .ToList();
-        }
-
-        return _registry.AugmentDefinitions.Values
-            .Where(augment => augment.IsPermanent && !string.IsNullOrWhiteSpace(augment.Id))
-            .OrderBy(augment => augment.Id, StringComparer.Ordinal)
-            .Select(augment => augment.Id)
-            .ToList();
+        return _sessionContentLookup!.GetCanonicalPermanentAugmentIds();
     }
 
     public IReadOnlyList<string> GetCanonicalPassiveBoardIds()
     {
         EnsureLoaded();
-        if (_registry.FirstPlayableSlice?.PassiveBoardIds.Count > 0)
-        {
-            return _registry.FirstPlayableSlice.PassiveBoardIds
-                .Where(id => _registry.PassiveBoardDefinitions.ContainsKey(id))
-                .OrderBy(id => id, StringComparer.Ordinal)
-                .ToList();
-        }
-
-        return _registry.PassiveBoardDefinitions.Keys
-            .OrderBy(id => id, StringComparer.Ordinal)
-            .ToList();
+        return _sessionContentLookup!.GetCanonicalPassiveBoardIds();
     }
 
     public IReadOnlyList<string> GetCanonicalSynergyFamilyIds()
     {
         EnsureLoaded();
-        if (_registry.FirstPlayableSlice?.SynergyFamilyIds.Count > 0)
-        {
-            return _registry.FirstPlayableSlice.SynergyFamilyIds
-                .Where(id => _registry.SynergyDefinitions.ContainsKey(id))
-                .OrderBy(id => id, StringComparer.Ordinal)
-                .ToList();
-        }
-
-        return _registry.SynergyDefinitions.Keys
-            .OrderBy(id => id, StringComparer.Ordinal)
-            .ToList();
+        return _sessionContentLookup!.GetCanonicalSynergyFamilyIds();
     }
 
     public FirstPlayableSliceDefinition? GetFirstPlayableSlice()
     {
         EnsureLoaded();
-        return _registry.FirstPlayableSlice;
+        return _sessionContentLookup!.GetFirstPlayableSlice();
     }
 
     public bool TryGetArchetype(string archetypeId, out UnitArchetypeDefinition archetype)
@@ -293,133 +234,43 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
     public bool TryGetTraitIds(string archetypeId, out IReadOnlyList<string> positiveTraitIds, out IReadOnlyList<string> negativeTraitIds)
     {
         EnsureLoaded();
-        positiveTraitIds = Array.Empty<string>();
-        negativeTraitIds = Array.Empty<string>();
-
-        if (!_registry.TraitPools.TryGetValue(archetypeId, out var pool))
-        {
-            return false;
-        }
-
-        positiveTraitIds = pool.PositiveTraits
-            .Where(entry => !string.IsNullOrWhiteSpace(entry.Id))
-            .Select(entry => entry.Id)
-            .ToList();
-        negativeTraitIds = pool.NegativeTraits
-            .Where(entry => !string.IsNullOrWhiteSpace(entry.Id))
-            .Select(entry => entry.Id)
-            .ToList();
-        return positiveTraitIds.Count > 0 && negativeTraitIds.Count > 0;
+        return _sessionContentLookup!.TryGetTraitIds(archetypeId, out positiveTraitIds, out negativeTraitIds);
     }
 
     public string NormalizeArchetypeId(string archetypeId, string raceId, string classId, int fallbackIndex)
     {
         EnsureLoaded();
-        if (!string.IsNullOrWhiteSpace(archetypeId) && _registry.ArchetypeDefinitions.ContainsKey(archetypeId))
-        {
-            return archetypeId;
-        }
-
-        var exactMatch = _registry.ArchetypeDefinitions.Values.FirstOrDefault(definition =>
-            string.Equals(definition.Race.Id, raceId, StringComparison.Ordinal) &&
-            string.Equals(definition.Class.Id, classId, StringComparison.Ordinal));
-        if (exactMatch != null)
-        {
-            return exactMatch.Id;
-        }
-
-        var ordered = GetCanonicalArchetypeIds();
-        if (ordered.Count == 0)
-        {
-            throw new InvalidOperationException("전투 archetype canonical 목록이 비어 있습니다.");
-        }
-
-        return ordered[Math.Abs(fallbackIndex) % ordered.Count];
+        return _sessionContentLookup!.NormalizeArchetypeId(archetypeId, raceId, classId, fallbackIndex);
     }
 
     public string NormalizePositiveTraitId(string archetypeId, string traitId, int fallbackIndex)
     {
         EnsureLoaded();
-        if (TryGetTraitIds(archetypeId, out var positives, out _) && positives.Count > 0)
-        {
-            if (!string.IsNullOrWhiteSpace(traitId) && positives.Contains(traitId))
-            {
-                return traitId;
-            }
-
-            return positives[Math.Abs(fallbackIndex) % positives.Count];
-        }
-
-        return string.Empty;
+        return _sessionContentLookup!.NormalizePositiveTraitId(archetypeId, traitId, fallbackIndex);
     }
 
     public string NormalizeNegativeTraitId(string archetypeId, string traitId, int fallbackIndex)
     {
         EnsureLoaded();
-        if (TryGetTraitIds(archetypeId, out _, out var negatives) && negatives.Count > 0)
-        {
-            if (!string.IsNullOrWhiteSpace(traitId) && negatives.Contains(traitId))
-            {
-                return traitId;
-            }
-
-            return negatives[Math.Abs(fallbackIndex) % negatives.Count];
-        }
-
-        return string.Empty;
+        return _sessionContentLookup!.NormalizeNegativeTraitId(archetypeId, traitId, fallbackIndex);
     }
 
     public string NormalizeItemBaseId(string itemBaseId, int fallbackIndex)
     {
         EnsureLoaded();
-        if (!string.IsNullOrWhiteSpace(itemBaseId) && _registry.ItemDefinitions.ContainsKey(itemBaseId))
-        {
-            return itemBaseId;
-        }
-
-        var items = GetCanonicalItemIds();
-        if (items.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        return items[Math.Abs(fallbackIndex) % items.Count];
+        return _sessionContentLookup!.NormalizeItemBaseId(itemBaseId, fallbackIndex);
     }
 
     public string NormalizeAffixId(string affixId, int fallbackIndex)
     {
         EnsureLoaded();
-        if (!string.IsNullOrWhiteSpace(affixId) && _registry.AffixDefinitions.ContainsKey(affixId))
-        {
-            return affixId;
-        }
-
-        var affixes = GetCanonicalAffixIds();
-        if (affixes.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        return affixes[Math.Abs(fallbackIndex) % affixes.Count];
+        return _sessionContentLookup!.NormalizeAffixId(affixId, fallbackIndex);
     }
 
     public string NormalizeTemporaryAugmentId(string augmentId, int fallbackIndex)
     {
         EnsureLoaded();
-        if (!string.IsNullOrWhiteSpace(augmentId)
-            && _registry.AugmentDefinitions.TryGetValue(augmentId, out var augment)
-            && !augment.IsPermanent)
-        {
-            return augmentId;
-        }
-
-        var augments = GetCanonicalTemporaryAugmentIds();
-        if (augments.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        return augments[Math.Abs(fallbackIndex) % augments.Count];
+        return _sessionContentLookup!.NormalizeTemporaryAugmentId(augmentId, fallbackIndex);
     }
 
     private void EnsureLoaded()
@@ -434,6 +285,7 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             _registry.EnsureLoaded();
             _snapshot = new SnapshotAssembler(_registry).Assemble();
+            _sessionContentLookup = new SnapshotSessionContentLookup(_snapshot);
             stopwatch.Stop();
             RuntimeInstrumentation.LogDuration(
                 nameof(RuntimeCombatContentLookup) + ".EnsureLoaded",

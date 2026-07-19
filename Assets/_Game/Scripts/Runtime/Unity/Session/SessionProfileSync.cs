@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SM.Combat.Model;
-using SM.Content;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core;
@@ -122,12 +121,13 @@ public sealed partial class GameSessionState
         Profile.Inventory = new List<InventoryItemRecord>();
         Profile.Heroes.Clear();
 
-        var archetypeIds = _combatContentLookup.GetCanonicalArchetypeIds();
-        var itemIds = _combatContentLookup.GetCanonicalItemIds();
+        var snapshot = _sessionContentLookup.Snapshot;
+        var archetypeIds = _sessionContentLookup.GetCanonicalArchetypeIds();
+        var itemIds = _sessionContentLookup.GetCanonicalItemIds();
         for (var i = 0; i < Math.Min(MetaBalanceDefaults.ExpeditionSquadCap, archetypeIds.Count); i++)
         {
             var archetypeId = archetypeIds[i];
-            _combatContentLookup.TryGetArchetype(archetypeId, out var archetype);
+            snapshot.Archetypes.TryGetValue(archetypeId, out var archetype);
             var heroId = $"hero-{i + 1}";
             var equippedItems = new List<string>();
             if (itemIds.Count > 0 && i < 4)
@@ -142,15 +142,15 @@ public sealed partial class GameSessionState
                 HeroId = heroId,
                 Name = archetype != null ? ResolveArchetypeDisplayName(archetype) : $"Hero {i + 1}",
                 ArchetypeId = archetypeId,
-                RaceId = archetype?.Race.Id ?? string.Empty,
-                ClassId = archetype?.Class.Id ?? string.Empty,
-                PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(archetypeId, string.Empty, i),
-                NegativeTraitId = _combatContentLookup.NormalizeNegativeTraitId(archetypeId, string.Empty, i + 1),
-                FlexActiveId = archetype?.Loadout?.FlexActive?.Id ?? string.Empty,
-                FlexPassiveId = archetype?.Loadout?.FlexPassive?.Id ?? string.Empty,
+                RaceId = archetype?.RaceId ?? string.Empty,
+                ClassId = archetype?.ClassId ?? string.Empty,
+                PositiveTraitId = _sessionContentLookup.NormalizePositiveTraitId(archetypeId, string.Empty, i),
+                NegativeTraitId = _sessionContentLookup.NormalizeNegativeTraitId(archetypeId, string.Empty, i + 1),
+                FlexActiveId = archetype?.FlexActive?.Id ?? string.Empty,
+                FlexPassiveId = archetype?.FlexPassive?.Id ?? string.Empty,
                 RecruitTier = archetype?.RecruitTier ?? RecruitTier.Common,
                 RecruitSource = RecruitOfferSource.DirectGrant,
-                DominantHand = DominantHandDistributionService.ResolveGenerated(heroId, archetype?.Class.Id ?? string.Empty),
+                DominantHand = DominantHandDistributionService.ResolveGenerated(heroId, archetype?.ClassId ?? string.Empty),
                 RetrainState = new UnitRetrainState(),
                 EconomyFootprint = new UnitEconomyFootprint(),
                 EquippedItemIds = equippedItems
@@ -198,36 +198,37 @@ public sealed partial class GameSessionState
             hero.EquippedItemIds ??= new List<string>();
             hero.RetrainState ??= new UnitRetrainState();
             hero.EconomyFootprint ??= new UnitEconomyFootprint();
-            hero.ArchetypeId = _combatContentLookup.NormalizeArchetypeId(hero.ArchetypeId, hero.RaceId, hero.ClassId, i);
-            if (_combatContentLookup.TryGetArchetype(hero.ArchetypeId, out var archetype))
+            hero.ArchetypeId = _sessionContentLookup.NormalizeArchetypeId(hero.ArchetypeId, hero.RaceId, hero.ClassId, i);
+            if (_sessionContentLookup.Snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype))
             {
-                hero.RaceId = archetype.Race.Id;
-                hero.ClassId = archetype.Class.Id;
+                hero.RaceId = archetype.RaceId;
+                hero.ClassId = archetype.ClassId;
                 hero.FlexActiveId = string.IsNullOrWhiteSpace(hero.FlexActiveId)
-                    ? archetype.Loadout?.FlexActive?.Id ?? string.Empty
+                    ? archetype.FlexActive?.Id ?? string.Empty
                     : hero.FlexActiveId;
                 hero.FlexPassiveId = string.IsNullOrWhiteSpace(hero.FlexPassiveId)
-                    ? archetype.Loadout?.FlexPassive?.Id ?? string.Empty
+                    ? archetype.FlexPassive?.Id ?? string.Empty
                     : hero.FlexPassiveId;
                 hero.RecruitTier = archetype.RecruitTier;
             }
 
             hero.CharacterId = NormalizeCharacterId(hero.CharacterId, hero.ArchetypeId);
-            if (_combatContentLookup.TryGetCharacterDefinition(hero.CharacterId, out var character))
+            if (_sessionContentLookup.Snapshot.Characters is { } characters
+                && characters.TryGetValue(hero.CharacterId, out var character))
             {
-                if (character.Race != null)
+                if (!string.IsNullOrWhiteSpace(character.RaceId))
                 {
-                    hero.RaceId = character.Race.Id;
+                    hero.RaceId = character.RaceId;
                 }
 
-                if (character.Class != null)
+                if (!string.IsNullOrWhiteSpace(character.ClassId))
                 {
-                    hero.ClassId = character.Class.Id;
+                    hero.ClassId = character.ClassId;
                 }
             }
 
-            hero.PositiveTraitId = _combatContentLookup.NormalizePositiveTraitId(hero.ArchetypeId, hero.PositiveTraitId, i);
-            hero.NegativeTraitId = _combatContentLookup.NormalizeNegativeTraitId(hero.ArchetypeId, hero.NegativeTraitId, i + 1);
+            hero.PositiveTraitId = _sessionContentLookup.NormalizePositiveTraitId(hero.ArchetypeId, hero.PositiveTraitId, i);
+            hero.NegativeTraitId = _sessionContentLookup.NormalizeNegativeTraitId(hero.ArchetypeId, hero.NegativeTraitId, i + 1);
             hero.EquippedItemIds = hero.EquippedItemIds
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
@@ -247,9 +248,9 @@ public sealed partial class GameSessionState
                 item.ItemInstanceId = $"inventory-i{Profile.ItemInstanceCounter.ToString(CultureInfo.InvariantCulture)}";
             }
 
-            item.ItemBaseId = _combatContentLookup.NormalizeItemBaseId(item.ItemBaseId, i);
+            item.ItemBaseId = _sessionContentLookup.NormalizeItemBaseId(item.ItemBaseId, i);
             item.AffixIds = item.AffixIds
-                .Select((affixId, affixIndex) => _combatContentLookup.NormalizeAffixId(affixId, i + affixIndex))
+                .Select((affixId, affixIndex) => _sessionContentLookup.NormalizeAffixId(affixId, i + affixIndex))
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
                 .ToList();
@@ -259,7 +260,7 @@ public sealed partial class GameSessionState
     private void NormalizeExpeditionContentIds()
     {
         var normalizedAugments = Expedition.TemporaryAugmentIds
-                .Select((augmentId, index) => _combatContentLookup.NormalizeTemporaryAugmentId(augmentId, index))
+                .Select((augmentId, index) => _sessionContentLookup.NormalizeTemporaryAugmentId(augmentId, index))
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
                 .ToList();
@@ -300,14 +301,14 @@ public sealed partial class GameSessionState
 
     private string ResolveRewardItemId(int index)
     {
-        return _combatContentLookup.NormalizeItemBaseId(string.Empty, index);
+        return _sessionContentLookup.NormalizeItemBaseId(string.Empty, index);
     }
 
-    private static string ResolveArchetypeDisplayName(UnitArchetypeDefinition archetype)
+    private static string ResolveArchetypeDisplayName(CombatArchetypeTemplate archetype)
     {
-        if (!string.IsNullOrWhiteSpace(archetype.LegacyDisplayName))
+        if (!string.IsNullOrWhiteSpace(archetype.DisplayName))
         {
-            return archetype.LegacyDisplayName;
+            return archetype.DisplayName;
         }
 
         // archetype.NameKey는 "content.archetype.warden.name" 같은 raw localization key.
@@ -315,6 +316,13 @@ public sealed partial class GameSessionState
         // archetype.Id ("warden")로 fallback — UI Presenter가 ContentTextResolver.GetCharacterName으로
         // localized 표시로 변환한다.
         return archetype.Id;
+    }
+
+    private static string ResolveArchetypeDisplayName(UnitArchetypeDefinition archetype)
+    {
+        return !string.IsNullOrWhiteSpace(archetype.LegacyDisplayName)
+            ? archetype.LegacyDisplayName
+            : archetype.Id;
     }
 
     private const int DynamicOfferPoolSize = 6;
@@ -330,26 +338,27 @@ public sealed partial class GameSessionState
 
         foreach (var preferredAugmentId in preferredAugmentIds.Where(id => !string.IsNullOrWhiteSpace(id)))
         {
-            if (_combatContentLookup.TryGetAugmentDefinition(preferredAugmentId, out var augment) && !augment.IsPermanent)
+            if (_sessionContentLookup.Snapshot.AugmentCatalog.TryGetValue(preferredAugmentId, out var augment)
+                && !augment.IsPermanent)
             {
                 return preferredAugmentId;
             }
         }
 
-        return _combatContentLookup.NormalizeTemporaryAugmentId(string.Empty, index);
+        return _sessionContentLookup.NormalizeTemporaryAugmentId(string.Empty, index);
     }
 
     // AugmentOfferService 로 현재 build 와 어울리는 temporary augment 를 점수 기반 선택한다. canonical temporary 집합
     // 안에서만 고르므로 reward payload 계약(GetCanonicalTemporaryAugmentIds 멤버십)이 유지된다. index 로 슬롯별 다른 후보.
     private string ResolveDynamicOfferAugmentId(int index)
     {
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             || snapshot.AugmentCatalog is not { Count: > 0 } catalog)
         {
             return string.Empty;
         }
 
-        var canonicalTemporary = new HashSet<string>(_combatContentLookup.GetCanonicalTemporaryAugmentIds(), StringComparer.Ordinal);
+        var canonicalTemporary = new HashSet<string>(_sessionContentLookup.GetCanonicalTemporaryAugmentIds(), StringComparer.Ordinal);
         var permanentEquipped = ResolveEquippedPermanentAugmentIds();
         var offerCatalog = catalog
             .Where(pair => canonicalTemporary.Contains(pair.Key) || permanentEquipped.Contains(pair.Key))
@@ -405,7 +414,7 @@ public sealed partial class GameSessionState
         }
 
         if (ActiveRun?.Overlay.TemporaryAugmentIds is not { Count: > 0 } activeAugmentIds
-            || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            || !_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             || snapshot.AugmentCatalog is not { Count: > 0 } catalog)
         {
             return tags;
@@ -469,15 +478,15 @@ public sealed partial class GameSessionState
 
     private IReadOnlyList<AugmentCatalogEntry> BuildPermanentProgressionAugmentDefinitions(params string[] explicitAugmentIds)
     {
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
         {
             return Array.Empty<AugmentCatalogEntry>();
         }
 
         var augmentIds = explicitAugmentIds
             .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Concat(_combatContentLookup.GetCanonicalTemporaryAugmentIds())
-            .Concat(_combatContentLookup.GetCanonicalPermanentAugmentIds())
+            .Concat(_sessionContentLookup.GetCanonicalTemporaryAugmentIds())
+            .Concat(_sessionContentLookup.GetCanonicalPermanentAugmentIds())
             .Where(id => !string.IsNullOrWhiteSpace(id))
             .Distinct(StringComparer.Ordinal);
         var definitions = new List<AugmentCatalogEntry>();
@@ -555,7 +564,7 @@ public sealed partial class GameSessionState
     private IReadOnlyDictionary<string, PassiveNodeTemplate> BuildPassiveBoardNodeDictionary(string boardId)
     {
         if (string.IsNullOrWhiteSpace(boardId)
-            || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+            || !_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
         {
             return new Dictionary<string, PassiveNodeTemplate>(StringComparer.Ordinal);
         }

@@ -82,7 +82,9 @@ internal static class CatalogEntryConverter
             Enumerate(definition.CompileTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             definition.WeaponFamilyTag ?? string.Empty,
             definition.SlotType.ToString(),
-            Enumerate(definition.AllowedClassTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
+            Enumerate(definition.AllowedClassTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
+            definition.RarityTier,
+            definition.IdentityKind);
     }
 
     internal static AffixTemplate BuildAffixTemplate(AffixDefinition definition)
@@ -95,7 +97,10 @@ internal static class CatalogEntryConverter
             BuildRulePackage(definition.Id, ModifierSource.Item, definition.RuleModifierTags),
             Enumerate(definition.AllowedSlotTypes).Select(slot => slot.ToString()).ToList(),
             definition.BudgetScore,
-            definition.SpawnWeight);
+            definition.SpawnWeight,
+            definition.Tier.ToString(),
+            definition.ItemLevelMin,
+            definition.ExclusiveGroupId ?? string.Empty);
     }
 
     internal static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)

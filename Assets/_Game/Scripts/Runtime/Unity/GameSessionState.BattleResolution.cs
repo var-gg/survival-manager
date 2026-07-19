@@ -53,24 +53,12 @@ public sealed partial class GameSessionState
         ResolvedEncounterContext encounter,
         out BattleState state,
         out string error)
-    {
-        state = null!;
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var combatSnapshot, out error))
-        {
-            return false;
-        }
-
-        state = BattleFactory.Create(
-            allySnapshot.Allies,
-            encounter.Enemies,
-            allySnapshot.TeamTactic.Posture,
-            encounter.EnemyPosture,
-            BattleSimulator.DefaultFixedStepSeconds,
-            seed: encounter.Context.BattleSeed,
-            statusRules: allySnapshot.StatusRules ?? CombatStatusRuleCompiler.Compile(combatSnapshot));
-        new EncounterResolutionService(combatSnapshot).ApplyBattleBootstrap(state, encounter);
-        return true;
-    }
+        => SessionBattleStateComposer.TryCompose(
+            _sessionContentLookup,
+            allySnapshot,
+            encounter,
+            out state,
+            out error);
 
     /// <summary>
     /// 현재 선택된 전투 노드를 **실 전투 sim으로 완주 정산**한다(헤드리스 — 씬 재생 없이). 결정론 sim이

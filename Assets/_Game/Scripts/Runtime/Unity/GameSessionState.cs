@@ -37,6 +37,7 @@ public sealed partial class GameSessionState
     };
 
     private readonly ICombatContentLookup _combatContentLookup;
+    private readonly ISessionContentLookup _sessionContentLookup;
     private readonly NarrativeRuntimeBootstrap _narrativeRuntimeBootstrap;
     private readonly SessionProfileSync _profileSync;
     private readonly SessionDeploymentFlow _deploymentFlow;
@@ -152,6 +153,7 @@ public sealed partial class GameSessionState
     internal GameSessionState(ICombatContentLookup combatContentLookup, NarrativeRuntimeBootstrap narrativeRuntimeBootstrap)
     {
         _combatContentLookup = combatContentLookup ?? throw new ArgumentNullException(nameof(combatContentLookup));
+        _sessionContentLookup = combatContentLookup;
         _narrativeRuntimeBootstrap = narrativeRuntimeBootstrap ?? throw new ArgumentNullException(nameof(narrativeRuntimeBootstrap));
         _profileSync = new SessionProfileSync(this);
         _deploymentFlow = new SessionDeploymentFlow(this);
@@ -807,7 +809,7 @@ public sealed partial class GameSessionState
             return false;
         }
 
-        if (_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        if (_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
         {
             if (snapshot.FirstPlayableSlice?.PassiveBoardIds.Contains(boardId, StringComparer.Ordinal) == true)
             {
@@ -821,13 +823,13 @@ public sealed partial class GameSessionState
             }
         }
 
-        var slice = _combatContentLookup.GetFirstPlayableSlice();
+        var slice = _sessionContentLookup.GetFirstPlayableSlice();
         if (slice?.PassiveBoardIds.Contains(boardId, StringComparer.Ordinal) == true)
         {
             return true;
         }
 
-        return _combatContentLookup.TryGetPassiveBoardDefinition(boardId, out _);
+        return false;
     }
 
     public bool ToggleExpeditionHero(string heroId) => _deploymentFlow.ToggleExpeditionHero(heroId);
@@ -1121,7 +1123,7 @@ public sealed partial class GameSessionState
     {
         EnsureBattleDeployReady();
 
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out var error))
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out var error))
         {
             throw new InvalidOperationException(error);
         }
@@ -1272,7 +1274,7 @@ public sealed partial class GameSessionState
         context = null!;
         error = string.Empty;
 
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out error))
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out error))
         {
             return false;
         }

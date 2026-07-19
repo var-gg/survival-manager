@@ -5,6 +5,7 @@ using System.Text;
 using SM.Combat.Model;
 using SM.HeadlessCensus;
 using SM.HeadlessPolicies;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 using SM.SealedLlmBridge;
@@ -15,10 +16,10 @@ namespace SM.Editor.Validation;
 /// <summary>player-visible 정보만 사용하는 deterministic campaign session 동작 집합.</summary>
 internal static class H100SessionDriver
 {
-    public static GameSessionState CreateSession(RuntimeCombatContentLookup lookup, string profileId)
+    public static GameSessionState CreateSession(ICombatContentLookup lookup, string profileId)
         => CreateSession(lookup, new SaveProfile { ProfileId = profileId });
 
-    public static GameSessionState CreateSession(RuntimeCombatContentLookup lookup, SaveProfile profile)
+    public static GameSessionState CreateSession(ICombatContentLookup lookup, SaveProfile profile)
     {
         if (profile == null)
         {
@@ -33,7 +34,7 @@ internal static class H100SessionDriver
 
     public static HeadlessDeploymentDecision ApplyPolicyDeployment(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         IHeadlessPolicy policy,
         int decisionSeed,
         Action<string>? decisionLog = null)
@@ -51,7 +52,7 @@ internal static class H100SessionDriver
 
     public static HeadlessDeploymentDecision ApplyPolicyDeployment(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         IHeadlessPolicy policy,
         int decisionSeed,
         HeadlessPolicyObservation observation,
@@ -232,7 +233,7 @@ internal static class H100SessionDriver
 
     public static HeadlessRewardDecision ApplyPolicyReward(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         IHeadlessPolicy policy,
         int decisionSeed,
         Action<string>? decisionLog = null)
@@ -250,7 +251,7 @@ internal static class H100SessionDriver
 
     public static HeadlessRewardDecision ApplyPolicyReward(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         IHeadlessPolicy policy,
         int decisionSeed,
         HeadlessPolicyObservation observation,

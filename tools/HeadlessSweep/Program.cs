@@ -15,7 +15,31 @@ if (args.Length == 1 && string.Equals(args[0], "snapshot-load", StringComparison
     return RunSnapshotLoad();
 }
 
-Console.Error.WriteLine("Usage: HeadlessSweep [snapshot-load]");
+if (args.Length >= 1 && string.Equals(args[0], "campaign-battle", StringComparison.Ordinal))
+{
+    string? unityReportPath = null;
+    string? outputPath = null;
+    for (var index = 1; index < args.Length; index++)
+    {
+        if (string.Equals(args[index], "--unity", StringComparison.Ordinal) && index + 1 < args.Length)
+        {
+            unityReportPath = args[++index];
+        }
+        else if (string.Equals(args[index], "--output", StringComparison.Ordinal) && index + 1 < args.Length)
+        {
+            outputPath = args[++index];
+        }
+        else
+        {
+            Console.Error.WriteLine($"Unknown campaign-battle argument: {args[index]}");
+            return 2;
+        }
+    }
+
+    return CampaignCellBattleRunner.Run(FindRepositoryRoot(), unityReportPath, outputPath);
+}
+
+Console.Error.WriteLine("Usage: HeadlessSweep [snapshot-load | campaign-battle [--unity <report>] [--output <path>]]");
 return 2;
 
 static int RunDeterminismGate()

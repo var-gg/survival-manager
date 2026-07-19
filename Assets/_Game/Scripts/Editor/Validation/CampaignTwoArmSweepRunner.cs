@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.HeadlessPolicies;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Unity;
 using UnityEngine;
@@ -29,7 +30,7 @@ internal static partial class CampaignTwoArmSweepRunner
             throw new InvalidOperationException($"campaign boss learning probe content unavailable: {contentError}");
         }
 
-        var itemIndex = CampaignBalanceSweepRunner.LoadItemMetaIndex();
+        var itemIndex = CampaignBalanceSweepRunner.BuildItemMetaIndex(content);
         var order = CampaignContentOrderIndex.Build(content);
         var grid = config.BuildGrid();
         var sampleCount = Math.Clamp(maximumCells, 1, grid.Count);
@@ -59,7 +60,7 @@ internal static partial class CampaignTwoArmSweepRunner
             throw new InvalidOperationException($"campaign prep witness content unavailable: {contentError}");
         }
 
-        var itemIndex = CampaignBalanceSweepRunner.LoadItemMetaIndex();
+        var itemIndex = CampaignBalanceSweepRunner.BuildItemMetaIndex(content);
         var order = CampaignContentOrderIndex.Build(content);
         var accumulator = new CampaignTwoArmSweepAccumulator(config);
         foreach (var cell in config.BuildGrid().Take(Math.Max(1, maximumCells)))
@@ -89,7 +90,7 @@ internal static partial class CampaignTwoArmSweepRunner
             throw new InvalidOperationException($"campaign two-arm sweep content unavailable: {contentError}");
         }
 
-        var itemIndex = CampaignBalanceSweepRunner.LoadItemMetaIndex();
+        var itemIndex = CampaignBalanceSweepRunner.BuildItemMetaIndex(content);
         var order = CampaignContentOrderIndex.Build(content);
         var grid = config.BuildGrid();
         var accumulator = new CampaignTwoArmSweepAccumulator(config);
@@ -114,7 +115,7 @@ internal static partial class CampaignTwoArmSweepRunner
     }
 
     private static void RunCell(
-        RuntimeCombatContentLookup lookup,
+        ICombatContentLookup lookup,
         IReadOnlyDictionary<string, CampaignBalanceSweepRunner.ItemMeta> itemIndex,
         CampaignContentOrderIndex order,
         CampaignBalanceSweepConfig config,
@@ -122,7 +123,8 @@ internal static partial class CampaignTwoArmSweepRunner
         CampaignBalanceGridCell cell,
         CampaignTwoArmSweepAccumulator accumulator,
         string stopAfterEncounterId = "",
-        Func<BattleState, ResolvedEncounterContext, BattleResult>? battleRunner = null)
+        Func<BattleState, ResolvedEncounterContext, BattleResult>? battleRunner = null,
+        Action<GameSessionState, BattleLoadoutSnapshot, BattleState, ResolvedEncounterContext>? setupObserver = null)
     {
         // arm id를 hero/profile identity에 넣지 않는다. 두 팔의 unit-id tie break까지 paired 상태로 유지한다.
         var cellTag = CellTag(cell);
@@ -242,6 +244,7 @@ internal static partial class CampaignTwoArmSweepRunner
                         $"two-arm battle compose failed({cell.CellId}/{arm.ArmId}/{node.Id}): {composeError}");
                 }
 
+                setupObserver?.Invoke(session, allySnapshot, state, measuredEncounter);
                 var measured = battleRunner != null
                     ? battleRunner(state, measuredEncounter)
                     : BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
@@ -386,7 +389,7 @@ internal static partial class CampaignTwoArmSweepRunner
 
     private static void ApplyBuildPower(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         IReadOnlyDictionary<string, CampaignBalanceSweepRunner.ItemMeta> itemIndex,
         CampaignBuildPowerQuantileSpec quantile)
     {

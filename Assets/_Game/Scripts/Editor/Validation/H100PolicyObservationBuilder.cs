@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Stats;
 using SM.HeadlessPolicies;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -19,7 +20,7 @@ internal static class H100PolicyObservationBuilder
 {
     public static HeadlessPolicyObservation Build(
         GameSessionState session,
-        RuntimeCombatContentLookup lookup,
+        ISessionContentLookup lookup,
         int decisionSeed,
         bool includeTownRoster = false)
     {

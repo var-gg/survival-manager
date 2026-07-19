@@ -698,7 +698,7 @@ public sealed partial class GameSessionState
     {
         choices = Array.Empty<RewardChoiceViewModel>();
         if (ActiveRun == null
-            || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            || !_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             || snapshot.AugmentCatalog is not { Count: > 0 } catalog)
         {
             return false;
@@ -716,7 +716,7 @@ public sealed partial class GameSessionState
             return false;
         }
 
-        var canonicalTemporary = new HashSet<string>(_combatContentLookup.GetCanonicalTemporaryAugmentIds(), StringComparer.Ordinal);
+        var canonicalTemporary = new HashSet<string>(_sessionContentLookup.GetCanonicalTemporaryAugmentIds(), StringComparer.Ordinal);
         if (canonicalTemporary.Count == 0)
         {
             return false;
@@ -903,7 +903,7 @@ public sealed partial class GameSessionState
 
     private List<string> GetOrderedCampaignChapterIds()
     {
-        if (_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+        if (_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             && snapshot.CampaignChapters is { Count: > 0 } chapters)
         {
             return chapters.Values
@@ -915,16 +915,12 @@ public sealed partial class GameSessionState
                 .ToList();
         }
 
-        return _combatContentLookup.GetOrderedCampaignChapters()
-            .Where(chapter => !string.IsNullOrWhiteSpace(chapter.Id))
-            .Select(chapter => chapter.Id)
-            .Distinct(StringComparer.Ordinal)
-            .ToList();
+        return new List<string>();
     }
 
     private List<string> GetOrderedSiteIdsForChapter(string chapterId)
     {
-        if (_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+        if (_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             && snapshot.CampaignChapters is { Count: > 0 } chapters
             && snapshot.ExpeditionSites is { Count: > 0 } sites
             && chapters.TryGetValue(chapterId, out var chapterTemplate))
@@ -946,26 +942,7 @@ public sealed partial class GameSessionState
                 .ToList();
         }
 
-        if (!_combatContentLookup.TryGetCampaignChapterDefinition(chapterId, out var chapter))
-        {
-            return new List<string>();
-        }
-
-        return chapter.SiteIds
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Select(id =>
-            {
-                var hasDefinition = _combatContentLookup.TryGetExpeditionSiteDefinition(id, out var site);
-                return new
-                {
-                    Id = id,
-                    Order = hasDefinition ? site.SiteOrder : int.MaxValue,
-                };
-            })
-            .OrderBy(entry => entry.Order)
-            .ThenBy(entry => entry.Id, StringComparer.Ordinal)
-            .Select(entry => entry.Id)
-            .ToList();
+        return new List<string>();
     }
 
     private void FinalizeRewardSettlement()
@@ -1044,7 +1021,7 @@ public sealed partial class GameSessionState
 
     private void EnsureCampaignSelection()
     {
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
         {
             return;
         }
@@ -1073,7 +1050,7 @@ public sealed partial class GameSessionState
     private bool TryBuildAuthoredExpeditionNodes(out IReadOnlyList<ExpeditionNodeViewModel> nodes)
     {
         nodes = Array.Empty<ExpeditionNodeViewModel>();
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
         {
             return false;
         }
@@ -1189,7 +1166,7 @@ public sealed partial class GameSessionState
     private bool TryBuildRewardChoicesFromAuthoredSource(out IReadOnlyList<RewardChoiceViewModel> choices)
     {
         choices = Array.Empty<RewardChoiceViewModel>();
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             || snapshot.RewardSources is not { } rewardSources)
         {
             return false;
@@ -1241,7 +1218,7 @@ public sealed partial class GameSessionState
     {
         if (ActiveRun == null
             || string.IsNullOrWhiteSpace(ActiveRun.Overlay.RewardSourceId)
-            || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+            || !_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
         {
             return false;
         }
@@ -1388,7 +1365,7 @@ public sealed partial class GameSessionState
     private string ResolveRewardSourceKind(string? sourceId, bool isSettlementChoice = false)
     {
         if (string.IsNullOrWhiteSpace(sourceId)
-            || !_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+            || !_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             || snapshot.RewardSources is not { } rewardSources
             || !rewardSources.TryGetValue(sourceId, out var source))
         {
@@ -1419,7 +1396,7 @@ public sealed partial class GameSessionState
         clearedSiteIds.Add(Profile.CampaignProgress.SelectedSiteId);
         Profile.CampaignProgress.ClearedSiteIds = clearedSiteIds.OrderBy(id => id, StringComparer.Ordinal).ToList();
 
-        if (!_combatContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
             || snapshot.CampaignChapters is not { } chapters)
         {
             return;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Meta;
 using SM.Meta.Model;
 
 namespace SM.Unity;
@@ -12,27 +13,12 @@ namespace SM.Unity;
 /// editor recovery fallback은 명시적으로 opt-in한 진단 경로에서만 허용한다.
 /// 테스트에서는 FakeCombatContentLookup으로 교체하여 Unity asset-pipeline 호출을 피한다.
 /// </summary>
-public interface ICombatContentLookup
+public interface ICombatContentLookup : ISessionContentLookup
 {
-    // ── Snapshot ──
-
-    CombatContentSnapshot Snapshot { get; }
     IReadOnlyDictionary<string, UnitArchetypeDefinition> ArchetypeDefinitions { get; }
-    bool TryGetCombatSnapshot(out CombatContentSnapshot snapshot, out string error);
-
-    // ── Canonical ID lists ──
-
-    IReadOnlyList<string> GetCanonicalArchetypeIds();
-    IReadOnlyList<string> GetCanonicalItemIds();
-    IReadOnlyList<string> GetCanonicalAffixIds();
-    IReadOnlyList<string> GetCanonicalTemporaryAugmentIds();
-    IReadOnlyList<string> GetCanonicalPermanentAugmentIds();
-    IReadOnlyList<string> GetCanonicalPassiveBoardIds();
-    IReadOnlyList<string> GetCanonicalSynergyFamilyIds();
 
     // ── Single-definition lookup ──
 
-    FirstPlayableSliceDefinition? GetFirstPlayableSlice();
     bool TryGetArchetype(string archetypeId, out UnitArchetypeDefinition archetype);
     bool TryGetItemDefinition(string itemId, out ItemBaseDefinition item);
     bool TryGetRaceDefinition(string raceId, out RaceDefinition race);
@@ -53,18 +39,8 @@ public interface ICombatContentLookup
     // ── Trait ──
 
     bool TryGetTraitEntry(string archetypeId, string traitId, out TraitEntry trait);
-    bool TryGetTraitIds(string archetypeId, out IReadOnlyList<string> positiveTraitIds, out IReadOnlyList<string> negativeTraitIds);
 
     // ── Ordered collections ──
 
     IReadOnlyList<CampaignChapterDefinition> GetOrderedCampaignChapters();
-
-    // ── Normalization ──
-
-    string NormalizeArchetypeId(string archetypeId, string raceId, string classId, int fallbackIndex);
-    string NormalizePositiveTraitId(string archetypeId, string traitId, int fallbackIndex);
-    string NormalizeNegativeTraitId(string archetypeId, string traitId, int fallbackIndex);
-    string NormalizeItemBaseId(string itemBaseId, int fallbackIndex);
-    string NormalizeAffixId(string affixId, int fallbackIndex);
-    string NormalizeTemporaryAugmentId(string augmentId, int fallbackIndex);
 }
