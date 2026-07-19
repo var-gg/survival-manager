@@ -39,7 +39,15 @@ if (args.Length >= 1 && string.Equals(args[0], "campaign-battle", StringComparis
     return CampaignCellBattleRunner.Run(FindRepositoryRoot(), unityReportPath, outputPath);
 }
 
-Console.Error.WriteLine("Usage: HeadlessSweep [snapshot-load | campaign-battle [--unity <report>] [--output <path>]]");
+if (args.Length >= 1 && string.Equals(args[0], "campaign-sweep", StringComparison.Ordinal))
+{
+    return HeadlessCampaignSweepRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
+}
+
+Console.Error.WriteLine(
+    "Usage: HeadlessSweep [snapshot-load | campaign-battle [--unity <report>] [--output <path>] "
+    + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] "
+    + "[--output <path>] [--verify]]");
 return 2;
 
 static int RunDeterminismGate()

@@ -16,10 +16,22 @@
              Link="SM.Core/%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="../../Assets/_Game/Scripts/Runtime/Combat/**/*.cs"
              Link="SM.Combat/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../Assets/_Game/Scripts/Runtime/HeadlessPolicies/**/*.cs"
+             Link="SM.HeadlessPolicies/%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="../../Assets/_Game/Scripts/Runtime/Meta/**/*.cs"
              Exclude="../../Assets/_Game/Scripts/Runtime/Meta/Serialization/**/*.cs"
              Link="SM.Meta/%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="../../Assets/_Game/Scripts/Runtime/Meta/Serialization/**/*.cs"
              Link="SM.Meta.Serialization/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignBalanceSweepConfig.cs"
+             Link="SM.Editor.Validation/CampaignBalanceSweepConfig.cs" />
+    <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignBossAnswerTagEvaluator.cs"
+             Link="SM.Editor.Validation/CampaignBossAnswerTagEvaluator.cs" />
+    <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignBalanceGridProjector.cs"
+             Link="SM.Editor.Validation/CampaignBalanceGridProjector.cs" />
+    <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignTwoArmSweepEvaluator.cs"
+             Link="SM.Editor.Validation/CampaignTwoArmSweepEvaluator.cs" />
+    <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignTwoArmSweepReport.cs"
+             Link="SM.Editor.Validation/CampaignTwoArmSweepReport.cs" />
   </ItemGroup>
 </Project>
