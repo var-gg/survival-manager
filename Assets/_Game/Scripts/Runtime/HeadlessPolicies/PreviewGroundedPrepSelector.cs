@@ -79,9 +79,12 @@ internal static class PreviewGroundedPrepSelector
 
                 var targetMatches = placements.Count(value => targetByHero.TryGetValue(value.HeroId, out var anchor) && anchor == value.Anchor);
                 var coveredThreats = connections.Select(value => value.ThreatTag).Distinct(StringComparer.Ordinal).Count();
+                var targetMatchValue = target.RuleId == PreviewGroundedFormationSelector.BacklineDiveScreenRule
+                    ? 24d
+                    : 6d;
                 var visibleValue = HeadlessPolicyScoring.EvaluateDeployment(observation, heroes, placements)
                                    + (coveredThreats * 24d)
-                                   + (targetMatches * 6d);
+                                   + (targetMatches * targetMatchValue);
                 var candidate = new Candidate(
                     placements.OrderBy(value => value.Anchor).ToArray(),
                     visibleValue,

@@ -152,6 +152,34 @@ public static class CampaignBalanceSweepRunner
     public static CampaignTwoArmSweepReport RunTwoArm(CampaignBalanceSweepConfig config)
         => CampaignTwoArmSweepRunner.Run(config);
 
+    /// <summary>배치 CLI 진입점: Wolfpine 보스까지의 균등 표본 two-arm 학습 곡선 probe.</summary>
+    public static void RunWolfpineBossLearningProbeFromCli()
+    {
+        try
+        {
+            const int canonicalCellCount = 480;
+            var requestedCellCount = Environment.GetEnvironmentVariable("SM_CAMPAIGN_BOSS_PROBE_CELLS");
+            var cellCount = int.TryParse(requestedCellCount, out var parsedCellCount)
+                ? Math.Clamp(parsedCellCount, 1, canonicalCellCount)
+                : canonicalCellCount;
+            var result = CampaignTwoArmSweepRunner.RunBossLearningProbe(
+                "site_wolfpine_trail_boss_1",
+                cellCount);
+            Debug.Log(
+                $"[CampaignSweep] Wolfpine boss probe cellsPerArm={cellCount} naive={result.Naive.WinRate:0.0000} "
+                + $"informed={result.Informed.WinRate:0.0000} gap={result.Gap:0.0000} "
+                + $"answerGivenNaiveWin={result.Naive.AnswerTagGivenWinRate?.ToString("0.0000") ?? "undefined"} "
+                + $"answerGivenInformedWin={result.Informed.AnswerTagGivenWinRate?.ToString("0.0000") ?? "undefined"} "
+                + $"bySquad={string.Join(";", result.ByReferenceSquad.Select(value => $"{value.SquadId}:{value.Naive.WinRate:0.0000}->{value.Informed.WinRate:0.0000}"))}");
+            EditorApplication.Exit(0);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+            EditorApplication.Exit(1);
+        }
+    }
+
     /// <summary>배치 CLI 진입점: Phase B canonical 480-cell two-arm baseline.</summary>
     public static void RunTwoArmBaselineFromCli()
     {

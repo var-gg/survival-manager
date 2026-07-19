@@ -22,6 +22,17 @@ public sealed class CampaignTwoArmSweepEvaluatorTests
         Assert.That(config.BuildGrid(), Has.Count.EqualTo(480));
         Assert.That(config.Guardrails.BossGapMinimum, Is.EqualTo(.30).Within(.0001));
         Assert.That(config.Guardrails.AuthoredDecisionOpportunityRatioMinimum, Is.EqualTo(1.50).Within(.0001));
+        var learning = config.BossLearningSpecs.Single();
+        Assert.That(learning.EncounterId, Is.EqualTo("site_wolfpine_trail_boss_1"));
+        Assert.That(learning.AnswerTags, Is.EquivalentTo(new[]
+        {
+            CampaignBossAnswerTag.BacklineGuardAnchor,
+            CampaignBossAnswerTag.DurableBackCornerBait,
+            CampaignBossAnswerTag.MarkFocusBurst,
+        }));
+        Assert.That(learning.PatternTaxPI, Is.InRange(12, 18));
+        Assert.That(learning.LessonRetryClearRates, Is.EqualTo(new[] { .70, .80 }));
+        Assert.That(learning.BossGapMin, Is.EqualTo(.30).Within(.0001));
     }
 
     [Test]
@@ -38,6 +49,7 @@ public sealed class CampaignTwoArmSweepEvaluatorTests
         Assert.That(report.Naive.WinRate, Is.EqualTo(.30).Within(.0001));
         Assert.That(report.Informed.WinRate, Is.EqualTo(.80).Within(.0001));
         Assert.That(report.Gap, Is.EqualTo(.50).Within(.0001));
+        Assert.That(report.Target.ArmGapBand.Minimum, Is.EqualTo(.30).Within(.0001));
         Assert.That(report.NaiveBandPass, Is.True);
         Assert.That(report.InfoBandPass, Is.True);
         Assert.That(report.GapBandPass, Is.True);
@@ -63,6 +75,7 @@ public sealed class CampaignTwoArmSweepEvaluatorTests
     private static CampaignBalanceSweepConfig FixtureConfig()
         => CampaignBalanceSweepConfig.Default with
         {
+            Guardrails = CampaignBalanceSweepConfig.Default.Guardrails with { BossGapMinimum = .60 },
             MinimumEffectiveSamplesPerArmPerNode = 10,
             MaximumWilsonHalfWidth = .30,
         };

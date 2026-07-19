@@ -17,19 +17,31 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_wolfpine_trail.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_pack_hunt
-  SignatureUtilityTag: boss_utility_ambush_call
+  SignatureAuraTag: boss_aura_sustain_guard
+  SignatureUtilityTag: boss_utility_backline_dive
   RewardDropTags:
   - boss
   - boss_overlay_wolfpine_trail
   - site_wolfpine_trail
-  - boss_aura_pack_hunt
-  - boss_utility_ambush_call
+  - boss_aura_sustain_guard
+  - boss_utility_backline_dive
   AppliedStatuses:
-  - Id: boss_overlay_wolfpine_trail_marked
-    StatusId: marked
+  - Id: boss_overlay_wolfpine_trail_guarded
+    StatusId: guarded
     DurationSeconds: 999
     Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
+  - Id: boss_overlay_wolfpine_trail_opening_barrier
+    StatusId: barrier
+    DurationSeconds: 0
+    Magnitude: 35
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

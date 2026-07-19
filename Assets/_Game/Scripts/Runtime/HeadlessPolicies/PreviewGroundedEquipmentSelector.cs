@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
 
 namespace SM.HeadlessPolicies;
 
@@ -40,6 +41,17 @@ internal static class PreviewGroundedEquipmentSelector
             || placements.Count == 0)
         {
             return PreviewGroundedEquipmentSelection.None;
+        }
+
+        var profile = EnemyThreatProfileParser.Parse(
+            EnemyThreatObservation.FromVisiblePreview(observation.EnemyPreview));
+        if (profile.Tags.Contains(EnemyThreatTag.BacklineDive, StringComparer.Ordinal))
+        {
+            var bait = SelectBacklineDiveBait(observation, placements);
+            if (bait != null)
+            {
+                return bait;
+            }
         }
 
         var enemyItems = observation.EnemyPreview.Units
@@ -108,6 +120,53 @@ internal static class PreviewGroundedEquipmentSelector
                 $"wall={wallStat};counter={penetrationStat};item={best.Item.Mechanics.ItemInstanceId};target={best.Target.HeroId}");
     }
 
+    private static PreviewGroundedEquipmentSelection SelectBacklineDiveBait(
+        HeadlessPolicyObservation observation,
+        IReadOnlyList<HeadlessPlacement> placements)
+    {
+        var rosterById = observation.Roster.ToDictionary(value => value.HeroId, StringComparer.Ordinal);
+        var bait = placements
+            .Where(value => value.Anchor is DeploymentAnchorId.BackTop or DeploymentAnchorId.BackBottom)
+            .Where(value => rosterById.TryGetValue(value.HeroId, out var hero)
+                            && hero.ClassId is "ranger" or "mystic")
+            .Select(value => rosterById[value.HeroId])
+            .OrderBy(value => DefensiveMagnitude(value.EquippedItems) > 0d ? 1 : 0)
+            .ThenBy(value => string.Equals(value.ClassId, "mystic", StringComparison.Ordinal) ? 0 : 1)
+            .ThenBy(value => value.MaxHp)
+            .ThenBy(value => value.HeroId, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (bait == null || DefensiveMagnitude(bait.EquippedItems) > 0d)
+        {
+            return null;
+        }
+
+        var item = observation.OwnedItems
+            .Where(value => !string.Equals(value.EquippedHeroId, bait.HeroId, StringComparison.Ordinal))
+            .Where(value => CanUseWeaponFamily(bait, value.Mechanics.WeaponFamilyTag))
+            .Where(value => CanUseClassTag(bait, value.Mechanics.Tags))
+            .Select(value => (Item: value, Defense: DefensiveMagnitude(new[] { value.Mechanics })))
+            .Where(value => value.Defense > 0d)
+            .OrderByDescending(value => value.Defense)
+            .ThenBy(value => value.Item.Mechanics.ItemInstanceId, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (item.Item == null)
+        {
+            return null;
+        }
+
+        return new PreviewGroundedEquipmentSelection(
+            new[] { new HeadlessEquipmentAssignment(item.Item.Mechanics.ItemInstanceId, bait.HeroId) },
+            item.Defense,
+            $"threat=backline_dive;counter=durable_bait;item={item.Item.Mechanics.ItemInstanceId};target={bait.HeroId}");
+    }
+
+    private static double DefensiveMagnitude(IEnumerable<HeadlessItemMechanicsObservation> items)
+        => items.Sum(item =>
+            ModifierMagnitude(item, "max_health")
+            + (ModifierMagnitude(item, "armor") * 4d)
+            + (ModifierMagnitude(item, "resist") * 4d)
+            + (ModifierMagnitude(item, "barrier_power") * 2d));
+
     private static double ModifierMagnitude(HeadlessItemMechanicsObservation item, string statId)
         => item.StatModifiers
                .Concat(item.Affixes.SelectMany(value => value.StatModifiers))
@@ -143,6 +202,20 @@ internal static class PreviewGroundedEquipmentSelector
                    weaponFamily,
                    StringComparison.Ordinal)),
            };
+
+    private static bool CanUseClassTag(
+        HeadlessHeroObservation hero,
+        IEnumerable<string> itemTags)
+    {
+        var classTags = (itemTags ?? Array.Empty<string>())
+            .Where(IsCombatClassTag)
+            .ToArray();
+        return classTags.Length == 0
+               || classTags.Contains(hero.ClassId, StringComparer.Ordinal);
+    }
+
+    private static bool IsCombatClassTag(string tag)
+        => tag is "vanguard" or "duelist" or "ranger" or "mystic";
 
     private sealed class Choice
     {

@@ -18,6 +18,7 @@ public sealed record CampaignBalanceSweepConfig(
     IReadOnlyList<CampaignRosterCoverageSpec> RosterCoverageVariants,
     IReadOnlyList<CampaignNonBossBandSpec> NonBossBands,
     IReadOnlyList<CampaignBossBandSpec> BossBands,
+    IReadOnlyList<CampaignBossLearningSpec> BossLearningSpecs,
     CampaignBalanceGuardrails Guardrails,
     int MinimumEffectiveSamplesPerArmPerNode,
     double MaximumWilsonHalfWidth,
@@ -96,6 +97,40 @@ public sealed record CampaignBalanceSweepConfig(
         {
             _ = HeadlessPolicyFactory.NormalizePolicyId(arm.PolicyId);
         }
+
+        if (BossLearningSpecs.Select(spec => spec.EncounterId)
+                .Distinct(StringComparer.Ordinal).Count() != BossLearningSpecs.Count)
+        {
+            throw new InvalidOperationException("Boss learning specs require unique encounter ids.");
+        }
+
+        foreach (var spec in BossLearningSpecs)
+        {
+            if (string.IsNullOrWhiteSpace(spec.EncounterId)
+                || spec.AnswerTags.Count == 0
+                || spec.AnswerTags.Any(string.IsNullOrWhiteSpace)
+                || spec.AnswerTags.Distinct(StringComparer.Ordinal).Count() != spec.AnswerTags.Count)
+            {
+                throw new InvalidOperationException($"Boss learning spec '{spec.EncounterId}' requires distinct non-empty answer tags.");
+            }
+
+            if (spec.PatternTaxPI is < 12 or > 18)
+            {
+                throw new InvalidOperationException($"Boss learning spec '{spec.EncounterId}' pattern tax must be 12-18 PI.");
+            }
+
+            if (spec.LessonRetryClearRates.Count != 2
+                || spec.LessonRetryClearRates.Any(rate => rate is < 0 or > 1)
+                || spec.LessonRetryClearRates[1] < spec.LessonRetryClearRates[0])
+            {
+                throw new InvalidOperationException($"Boss learning spec '{spec.EncounterId}' requires two ordered retry clear rates in [0,1].");
+            }
+
+            if (spec.BossGapMin is < 0 or > 1)
+            {
+                throw new InvalidOperationException($"Boss learning spec '{spec.EncounterId}' boss gap minimum must be in [0,1].");
+            }
+        }
     }
 
     public CampaignNonBossBandSpec NonBossBand(int chapterOrder)
@@ -103,6 +138,9 @@ public sealed record CampaignBalanceSweepConfig(
 
     public CampaignBossBandSpec BossBand(int chapterOrder, int siteOrder)
         => BossBands.Single(band => band.ChapterOrder == chapterOrder && band.SiteOrder == siteOrder);
+
+    public CampaignBossLearningSpec? FindBossLearningSpec(string encounterId)
+        => BossLearningSpecs.FirstOrDefault(spec => string.Equals(spec.EncounterId, encounterId, StringComparison.Ordinal));
 
     private static CampaignBalanceSweepConfig CreateDefault()
     {
@@ -190,6 +228,21 @@ public sealed record CampaignBalanceSweepConfig(
             Boss(5, 2, Band(.15, .30, .22), Band(.50, .70, .60), .38),
         };
 
+        var bossLearning = new[]
+        {
+            new CampaignBossLearningSpec(
+                "site_wolfpine_trail_boss_1",
+                new[]
+                {
+                    CampaignBossAnswerTag.BacklineGuardAnchor,
+                    CampaignBossAnswerTag.DurableBackCornerBait,
+                    CampaignBossAnswerTag.MarkFocusBurst,
+                },
+                PatternTaxPI: 15,
+                LessonRetryClearRates: new[] { .70, .80 },
+                BossGapMin: .30),
+        };
+
         var guardrails = new CampaignBalanceGuardrails(
             BossGapMinimum: .30,
             NaiveBossAnswerTagConditionalMinimum: .85,
@@ -239,6 +292,7 @@ public sealed record CampaignBalanceSweepConfig(
             coverage,
             nonBoss,
             bosses,
+            bossLearning,
             guardrails,
             MinimumEffectiveSamplesPerArmPerNode: 480,
             MaximumWilsonHalfWidth: .045,
@@ -324,6 +378,13 @@ public sealed record CampaignBossBandSpec(
     ProbabilityBand NaiveWinBand,
     ProbabilityBand InfoWinBand,
     double InitialCenterGap);
+
+public sealed record CampaignBossLearningSpec(
+    string EncounterId,
+    IReadOnlyList<string> AnswerTags,
+    int PatternTaxPI,
+    IReadOnlyList<double> LessonRetryClearRates,
+    double BossGapMin);
 
 public sealed record CampaignBalanceGuardrails(
     double BossGapMinimum,

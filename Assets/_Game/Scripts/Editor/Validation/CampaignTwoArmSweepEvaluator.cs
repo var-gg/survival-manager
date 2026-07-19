@@ -511,11 +511,12 @@ public static class CampaignTwoArmBandEvaluator
         if (aggregate.IsBoss)
         {
             var boss = config.BossBand(aggregate.ChapterOrder, aggregate.SiteOrder);
+            var learning = config.FindBossLearningSpec(aggregate.EncounterId);
             return new CampaignNodeBandTarget(
                 "boss",
                 boss.NaiveWinBand,
                 boss.InfoWinBand,
-                new ProbabilityRange(config.Guardrails.BossGapMinimum, 1),
+                new ProbabilityRange(learning?.BossGapMin ?? config.Guardrails.BossGapMinimum, 1),
                 NaiveBossCliffExemptWhenGapPasses: true,
                 config.Guardrails.NaiveBossAnswerTagConditionalMinimum);
         }

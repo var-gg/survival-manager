@@ -7,6 +7,7 @@ namespace SM.HeadlessPolicies;
 
 public static class EnemyThreatTag
 {
+    public const string BacklineDive = "backline_dive";
     public const string BacklineFirepower = "backline_firepower";
     public const string SustainEngine = "sustain_engine";
     public const string FrontlineWall = "frontline_wall";
@@ -135,6 +136,16 @@ public static class EnemyThreatProfileParser
         if (backline.Length >= 2)
         {
             findings.Add(Finding(EnemyThreatTag.BacklineFirepower, backline));
+        }
+
+        var divers = observation.Units.Where(unit => ContainsAny(unit.ClassTag, "duelist")).ToArray();
+        if (divers.Length > 0
+            && string.Equals(
+                observation.BossUtilityTag,
+                "boss_utility_backline_dive",
+                StringComparison.Ordinal))
+        {
+            findings.Add(Finding(EnemyThreatTag.BacklineDive, divers));
         }
 
         var sustain = observation.Units.Where(IsSustainSource).ToArray();

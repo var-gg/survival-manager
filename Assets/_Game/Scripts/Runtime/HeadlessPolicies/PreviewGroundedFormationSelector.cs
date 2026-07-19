@@ -27,6 +27,7 @@ internal static class PreviewGroundedFormationSelector
     public const string CenterBreakRule = "center_break_crossfire";
     public const string DurableMultiEntryRule = "durable_multi_entry_rotation";
     public const string StablePriorityScreenRule = "stable_priority_screen";
+    public const string BacklineDiveScreenRule = "backline_dive_screen";
 
     public static PreviewGroundedFormationSelection Select(
         EnemyThreatProfile profile,
@@ -37,6 +38,16 @@ internal static class PreviewGroundedFormationSelector
         var fallback = new PreviewGroundedFormationSelection(
             HeadlessPolicyScoring.PlaceFormation(heroes, anchors),
             StandardRule);
+        if (profile.Tags.Contains(EnemyThreatTag.BacklineDive, StringComparer.Ordinal)
+            && HasAllAnchors(anchors))
+        {
+            var diveScreen = BacklineDiveScreen(heroes, connections);
+            if (diveScreen != null)
+            {
+                return diveScreen;
+            }
+        }
+
         if (HasSustainBackline(profile)
             && HasAllAnchors(anchors)
             && heroes.Count(HeadlessPolicyScoring.PrefersFront) <= 3
@@ -148,6 +159,60 @@ internal static class PreviewGroundedFormationSelector
             .OrderBy(value => value.Anchor)
             .ToArray();
         return new PreviewGroundedFormationSelection(placements, StablePriorityScreenRule);
+    }
+
+    private static PreviewGroundedFormationSelection? BacklineDiveScreen(
+        IReadOnlyList<HeadlessHeroObservation> heroes,
+        IReadOnlyList<PreviewCounterConnection> connections)
+    {
+        var byId = heroes.ToDictionary(value => value.HeroId, StringComparer.Ordinal);
+        var guard = ConnectedHeroes(connections, PreviewCounterCapability.Protection)
+            .Where(byId.ContainsKey)
+            .Select(id => byId[id])
+            .Where(HeadlessPolicyScoring.PrefersFront)
+            .OrderBy(value => string.Equals(value.ClassId, "vanguard", StringComparison.Ordinal) ? 0 : 1)
+            .ThenByDescending(value => value.MaxHp)
+            .ThenBy(value => value.HeroId, StringComparer.Ordinal)
+            .FirstOrDefault();
+        var protectedHero = heroes
+            .Where(value => guard == null || value.HeroId != guard.HeroId)
+            .Where(value => value.ClassId is "ranger" or "mystic")
+            .OrderBy(value => value.PreferredAnchor is DeploymentAnchorId.BackTop or DeploymentAnchorId.BackBottom ? 0 : 1)
+            .ThenBy(value => string.Equals(value.ClassId, "mystic", StringComparison.Ordinal) ? 0 : 1)
+            .ThenBy(value => HealthRatio(value))
+            .ThenBy(value => value.HeroId, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (guard == null || protectedHero == null)
+        {
+            return null;
+        }
+
+        var protectedAnchor = protectedHero.PreferredAnchor is DeploymentAnchorId.BackTop or DeploymentAnchorId.BackBottom
+            ? protectedHero.PreferredAnchor
+            : DeploymentAnchorId.BackTop;
+        var guardAnchor = protectedAnchor == DeploymentAnchorId.BackBottom
+            ? DeploymentAnchorId.FrontBottom
+            : DeploymentAnchorId.FrontTop;
+        var placements = new List<HeadlessPlacement>
+        {
+            new(guardAnchor, guard.HeroId),
+            new(protectedAnchor, protectedHero.HeroId),
+        };
+        var reserved = new HashSet<string>(new[] { guard.HeroId, protectedHero.HeroId }, StringComparer.Ordinal);
+        var remainingHeroes = heroes.Where(value => !reserved.Contains(value.HeroId)).ToArray();
+        var remainingAnchors = new[]
+        {
+            DeploymentAnchorId.FrontTop,
+            DeploymentAnchorId.FrontCenter,
+            DeploymentAnchorId.FrontBottom,
+            DeploymentAnchorId.BackTop,
+            DeploymentAnchorId.BackCenter,
+            DeploymentAnchorId.BackBottom,
+        }.Where(value => value != protectedAnchor && value != guardAnchor).ToArray();
+        placements.AddRange(HeadlessPolicyScoring.PlaceFormation(remainingHeroes, remainingAnchors));
+        return new PreviewGroundedFormationSelection(
+            placements.OrderBy(value => value.Anchor).ToArray(),
+            BacklineDiveScreenRule);
     }
 
     private static IEnumerable<string> ConnectedHeroes(

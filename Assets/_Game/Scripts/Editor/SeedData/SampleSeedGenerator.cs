@@ -3811,7 +3811,18 @@ public static class SampleSeedGenerator
             CreateEnemySquad($"{site.SiteId}_skirmish_1_squad", site.FactionId, site.SkirmishA, TeamPostureTypeValue.StandardAdvance, ThreatTierValue.Tier1, 1);
             CreateEnemySquad($"{site.SiteId}_skirmish_2_squad", site.FactionId, site.SkirmishB, TeamPostureTypeValue.StandardAdvance, ThreatTierValue.Tier1, 1);
             CreateEnemySquad($"{site.SiteId}_elite_1_squad", site.FactionId, site.Elite, TeamPostureTypeValue.CollapseWeakSide, ThreatTierValue.Tier2, 2);
-            CreateBossSquad($"{site.SiteId}_boss_1_squad", site.FactionId, site.BossCaptain, site.BossEscorts, ThreatTierValue.Tier3, 3);
+            CreateBossSquad(
+                $"{site.SiteId}_boss_1_squad",
+                site.FactionId,
+                site.BossCaptain,
+                site.BossEscorts,
+                site.BossPosture,
+                site.BossCaptainAnchor,
+                site.BossEscortOneAnchor,
+                site.BossEscortTwoAnchor,
+                site.BossEscortThreeAnchor,
+                ThreatTierValue.Tier3,
+                3);
 
             CreateEncounter($"{site.SiteId}_skirmish_1", site.SiteId, site.FactionId, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_1_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[0], site.AnswerLaneId);
             CreateEncounter($"{site.SiteId}_skirmish_2", site.SiteId, site.FactionId, EncounterKindValue.Skirmish, $"{site.SiteId}_skirmish_2_squad", string.Empty, "reward_source_skirmish", ThreatTierValue.Tier1, 1, 1, "chapter_entry", site.EncounterFamilyIds[1], site.AnswerLaneId);
@@ -3845,9 +3856,47 @@ public static class SampleSeedGenerator
                 // sweep 2회전 조정(GPT 결정): skirmish_2 적 전체 화력 ×0.92 — 1챕 노드 하한(0.90) 복구.
                 Members(Member("rift_stalker", "extra_wolfpine_outrider", "rift_stalker_encounter_pack_fatigue"), Member("raider", "hero_ember_runner", "raider_encounter_pack_fatigue"), Member("scout", "extra_grey_fang_vanguard", "scout_encounter_pack_fatigue"), Member("hunter", "extra_wolfpine_ember_runner_cell", "hunter_encounter_pack_fatigue")),
                 Members(Member("reaver", "npc_grey_fang"), Member("raider", "extra_grey_fang_vanguard"), Member("scout", "hero_ember_runner"), Member("shaman", "extra_wolfpine_outrider")),
-                Member("reaver", "npc_grey_fang"),
-                Members(Member("rift_stalker", "extra_wolfpine_outrider"), Member("shaman", "extra_grey_fang_vanguard")),
-                "boss_overlay_wolfpine_trail", "boss_aura_pack_hunt", "boss_utility_ambush_call", "marked"),
+                Member(
+                    "warden",
+                    "npc_grey_fang",
+                    positiveTraitId: "warden_positive_sturdy",
+                    equipmentBudget: 3f,
+                    equipmentItemBaseId: "item_bulwark_armor",
+                    equipmentAffixIds: new[] { "affix_packborn" }),
+                Members(
+                    Member(
+                        "reaver",
+                        "extra_wolfpine_outrider",
+                        positiveTraitId: "reaver_positive_brave",
+                        equipmentBudget: 3f,
+                        equipmentItemBaseId: "item_reaver_blade",
+                        equipmentAffixIds: new[]
+                        {
+                            "affix_hasty",
+                            "affix_sharp",
+                            "affix_piercing",
+                            "affix_precise",
+                        }),
+                    Member(
+                        "reaver",
+                        "extra_wolfpine_ember_runner_cell",
+                        positiveTraitId: "reaver_positive_brave",
+                        equipmentBudget: 3f,
+                        equipmentItemBaseId: "item_reaver_blade",
+                        equipmentAffixIds: new[] { "affix_fierce" }),
+                    Member(
+                        "shaman",
+                        "extra_grey_fang_vanguard",
+                        positiveTraitId: "shaman_positive_swift",
+                        equipmentBudget: 3f,
+                        equipmentItemBaseId: "item_priest_focus",
+                        equipmentAffixIds: new[] { "affix_mender" })),
+                "boss_overlay_wolfpine_trail", "boss_aura_sustain_guard", "boss_utility_backline_dive", "guarded",
+                BossPosture: TeamPostureTypeValue.AllInBackline,
+                BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
+                BossEscortTwoAnchor: DeploymentAnchorValue.FrontBottom,
+                BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
+                BossOpeningBarrier: 35f),
             new CampaignSiteSeed(
                 "chapter_sunken_bastion", 2, "Sunken Bastion", "가라앉은 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
                 "site_sunken_bastion", 1, "Sunken Bastion", "가라앉은 보루", "Shielded adjudicators protect a submerged reliquary.", "방패 든 심판관들이 잠긴 성물고를 지킨다.",
@@ -3944,9 +3993,23 @@ public static class SampleSeedGenerator
         };
     }
 
-    private static EnemyMemberSeed Member(string archetypeId, string characterId = "", string negativeTraitId = "")
+    private static EnemyMemberSeed Member(
+        string archetypeId,
+        string characterId = "",
+        string negativeTraitId = "",
+        string positiveTraitId = "",
+        float equipmentBudget = 0f,
+        string equipmentItemBaseId = "",
+        IReadOnlyList<string>? equipmentAffixIds = null)
     {
-        return new EnemyMemberSeed(archetypeId, characterId, negativeTraitId);
+        return new EnemyMemberSeed(
+            archetypeId,
+            characterId,
+            negativeTraitId,
+            positiveTraitId,
+            equipmentBudget,
+            equipmentItemBaseId,
+            equipmentAffixIds ?? Array.Empty<string>());
     }
 
     private static IReadOnlyList<EnemyMemberSeed> Members(params EnemyMemberSeed[] members)
@@ -4128,9 +4191,22 @@ public static class SampleSeedGenerator
         string OverlayId,
         string OverlayAuraTag,
         string OverlayUtilityTag,
-        string OverlayStatusId);
+        string OverlayStatusId,
+        TeamPostureTypeValue BossPosture = TeamPostureTypeValue.ProtectCarry,
+        DeploymentAnchorValue BossCaptainAnchor = DeploymentAnchorValue.FrontCenter,
+        DeploymentAnchorValue BossEscortOneAnchor = DeploymentAnchorValue.BackTop,
+        DeploymentAnchorValue BossEscortTwoAnchor = DeploymentAnchorValue.BackBottom,
+        DeploymentAnchorValue BossEscortThreeAnchor = DeploymentAnchorValue.FrontBottom,
+        float BossOpeningBarrier = 0f);
 
-    private sealed record EnemyMemberSeed(string ArchetypeId, string CharacterId, string NegativeTraitId = "");
+    private sealed record EnemyMemberSeed(
+        string ArchetypeId,
+        string CharacterId,
+        string NegativeTraitId = "",
+        string PositiveTraitId = "",
+        float EquipmentBudget = 0f,
+        string EquipmentItemBaseId = "",
+        IReadOnlyList<string>? EquipmentAffixIds = null);
 
     private static void CreateRewardSource(string id, string enName, string koName, RewardSourceKindValue kind, string dropTableId, IReadOnlyList<RarityBracketValue> rarityBrackets)
     {
@@ -4200,7 +4276,18 @@ public static class SampleSeedGenerator
             asset.SignatureAuraTag = site.OverlayAuraTag;
             asset.SignatureUtilityTag = site.OverlayUtilityTag;
             asset.RewardDropTags = new List<string> { "boss", site.OverlayId, site.SiteId, site.OverlayAuraTag, site.OverlayUtilityTag };
-            asset.AppliedStatuses = new List<StatusApplicationRule> { MakeStatus($"{site.OverlayId}_{site.OverlayStatusId}", site.OverlayStatusId, 999f, 0f) };
+            asset.AppliedStatuses = new List<StatusApplicationRule>
+            {
+                MakeStatus($"{site.OverlayId}_{site.OverlayStatusId}", site.OverlayStatusId, 999f, 0f),
+            };
+            if (site.BossOpeningBarrier > 0f)
+            {
+                asset.AppliedStatuses.Add(MakeStatus(
+                    $"{site.OverlayId}_opening_barrier",
+                    "barrier",
+                    0f,
+                    site.BossOpeningBarrier));
+            }
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, $"{site.SiteNameKo} 우두머리 위상", $"{site.SiteName} Boss Overlay");
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.DescriptionKey, $"{site.AnswerLaneId} 전용 오라와 보상 태그", $"{site.AnswerLaneId} aura and reward tags");
         });
@@ -4231,10 +4318,13 @@ public static class SampleSeedGenerator
                     _ => DeploymentAnchorValue.BackBottom,
                 },
                 Role = EnemySquadMemberRoleValue.Unit,
-                PositiveTraitId = string.Empty,
                 // encounter-local 수치 노브 — 특정 인카운터의 특정 멤버만 스탯을 조정할 때 trait 채널을 쓴다
                 // (sweep 2회전 Q3: sunken elite 성가대 힐 완화). 아키타입/전역 수치 무접촉.
                 NegativeTraitId = member.NegativeTraitId,
+                PositiveTraitId = member.PositiveTraitId,
+                EquipmentBudget = member.EquipmentBudget,
+                EquipmentItemBaseId = member.EquipmentItemBaseId,
+                EquipmentAffixIds = (member.EquipmentAffixIds ?? Array.Empty<string>()).ToList(),
                 RuleModifierTags = new List<string>()
             }).ToList();
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, id, id);
@@ -4242,7 +4332,18 @@ public static class SampleSeedGenerator
         });
     }
 
-    private static void CreateBossSquad(string id, string factionId, EnemyMemberSeed captain, IReadOnlyList<EnemyMemberSeed> escorts, ThreatTierValue threatTier, int threatCost)
+    private static void CreateBossSquad(
+        string id,
+        string factionId,
+        EnemyMemberSeed captain,
+        IReadOnlyList<EnemyMemberSeed> escorts,
+        TeamPostureTypeValue posture,
+        DeploymentAnchorValue captainAnchor,
+        DeploymentAnchorValue escortOneAnchor,
+        DeploymentAnchorValue escortTwoAnchor,
+        DeploymentAnchorValue escortThreeAnchor,
+        ThreatTierValue threatTier,
+        int threatCost)
     {
         CreateAsset<EnemySquadTemplateDefinition>($"{ResourcesRoot}/EnemySquads/{id}.asset", asset =>
         {
@@ -4250,20 +4351,45 @@ public static class SampleSeedGenerator
             asset.NameKey = ContentLocalizationTables.BuildEnemySquadNameKey(id);
             asset.DescriptionKey = ContentLocalizationTables.BuildEnemySquadDescriptionKey(id);
             asset.FactionId = factionId;
-            asset.EnemyPosture = TeamPostureTypeValue.ProtectCarry;
+            asset.EnemyPosture = posture;
             asset.ThreatTier = threatTier;
             asset.ThreatCost = threatCost;
             asset.RewardDropTags = new List<string> { factionId, "boss" };
             asset.Members = new List<EnemySquadMemberDefinition>
             {
-                new() { Id = $"{id}_captain", ArchetypeId = captain.ArchetypeId, CharacterId = captain.CharacterId, Anchor = DeploymentAnchorValue.FrontCenter, Role = EnemySquadMemberRoleValue.Captain },
-                new() { Id = $"{id}_escort_1", ArchetypeId = escorts[0].ArchetypeId, CharacterId = escorts[0].CharacterId, Anchor = DeploymentAnchorValue.BackTop, Role = EnemySquadMemberRoleValue.Escort },
-                new() { Id = $"{id}_escort_2", ArchetypeId = escorts[1].ArchetypeId, CharacterId = escorts[1].CharacterId, Anchor = DeploymentAnchorValue.BackBottom, Role = EnemySquadMemberRoleValue.Escort },
+                CreateEnemyMemberDefinition($"{id}_captain", captain, captainAnchor, EnemySquadMemberRoleValue.Captain),
             };
+            var escortAnchors = new[] { escortOneAnchor, escortTwoAnchor, escortThreeAnchor };
+            asset.Members.AddRange(escorts.Select((escort, index) =>
+                CreateEnemyMemberDefinition(
+                    $"{id}_escort_{index + 1}",
+                    escort,
+                    escortAnchors[index],
+                    EnemySquadMemberRoleValue.Escort)));
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, $"{id} 우두머리 분대", $"{id} boss squad");
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.DescriptionKey, "우두머리 + 호위 구조", "Boss captain plus escorts");
         });
     }
+
+    private static EnemySquadMemberDefinition CreateEnemyMemberDefinition(
+        string id,
+        EnemyMemberSeed seed,
+        DeploymentAnchorValue anchor,
+        EnemySquadMemberRoleValue role)
+        => new()
+        {
+            Id = id,
+            ArchetypeId = seed.ArchetypeId,
+            CharacterId = seed.CharacterId,
+            Anchor = anchor,
+            Role = role,
+            PositiveTraitId = seed.PositiveTraitId,
+            NegativeTraitId = seed.NegativeTraitId,
+            EquipmentBudget = seed.EquipmentBudget,
+            EquipmentItemBaseId = seed.EquipmentItemBaseId,
+            EquipmentAffixIds = (seed.EquipmentAffixIds ?? Array.Empty<string>()).ToList(),
+            RuleModifierTags = new List<string>(),
+        };
 
     private static void CreateEncounter(string id, string siteId, string factionId, EncounterKindValue kind, string squadId, string overlayId, string rewardSourceId, ThreatTierValue threatTier, int threatCost, int threatSkulls, string difficultyBand, string encounterFamilyId, string answerLaneId)
     {

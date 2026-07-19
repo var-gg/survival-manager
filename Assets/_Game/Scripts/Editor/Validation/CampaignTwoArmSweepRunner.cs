@@ -16,6 +16,40 @@ namespace SM.Editor.Validation;
 /// </summary>
 internal static class CampaignTwoArmSweepRunner
 {
+    internal static CampaignTwoArmNodeReport RunBossLearningProbe(
+        string encounterId,
+        int maximumCells = 96)
+    {
+        var config = CampaignBalanceSweepConfig.Default;
+        config.Validate();
+        SM.Editor.SeedData.SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(CampaignTwoArmSweepRunner));
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
+        if (!lookup.TryGetCombatSnapshot(out var content, out var contentError))
+        {
+            throw new InvalidOperationException($"campaign boss learning probe content unavailable: {contentError}");
+        }
+
+        var itemIndex = CampaignBalanceSweepRunner.LoadItemMetaIndex();
+        var order = CampaignContentOrderIndex.Build(content);
+        var grid = config.BuildGrid();
+        var sampleCount = Math.Clamp(maximumCells, 1, grid.Count);
+        var sampledCells = Enumerable.Range(0, sampleCount)
+            .Select(index => grid[(int)Math.Floor(index * grid.Count / (double)sampleCount)])
+            .ToArray();
+        var accumulator = new CampaignTwoArmSweepAccumulator(config);
+        foreach (var arm in config.Arms)
+        {
+            foreach (var cell in sampledCells)
+            {
+                RunCell(lookup, itemIndex, order, config, arm, cell, accumulator, encounterId);
+            }
+        }
+
+        var aggregate = accumulator.BuildNodeAggregates()
+            .Single(node => string.Equals(node.EncounterId, encounterId, StringComparison.Ordinal));
+        return CampaignTwoArmBandEvaluator.EvaluateNode(config, aggregate);
+    }
+
     internal static CampaignPrepMechanismSummary RunPrepMechanismWitness(int maximumCells = 12)
     {
         var config = CampaignBalanceSweepConfig.Default;
@@ -86,7 +120,8 @@ internal static class CampaignTwoArmSweepRunner
         CampaignBalanceSweepConfig config,
         CampaignBalanceArmSpec arm,
         CampaignBalanceGridCell cell,
-        CampaignTwoArmSweepAccumulator accumulator)
+        CampaignTwoArmSweepAccumulator accumulator,
+        string stopAfterEncounterId = "")
     {
         // arm id를 hero/profile identity에 넣지 않는다. 두 팔의 unit-id tie break까지 paired 상태로 유지한다.
         var cellTag = CellTag(cell);
@@ -225,9 +260,15 @@ internal static class CampaignTwoArmSweepRunner
                     cell.Squad.SquadId,
                     identity,
                     won,
-                    HasBossAnswerTag(allySnapshot),
+                    CampaignBossAnswerTagEvaluator.HasAnswer(
+                        allySnapshot,
+                        config.FindBossLearningSpec(identity.EncounterId)),
                     FormationHash(session),
                     prepEquipmentAssignmentCount > 0);
+                if (string.Equals(identity.EncounterId, stopAfterEncounterId, StringComparison.Ordinal))
+                {
+                    return;
+                }
 
                 // 측정 outcome은 위 1회 deterministic cell 결과다. 캠페인 후속 노드 도달 상태만 기존
                 // retry-until-win 하네스와 같이 동일 build/formation의 첫 winning seed로 정산한다.
@@ -405,30 +446,6 @@ internal static class CampaignTwoArmSweepRunner
         var expedition = session.ExpeditionSquadHeroIds.OrderBy(id => id, StringComparer.Ordinal);
         return $"{string.Join("|", assignments)}||{string.Join(",", expedition)}";
     }
-
-    private static bool HasBossAnswerTag(BattleLoadoutSnapshot snapshot)
-    {
-        var allies = snapshot.Allies ?? Array.Empty<BattleUnitLoadout>();
-        var guardAnchor = allies.Any(unit =>
-            unit.PreferredAnchor.IsFrontRow()
-            && (string.Equals(unit.ClassId, "vanguard", StringComparison.Ordinal)
-                || ContainsToken(unit.RoleTag, "anchor")
-                || (unit.CompileTags ?? Array.Empty<string>()).Any(tag => ContainsToken(tag, "guard"))));
-        var baitedGap = allies.Count(unit => unit.PreferredAnchor.IsFrontRow()) >= 2
-                        && allies.All(unit => unit.PreferredAnchor != DeploymentAnchorId.FrontCenter);
-        var hasMark = allies.Any(unit =>
-            (unit.CompileTags ?? Array.Empty<string>()).Any(tag => ContainsToken(tag, "mark"))
-            || (unit.Skills ?? Array.Empty<BattleSkillSpec>()).Any(skill => ContainsToken(skill.Id, "mark")));
-        var hasBurst = allies.Any(unit =>
-            ContainsToken(unit.RoleTag, "carry")
-            || string.Equals(unit.ClassId, "duelist", StringComparison.Ordinal)
-            || string.Equals(unit.ClassId, "ranger", StringComparison.Ordinal));
-        return guardAnchor || baitedGap || (hasMark && hasBurst);
-    }
-
-    private static bool ContainsToken(string value, string token)
-        => !string.IsNullOrWhiteSpace(value)
-           && value.Contains(token, StringComparison.OrdinalIgnoreCase);
 
     private static bool IsElite(ResolvedEncounterContext encounter)
         => encounter.Context.EncounterId.Contains("_elite_", StringComparison.Ordinal)

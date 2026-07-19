@@ -62,16 +62,29 @@ public sealed class CampaignEncounterPrepTests
         {
             var encounter = snapshot.Encounters![encounterId];
             var squad = snapshot.EnemySquads![encounter.EnemySquadTemplateId];
-            var expectedHeadcount = encounter.Kind == EncounterKindValue.Boss ? 3 : 4;
+            var isWolfpineLearningBoss = string.Equals(
+                encounter.Id,
+                "site_wolfpine_trail_boss_1",
+                StringComparison.Ordinal);
+            var expectedHeadcount = encounter.Kind == EncounterKindValue.Boss
+                ? isWolfpineLearningBoss ? 4 : 3
+                : 4;
             Assert.That(squad.Members, Has.Count.EqualTo(expectedHeadcount), encounter.Id);
 
             var average = squad.Members.Average(value => value.EquipmentBudget);
             Assert.That(
                 average,
-                Is.EqualTo(expected[(chapter.StoryOrder, encounter.Kind)]).Within(0.25d),
+                Is.EqualTo(isWolfpineLearningBoss
+                    ? 3d
+                    : expected[(chapter.StoryOrder, encounter.Kind)]).Within(0.25d),
                 encounter.Id);
 
-            if (chapter.StoryOrder <= 2)
+            if (isWolfpineLearningBoss)
+            {
+                Assert.That(squad.Members.All(value => value.EquipmentBudget > 0f), Is.True, encounter.Id);
+                Assert.That(squad.Members.All(value => !string.IsNullOrWhiteSpace(value.EquipmentItemBaseId)), Is.True, encounter.Id);
+            }
+            else if (chapter.StoryOrder <= 2)
             {
                 Assert.That(squad.Members.All(value => value.EquipmentBudget == 0f), Is.True, encounter.Id);
                 Assert.That(squad.Members.All(value => string.IsNullOrWhiteSpace(value.EquipmentItemBaseId)), Is.True, encounter.Id);
@@ -114,5 +127,25 @@ public sealed class CampaignEncounterPrepTests
             "informed prep never applied a bounded owned-item gear counter");
         Assert.That(witness.GearCounterSampleCount, Is.GreaterThan(0),
             "paired witness did not record any counterable enemy-gear samples");
+    }
+
+    [Test]
+    public void WolfpineBoss_AuthorsDiveAndSustain_AndInformedPrepSelectsAnswer()
+    {
+        var witness = CampaignBossLearningWitness.Capture();
+
+        TestContext.WriteLine(
+            $"naive=[{string.Join(",", witness.NaiveAnswerTags)}] "
+            + $"informed=[{string.Join(",", witness.InformedAnswerTags)}] "
+            + $"naive_surface=[{witness.NaiveAnswerSurface}] "
+            + $"informed_surface=[{witness.InformedAnswerSurface}] "
+            + $"prep={witness.PrepRationale}");
+        Assert.That(witness.DiveAuthored, Is.True);
+        Assert.That(witness.SustainWallAuthored, Is.True);
+        Assert.That(witness.NaiveAnswerTags, Is.Empty);
+        Assert.That(witness.InformedAnswerTags, Does.Contain(CampaignBossAnswerTag.BacklineGuardAnchor));
+        Assert.That(witness.InformedAnswerTags, Does.Contain(CampaignBossAnswerTag.DurableBackCornerBait));
+        Assert.That(witness.PrepRationale, Does.Contain("backline_dive_screen"));
+        Assert.That(witness.PrepRationale, Does.Contain("counter=durable_bait"));
     }
 }

@@ -170,6 +170,93 @@ public sealed class PreviewGroundedConceptPolicyFastTests
         Assert.DoesNotThrow(() => HeadlessPrepPolicyGuard.ValidateDecision(observation, decision));
     }
 
+    [Test]
+    public void Prep_BacklineDivePreview_MovesProtectionAnchorBesideBackline()
+    {
+        var roster = new[]
+        {
+            Hero("hero-warden", "warden", "vanguard", "anchor", DeploymentAnchorId.FrontCenter, true,
+                Skill("warden-guard", SkillKind.Shield, SkillDelivery.Aura, SkillTargetRule.Self, DamageType.Physical, 0f, "guarded")),
+            Hero("hero-raider", "raider", "duelist", "bruiser", DeploymentAnchorId.FrontTop, true,
+                Skill("raider-strike", SkillKind.Strike, SkillDelivery.Melee, SkillTargetRule.MostExposedEnemy, DamageType.Physical, 1.3f)),
+            Hero("hero-marksman", "marksman", "ranger", "carry", DeploymentAnchorId.BackTop, true,
+                Skill("marksman-shot", SkillKind.Strike, SkillDelivery.Projectile, SkillTargetRule.MostExposedEnemy, DamageType.Physical, 5f)),
+            Hero("hero-hunter", "hunter", "ranger", "carry", DeploymentAnchorId.BackBottom, true,
+                Skill("hunter-shot", SkillKind.Strike, SkillDelivery.Projectile, SkillTargetRule.MostExposedEnemy, DamageType.Physical, 5f)),
+        };
+        var preview = new HeadlessEnemyPreview(
+            true,
+            "site_wolfpine_trail_boss_1",
+            "faction_wolfpine_pack",
+            "site_boss",
+            3,
+            new[]
+            {
+                new HeadlessEnemyUnitPreview("warden", "human", "vanguard", "boss_captain", DeploymentAnchorId.FrontCenter),
+                new HeadlessEnemyUnitPreview("reaver", "undead", "duelist", "escort", DeploymentAnchorId.FrontTop),
+                new HeadlessEnemyUnitPreview("shaman", "beastkin", "mystic", "escort", DeploymentAnchorId.BackBottom),
+            },
+            "boss_aura_sustain_guard",
+            "boss_utility_backline_dive",
+            Array.Empty<string>());
+        var observation = Observation(
+            "site_wolfpine_trail",
+            "site_wolfpine_trail_boss_1",
+            4,
+            roster,
+            preview,
+            new[]
+            {
+                new HeadlessOwnedItemObservation(
+                    new HeadlessItemMechanicsObservation(
+                        "item-durable-bait",
+                        "owned-durable-bait",
+                        new[] { "ranger" },
+                        string.Empty,
+                        new[] { new HeadlessStatModifierObservation("max_health", "Add", 8f, string.Empty) },
+                        Array.Empty<HeadlessAffixMechanicsObservation>(),
+                        Array.Empty<HeadlessSkillObservation>()),
+                    "hero-warden"),
+                new HeadlessOwnedItemObservation(
+                    new HeadlessItemMechanicsObservation(
+                        "item-vanguard-only",
+                        "owned-vanguard-only",
+                        new[] { "vanguard" },
+                        string.Empty,
+                        new[] { new HeadlessStatModifierObservation("max_health", "Add", 20f, string.Empty) },
+                        Array.Empty<HeadlessAffixMechanicsObservation>(),
+                        Array.Empty<HeadlessSkillObservation>()),
+                    "hero-warden"),
+            });
+        var profile = EnemyThreatProfileParser.Parse(EnemyThreatObservation.FromVisiblePreview(preview));
+        var policy = ConceptCommitPolicy.CreatePreviewGrounded(GuardedIntent());
+
+        var decision = policy.DecidePrep(observation);
+
+        Assert.That(profile.Tags, Does.Contain(EnemyThreatTag.BacklineDive));
+        Assert.That(decision.Rationale, Does.Contain("backline_dive_screen"));
+        Assert.That(decision.Placements.Any(guard =>
+            guard.Anchor.IsFrontRow()
+            && guard.HeroId == "hero-warden"
+            && decision.Placements.Any(backliner =>
+                backliner.Anchor.IsBackRow()
+                && backliner.Anchor.LaneIndex() == guard.Anchor.LaneIndex()
+                && backliner.HeroId is "hero-hunter" or "hero-marksman")), Is.True,
+            $"placements={string.Join(",", decision.Placements.Select(value => $"{value.Anchor}:{value.HeroId}"))}; rationale={decision.Rationale}");
+        Assert.That(observation.CurrentPlacements.Any(guard =>
+            guard.Anchor.IsFrontRow()
+            && guard.HeroId == "hero-warden"
+            && observation.CurrentPlacements.Any(backliner =>
+                backliner.Anchor.IsBackRow()
+                && backliner.Anchor.LaneIndex() == guard.Anchor.LaneIndex()
+                && backliner.HeroId is "hero-hunter" or "hero-marksman")), Is.False);
+        Assert.That(decision.EquipmentAssignments.Count, Is.EqualTo(1));
+        Assert.That(decision.EquipmentAssignments[0].ItemInstanceId, Is.EqualTo("owned-durable-bait"));
+        Assert.That(decision.EquipmentAssignments[0].HeroId, Is.EqualTo("hero-hunter").Or.EqualTo("hero-marksman"));
+        Assert.That(decision.Rationale, Does.Contain("counter=durable_bait"));
+        Assert.DoesNotThrow(() => HeadlessPrepPolicyGuard.ValidateDecision(observation, decision));
+    }
+
     private static string Run(HeadlessPolicyObservation observation)
     {
         var policy = ConceptCommitPolicy.CreatePreviewGrounded(GuardedIntent());
@@ -241,7 +328,8 @@ public sealed class PreviewGroundedConceptPolicyFastTests
         string encounterId,
         int capacity,
         IReadOnlyList<HeadlessHeroObservation> roster,
-        HeadlessEnemyPreview preview)
+        HeadlessEnemyPreview preview,
+        IReadOnlyList<HeadlessOwnedItemObservation> ownedItems = null)
     {
         var evidence = new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -291,7 +379,13 @@ public sealed class PreviewGroundedConceptPolicyFastTests
                 preview.BossUtilityTag,
                 preview.RewardDropTags),
             Array.Empty<HeadlessRewardOption>(),
-            evidenceFactIdsBySignal: evidence);
+            evidenceFactIdsBySignal: evidence,
+            currentPlacements: roster
+                .Where(hero => hero.IsDeployed)
+                .Take(capacity)
+                .Select(hero => new HeadlessPlacement(hero.PreferredAnchor, hero.HeroId))
+                .ToArray(),
+            ownedItems: ownedItems);
     }
 
     private static HeadlessEnemyPreview Preview(string encounterId)

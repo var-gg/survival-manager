@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: content.enemy_squad.site_wolfpine_trail_boss_1_squad.name
   DescriptionKey: content.enemy_squad.site_wolfpine_trail_boss_1_squad.desc
   FactionId: faction_wolfpine_pack
-  EnemyPosture: 2
+  EnemyPosture: 4
   ThreatTier: 3
   ThreatCost: 3
   RewardDropTags:
@@ -25,32 +25,61 @@ MonoBehaviour:
   Members:
   - Id: site_wolfpine_trail_boss_1_squad_captain
     NameKey: 
-    ArchetypeId: reaver
+    ArchetypeId: warden
     CharacterId: npc_grey_fang
     Anchor: 1
     Role: 1
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId: warden_positive_sturdy
+    NegativeTraitId:
+    EquipmentBudget: 3
+    EquipmentItemBaseId: item_bulwark_armor
+    EquipmentAffixIds:
+    - affix_packborn
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_wolfpine_trail_boss_1_squad_escort_1
-    NameKey: 
-    ArchetypeId: rift_stalker
+    NameKey:
+    ArchetypeId: reaver
     CharacterId: extra_wolfpine_outrider
-    Anchor: 3
+    Anchor: 0
     Role: 2
-    PositiveTraitId: 
+    PositiveTraitId: reaver_positive_brave
     NegativeTraitId: 
+    EquipmentBudget: 3
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds:
+    - affix_hasty
+    - affix_sharp
+    - affix_piercing
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_wolfpine_trail_boss_1_squad_escort_2
+    NameKey:
+    ArchetypeId: reaver
+    CharacterId: extra_wolfpine_ember_runner_cell
+    Anchor: 2
+    Role: 2
+    PositiveTraitId: reaver_positive_brave
+    NegativeTraitId:
+    EquipmentBudget: 3
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds:
+    - affix_fierce
+    RuleModifierTags: []
+    legacyDisplayName:
+  - Id: site_wolfpine_trail_boss_1_squad_escort_3
     NameKey: 
     ArchetypeId: shaman
     CharacterId: extra_grey_fang_vanguard
     Anchor: 5
     Role: 2
-    PositiveTraitId: 
+    PositiveTraitId: shaman_positive_swift
     NegativeTraitId: 
+    EquipmentBudget: 3
+    EquipmentItemBaseId: item_priest_focus
+    EquipmentAffixIds:
+    - affix_mender
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

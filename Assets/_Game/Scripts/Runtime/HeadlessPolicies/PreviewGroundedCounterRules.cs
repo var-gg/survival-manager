@@ -82,6 +82,9 @@ public static class PreviewGroundedCounterRules
     {
         return threatTag switch
         {
+            EnemyThreatTag.BacklineDive => FindSkill(hero, PreviewCounterCapability.Protection, skill =>
+                skill.Kind is SkillKind.Heal or SkillKind.Shield
+                || HasStatus(skill, "guarded", "barrier", "shield")),
             EnemyThreatTag.BacklineFirepower => FindSkill(hero, PreviewCounterCapability.PriorityAccess, skill =>
                 skill.TargetRule is SkillTargetRule.LowestHpEnemy or SkillTargetRule.MostExposedEnemy
                 && (skill.Range >= 2.5f
