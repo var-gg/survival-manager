@@ -39,7 +39,11 @@ internal static class PreviewGroundedPrepSelector
             EnemyThreatObservation.FromVisiblePreview(observation.EnemyPreview));
         if (!observation.EnemyPreview.IsAvailable || profile.Tags.Count == 0)
         {
-            return Hold(observation, current, "preview_unavailable_or_no_visible_threat");
+            return Hold(
+                observation,
+                current,
+                "preview_unavailable_or_no_visible_threat",
+                PreviewGroundedEquipmentSelector.Select(observation, current));
         }
 
         var heroSets = new List<IReadOnlyList<HeadlessHeroObservation>> { currentHeroes };
@@ -96,9 +100,14 @@ internal static class PreviewGroundedPrepSelector
 
         if (best == null || SameFormation(current, best.Placements))
         {
-            return Hold(observation, current, "bounded_search_prefers_hold");
+            return Hold(
+                observation,
+                current,
+                "bounded_search_prefers_hold",
+                PreviewGroundedEquipmentSelector.Select(observation, current));
         }
 
+        var equipment = PreviewGroundedEquipmentSelector.Select(observation, best.Placements);
         var signals = best.Connections
             .SelectMany(value => new[] { value.ThreatEvidenceSignalKey, value.HeroEvidenceSignalKey })
             .Append(HeadlessPolicyEvidence.DeploymentSurfaceSignal)
@@ -109,30 +118,40 @@ internal static class PreviewGroundedPrepSelector
             .ToArray();
         return new PreviewGroundedPrepSelection(
             best.Placements,
-            Array.Empty<HeadlessEquipmentAssignment>(),
-            best.VisibleValue,
-            $"threats={string.Join(",", profile.Tags)};covered={best.CoveredThreats};formation_rule={best.FormationRule};formation_edits={best.FormationEdits};bench_swaps={best.BenchSwaps}",
+            equipment.Assignments,
+            best.VisibleValue + equipment.EstimatedValue,
+            AppendEquipmentDetail(
+                $"threats={string.Join(",", profile.Tags)};covered={best.CoveredThreats};formation_rule={best.FormationRule};formation_edits={best.FormationEdits};bench_swaps={best.BenchSwaps}",
+                equipment),
             signals);
     }
 
     private static PreviewGroundedPrepSelection Hold(
         HeadlessPolicyObservation observation,
         IReadOnlyList<HeadlessPlacement> current,
-        string reason)
+        string reason,
+        PreviewGroundedEquipmentSelection equipment = null)
         => new(
             current,
-            Array.Empty<HeadlessEquipmentAssignment>(),
+            (equipment ?? PreviewGroundedEquipmentSelection.None).Assignments,
             HeadlessPolicyScoring.EvaluateDeployment(
                 observation,
                 observation.Roster.Where(hero => current.Any(value => value.HeroId == hero.HeroId)).ToArray(),
-                current),
-            reason,
+                current) + (equipment ?? PreviewGroundedEquipmentSelection.None).EstimatedValue,
+            AppendEquipmentDetail(reason, equipment ?? PreviewGroundedEquipmentSelection.None),
             new[]
             {
                 HeadlessPolicyEvidence.DeploymentSurfaceSignal,
                 HeadlessPolicyEvidence.RosterSurfaceSignal,
                 HeadlessPolicyEvidence.EnemyPreviewSignal,
             });
+
+    private static string AppendEquipmentDetail(
+        string rationale,
+        PreviewGroundedEquipmentSelection equipment)
+        => equipment.Assignments.Count == 0
+            ? rationale
+            : $"{rationale};gear_counter={equipment.Detail}";
 
     private static bool SameFormation(
         IReadOnlyList<HeadlessPlacement> left,

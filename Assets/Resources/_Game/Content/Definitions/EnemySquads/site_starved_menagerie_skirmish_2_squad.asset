@@ -31,6 +31,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_skirmish_2_squad_2
@@ -41,6 +44,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_skirmish_2_squad_3
@@ -51,6 +57,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_skirmish_2_squad_4
@@ -61,6 +70,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

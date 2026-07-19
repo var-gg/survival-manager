@@ -128,7 +128,17 @@ public sealed record CampaignChapterTemplate(
     string Name,
     int StoryOrder,
     IReadOnlyList<string> SiteIds,
-    bool UnlocksEndlessOnClear);
+    bool UnlocksEndlessOnClear,
+    CampaignChapterBalanceTemplate? Balance = null);
+
+public sealed record CampaignChapterBalanceTemplate(
+    float HpEnvelope,
+    float AtkEnvelope,
+    float SiteHpStep,
+    float SiteAtkStep)
+{
+    public static CampaignChapterBalanceTemplate Inert { get; } = new(1f, 1f, 0f, 0f);
+}
 
 public sealed record ExpeditionSiteTemplate(
     string Id,
@@ -164,7 +174,10 @@ public sealed record EnemySquadMemberTemplate(
     string PositiveTraitId,
     string NegativeTraitId,
     EnemySquadMemberRoleValue Role,
-    IReadOnlyList<string> RuleModifierTags);
+    IReadOnlyList<string> RuleModifierTags,
+    float EquipmentBudget = 0f,
+    string EquipmentItemBaseId = "",
+    IReadOnlyList<string>? EquipmentAffixIds = null);
 
 public sealed record EnemySquadTemplate(
     string Id,

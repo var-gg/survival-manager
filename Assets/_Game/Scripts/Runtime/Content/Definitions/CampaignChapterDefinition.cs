@@ -14,6 +14,7 @@ namespace SM.Content.Definitions
         public int StoryOrder = 0;
         public List<string> SiteIds = new();
         public bool UnlocksEndlessOnClear;
+        public CampaignChapterBalanceSpec Balance = new();
 
         [FormerlySerializedAs("DisplayName")]
         [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;

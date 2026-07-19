@@ -21,7 +21,12 @@ internal static class CampaignConverter
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
                 .ToList(),
-            definition.UnlocksEndlessOnClear);
+            definition.UnlocksEndlessOnClear,
+            new CampaignChapterBalanceTemplate(
+                definition.Balance?.HpEnvelope ?? 1f,
+                definition.Balance?.AtkEnvelope ?? 1f,
+                definition.Balance?.SiteHpStep ?? 0f,
+                definition.Balance?.SiteAtkStep ?? 0f));
     }
 
     internal static ExpeditionSiteTemplate BuildExpeditionSiteTemplate(ExpeditionSiteDefinition definition)
@@ -87,6 +92,12 @@ internal static class CampaignConverter
                     member.Role,
                     Enumerate(member.RuleModifierTags)
                         .Where(tag => !string.IsNullOrWhiteSpace(tag))
+                        .Distinct(StringComparer.Ordinal)
+                        .ToList(),
+                    Math.Max(0f, member.EquipmentBudget),
+                    member.EquipmentItemBaseId,
+                    Enumerate(member.EquipmentAffixIds)
+                        .Where(id => !string.IsNullOrWhiteSpace(id))
                         .Distinct(StringComparer.Ordinal)
                         .ToList()))
                 .ToList());

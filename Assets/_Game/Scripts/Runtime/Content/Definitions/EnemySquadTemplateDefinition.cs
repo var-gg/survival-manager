@@ -17,6 +17,9 @@ namespace SM.Content.Definitions
         public EnemySquadMemberRoleValue Role = EnemySquadMemberRoleValue.Unit;
         public string PositiveTraitId = string.Empty;
         public string NegativeTraitId = string.Empty;
+        [Min(0f)] public float EquipmentBudget;
+        public string EquipmentItemBaseId = string.Empty;
+        public List<string> EquipmentAffixIds = new();
         public List<string> RuleModifierTags = new();
 
         [FormerlySerializedAs("DisplayName")]

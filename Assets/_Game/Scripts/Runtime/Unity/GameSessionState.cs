@@ -1237,6 +1237,33 @@ public sealed partial class GameSessionState
             : context with { Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(context.Enemies, heatPackages) };
     }
 
+    /// <summary>
+    /// 저작 campaign envelope를 endless Heat와 같은 CombatModifierPackage channel로 적 loadout에 접는다.
+    /// chapter 1은 service에서 빈 package를 반환하므로 sealed story golden을 보존한다.
+    /// </summary>
+    private static ResolvedEncounterContext ApplyCampaignEnvelopeScaling(
+        ResolvedEncounterContext context,
+        CombatContentSnapshot snapshot)
+    {
+        if (snapshot.CampaignChapters is not { } chapters
+            || !chapters.TryGetValue(context.Context.ChapterId, out var chapter))
+        {
+            return context;
+        }
+
+        var siteOrder = snapshot.ExpeditionSites is { } sites
+                        && sites.TryGetValue(context.Context.SiteId, out var site)
+            ? site.SiteOrder
+            : 1;
+        var packages = CampaignEnvelopeService.BuildEnemyChapterPackages(
+            chapter.StoryOrder,
+            chapter.Balance,
+            siteOrder);
+        return packages.Count == 0
+            ? context
+            : context with { Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(context.Enemies, packages) };
+    }
+
     public bool TryResolveCurrentEncounter(out ResolvedEncounterContext context, out string error) =>
         _expeditionFlow.TryResolveCurrentEncounter(out context, out error);
 
@@ -1284,6 +1311,7 @@ public sealed partial class GameSessionState
                 // ADR-0028 slice 3 — 거스른 세력 적대가 누적되면 적이 경계 상태로 출현(EnemyAlertness 통로).
                 // 정치 충돌이 다음 전장에 닿는 지점. 적 package는 EnemySnapshotHash가 포착(live 결정적).
                 context = ApplyEnemyPoliticalConditions(context, run);
+                context = ApplyCampaignEnvelopeScaling(context, snapshot);
                 context = ApplyEndlessHeatScaling(context, run);
                 ActiveRun = RunStateService.SetBattleContext(run, battleContext);
                 SyncActiveRunRecord();

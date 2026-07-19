@@ -239,6 +239,14 @@ public sealed class EncounterResolutionService
             return false;
         }
 
+        var invalidEquipmentMember = squad.Members.FirstOrDefault(member =>
+            member.EquipmentBudget > 0 && string.IsNullOrWhiteSpace(member.EquipmentItemBaseId));
+        if (invalidEquipmentMember != null)
+        {
+            error = $"Enemy squad member '{invalidEquipmentMember.Id}' has equipment budget without an authored item.";
+            return false;
+        }
+
         var enemyParticipants = squad.Members
             .Select(member => new BattleParticipantSpec(
                 string.IsNullOrWhiteSpace(member.Id) ? $"{encounter.Id}:{member.ArchetypeId}:{member.Anchor}" : member.Id,
@@ -247,7 +255,7 @@ public sealed class EncounterResolutionService
                 member.Anchor,
                 member.PositiveTraitId,
                 member.NegativeTraitId,
-                Array.Empty<BattleEquippedItemSpec>(),
+                BuildEnemyEquipment(member),
                 Array.Empty<string>(),
                 squad.EnemyPosture,
                 ResolveEnemyRoleTag(member),
@@ -396,6 +404,24 @@ public sealed class EncounterResolutionService
         }
 
         return results;
+    }
+
+    private static IReadOnlyList<BattleEquippedItemSpec> BuildEnemyEquipment(EnemySquadMemberTemplate member)
+    {
+        if (member.EquipmentBudget <= 0 || string.IsNullOrWhiteSpace(member.EquipmentItemBaseId))
+        {
+            return Array.Empty<BattleEquippedItemSpec>();
+        }
+
+        return new[]
+        {
+            new BattleEquippedItemSpec(
+                member.EquipmentItemBaseId,
+                (member.EquipmentAffixIds ?? Array.Empty<string>())
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList()),
+        };
     }
 
     // BattleSeed 결정성: context hash는 run 인스턴스(per-run GUID)를 섞지 않고 콘텐츠 좌표로만 구성한다.

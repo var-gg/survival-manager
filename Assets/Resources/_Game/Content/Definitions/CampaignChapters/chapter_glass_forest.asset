@@ -20,5 +20,10 @@ MonoBehaviour:
   - site_glass_forest
   - site_starved_menagerie
   UnlocksEndlessOnClear: 0
+  Balance:
+    HpEnvelope: 1.09
+    AtkEnvelope: 1.06
+    SiteHpStep: 0.01
+    SiteAtkStep: 0.005
   legacyDisplayName: 
   legacyDescription: 

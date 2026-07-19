@@ -68,6 +68,31 @@ public sealed class EncounterResolutionServiceFastTests
     }
 
     [Test]
+    public void TryResolveEncounter_ZeroEquipmentBudgetPreservesEmptyEnemyGearChannel()
+    {
+        var resolver = new EncounterResolutionService(CreateSnapshot());
+        var context = TestContextState();
+
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+        Assert.That(resolved.Enemies.Single().NumericPackages, Is.Empty);
+    }
+
+    [Test]
+    public void TryResolveEncounter_PositiveEquipmentBudgetCompilesAuthoredItemAndAffixPackages()
+    {
+        var resolver = new EncounterResolutionService(CreateSnapshot(
+            equipmentBudget: 1.5f,
+            equipmentItemBaseId: "item.enemy.armor",
+            equipmentAffixIds: new[] { "affix.enemy.sturdy" }));
+        var context = TestContextState();
+
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+        Assert.That(
+            resolved.Enemies.Single().NumericPackages.Select(value => value.SourceId),
+            Is.EquivalentTo(new[] { "item.enemy.armor", "affix.enemy.sturdy" }));
+    }
+
+    [Test]
     public void BuildBattleContextFromPayload_AuthoredEncounter_PreservesIdentityAndHash()
     {
         var snapshot = CreateSnapshot();
@@ -233,8 +258,59 @@ public sealed class EncounterResolutionServiceFastTests
             IsQuickBattle: false);
     }
 
-    private static CombatContentSnapshot CreateSnapshot(IReadOnlyList<string>? memberRuleModifierTags = null)
+    private static BattleContextState TestContextState()
+        => new(
+            "chapter_test",
+            "site_test",
+            0,
+            "encounter_test",
+            123,
+            "hash:test",
+            "reward_source_test",
+            1,
+            false,
+            "faction_wolfpine",
+            string.Empty);
+
+    private static CombatContentSnapshot CreateSnapshot(
+        IReadOnlyList<string>? memberRuleModifierTags = null,
+        float equipmentBudget = 0f,
+        string equipmentItemBaseId = "",
+        IReadOnlyList<string>? equipmentAffixIds = null)
     {
+        var itemPackages = new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal);
+        var affixPackages = new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal);
+        if (equipmentBudget > 0f)
+        {
+            itemPackages[equipmentItemBaseId] = new CombatModifierPackage(
+                equipmentItemBaseId,
+                ModifierSource.Item,
+                new[]
+                {
+                    new StatModifier(
+                        StatKey.Armor,
+                        ModifierOp.Flat,
+                        1f,
+                        ModifierSource.Item,
+                        equipmentItemBaseId),
+                });
+            foreach (var affixId in equipmentAffixIds ?? Array.Empty<string>())
+            {
+                affixPackages[affixId] = new CombatModifierPackage(
+                    affixId,
+                    ModifierSource.Item,
+                    new[]
+                    {
+                        new StatModifier(
+                            StatKey.Armor,
+                            ModifierOp.Flat,
+                            1f,
+                            ModifierSource.Item,
+                            affixId),
+                    });
+            }
+        }
+
         return new CombatContentSnapshot(
             Archetypes: new Dictionary<string, CombatArchetypeTemplate>(StringComparer.Ordinal)
             {
@@ -249,8 +325,8 @@ public sealed class EncounterResolutionServiceFastTests
                     Array.Empty<BattleSkillSpec>()),
             },
             TraitPackages: EmptyPackages(),
-            ItemPackages: EmptyPackages(),
-            AffixPackages: EmptyPackages(),
+            ItemPackages: itemPackages,
+            AffixPackages: affixPackages,
             AugmentPackages: EmptyPackages(),
             SkillCatalog: new Dictionary<string, BattleSkillSpec>(StringComparer.Ordinal),
             TeamTactics: new Dictionary<string, TeamTacticTemplate>(StringComparer.Ordinal),
@@ -312,7 +388,10 @@ public sealed class EncounterResolutionServiceFastTests
                             string.Empty,
                             string.Empty,
                             EnemySquadMemberRoleValue.Captain,
-                            memberRuleModifierTags ?? Array.Empty<string>()),
+                            memberRuleModifierTags ?? Array.Empty<string>(),
+                            equipmentBudget,
+                            equipmentItemBaseId,
+                            equipmentAffixIds ?? Array.Empty<string>()),
                     }),
             },
             RewardSources: new Dictionary<string, RewardSourceTemplate>(StringComparer.Ordinal)

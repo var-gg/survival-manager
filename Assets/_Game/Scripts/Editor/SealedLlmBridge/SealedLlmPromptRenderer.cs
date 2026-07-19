@@ -311,6 +311,7 @@ public static class SealedLlmPromptRenderer
         var properties = value.GetType()
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
             .Where(property => property.GetIndexParameters().Length == 0 && property.GetMethod != null)
+            .Where(property => !ShouldOmitEmptyEnemyEquipment(value, property))
             .OrderBy(property => property.Name, StringComparer.Ordinal)
             .ToArray();
         if (properties.Length == 0)
@@ -329,6 +330,11 @@ public static class SealedLlmPromptRenderer
 
         output.Append('}');
     }
+
+    private static bool ShouldOmitEmptyEnemyEquipment(object value, PropertyInfo property)
+        => value is HeadlessEnemyUnitPreview enemy
+           && string.Equals(property.Name, nameof(enemy.EquippedItems), StringComparison.Ordinal)
+           && enemy.EquippedItems.Count == 0;
 
     private static void AppendDictionary(StringBuilder output, IDictionary dictionary, int depth)
     {

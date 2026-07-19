@@ -25,6 +25,13 @@ internal static class CampaignFileParser
             definition.StoryOrder = ExtractInt(lines, "StoryOrder:");
             definition.SiteIds = ParseStringList(lines, "SiteIds:");
             definition.UnlocksEndlessOnClear = ExtractBool(lines, "UnlocksEndlessOnClear:");
+            definition.Balance = new CampaignChapterBalanceSpec
+            {
+                HpEnvelope = ExtractFloat(lines, "HpEnvelope:", 1f),
+                AtkEnvelope = ExtractFloat(lines, "AtkEnvelope:", 1f),
+                SiteHpStep = ExtractFloat(lines, "SiteHpStep:", 0f),
+                SiteAtkStep = ExtractFloat(lines, "SiteAtkStep:", 0f),
+            };
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
             ApplyFallbackIdentity(definition, path);
@@ -207,6 +214,24 @@ internal static class CampaignFileParser
                 else if (trimmed.StartsWith("NegativeTraitId:", StringComparison.Ordinal))
                 {
                     member.NegativeTraitId = trimmed["NegativeTraitId:".Length..].Trim();
+                }
+                else if (trimmed.StartsWith("EquipmentBudget:", StringComparison.Ordinal))
+                {
+                    member.EquipmentBudget = Math.Max(
+                        0f,
+                        ExtractFloat(new[] { trimmed }, "EquipmentBudget:", 0f));
+                }
+                else if (trimmed.StartsWith("EquipmentItemBaseId:", StringComparison.Ordinal))
+                {
+                    member.EquipmentItemBaseId = trimmed["EquipmentItemBaseId:".Length..].Trim();
+                }
+                else if (string.Equals(trimmed, "EquipmentAffixIds: []", StringComparison.Ordinal))
+                {
+                    member.EquipmentAffixIds = new List<string>();
+                }
+                else if (string.Equals(trimmed, "EquipmentAffixIds:", StringComparison.Ordinal))
+                {
+                    member.EquipmentAffixIds = ParseIndentedStringList(lines, ref index, 4);
                 }
                 else if (string.Equals(trimmed, "RuleModifierTags: []", StringComparison.Ordinal))
                 {

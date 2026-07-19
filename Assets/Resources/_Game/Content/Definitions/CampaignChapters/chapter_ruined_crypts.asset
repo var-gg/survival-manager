@@ -20,5 +20,10 @@ MonoBehaviour:
   - site_ruined_crypts
   - site_bone_orchard
   UnlocksEndlessOnClear: 0
+  Balance:
+    HpEnvelope: 1.06
+    AtkEnvelope: 1.04
+    SiteHpStep: 0.01
+    SiteAtkStep: 0.005
   legacyDisplayName: 
   legacyDescription: 

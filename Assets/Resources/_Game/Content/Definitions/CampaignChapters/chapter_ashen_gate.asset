@@ -20,5 +20,10 @@ MonoBehaviour:
   - site_ashen_gate
   - site_wolfpine_trail
   UnlocksEndlessOnClear: 0
+  Balance:
+    HpEnvelope: 1
+    AtkEnvelope: 1
+    SiteHpStep: 0.01
+    SiteAtkStep: 0.005
   legacyDisplayName: 
   legacyDescription: 

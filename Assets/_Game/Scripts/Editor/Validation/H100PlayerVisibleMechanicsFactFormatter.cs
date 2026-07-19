@@ -102,12 +102,21 @@ internal static class H100PlayerVisibleMechanicsFactFormatter
             Pair("reward_drop_tags", Sequence(preview.RewardDropTags.OrderBy(value => value, StringComparer.Ordinal))));
 
     public static string EnemyUnit(HeadlessEnemyUnitPreview unit)
-        => Join(
+    {
+        var identity = Join(
             Pair("archetype", unit.ArchetypeId),
             Pair("race", unit.RaceId),
             Pair("class", unit.ClassId),
             Pair("role", unit.RoleTag),
             Pair("preferred_anchor", unit.PreferredAnchor.ToString()));
+        return unit.EquippedItems.Count == 0
+            ? identity
+            : Join(
+                identity,
+                Pair("equipped_items", Sequence(unit.EquippedItems
+                    .OrderBy(value => value.ItemId, StringComparer.Ordinal)
+                    .Select(Item))));
+    }
 
     public static string Reward(HeadlessRewardOption option)
         => Join(

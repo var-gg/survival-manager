@@ -424,7 +424,17 @@ internal static class H100PolicyObservationBuilder
                 archetype?.RaceId ?? string.Empty,
                 archetype?.ClassId ?? string.Empty,
                 archetype?.RoleTag ?? string.Empty,
-                archetype?.DefaultAnchor ?? ResolveClassAnchor(archetype?.ClassId ?? string.Empty));
+                archetype?.DefaultAnchor ?? ResolveClassAnchor(archetype?.ClassId ?? string.Empty),
+                member.EquipmentBudget > 0
+                    ? new[]
+                    {
+                        BuildItemMechanics(
+                            member.EquipmentItemBaseId,
+                            string.Empty,
+                            member.EquipmentAffixIds,
+                            snapshot),
+                    }
+                    : Array.Empty<HeadlessItemMechanicsObservation>());
         }).ToArray();
 
         var bossAura = string.Empty;

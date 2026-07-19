@@ -86,6 +86,90 @@ public sealed class PreviewGroundedConceptPolicyFastTests
         Assert.That(legacy.LastPreviewDecision, Is.Null);
     }
 
+    [Test]
+    public void Prep_UsesOneOwnedPenetrationItemToCounterVisibleEnemyArmor()
+    {
+        var enemyArmor = new HeadlessItemMechanicsObservation(
+            "item_enemy_layered_armor",
+            string.Empty,
+            new[] { "armor" },
+            string.Empty,
+            new[] { new HeadlessStatModifierObservation("armor", "Flat", 2f, string.Empty) },
+            Array.Empty<HeadlessAffixMechanicsObservation>(),
+            Array.Empty<HeadlessSkillObservation>());
+        var preview = new HeadlessEnemyPreview(
+            true,
+            "encounter-armored",
+            "faction-visible",
+            "elite",
+            2,
+            new[]
+            {
+                new HeadlessEnemyUnitPreview(
+                    "bulwark",
+                    "undead",
+                    "vanguard",
+                    "anchor",
+                    DeploymentAnchorId.FrontCenter,
+                    new[] { enemyArmor }),
+            },
+            string.Empty,
+            string.Empty,
+            Array.Empty<string>());
+        var roster = new[]
+        {
+            Hero("hero-wall", "warden", "vanguard", "anchor", DeploymentAnchorId.FrontCenter, true,
+                Skill("wall-guard", SkillKind.Buff, SkillDelivery.Aura, SkillTargetRule.Self, DamageType.Physical, 0f, "guarded")),
+            Hero("hero-ranger", "marksman", "ranger", "carry", DeploymentAnchorId.BackTop, true,
+                Skill("ranger-shot", SkillKind.Strike, SkillDelivery.Projectile, SkillTargetRule.MostExposedEnemy, DamageType.Physical, 5f)),
+        };
+        var evidence = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            [HeadlessPolicyEvidence.DeploymentSurfaceSignal] = "fact-deployment",
+            [HeadlessPolicyEvidence.RosterSurfaceSignal] = "fact-roster",
+            [HeadlessPolicyEvidence.EnemyPreviewSignal] = "fact-preview",
+            [HeadlessPolicyEvidence.EnemyUnitSignal(0)] = "fact-enemy-0",
+            [HeadlessPolicyEvidence.HeroSignal("hero-wall")] = "fact-hero-wall",
+            [HeadlessPolicyEvidence.HeroSignal("hero-ranger")] = "fact-hero-ranger",
+            [HeadlessPolicyEvidence.HeroSkillSignal("hero-wall", "wall-guard")] = "fact-wall-guard",
+            [HeadlessPolicyEvidence.HeroSkillSignal("hero-ranger", "ranger-shot")] = "fact-ranger-shot",
+        };
+        var piercingBow = new HeadlessItemMechanicsObservation(
+            "item_counter_bow",
+            "owned-piercing-bow",
+            new[] { "weapon", "bow" },
+            "bow",
+            new[] { new HeadlessStatModifierObservation("phys_pen", "Flat", 0.7f, string.Empty) },
+            Array.Empty<HeadlessAffixMechanicsObservation>(),
+            Array.Empty<HeadlessSkillObservation>());
+        var observation = new HeadlessPolicyObservation(
+            1701,
+            2,
+            "chapter-visible",
+            "site-visible",
+            roster,
+            new[] { DeploymentAnchorId.FrontCenter, DeploymentAnchorId.BackTop },
+            preview,
+            Array.Empty<HeadlessRewardOption>(),
+            evidenceFactIdsBySignal: evidence,
+            currentPlacements: new[]
+            {
+                new HeadlessPlacement(DeploymentAnchorId.FrontCenter, "hero-wall"),
+                new HeadlessPlacement(DeploymentAnchorId.BackTop, "hero-ranger"),
+            },
+            ownedItems: new[] { new HeadlessOwnedItemObservation(piercingBow, string.Empty) });
+
+        var policy = ConceptCommitPolicy.CreatePreviewGrounded(GuardedIntent());
+        var decision = policy.DecidePrep(observation);
+
+        Assert.That(HeadlessPrepPolicyGuard.MaximumEquipmentAssignments, Is.EqualTo(1));
+        Assert.That(decision.EquipmentAssignments.Count, Is.EqualTo(1));
+        Assert.That(decision.EquipmentAssignments[0].ItemInstanceId, Is.EqualTo("owned-piercing-bow"));
+        Assert.That(decision.EquipmentAssignments[0].HeroId, Is.EqualTo("hero-ranger"));
+        Assert.That(decision.Rationale, Does.Contain("counter=phys_pen"));
+        Assert.DoesNotThrow(() => HeadlessPrepPolicyGuard.ValidateDecision(observation, decision));
+    }
+
     private static string Run(HeadlessPolicyObservation observation)
     {
         var policy = ConceptCommitPolicy.CreatePreviewGrounded(GuardedIntent());

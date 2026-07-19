@@ -12,6 +12,7 @@ internal sealed class CampaignTwoArmSweepAccumulator
     private readonly Dictionary<string, SiteBucket> _sites = new(StringComparer.Ordinal);
     private readonly Dictionary<string, DecisionBucket> _decisions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, PairedNodeObservation> _pairedNodes = new(StringComparer.Ordinal);
+    private int _equipmentAssignmentCount;
 
     public CampaignTwoArmSweepAccumulator(CampaignBalanceSweepConfig config)
     {
@@ -29,7 +30,8 @@ internal sealed class CampaignTwoArmSweepAccumulator
         CampaignNodeIdentity node,
         bool won,
         bool answerTagPresent,
-        string formationHash)
+        string formationHash,
+        bool gearCounterUsed)
     {
         var key = $"{node.ChapterOrder:D2}|{node.SiteOrder:D2}|{node.NodeOrder:D2}|{node.NodeId}";
         if (!_nodes.TryGetValue(key, out var bucket))
@@ -53,7 +55,7 @@ internal sealed class CampaignTwoArmSweepAccumulator
             _pairedNodes.Add(pairKey, paired);
         }
 
-        paired.Record(arm.ArmId, won, formationHash);
+        paired.Record(arm.ArmId, won, formationHash, gearCounterUsed);
     }
 
     public void RecordSite(
@@ -91,7 +93,11 @@ internal sealed class CampaignTwoArmSweepAccumulator
         }
     }
 
-    public void RecordPrepDecision(CampaignBalanceArmSpec arm, bool opportunity, bool setupChanged)
+    public void RecordPrepDecision(
+        CampaignBalanceArmSpec arm,
+        bool opportunity,
+        bool setupChanged,
+        int equipmentAssignmentCount)
     {
         if (!opportunity)
         {
@@ -99,6 +105,7 @@ internal sealed class CampaignTwoArmSweepAccumulator
         }
 
         var bucket = _decisions[arm.ArmId];
+        _equipmentAssignmentCount += Math.Max(0, equipmentAssignmentCount);
         bucket.PrepOpportunities++;
         if (setupChanged)
         {
@@ -133,11 +140,16 @@ internal sealed class CampaignTwoArmSweepAccumulator
     public CampaignPrepMechanismSummary BuildPrepMechanismSummary()
     {
         var complete = _pairedNodes.Values.Where(value => value.IsComplete).ToArray();
+        var gearCounter = complete.Where(value => value.InformedGearCounterUsed).ToArray();
         return new CampaignPrepMechanismSummary(
             complete.Count(value => !string.Equals(value.NaiveFormationHash, value.InformedFormationHash, StringComparison.Ordinal)),
             complete.Count(value => value.NaiveWon.Value != value.InformedWon.Value),
             complete.Count(value => !value.NaiveWon.Value && value.InformedWon.Value),
-            complete.Count(value => value.NaiveWon.Value && !value.InformedWon.Value));
+            complete.Count(value => value.NaiveWon.Value && !value.InformedWon.Value),
+            _equipmentAssignmentCount,
+            gearCounter.Length,
+            gearCounter.Count(value => value.NaiveWon.Value),
+            gearCounter.Count(value => value.InformedWon.Value));
     }
 
     private sealed class NodeBucket
@@ -278,9 +290,10 @@ internal sealed class CampaignTwoArmSweepAccumulator
         public bool? InformedWon { get; private set; }
         public string NaiveFormationHash { get; private set; }
         public string InformedFormationHash { get; private set; }
+        public bool InformedGearCounterUsed { get; private set; }
         public bool IsComplete => NaiveWon.HasValue && InformedWon.HasValue;
 
-        public void Record(string armId, bool won, string formationHash)
+        public void Record(string armId, bool won, string formationHash, bool gearCounterUsed)
         {
             if (string.Equals(armId, "naive", StringComparison.Ordinal))
             {
@@ -291,6 +304,7 @@ internal sealed class CampaignTwoArmSweepAccumulator
             {
                 InformedWon = won;
                 InformedFormationHash = formationHash;
+                InformedGearCounterUsed = gearCounterUsed;
             }
             else
             {
@@ -304,7 +318,22 @@ internal sealed record CampaignPrepMechanismSummary(
     int FormationDivergenceCount,
     int OutcomeDivergenceCount,
     int InformedOnlyWinCount,
-    int NaiveOnlyWinCount);
+    int NaiveOnlyWinCount,
+    int EquipmentAssignmentCount,
+    int GearCounterSampleCount,
+    int GearCounterNaiveWinCount,
+    int GearCounterInformedWinCount)
+{
+    public double GearCounterNaiveWinRate => GearCounterSampleCount == 0
+        ? 0d
+        : GearCounterNaiveWinCount / (double)GearCounterSampleCount;
+
+    public double GearCounterInformedWinRate => GearCounterSampleCount == 0
+        ? 0d
+        : GearCounterInformedWinCount / (double)GearCounterSampleCount;
+
+    public double GearCounterGap => GearCounterInformedWinRate - GearCounterNaiveWinRate;
+}
 
 internal sealed record CampaignNodeIdentity(
     string ChapterId,
@@ -454,7 +483,7 @@ public static class CampaignTwoArmBandEvaluator
             Summary = BuildSummary(config, nodes, sites, samplingPass, accumulator.BuildPrepMechanismSummary()),
             PhaseAApproximations = new[]
             {
-                "both arms share greedy site-entry deployment; informed alone receives the elite/boss <=2 formation edits + <=1 bench swap prep transaction",
+                "both arms share greedy site-entry deployment; informed alone receives the elite/boss <=2 formation edits + <=1 bench swap + <=1 owned-equipment assignment prep transaction",
                 "build-power quantiles are ordinal cohorts made only from existing 0/1/2/3 equipment-slot and available-passive paths; no stat multiplier is injected",
                 "enemy composition variants preserve authored units/mechanics and vary only deterministic member order/anchor placement inside the measurement input",
                 "paid Scout, recruit, and Refit are never invoked by either arm",
@@ -661,6 +690,11 @@ public static class CampaignTwoArmBandEvaluator
             OutcomeDivergenceCount = mechanism.OutcomeDivergenceCount,
             InformedOnlyWinCount = mechanism.InformedOnlyWinCount,
             NaiveOnlyWinCount = mechanism.NaiveOnlyWinCount,
+            PrepEquipmentAssignmentCount = mechanism.EquipmentAssignmentCount,
+            GearCounterSampleCount = mechanism.GearCounterSampleCount,
+            GearCounterNaiveWinRate = mechanism.GearCounterNaiveWinRate,
+            GearCounterInformedWinRate = mechanism.GearCounterInformedWinRate,
+            GearCounterGap = mechanism.GearCounterGap,
             CliffFindings = cliffs,
             ConsecutiveInfoSiteAndDropFindings = drops,
             LateSaturationFindings = saturation,

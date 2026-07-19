@@ -20,5 +20,10 @@ MonoBehaviour:
   - site_sunken_bastion
   - site_tithe_road
   UnlocksEndlessOnClear: 0
+  Balance:
+    HpEnvelope: 1.03
+    AtkEnvelope: 1.02
+    SiteHpStep: 0.01
+    SiteAtkStep: 0.005
   legacyDisplayName: 
   legacyDescription: 

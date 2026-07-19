@@ -336,6 +336,14 @@ internal static class SealedLlmObservationCanonicalWriter
             Append(payload, value.ClassId, nameof(value.ClassId));
             Append(payload, value.RoleTag, nameof(value.RoleTag));
             SealedLlmCanonicalValue.AppendEnum(payload, value.PreferredAnchor, nameof(value.PreferredAnchor));
+            if (value.EquippedItems.Count > 0)
+            {
+                SealedLlmCanonicalValue.AppendSortedObjects(
+                    payload,
+                    value.EquippedItems,
+                    nameof(value.EquippedItems),
+                    ItemBytes);
+            }
         });
 
     private static byte[] RewardOptionBytes(HeadlessRewardOption value)

@@ -26,6 +26,7 @@ internal static class CampaignTwoArmSweepReportWriter
             $"[CampaignTwoArmSweep] status={withPath.Summary.Status} nodes={withPath.Summary.NodeCount} "
             + $"naive={withPath.Summary.MeanNaiveWinRate:0.000} info={withPath.Summary.MeanInfoWinRate:0.000} "
             + $"gap={withPath.Summary.MeanGap:0.000} bossGap={withPath.Summary.MeanBossGap:0.000} "
+            + $"gearAssignments={withPath.Summary.PrepEquipmentAssignmentCount} "
             + $"samples={withPath.Grid.ExecutedCellCountPerArmPerNode} report={path}");
         return withPath;
     }

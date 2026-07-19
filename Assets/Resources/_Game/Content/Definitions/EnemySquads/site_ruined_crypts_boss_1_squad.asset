@@ -31,6 +31,10 @@ MonoBehaviour:
     Role: 1
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds:
+    - affix_sturdy
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ruined_crypts_boss_1_squad_escort_1
@@ -41,6 +45,10 @@ MonoBehaviour:
     Role: 2
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds:
+    - affix_sturdy
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ruined_crypts_boss_1_squad_escort_2
@@ -51,6 +59,9 @@ MonoBehaviour:
     Role: 2
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

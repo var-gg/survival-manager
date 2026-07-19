@@ -153,6 +153,7 @@ internal static class CampaignTwoArmSweepRunner
                 var measuredEncounter = ProjectEncounter(encounter, cell.EnemyComposition);
                 var prepOpportunity = encounter.Context.IsBoss || IsElite(encounter);
                 var prepChanged = false;
+                var prepEquipmentAssignmentCount = 0;
                 if (prepOpportunity && arm.UsesEncounterPrep && policy is IHeadlessPrepPolicy prepPolicy)
                 {
                     var prepBefore = FormationHash(session);
@@ -171,13 +172,15 @@ internal static class CampaignTwoArmSweepRunner
                                 prepSeed,
                                 includeTownRoster: true).EnemyPreview,
                             measuredEncounter.Enemies));
-                    H100SessionDriver.ApplyPolicyPrep(
+                    var prepDecision = H100SessionDriver.ApplyPolicyPrep(
                         session,
                         policy,
                         prepPolicy,
                         prepSeed,
                         prepObservation);
-                    prepChanged = !string.Equals(prepBefore, FormationHash(session), StringComparison.Ordinal);
+                    prepEquipmentAssignmentCount = prepDecision.EquipmentAssignments.Count;
+                    prepChanged = !string.Equals(prepBefore, FormationHash(session), StringComparison.Ordinal)
+                                  || prepEquipmentAssignmentCount > 0;
 
                     if (!session.TryBuildSelectedBattleState(
                             out _,
@@ -192,7 +195,11 @@ internal static class CampaignTwoArmSweepRunner
                     measuredEncounter = ProjectEncounter(encounter, cell.EnemyComposition);
                 }
 
-                accumulator.RecordPrepDecision(arm, prepOpportunity, prepChanged);
+                accumulator.RecordPrepDecision(
+                    arm,
+                    prepOpportunity,
+                    prepChanged,
+                    prepEquipmentAssignmentCount);
                 if (!session.TryComposeBattleState(allySnapshot, measuredEncounter, out var state, out var composeError))
                 {
                     throw new InvalidOperationException(
@@ -219,7 +226,8 @@ internal static class CampaignTwoArmSweepRunner
                     identity,
                     won,
                     HasBossAnswerTag(allySnapshot),
-                    FormationHash(session));
+                    FormationHash(session),
+                    prepEquipmentAssignmentCount > 0);
 
                 // 측정 outcome은 위 1회 deterministic cell 결과다. 캠페인 후속 노드 도달 상태만 기존
                 // retry-until-win 하네스와 같이 동일 build/formation의 첫 winning seed로 정산한다.
@@ -290,7 +298,13 @@ internal static class CampaignTwoArmSweepRunner
                     unit.RaceId,
                     unit.ClassId,
                     unit.RoleTag,
-                    unit.PreferredAnchor))
+                    unit.PreferredAnchor,
+                    authored.Units
+                        .FirstOrDefault(value => string.Equals(
+                            value.ArchetypeId,
+                            unit.ArchetypeId,
+                            StringComparison.Ordinal))
+                        ?.EquippedItems))
                 .ToArray(),
             authored.BossAuraTag,
             authored.BossUtilityTag,

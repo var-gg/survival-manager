@@ -9,6 +9,7 @@ public static class HeadlessPrepPolicyGuard
 {
     public const int MaximumFormationEdits = 2;
     public const int MaximumBenchSwaps = 1;
+    public const int MaximumEquipmentAssignments = 1;
 
     public static void ValidateDecision(HeadlessPolicyObservation observation, HeadlessPrepDecision decision)
     {
@@ -61,6 +62,12 @@ public static class HeadlessPrepPolicyGuard
             value => value,
             StringComparer.Ordinal);
         RequireDistinct(decision.EquipmentAssignments.Select(value => value.ItemInstanceId), "prep item");
+        if (decision.EquipmentAssignments.Count > MaximumEquipmentAssignments)
+        {
+            throw new InvalidOperationException(
+                $"Prep exceeds the {MaximumEquipmentAssignments}-equipment-assignment budget.");
+        }
+
         foreach (var assignment in decision.EquipmentAssignments)
         {
             if (assignment == null

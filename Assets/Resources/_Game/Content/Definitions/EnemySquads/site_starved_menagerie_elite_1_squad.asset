@@ -31,6 +31,10 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 3
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_elite_1_squad_2
@@ -41,6 +45,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_elite_1_squad_3
@@ -51,6 +58,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_elite_1_squad_4
@@ -61,6 +71,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_priest_focus
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

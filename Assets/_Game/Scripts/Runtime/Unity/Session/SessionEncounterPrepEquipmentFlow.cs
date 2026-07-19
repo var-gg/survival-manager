@@ -6,7 +6,7 @@ namespace SM.Unity;
 
 public sealed partial class GameSessionState
 {
-    /// <summary>활성 expedition 전투 직전에만 보유 장비를 출전 영웅 사이에서 무료로 재배치한다.</summary>
+    /// <summary>선택된 expedition 전투 직전에만 보유 장비를 출전 영웅 사이에서 무료로 재배치한다.</summary>
     internal Result ReequipOwnedItemForEncounter(string itemInstanceId, string heroId) =>
         _deploymentFlow.ReequipOwnedItemForEncounter(itemInstanceId, heroId);
 
@@ -14,11 +14,11 @@ public sealed partial class GameSessionState
     {
         internal Result ReequipOwnedItemForEncounter(string itemInstanceId, string heroId)
         {
-            if (!_session.HasActiveExpeditionRun
-                || _session.GetSelectedExpeditionNode()?.RequiresBattle != true
-                || _session.PendingRewardChoices.Count != 0)
+            var selectedNode = _session.GetSelectedExpeditionNode();
+            if (selectedNode?.RequiresBattle != true
+                || _session._resolvedExpeditionNodeIds.Contains(selectedNode.Id))
             {
-                return Result.Fail("Encounter prep 장비 변경은 활성 전투 노드 직전에서만 가능합니다.");
+                return Result.Fail("Encounter prep 장비 변경은 선택된 미해결 전투 노드 직전에서만 가능합니다.");
             }
 
             if (!_session.ExpeditionSquadHeroIds.Contains(heroId, StringComparer.Ordinal)

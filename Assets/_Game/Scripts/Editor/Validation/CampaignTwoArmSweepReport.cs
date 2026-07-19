@@ -151,6 +151,11 @@ public sealed record CampaignTwoArmSweepSummary
     public int OutcomeDivergenceCount { get; init; }
     public int InformedOnlyWinCount { get; init; }
     public int NaiveOnlyWinCount { get; init; }
+    public int PrepEquipmentAssignmentCount { get; init; }
+    public int GearCounterSampleCount { get; init; }
+    public double GearCounterNaiveWinRate { get; init; }
+    public double GearCounterInformedWinRate { get; init; }
+    public double GearCounterGap { get; init; }
     public IReadOnlyList<string> CliffFindings { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> ConsecutiveInfoSiteAndDropFindings { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> LateSaturationFindings { get; init; } = Array.Empty<string>();

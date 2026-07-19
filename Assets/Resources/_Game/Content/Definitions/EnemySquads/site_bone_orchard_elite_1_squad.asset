@@ -31,6 +31,10 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds:
+    - affix_sturdy
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_elite_1_squad_2
@@ -41,6 +45,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_elite_1_squad_3
@@ -51,6 +58,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_elite_1_squad_4
@@ -61,6 +71,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

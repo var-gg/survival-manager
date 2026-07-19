@@ -169,11 +169,18 @@ public sealed class ConceptCommitPolicy : IHeadlessPolicy, IHeadlessRosterPolicy
                     HeadlessPolicyEvidence.EnemyPreviewSignal,
                 });
         var evidence = HeadlessPolicyEvidence.ForSignals(observation, selection.EvidenceSignals);
-        var action = HeadlessPolicyScoring.PlacementSignature(selection.Placements);
+        var formationAction = HeadlessPolicyScoring.PlacementSignature(selection.Placements);
+        var equipmentAction = string.Join(",", selection.EquipmentAssignments
+            .OrderBy(value => value.ItemInstanceId, StringComparer.Ordinal)
+            .Select(value => $"{value.ItemInstanceId}->{value.HeroId}"));
+        var action = selection.EquipmentAssignments.Count == 0
+            ? formationAction
+            : $"{formationAction}|equipment:{equipmentAction}";
         var changed = !string.Equals(
-            action,
+            formationAction,
             HeadlessPolicyScoring.PlacementSignature(observation.CurrentPlacements),
-            StringComparison.Ordinal);
+            StringComparison.Ordinal)
+            || selection.EquipmentAssignments.Count > 0;
         RecordDecision(
             "prep",
             action,

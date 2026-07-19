@@ -518,13 +518,15 @@ public sealed class HeadlessEnemyUnitPreview
         string raceId,
         string classId,
         string roleTag,
-        DeploymentAnchorId preferredAnchor)
+        DeploymentAnchorId preferredAnchor,
+        IReadOnlyList<HeadlessItemMechanicsObservation> equippedItems = null)
     {
         ArchetypeId = archetypeId;
         RaceId = raceId;
         ClassId = classId;
         RoleTag = roleTag;
         PreferredAnchor = preferredAnchor;
+        EquippedItems = equippedItems ?? Array.Empty<HeadlessItemMechanicsObservation>();
     }
 
     public string ArchetypeId { get; }
@@ -532,6 +534,7 @@ public sealed class HeadlessEnemyUnitPreview
     public string ClassId { get; }
     public string RoleTag { get; }
     public DeploymentAnchorId PreferredAnchor { get; }
+    public IReadOnlyList<HeadlessItemMechanicsObservation> EquippedItems { get; }
 }
 
 public enum HeadlessRewardKind

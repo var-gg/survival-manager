@@ -20,5 +20,10 @@ MonoBehaviour:
   - site_heartforge_gate
   - site_worldscar_depths
   UnlocksEndlessOnClear: 1
+  Balance:
+    HpEnvelope: 1.12
+    AtkEnvelope: 1.08
+    SiteHpStep: 0.01
+    SiteAtkStep: 0.005
   legacyDisplayName: 
   legacyDescription: 
