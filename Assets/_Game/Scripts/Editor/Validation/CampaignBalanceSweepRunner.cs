@@ -141,6 +141,33 @@ public static class CampaignBalanceSweepRunner
         Debug.Log($"[CampaignSweep] smoke run complete → {result.ReportDirectory}");
     }
 
+    [MenuItem("SM/Internal/Validation/Run Campaign Balance Sweep (Two Arm Phase A)")]
+    public static void RunTwoArmBaselineMenu()
+    {
+        var result = RunTwoArm(CampaignBalanceSweepConfig.Default);
+        Debug.Log($"[CampaignSweep] two-arm baseline complete → {result.JsonReportPath}");
+    }
+
+    /// <summary>Phase A 480-cell naive/informed measurement lane. 기존 curve/delta lane과 artifact를 분리한다.</summary>
+    public static CampaignTwoArmSweepReport RunTwoArm(CampaignBalanceSweepConfig config)
+        => CampaignTwoArmSweepRunner.Run(config);
+
+    /// <summary>배치 CLI 진입점: Phase A canonical 480-cell two-arm baseline.</summary>
+    public static void RunTwoArmBaselineFromCli()
+    {
+        try
+        {
+            var result = RunTwoArm(CampaignBalanceSweepConfig.Default);
+            Debug.Log($"[CampaignSweep] CLI two-arm baseline complete → {result.JsonReportPath}");
+            EditorApplication.Exit(0);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError($"[CampaignSweep] CLI two-arm baseline failed: {exception}");
+            EditorApplication.Exit(1);
+        }
+    }
+
     /// <summary>배치 CLI 진입점: Unity -batchmode -executeMethod SM.Editor.Validation.CampaignBalanceSweepRunner.RunFullFromCli -quit</summary>
     public static void RunFullFromCli()
     {
@@ -1005,9 +1032,9 @@ public static class CampaignBalanceSweepRunner
     /// 측정이 정직하려면 러너가 저작 게이트를 직접 지켜야 한다. 아니면 원거리 활이 vanguard에 붙어
     /// "델타 0 = dead" 허구를 생산한다.
     /// </summary>
-    private sealed record ItemMeta(string ItemId, ItemSlotType SlotType, IReadOnlyList<string> AllowedClassIds);
+    internal sealed record ItemMeta(string ItemId, ItemSlotType SlotType, IReadOnlyList<string> AllowedClassIds);
 
-    private static IReadOnlyDictionary<string, ItemMeta> LoadItemMetaIndex()
+    internal static IReadOnlyDictionary<string, ItemMeta> LoadItemMetaIndex()
     {
         var index = new Dictionary<string, ItemMeta>(StringComparer.Ordinal);
         foreach (var definition in Resources.LoadAll<ItemBaseDefinition>("_Game/Content/Definitions/Items"))
@@ -1029,7 +1056,7 @@ public static class CampaignBalanceSweepRunner
         return index;
     }
 
-    private static bool CanWear(
+    internal static bool CanWear(
         GameSessionState session,
         IReadOnlyDictionary<string, ItemMeta> itemIndex,
         HeroInstanceRecord hero,
@@ -1056,7 +1083,7 @@ public static class CampaignBalanceSweepRunner
         return true;
     }
 
-    private static void AuthorSquad(
+    internal static void AuthorSquad(
         GameSessionState session,
         RuntimeCombatContentLookup lookup,
         string squadTag,
@@ -1209,7 +1236,7 @@ public static class CampaignBalanceSweepRunner
     /// 얕은 노드부터(보드 depth → id ordinal) 예산이 허용하는 만큼 토글 — "일반 플레이어"의 성장 근사.
     /// 예산 계단(레벨 5→8)은 세션 validator가 소유하므로 여기서는 Result만 소비한다.
     /// </summary>
-    private static void GreedyGrowPassives(GameSessionState session, RuntimeCombatContentLookup lookup)
+    internal static void GreedyGrowPassives(GameSessionState session, RuntimeCombatContentLookup lookup)
     {
         if (!lookup.TryGetCombatSnapshot(out var content, out _))
         {
