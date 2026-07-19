@@ -36,6 +36,25 @@ public static class SealedLlmLegalActionSet
     public static byte[] RewardDescriptor(HeadlessPolicyObservation observation)
         => Descriptor("SealedLlmRewardLegalActionSetV1", RewardKeys(observation));
 
+    public static byte[] PrepDescriptor(HeadlessPolicyObservation observation)
+    {
+        HeadlessPolicyGuard.ValidateObservation(observation);
+        using var payload = new MemoryStream();
+        SealedLlmCanonicalValue.Append(payload, "SealedLlmPrepActionSpaceV1", "schema");
+        SealedLlmCanonicalValue.Append(payload, DeploymentDescriptor(observation), "deployment");
+        SealedLlmCanonicalValue.AppendSortedStrings(
+            payload,
+            observation.CurrentPlacements.Select(value => SealedLlmActionGrammar.DeploymentPair(value.Anchor, value.HeroId)).ToArray(),
+            "currentPlacements");
+        SealedLlmCanonicalValue.AppendSortedStrings(
+            payload,
+            observation.OwnedItems.Select(value => value.Mechanics.ItemInstanceId).ToArray(),
+            "ownedItemIds");
+        SealedLlmCanonicalValue.AppendInteger(payload, HeadlessPrepPolicyGuard.MaximumFormationEdits);
+        SealedLlmCanonicalValue.AppendInteger(payload, HeadlessPrepPolicyGuard.MaximumBenchSwaps);
+        return payload.ToArray();
+    }
+
     public static byte[] RecruitDescriptor(HeadlessRosterPolicyObservation observation)
         => Descriptor("SealedLlmRecruitLegalActionSetV1", RecruitKeys(observation));
 
@@ -50,6 +69,9 @@ public static class SealedLlmLegalActionSet
 
     public static string RewardLegalActionSetHash(HeadlessPolicyObservation observation)
         => LegalActionSetHash(RewardDescriptor(observation));
+
+    public static string PrepLegalActionSetHash(HeadlessPolicyObservation observation)
+        => LegalActionSetHash(PrepDescriptor(observation));
 
     public static string RecruitLegalActionSetHash(HeadlessRosterPolicyObservation observation)
         => LegalActionSetHash(RecruitDescriptor(observation));

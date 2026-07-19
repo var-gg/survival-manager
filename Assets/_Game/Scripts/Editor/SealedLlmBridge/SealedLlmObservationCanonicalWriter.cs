@@ -13,7 +13,7 @@ namespace SM.SealedLlmBridge;
 /// </summary>
 internal static class SealedLlmObservationCanonicalWriter
 {
-    private const string PolicySchema = "SealedLlmPolicyObservationV1";
+    private const string PolicySchema = "SealedLlmPolicyObservationV2";
     private const string RosterPolicySchema = "SealedLlmRosterPolicyObservationV1";
 
     public static byte[] Write(HeadlessPolicyObservation value)
@@ -48,7 +48,33 @@ internal static class SealedLlmObservationCanonicalWriter
                 value.SynergyCatalog,
                 nameof(value.SynergyCatalog),
                 SynergyBytes);
+            SealedLlmCanonicalValue.AppendSortedObjects(
+                payload,
+                value.CurrentPlacements,
+                nameof(value.CurrentPlacements),
+                PlacementBytes);
+            SealedLlmCanonicalValue.AppendSortedObjects(
+                payload,
+                value.OwnedItems,
+                nameof(value.OwnedItems),
+                OwnedItemBytes);
             AppendEvidenceMap(payload, value.EvidenceFactIdsBySignal, nameof(value.EvidenceFactIdsBySignal));
+        });
+
+    private static byte[] PlacementBytes(HeadlessPlacement value)
+        => Create(payload =>
+        {
+            Append(payload, "HeadlessPlacementV1", nameof(HeadlessPlacement));
+            SealedLlmCanonicalValue.AppendEnum(payload, value.Anchor, nameof(value.Anchor));
+            Append(payload, value.HeroId, nameof(value.HeroId));
+        });
+
+    private static byte[] OwnedItemBytes(HeadlessOwnedItemObservation value)
+        => Create(payload =>
+        {
+            Append(payload, "HeadlessOwnedItemObservationV1", nameof(HeadlessOwnedItemObservation));
+            Append(payload, ItemBytes(Required(value.Mechanics, nameof(value.Mechanics))), nameof(value.Mechanics));
+            Append(payload, value.EquippedHeroId, nameof(value.EquippedHeroId));
         });
 
     public static byte[] Write(HeadlessRosterPolicyObservation value)

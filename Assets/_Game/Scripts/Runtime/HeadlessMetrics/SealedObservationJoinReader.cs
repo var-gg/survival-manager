@@ -51,11 +51,13 @@ public sealed record SealedRefitItemRow(
 /// </summary>
 public static class SealedObservationJoinReader
 {
-    private const string PolicySchema = "SealedLlmPolicyObservationV1";
+    private const string PolicySchemaV1 = "SealedLlmPolicyObservationV1";
+    private const string PolicySchemaV2 = "SealedLlmPolicyObservationV2";
     private const string RosterPolicySchema = "SealedLlmRosterPolicyObservationV1";
 
     private const string DeploymentSeam = "deployment";
     private const string RewardSeam = "reward";
+    private const string PrepSeam = "prep";
     private const string RecruitSeam = "recruit";
     private const string LevelNodeSeam = "level_node";
     private const string RefitSeam = "refit";
@@ -69,13 +71,17 @@ public static class SealedObservationJoinReader
             var schema = reader.ReadString("schema");
             switch (schema)
             {
-                case PolicySchema when seamType is DeploymentSeam or RewardSeam:
-                    ParsePolicy(reader, collector);
+                case PolicySchemaV1 when seamType is DeploymentSeam or RewardSeam:
+                    ParsePolicy(reader, collector, hasPrepSurface: false);
+                    break;
+                case PolicySchemaV2 when seamType is DeploymentSeam or PrepSeam or RewardSeam:
+                    ParsePolicy(reader, collector, hasPrepSurface: true);
                     break;
                 case RosterPolicySchema when seamType is RecruitSeam or LevelNodeSeam or RefitSeam:
                     ParseRosterPolicy(reader, collector);
                     break;
-                case PolicySchema:
+                case PolicySchemaV1:
+                case PolicySchemaV2:
                 case RosterPolicySchema:
                     throw new FormatException(
                         $"Observation schema '{schema}' is incompatible with seam '{seamType}'.");
@@ -105,7 +111,10 @@ public static class SealedObservationJoinReader
             Array.Empty<SealedPassiveNodeRow>(),
             Array.Empty<SealedRefitItemRow>());
 
-    private static void ParsePolicy(SealedCanonicalFrameReader reader, Collector collector)
+    private static void ParsePolicy(
+        SealedCanonicalFrameReader reader,
+        Collector collector,
+        bool hasPrepSurface)
     {
         reader.ReadInteger("decision_seed");
         reader.ReadInteger("deploy_capacity");
@@ -120,7 +129,28 @@ public static class SealedObservationJoinReader
         ParseObjectList(reader, "temporary_augments", bytes => ParseAugment(bytes, collector));
         ParseObjectList(reader, "synergy_counts", bytes => ParseSynergyCount(bytes, collector));
         ParseObjectList(reader, "synergy_catalog", bytes => ParseSynergy(bytes, collector));
+        if (hasPrepSurface)
+        {
+            ParseObjectList(reader, "current_placements", bytes => ParsePlacement(bytes, collector));
+            ParseObjectList(reader, "owned_items", bytes => ParseOwnedItem(bytes, collector));
+        }
         ParseEvidenceMap(reader, collector);
+    }
+
+    private static void ParsePlacement(byte[] bytes, Collector collector)
+    {
+        var reader = ObjectReader(bytes, "placement", "HeadlessPlacementV1");
+        collector.Visible(reader.ReadString("anchor"));
+        collector.Visible(reader.ReadString("hero_id"));
+        reader.RequireEnd();
+    }
+
+    private static void ParseOwnedItem(byte[] bytes, Collector collector)
+    {
+        var reader = ObjectReader(bytes, "owned_item", "HeadlessOwnedItemObservationV1");
+        ParseItem(reader.ReadBytes("mechanics"), collector);
+        collector.Visible(reader.ReadString("equipped_hero_id"));
+        reader.RequireEnd();
     }
 
     private static void ParseRosterPolicy(SealedCanonicalFrameReader reader, Collector collector)

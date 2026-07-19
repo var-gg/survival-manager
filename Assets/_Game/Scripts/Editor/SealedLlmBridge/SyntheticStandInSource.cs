@@ -35,6 +35,7 @@ public sealed class SyntheticStandInSource : ISealedDecisionSource
 
     private readonly IHeadlessPolicy _referencePolicy;
     private readonly IHeadlessRosterPolicy _referenceRosterPolicy;
+    private readonly IHeadlessPrepPolicy _referencePrepPolicy;
 
     public SyntheticStandInSource(
         IHeadlessPolicy referencePolicy,
@@ -43,6 +44,7 @@ public sealed class SyntheticStandInSource : ISealedDecisionSource
         _referencePolicy = referencePolicy ?? throw new ArgumentNullException(nameof(referencePolicy));
         _referenceRosterPolicy = referenceRosterPolicy
                                  ?? throw new ArgumentNullException(nameof(referenceRosterPolicy));
+        _referencePrepPolicy = referencePolicy as IHeadlessPrepPolicy;
     }
 
     public LlmDecisionResponseV1 RequestDecision(SealedLlmDecisionRequest request)
@@ -64,6 +66,25 @@ public sealed class SyntheticStandInSource : ISealedDecisionSource
             {
                 var decision = _referencePolicy.DecideReward(RequirePolicyObservation(request));
                 selectedAction = SealedLlmActionCodec.EncodeReward(decision);
+                evidenceFactIds = decision.EvidenceFactIds;
+                break;
+            }
+            case SealedLlmSeamTypes.Prep:
+            {
+                var observation = RequirePolicyObservation(request);
+                var decision = _referencePrepPolicy?.DecidePrep(observation)
+                               ?? new HeadlessPrepDecision(
+                                   observation.CurrentPlacements,
+                                   Array.Empty<HeadlessEquipmentAssignment>(),
+                                   "synthetic_default_hold",
+                                   0d,
+                                   observation.EvidenceFactIdsBySignal.Values
+                                       .Where(value => !string.IsNullOrWhiteSpace(value))
+                                       .Distinct(StringComparer.Ordinal)
+                                       .OrderBy(value => value, StringComparer.Ordinal)
+                                       .Take(1)
+                                       .ToArray());
+                selectedAction = SealedLlmActionCodec.EncodePrep(decision);
                 evidenceFactIds = decision.EvidenceFactIds;
                 break;
             }

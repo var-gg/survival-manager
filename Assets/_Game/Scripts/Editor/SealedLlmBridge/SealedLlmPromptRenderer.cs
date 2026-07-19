@@ -38,7 +38,7 @@ public static class SealedLlmPromptRenderer
         IReadOnlyList<string> legalActionKeys,
         LlmPromptManifestV1 manifest)
     {
-        ValidateSeam(seamKey, SealedLlmSeamTypes.Deployment, SealedLlmSeamTypes.Reward);
+        ValidateSeam(seamKey, SealedLlmSeamTypes.Deployment, SealedLlmSeamTypes.Prep, SealedLlmSeamTypes.Reward);
         HeadlessPolicyGuard.ValidateObservation(
             observation ?? throw new ArgumentNullException(nameof(observation)));
         return RenderDecision(seamKey, observation, legalActionKeys, manifest);
@@ -93,6 +93,7 @@ public static class SealedLlmPromptRenderer
         return seamKey.SeamType switch
         {
             SealedLlmSeamTypes.Deployment => DeploymentPairKeys(observation),
+            SealedLlmSeamTypes.Prep => PrepComponentKeys(observation),
             SealedLlmSeamTypes.Reward => SealedLlmLegalActionSet.RewardKeys(observation),
             _ => throw new ArgumentException($"Policy observation cannot serve seam '{seamKey.SeamType}'.", nameof(seamKey)),
         };
@@ -159,6 +160,13 @@ public static class SealedLlmPromptRenderer
                 .Append(RenderObservation(DeploymentActionSpace(policyObservation)))
                 .Append("\nDeployment selected_action must contain exactly deploy_capacity distinct anchorId=heroId pairs, joined by ';', with pairs strictly ordinal-sorted by anchorId.");
         }
+        else if (string.Equals(seamKey.SeamType, SealedLlmSeamTypes.Prep, StringComparison.Ordinal))
+        {
+            var policyObservation = (HeadlessPolicyObservation)observation;
+            prompt.Append("\ndeployment_action_space=")
+                .Append(RenderObservation(DeploymentActionSpace(policyObservation)))
+                .Append("\nPrep selected_action must be formation#<full canonical deployment>|equipment#<skip or itemInstanceId=heroId entries sorted by item id and joined by ','>. Keep at most two retained-hero anchor edits and at most one bench swap; equipment may use only observed owned items and selected heroes.");
+        }
         else
         {
             prompt.Append("\nselected_action must equal exactly one legal_action_keys entry.");
@@ -193,6 +201,15 @@ public static class SealedLlmPromptRenderer
             .Select(value => value.Key)
             .ToArray();
     }
+
+    private static IReadOnlyList<string> PrepComponentKeys(HeadlessPolicyObservation observation)
+        => DeploymentPairKeys(observation)
+            .Concat(new[] { SealedLlmActionGrammar.Skip })
+            .Concat(observation.OwnedItems.SelectMany(item => observation.Roster.Select(hero =>
+                SealedLlmActionGrammar.PrepEquipmentPair(item.Mechanics.ItemInstanceId, hero.HeroId))))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
 
     private static IReadOnlyList<string> RequireLegalKeys(IReadOnlyList<string> legalActionKeys)
     {

@@ -8,7 +8,7 @@ namespace SM.HeadlessPolicies;
 /// 순간 점수보다 선언된 build intent의 정체성·milestone·pivot 조건을 우선하는 결정적 정책.
 /// coverage intent는 순수 DTO constructor injection을 허용하고, null이면 가시 fact만으로 discovery intent를 만든다.
 /// </summary>
-public sealed class ConceptCommitPolicy : IHeadlessPolicy, IHeadlessRosterPolicy
+public sealed class ConceptCommitPolicy : IHeadlessPolicy, IHeadlessRosterPolicy, IHeadlessPrepPolicy
 {
     public const string PolicyId = "concept-commit-v1";
     public const string PreviewGroundedPolicyId = "concept-preview-grounded-v1";
@@ -144,6 +144,54 @@ public sealed class ConceptCommitPolicy : IHeadlessPolicy, IHeadlessRosterPolicy
             rationale,
             ConceptIntentPredicateMatcher.RewardPrimaryMatches(_intent, selection.Option),
             evidence);
+    }
+
+    public HeadlessPrepDecision DecidePrep(HeadlessPolicyObservation observation)
+    {
+        HeadlessPolicyGuard.ValidateObservation(observation);
+        EnsureIntentState(observation);
+        if (observation.CurrentPlacements.Count != observation.DeployCapacity)
+        {
+            throw new InvalidOperationException("Prep requires a complete current deployment.");
+        }
+
+        var selection = _usesPreviewGroundedSelection
+            ? PreviewGroundedPrepSelector.Select(observation)
+            : new PreviewGroundedPrepSelection(
+                observation.CurrentPlacements,
+                Array.Empty<HeadlessEquipmentAssignment>(),
+                0d,
+                "default_hold",
+                new[]
+                {
+                    HeadlessPolicyEvidence.DeploymentSurfaceSignal,
+                    HeadlessPolicyEvidence.RosterSurfaceSignal,
+                    HeadlessPolicyEvidence.EnemyPreviewSignal,
+                });
+        var evidence = HeadlessPolicyEvidence.ForSignals(observation, selection.EvidenceSignals);
+        var action = HeadlessPolicyScoring.PlacementSignature(selection.Placements);
+        var changed = !string.Equals(
+            action,
+            HeadlessPolicyScoring.PlacementSignature(observation.CurrentPlacements),
+            StringComparison.Ordinal);
+        RecordDecision(
+            "prep",
+            action,
+            changed ? IntentDecisionReason.CounterAdapt : IntentDecisionReason.Keep,
+            milestoneAdvanced: false,
+            scarceResourceInvested: false,
+            meaningfulProgress: changed,
+            _state.ProgressScore,
+            _state.CompletedMilestones,
+            DeclareHypothesis(evidence));
+        var decision = new HeadlessPrepDecision(
+            selection.Placements,
+            selection.EquipmentAssignments,
+            Rationale(changed ? IntentDecisionReason.CounterAdapt : IntentDecisionReason.Keep, selection.Rationale),
+            selection.EstimatedValue,
+            evidence);
+        HeadlessPrepPolicyGuard.ValidateDecision(observation, decision);
+        return decision;
     }
 
     public HeadlessRecruitDecision DecideRecruit(HeadlessRosterPolicyObservation observation)

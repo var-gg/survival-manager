@@ -11,11 +11,40 @@ using UnityEngine;
 namespace SM.Editor.Validation;
 
 /// <summary>
-/// Phase A 480-cell two-arm campaign measurement. 실 session/content composition을 사용하되
+/// Phase B 480-cell two-arm campaign measurement. 실 session/content composition을 사용하되
 /// gameplay/content 자산은 수정하지 않고 측정 입력의 build/roster/enemy placement만 투영한다.
 /// </summary>
 internal static class CampaignTwoArmSweepRunner
 {
+    internal static CampaignPrepMechanismSummary RunPrepMechanismWitness(int maximumCells = 12)
+    {
+        var config = CampaignBalanceSweepConfig.Default;
+        var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
+        if (!lookup.TryGetCombatSnapshot(out var content, out var contentError))
+        {
+            throw new InvalidOperationException($"campaign prep witness content unavailable: {contentError}");
+        }
+
+        var itemIndex = CampaignBalanceSweepRunner.LoadItemMetaIndex();
+        var order = CampaignContentOrderIndex.Build(content);
+        var accumulator = new CampaignTwoArmSweepAccumulator(config);
+        foreach (var cell in config.BuildGrid().Take(Math.Max(1, maximumCells)))
+        {
+            foreach (var arm in config.Arms)
+            {
+                RunCell(lookup, itemIndex, order, config, arm, cell, accumulator);
+            }
+
+            var witness = accumulator.BuildPrepMechanismSummary();
+            if (witness.FormationDivergenceCount > 0)
+            {
+                return witness;
+            }
+        }
+
+        return accumulator.BuildPrepMechanismSummary();
+    }
+
     public static CampaignTwoArmSweepReport Run(CampaignBalanceSweepConfig config)
     {
         config.Validate();
@@ -72,6 +101,7 @@ internal static class CampaignTwoArmSweepRunner
         ApplyBuildPower(session, lookup, itemIndex, cell.BuildPower);
 
         var policy = HeadlessPolicyFactory.Create(arm.PolicyId);
+        var siteEntryPolicy = new GreedyPolicy();
         var siteCount = 0;
         while (!session.Profile.CampaignProgress.StoryCleared && siteCount < config.SiteSafety)
         {
@@ -91,17 +121,13 @@ internal static class CampaignTwoArmSweepRunner
                 decisionSeed,
                 includeTownRoster: true);
 
-            // Naive는 첫 출격에서 greedy/fixed binding을 적용한 뒤 이전 formation hash를 유지한다.
-            // Informed만 매 site 무료 preview를 읽어 site-entry setup을 다시 고른다.
-            if (arm.UsesForcedPreview || siteCount == 0)
-            {
-                H100SessionDriver.ApplyPolicyDeployment(
-                    session,
-                    lookup,
-                    policy,
-                    decisionSeed,
-                    observation);
-            }
+            // Phase B는 두 arm의 site-entry를 동일하게 고정하고 elite/boss prep만 인과 변수로 둔다.
+            H100SessionDriver.ApplyPolicyDeployment(
+                session,
+                lookup,
+                siteEntryPolicy,
+                decisionSeed,
+                observation);
 
             var setupAfter = FormationHash(session);
             accumulator.RecordSiteEntryDecision(
@@ -125,6 +151,48 @@ internal static class CampaignTwoArmSweepRunner
                 }
 
                 var measuredEncounter = ProjectEncounter(encounter, cell.EnemyComposition);
+                var prepOpportunity = encounter.Context.IsBoss || IsElite(encounter);
+                var prepChanged = false;
+                if (prepOpportunity && arm.UsesEncounterPrep && policy is IHeadlessPrepPolicy prepPolicy)
+                {
+                    var prepBefore = FormationHash(session);
+                    var prepSeed = H100SessionDriver.DeriveSeed(
+                        $"{chapterId}|{siteId}|{node.Id}|{cell.CellId}|prep",
+                        siteCount);
+                    var prepObservation = H100PolicyObservationBuilder.Build(
+                            session,
+                            lookup,
+                            prepSeed,
+                            includeTownRoster: true)
+                        .WithEnemyPreview(ProjectPreview(
+                            H100PolicyObservationBuilder.Build(
+                                session,
+                                lookup,
+                                prepSeed,
+                                includeTownRoster: true).EnemyPreview,
+                            measuredEncounter.Enemies));
+                    H100SessionDriver.ApplyPolicyPrep(
+                        session,
+                        policy,
+                        prepPolicy,
+                        prepSeed,
+                        prepObservation);
+                    prepChanged = !string.Equals(prepBefore, FormationHash(session), StringComparison.Ordinal);
+
+                    if (!session.TryBuildSelectedBattleState(
+                            out _,
+                            out encounter,
+                            out allySnapshot,
+                            out buildError))
+                    {
+                        throw new InvalidOperationException(
+                            $"two-arm post-prep battle state build failed({cell.CellId}/{arm.ArmId}/{node.Id}): {buildError}");
+                    }
+
+                    measuredEncounter = ProjectEncounter(encounter, cell.EnemyComposition);
+                }
+
+                accumulator.RecordPrepDecision(arm, prepOpportunity, prepChanged);
                 if (!session.TryComposeBattleState(allySnapshot, measuredEncounter, out var state, out var composeError))
                 {
                     throw new InvalidOperationException(
@@ -146,10 +214,12 @@ internal static class CampaignTwoArmSweepRunner
                     encounter.Context.IsBoss);
                 accumulator.RecordNode(
                     arm,
+                    cell.CellId,
                     cell.Squad.SquadId,
                     identity,
                     won,
-                    HasBossAnswerTag(allySnapshot));
+                    HasBossAnswerTag(allySnapshot),
+                    FormationHash(session));
 
                 // 측정 outcome은 위 1회 deterministic cell 결과다. 캠페인 후속 노드 도달 상태만 기존
                 // retry-until-win 하네스와 같이 동일 build/formation의 첫 winning seed로 정산한다.
@@ -204,6 +274,27 @@ internal static class CampaignTwoArmSweepRunner
                 variant.VariantIndex),
         };
     }
+
+    private static HeadlessEnemyPreview ProjectPreview(
+        HeadlessEnemyPreview authored,
+        IReadOnlyList<BattleUnitLoadout> enemies)
+        => new(
+            authored.IsAvailable,
+            authored.EncounterId,
+            authored.FactionId,
+            authored.DifficultyBand,
+            authored.ThreatSkulls,
+            (enemies ?? Array.Empty<BattleUnitLoadout>())
+                .Select(unit => new HeadlessEnemyUnitPreview(
+                    unit.ArchetypeId,
+                    unit.RaceId,
+                    unit.ClassId,
+                    unit.RoleTag,
+                    unit.PreferredAnchor))
+                .ToArray(),
+            authored.BossAuraTag,
+            authored.BossUtilityTag,
+            authored.RewardDropTags);
 
     private static BattleResult FindProgressionResult(
         GameSessionState session,

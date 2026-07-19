@@ -6,7 +6,7 @@ using SM.HeadlessPolicies;
 namespace SM.Editor.Validation;
 
 /// <summary>
-/// 캠페인 난이도 곡선 Phase A 측정 사양. 런타임 콘텐츠가 아니라 Editor 검증 하네스의 버전된 입력이다.
+/// 캠페인 난이도 곡선 Phase B 측정 사양. 런타임 콘텐츠가 아니라 Editor 검증 하네스의 버전된 입력이다.
 /// gpt-pro 정량 사양 v1의 480-cell grid, 두 arm binding, 승률 band와 guardrail을 한 곳에 고정한다.
 /// </summary>
 public sealed record CampaignBalanceSweepConfig(
@@ -111,13 +111,13 @@ public sealed record CampaignBalanceSweepConfig(
             new CampaignBalanceArmSpec(
                 "naive",
                 HeadlessPolicyFactory.GreedyId,
-                UsesForcedPreview: false,
-                "Fixed greedy deployment; ignores preview and preserves the prior formation after initial setup."),
+                UsesEncounterPrep: false,
+                "Shared greedy site entry; elite/boss prep holds."),
             new CampaignBalanceArmSpec(
                 "informed",
                 HeadlessPolicyFactory.PreviewGroundedConceptId,
-                UsesForcedPreview: true,
-                "Phase A site-entry preview-grounded setup; Phase B mid-site prep transaction is not available."),
+                UsesEncounterPrep: true,
+                "Shared greedy site entry; preview-grounded bounded prep runs before elite and boss nodes."),
         };
 
         var squads = new[]
@@ -136,7 +136,7 @@ public sealed record CampaignBalanceSweepConfig(
                 new[] { "raider", "scout", "priest", "shaman" }),
         };
 
-        // Phase A에는 라이브 EBP 분포가 아직 없다. 기존 3-slot 장비와 passive budget 경로만 사용해
+        // Phase B에도 라이브 EBP 분포가 아직 없다. 기존 3-slot 장비와 passive budget 경로만 사용해
         // 동일 콘텐츠에서 재현 가능한 ordinal cohort를 만든다(수치 stat multiplier는 발명하지 않는다).
         var builds = new[]
         {
@@ -270,8 +270,8 @@ public sealed record CampaignBalanceSweepConfig(
 public sealed record CampaignBalanceArmSpec(
     string ArmId,
     string PolicyId,
-    bool UsesForcedPreview,
-    string PhaseADescription);
+    bool UsesEncounterPrep,
+    string Description);
 
 public sealed record CampaignReferenceSquadSpec(
     string SquadId,

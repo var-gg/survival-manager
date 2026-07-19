@@ -182,9 +182,10 @@ public static class SealedLlmExchangeEnvelope
 
         if (value.DeploymentActionSpace != null)
         {
-            if (!string.Equals(value.SeamKey.SeamType, SealedLlmSeamTypes.Deployment, StringComparison.Ordinal))
+            if (!string.Equals(value.SeamKey.SeamType, SealedLlmSeamTypes.Deployment, StringComparison.Ordinal)
+                && !string.Equals(value.SeamKey.SeamType, SealedLlmSeamTypes.Prep, StringComparison.Ordinal))
             {
-                throw new ArgumentException("DeploymentActionSpace is only valid for deployment requests.", nameof(value));
+                throw new ArgumentException("DeploymentActionSpace is only valid for deployment or prep requests.", nameof(value));
             }
 
             if (value.DeploymentActionSpace.AvailableHeroIds == null

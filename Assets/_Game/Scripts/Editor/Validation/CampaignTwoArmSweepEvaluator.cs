@@ -11,6 +11,7 @@ internal sealed class CampaignTwoArmSweepAccumulator
     private readonly Dictionary<string, NodeBucket> _nodes = new(StringComparer.Ordinal);
     private readonly Dictionary<string, SiteBucket> _sites = new(StringComparer.Ordinal);
     private readonly Dictionary<string, DecisionBucket> _decisions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, PairedNodeObservation> _pairedNodes = new(StringComparer.Ordinal);
 
     public CampaignTwoArmSweepAccumulator(CampaignBalanceSweepConfig config)
     {
@@ -23,10 +24,12 @@ internal sealed class CampaignTwoArmSweepAccumulator
 
     public void RecordNode(
         CampaignBalanceArmSpec arm,
+        string cellId,
         string squadId,
         CampaignNodeIdentity node,
         bool won,
-        bool answerTagPresent)
+        bool answerTagPresent,
+        string formationHash)
     {
         var key = $"{node.ChapterOrder:D2}|{node.SiteOrder:D2}|{node.NodeOrder:D2}|{node.NodeId}";
         if (!_nodes.TryGetValue(key, out var bucket))
@@ -42,6 +45,15 @@ internal sealed class CampaignTwoArmSweepAccumulator
         {
             decision.LossesObserved++;
         }
+
+        var pairKey = $"{cellId}|{key}";
+        if (!_pairedNodes.TryGetValue(pairKey, out var paired))
+        {
+            paired = new PairedNodeObservation();
+            _pairedNodes.Add(pairKey, paired);
+        }
+
+        paired.Record(arm.ArmId, won, formationHash);
     }
 
     public void RecordSite(
@@ -79,6 +91,25 @@ internal sealed class CampaignTwoArmSweepAccumulator
         }
     }
 
+    public void RecordPrepDecision(CampaignBalanceArmSpec arm, bool opportunity, bool setupChanged)
+    {
+        if (!opportunity)
+        {
+            return;
+        }
+
+        var bucket = _decisions[arm.ArmId];
+        bucket.PrepOpportunities++;
+        if (setupChanged)
+        {
+            bucket.PrepStateChanges++;
+        }
+        else
+        {
+            bucket.ForcedNoOpClicks++;
+        }
+    }
+
     public IReadOnlyList<CampaignTwoArmNodeAggregate> BuildNodeAggregates()
         => _nodes.Values
             .OrderBy(bucket => bucket.Identity.ChapterOrder)
@@ -98,6 +129,16 @@ internal sealed class CampaignTwoArmSweepAccumulator
 
     public IReadOnlyList<CampaignDecisionDensityRaw> BuildDecisionAggregates()
         => _config.Arms.Select(arm => _decisions[arm.ArmId].Build()).ToArray();
+
+    public CampaignPrepMechanismSummary BuildPrepMechanismSummary()
+    {
+        var complete = _pairedNodes.Values.Where(value => value.IsComplete).ToArray();
+        return new CampaignPrepMechanismSummary(
+            complete.Count(value => !string.Equals(value.NaiveFormationHash, value.InformedFormationHash, StringComparison.Ordinal)),
+            complete.Count(value => value.NaiveWon.Value != value.InformedWon.Value),
+            complete.Count(value => !value.NaiveWon.Value && value.InformedWon.Value),
+            complete.Count(value => value.NaiveWon.Value && !value.InformedWon.Value));
+    }
 
     private sealed class NodeBucket
     {
@@ -214,6 +255,8 @@ internal sealed class CampaignTwoArmSweepAccumulator
         public long UniqueBattlesEntered { get; set; }
         public long PreviewOpportunities { get; set; }
         public long PreviewStateChanges { get; set; }
+        public long PrepOpportunities { get; set; }
+        public long PrepStateChanges { get; set; }
         public long ForcedNoOpClicks { get; set; }
         public long LossesObserved { get; set; }
         public long LossesFollowedByChangedSetup { get; set; }
@@ -222,13 +265,46 @@ internal sealed class CampaignTwoArmSweepAccumulator
             => new(
                 Arm,
                 UniqueBattlesEntered,
-                new CampaignDecisionDensityCounts(0, PreviewOpportunities, 0, 0),
-                new CampaignDecisionDensityCounts(0, PreviewStateChanges, 0, 0),
+                new CampaignDecisionDensityCounts(0, PreviewOpportunities, PrepOpportunities, 0),
+                new CampaignDecisionDensityCounts(0, PreviewStateChanges, PrepStateChanges, 0),
                 ForcedNoOpClicks,
                 LossesObserved,
                 LossesFollowedByChangedSetup);
     }
+
+    private sealed class PairedNodeObservation
+    {
+        public bool? NaiveWon { get; private set; }
+        public bool? InformedWon { get; private set; }
+        public string NaiveFormationHash { get; private set; }
+        public string InformedFormationHash { get; private set; }
+        public bool IsComplete => NaiveWon.HasValue && InformedWon.HasValue;
+
+        public void Record(string armId, bool won, string formationHash)
+        {
+            if (string.Equals(armId, "naive", StringComparison.Ordinal))
+            {
+                NaiveWon = won;
+                NaiveFormationHash = formationHash;
+            }
+            else if (string.Equals(armId, "informed", StringComparison.Ordinal))
+            {
+                InformedWon = won;
+                InformedFormationHash = formationHash;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Unknown campaign arm '{armId}'.");
+            }
+        }
+    }
 }
+
+internal sealed record CampaignPrepMechanismSummary(
+    int FormationDivergenceCount,
+    int OutcomeDivergenceCount,
+    int InformedOnlyWinCount,
+    int NaiveOnlyWinCount);
 
 internal sealed record CampaignNodeIdentity(
     string ChapterId,
@@ -375,10 +451,10 @@ public static class CampaignTwoArmBandEvaluator
             Sites = sites,
             Chapters = chapters,
             DecisionDensity = decisionDensity,
-            Summary = BuildSummary(config, nodes, sites, samplingPass),
+            Summary = BuildSummary(config, nodes, sites, samplingPass, accumulator.BuildPrepMechanismSummary()),
             PhaseAApproximations = new[]
             {
-                "informed arm uses the existing site-entry preview-grounded policy; Phase B adds the mid-site <=2 formation edits + <=1 bench swap prep transaction",
+                "both arms share greedy site-entry deployment; informed alone receives the elite/boss <=2 formation edits + <=1 bench swap prep transaction",
                 "build-power quantiles are ordinal cohorts made only from existing 0/1/2/3 equipment-slot and available-passive paths; no stat multiplier is injected",
                 "enemy composition variants preserve authored units/mechanics and vary only deterministic member order/anchor placement inside the measurement input",
                 "paid Scout, recruit, and Refit are never invoked by either arm",
@@ -503,7 +579,8 @@ public static class CampaignTwoArmBandEvaluator
         CampaignBalanceSweepConfig config,
         IReadOnlyList<CampaignTwoArmNodeReport> nodes,
         IReadOnlyList<CampaignTwoArmSiteReport> sites,
-        bool samplingPass)
+        bool samplingPass,
+        CampaignPrepMechanismSummary mechanism)
     {
         var cliffs = nodes.Where(node =>
                 node.Informed.WinRate < config.Guardrails.CliffNodeMinimumWinRate
@@ -580,6 +657,10 @@ public static class CampaignTwoArmBandEvaluator
             MeanBossNaiveWinRate = bosses.Length == 0 ? 0 : bosses.Average(node => node.Naive.WinRate),
             MeanBossInfoWinRate = bosses.Length == 0 ? 0 : bosses.Average(node => node.Informed.WinRate),
             MeanBossGap = bosses.Length == 0 ? 0 : bosses.Average(node => node.Gap),
+            PrepFormationDivergenceCount = mechanism.FormationDivergenceCount,
+            OutcomeDivergenceCount = mechanism.OutcomeDivergenceCount,
+            InformedOnlyWinCount = mechanism.InformedOnlyWinCount,
+            NaiveOnlyWinCount = mechanism.NaiveOnlyWinCount,
             CliffFindings = cliffs,
             ConsecutiveInfoSiteAndDropFindings = drops,
             LateSaturationFindings = saturation,

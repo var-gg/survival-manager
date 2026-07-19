@@ -141,18 +141,18 @@ public static class CampaignBalanceSweepRunner
         Debug.Log($"[CampaignSweep] smoke run complete → {result.ReportDirectory}");
     }
 
-    [MenuItem("SM/Internal/Validation/Run Campaign Balance Sweep (Two Arm Phase A)")]
+    [MenuItem("SM/Internal/Validation/Run Campaign Balance Sweep (Two Arm Phase B)")]
     public static void RunTwoArmBaselineMenu()
     {
         var result = RunTwoArm(CampaignBalanceSweepConfig.Default);
         Debug.Log($"[CampaignSweep] two-arm baseline complete → {result.JsonReportPath}");
     }
 
-    /// <summary>Phase A 480-cell naive/informed measurement lane. 기존 curve/delta lane과 artifact를 분리한다.</summary>
+    /// <summary>Phase B 480-cell naive/informed measurement lane. 기존 curve/delta lane과 artifact를 분리한다.</summary>
     public static CampaignTwoArmSweepReport RunTwoArm(CampaignBalanceSweepConfig config)
         => CampaignTwoArmSweepRunner.Run(config);
 
-    /// <summary>배치 CLI 진입점: Phase A canonical 480-cell two-arm baseline.</summary>
+    /// <summary>배치 CLI 진입점: Phase B canonical 480-cell two-arm baseline.</summary>
     public static void RunTwoArmBaselineFromCli()
     {
         try

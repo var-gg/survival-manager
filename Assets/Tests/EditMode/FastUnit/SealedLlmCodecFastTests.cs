@@ -78,6 +78,7 @@ public sealed class SealedLlmCodecFastTests
             typeof(HeadlessPassiveNodeObservation),
             typeof(HeadlessRefitItemObservation),
             typeof(HeadlessRefitSlotObservation),
+            typeof(HeadlessOwnedItemObservation),
         };
 
         foreach (var type in observationTypes)
@@ -109,7 +110,7 @@ public sealed class SealedLlmCodecFastTests
     }
 
     [Test]
-    public void FiveSeams_EncodeDecodeRoundTripChoiceAndPassProductionGuards()
+    public void SixSeams_EncodeDecodeRoundTripChoiceAndPassProductionGuards()
     {
         var policyObservation = CreatePolicyObservation();
         var rosterObservation = CreateRosterObservation();
@@ -128,6 +129,25 @@ public sealed class SealedLlmCodecFastTests
             SealedLlmActionCodec.EncodeDeployment(deployment));
         Assert.That(PlacementSignature(decodedDeployment), Is.EqualTo(PlacementSignature(deployment)));
         Assert.DoesNotThrow(() => HeadlessPolicyGuard.ValidateDeploymentDecision(policyObservation, decodedDeployment));
+
+        var prep = new HeadlessPrepDecision(
+            new[]
+            {
+                new HeadlessPlacement(DeploymentAnchorId.BackTop, "hero-b"),
+                new HeadlessPlacement(DeploymentAnchorId.FrontTop, "hero-a"),
+            },
+            new[] { new HeadlessEquipmentAssignment("instance-hero-a", "hero-b") },
+            "reference",
+            1d,
+            new[] { "fact" });
+        var decodedPrep = SealedLlmActionCodec.DecodePrep(
+            policyObservation,
+            SealedLlmActionCodec.EncodePrep(prep));
+        Assert.That(
+            string.Join(";", decodedPrep.Placements.OrderBy(value => value.Anchor).Select(value => $"{value.Anchor}={value.HeroId}")),
+            Is.EqualTo(string.Join(";", prep.Placements.OrderBy(value => value.Anchor).Select(value => $"{value.Anchor}={value.HeroId}"))));
+        Assert.That(decodedPrep.EquipmentAssignments.Single().ItemInstanceId, Is.EqualTo("instance-hero-a"));
+        Assert.DoesNotThrow(() => HeadlessPrepPolicyGuard.ValidateDecision(policyObservation, decodedPrep));
 
         var reward = new HeadlessRewardDecision(1, "reference", 1d, new[] { "fact" });
         var decodedReward = SealedLlmActionCodec.DecodeReward(
@@ -163,7 +183,7 @@ public sealed class SealedLlmCodecFastTests
     }
 
     [Test]
-    public void FiveSeams_RejectMalformedAndOffMenuActionsWithTypedException()
+    public void SixSeams_RejectMalformedAndOffMenuActionsWithTypedException()
     {
         var policyObservation = CreatePolicyObservation();
         var rosterObservation = CreateRosterObservation();
@@ -174,6 +194,12 @@ public sealed class SealedLlmCodecFastTests
         AssertTypedFailure(() => SealedLlmActionCodec.DecodeDeployment(
             policyObservation,
             "BackTop=missing;FrontTop=hero-b"));
+        AssertTypedFailure(() => SealedLlmActionCodec.DecodePrep(
+            policyObservation,
+            "formation#BackTop=hero-a;FrontTop=hero-b|equipment#missing=hero-a"));
+        AssertTypedFailure(() => SealedLlmActionCodec.DecodePrep(
+            policyObservation,
+            "formation#BackTop=hero-b;FrontTop=hero-a|equipment#skip|extra"));
         AssertTypedFailure(() => SealedLlmActionCodec.DecodeReward(policyObservation, "01"));
         AssertTypedFailure(() => SealedLlmActionCodec.DecodeReward(policyObservation, "99"));
         AssertTypedFailure(() => SealedLlmActionCodec.DecodeRecruit(rosterObservation, " 0"));
@@ -319,6 +345,17 @@ public sealed class SealedLlmCodecFastTests
             {
                 ["signal-b"] = "fact-b",
                 ["signal-a"] = "fact-a",
+            },
+            new[]
+            {
+                new HeadlessPlacement(DeploymentAnchorId.BackTop, "hero-a"),
+                new HeadlessPlacement(DeploymentAnchorId.FrontTop, "hero-b"),
+            },
+            new[]
+            {
+                new HeadlessOwnedItemObservation(
+                    Item("item-hero-a", "instance-hero-a", tags, deepAffixMagnitude),
+                    "hero-a"),
             });
         HeadlessPolicyGuard.ValidateObservation(observation);
         return observation;

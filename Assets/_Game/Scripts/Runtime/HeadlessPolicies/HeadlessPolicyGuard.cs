@@ -58,6 +58,34 @@ public static class HeadlessPolicyGuard
             }
         }
 
+        RequireDistinct(observation.CurrentPlacements.Select(value => value.Anchor), "current anchor");
+        RequireDistinct(observation.CurrentPlacements.Select(value => value.HeroId), "current deployed hero");
+        var visibleHeroIds = observation.Roster.Select(value => value.HeroId).ToHashSet(StringComparer.Ordinal);
+        var visibleAnchorIds = observation.Anchors.ToHashSet();
+        foreach (var placement in observation.CurrentPlacements)
+        {
+            if (placement == null
+                || !visibleHeroIds.Contains(placement.HeroId)
+                || !visibleAnchorIds.Contains(placement.Anchor))
+            {
+                throw new InvalidOperationException("Current placement is outside the visible roster or anchor set.");
+            }
+        }
+
+        RequireDistinct(observation.OwnedItems.Select(value => value.Mechanics.ItemInstanceId), "owned item instance");
+        foreach (var item in observation.OwnedItems)
+        {
+            if (item?.Mechanics == null || string.IsNullOrWhiteSpace(item.Mechanics.ItemInstanceId))
+            {
+                throw new InvalidOperationException("Owned item observations require a stable instance id.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.EquippedHeroId) && !visibleHeroIds.Contains(item.EquippedHeroId))
+            {
+                throw new InvalidOperationException("Owned item equip owner must be visible to prep policy.");
+            }
+        }
+
         ValidateEnemyPreview(observation.EnemyPreview);
         RequireDistinct(observation.RewardOptions.Select(option => option.Index), "reward option index");
         foreach (var option in observation.RewardOptions)

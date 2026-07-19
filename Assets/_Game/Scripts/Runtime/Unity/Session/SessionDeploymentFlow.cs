@@ -11,7 +11,7 @@ namespace SM.Unity;
 
 public sealed partial class GameSessionState
 {
-    internal sealed class SessionDeploymentFlow
+    internal sealed partial class SessionDeploymentFlow
     {
         private readonly GameSessionState _session;
 

@@ -5,6 +5,7 @@ using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
+using SM.Meta.Model;
 using SM.SealedLlmBridge;
 using SM.Unity;
 
@@ -168,6 +169,53 @@ internal static class H100CampaignCorpusRunner
                         session.AbandonExpeditionRun();
                         defeated = true;
                         break;
+                    }
+
+                    if (policy is IHeadlessPrepPolicy prepPolicy
+                        && session.TryBuildSelectedBattleState(out _, out var prepEncounter, out _, out _)
+                        && (prepEncounter.Context.IsBoss || IsElite(prepEncounter)))
+                    {
+                        var prepSeed = H100SessionDriver.DeriveSeed(
+                            $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|{session.GetSelectedExpeditionNode()!.Id}|prep",
+                            campaignSeed + battleIndex);
+                        var prepObservation = factLedger.Observe(
+                            campaignId,
+                            campaignIndex,
+                            siteCount,
+                            decisionCount,
+                            H100PolicyObservationBuilder.Build(
+                                session,
+                                lookup,
+                                prepSeed,
+                                includeTownRoster: true));
+                        observationHooks?.PrepOffered?.Invoke(new H100PrepOfferedContext(
+                            campaignId,
+                            campaignIndex,
+                            campaignSeed,
+                            siteCount,
+                            battleIndex,
+                            decisionCount,
+                            prepSeed,
+                            session,
+                            prepObservation));
+                        var prepDecision = H100SessionDriver.ApplyPolicyPrep(
+                            session,
+                            policy,
+                            prepPolicy,
+                            prepSeed,
+                            prepObservation,
+                            decisionLog,
+                            decisionCount,
+                            observationHooks?.DecisionApplied);
+                        factLedger.RecordPrep(
+                            campaignId,
+                            campaignIndex,
+                            siteCount,
+                            decisionCount,
+                            policy.Id,
+                            prepDecision);
+                        intentTrace.Record(campaignId, campaignIndex, siteCount, decisionCount, policy);
+                        decisionCount++;
                     }
 
                     var replayGroupId = $"{campaignId}-battle-{battleIndex:D4}";
@@ -387,4 +435,8 @@ internal static class H100CampaignCorpusRunner
             ReplayManifestHash = ReplayHash.ComputeManifest(campaignBattles.Select(record => record.ReplayHash)),
         });
     }
+
+    private static bool IsElite(ResolvedEncounterContext encounter)
+        => encounter.Context.EncounterId.Contains("_elite_", StringComparison.Ordinal)
+           || encounter.Context.RewardSourceId.Contains("elite", StringComparison.OrdinalIgnoreCase);
 }

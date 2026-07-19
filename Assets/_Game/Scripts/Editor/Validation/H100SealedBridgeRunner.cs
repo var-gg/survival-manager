@@ -477,6 +477,10 @@ public static class H100SealedBridgeRunner
             replay.SealedManifestHash,
             replay.RebuiltManifestHash,
             replay.RebuiltTrace.Entries.Count,
+            replay.RebuiltTrace.Entries.Count(entry => string.Equals(
+                entry.SeamKey.SeamType,
+                SealedLlmSeamTypes.Prep,
+                StringComparison.Ordinal)),
             capture.TracePath,
             replay.Verification.FirstDivergenceReason.ToString(),
             replay.Verification.FirstDivergenceDetail);
@@ -1035,6 +1039,10 @@ public static class H100SealedBridgeRunner
                     context.DecisionIndex,
                     SealedLlmSeamTypes.Reward,
                     context.Session),
+                PrepOffered: context => Stash(
+                    context.DecisionIndex,
+                    SealedLlmSeamTypes.Prep,
+                    context.Session),
                 RosterDecisionOffered: context => Stash(
                     context.DecisionIndex,
                     context.LeverId,
@@ -1129,15 +1137,17 @@ public static class H100SealedBridgeRunner
             => $"{key.DecisionIndex}:{key.SeamType}:{key.Ordinal}";
     }
 
-    private sealed class ScriptedReferencePolicy : IHeadlessPolicy, IHeadlessRosterPolicy
+    private sealed class ScriptedReferencePolicy : IHeadlessPolicy, IHeadlessRosterPolicy, IHeadlessPrepPolicy
     {
         private readonly IHeadlessPolicy _policy;
         private readonly IHeadlessRosterPolicy? _rosterPolicy;
+        private readonly IHeadlessPrepPolicy? _prepPolicy;
 
         public ScriptedReferencePolicy(IHeadlessPolicy policy)
         {
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
             _rosterPolicy = policy as IHeadlessRosterPolicy;
+            _prepPolicy = policy as IHeadlessPrepPolicy;
         }
 
         public string Id => _policy.Id;
@@ -1147,6 +1157,19 @@ public static class H100SealedBridgeRunner
 
         public HeadlessRewardDecision DecideReward(HeadlessPolicyObservation observation)
             => _policy.DecideReward(observation);
+
+        public HeadlessPrepDecision DecidePrep(HeadlessPolicyObservation observation)
+            => _prepPolicy?.DecidePrep(observation)
+               ?? new HeadlessPrepDecision(
+                   observation.CurrentPlacements,
+                   Array.Empty<HeadlessEquipmentAssignment>(),
+                   "factory policy does not opt into prep changes",
+                   0d,
+                   Evidence(
+                       observation,
+                       HeadlessPolicyEvidence.DeploymentSurfaceSignal,
+                       HeadlessPolicyEvidence.RosterSurfaceSignal,
+                       HeadlessPolicyEvidence.EnemyPreviewSignal));
 
         public HeadlessRecruitDecision DecideRecruit(HeadlessRosterPolicyObservation observation)
             => _rosterPolicy?.DecideRecruit(observation)
@@ -1206,6 +1229,27 @@ public static class H100SealedBridgeRunner
 
             return result;
         }
+
+        private static IReadOnlyList<string> Evidence(
+            HeadlessPolicyObservation observation,
+            params string[] signals)
+        {
+            if (observation == null) throw new ArgumentNullException(nameof(observation));
+            var result = new string[signals.Length];
+            for (var index = 0; index < signals.Length; index++)
+            {
+                if (!observation.EvidenceFactIdsBySignal.TryGetValue(signals[index], out var factId)
+                    || string.IsNullOrWhiteSpace(factId))
+                {
+                    throw new HeadlessPolicyEvidenceException(
+                        $"Player-visible prep evidence signal '{signals[index]}' is unavailable.");
+                }
+
+                result[index] = factId;
+            }
+
+            return result;
+        }
     }
 
     private sealed record OfferedState(string SeamType, string PreStateHash);
@@ -1236,6 +1280,7 @@ public static class H100SealedBridgeRunner
         string SealedManifestHash,
         string RebuiltManifestHash,
         int EntryCount,
+        int PrepEntryCount,
         string TracePath,
         string FirstDivergenceReason,
         string FirstDivergenceDetail)

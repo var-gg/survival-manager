@@ -65,9 +65,13 @@ public sealed class LiveColdStartFileHandshakeSource : ISealedDecisionSource
             ? SealedLlmPromptRenderer.LegalActionKeys(request.SeamKey, request.PolicyObservation)
             : SealedLlmPromptRenderer.LegalActionKeys(request.SeamKey, request.RosterObservation);
         var deploymentActionSpace = string.Equals(
-            request.SeamKey.SeamType,
-            SealedLlmSeamTypes.Deployment,
-            StringComparison.Ordinal)
+                                        request.SeamKey.SeamType,
+                                        SealedLlmSeamTypes.Deployment,
+                                        StringComparison.Ordinal)
+                                    || string.Equals(
+                                        request.SeamKey.SeamType,
+                                        SealedLlmSeamTypes.Prep,
+                                        StringComparison.Ordinal)
             ? SealedLlmPromptRenderer.DeploymentActionSpace(request.PolicyObservation)
             : null;
         var prompt = request.PolicyObservation != null
@@ -243,6 +247,11 @@ public sealed class LiveColdStartFileHandshakeSource : ISealedDecisionSource
         {
             case SealedLlmSeamTypes.Deployment:
                 _ = SealedLlmActionCodec.DecodeDeployment(
+                    RequirePolicyObservation(request),
+                    selectedAction);
+                break;
+            case SealedLlmSeamTypes.Prep:
+                _ = SealedLlmActionCodec.DecodePrep(
                     RequirePolicyObservation(request),
                     selectedAction);
                 break;

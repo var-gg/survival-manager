@@ -99,6 +99,32 @@ internal sealed class H100PlayerVisibleFactLedgerCollector
             decision.EvidenceFactIds));
     }
 
+    public void RecordPrep(
+        string campaignId,
+        int campaignIndex,
+        int siteIndex,
+        int decisionIndex,
+        string policyId,
+        HeadlessPrepDecision decision)
+    {
+        var formation = string.Join("|", decision.Placements
+            .OrderBy(value => value.Anchor)
+            .Select(value => $"{((int)value.Anchor).ToString(CultureInfo.InvariantCulture)}:{value.HeroId}"));
+        var equipment = string.Join("|", decision.EquipmentAssignments
+            .OrderBy(value => value.ItemInstanceId, StringComparer.Ordinal)
+            .Select(value => $"{value.ItemInstanceId}:{value.HeroId}"));
+        Record(PlayerVisibleDecisionRecord.Create(
+            _runId,
+            campaignId,
+            new PlayerVisibleTimelinePoint(campaignIndex, siteIndex, decisionIndex),
+            policyId,
+            "prep",
+            $"formation={formation};equipment={equipment}",
+            decision.Rationale,
+            decision.EstimatedValue,
+            decision.EvidenceFactIds));
+    }
+
     public void RecordRecruit(
         string campaignId,
         int campaignIndex,

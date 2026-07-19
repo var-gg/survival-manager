@@ -117,6 +117,67 @@ internal static class H100SessionDriver
         return decision;
     }
 
+    public static HeadlessPrepDecision ApplyPolicyPrep(
+        GameSessionState session,
+        IHeadlessPolicy policy,
+        IHeadlessPrepPolicy prepPolicy,
+        int decisionSeed,
+        HeadlessPolicyObservation observation,
+        Action<string>? decisionLog = null,
+        int decisionIndex = -1,
+        Action<H100DecisionAppliedContext>? decisionApplied = null)
+    {
+        if (observation.DecisionSeed != decisionSeed)
+        {
+            throw new InvalidOperationException("Prepared prep observation seed does not match the requested decision seed.");
+        }
+
+        session.EnsureBattleDeployReady();
+        var decision = prepPolicy.DecidePrep(observation);
+        HeadlessPrepPolicyGuard.ValidateDecision(observation, decision);
+        SynchronizeExpeditionSquad(session, new HeadlessDeploymentDecision(
+            decision.Placements,
+            decision.Rationale,
+            decision.EstimatedValue,
+            decision.EvidenceFactIds));
+        foreach (var anchor in session.DeploymentAnchors)
+        {
+            session.AssignHeroToAnchor(anchor, null);
+        }
+
+        foreach (var placement in decision.Placements)
+        {
+            if (!session.AssignHeroToAnchor(placement.Anchor, placement.HeroId))
+            {
+                throw new InvalidOperationException($"Validated H100 prep placement could not be applied: {placement.HeroId}@{placement.Anchor}.");
+            }
+        }
+
+        foreach (var assignment in decision.EquipmentAssignments)
+        {
+            var result = session.ReequipOwnedItemForEncounter(assignment.ItemInstanceId, assignment.HeroId);
+            if (!result.IsSuccess)
+            {
+                throw new InvalidOperationException($"Validated H100 prep equipment move could not be applied: {result.Error}");
+            }
+        }
+
+        decisionLog?.Invoke(FormatDecisionLog(policy.Id, "prep", observation, decision.Rationale, decision.EstimatedValue));
+        if (decisionApplied != null)
+        {
+            RequireDecisionIndex(decisionIndex);
+            decisionApplied(new H100DecisionAppliedContext(
+                decisionIndex,
+                SealedLlmSeamTypes.Prep,
+                0,
+                session,
+                SealedLlmActionCodec.EncodePrep(decision),
+                "success"));
+        }
+
+        return decision;
+    }
+
     public static HeadlessPassiveDecision ApplyPolicyPassive(
         GameSessionState session,
         IHeadlessRosterPolicy policy,

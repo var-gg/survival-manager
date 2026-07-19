@@ -9,7 +9,7 @@ namespace SM.SealedLlmBridge;
 /// Pure policy adapter that canonicalizes each player-visible decision, obtains one strict wire response, and leaves
 /// game-state completion to the caller through <see cref="SealedDecisionTraceBuilder.Complete"/>.
 /// </summary>
-public sealed class SealedLlmBridgePolicy : IHeadlessPolicy, IHeadlessRosterPolicy
+public sealed class SealedLlmBridgePolicy : IHeadlessPolicy, IHeadlessRosterPolicy, IHeadlessPrepPolicy
 {
     public const string PolicyId = "sealed-llm-bridge-v1";
 
@@ -50,6 +50,14 @@ public sealed class SealedLlmBridgePolicy : IHeadlessPolicy, IHeadlessRosterPoli
             SealedLlmLegalActionSet.RewardLegalActionSetHash,
             SealedLlmActionCodec.DecodeReward,
             HeadlessPolicyGuard.ValidateRewardDecision);
+
+    public HeadlessPrepDecision DecidePrep(HeadlessPolicyObservation observation)
+        => DecidePolicy(
+            SealedLlmSeamTypes.Prep,
+            observation,
+            SealedLlmLegalActionSet.PrepLegalActionSetHash,
+            SealedLlmActionCodec.DecodePrep,
+            HeadlessPrepPolicyGuard.ValidateDecision);
 
     public HeadlessRecruitDecision DecideRecruit(HeadlessRosterPolicyObservation observation)
         => DecideRoster(
@@ -192,6 +200,12 @@ public sealed class SealedLlmBridgePolicy : IHeadlessPolicy, IHeadlessRosterPoli
         {
             HeadlessDeploymentDecision value => new HeadlessDeploymentDecision(
                 value.Placements,
+                value.Rationale,
+                value.EstimatedValue,
+                evidence),
+            HeadlessPrepDecision value => new HeadlessPrepDecision(
+                value.Placements,
+                value.EquipmentAssignments,
                 value.Rationale,
                 value.EstimatedValue,
                 evidence),

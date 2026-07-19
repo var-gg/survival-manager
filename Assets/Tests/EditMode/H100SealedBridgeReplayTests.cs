@@ -38,12 +38,14 @@ public sealed class H100SealedBridgeReplayTests
         TestContext.WriteLine(
             $"replay verification={witness.VerificationPassed} manifest_equal={witness.ManifestEqual} "
             + $"sealed={witness.SealedManifestHash} rebuilt={witness.RebuiltManifestHash} "
-            + $"entries={witness.EntryCount} trace={witness.TracePath}");
+            + $"entries={witness.EntryCount} prep_entries={witness.PrepEntryCount} trace={witness.TracePath}");
         Assert.That(witness.VerificationPassed, Is.True,
             $"fresh replay diverged: {witness.FirstDivergenceReason} {witness.FirstDivergenceDetail}");
         Assert.That(witness.ManifestEqual, Is.True, "fresh replay manifest is not byte-identical");
         Assert.That(witness.Passed, Is.True);
         Assert.That(witness.EntryCount, Is.GreaterThan(0));
+        Assert.That(witness.PrepEntryCount, Is.GreaterThan(0),
+            "elite/boss prep seam was not captured and replayed");
     }
 
     [Test]

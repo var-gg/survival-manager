@@ -17,6 +17,9 @@ namespace SM.SealedLlmBridge;
 /// </summary>
 public static class SealedLlmActionCodec
 {
+    private const string PrepFormationPrefix = "formation#";
+    private const string PrepEquipmentPrefix = "equipment#";
+
     public static string EncodeDeployment(HeadlessDeploymentDecision decision)
     {
         if (decision?.Placements == null)
@@ -118,6 +121,78 @@ public static class SealedLlmActionCodec
         ValidateDecoded(
             selectedAction,
             () => HeadlessPolicyGuard.ValidateDeploymentDecision(observation, decision));
+        return decision;
+    }
+
+    public static string EncodePrep(HeadlessPrepDecision decision)
+    {
+        if (decision == null) throw new ArgumentNullException(nameof(decision));
+        var deployment = EncodeDeployment(new HeadlessDeploymentDecision(
+            decision.Placements,
+            decision.Rationale,
+            decision.EstimatedValue,
+            decision.EvidenceFactIds));
+        var equipment = decision.EquipmentAssignments.Count == 0
+            ? SealedLlmActionGrammar.Skip
+            : string.Join(",", decision.EquipmentAssignments
+                .OrderBy(value => value.ItemInstanceId, StringComparer.Ordinal)
+                .Select(value => SealedLlmActionGrammar.PrepEquipmentPair(value.ItemInstanceId, value.HeroId)));
+        return $"{PrepFormationPrefix}{deployment}|{PrepEquipmentPrefix}{equipment}";
+    }
+
+    public static HeadlessPrepDecision DecodePrep(
+        HeadlessPolicyObservation observation,
+        string selectedAction)
+    {
+        var action = RequireAction(selectedAction);
+        var separator = action.IndexOf('|');
+        if (!action.StartsWith(PrepFormationPrefix, StringComparison.Ordinal)
+            || separator <= PrepFormationPrefix.Length
+            || !action.Substring(separator + 1).StartsWith(PrepEquipmentPrefix, StringComparison.Ordinal)
+            || separator != action.LastIndexOf('|'))
+        {
+            throw DecodeError(
+                SealedLlmActionDecodeReason.MalformedGrammar,
+                selectedAction,
+                "Prep action must be formation#<deployment>|equipment#<skip-or-item=hero-list>.");
+        }
+
+        var deploymentAction = action.Substring(PrepFormationPrefix.Length, separator - PrepFormationPrefix.Length);
+        var deployment = DecodeDeployment(observation, deploymentAction);
+        var equipmentAction = action.Substring(separator + 1 + PrepEquipmentPrefix.Length);
+        var assignments = new List<HeadlessEquipmentAssignment>();
+        if (!string.Equals(equipmentAction, SealedLlmActionGrammar.Skip, StringComparison.Ordinal))
+        {
+            string previousItemId = null;
+            foreach (var pair in equipmentAction.Split(new[] { ',' }, StringSplitOptions.None))
+            {
+                var equals = pair.IndexOf('=');
+                if (equals <= 0 || equals != pair.LastIndexOf('=') || equals == pair.Length - 1)
+                {
+                    throw DecodeError(SealedLlmActionDecodeReason.MalformedGrammar, selectedAction, "Prep equipment entries must be itemInstanceId=heroId.");
+                }
+
+                var itemId = pair.Substring(0, equals);
+                var heroId = pair.Substring(equals + 1);
+                RequireGrammarToken(itemId, selectedAction, '=', ',', '#', '|');
+                RequireGrammarToken(heroId, selectedAction, '=', ',', '#', '|');
+                if (previousItemId != null && StringComparer.Ordinal.Compare(previousItemId, itemId) >= 0)
+                {
+                    throw DecodeError(SealedLlmActionDecodeReason.NonCanonicalOrder, selectedAction, "Prep equipment entries must be strictly item-id sorted.");
+                }
+
+                assignments.Add(new HeadlessEquipmentAssignment(itemId, heroId));
+                previousItemId = itemId;
+            }
+        }
+
+        var decision = new HeadlessPrepDecision(
+            deployment.Placements,
+            assignments,
+            SealedLlmDecisionEnvelope.Rationale,
+            0d,
+            SealedLlmDecisionEnvelope.EvidenceFactIds);
+        ValidateDecoded(selectedAction, () => HeadlessPrepPolicyGuard.ValidateDecision(observation, decision));
         return decision;
     }
 

@@ -4,6 +4,7 @@ namespace SM.SealedLlmBridge;
 public static class SealedLlmSeamTypes
 {
     public const string Deployment = "deployment";
+    public const string Prep = "prep";
     public const string Reward = "reward";
     public const string Recruit = "recruit";
     public const string LevelNode = "level_node";

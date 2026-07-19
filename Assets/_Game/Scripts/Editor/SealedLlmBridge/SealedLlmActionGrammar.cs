@@ -16,6 +16,13 @@ internal static class SealedLlmActionGrammar
         return string.Concat(anchorId, "=", heroId);
     }
 
+    public static string PrepEquipmentPair(string itemInstanceId, string heroId)
+    {
+        RequireToken(itemInstanceId, nameof(itemInstanceId), '=', ',', '#', '|');
+        RequireToken(heroId, nameof(heroId), '=', ',', '#', '|');
+        return string.Concat(itemInstanceId, "=", heroId);
+    }
+
     public static string PassiveKey(string heroId, string boardId, string nodeId)
     {
         RequireToken(heroId, nameof(heroId), ':');

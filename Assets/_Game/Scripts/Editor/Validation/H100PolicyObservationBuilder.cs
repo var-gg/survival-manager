@@ -103,7 +103,21 @@ internal static class H100PolicyObservationBuilder
                 session.Profile.Currencies.Echo),
             temporaryAugments,
             BuildSynergyCounts(roster, snapshot),
-            BuildSynergyCatalog(snapshot));
+            BuildSynergyCatalog(snapshot),
+            currentPlacements: session.EnumerateDeploymentAssignments()
+                .Where(value => !string.IsNullOrWhiteSpace(value.HeroId))
+                .OrderBy(value => value.Anchor)
+                .Select(value => new HeadlessPlacement(value.Anchor, value.HeroId!))
+                .ToArray(),
+            ownedItems: includeTownRoster
+                ? session.Profile.Inventory
+                    .Where(item => item != null && !string.IsNullOrWhiteSpace(item.ItemInstanceId))
+                    .OrderBy(item => item.ItemInstanceId, StringComparer.Ordinal)
+                    .Select(item => new HeadlessOwnedItemObservation(
+                        BuildItemMechanics(item.ItemBaseId, item.ItemInstanceId, item.AffixIds, snapshot),
+                        item.EquippedHeroId))
+                    .ToArray()
+                : Array.Empty<HeadlessOwnedItemObservation>());
         observation = H100PlayerVisibleFactProjector.AttachEvidenceIndex(observation);
         HeadlessPolicyGuard.ValidateObservation(observation);
         return observation;

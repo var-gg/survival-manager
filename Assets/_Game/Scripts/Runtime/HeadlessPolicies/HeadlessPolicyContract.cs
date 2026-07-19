@@ -23,7 +23,9 @@ public sealed class HeadlessPolicyObservation
         IReadOnlyList<HeadlessAugmentMechanicsObservation> temporaryAugments = null,
         IReadOnlyList<HeadlessSynergyCountObservation> synergyCounts = null,
         IReadOnlyList<HeadlessSynergyObservation> synergyCatalog = null,
-        IReadOnlyDictionary<string, string> evidenceFactIdsBySignal = null)
+        IReadOnlyDictionary<string, string> evidenceFactIdsBySignal = null,
+        IReadOnlyList<HeadlessPlacement> currentPlacements = null,
+        IReadOnlyList<HeadlessOwnedItemObservation> ownedItems = null)
     {
         DecisionSeed = decisionSeed;
         DeployCapacity = deployCapacity;
@@ -37,6 +39,8 @@ public sealed class HeadlessPolicyObservation
         TemporaryAugments = temporaryAugments ?? Array.Empty<HeadlessAugmentMechanicsObservation>();
         SynergyCounts = synergyCounts ?? Array.Empty<HeadlessSynergyCountObservation>();
         SynergyCatalog = synergyCatalog ?? Array.Empty<HeadlessSynergyObservation>();
+        CurrentPlacements = currentPlacements ?? Array.Empty<HeadlessPlacement>();
+        OwnedItems = ownedItems ?? Array.Empty<HeadlessOwnedItemObservation>();
         var sortedEvidenceFactIds = new SortedDictionary<string, string>(StringComparer.Ordinal);
         if (evidenceFactIdsBySignal != null)
         {
@@ -62,6 +66,8 @@ public sealed class HeadlessPolicyObservation
     public IReadOnlyList<HeadlessAugmentMechanicsObservation> TemporaryAugments { get; }
     public IReadOnlyList<HeadlessSynergyCountObservation> SynergyCounts { get; }
     public IReadOnlyList<HeadlessSynergyObservation> SynergyCatalog { get; }
+    public IReadOnlyList<HeadlessPlacement> CurrentPlacements { get; }
+    public IReadOnlyList<HeadlessOwnedItemObservation> OwnedItems { get; }
     public IReadOnlyDictionary<string, string> EvidenceFactIdsBySignal { get; }
 
     public HeadlessPolicyObservation WithEvidenceFactIds(
@@ -79,7 +85,27 @@ public sealed class HeadlessPolicyObservation
             TemporaryAugments,
             SynergyCounts,
             SynergyCatalog,
-            evidenceFactIdsBySignal);
+            evidenceFactIdsBySignal,
+            CurrentPlacements,
+            OwnedItems);
+
+    public HeadlessPolicyObservation WithEnemyPreview(HeadlessEnemyPreview enemyPreview)
+        => new(
+            DecisionSeed,
+            DeployCapacity,
+            ChapterId,
+            SiteId,
+            Roster,
+            Anchors,
+            enemyPreview,
+            RewardOptions,
+            Wallet,
+            TemporaryAugments,
+            SynergyCounts,
+            SynergyCatalog,
+            EvidenceFactIdsBySignal,
+            CurrentPlacements,
+            OwnedItems);
 }
 
 /// <summary>roster UI에서 확인 가능한 영웅 identity, role, 현재 성장/상태의 순수 projection.</summary>

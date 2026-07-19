@@ -15,7 +15,8 @@ internal sealed record H100CampaignObservationHooks(
     Action<H100DeploymentOfferedContext>? DeploymentOffered = null,
     Action<H100BattleCompletedContext>? BattleCompleted = null,
     Action<H100RosterDecisionOfferedContext>? RosterDecisionOffered = null,
-    Action<H100DecisionAppliedContext>? DecisionApplied = null);
+    Action<H100DecisionAppliedContext>? DecisionApplied = null,
+    Action<H100PrepOfferedContext>? PrepOffered = null);
 
 internal sealed record H100DecisionAppliedContext(
     int DecisionIndex,
@@ -47,6 +48,17 @@ internal sealed record H100SiteArrivalContext(
     HeadlessDeploymentDecision Decision);
 
 internal sealed record H100RewardOfferedContext(
+    string CampaignId,
+    int CampaignIndex,
+    int CampaignSeed,
+    int SiteIndex,
+    int BattleIndex,
+    int DecisionIndex,
+    int DecisionSeed,
+    GameSessionState Session,
+    HeadlessPolicyObservation Observation);
+
+internal sealed record H100PrepOfferedContext(
     string CampaignId,
     int CampaignIndex,
     int CampaignSeed,
