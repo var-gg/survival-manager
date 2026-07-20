@@ -234,9 +234,9 @@ public static class HitResolutionService
         return ChanceHits(state, actor, target, $"{actionType}:dodge", target.Behavior.DodgeChance);
     }
 
-    // 정수 확률 판정(결정적, ADR-0029 §우선순위 ③). 정수 hash remainder ∈ [0,10000)을 확률×10000 정수
-    // threshold와 비교한다 — float roll(/10000f)·float 비교를 제거. probability는 아직 stat/behavior float이며
-    // (Phase 4에서 fixed 전환) 여기서 ×10000 절단으로 basis-point threshold(0..10000)에 단 한 번 양자화한다.
+    // 정수 확률 판정(결정적, ADR-0029 §우선순위 ③). 정수 hash remainder ∈ [0,10000)을 probability의
+    // basis-point threshold와 비교한다. probability는 아직 stat/behavior float이지만 아래 변환은 float
+    // 산술을 사용하지 않아 backend의 중간값 반올림 차이가 판정에 유입되지 않는다.
     private static bool ChanceHits(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context, float probability)
     {
         return RollBasisPoints(state, actor, target, context) < ProbabilityToBasisPoints(probability);
@@ -244,7 +244,37 @@ public static class HitResolutionService
 
     private static int ProbabilityToBasisPoints(float probability)
     {
-        return (int)(Math.Clamp(probability, 0f, 1f) * 10000f);
+        if (float.IsNaN(probability) || probability <= 0f)
+        {
+            return 0;
+        }
+
+        if (probability >= 1f)
+        {
+            return 10000;
+        }
+
+        // positive finite IEEE-754 binary32 = significand * 2^-denominatorShift.
+        // Scale and round-to-nearest (half up) entirely in integer space so Mono and .NET 8
+        // produce the same threshold for every possible float bit pattern.
+        var bits = unchecked((uint)BitConverter.SingleToInt32Bits(probability));
+        var exponent = (int)((bits >> 23) & 0xffu);
+        var significand = bits & 0x7fffffu;
+        var denominatorShift = 149;
+        if (exponent != 0)
+        {
+            significand |= 0x800000u;
+            denominatorShift = 150 - exponent;
+        }
+
+        var scaledSignificand = (ulong)significand * 10000UL;
+        if (denominatorShift >= 64)
+        {
+            return 0;
+        }
+
+        var halfDenominator = 1UL << (denominatorShift - 1);
+        return (int)((scaledSignificand + halfDenominator) >> denominatorShift);
     }
 
     private static int RollBasisPoints(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)

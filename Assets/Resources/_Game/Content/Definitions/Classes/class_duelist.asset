@@ -15,5 +15,9 @@ MonoBehaviour:
   Id: duelist
   NameKey: content.class.duelist.name
   DescriptionKey: content.class.duelist.desc
+  BaseCritChance: 0.12
+  BaseCritMultiplier: 1.75
+  CritChanceCap: 0.4
+  CritMultiplierCap: 1.85
   legacyDisplayName: 
   legacyDescription: 

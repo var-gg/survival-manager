@@ -104,15 +104,15 @@ public static class BattleHashCorpus
         {
             BuildUnit("ally_van_top", "human", DeploymentAnchorId.FrontTop, hp: 70f, moveSpeed: 1.9f),
             BuildUnit("ally_van_bot", "human", DeploymentAnchorId.FrontBottom, hp: 70f, moveSpeed: 1.9f),
-            BuildUnit("ally_ranger", "human", DeploymentAnchorId.BackTop, hp: 45f, moveSpeed: 2.1f, classId: "ranger", phys: 8f, attackRange: 2.8f),
-            BuildUnit("ally_mystic", "human", DeploymentAnchorId.BackBottom, hp: 40f, moveSpeed: 2.0f, classId: "mystic", phys: 5f, attackRange: 2.4f, heal: 6f),
+            BuildUnit("ally_ranger", "human", DeploymentAnchorId.BackTop, hp: 45f, moveSpeed: 2.1f, classId: "ranger", phys: 8f, attackRange: 2.8f, critChance: 0.04f, critMultiplierBonus: 0.55f),
+            BuildUnit("ally_mystic", "human", DeploymentAnchorId.BackBottom, hp: 40f, moveSpeed: 2.0f, classId: "mystic", phys: 5f, attackRange: 2.4f, heal: 6f, critChance: 0.05f, critMultiplierBonus: 0.45f),
         };
         var enemies = new[]
         {
             BuildUnit("enemy_van_top", "undead", DeploymentAnchorId.FrontTop, hp: 70f, moveSpeed: 1.8f),
             BuildUnit("enemy_van_bot", "undead", DeploymentAnchorId.FrontBottom, hp: 70f, moveSpeed: 1.8f),
-            BuildUnit("enemy_ranger", "undead", DeploymentAnchorId.BackTop, hp: 45f, moveSpeed: 2.0f, classId: "ranger", phys: 8f, attackRange: 2.8f),
-            BuildUnit("enemy_mystic", "undead", DeploymentAnchorId.BackBottom, hp: 40f, moveSpeed: 1.9f, classId: "mystic", phys: 5f, attackRange: 2.4f, heal: 6f),
+            BuildUnit("enemy_ranger", "undead", DeploymentAnchorId.BackTop, hp: 45f, moveSpeed: 2.0f, classId: "ranger", phys: 8f, attackRange: 2.8f, critChance: 0.04f, critMultiplierBonus: 0.55f),
+            BuildUnit("enemy_mystic", "undead", DeploymentAnchorId.BackBottom, hp: 40f, moveSpeed: 1.9f, classId: "mystic", phys: 5f, attackRange: 2.4f, heal: 6f, critChance: 0.05f, critMultiplierBonus: 0.45f),
         };
         return BattleFactory.Create(
             allies,
@@ -132,7 +132,9 @@ public static class BattleHashCorpus
         string classId = "vanguard",
         float phys = 6f,
         float attackRange = 1.2f,
-        float heal = 0f)
+        float heal = 0f,
+        float critChance = 0.06f,
+        float critMultiplierBonus = 0.5f)
     {
         return new BattleUnitLoadout(
             id,
@@ -151,6 +153,10 @@ public static class BattleHashCorpus
                 [StatKey.AggroRadius] = 8f,
                 [StatKey.AttackWindup] = 0.1f,
                 [StatKey.AttackCooldown] = 0.5f,
+                // ClassDefinition의 authored total multiplier는 runtime bonus(×1 + stat)로 투영된다.
+                // 이 self-contained 결정성 fixture도 production class baseline을 명시해 global crit 변경을 관측한다.
+                [StatKey.CritChance] = critChance,
+                [StatKey.CritMultiplier] = critMultiplierBonus,
                 [StatKey.LeashDistance] = 6f,
                 [StatKey.TargetSwitchDelay] = 0.3f,
             },

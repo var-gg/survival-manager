@@ -110,7 +110,8 @@ internal sealed class ArchetypeConverter
             null,
             null,
             BuildGovernanceSummary(definition.BudgetCard),
-            definition.DefaultDominantHand);
+            definition.DefaultDominantHand,
+            BuildClassStatPackage(definition.Class));
     }
 
     internal static FootprintProfile BuildFootprintProfile(UnitArchetypeDefinition definition)

@@ -21,14 +21,14 @@ MonoBehaviour:
   DamageType: 0
   Delivery: 2
   TargetRule: 2
-  Power: 2
-  Range: 5.6
+  Power: 1.75
+  Range: 5.2
   RangeMin: 0
   RangeMax: -1
   Radius: 0
   Width: 0
   ArcDegrees: 0
-  PowerFlat: 2
+  PowerFlat: 1.75
   PhysCoeff: 1
   MagCoeff: 0
   HealCoeff: 0

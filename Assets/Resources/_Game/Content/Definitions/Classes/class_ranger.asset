@@ -15,5 +15,9 @@ MonoBehaviour:
   Id: ranger
   NameKey: content.class.ranger.name
   DescriptionKey: content.class.ranger.desc
+  BaseCritChance: 0.04
+  BaseCritMultiplier: 1.55
+  CritChanceCap: 0.3
+  CritMultiplierCap: 1.7
   legacyDisplayName: 
   legacyDescription: 

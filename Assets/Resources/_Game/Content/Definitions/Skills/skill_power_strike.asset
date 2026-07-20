@@ -33,7 +33,7 @@ MonoBehaviour:
   MagCoeff: 0
   HealCoeff: 0
   HealthCoeff: 0
-  CanCrit: 0
+  CanCrit: 1
   ActivationModel: 2
   Lane: 0
   LockRule: 2

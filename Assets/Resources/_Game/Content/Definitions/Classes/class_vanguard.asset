@@ -15,5 +15,9 @@ MonoBehaviour:
   Id: vanguard
   NameKey: content.class.vanguard.name
   DescriptionKey: content.class.vanguard.desc
+  BaseCritChance: 0.06
+  BaseCritMultiplier: 1.5
+  CritChanceCap: 0.25
+  CritMultiplierCap: 1.65
   legacyDisplayName: 
   legacyDescription: 

@@ -152,6 +152,48 @@ public sealed class LoadoutCompilerClosureTests
     }
 
     [Test]
+    public void LoadoutCompiler_CarriesClassCritCaps_AndCapsFutureStacking()
+    {
+        const string sourceId = "class:duelist:stat_caps";
+        var content = BuildContentSnapshot();
+        var archetypes = content.Archetypes.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        var raider = archetypes["raider"];
+        var baseStats = new Dictionary<StatKey, float>(raider.BaseStats)
+        {
+            [StatKey.CritChance] = 0.12f,
+            [StatKey.CritMultiplier] = 0.75f,
+        };
+        archetypes["raider"] = raider with
+        {
+            BaseStats = baseStats,
+            ClassStatPackage = new CombatModifierPackage(
+                sourceId,
+                ModifierSource.Other,
+                new[]
+                {
+                    new StatModifier(StatKey.CritChance, ModifierOp.ClampMax, 0.40f, ModifierSource.Other, sourceId),
+                    new StatModifier(StatKey.CritMultiplier, ModifierOp.ClampMax, 0.85f, ModifierSource.Other, sourceId),
+                }),
+        };
+
+        var snapshot = CompileSquad(new LoadoutCompiler(), content with { Archetypes = archetypes }, BuildBaselineSpec());
+        var compiled = snapshot.Allies.Single(ally => ally.ArchetypeId == "raider");
+        var overflow = new[]
+        {
+            new StatModifier(StatKey.CritChance, ModifierOp.Flat, 2f, ModifierSource.Item, "future_crit_item"),
+            new StatModifier(StatKey.CritMultiplier, ModifierOp.Flat, 2f, ModifierSource.Item, "future_crit_item"),
+        };
+        var stats = new StatBlock(
+            new Dictionary<StatKey, float>(compiled.BaseStats),
+            compiled.NumericPackages.SelectMany(package => package.Modifiers).Concat(overflow));
+
+        Assert.That(compiled.NumericPackages.Any(package => package.SourceId == sourceId), Is.True);
+        Assert.That(snapshot.Provenance!.Any(entry => entry.ArtifactKind == "class_stat_cap" && entry.SourceId == sourceId), Is.True);
+        Assert.That(stats.Get(StatKey.CritChance), Is.EqualTo(0.40f).Within(0.0001f));
+        Assert.That(1f + stats.Get(StatKey.CritMultiplier), Is.EqualTo(1.85f).Within(0.0001f));
+    }
+
+    [Test]
     public void LoadoutCompiler_CarriesAugmentTriggeredEffects_ToLoadout()
     {
         var compiler = new LoadoutCompiler();

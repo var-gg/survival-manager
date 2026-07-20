@@ -273,10 +273,10 @@ MonoBehaviour:
   BaseResist: 0
   BaseBarrierPower: 0
   BaseTenacity: 0
-  BasePhysPower: 5
+  BasePhysPower: 4.73
   BaseMagPower: 0
   BaseAttackSpeed: 6
-  BaseAttack: 5
+  BaseAttack: 4.73
   BaseDefense: 2
   BaseSpeed: 6
   BaseHealPower: 0

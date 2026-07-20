@@ -70,6 +70,7 @@ public static class SampleSeedGenerator
         CreateSafeTargetPassiveNodes(stableTags);
         PatchGrantedSkillHostNodes();
         PatchLaunchFloorItemsAndSkills(stableTags);
+        PatchBalanceFrameworkCore();
         CreateStatusCatalog();
         CreateTraitTokens();
         CreateRewardSourcesAndDropTables();
@@ -748,12 +749,29 @@ public static class SampleSeedGenerator
                 a.Id = tuple.Item1;
                 a.NameKey = ContentLocalizationTables.BuildClassNameKey(tuple.Item1);
                 a.DescriptionKey = ContentLocalizationTables.BuildClassDescriptionKey(tuple.Item1);
+                ApplyClassCritBaseline(a);
                 UpsertStringEntry(ContentLocalizationTables.Classes, a.NameKey, tuple.Item3, tuple.Item2);
                 UpsertStringEntry(ContentLocalizationTables.Classes, a.DescriptionKey, tuple.Item5, tuple.Item4);
             });
             PatchSerializedLocalizedIdentity(asset, asset.Id, asset.NameKey, asset.DescriptionKey);
             return asset;
         });
+    }
+
+    private static void ApplyClassCritBaseline(ClassDefinition asset)
+    {
+        var values = asset.Id switch
+        {
+            "vanguard" => (Chance: 0.06f, Multiplier: 1.50f, ChanceCap: 0.25f, MultiplierCap: 1.65f),
+            "duelist" => (Chance: 0.12f, Multiplier: 1.75f, ChanceCap: 0.40f, MultiplierCap: 1.85f),
+            "ranger" => (Chance: 0.04f, Multiplier: 1.55f, ChanceCap: 0.30f, MultiplierCap: 1.70f),
+            "mystic" => (Chance: 0.05f, Multiplier: 1.45f, ChanceCap: 0.25f, MultiplierCap: 1.55f),
+            _ => (Chance: 0f, Multiplier: 1f, ChanceCap: 1f, MultiplierCap: 2f),
+        };
+        asset.BaseCritChance = values.Chance;
+        asset.BaseCritMultiplier = values.Multiplier;
+        asset.CritChanceCap = values.ChanceCap;
+        asset.CritMultiplierCap = values.MultiplierCap;
     }
 
     private static Dictionary<string, FootprintProfileDefinition> CreateFootprintProfiles()
@@ -917,7 +935,7 @@ public static class SampleSeedGenerator
         return new[]
         {
             ("skill_power_strike", "Power Strike", "강타", "Heavy melee strike.", "강한 근접 일격.", SkillKindValue.Strike, 3f, 1f),
-            ("skill_precision_shot", "Precision Shot", "정밀 사격", "Focused ranged shot.", "집중된 원거리 사격.", SkillKindValue.Strike, 2f, 5.6f),
+            ("skill_precision_shot", "Precision Shot", "정밀 사격", "Focused ranged shot.", "집중된 원거리 사격.", SkillKindValue.Strike, 1.75f, 5.2f),
             ("skill_minor_heal", "Minor Heal", "소회복", "Small targeted heal.", "단일 대상 소회복.", SkillKindValue.Heal, 4f, 2f),
         }.ToDictionary(tuple => tuple.Item1, tuple => CreateAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{tuple.Item1}.asset", a =>
         {
@@ -936,7 +954,7 @@ public static class SampleSeedGenerator
             a.MagCoeff = tuple.Item6 == SkillKindValue.Heal ? 0.8f : 0f;
             a.HealCoeff = tuple.Item6 == SkillKindValue.Heal ? 1f : 0f;
             a.HealthCoeff = 0f;
-            a.CanCrit = tuple.Item1 == "skill_precision_shot";
+            a.CanCrit = tuple.Item6 == SkillKindValue.Strike;
             a.IconId = ResolveSkillIconId(a.Id);
             a.VfxHookId = ResolveSkillVfxHookId(a.Id);
             a.SfxHookId = ResolveSkillSfxHookId(a.Id);
@@ -989,10 +1007,10 @@ public static class SampleSeedGenerator
         var result = new Dictionary<string, UnitArchetypeDefinition>();
         result["warden"] = CreateArchetype("warden", "Warden", races["human"], classes["vanguard"], traitPools["warden"], skills["skill_power_strike"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 24, 5, 3, 3, 0, DeploymentAnchorValue.FrontCenter, TeamPostureTypeValue.HoldLine);
         result["guardian"] = CreateArchetype("guardian", "Guardian", races["undead"], classes["vanguard"], traitPools["guardian"], skills["skill_power_strike"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 26, 4, 4, 2, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.ProtectCarry);
-        result["slayer"] = CreateArchetype("slayer", "Slayer", races["human"], classes["duelist"], traitPools["slayer"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 20, 7, 2, 4, 0, DeploymentAnchorValue.FrontBottom, TeamPostureTypeValue.StandardAdvance);
-        result["raider"] = CreateArchetype("raider", "Raider", races["beastkin"], classes["duelist"], traitPools["raider"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 19, 8, 1, 5, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.CollapseWeakSide);
-        result["hunter"] = CreateArchetype("hunter", "Hunter", races["human"], classes["ranger"], traitPools["hunter"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 18, 6, 2, 5, 0, DeploymentAnchorValue.BackTop, TeamPostureTypeValue.StandardAdvance);
-        result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 17, 5, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide);
+        result["slayer"] = CreateArchetype("slayer", "Slayer", races["human"], classes["duelist"], traitPools["slayer"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 20, 8, 2, 4, 0, DeploymentAnchorValue.FrontBottom, TeamPostureTypeValue.StandardAdvance);
+        result["raider"] = CreateArchetype("raider", "Raider", races["beastkin"], classes["duelist"], traitPools["raider"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 19, 9, 1, 5, 0, DeploymentAnchorValue.FrontTop, TeamPostureTypeValue.CollapseWeakSide);
+        result["hunter"] = CreateArchetype("hunter", "Hunter", races["human"], classes["ranger"], traitPools["hunter"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 18, 5.73f, 2, 5, 0, DeploymentAnchorValue.BackTop, TeamPostureTypeValue.StandardAdvance);
+        result["scout"] = CreateArchetype("scout", "Scout", races["beastkin"], classes["ranger"], traitPools["scout"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 17, 4.73f, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide);
         result["priest"] = CreateArchetype("priest", "Priest", races["human"], classes["mystic"], traitPools["priest"], skills["skill_minor_heal"], footprintProfiles["vanguard"], behaviorProfiles["vanguard"], mobilityProfiles["vanguard"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry);
         result["hexer"] = CreateArchetype("hexer", "Hexer", races["undead"], classes["mystic"], traitPools["hexer"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 17, 4, 2, 4, 4, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.AllInBackline);
         result["rift_stalker"] = CreateArchetype("rift_stalker", "Rift Stalker", races["beastkin"], classes["ranger"], traitPools["rift_stalker"], skills["skill_precision_shot"], footprintProfiles["ranger"], behaviorProfiles["ranger"], mobilityProfiles["ranger"], 18, 6, 2, 6, 0, DeploymentAnchorValue.BackBottom, TeamPostureTypeValue.CollapseWeakSide, ArchetypeScopeValue.Specialist);
@@ -3032,6 +3050,118 @@ public static class SampleSeedGenerator
         PatchSkill("skill_priest_core", tags, new[] { "heal", "cleanse", "shield_skill" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_barrier_priest", "barrier", 0f, 5f) }, "cleanse_control");
         PatchSkill("skill_shaman_core", tags, new[] { "burst", "zone", "burn" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_burn_shaman", "burn", 4f, 1.5f) }, string.Empty);
         PatchLoopBRecruitmentSkills(tags);
+    }
+
+    private static void PatchBalanceFrameworkCore()
+    {
+        foreach (var classId in new[] { "vanguard", "duelist", "ranger", "mystic" })
+        {
+            var definition = LoadDefinition<ClassDefinition>($"{ResourcesRoot}/Classes/class_{classId}.asset");
+            if (definition == null)
+            {
+                continue;
+            }
+
+            ApplyClassCritBaseline(definition);
+            EditorUtility.SetDirty(definition);
+        }
+
+        // ClassDefinition is the single authored crit baseline. Clear the four surviving legacy
+        // archetype overrides so inspector data cannot imply a second source of truth.
+        foreach (var archetypeId in new[] { "bulwark", "reaver", "marksman", "shaman" })
+        {
+            var definition = LoadDefinition<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_{archetypeId}.asset");
+            if (definition == null)
+            {
+                continue;
+            }
+
+            definition.BaseCritChance = 0f;
+            definition.BaseCritMultiplier = 0f;
+            EditorUtility.SetDirty(definition);
+        }
+
+        PatchBalanceArchetype("slayer", 20f, 8f, 2f, 4f);
+        PatchBalanceArchetype("raider", 19f, 9f, 1f, 5f);
+        PatchBalanceArchetype("hunter", 18f, 5.73f, 2f, 5f);
+        PatchBalanceArchetype("scout", 17f, 4.73f, 2f, 6f);
+        PatchBalanceArchetype("marksman", 16f, 7f, 1f, 4f);
+
+        PatchBalanceAttackSkill("skill_power_strike");
+        PatchBalanceAttackSkill("skill_hexer_core");
+        PatchBalanceAttackSkill("skill_priest_core");
+        PatchBalanceAttackSkill("skill_shaman_core");
+        PatchBalanceAttackSkill("skill_echo_resonance");
+        PatchBalanceSkillPower("skill_slayer_core", 2.464f);
+        PatchBalanceSkillPower("skill_raider_core", 2.352f);
+        PatchBalanceSkillPower("skill_reaver_core", 2.24f);
+
+        var precisionShot = LoadDefinition<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_precision_shot.asset");
+        if (precisionShot != null)
+        {
+            precisionShot.Power = 1.75f;
+            precisionShot.PowerFlat = 1.75f;
+            precisionShot.Range = 5.2f;
+            precisionShot.CanCrit = true;
+            EditorUtility.SetDirty(precisionShot);
+        }
+
+        var marksmanCore = LoadDefinition<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_marksman_core.asset");
+        if (marksmanCore != null)
+        {
+            marksmanCore.Power = 2f;
+            marksmanCore.PowerFlat = 2f;
+            marksmanCore.Range = 6f;
+            marksmanCore.CastWindupSeconds = 0.2125f;
+            marksmanCore.CanCrit = true;
+            marksmanCore.TargetRuleData ??= new TargetRule();
+            marksmanCore.TargetRuleData.LockTargetAtCastStart = true;
+            marksmanCore.TargetRuleData.RetargetLockMode = RetargetLockMode.UntilCastComplete;
+            EditorUtility.SetDirty(marksmanCore);
+        }
+    }
+
+    private static void PatchBalanceArchetype(string id, float maxHealth, float physPower, float armor, float attackSpeed)
+    {
+        var definition = LoadDefinition<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_{id}.asset");
+        if (definition == null)
+        {
+            return;
+        }
+
+        definition.BaseMaxHealth = maxHealth;
+        definition.BasePhysPower = physPower;
+        definition.BaseArmor = armor;
+        definition.BaseAttackSpeed = attackSpeed;
+        definition.BaseAttack = physPower;
+        definition.BaseDefense = armor;
+        definition.BaseSpeed = attackSpeed;
+        EditorUtility.SetDirty(definition);
+    }
+
+    private static void PatchBalanceAttackSkill(string id)
+    {
+        var definition = LoadDefinition<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{id}.asset");
+        if (definition == null)
+        {
+            return;
+        }
+
+        definition.CanCrit = true;
+        EditorUtility.SetDirty(definition);
+    }
+
+    private static void PatchBalanceSkillPower(string id, float power)
+    {
+        var definition = LoadDefinition<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{id}.asset");
+        if (definition == null)
+        {
+            return;
+        }
+
+        definition.Power = power;
+        definition.PowerFlat = power;
+        EditorUtility.SetDirty(definition);
     }
 
     private static void RepairResidualAuthoring(IReadOnlyDictionary<string, StableTagDefinition> tags)

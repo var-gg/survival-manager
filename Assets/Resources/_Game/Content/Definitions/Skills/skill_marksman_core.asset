@@ -21,14 +21,14 @@ MonoBehaviour:
   DamageType: 0
   Delivery: 2
   TargetRule: 1
-  Power: 4.1
-  Range: 5.8
+  Power: 2
+  Range: 6
   RangeMin: 0
   RangeMax: -1
   Radius: 0
   Width: 0
   ArcDegrees: 0
-  PowerFlat: 4.1
+  PowerFlat: 2
   PhysCoeff: 1
   MagCoeff: 0
   HealCoeff: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
   ResourceCost: -1
   BaseCooldownSeconds: 2.1
   CooldownSeconds: -1
-  CastWindupSeconds: 0.17
+  CastWindupSeconds: 0.2125
   RecoverySeconds: -1
   PowerBudget: 0
   InterruptRefundScalar: 0.5

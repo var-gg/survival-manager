@@ -98,6 +98,16 @@ public sealed class LoadoutCompiler
                 archetype.Id,
                 "archetype_base",
                 BuildBaseStatDetails(archetype.BaseStats)));
+            if (archetype.ClassStatPackage != null)
+            {
+                artifacts.NumericPackages.Add(archetype.ClassStatPackage);
+                artifacts.Provenance.Add(new CompileProvenanceEntry(
+                    hero.Id,
+                    archetype.ClassStatPackage.Source,
+                    archetype.ClassStatPackage.SourceId,
+                    "class_stat_cap",
+                    BuildModifierDetails(archetype.ClassStatPackage.Modifiers)));
+            }
 
             AddNumericPackage(content.TraitPackages, hero.PositiveTraitId, artifacts, hero.Id, "trait");
             AddNumericPackage(content.TraitPackages, hero.NegativeTraitId, artifacts, hero.Id, "trait");

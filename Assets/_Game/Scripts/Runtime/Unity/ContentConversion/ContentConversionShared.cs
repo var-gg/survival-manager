@@ -52,6 +52,13 @@ internal static class ContentConversionShared
 
     internal static Dictionary<StatKey, float> BuildBaseStats(UnitArchetypeDefinition definition)
     {
+        var baseCritChance = definition.Class != null
+            ? definition.Class.BaseCritChance
+            : definition.BaseCritChance;
+        var baseCritMultiplierBonus = definition.Class != null
+            ? Math.Max(0f, definition.Class.BaseCritMultiplier - 1f)
+            : definition.BaseCritMultiplier;
+
         return new Dictionary<StatKey, float>
         {
             [StatKey.MaxHealth] = definition.BaseMaxHealth,
@@ -70,8 +77,8 @@ internal static class ContentConversionShared
             [StatKey.ManaGainOnAttack] = definition.BaseManaGainOnAttack,
             [StatKey.ManaGainOnHit] = definition.BaseManaGainOnHit,
             [StatKey.CooldownRecovery] = definition.BaseCooldownRecovery,
-            [StatKey.CritChance] = definition.BaseCritChance,
-            [StatKey.CritMultiplier] = definition.BaseCritMultiplier,
+            [StatKey.CritChance] = baseCritChance,
+            [StatKey.CritMultiplier] = baseCritMultiplierBonus,
             [StatKey.PhysPen] = definition.BasePhysPen,
             [StatKey.MagPen] = definition.BaseMagPen,
             [StatKey.AggroRadius] = definition.BaseAggroRadius,
@@ -86,6 +93,34 @@ internal static class ContentConversionShared
             [StatKey.RepositionCooldown] = definition.BaseRepositionCooldown,
             [StatKey.AttackCooldown] = definition.BaseAttackCooldown,
         };
+    }
+
+    internal static CombatModifierPackage? BuildClassStatPackage(ClassDefinition? definition)
+    {
+        if (definition == null)
+        {
+            return null;
+        }
+
+        var sourceId = $"class:{definition.Id}:stat_caps";
+        return new CombatModifierPackage(
+            sourceId,
+            ModifierSource.Other,
+            new[]
+            {
+                new StatModifier(
+                    StatKey.CritChance,
+                    ModifierOp.ClampMax,
+                    Math.Max(0f, definition.CritChanceCap),
+                    ModifierSource.Other,
+                    sourceId),
+                new StatModifier(
+                    StatKey.CritMultiplier,
+                    ModifierOp.ClampMax,
+                    Math.Max(0f, definition.CritMultiplierCap - 1f),
+                    ModifierSource.Other,
+                    sourceId),
+            });
     }
 
     internal static float PreferPrimaryOrFallback(float primary, float fallback)

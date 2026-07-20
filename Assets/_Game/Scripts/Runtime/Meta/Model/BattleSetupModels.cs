@@ -71,7 +71,8 @@ public sealed record CombatArchetypeTemplate(
     OwnershipLink? Ownership = null,
     SummonProfile? SummonProfile = null,
     ContentGovernanceSummary? Governance = null,
-    DominantHand DefaultDominantHand = DominantHand.Right);
+    DominantHand DefaultDominantHand = DominantHand.Right,
+    CombatModifierPackage? ClassStatPackage = null);
 
 public sealed record TeamTacticTemplate(
     string Id,

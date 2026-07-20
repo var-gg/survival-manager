@@ -290,8 +290,8 @@ MonoBehaviour:
   BaseManaGainOnAttack: 2
   BaseManaGainOnHit: 2
   BaseCooldownRecovery: 0.04
-  BaseCritChance: 0.01
-  BaseCritMultiplier: 1.2
+  BaseCritChance: 0
+  BaseCritMultiplier: 0
   BasePhysPen: 0
   BaseMagPen: 0.5
   BaseAggroRadius: 7.2

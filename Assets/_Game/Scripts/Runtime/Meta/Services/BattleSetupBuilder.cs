@@ -75,6 +75,11 @@ public static class BattleSetupBuilder
         }
 
         var packages = new List<CombatModifierPackage>();
+        if (archetype.ClassStatPackage != null)
+        {
+            packages.Add(archetype.ClassStatPackage);
+        }
+
         var appliedAffixTemplates = new List<AffixTemplate>();
         var deferredConditionalAffixes = new List<AffixTemplate>();
         if (!TryAddTraitPackage(participant.PositiveTraitId, content, packages, out error) ||

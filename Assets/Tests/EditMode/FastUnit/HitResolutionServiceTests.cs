@@ -2,6 +2,7 @@ using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Ids;
+using System.Reflection;
 
 namespace SM.Tests.EditMode;
 
@@ -65,5 +66,21 @@ public sealed class HitResolutionServiceTests
         // min-damage floor는 1.0 HP. 회피 시에만 0.
         Assert.That(result.WasDodged ? result.Value == 0f : result.Value >= 1f, Is.True,
             "피격 damage는 1.0 HP 이상이거나(floor), 회피 시 0이어야 한다");
+    }
+
+    [TestCase(0.04f, 400)]
+    [TestCase(0.06f, 600)]
+    [TestCase(0.12f, 1200)]
+    [TestCase(0.03125f, 313)]
+    public void ProbabilityToBasisPoints_UsesBackendStableNearestRounding(float probability, int expected)
+    {
+        var method = typeof(HitResolutionService).GetMethod(
+            "ProbabilityToBasisPoints",
+            BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new AssertionException("ProbabilityToBasisPoints method was not found.");
+
+        var actual = (int)method.Invoke(null, new object[] { probability });
+
+        Assert.That(actual, Is.EqualTo(expected));
     }
 }

@@ -44,10 +44,18 @@ if (args.Length >= 1 && string.Equals(args[0], "campaign-sweep", StringCompariso
     return HeadlessCampaignSweepRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
 }
 
+if (args.Length >= 1 && string.Equals(args[0], "balance-framework", StringComparison.Ordinal))
+{
+    return BalanceFrameworkGateRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
+}
+
 Console.Error.WriteLine(
     "Usage: HeadlessSweep [snapshot-load | campaign-battle [--unity <report>] [--output <path>] "
     + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] "
-    + "[--output <path>] [--verify]]");
+    + "[--output <path>] [--verify] | balance-framework [--samples <n>] [--neutral-health-more <n>] "
+    + "[--neutral-power-more <n>] [--snapshot <path>] [--neutral-snapshot <path>] "
+    + "[--emulate-before] [--neutral-emulate-before] [--precision-power <n>] "
+    + "[--duelist-core-power-scale <n>] [--low-growth-ranger-atk-delta <n>] [--output <path>]]");
 return 2;
 
 static int RunDeterminismGate()
