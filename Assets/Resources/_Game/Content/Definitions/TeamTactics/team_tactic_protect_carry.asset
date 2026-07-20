@@ -21,6 +21,11 @@ MonoBehaviour:
   BackSpacingBias: 0.1
   ProtectCarryBias: 0.65
   TargetSwitchPenalty: 0.08
+  Compactness: 0.9
+  Width: 1
+  Depth: 1
+  LineSpacing: 1
+  FlankBias: 0
   CompileTags:
   - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   - {fileID: 11400000, guid: 4eab0c363ee4fb242a28a6b5ab414684, type: 2}

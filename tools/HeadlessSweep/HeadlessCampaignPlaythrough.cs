@@ -85,7 +85,7 @@ internal static class HeadlessCampaignPlaythrough
                     prepChanged,
                     prepEquipmentAssignmentCount));
                 var measured = RunBattle(state, setup.AllySnapshot, measuredEncounter, "measured");
-                var won = measured.Winner == TeamSide.Ally;
+                var won = measured.Result.Winner == TeamSide.Ally;
                 siteFirstVisitClear &= won;
                 var identity = new CampaignNodeIdentity(
                     chapterId,
@@ -104,7 +104,8 @@ internal static class HeadlessCampaignPlaythrough
                         setup.AllySnapshot,
                         config.FindBossLearningSpec(identity.EncounterId)),
                     state.FormationHash(),
-                    prepEquipmentAssignmentCount > 0));
+                    prepEquipmentAssignmentCount > 0,
+                    measured.FlankSurvival));
 
                 if (string.Equals(identity.EncounterId, stopAfterEncounterId, StringComparison.Ordinal))
                 {
@@ -120,12 +121,12 @@ internal static class HeadlessCampaignPlaythrough
                 }
 
                 var progression = won
-                    ? measured
+                    ? measured.Result
                     : FindProgressionResult(
                         state,
                         setup.AllySnapshot,
                         measuredEncounter,
-                        config.ProgressionRetrySeedCount) ?? measured;
+                        config.ProgressionRetrySeedCount) ?? measured.Result;
                 state.ApplyBattleProgression(progression);
                 state.AdvanceBattleNode();
             }
@@ -161,7 +162,7 @@ internal static class HeadlessCampaignPlaythrough
             StoppedAtTarget: false);
     }
 
-    private static BattleResult RunBattle(
+    private static HeadlessCampaignBattleOutcome RunBattle(
         HeadlessCampaignState state,
         BattleLoadoutSnapshot allySnapshot,
         ResolvedEncounterContext encounter,
@@ -178,7 +179,14 @@ internal static class HeadlessCampaignPlaythrough
                 $"Headless campaign {phase} compose failed ({state.Cell.CellId}/{encounter.Context.EncounterId}): {error}");
         }
 
-        return BattleResolver.Run(battleState, BattleSimulator.DefaultMaxSteps);
+        var survivalObserver = new PackPursuitSurvivalObserver();
+        var result = BattleResolver.Run(
+            battleState,
+            BattleSimulator.DefaultMaxSteps,
+            step => survivalObserver.Observe(battleState, step));
+        return new HeadlessCampaignBattleOutcome(
+            result,
+            survivalObserver.Complete(battleState));
     }
 
     private static BattleResult? FindProgressionResult(
@@ -196,7 +204,7 @@ internal static class HeadlessCampaignPlaythrough
                     BattleSeed = DeriveSeed(measuredEncounter.Context.BattleContextHash, 2000 + attempt),
                 },
             };
-            var result = RunBattle(state, allySnapshot, retry, $"progression-{attempt}");
+            var result = RunBattle(state, allySnapshot, retry, $"progression-{attempt}").Result;
             if (result.Winner == TeamSide.Ally)
             {
                 return result;

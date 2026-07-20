@@ -3858,45 +3858,30 @@ public static class SampleSeedGenerator
                 Members(Member("reaver", "npc_grey_fang"), Member("raider", "extra_grey_fang_vanguard"), Member("scout", "hero_ember_runner"), Member("shaman", "extra_wolfpine_outrider")),
                 Member(
                     "warden",
-                    "npc_grey_fang",
-                    positiveTraitId: "warden_positive_sturdy",
-                    equipmentBudget: 3f,
-                    equipmentItemBaseId: "item_bulwark_armor",
-                    equipmentAffixIds: new[] { "affix_packborn" }),
+                    "npc_grey_fang"),
                 Members(
                     Member(
                         "reaver",
                         "extra_wolfpine_outrider",
-                        positiveTraitId: "reaver_positive_brave",
                         equipmentBudget: 3f,
                         equipmentItemBaseId: "item_reaver_blade",
-                        equipmentAffixIds: new[]
-                        {
-                            "affix_hasty",
-                            "affix_sharp",
-                            "affix_piercing",
-                            "affix_precise",
-                        }),
+                        ruleModifierTags: new[] { "pack_pursuit" }),
                     Member(
                         "reaver",
                         "extra_wolfpine_ember_runner_cell",
-                        positiveTraitId: "reaver_positive_brave",
                         equipmentBudget: 3f,
                         equipmentItemBaseId: "item_reaver_blade",
-                        equipmentAffixIds: new[] { "affix_fierce" }),
+                        ruleModifierTags: new[] { "pack_pursuit" }),
                     Member(
                         "shaman",
                         "extra_grey_fang_vanguard",
-                        positiveTraitId: "shaman_positive_swift",
-                        equipmentBudget: 3f,
-                        equipmentItemBaseId: "item_priest_focus",
-                        equipmentAffixIds: new[] { "affix_mender" })),
+                        positiveTraitId: "shaman_positive_swift")),
                 "boss_overlay_wolfpine_trail", "boss_aura_sustain_guard", "boss_utility_backline_dive", "guarded",
                 BossPosture: TeamPostureTypeValue.AllInBackline,
                 BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
                 BossEscortTwoAnchor: DeploymentAnchorValue.FrontBottom,
                 BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
-                BossOpeningBarrier: 35f),
+                BossOpeningBarrier: 41.5f),
             new CampaignSiteSeed(
                 "chapter_sunken_bastion", 2, "Sunken Bastion", "가라앉은 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
                 "site_sunken_bastion", 1, "Sunken Bastion", "가라앉은 보루", "Shielded adjudicators protect a submerged reliquary.", "방패 든 심판관들이 잠긴 성물고를 지킨다.",
@@ -4000,7 +3985,8 @@ public static class SampleSeedGenerator
         string positiveTraitId = "",
         float equipmentBudget = 0f,
         string equipmentItemBaseId = "",
-        IReadOnlyList<string>? equipmentAffixIds = null)
+        IReadOnlyList<string>? equipmentAffixIds = null,
+        IReadOnlyList<string>? ruleModifierTags = null)
     {
         return new EnemyMemberSeed(
             archetypeId,
@@ -4009,7 +3995,8 @@ public static class SampleSeedGenerator
             positiveTraitId,
             equipmentBudget,
             equipmentItemBaseId,
-            equipmentAffixIds ?? Array.Empty<string>());
+            equipmentAffixIds ?? Array.Empty<string>(),
+            ruleModifierTags ?? Array.Empty<string>());
     }
 
     private static IReadOnlyList<EnemyMemberSeed> Members(params EnemyMemberSeed[] members)
@@ -4206,7 +4193,8 @@ public static class SampleSeedGenerator
         string PositiveTraitId = "",
         float EquipmentBudget = 0f,
         string EquipmentItemBaseId = "",
-        IReadOnlyList<string>? EquipmentAffixIds = null);
+        IReadOnlyList<string>? EquipmentAffixIds = null,
+        IReadOnlyList<string>? RuleModifierTags = null);
 
     private static void CreateRewardSource(string id, string enName, string koName, RewardSourceKindValue kind, string dropTableId, IReadOnlyList<RarityBracketValue> rarityBrackets)
     {
@@ -4325,7 +4313,7 @@ public static class SampleSeedGenerator
                 EquipmentBudget = member.EquipmentBudget,
                 EquipmentItemBaseId = member.EquipmentItemBaseId,
                 EquipmentAffixIds = (member.EquipmentAffixIds ?? Array.Empty<string>()).ToList(),
-                RuleModifierTags = new List<string>()
+                RuleModifierTags = (member.RuleModifierTags ?? Array.Empty<string>()).ToList()
             }).ToList();
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.NameKey, id, id);
             UpsertStringEntry(ContentLocalizationTables.Encounters, asset.DescriptionKey, $"{factionId} 분대", $"{factionId} squad");
@@ -4388,7 +4376,7 @@ public static class SampleSeedGenerator
             EquipmentBudget = seed.EquipmentBudget,
             EquipmentItemBaseId = seed.EquipmentItemBaseId,
             EquipmentAffixIds = (seed.EquipmentAffixIds ?? Array.Empty<string>()).ToList(),
-            RuleModifierTags = new List<string>(),
+            RuleModifierTags = (seed.RuleModifierTags ?? Array.Empty<string>()).ToList(),
         };
 
     private static void CreateEncounter(string id, string siteId, string factionId, EncounterKindValue kind, string squadId, string overlayId, string rewardSourceId, ThreatTierValue threatTier, int threatCost, int threatSkulls, string difficultyBand, string encounterFamilyId, string answerLaneId)

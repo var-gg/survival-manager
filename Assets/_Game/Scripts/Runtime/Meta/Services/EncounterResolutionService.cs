@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using SM.Combat.Model;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;
 
@@ -13,6 +14,7 @@ namespace SM.Meta.Services;
 public sealed class EncounterResolutionService
 {
     private const int BattleNodesPerSite = 4;
+    private const string PackPursuitBehaviorTag = "pack_pursuit";
     private readonly CombatContentSnapshot _content;
 
     public EncounterResolutionService(CombatContentSnapshot content)
@@ -312,7 +314,30 @@ public sealed class EncounterResolutionService
         {
             captain.ApplyStatus(status);
         }
+
+        // Wolfpine's authored opening-barrier budget is also the deterministic chip budget for tagged flank
+        // escorts. The status magnitude remains the single content knob; the routing is gated by the same explicit
+        // behavior tag as the movement path, so other escorts and other boss content are unchanged.
+        var packPursuitOpeningBarrier = (overlay.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
+            .FirstOrDefault(status => string.Equals(status.StatusId, "barrier", StringComparison.Ordinal)
+                                      && status.Magnitude > 0f);
+        var packPursuitCanActivate = state.Allies.Any(unit => unit.IsAlive
+                                                               && unit.Behavior.FormationLine == FormationLine.Backline
+                                                               && unit.Definition.ClassId is "ranger" or "mystic");
+        if (packPursuitOpeningBarrier != null && packPursuitCanActivate)
+        {
+            foreach (var escort in state.Enemies.Where(unit => unit.Id != captain.Id && HasPackPursuitTag(unit)))
+            {
+                escort.AddBarrier(packPursuitOpeningBarrier.Magnitude);
+            }
+        }
     }
+
+    private static bool HasPackPursuitTag(UnitSnapshot unit)
+        => (unit.Definition.RulePackages ?? Array.Empty<CombatRuleModifierPackage>())
+            .SelectMany(package => package.Modifiers ?? Array.Empty<RuleModifier>())
+            .Any(modifier => modifier.Kind == RuleModifierKind.BehaviorTag
+                             && string.Equals(modifier.Value, PackPursuitBehaviorTag, StringComparison.Ordinal));
 
     private string ResolveSelectedSiteId(CampaignChapterTemplate chapter, string requestedSiteId)
     {

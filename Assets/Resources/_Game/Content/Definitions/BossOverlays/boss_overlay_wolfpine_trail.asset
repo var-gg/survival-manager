@@ -41,7 +41,7 @@ MonoBehaviour:
   - Id: boss_overlay_wolfpine_trail_opening_barrier
     StatusId: barrier
     DurationSeconds: 0
-    Magnitude: 35
+    Magnitude: 41.5
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

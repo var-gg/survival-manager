@@ -49,12 +49,27 @@ internal sealed record HeadlessCampaignBattleSetup(
     BattleLoadoutSnapshot AllySnapshot,
     ResolvedEncounterContext AuthoredEncounter);
 
+internal sealed record HeadlessCampaignFlankSurvival(
+    int TargetedShooterCount,
+    int SurvivingTargetedShooterCount,
+    int BacklineDiveKillCount)
+{
+    public double SurvivalRate => TargetedShooterCount == 0
+        ? 0d
+        : SurvivingTargetedShooterCount / (double)TargetedShooterCount;
+}
+
+internal sealed record HeadlessCampaignBattleOutcome(
+    BattleResult Result,
+    HeadlessCampaignFlankSurvival FlankSurvival);
+
 internal sealed record HeadlessCampaignNodeObservation(
     CampaignNodeIdentity Identity,
     bool Won,
     bool AnswerTagPresent,
     string FormationHash,
-    bool GearCounterUsed);
+    bool GearCounterUsed,
+    HeadlessCampaignFlankSurvival FlankSurvival);
 
 internal sealed record HeadlessCampaignSiteObservation(
     CampaignSiteIdentity Identity,
@@ -124,7 +139,31 @@ internal sealed record HeadlessCampaignCellNodeResult(
     string EncounterId,
     bool Won,
     string FormationHash,
-    bool GearCounterUsed);
+    bool GearCounterUsed,
+    HeadlessCampaignFlankSurvival FlankSurvival);
+
+internal sealed record HeadlessCampaignSurvivalArmCount(
+    string ArmId,
+    string PolicyId,
+    int TargetedShooters,
+    int SurvivingTargetedShooters,
+    int BacklineDiveKills)
+{
+    public double SurvivalRate => TargetedShooters == 0
+        ? 0d
+        : SurvivingTargetedShooters / (double)TargetedShooters;
+}
+
+internal sealed record HeadlessCampaignSquadSurvivalBand(
+    string SquadId,
+    HeadlessCampaignSurvivalArmCount Naive,
+    HeadlessCampaignSurvivalArmCount Informed);
+
+internal sealed record HeadlessCampaignSurvivalBand(
+    string EncounterId,
+    HeadlessCampaignSurvivalArmCount Naive,
+    HeadlessCampaignSurvivalArmCount Informed,
+    IReadOnlyList<HeadlessCampaignSquadSurvivalBand> ByReferenceSquad);
 
 internal sealed record HeadlessCampaignCellResult(
     int CellIndex,
@@ -159,4 +198,5 @@ internal sealed record HeadlessCampaignSweepReport(
     string CanonicalHash,
     HeadlessCampaignCanonicalResult Result,
     HeadlessCampaignNodeBand TargetBoss,
+    HeadlessCampaignSurvivalBand TargetBossSurvival,
     HeadlessCampaignVerification Verification);

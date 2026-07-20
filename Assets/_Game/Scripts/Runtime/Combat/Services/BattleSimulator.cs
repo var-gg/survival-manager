@@ -147,6 +147,14 @@ public sealed class BattleSimulator
                 actor.SetCurrentTarget(evaluated.Target.Id);
             }
 
+            // A scoped pack-pursuit approach is an intentional movement override, not an attack or Dive gate.
+            // Resolve it after RoleBrain has had the normal chance to open Dive, but before the current frontline
+            // target's in-range check can commit another center-fight swing and make the flank route unreachable.
+            if (MovementResolver.TryMovePackPursuitApproach(State, actor))
+            {
+                continue;
+            }
+
             // Phase 0 single attack rule: an action begins when the target is within action range
             // (edge ≤ R + 0.05) and the cooldown is ready. No range-band / slot-ready / start-tolerance
             // gating — those produced the out-of-range hover and the slot thrash. When not in range the
@@ -288,6 +296,14 @@ public sealed class BattleSimulator
         if (actor.ActionState is not (CombatActionState.Spawn or CombatActionState.AdvanceToAnchor))
         {
             return false;
+        }
+
+        // A pack-pursuit escort owns a content-scoped flank approach instead of the ordinary center-facing spawn
+        // advance. Hand it to MovementResolver here so the generic spawn envelope cannot keep dragging it toward
+        // the contact mass before normal intent evaluation begins. Non-tagged units retain the exact old path.
+        if (MovementResolver.TryMovePackPursuitApproach(State, actor))
+        {
+            return true;
         }
 
         var home = MovementResolver.ResolveHomePosition(State, actor);

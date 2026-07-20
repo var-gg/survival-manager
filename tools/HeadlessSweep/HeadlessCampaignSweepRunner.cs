@@ -69,6 +69,7 @@ internal static class HeadlessCampaignSweepRunner
                 CanonicalHash: primary.Hash,
                 Result: primary.Canonical,
                 TargetBoss: primary.TargetBoss,
+                TargetBossSurvival: primary.TargetBossSurvival,
                 Verification: verification);
             var outputPath = Resolve(repositoryRoot, options.OutputPath);
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
@@ -80,7 +81,9 @@ internal static class HeadlessCampaignSweepRunner
                 + $"degree={options.Degree} elapsed={primary.ElapsedSeconds.ToString("0.000", CultureInfo.InvariantCulture)}s "
                 + $"hash={primary.Hash} boss={primary.TargetBoss.Naive.WinRate.ToString("0.000000", CultureInfo.InvariantCulture)}"
                 + $"->{primary.TargetBoss.Informed.WinRate.ToString("0.000000", CultureInfo.InvariantCulture)} "
-                + $"gap={primary.TargetBoss.Gap.ToString("0.000000", CultureInfo.InvariantCulture)}");
+                + $"gap={primary.TargetBoss.Gap.ToString("0.000000", CultureInfo.InvariantCulture)} "
+                + $"flanked-survival={primary.TargetBossSurvival.Naive.SurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}"
+                + $"->{primary.TargetBossSurvival.Informed.SurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}");
             Console.WriteLine($"headless-campaign-sweep report={outputPath}");
             return 0;
         }
@@ -175,6 +178,10 @@ internal static class HeadlessCampaignSweepRunner
             node.EncounterId,
             stopAfterEncounterId,
             StringComparison.Ordinal));
+        var targetBossSurvival = BuildSurvivalBand(
+            executions,
+            config,
+            stopAfterEncounterId);
         var canonical = new HeadlessCampaignCanonicalResult(
             SchemaVersion: "headless-campaign-canonical-v1",
             StopAfterEncounterId: stopAfterEncounterId,
@@ -190,12 +197,60 @@ internal static class HeadlessCampaignSweepRunner
                             node.Identity.EncounterId,
                             node.Won,
                             node.FormationHash,
-                            node.GearCounterUsed)))
+                            node.GearCounterUsed,
+                            node.FlankSurvival)))
                         .ToArray()))
                 .ToArray());
         var canonicalJson = JsonConvert.SerializeObject(canonical, Formatting.None, SerializerSettings());
         var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(canonicalJson))).ToLowerInvariant();
-        return new SweepExecution(canonical, targetBoss, hash, stopwatch.Elapsed.TotalSeconds);
+        return new SweepExecution(
+            canonical,
+            targetBoss,
+            targetBossSurvival,
+            hash,
+            stopwatch.Elapsed.TotalSeconds);
+    }
+
+    private static HeadlessCampaignSurvivalBand BuildSurvivalBand(
+        IReadOnlyList<HeadlessCampaignCellExecution> executions,
+        CampaignBalanceSweepConfig config,
+        string encounterId)
+    {
+        var squadIds = executions.Select(value => value.SquadId)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
+        return new HeadlessCampaignSurvivalBand(
+            encounterId,
+            BuildSurvivalArm(executions, config.Arms[0], encounterId),
+            BuildSurvivalArm(executions, config.Arms[1], encounterId),
+            squadIds.Select(squadId => new HeadlessCampaignSquadSurvivalBand(
+                    squadId,
+                    BuildSurvivalArm(executions, config.Arms[0], encounterId, squadId),
+                    BuildSurvivalArm(executions, config.Arms[1], encounterId, squadId)))
+                .ToArray());
+    }
+
+    private static HeadlessCampaignSurvivalArmCount BuildSurvivalArm(
+        IEnumerable<HeadlessCampaignCellExecution> executions,
+        CampaignBalanceArmSpec arm,
+        string encounterId,
+        string? squadId = null)
+    {
+        var observations = executions
+            .Where(cell => squadId == null || string.Equals(cell.SquadId, squadId, StringComparison.Ordinal))
+            .SelectMany(cell => cell.Arms)
+            .Where(execution => string.Equals(execution.Arm.ArmId, arm.ArmId, StringComparison.Ordinal))
+            .SelectMany(execution => execution.Nodes)
+            .Where(node => string.Equals(node.Identity.EncounterId, encounterId, StringComparison.Ordinal))
+            .Select(node => node.FlankSurvival)
+            .ToArray();
+        return new HeadlessCampaignSurvivalArmCount(
+            arm.ArmId,
+            arm.PolicyId,
+            observations.Sum(value => value.TargetedShooterCount),
+            observations.Sum(value => value.SurvivingTargetedShooterCount),
+            observations.Sum(value => value.BacklineDiveKillCount));
     }
 
     private static HeadlessCampaignNodeBand ToNodeBand(CampaignTwoArmNodeAggregate aggregate)
@@ -311,6 +366,7 @@ internal static class HeadlessCampaignSweepRunner
     private sealed record SweepExecution(
         HeadlessCampaignCanonicalResult Canonical,
         HeadlessCampaignNodeBand TargetBoss,
+        HeadlessCampaignSurvivalBand TargetBossSurvival,
         string Hash,
         double ElapsedSeconds);
 }

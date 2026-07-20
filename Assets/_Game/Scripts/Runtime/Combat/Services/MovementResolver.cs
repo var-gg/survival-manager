@@ -19,6 +19,11 @@ public static class MovementResolver
     private const float BacklineMaxLaneOffset = 1.1f;
     private const float BaseLaneGap = 1.8f;
     private const float BaseRowGap = 2.1f;
+    private const string PackPursuitBehaviorTag = "pack_pursuit";
+    private const int PackPursuitTimeoutStep = 64;
+    private const float PackPursuitDiveMaxForwardDepth = 5.0f;
+    private const float PackPursuitDiveMaxPathDistance = 5.5f;
+    private const float PackPursuitWingPadding = 0.12f;
     internal const float ActionStartRangeTolerance = 0.12f;
     // Phase 1 HoldLine: a vanguard holds the frontline by clamping its pursuit to within this radius of its
     // formation anchor (master design "do not pursue beyond anchor + 2.0m"), so it engages the line without diving.
@@ -408,6 +413,16 @@ public static class MovementResolver
 
     public static void MoveForIntent(BattleState state, UnitSnapshot actor, EvaluatedAction evaluated)
     {
+        // Wolfpine pack-pursuit precedes the ordinary WaitDefend/in-range exits. Tagged flank runners can have
+        // no immediately actionable target while their legal backline dive target remains outside the existing
+        // RoleBrain geometry, or can already be in melee range of a frontline target. Either exit would collapse
+        // them into the center before the dive gate can open. This branch only supplies an approach point; it
+        // never admits or selects a Dive.
+        if (TryMovePackPursuitApproach(state, actor))
+        {
+            return;
+        }
+
         if (evaluated.ActionType == BattleActionType.WaitDefend || evaluated.Target == null)
         {
             MoveTowards(state, actor, ResolveHomePosition(state, actor), CombatActionState.Reposition);
@@ -481,6 +496,21 @@ public static class MovementResolver
 
         var desiredPosition = ResolveDesiredPosition(state, actor, target, evaluated.DesiredRangeBand);
         MoveTowards(state, actor, desiredPosition, CombatActionState.Approach, allowProgressGate: true);
+    }
+
+    internal static bool TryMovePackPursuitApproach(BattleState state, UnitSnapshot actor)
+    {
+        if (!TryResolvePackPursuitApproachPoint(
+                state,
+                actor,
+                state.GetTacticContext(actor.Side),
+                out var approachPoint))
+        {
+            return false;
+        }
+
+        MoveTowards(state, actor, approachPoint, CombatActionState.Approach);
+        return true;
     }
 
     public static void ResolveFormationSpacing(BattleState state)
@@ -665,6 +695,63 @@ public static class MovementResolver
             : new CombatVector2(-1f, 0f));
 
         return target.Position - (directionToTarget * centerDistance);
+    }
+
+    private static bool TryResolvePackPursuitApproachPoint(
+        BattleState state,
+        UnitSnapshot actor,
+        TacticContext context,
+        out CombatVector2 approachPoint)
+    {
+        approachPoint = default;
+        if (state.StepIndex >= PackPursuitTimeoutStep
+            || actor.CurrentCombatIntent.Type == CombatIntentType.Dive
+            || actor.Definition.ClassId != "duelist"
+            || actor.Anchor.LaneIndex() == 0
+            || (context.Posture != TeamPostureType.AllInBackline
+                && context.Posture != TeamPostureType.CollapseWeakSide)
+            || !HasPackPursuitBehaviorTag(actor))
+        {
+            return false;
+        }
+
+        var backlineCandidate = state.GetOpponents(actor.Side)
+            .Where(enemy => enemy.IsAlive
+                            && enemy.Behavior.FormationLine == FormationLine.Backline
+                            && (enemy.Definition.ClassId == "ranger" || enemy.Definition.ClassId == "mystic")
+                            && IsBeyondPackPursuitDiveGeometry(actor, enemy))
+            .OrderBy(enemy => Math.Abs(enemy.FixedPosition.Y.Raw - actor.FixedAnchorPosition.Y.Raw))
+            .ThenBy(enemy => enemy.Id.Value, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (backlineCandidate == null)
+        {
+            return false;
+        }
+
+        var wingSign = actor.FixedAnchorPosition.Y.Raw > 0 ? 1f : -1f;
+        var wingY = wingSign * (ArenaHalfHeight - actor.NavigationRadius - PackPursuitWingPadding);
+        var isAtWing = Math.Abs(actor.Position.Y - wingY) <= 0.05f;
+        approachPoint = isAtWing
+            ? new CombatVector2(backlineCandidate.Position.X, wingY)
+            : new CombatVector2(actor.Position.X, wingY);
+        return true;
+    }
+
+    private static bool IsBeyondPackPursuitDiveGeometry(UnitSnapshot actor, UnitSnapshot candidate)
+    {
+        var forwardDepth = actor.Side == TeamSide.Ally
+            ? candidate.Position.X - actor.Position.X
+            : actor.Position.X - candidate.Position.X;
+        return forwardDepth > PackPursuitDiveMaxForwardDepth
+               || actor.Position.DistanceTo(candidate.Position) > PackPursuitDiveMaxPathDistance;
+    }
+
+    private static bool HasPackPursuitBehaviorTag(UnitSnapshot actor)
+    {
+        return (actor.Definition.RulePackages ?? Array.Empty<CombatRuleModifierPackage>())
+            .SelectMany(package => package.Modifiers ?? Array.Empty<RuleModifier>())
+            .Any(modifier => modifier.Kind == RuleModifierKind.BehaviorTag
+                             && string.Equals(modifier.Value, PackPursuitBehaviorTag, StringComparison.Ordinal));
     }
 
     private static CombatVector2 ResolveBestZoneCandidate(
