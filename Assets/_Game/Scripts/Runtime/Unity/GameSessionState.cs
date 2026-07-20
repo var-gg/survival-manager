@@ -1188,7 +1188,9 @@ public sealed partial class GameSessionState
             blueprint,
             overlay,
             snapshot,
-            squadSupportPackages);
+            squadSupportPackages,
+            snapshot.WarWound,
+            activeRun.ActiveWoundHeroIds);
 
         LastCompiledBattleSnapshot = compiled;
         ActiveRun = activeRun with { Overlay = overlay };

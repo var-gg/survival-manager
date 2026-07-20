@@ -97,6 +97,17 @@ internal static class HeadlessCampaignPlaythrough
                     authoredEncounter.Context.EncounterId,
                     IsElite(authoredEncounter),
                     authoredEncounter.Context.IsBoss);
+                var stopAtCurrentNode = string.Equals(identity.EncounterId, stopAfterEncounterId, StringComparison.Ordinal);
+                var progression = won
+                    ? measured.Result
+                    : stopAtCurrentNode
+                        ? null
+                        : FindProgressionResult(
+                        state,
+                        setup.AllySnapshot,
+                        measuredEncounter,
+                        config.ProgressionRetrySeedCount) ?? measured.Result;
+                var woundsApplied = progression == null ? 0 : state.ApplyBattleProgression(progression);
                 nodes.Add(new HeadlessCampaignNodeObservation(
                     identity,
                     won,
@@ -106,9 +117,10 @@ internal static class HeadlessCampaignPlaythrough
                     state.FormationHash(),
                     prepEquipmentAssignmentCount > 0,
                     measured.FlankSurvival,
-                    measured.AntiClusterAoeSurvival));
+                    measured.AntiClusterAoeSurvival,
+                    won ? woundsApplied : 0));
 
-                if (string.Equals(identity.EncounterId, stopAfterEncounterId, StringComparison.Ordinal))
+                if (stopAtCurrentNode)
                 {
                     return new HeadlessCampaignArmExecution(
                         arm,
@@ -121,14 +133,6 @@ internal static class HeadlessCampaignPlaythrough
                         StoppedAtTarget: true);
                 }
 
-                var progression = won
-                    ? measured.Result
-                    : FindProgressionResult(
-                        state,
-                        setup.AllySnapshot,
-                        measuredEncounter,
-                        config.ProgressionRetrySeedCount) ?? measured.Result;
-                state.ApplyBattleProgression(progression);
                 state.AdvanceBattleNode();
             }
 

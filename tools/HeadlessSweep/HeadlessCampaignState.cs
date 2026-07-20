@@ -263,7 +263,9 @@ internal sealed class HeadlessCampaignState
             new PermanentAugmentLoadoutState(blueprint.BlueprintId, Array.Empty<string>()),
             blueprint,
             overlay,
-            Snapshot);
+            Snapshot,
+            warWoundSpec: Snapshot.WarWound,
+            activeWoundHeroIds: ActiveRun.ActiveWoundHeroIds);
 
         ActiveRun = ActiveRun with { Blueprint = blueprint, Overlay = overlay };
         var context = _encounterResolver.BuildBattleContext(
@@ -283,8 +285,26 @@ internal sealed class HeadlessCampaignState
         return new HeadlessCampaignBattleSetup(compiled, encounter);
     }
 
-    internal void ApplyBattleProgression(BattleResult result)
+    internal int ApplyBattleProgression(BattleResult result)
     {
+        var woundsApplied = 0;
+        if (ActiveRun != null && Snapshot.WarWound != null)
+        {
+            var woundResolution = WarWoundResolutionService.Resolve(
+                ActiveRun,
+                result.Winner == TeamSide.Ally,
+                result.FinalUnits
+                    .Where(unit => unit.Side == TeamSide.Ally && unit.EntityKind == CombatEntityKind.RosterUnit)
+                    .Select(unit => new WarWoundCandidate(
+                        ResolveRosterHeroId(unit.Id),
+                        unit.CurrentHealth,
+                        unit.MaxHealth))
+                    .ToArray(),
+                Snapshot.WarWound);
+            ActiveRun = woundResolution.UpdatedRun;
+            woundsApplied = woundResolution.AppliedHeroIds.Count;
+        }
+
         var heroesById = Heroes.ToDictionary(hero => hero.Id, StringComparer.Ordinal);
         foreach (var unit in result.FinalUnits)
         {
@@ -318,6 +338,8 @@ internal sealed class HeadlessCampaignState
         {
             ApplyAutomaticLoot();
         }
+
+        return woundsApplied;
     }
 
     internal void AdvanceBattleNode()

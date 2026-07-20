@@ -121,6 +121,13 @@ public sealed partial class GameSessionState
             _session._lastAutomaticLootBundle = null;
             _session._hasPendingRewardSettlement = shouldCreateRewardSettlement;
 
+            if (finalUnits != null
+                && !_session.IsDirectCombatSandboxLane
+                && !_session.IsQuickBattleSmokeActive)
+            {
+                ApplyWarWoundAftermath(finalUnits, victory);
+            }
+
             // wave-33-progression: combat result → HeroInstanceRecord HP + HeroProgressionRecord Exp 갱신.
             // finalUnits == null이면 (sandbox/balance runner처럼 raw 결과를 안 전달하는 path) 건너뜀 — 기존 호환.
             if (finalUnits != null && !_session.IsDirectCombatSandboxLane)
@@ -247,6 +254,30 @@ public sealed partial class GameSessionState
 
             var parts = unitId.Split('_', 3);
             return parts.Length == 3 ? parts[2] : unitId;
+        }
+
+        private void ApplyWarWoundAftermath(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory)
+        {
+            if (_session.ActiveRun == null
+                || !_session._sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _)
+                || snapshot.WarWound == null)
+            {
+                return;
+            }
+
+            var candidates = finalUnits
+                .Where(unit => unit.Side == TeamSide.Ally && unit.EntityKind == CombatEntityKind.RosterUnit)
+                .Select(unit => new WarWoundCandidate(
+                    ResolveRosterHeroId(unit.Id),
+                    unit.CurrentHealth,
+                    unit.MaxHealth))
+                .ToArray();
+            var resolution = WarWoundResolutionService.Resolve(
+                _session.ActiveRun,
+                victory,
+                candidates,
+                snapshot.WarWound);
+            _session.ActiveRun = resolution.UpdatedRun;
         }
 
         private void ApplyHeroBattleAftermath(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory)

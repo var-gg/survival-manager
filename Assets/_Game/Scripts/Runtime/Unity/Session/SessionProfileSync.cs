@@ -765,7 +765,8 @@ public sealed partial class GameSessionState
             Profile.ActiveRun.LastSettlementWasVictory,
             Profile.ActiveRun.StoryCleared,
             Profile.ActiveRun.EndlessUnlocked,
-            Profile.ActiveRun.EndlessCycleIndex);
+            Profile.ActiveRun.EndlessCycleIndex,
+            Profile.ActiveRun.ActiveWoundHeroIds);
         LastBattleVictory = ActiveRun.LastSettlementWasVictory;
         IsQuickBattleSmokeActive = ActiveRun.IsQuickBattle;
         QuickBattleLaneKind = ActiveRun.IsQuickBattle
@@ -899,6 +900,7 @@ public sealed partial class GameSessionState
             TemporaryAugmentIds = ActiveRun.Overlay.TemporaryAugmentIds.ToList(),
             PendingRewardIds = ActiveRun.Overlay.PendingRewardIds.ToList(),
             BattleDeployHeroIds = ActiveRun.BattleDeployHeroIds.ToList(),
+            ActiveWoundHeroIds = (ActiveRun.ActiveWoundHeroIds ?? Array.Empty<string>()).ToList(),
             RecruitPhase = _recruitPhaseState.Clone(),
             RecruitPity = _recruitPityState.Clone(),
             CompileVersion = ActiveRun.Overlay.CompileVersion,

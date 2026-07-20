@@ -83,7 +83,8 @@ internal sealed record HeadlessCampaignNodeObservation(
     string FormationHash,
     bool GearCounterUsed,
     HeadlessCampaignFlankSurvival FlankSurvival,
-    HeadlessCampaignAoeSurvival AntiClusterAoeSurvival);
+    HeadlessCampaignAoeSurvival AntiClusterAoeSurvival,
+    int WoundsApplied);
 
 internal sealed record HeadlessCampaignSiteObservation(
     CampaignSiteIdentity Identity,
@@ -231,6 +232,14 @@ internal sealed record HeadlessCampaignVerification(
     double RepeatElapsedSeconds,
     double SingleThreadElapsedSeconds);
 
+internal sealed record HeadlessCampaignWoundMeasure(
+    int WonCells,
+    int CellsWithWound,
+    int AppliedWounds)
+{
+    public double OccurrenceRate => WonCells == 0 ? 0d : CellsWithWound / (double)WonCells;
+}
+
 internal sealed record HeadlessCampaignSweepReport(
     string SchemaVersion,
     int Cells,
@@ -243,4 +252,5 @@ internal sealed record HeadlessCampaignSweepReport(
     HeadlessCampaignNodeBand TargetBoss,
     HeadlessCampaignSurvivalBand TargetBossSurvival,
     HeadlessCampaignAoeBand TargetBossAoeSurvival,
+    HeadlessCampaignWoundMeasure WoundMeasure,
     HeadlessCampaignVerification Verification);

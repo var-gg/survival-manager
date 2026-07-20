@@ -85,7 +85,9 @@ public sealed record ActiveRunState(
     bool StoryCleared = false,
     bool EndlessUnlocked = false,
     // 0 = 스토리 원정, 1+ = 무한 순환 N회차 run. 시드/보상 dedup/Atlas traversal이 이 값으로 분기한다.
-    int EndlessCycleIndex = 0);
+    int EndlessCycleIndex = 0,
+    // 영구 hero truth가 아닌 현재 사이트 run의 전상 hero id 목록. run 종료 시 ActiveRun과 함께 폐기된다.
+    IReadOnlyList<string>? ActiveWoundHeroIds = null);
 
 public sealed record InventoryLedgerEntry(
     string EntryId,

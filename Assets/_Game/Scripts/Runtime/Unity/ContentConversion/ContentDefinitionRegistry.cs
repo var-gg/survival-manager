@@ -54,6 +54,7 @@ internal sealed class ContentDefinitionRegistry
     private readonly Dictionary<string, DialogueSequenceDefinition> _dialogueSequenceDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ChapterBeatDefinition> _chapterBeatDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, HeroLoreDefinition> _heroLoreDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, WarWoundBalanceDefinition> _warWoundDefinitions = new(StringComparer.Ordinal);
     private readonly bool _allowEditorRecoveryFallback;
     private FirstPlayableSliceDefinition? _firstPlayableSlice;
     private bool _loaded;
@@ -94,6 +95,7 @@ internal sealed class ContentDefinitionRegistry
     internal IReadOnlyDictionary<string, DialogueSequenceDefinition> DialogueSequenceDefinitions => _dialogueSequenceDefinitions;
     internal IReadOnlyDictionary<string, ChapterBeatDefinition> ChapterBeatDefinitions => _chapterBeatDefinitions;
     internal IReadOnlyDictionary<string, HeroLoreDefinition> HeroLoreDefinitions => _heroLoreDefinitions;
+    internal IReadOnlyDictionary<string, WarWoundBalanceDefinition> WarWoundDefinitions => _warWoundDefinitions;
     internal FirstPlayableSliceDefinition? FirstPlayableSlice => _firstPlayableSlice;
     internal bool AllowsEditorRecoveryFallback => _allowEditorRecoveryFallback;
 
@@ -154,6 +156,7 @@ internal sealed class ContentDefinitionRegistry
             var dialogueSequences = LoadDefinitions<DialogueSequenceDefinition>("_Game/Content/Definitions/DialogueSequences", "Assets/Resources/_Game/Content/Definitions/DialogueSequences");
             var chapterBeats = LoadDefinitions<ChapterBeatDefinition>("_Game/Content/Definitions/ChapterBeats", "Assets/Resources/_Game/Content/Definitions/ChapterBeats");
             var heroLore = LoadDefinitions<HeroLoreDefinition>("_Game/Content/Definitions/HeroLore", "Assets/Resources/_Game/Content/Definitions/HeroLore");
+            var warWounds = LoadDefinitions<WarWoundBalanceDefinition>("_Game/Content/Definitions/Expeditions", "Assets/Resources/_Game/Content/Definitions/Expeditions");
             var firstPlayableSliceAssets = LoadDefinitions<FirstPlayableSliceDefinitionAsset>("_Game/Content/Definitions/FirstPlayable", "Assets/Resources/_Game/Content/Definitions/FirstPlayable");
 
             var requiresFileFallback =
@@ -299,6 +302,8 @@ internal sealed class ContentDefinitionRegistry
                 _chapterBeatDefinitions[chapterBeat.Id] = chapterBeat;
             foreach (var lore in heroLore.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _heroLoreDefinitions[lore.Id] = lore;
+            foreach (var warWound in warWounds.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _warWoundDefinitions[warWound.Id] = warWound;
 
             _firstPlayableSlice = NormalizeFirstPlayableSlice(
                 firstPlayableSliceAssets
@@ -346,6 +351,7 @@ internal sealed class ContentDefinitionRegistry
         _dialogueSequenceDefinitions.Clear();
         _chapterBeatDefinitions.Clear();
         _heroLoreDefinitions.Clear();
+        _warWoundDefinitions.Clear();
     }
 
     private FirstPlayableSliceDefinition? NormalizeFirstPlayableSlice(FirstPlayableSliceDefinition? authored)

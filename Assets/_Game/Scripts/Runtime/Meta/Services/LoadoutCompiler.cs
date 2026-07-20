@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Core.Stats;
 using SM.Meta.Model;
@@ -58,7 +59,9 @@ public sealed class LoadoutCompiler
         SquadBlueprintState blueprint,
         RunOverlayState overlay,
         CombatContentSnapshot content,
-        IReadOnlyList<CombatModifierPackage>? squadSupportPackages = null)
+        IReadOnlyList<CombatModifierPackage>? squadSupportPackages = null,
+        WarWoundSpec? warWoundSpec = null,
+        IReadOnlyCollection<string>? activeWoundHeroIds = null)
     {
         var heroesById = heroes.ToDictionary(hero => hero.Id, StringComparer.Ordinal);
         var compiled = new List<BattleUnitLoadout>();
@@ -231,6 +234,17 @@ public sealed class LoadoutCompiler
                 artifacts,
                 hero.Id,
                 grantedSupportGems);
+            if (warWoundSpec != null
+                && activeWoundHeroIds != null
+                && activeWoundHeroIds.Contains(hero.Id, StringComparer.Ordinal))
+            {
+                resolvedSkills = ApplyWarWoundModifier(
+                    resolvedSkills,
+                    artifacts,
+                    hero.Id,
+                    warWoundSpec,
+                    content);
+            }
             foreach (var selection in resolvedSkills)
             {
                 var skill = selection.Skill;
@@ -501,7 +515,7 @@ public sealed class LoadoutCompiler
                     continue;
                 }
 
-                transformed[i] = selection with { Skill = TransformSupportedSkill(selection.Skill, modifier) };
+                transformed[i] = selection with { Skill = BattleSkillEffectModifier.Apply(selection.Skill, modifier) };
                 artifacts.Provenance.Add(new CompileProvenanceEntry(
                     heroId, ModifierSource.Skill, gem.Id, "support_modifier", new[] { $"target:{selection.Skill.Id}" }));
             }
@@ -573,34 +587,49 @@ public sealed class LoadoutCompiler
         return !blocked.Any(tag => candidateTags.Contains(tag, StringComparer.Ordinal));
     }
 
-    private static BattleSkillSpec TransformSupportedSkill(BattleSkillSpec skill, BattleSupportModifierSpec modifier)
+    private static IReadOnlyList<ResolvedSkillSelection> ApplyWarWoundModifier(
+        IReadOnlyList<ResolvedSkillSelection> resolved,
+        CompiledArtifacts artifacts,
+        string heroId,
+        WarWoundSpec spec,
+        CombatContentSnapshot content)
     {
-        var statuses = (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>()).ToList();
-        if (Math.Abs(modifier.StatusDurationMultiplier - 1f) > 0.0001f)
+        var modifier = new BattleSupportModifierSpec(
+            PowerMultiplier: spec.WoundAbilityScalar,
+            StatusDurationMultiplier: spec.WoundAbilityScalar);
+        var transformed = resolved.ToList();
+        for (var index = 0; index < transformed.Count; index++)
         {
-            statuses = statuses
-                .Select(status => status with { DurationSeconds = status.DurationSeconds * modifier.StatusDurationMultiplier })
-                .ToList();
+            var selection = transformed[index];
+            if (!string.Equals(selection.Skill.SlotKind, CompiledSkillSlots.CoreActive, StringComparison.Ordinal)
+                && !string.Equals(selection.Skill.SlotKind, CompiledSkillSlots.UtilityActive, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            transformed[index] = selection with
+            {
+                Skill = BattleSkillEffectModifier.Apply(
+                    selection.Skill,
+                    modifier,
+                    status => content.StatusFamilies != null
+                              && content.StatusFamilies.TryGetValue(status.StatusId, out var family)
+                              && family.Group == StatusGroupValue.Control,
+                    coefficientMultiplier: spec.WoundAbilityScalar),
+            };
+            artifacts.Provenance.Add(new CompileProvenanceEntry(
+                heroId,
+                ModifierSource.Other,
+                "war_wound",
+                "run_wound_skill_effect",
+                new[]
+                {
+                    $"target:{selection.Skill.Id}",
+                    $"scalar:{spec.WoundAbilityScalar.ToString("R", CultureInfo.InvariantCulture)}",
+                }));
         }
 
-        if (modifier.AddedStatuses is { Count: > 0 })
-        {
-            statuses.AddRange(modifier.AddedStatuses);
-        }
-
-        return skill with
-        {
-            Power = skill.Power * modifier.PowerMultiplier,
-            PowerFlat = skill.PowerFlat * modifier.PowerMultiplier,
-            BaseCooldownSeconds = skill.BaseCooldownSeconds * modifier.CooldownMultiplier,
-            CastWindupSeconds = skill.CastWindupSeconds * modifier.CastWindupMultiplier,
-            Range = skill.Range + modifier.RangeBonus,
-            CanCrit = skill.CanCrit || modifier.ForceCanCrit,
-            AppliedStatuses = statuses.Count > 0 ? statuses : skill.AppliedStatuses,
-            CleanseProfileId = string.IsNullOrWhiteSpace(skill.CleanseProfileId) && !string.IsNullOrWhiteSpace(modifier.GrantCleanseProfileId)
-                ? modifier.GrantCleanseProfileId
-                : skill.CleanseProfileId,
-        };
+        return transformed;
     }
 
     private static AffixTemplate? ResolveAffixTemplate(CombatContentSnapshot content, string affixId)

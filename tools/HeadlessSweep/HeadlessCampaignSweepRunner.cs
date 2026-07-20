@@ -71,6 +71,7 @@ internal static class HeadlessCampaignSweepRunner
                 TargetBoss: primary.TargetBoss,
                 TargetBossSurvival: primary.TargetBossSurvival,
                 TargetBossAoeSurvival: primary.TargetBossAoeSurvival,
+                WoundMeasure: primary.WoundMeasure,
                 Verification: verification);
             var outputPath = Resolve(repositoryRoot, options.OutputPath);
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
@@ -86,7 +87,8 @@ internal static class HeadlessCampaignSweepRunner
                 + $"aoe-catch={primary.TargetBossAoeSurvival.Naive.MeanShooterAoeCatches.ToString("0.000000", CultureInfo.InvariantCulture)}"
                 + $"->{primary.TargetBossAoeSurvival.Informed.MeanShooterAoeCatches.ToString("0.000000", CultureInfo.InvariantCulture)} "
                 + $"shooter-survival={primary.TargetBossAoeSurvival.Naive.ShooterSurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}"
-                + $"->{primary.TargetBossAoeSurvival.Informed.ShooterSurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}");
+                + $"->{primary.TargetBossAoeSurvival.Informed.ShooterSurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)} "
+                + $"wound-occurrence={primary.WoundMeasure.OccurrenceRate.ToString("0.000000", CultureInfo.InvariantCulture)}");
             Console.WriteLine($"headless-campaign-sweep report={outputPath}");
             return 0;
         }
@@ -189,6 +191,7 @@ internal static class HeadlessCampaignSweepRunner
             executions,
             config,
             stopAfterEncounterId);
+        var woundMeasure = BuildWoundMeasure(executions);
         var canonical = new HeadlessCampaignCanonicalResult(
             SchemaVersion: "headless-campaign-canonical-v1",
             StopAfterEncounterId: stopAfterEncounterId,
@@ -216,8 +219,23 @@ internal static class HeadlessCampaignSweepRunner
             targetBoss,
             targetBossSurvival,
             targetBossAoeSurvival,
+            woundMeasure,
             hash,
             stopwatch.Elapsed.TotalSeconds);
+    }
+
+    private static HeadlessCampaignWoundMeasure BuildWoundMeasure(
+        IEnumerable<HeadlessCampaignCellExecution> executions)
+    {
+        var wonNodes = executions
+            .SelectMany(cell => cell.Arms)
+            .SelectMany(arm => arm.Nodes)
+            .Where(node => node.Won)
+            .ToArray();
+        return new HeadlessCampaignWoundMeasure(
+            wonNodes.Length,
+            wonNodes.Count(node => node.WoundsApplied > 0),
+            wonNodes.Sum(node => node.WoundsApplied));
     }
 
     private static HeadlessCampaignAoeBand BuildAoeBand(
@@ -423,6 +441,7 @@ internal static class HeadlessCampaignSweepRunner
         HeadlessCampaignNodeBand TargetBoss,
         HeadlessCampaignSurvivalBand TargetBossSurvival,
         HeadlessCampaignAoeBand TargetBossAoeSurvival,
+        HeadlessCampaignWoundMeasure WoundMeasure,
         string Hash,
         double ElapsedSeconds);
 }

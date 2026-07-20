@@ -35,6 +35,7 @@ internal sealed class SnapshotAssembler
     private readonly IReadOnlyDictionary<string, DropTableDefinition> _dropTableDefinitions;
     private readonly IReadOnlyDictionary<string, LootBundleDefinition> _lootBundleDefinitions;
     private readonly IReadOnlyDictionary<string, TraitTokenDefinition> _traitTokenDefinitions;
+    private readonly IReadOnlyDictionary<string, WarWoundBalanceDefinition> _warWoundDefinitions;
     private readonly FirstPlayableSliceDefinition? _firstPlayableSlice;
 
     internal SnapshotAssembler(ContentDefinitionRegistry registry)
@@ -63,6 +64,7 @@ internal sealed class SnapshotAssembler
         _dropTableDefinitions = registry.DropTableDefinitions;
         _lootBundleDefinitions = registry.LootBundleDefinitions;
         _traitTokenDefinitions = registry.TraitTokenDefinitions;
+        _warWoundDefinitions = registry.WarWoundDefinitions;
         _firstPlayableSlice = registry.FirstPlayableSlice;
     }
 
@@ -159,6 +161,16 @@ internal sealed class SnapshotAssembler
                 _passiveBoardDefinitions,
                 _synergyDefinitions,
                 _firstPlayableSlice));
+        var warWound = BuildSection("war wound balance", () =>
+        {
+            if (_warWoundDefinitions.Count != 1)
+            {
+                throw new InvalidOperationException(
+                    $"Exactly one war wound balance definition is required, found {_warWoundDefinitions.Count}.");
+            }
+
+            return WarWoundConverter.Build(_warWoundDefinitions.Values.Single());
+        });
 
         return new CombatContentSnapshot(
             archetypeTemplates,
@@ -190,6 +202,7 @@ internal sealed class SnapshotAssembler
             affixCatalog,
             itemCatalog,
             archetypeTraitPools,
-            sessionContentOrder);
+            sessionContentOrder,
+            warWound);
     }
 }

@@ -37,6 +37,7 @@ public class JsonPersistenceTests
                 CompileVersion = "build-compile-audit.v1",
                 CompileHash = "abc123",
                 PledgedWarrantId = "warrant_intact",
+                ActiveWoundHeroIds = new System.Collections.Generic.List<string> { "hero-1" },
                 TemporaryAugmentIds = new System.Collections.Generic.List<string> { "augment_silver_guard" }
             };
             profile.MatchHeaders.Add(new MatchRecordHeader
@@ -138,6 +139,7 @@ public class JsonPersistenceTests
             Assert.That(loaded.FactionStanding[0].FactionId, Is.EqualTo("faction_solarum"));
             Assert.That(loaded.FactionStanding[0].Trust, Is.EqualTo(5));
             Assert.That(loaded.ActiveRun.PledgedWarrantId, Is.EqualTo("warrant_intact"));
+            Assert.That(loaded.ActiveRun.ActiveWoundHeroIds, Is.EqualTo(new[] { "hero-1" }));
         }
         finally
         {
