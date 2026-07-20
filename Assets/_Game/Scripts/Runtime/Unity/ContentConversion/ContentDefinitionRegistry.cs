@@ -40,6 +40,7 @@ internal sealed class ContentDefinitionRegistry
     private readonly Dictionary<string, SynergyDefinition> _synergyDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, CampaignChapterDefinition> _campaignChapterDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ExpeditionSiteDefinition> _expeditionSiteDefinitions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, SiteGraphDefinition> _siteGraphDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, EncounterDefinition> _encounterDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, EnemySquadTemplateDefinition> _enemySquadDefinitions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, BossOverlayDefinition> _bossOverlayDefinitions = new(StringComparer.Ordinal);
@@ -81,6 +82,7 @@ internal sealed class ContentDefinitionRegistry
     internal IReadOnlyDictionary<string, SynergyDefinition> SynergyDefinitions => _synergyDefinitions;
     internal IReadOnlyDictionary<string, CampaignChapterDefinition> CampaignChapterDefinitions => _campaignChapterDefinitions;
     internal IReadOnlyDictionary<string, ExpeditionSiteDefinition> ExpeditionSiteDefinitions => _expeditionSiteDefinitions;
+    internal IReadOnlyDictionary<string, SiteGraphDefinition> SiteGraphDefinitions => _siteGraphDefinitions;
     internal IReadOnlyDictionary<string, EncounterDefinition> EncounterDefinitions => _encounterDefinitions;
     internal IReadOnlyDictionary<string, EnemySquadTemplateDefinition> EnemySquadDefinitions => _enemySquadDefinitions;
     internal IReadOnlyDictionary<string, BossOverlayDefinition> BossOverlayDefinitions => _bossOverlayDefinitions;
@@ -142,6 +144,7 @@ internal sealed class ContentDefinitionRegistry
             var synergies = LoadDefinitions<SynergyDefinition>("_Game/Content/Definitions/Synergies", "Assets/Resources/_Game/Content/Definitions/Synergies");
             var campaignChapters = LoadDefinitions<CampaignChapterDefinition>("_Game/Content/Definitions/CampaignChapters", "Assets/Resources/_Game/Content/Definitions/CampaignChapters");
             var expeditionSites = LoadDefinitions<ExpeditionSiteDefinition>("_Game/Content/Definitions/ExpeditionSites", "Assets/Resources/_Game/Content/Definitions/ExpeditionSites");
+            var siteGraphs = LoadDefinitions<SiteGraphDefinition>("_Game/Content/Definitions/SiteGraphs", "Assets/Resources/_Game/Content/Definitions/SiteGraphs");
             var encounters = LoadDefinitions<EncounterDefinition>("_Game/Content/Definitions/Encounters", "Assets/Resources/_Game/Content/Definitions/Encounters");
             var enemySquads = LoadDefinitions<EnemySquadTemplateDefinition>("_Game/Content/Definitions/EnemySquads", "Assets/Resources/_Game/Content/Definitions/EnemySquads");
             var bossOverlays = LoadDefinitions<BossOverlayDefinition>("_Game/Content/Definitions/BossOverlays", "Assets/Resources/_Game/Content/Definitions/BossOverlays");
@@ -212,6 +215,7 @@ internal sealed class ContentDefinitionRegistry
                 if (synergies.Length == 0) synergies = parsed.Synergies.ToArray();
                 if (campaignChapters.Length == 0) campaignChapters = parsed.CampaignChapters.ToArray();
                 if (expeditionSites.Length == 0) expeditionSites = parsed.ExpeditionSites.ToArray();
+                if (siteGraphs.Length == 0) siteGraphs = parsed.SiteGraphs.ToArray();
                 if (encounters.Length == 0) encounters = parsed.Encounters.ToArray();
                 if (enemySquads.Length == 0) enemySquads = parsed.EnemySquads.ToArray();
                 if (bossOverlays.Length == 0) bossOverlays = parsed.BossOverlays.ToArray();
@@ -274,6 +278,8 @@ internal sealed class ContentDefinitionRegistry
                 _campaignChapterDefinitions[chapter.Id] = chapter;
             foreach (var site in expeditionSites.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _expeditionSiteDefinitions[site.Id] = site;
+            foreach (var siteGraph in siteGraphs.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
+                _siteGraphDefinitions[siteGraph.Id] = siteGraph;
             foreach (var encounter in encounters.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
                 _encounterDefinitions[encounter.Id] = encounter;
             foreach (var squad in enemySquads.Where(d => d != null && !string.IsNullOrWhiteSpace(d.Id)))
@@ -337,6 +343,7 @@ internal sealed class ContentDefinitionRegistry
         _synergyDefinitions.Clear();
         _campaignChapterDefinitions.Clear();
         _expeditionSiteDefinitions.Clear();
+        _siteGraphDefinitions.Clear();
         _encounterDefinitions.Clear();
         _enemySquadDefinitions.Clear();
         _bossOverlayDefinitions.Clear();

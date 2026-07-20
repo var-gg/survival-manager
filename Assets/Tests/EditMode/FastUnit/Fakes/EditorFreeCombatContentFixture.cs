@@ -10,7 +10,7 @@ namespace SM.Tests.EditMode.Fakes;
 
 public static class EditorFreeCombatContentFixture
 {
-    public static FakeCombatContentLookup CreateRunLoopLookup()
+    public static FakeCombatContentLookup CreateRunLoopLookup(SiteGraphTemplate? siteAlphaGateGraph = null)
     {
         var augmentCatalog = CreateRunLoopAugmentCatalog();
         var firstPlayableSlice = new FirstPlayableSliceDefinition
@@ -30,7 +30,7 @@ public static class EditorFreeCombatContentFixture
             1,
             new[] { "site_beta_watch" },
             true);
-        var siteAlphaGate = CreateSite("site_alpha_gate", "chapter_alpha", 0);
+        var siteAlphaGate = CreateSite("site_alpha_gate", "chapter_alpha", 0, siteAlphaGateGraph);
         var siteAlphaDepths = CreateSite("site_alpha_depths", "chapter_alpha", 1);
         var siteBetaWatch = CreateSite("site_beta_watch", "chapter_beta", 0);
 
@@ -235,7 +235,11 @@ public static class EditorFreeCombatContentFixture
             BuildBiasTags: buildBiasTags);
     }
 
-    private static ExpeditionSiteTemplate CreateSite(string siteId, string chapterId, int siteOrder)
+    private static ExpeditionSiteTemplate CreateSite(
+        string siteId,
+        string chapterId,
+        int siteOrder,
+        SiteGraphTemplate? graph = null)
     {
         return new ExpeditionSiteTemplate(
             siteId,
@@ -251,7 +255,8 @@ public static class EditorFreeCombatContentFixture
                 $"{siteId}:boss",
             },
             "reward_source_extract",
-            (int)ThreatTierValue.Tier1);
+            (int)ThreatTierValue.Tier1,
+            graph);
     }
 
     private static PassiveNodeTemplate CreatePassiveNode(string nodeId, string boardId, int boardDepth)

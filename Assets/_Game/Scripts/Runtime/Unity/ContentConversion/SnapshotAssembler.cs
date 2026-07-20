@@ -25,6 +25,7 @@ internal sealed class SnapshotAssembler
     private readonly IReadOnlyDictionary<string, SynergyDefinition> _synergyDefinitions;
     private readonly IReadOnlyDictionary<string, CampaignChapterDefinition> _campaignChapterDefinitions;
     private readonly IReadOnlyDictionary<string, ExpeditionSiteDefinition> _expeditionSiteDefinitions;
+    private readonly IReadOnlyDictionary<string, SiteGraphDefinition> _siteGraphDefinitions;
     private readonly IReadOnlyDictionary<string, EncounterDefinition> _encounterDefinitions;
     private readonly IReadOnlyDictionary<string, EnemySquadTemplateDefinition> _enemySquadDefinitions;
     private readonly IReadOnlyDictionary<string, BossOverlayDefinition> _bossOverlayDefinitions;
@@ -54,6 +55,7 @@ internal sealed class SnapshotAssembler
         _synergyDefinitions = registry.SynergyDefinitions;
         _campaignChapterDefinitions = registry.CampaignChapterDefinitions;
         _expeditionSiteDefinitions = registry.ExpeditionSiteDefinitions;
+        _siteGraphDefinitions = registry.SiteGraphDefinitions;
         _encounterDefinitions = registry.EncounterDefinitions;
         _enemySquadDefinitions = registry.EnemySquadDefinitions;
         _bossOverlayDefinitions = registry.BossOverlayDefinitions;
@@ -130,8 +132,17 @@ internal sealed class SnapshotAssembler
                 StringComparer.Ordinal));
         var campaignChaptersCatalog = BuildSection("campaign chapters", () =>
             _campaignChapterDefinitions.Values.ToDictionary(definition => definition.Id, CampaignConverter.BuildCampaignChapterTemplate, StringComparer.Ordinal));
+        var siteGraphsBySiteId = BuildSection("site graphs", () =>
+            _siteGraphDefinitions.Values
+                .Where(definition => !string.IsNullOrWhiteSpace(definition.SiteId))
+                .ToDictionary(definition => definition.SiteId, definition => definition, StringComparer.Ordinal));
         var expeditionSitesCatalog = BuildSection("expedition sites", () =>
-            _expeditionSiteDefinitions.Values.ToDictionary(definition => definition.Id, CampaignConverter.BuildExpeditionSiteTemplate, StringComparer.Ordinal));
+            _expeditionSiteDefinitions.Values.ToDictionary(
+                definition => definition.Id,
+                definition => CampaignConverter.BuildExpeditionSiteTemplate(
+                    definition,
+                    siteGraphsBySiteId.TryGetValue(definition.Id, out var graph) ? graph : null),
+                StringComparer.Ordinal));
         var encounterCatalog = BuildSection("encounters", () =>
             _encounterDefinitions.Values.ToDictionary(definition => definition.Id, CampaignConverter.BuildEncounterTemplate, StringComparer.Ordinal));
         var enemySquadCatalog = BuildSection("enemy squads", () =>

@@ -105,6 +105,7 @@ internal static class YamlFieldExtractor
             UnitArchetypeDefinition archetype => archetype.Id,
             CampaignChapterDefinition chapter => chapter.Id,
             ExpeditionSiteDefinition site => site.Id,
+            SiteGraphDefinition siteGraph => siteGraph.Id,
             EncounterDefinition encounter => encounter.Id,
             EnemySquadTemplateDefinition squad => squad.Id,
             BossOverlayDefinition overlay => overlay.Id,
@@ -1050,6 +1051,9 @@ internal static class YamlFieldExtractor
                 site.Id = CoalesceId(site.Id, DeriveId(assetPath));
                 site.NameKey = Coalesce(site.NameKey, ContentLocalizationTables.BuildExpeditionSiteNameKey(site.Id));
                 site.DescriptionKey = Coalesce(site.DescriptionKey, ContentLocalizationTables.BuildExpeditionSiteDescriptionKey(site.Id));
+                break;
+            case SiteGraphDefinition siteGraph:
+                siteGraph.Id = CoalesceId(siteGraph.Id, DeriveId(assetPath));
                 break;
             case EncounterDefinition encounter:
                 encounter.Id = CoalesceId(encounter.Id, DeriveId(assetPath));

@@ -86,6 +86,23 @@ public enum EncounterKindValue
     Boss = 2,
 }
 
+public enum SiteNodeKindValue
+{
+    Unknown = 0,
+    Briefing = 1,
+    Skirmish = 2,
+    Elite = 3,
+    Boss = 4,
+    Event = 5,
+    Cache = 6,
+    Camp = 7,
+    Sutler = 8,
+    Memorial = 9,
+    DeepFork = 10,
+    Deep = 11,
+    Extract = 12,
+}
+
 public enum ThreatTierValue
 {
     Tier1 = 1,

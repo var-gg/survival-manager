@@ -31,6 +31,13 @@ internal static class CampaignConverter
 
     internal static ExpeditionSiteTemplate BuildExpeditionSiteTemplate(ExpeditionSiteDefinition definition)
     {
+        return BuildExpeditionSiteTemplate(definition, null);
+    }
+
+    internal static ExpeditionSiteTemplate BuildExpeditionSiteTemplate(
+        ExpeditionSiteDefinition definition,
+        SiteGraphDefinition? siteGraph)
+    {
         return new ExpeditionSiteTemplate(
             definition.Id,
             definition.ChapterId,
@@ -42,7 +49,30 @@ internal static class CampaignConverter
                 .Distinct(StringComparer.Ordinal)
                 .ToList(),
             definition.ExtractRewardSourceId,
-            (int)definition.ThreatTier);
+            (int)definition.ThreatTier,
+            siteGraph == null ? null : BuildSiteGraphTemplate(siteGraph));
+    }
+
+    internal static SiteGraphTemplate BuildSiteGraphTemplate(SiteGraphDefinition definition)
+    {
+        return new SiteGraphTemplate(
+            definition.Id,
+            definition.SiteId,
+            (definition.Nodes ?? new List<SiteGraphNodeDefinition>())
+                .Where(node => node != null)
+                .Select(node => new SiteGraphNodeTemplate(
+                    node.NodeId,
+                    node.Rank,
+                    node.Kind,
+                    node.LaneTag,
+                    node.EncounterId,
+                    node.EventId,
+                    Enumerate(node.NextNodeIds)
+                        .Where(id => !string.IsNullOrWhiteSpace(id))
+                        .ToList(),
+                    node.EchoIncome,
+                    node.RewardSourceId))
+                .ToList());
     }
 
     internal static EncounterTemplate BuildEncounterTemplate(EncounterDefinition definition)

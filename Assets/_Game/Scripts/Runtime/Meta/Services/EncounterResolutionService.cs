@@ -13,7 +13,6 @@ namespace SM.Meta.Services;
 
 public sealed class EncounterResolutionService
 {
-    private const int BattleNodesPerSite = 4;
     private const string PackPursuitBehaviorTag = "pack_pursuit";
     private readonly CombatContentSnapshot _content;
 
@@ -83,35 +82,92 @@ public sealed class EncounterResolutionService
             return Array.Empty<SiteTrackNodeState>();
         }
 
+        if (site.Graph is { } graph && graph.Nodes.Count > 0)
+        {
+            return BuildGraphSiteTrack(site, graph);
+        }
+
         var encounterIds = site.EncounterIds
             .Where(id => !string.IsNullOrWhiteSpace(id) && _content.Encounters!.ContainsKey(id))
-            .Take(BattleNodesPerSite)
             .ToList();
         if (encounterIds.Count == 0)
         {
             return Array.Empty<SiteTrackNodeState>();
         }
 
-        var nodes = new List<SiteTrackNodeState>(BattleNodesPerSite + 1);
+        var nodes = new List<SiteTrackNodeState>(encounterIds.Count + 1);
         for (var index = 0; index < encounterIds.Count; index++)
         {
             var encounter = _content.Encounters![encounterIds[index]];
             nodes.Add(new SiteTrackNodeState(
                 index,
                 encounter.Id,
+                ToSiteNodeKind(encounter.Kind),
+                encounter.Id,
                 encounter.RewardSourceId,
                 true,
-                false));
+                false,
+                new[] { index + 1 }));
         }
 
         nodes.Add(new SiteTrackNodeState(
             encounterIds.Count,
             $"{site.Id}:extract",
+            SiteNodeKindValue.Extract,
+            $"{site.Id}:extract",
             site.ExtractRewardSourceId,
             false,
-            false));
+            false,
+            Array.Empty<int>()));
 
         return nodes;
+    }
+
+    private IReadOnlyList<SiteTrackNodeState> BuildGraphSiteTrack(
+        ExpeditionSiteTemplate site,
+        SiteGraphTemplate graph)
+    {
+        var indexedNodes = graph.Nodes
+            .Select((node, index) => (Node: node, Index: index))
+            .ToList();
+        if (indexedNodes.Count == 0)
+        {
+            return Array.Empty<SiteTrackNodeState>();
+        }
+
+        var indexByNodeId = indexedNodes
+            .Where(entry => !string.IsNullOrWhiteSpace(entry.Node.NodeId))
+            .GroupBy(entry => entry.Node.NodeId, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First().Index, StringComparer.Ordinal);
+        var result = new List<SiteTrackNodeState>(indexedNodes.Count);
+        foreach (var (node, index) in indexedNodes)
+        {
+            var requiresBattle = !string.IsNullOrWhiteSpace(node.EncounterId)
+                && _content.Encounters!.ContainsKey(node.EncounterId);
+            var encounterId = requiresBattle
+                ? node.EncounterId
+                : node.Kind == SiteNodeKindValue.Extract
+                    ? $"{site.Id}:extract"
+                    : node.NodeId;
+            var rewardSourceId = ResolveGraphRewardSource(site, node, requiresBattle);
+            var nextNodeIndices = node.NextNodeIds
+                .Where(indexByNodeId.ContainsKey)
+                .Select(id => indexByNodeId[id])
+                .Distinct()
+                .ToList();
+
+            result.Add(new SiteTrackNodeState(
+                index,
+                node.NodeId,
+                node.Kind,
+                encounterId,
+                rewardSourceId,
+                requiresBattle,
+                false,
+                nextNodeIndices));
+        }
+
+        return result;
     }
 
     public BattleContextState BuildBattleContext(ActiveRunState run, string chapterId, string siteId, int nodeIndex)
@@ -119,6 +175,39 @@ public sealed class EncounterResolutionService
         if (!HasAuthoredCatalog
             || !_content.ExpeditionSites!.TryGetValue(siteId, out var site))
         {
+            return BuildDebugSmokeContext(run, nodeIndex);
+        }
+
+        if (site.Graph is { } graph && graph.Nodes.Count > 0)
+        {
+            var track = BuildGraphSiteTrack(site, graph);
+            if (nodeIndex >= 0
+                && nodeIndex < track.Count
+                && track[nodeIndex].RequiresBattle
+                && _content.Encounters!.TryGetValue(track[nodeIndex].EncounterId, out var graphEncounter))
+            {
+                var graphNode = track[nodeIndex];
+                var graphContextHash = ComputeContextHash(
+                    chapterId,
+                    siteId,
+                    nodeIndex,
+                    graphEncounter.Id,
+                    graphNode.RewardSourceId,
+                    endlessCycleIndex: run?.EndlessCycleIndex ?? 0);
+                return new BattleContextState(
+                    chapterId,
+                    siteId,
+                    nodeIndex,
+                    graphEncounter.Id,
+                    ComputeSeed(graphContextHash),
+                    graphContextHash,
+                    graphNode.RewardSourceId,
+                    Math.Max(1, graphEncounter.ThreatSkulls),
+                    graphEncounter.Kind == EncounterKindValue.Boss,
+                    graphEncounter.FactionId,
+                    graphEncounter.BossOverlayId);
+            }
+
             return BuildDebugSmokeContext(run, nodeIndex);
         }
 
@@ -173,7 +262,7 @@ public sealed class EncounterResolutionService
                 payload.EncounterId,
                 ComputeSeed(payload.BattleContextHash),
                 payload.BattleContextHash,
-                extractSite.ExtractRewardSourceId,
+                ResolveGraphRewardSource(extractSite, payload.SiteNodeIndex, extractSite.ExtractRewardSourceId),
                 1,
                 false,
                 extractSite.FactionId,
@@ -190,7 +279,9 @@ public sealed class EncounterResolutionService
                 payload.EncounterId,
                 ComputeSeed(payload.BattleContextHash),
                 payload.BattleContextHash,
-                encounter.RewardSourceId,
+                _content.ExpeditionSites!.TryGetValue(payload.SiteId, out var payloadSite)
+                    ? ResolveGraphRewardSource(payloadSite, payload.SiteNodeIndex, encounter.RewardSourceId)
+                    : encounter.RewardSourceId,
                 Math.Max(1, encounter.ThreatSkulls),
                 encounter.Kind == EncounterKindValue.Boss,
                 encounter.FactionId,
@@ -199,6 +290,55 @@ public sealed class EncounterResolutionService
 
         // Encounter id가 catalog에 없으면 site/nodeIndex로 legacy 경로 재시도.
         return BuildBattleContext(run, payload.ChapterId, payload.SiteId, payload.SiteNodeIndex);
+    }
+
+    private static SiteNodeKindValue ToSiteNodeKind(EncounterKindValue kind)
+    {
+        return kind switch
+        {
+            EncounterKindValue.Skirmish => SiteNodeKindValue.Skirmish,
+            EncounterKindValue.Elite => SiteNodeKindValue.Elite,
+            EncounterKindValue.Boss => SiteNodeKindValue.Boss,
+            _ => SiteNodeKindValue.Unknown,
+        };
+    }
+
+    private string ResolveGraphRewardSource(
+        ExpeditionSiteTemplate site,
+        SiteGraphNodeTemplate node,
+        bool requiresBattle)
+    {
+        if (!string.IsNullOrWhiteSpace(node.RewardSourceId))
+        {
+            return node.RewardSourceId;
+        }
+
+        if (requiresBattle
+            && _content.Encounters!.TryGetValue(node.EncounterId, out var encounter))
+        {
+            return encounter.RewardSourceId;
+        }
+
+        return node.Kind == SiteNodeKindValue.Extract
+            ? site.ExtractRewardSourceId
+            : string.Empty;
+    }
+
+    private static string ResolveGraphRewardSource(
+        ExpeditionSiteTemplate site,
+        int nodeIndex,
+        string fallback)
+    {
+        if (site.Graph is not { } graph
+            || graph.Nodes.Count == 0
+            || nodeIndex < 0
+            || nodeIndex >= graph.Nodes.Count
+            || string.IsNullOrWhiteSpace(graph.Nodes[nodeIndex].RewardSourceId))
+        {
+            return fallback;
+        }
+
+        return graph.Nodes[nodeIndex].RewardSourceId;
     }
 
     public BattleContextState BuildDebugSmokeContext(ActiveRunState run, int nodeIndex)

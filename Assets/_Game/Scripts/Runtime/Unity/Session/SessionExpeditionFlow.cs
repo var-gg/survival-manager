@@ -343,7 +343,7 @@ public sealed partial class GameSessionState
             var current = GetCurrentExpeditionNode();
             if (current != null
                 && current.Index == nodeIndex
-                && !_session._resolvedExpeditionNodeIds.Contains(current.Id))
+                && !_session._resolvedExpeditionNodeIds.Contains(current.GraphNodeId))
             {
                 _session.SelectedExpeditionNodeIndex = nodeIndex;
                 return true;
@@ -376,7 +376,7 @@ public sealed partial class GameSessionState
                 return Array.Empty<int>();
             }
 
-            if (!_session._resolvedExpeditionNodeIds.Contains(current.Id))
+            if (!_session._resolvedExpeditionNodeIds.Contains(current.GraphNodeId))
             {
                 return new[] { current.Index };
             }
@@ -400,8 +400,8 @@ public sealed partial class GameSessionState
             // UpdateCampaignProgress)을 마친 뒤 곧바로 이 메서드를 호출한다. 이미 정산된 노드를 여기서 다시
             // 정산하면 Gold/Echo 효과가 이중 적용되어 헤드리스 정산이 씬(MarkBattleResolved만 경유)과 갈라진다.
             // 이미 정산된 노드면 효과 재적용 없이 커서만 전진해 "헤드리스=씬, 노드당 1회" 계약을 보장한다.
-            var alreadyResolved = !string.IsNullOrWhiteSpace(selected.Id)
-                && _session._resolvedExpeditionNodeIds.Contains(selected.Id);
+            var alreadyResolved = !string.IsNullOrWhiteSpace(selected.GraphNodeId)
+                && _session._resolvedExpeditionNodeIds.Contains(selected.GraphNodeId);
             if (!alreadyResolved)
             {
                 _session.MarkNodeResolved(selected);
@@ -813,16 +813,16 @@ public sealed partial class GameSessionState
 
     private void MarkNodeResolved(ExpeditionNodeViewModel node)
     {
-        if (!string.IsNullOrWhiteSpace(node.Id))
+        if (!string.IsNullOrWhiteSpace(node.GraphNodeId))
         {
-            _resolvedExpeditionNodeIds.Add(node.Id);
+            _resolvedExpeditionNodeIds.Add(node.GraphNodeId);
         }
     }
 
     private void AutoSelectNextExpeditionNode()
     {
         var current = GetCurrentExpeditionNode();
-        if (current != null && !_resolvedExpeditionNodeIds.Contains(current.Id))
+        if (current != null && !_resolvedExpeditionNodeIds.Contains(current.GraphNodeId))
         {
             SelectedExpeditionNodeIndex = current.Index;
             return;
@@ -896,9 +896,26 @@ public sealed partial class GameSessionState
 
     private int ResolveNextActiveNodeIndex(int resolvedNodeIndex)
     {
-        return resolvedNodeIndex + 1 < _expeditionNodes.Count
-            ? resolvedNodeIndex + 1
-            : resolvedNodeIndex;
+        if (resolvedNodeIndex < 0 || resolvedNodeIndex >= _expeditionNodes.Count)
+        {
+            return resolvedNodeIndex;
+        }
+
+        var nextNodeIndices = _expeditionNodes[resolvedNodeIndex].NextNodeIndices ?? Array.Empty<int>();
+        if (SelectedExpeditionNodeIndex is int selectedIndex && nextNodeIndices.Contains(selectedIndex))
+        {
+            return selectedIndex;
+        }
+
+        foreach (var nextNodeIndex in nextNodeIndices)
+        {
+            if (nextNodeIndex >= 0 && nextNodeIndex < _expeditionNodes.Count)
+            {
+                return nextNodeIndex;
+            }
+        }
+
+        return resolvedNodeIndex;
     }
 
     private List<string> GetOrderedCampaignChapterIds()
@@ -955,7 +972,11 @@ public sealed partial class GameSessionState
         _hasPendingRewardSettlement = false;
         _pendingRewardChoices.Clear();
 
-        if (IsQuickBattleSmokeActive || !LastBattleVictory || CurrentExpeditionNodeIndex >= _expeditionNodes.Count - 1)
+        var currentNode = GetCurrentExpeditionNode();
+        if (IsQuickBattleSmokeActive
+            || !LastBattleVictory
+            || currentNode == null
+            || currentNode.NextNodeIndices.Count == 0)
         {
             HasActiveExpeditionRun = false;
             QuickBattleLaneKind = IsQuickBattleSmokeActive ? QuickBattleLaneKind : CombatSandboxLaneKind.None;
@@ -1072,20 +1093,21 @@ public sealed partial class GameSessionState
             .Select(node => new ExpeditionNodeViewModel(
                 node.Index,
                 node.EncounterId,
-                string.Equals(node.EncounterId, $"{Profile.CampaignProgress.SelectedSiteId}:extract", StringComparison.Ordinal)
+                node.NodeKind == SiteNodeKindValue.Extract
                     ? "ui.expedition.route.extract.label"
                     : ContentLocalizationTables.BuildEncounterNameKey(node.EncounterId),
-                string.Equals(node.EncounterId, $"{Profile.CampaignProgress.SelectedSiteId}:extract", StringComparison.Ordinal)
+                node.NodeKind == SiteNodeKindValue.Extract
                     ? "ui.expedition.route.extract.reward"
                     : ContentLocalizationTables.BuildRewardSourceNameKey(node.RewardSourceId),
-                string.Equals(node.EncounterId, $"{Profile.CampaignProgress.SelectedSiteId}:extract", StringComparison.Ordinal)
+                node.NodeKind == SiteNodeKindValue.Extract
                     ? "ui.expedition.route.extract.desc"
                     : ContentLocalizationTables.BuildEncounterDescriptionKey(node.EncounterId),
                 node.RequiresBattle,
                 ExpeditionNodeEffectKind.None,
                 0,
                 node.RewardSourceId,
-                node.Index + 1 < built.Count ? new[] { node.Index + 1 } : Array.Empty<int>()))
+                node.NextNodeIndices,
+                node.NodeId))
             .ToList();
         return true;
     }

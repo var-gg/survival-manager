@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SM.Combat.Model;
+using SM.Core.Content;
 
 namespace SM.Meta.Model;
 
@@ -13,10 +14,13 @@ public sealed record CampaignProgressState(
 
 public sealed record SiteTrackNodeState(
     int Index,
+    string NodeId,
+    SiteNodeKindValue NodeKind,
     string EncounterId,
     string RewardSourceId,
     bool RequiresBattle,
-    bool IsResolved);
+    bool IsResolved,
+    IReadOnlyList<int> NextNodeIndices);
 
 public sealed record BattleContextState(
     string ChapterId,

@@ -149,7 +149,8 @@ public sealed record ExpeditionSiteTemplate(
     string FactionId,
     IReadOnlyList<string> EncounterIds,
     string ExtractRewardSourceId,
-    int ThreatTier);
+    int ThreatTier,
+    SiteGraphTemplate? Graph = null);
 
 public sealed record EncounterTemplate(
     string Id,
