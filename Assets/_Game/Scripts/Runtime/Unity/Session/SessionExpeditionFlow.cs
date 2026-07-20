@@ -82,6 +82,7 @@ public sealed partial class GameSessionState
             _session.ResetAtlasSession();
             _session._runtimeTelemetryEvents.Clear();
             _session._resolvedExpeditionNodeIds.Clear();
+            _session._siteEventFlow.ResetRunState();
         }
 
         private void PrepareExpeditionTrack()
@@ -138,6 +139,7 @@ public sealed partial class GameSessionState
             _session._hasPendingRewardSettlement = false;
             _session._runtimeTelemetryEvents.Clear();
             _session._pendingRewardChoices.Clear();
+            _session._siteEventFlow.ResetRunState();
             if (resetSeedOverride)
             {
                 _session._quickBattleSeedOverride = null;
@@ -193,6 +195,7 @@ public sealed partial class GameSessionState
             _session._quickBattleSeedOverride = null;
             _session._compiledQuickBattleScenario = null;
             _session.ResetAtlasSession();
+            _session._siteEventFlow.ResetRunState();
             _session.ActiveRun = null;
             _session.SyncActiveRunRecord();
             _session.SyncExpeditionState();
@@ -278,6 +281,11 @@ public sealed partial class GameSessionState
                 return false;
             }
 
+            if (selected.NodeKind == SiteNodeKindValue.Event)
+            {
+                return _session._siteEventFlow.TryPresent(selected);
+            }
+
             _session.CurrentExpeditionNodeIndex = selected.Index;
             _session.SelectedExpeditionNodeIndex = selected.Index;
             _session.EnsureCampaignSelection();
@@ -286,6 +294,7 @@ public sealed partial class GameSessionState
             _session.LastBattleVictory = true;
             _session.LastBattleSummary = _session.BuildNodeSettlementSummaryToken(selected);
             _session.LastExpeditionEffectMessage = _session.ApplyExpeditionNodeEffect(selected);
+            _session._siteEventFlow.ConsumeExtractBonusIfNeeded(selected);
             _session.LastRewardApplicationSummary = SessionTextToken.Empty;
             _session.LastPermanentUnlockSummary = SessionTextToken.Empty;
             _session._lastAutomaticLootBundle = null;
@@ -441,6 +450,7 @@ public sealed partial class GameSessionState
                 "Expedition ended. Returning to Town.");
             _session._hasPendingRewardSettlement = false;
             _session._pendingRewardChoices.Clear();
+            _session._siteEventFlow.ResetRunState();
             _session.ActiveRun = null;
             _session.ResetAtlasSession();
             _session.SyncActiveRunRecord();
@@ -856,6 +866,38 @@ public sealed partial class GameSessionState
         SyncActiveRunRecord();
     }
 
+    internal bool TryGetSiteEventSnapshot(out CombatContentSnapshot snapshot)
+    {
+        return _sessionContentLookup.TryGetCombatSnapshot(out snapshot, out _);
+    }
+
+    internal void PrepareSiteEventNode(ExpeditionNodeViewModel node)
+    {
+        CurrentExpeditionNodeIndex = node.Index;
+        SelectedExpeditionNodeIndex = node.Index;
+        EnsureCampaignSelection();
+        EnsureActiveRunNodeState(node);
+        SyncActiveRunIfPresent();
+    }
+
+    internal void CompleteSiteEventNode(ExpeditionNodeViewModel node, ActiveRunState resolvedRun)
+    {
+        ActiveRun = resolvedRun;
+        MarkNodeResolved(node);
+        LastBattleVictory = true;
+        LastBattleSummary = BuildNodeSettlementSummaryToken(node);
+        LastExpeditionEffectMessage = ApplyExpeditionNodeEffect(node);
+        LastRewardApplicationSummary = SessionTextToken.Empty;
+        LastPermanentUnlockSummary = SessionTextToken.Empty;
+        _lastAutomaticLootBundle = null;
+        _hasPendingRewardSettlement = true;
+        UpdateCampaignProgressForResolvedNode(node);
+        ActiveRun = ActiveRun with { LastSettlementWasVictory = true };
+        RestoreResolvedProgressMarkers(includeCurrentNode: true);
+        EnsureRewardChoices(reset: true);
+        SyncActiveRunIfPresent();
+    }
+
     private void EnsureActiveRunNodeState(ExpeditionNodeViewModel node)
     {
         ActiveRun ??= RunStateService.StartRun(GetExpeditionRunId(), CaptureBlueprintState(), IsQuickBattleSmokeActive);
@@ -1095,19 +1137,30 @@ public sealed partial class GameSessionState
                 node.EncounterId,
                 node.NodeKind == SiteNodeKindValue.Extract
                     ? "ui.expedition.route.extract.label"
+                    : node.NodeKind == SiteNodeKindValue.Event
+                        ? ContentLocalizationTables.BuildSiteEventSetupKey(node.EventId)
                     : ContentLocalizationTables.BuildEncounterNameKey(node.EncounterId),
                 node.NodeKind == SiteNodeKindValue.Extract
                     ? "ui.expedition.route.extract.reward"
                     : ContentLocalizationTables.BuildRewardSourceNameKey(node.RewardSourceId),
                 node.NodeKind == SiteNodeKindValue.Extract
                     ? "ui.expedition.route.extract.desc"
+                    : node.NodeKind == SiteNodeKindValue.Event
+                        ? ContentLocalizationTables.BuildSiteEventSetupKey(node.EventId)
                     : ContentLocalizationTables.BuildEncounterDescriptionKey(node.EncounterId),
                 node.RequiresBattle,
-                ExpeditionNodeEffectKind.None,
-                0,
+                !node.RequiresBattle && node.EchoIncome != 0
+                    ? ExpeditionNodeEffectKind.Echo
+                    : ExpeditionNodeEffectKind.None,
+                node.EchoIncome,
                 node.RewardSourceId,
                 node.NextNodeIndices,
-                node.NodeId))
+                node.NodeId,
+                node.NodeKind,
+                node.EventId,
+                node.NodeKind is SiteNodeKindValue.Event or SiteNodeKindValue.Cache
+                    ? node.RewardSourceId
+                    : string.Empty))
             .ToList();
         return true;
     }

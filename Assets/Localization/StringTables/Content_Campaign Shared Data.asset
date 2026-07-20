@@ -191,6 +191,110 @@ MonoBehaviour:
     m_Key: content.campaign.site.site_worldscar_depths.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 40453069203640320
+    m_Key: content.site_event.site_event_collapsed_aid_station.choice.rescue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069249777664
+    m_Key: content.site_event.site_event_collapsed_aid_station.choice.take_supplies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069249777665
+    m_Key: content.site_event.site_event_collapsed_aid_station.choice.burn_it
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069249777666
+    m_Key: content.site_event.site_event_collapsed_aid_station.setup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069803425792
+    m_Key: content.site_event.site_event_road_of_corpses.choice.recover_scout
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069803425793
+    m_Key: content.site_event.site_event_road_of_corpses.choice.move_on
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069803425794
+    m_Key: content.site_event.site_event_road_of_corpses.setup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576448
+    m_Key: content.site_event.site_event_deserter_quartermaster.choice.trade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576449
+    m_Key: content.site_event.site_event_deserter_quartermaster.choice.claim_bounty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576450
+    m_Key: content.site_event.site_event_deserter_quartermaster.choice.seize
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576451
+    m_Key: content.site_event.site_event_deserter_quartermaster.setup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338496
+    m_Key: content.site_event.site_event_reliquary_cart.choice.salvage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338497
+    m_Key: content.site_event.site_event_reliquary_cart.choice.leave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338498
+    m_Key: content.site_event.site_event_reliquary_cart.choice.break_seal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338499
+    m_Key: content.site_event.site_event_reliquary_cart.setup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294848
+    m_Key: content.site_event.site_event_hostage_standoff.choice.assault
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294849
+    m_Key: content.site_event.site_event_hostage_standoff.choice.ransom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294850
+    m_Key: content.site_event.site_event_hostage_standoff.choice.ignore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294851
+    m_Key: content.site_event.site_event_hostage_standoff.setup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834112
+    m_Key: content.site_event.site_event_memorial.choice.offer_echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834113
+    m_Key: content.site_event.site_event_memorial.choice.study_names
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834114
+    m_Key: content.site_event.site_event_memorial.choice.lay_to_rest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834115
+    m_Key: content.site_event.site_event_memorial.setup.{siteId}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834116
+    m_Key: content.site_event.site_event_memorial.setup.site_ashen_gate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834117
+    m_Key: content.site_event.site_event_memorial.setup.site_wolfpine_trail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834118
+    m_Key: content.site_event.site_event_memorial.setup.site_sunken_bastion
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

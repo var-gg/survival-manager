@@ -99,6 +99,41 @@ public sealed class ContentParsingParityWitnessTests
         }
     }
 
+    [Test]
+    public void ParserLane_MatchesResourcesLane_ForSiteEvents()
+    {
+        Assert.That(RuntimeCombatContentFileParser.TryLoad(out var parsed, out var error), Is.True, error);
+        var parsedEvents = parsed.SiteEvents.ToDictionary(siteEvent => siteEvent.Id, StringComparer.Ordinal);
+        var assetEvents = Resources.LoadAll<SiteEventDefinition>("_Game/Content/Definitions/SiteEvents");
+        Assert.That(assetEvents, Has.Length.EqualTo(6));
+
+        foreach (var expected in assetEvents)
+        {
+            Assert.That(parsedEvents.TryGetValue(expected.Id, out var actual), Is.True, expected.Id);
+            Assert.That(actual!.SiteId, Is.EqualTo(expected.SiteId), $"{expected.Id}.SiteId");
+            Assert.That(actual.SetupKey, Is.EqualTo(expected.SetupKey), $"{expected.Id}.SetupKey");
+            Assert.That(actual.Choices, Has.Count.EqualTo(expected.Choices.Count), $"{expected.Id}.Choices");
+            for (var choiceIndex = 0; choiceIndex < expected.Choices.Count; choiceIndex++)
+            {
+                var expectedChoice = expected.Choices[choiceIndex];
+                var actualChoice = actual.Choices[choiceIndex];
+                Assert.That(actualChoice.Id, Is.EqualTo(expectedChoice.Id), $"{expected.Id}.Choices[{choiceIndex}].Id");
+                Assert.That(actualChoice.LabelKey, Is.EqualTo(expectedChoice.LabelKey), $"{expected.Id}.Choices[{choiceIndex}].LabelKey");
+                Assert.That(actualChoice.Outcomes, Has.Count.EqualTo(expectedChoice.Outcomes.Count), $"{expected.Id}.Choices[{choiceIndex}].Outcomes");
+                for (var outcomeIndex = 0; outcomeIndex < expectedChoice.Outcomes.Count; outcomeIndex++)
+                {
+                    var expectedOutcome = expectedChoice.Outcomes[outcomeIndex];
+                    var actualOutcome = actualChoice.Outcomes[outcomeIndex];
+                    Assert.That(actualOutcome.Kind, Is.EqualTo(expectedOutcome.Kind));
+                    Assert.That(actualOutcome.PayloadId, Is.EqualTo(expectedOutcome.PayloadId));
+                    Assert.That(actualOutcome.AuxiliaryId, Is.EqualTo(expectedOutcome.AuxiliaryId));
+                    Assert.That(actualOutcome.Amount, Is.EqualTo(expectedOutcome.Amount));
+                    Assert.That(actualOutcome.TargetRule, Is.EqualTo(expectedOutcome.TargetRule));
+                }
+            }
+        }
+    }
+
     private static void AssertTriggeredEffectsEqual(
         string contentId,
         IReadOnlyList<TriggeredEffectSpec> fromAsset,
@@ -142,9 +177,11 @@ public sealed class ContentParsingParityWitnessTests
             Assert.That(actualRule.Magnitude, Is.EqualTo(expectedRule.Magnitude), $"{contentId}.AddedStatuses[{i}].Magnitude");
             Assert.That(actualRule.MaxStacks, Is.EqualTo(expectedRule.MaxStacks), $"{contentId}.AddedStatuses[{i}].MaxStacks");
             Assert.That(actualRule.RefreshDurationOnReapply, Is.EqualTo(expectedRule.RefreshDurationOnReapply), $"{contentId}.AddedStatuses[{i}].RefreshDurationOnReapply");
-            // 파서가 아직 안 나르는 필드는 committed 콘텐츠가 기본값일 때만 parity가 성립한다 —
-            // 이 단언이 깨지면 콘텐츠가 파서 범위 밖을 저작한 것이므로 파서를 확장할 것.
-            Assert.That(expectedRule.StackCap, Is.Zero, $"{contentId}.AddedStatuses[{i}].StackCap은 파서 미운반 필드 — 저작 시 파서 확장 필요");
+            Assert.That(actualRule.StackCap, Is.EqualTo(expectedRule.StackCap), $"{contentId}.AddedStatuses[{i}].StackCap");
+            if (string.Equals(contentId, "skill_sunder_rhythm", StringComparison.Ordinal))
+            {
+                Assert.That(actualRule.StackCap, Is.EqualTo(3), "skill_sunder_rhythm StackCap parser parity");
+            }
         }
 
         Assert.That(actual.OwnerModifiers.Count, Is.EqualTo(expected.OwnerModifiers.Count), $"{contentId}.OwnerModifiers 개수");

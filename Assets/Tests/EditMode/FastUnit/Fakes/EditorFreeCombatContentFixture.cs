@@ -10,7 +10,9 @@ namespace SM.Tests.EditMode.Fakes;
 
 public static class EditorFreeCombatContentFixture
 {
-    public static FakeCombatContentLookup CreateRunLoopLookup(SiteGraphTemplate? siteAlphaGateGraph = null)
+    public static FakeCombatContentLookup CreateRunLoopLookup(
+        SiteGraphTemplate? siteAlphaGateGraph = null,
+        IReadOnlyDictionary<string, SiteEventTemplate>? siteEvents = null)
     {
         var augmentCatalog = CreateRunLoopAugmentCatalog();
         var firstPlayableSlice = new FirstPlayableSliceDefinition
@@ -61,7 +63,9 @@ public static class EditorFreeCombatContentFixture
                     Array.Empty<EnemySquadMemberTemplate>()),
             },
             augmentCatalog: augmentCatalog,
-            rewardSources: CreateRewardSources());
+            rewardSources: CreateRewardSources(),
+            siteEvents: siteEvents,
+            warWound: siteEvents == null ? null : new WarWoundSpec(0.25f, 0.9f, 1, 3, 1, true));
 
         return new FakeCombatContentLookup(snapshot: snapshot, firstPlayableSlice: firstPlayableSlice);
     }
@@ -135,7 +139,9 @@ public static class EditorFreeCombatContentFixture
         IReadOnlyDictionary<string, EnemySquadTemplate>? enemySquads = null,
         IReadOnlyDictionary<string, BossOverlayTemplate>? bossOverlays = null,
         IReadOnlyDictionary<string, AugmentCatalogEntry>? augmentCatalog = null,
-        IReadOnlyDictionary<string, RewardSourceTemplate>? rewardSources = null)
+        IReadOnlyDictionary<string, RewardSourceTemplate>? rewardSources = null,
+        IReadOnlyDictionary<string, SiteEventTemplate>? siteEvents = null,
+        WarWoundSpec? warWound = null)
     {
         var emptyPackages = new Dictionary<string, CombatModifierPackage>(StringComparer.Ordinal);
         var augmentPackages = augmentCatalog?
@@ -159,7 +165,9 @@ public static class EditorFreeCombatContentFixture
             EnemySquads: enemySquads,
             BossOverlays: bossOverlays,
             RewardSources: rewardSources,
-            FirstPlayableSlice: firstPlayableSlice);
+            FirstPlayableSlice: firstPlayableSlice,
+            WarWound: warWound,
+            SiteEvents: siteEvents);
     }
 
     private static IReadOnlyDictionary<string, AugmentCatalogEntry> CreateRunLoopAugmentCatalog()
@@ -321,6 +329,7 @@ public static class EditorFreeCombatContentFixture
             ["reward_source_elite"] = new("reward_source_elite", "Elite", RewardSourceKindValue.Elite, "drop.elite", true, new[] { RarityBracketValue.Advanced }),
             ["reward_source_boss"] = new("reward_source_boss", "Boss", RewardSourceKindValue.Boss, "drop.boss", true, new[] { RarityBracketValue.Boss }),
             ["reward_source_extract"] = new("reward_source_extract", "Extract", RewardSourceKindValue.ExtractEndRun, "drop.extract", true, new[] { RarityBracketValue.Advanced }),
+            ["reward_source_shrine_event"] = new("reward_source_shrine_event", "Shrine Event", RewardSourceKindValue.ShrineEvent, "drop_table_shrine_event", true, new[] { RarityBracketValue.Common }),
         };
     }
 }

@@ -106,6 +106,7 @@ internal static class YamlFieldExtractor
             CampaignChapterDefinition chapter => chapter.Id,
             ExpeditionSiteDefinition site => site.Id,
             SiteGraphDefinition siteGraph => siteGraph.Id,
+            SiteEventDefinition siteEvent => siteEvent.Id,
             EncounterDefinition encounter => encounter.Id,
             EnemySquadTemplateDefinition squad => squad.Id,
             BossOverlayDefinition overlay => overlay.Id,

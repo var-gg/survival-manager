@@ -43,6 +43,7 @@ public sealed partial class GameSessionState
     private readonly SessionDeploymentFlow _deploymentFlow;
     private readonly SessionRecruitmentFlow _recruitmentFlow;
     private readonly SessionExpeditionFlow _expeditionFlow;
+    private readonly SiteEventSessionController _siteEventFlow;
     private readonly SessionAtlasFlow _atlasFlow;
     private readonly SessionRewardSettlementFlow _rewardSettlementFlow;
     private readonly LoadoutCompiler _loadoutCompiler = new();
@@ -112,6 +113,11 @@ public sealed partial class GameSessionState
     public IReadOnlyList<RecruitUnitPreview> RecruitOffers => _recruitOffers;
     public IReadOnlyList<ExpeditionNodeViewModel> ExpeditionNodes => _expeditionNodes;
     public IReadOnlyList<RewardChoiceViewModel> PendingRewardChoices => _pendingRewardChoices;
+    public SiteEventSessionController SiteEvents => _siteEventFlow;
+    public SiteEventPresentationViewModel? PendingSiteEvent => _siteEventFlow.PendingPresentation;
+    public IReadOnlyList<SiteEventRecruitOffer> PendingSiteRecruitOffers => _siteEventFlow.PendingRecruitOffers;
+    public IReadOnlyList<string> SiteConsumableIds => _siteEventFlow.ConsumableIds;
+    public int PendingSiteExtractBonusEcho => _siteEventFlow.PendingExtractBonusEcho;
     public IReadOnlyList<TelemetryEventRecord> RuntimeTelemetryEvents => _runtimeTelemetryEvents;
     public LootBundleResult? LastAutomaticLootBundle => _lastAutomaticLootBundle;
     public bool HasPendingRewardSettlement => _hasPendingRewardSettlement;
@@ -159,6 +165,7 @@ public sealed partial class GameSessionState
         _deploymentFlow = new SessionDeploymentFlow(this);
         _recruitmentFlow = new SessionRecruitmentFlow(this);
         _expeditionFlow = new SessionExpeditionFlow(this);
+        _siteEventFlow = new SiteEventSessionController(this);
         _atlasFlow = new SessionAtlasFlow(this);
         _rewardSettlementFlow = new SessionRewardSettlementFlow(this);
         StoryDirector = _narrativeRuntimeBootstrap.CreateStoryDirector(NarrativeProgressRecord.Empty);
@@ -235,6 +242,7 @@ public sealed partial class GameSessionState
             _atlasSession = null;
             _atlasExpeditionModifierPayload = null;
             _runBattlePayload = null;
+            _siteEventFlow.ResetRunState();
             SelectedTeamPosture = TeamPostureType.StandardAdvance;
             SelectedTeamTacticId = string.Empty;
             _recruitOfferGeneration = 0;

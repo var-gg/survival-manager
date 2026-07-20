@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d3345b058e356743b2b12cc479c5766, type: 3}
+  m_Name: site_event_reliquary_cart
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.SiteEventDefinition
+  Id: site_event_reliquary_cart
+  SiteId: site_sunken_bastion
+  SetupKey: content.site_event.site_event_reliquary_cart.setup
+  Choices:
+  - Id: salvage
+    LabelKey: content.site_event.site_event_reliquary_cart.choice.salvage
+    Outcomes:
+    - Kind: 8
+      PayloadId: 
+      AuxiliaryId: 
+      Amount: 10
+      TargetRule: 0
+    - Kind: 5
+      PayloadId: node_sunken_boss_variant
+      AuxiliaryId: 
+      Amount: 0
+      TargetRule: 0
+  - Id: leave
+    LabelKey: content.site_event.site_event_reliquary_cart.choice.leave
+    Outcomes:
+    - Kind: 5
+      PayloadId: node_sunken_boss_standard
+      AuxiliaryId: 
+      Amount: 0
+      TargetRule: 0
+  - Id: break_seal
+    LabelKey: content.site_event.site_event_reliquary_cart.choice.break_seal
+    Outcomes:
+    - Kind: 0
+      PayloadId: item_cantor_focus
+      AuxiliaryId: 
+      Amount: 0
+      TargetRule: 0
+    - Kind: 4
+      PayloadId: 
+      AuxiliaryId: 
+      Amount: 0
+      TargetRule: 2

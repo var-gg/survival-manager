@@ -26,6 +26,7 @@ internal sealed class SnapshotAssembler
     private readonly IReadOnlyDictionary<string, CampaignChapterDefinition> _campaignChapterDefinitions;
     private readonly IReadOnlyDictionary<string, ExpeditionSiteDefinition> _expeditionSiteDefinitions;
     private readonly IReadOnlyDictionary<string, SiteGraphDefinition> _siteGraphDefinitions;
+    private readonly IReadOnlyDictionary<string, SiteEventDefinition> _siteEventDefinitions;
     private readonly IReadOnlyDictionary<string, EncounterDefinition> _encounterDefinitions;
     private readonly IReadOnlyDictionary<string, EnemySquadTemplateDefinition> _enemySquadDefinitions;
     private readonly IReadOnlyDictionary<string, BossOverlayDefinition> _bossOverlayDefinitions;
@@ -56,6 +57,7 @@ internal sealed class SnapshotAssembler
         _campaignChapterDefinitions = registry.CampaignChapterDefinitions;
         _expeditionSiteDefinitions = registry.ExpeditionSiteDefinitions;
         _siteGraphDefinitions = registry.SiteGraphDefinitions;
+        _siteEventDefinitions = registry.SiteEventDefinitions;
         _encounterDefinitions = registry.EncounterDefinitions;
         _enemySquadDefinitions = registry.EnemySquadDefinitions;
         _bossOverlayDefinitions = registry.BossOverlayDefinitions;
@@ -143,6 +145,11 @@ internal sealed class SnapshotAssembler
                     definition,
                     siteGraphsBySiteId.TryGetValue(definition.Id, out var graph) ? graph : null),
                 StringComparer.Ordinal));
+        var siteEventCatalog = BuildSection("site events", () =>
+            _siteEventDefinitions.Values.ToDictionary(
+                definition => definition.Id,
+                CampaignConverter.BuildSiteEventTemplate,
+                StringComparer.Ordinal));
         var encounterCatalog = BuildSection("encounters", () =>
             _encounterDefinitions.Values.ToDictionary(definition => definition.Id, CampaignConverter.BuildEncounterTemplate, StringComparer.Ordinal));
         var enemySquadCatalog = BuildSection("enemy squads", () =>
@@ -214,6 +221,7 @@ internal sealed class SnapshotAssembler
             itemCatalog,
             archetypeTraitPools,
             sessionContentOrder,
-            warWound);
+            warWound,
+            siteEventCatalog);
     }
 }

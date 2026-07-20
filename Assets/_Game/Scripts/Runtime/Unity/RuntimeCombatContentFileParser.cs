@@ -37,6 +37,7 @@ public sealed record RuntimeCombatParsedContent(
     IReadOnlyList<CampaignChapterDefinition> CampaignChapters,
     IReadOnlyList<ExpeditionSiteDefinition> ExpeditionSites,
     IReadOnlyList<SiteGraphDefinition> SiteGraphs,
+    IReadOnlyList<SiteEventDefinition> SiteEvents,
     IReadOnlyList<EncounterDefinition> Encounters,
     IReadOnlyList<EnemySquadTemplateDefinition> EnemySquads,
     IReadOnlyList<BossOverlayDefinition> BossOverlays,
@@ -73,6 +74,7 @@ public sealed record RuntimeCombatParsedContent(
             .Concat(CampaignChapters)
             .Concat(ExpeditionSites)
             .Concat(SiteGraphs)
+            .Concat(SiteEvents)
             .Concat(Encounters)
             .Concat(EnemySquads)
             .Concat(BossOverlays)
@@ -130,6 +132,7 @@ public static class RuntimeCombatContentFileParser
             var campaignChapters = CampaignFileParser.LoadCampaignChapters();
             var expeditionSites = CampaignFileParser.LoadExpeditionSites();
             var siteGraphs = SiteGraphFileParser.LoadSiteGraphs();
+            var siteEvents = SiteEventFileParser.LoadSiteEvents();
             var encounters = CampaignFileParser.LoadEncounters();
             var enemySquads = CampaignFileParser.LoadEnemySquads();
             var bossOverlays = CampaignFileParser.LoadBossOverlays();
@@ -164,6 +167,7 @@ public static class RuntimeCombatContentFileParser
                 campaignChapters,
                 expeditionSites,
                 siteGraphs,
+                siteEvents,
                 encounters,
                 enemySquads,
                 bossOverlays,
@@ -199,6 +203,7 @@ public static class RuntimeCombatContentFileParser
                 campaignChapters,
                 expeditionSites,
                 siteGraphs,
+                siteEvents,
                 encounters,
                 enemySquads,
                 bossOverlays,
@@ -283,6 +288,7 @@ public static class RuntimeCombatContentFileParser
             CampaignChapterDefinition => "CampaignChapters",
             ExpeditionSiteDefinition => "ExpeditionSites",
             SiteGraphDefinition => "SiteGraphs",
+            SiteEventDefinition => "SiteEvents",
             EncounterDefinition => "Encounters",
             EnemySquadTemplateDefinition => "EnemySquads",
             BossOverlayDefinition => "BossOverlays",

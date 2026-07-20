@@ -91,6 +91,8 @@ namespace SM.Content.Definitions
         public static string BuildLootBundleDescriptionKey(string id) => $"content.loot_bundle.{NormalizeId(id)}.desc";
         public static string BuildTraitTokenNameKey(string id) => $"content.trait_token.{NormalizeId(id)}.name";
         public static string BuildTraitTokenDescriptionKey(string id) => $"content.trait_token.{NormalizeId(id)}.desc";
+        public static string BuildSiteEventSetupKey(string id) => $"content.site_event.{NormalizeId(id)}.setup";
+        public static string BuildSiteEventChoiceLabelKey(string eventId, string choiceId) => $"content.site_event.{NormalizeId(eventId)}.choice.{NormalizeId(choiceId)}";
 
         public static string NormalizeId(string id)
         {
@@ -202,7 +204,10 @@ namespace SM.Content.Definitions
                 return Expedition;
             }
 
-            if (definitionType == typeof(CampaignChapterDefinition) || definitionType == typeof(ExpeditionSiteDefinition))
+            if (definitionType == typeof(CampaignChapterDefinition)
+                || definitionType == typeof(ExpeditionSiteDefinition)
+                || definitionType == typeof(SiteEventDefinition)
+                || definitionType == typeof(SiteEventChoiceDefinition))
             {
                 return Campaign;
             }

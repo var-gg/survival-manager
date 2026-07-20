@@ -164,7 +164,9 @@ public sealed class EncounterResolutionService
                 rewardSourceId,
                 requiresBattle,
                 false,
-                nextNodeIndices));
+                nextNodeIndices,
+                node.EventId,
+                node.EchoIncome));
         }
 
         return result;

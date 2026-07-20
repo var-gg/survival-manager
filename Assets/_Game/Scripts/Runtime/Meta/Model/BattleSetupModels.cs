@@ -373,7 +373,8 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, ItemTemplate>? ItemCatalog = null,
     IReadOnlyDictionary<string, ArchetypeTraitPoolTemplate>? ArchetypeTraitPools = null,
     SessionContentOrder? SessionContentOrder = null,
-    WarWoundSpec? WarWound = null);
+    WarWoundSpec? WarWound = null,
+    IReadOnlyDictionary<string, SiteEventTemplate>? SiteEvents = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

@@ -194,6 +194,137 @@ MonoBehaviour:
     m_Localized: Baekgyu's final archive cell combines every prior pressure lane.
     m_Metadata:
       m_Items: []
+  - m_Id: 40453069203640320
+    m_Localized: Secure a medic recruit offer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069249777664
+    m_Localized: Take field dressings and armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069249777665
+    m_Localized: Gain 6 Echo and burn the station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069249777666
+    m_Localized: 'One of recruitment, supplies, or Echo changes immediately.
+
+      Someone
+      is still alive inside the collapsed aid station.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069803425792
+    m_Localized: Recover a hunter bow and route to the elite ambush
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069803425793
+    m_Localized: Advance on the standard route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453069803425794
+    m_Localized: 'Take a bow and route into an elite ambush, or advance normally.
+
+      Corpses
+      point down the road like an arrow.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576448
+    m_Localized: Trade for supplies, a consumable, and 3 extract bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576449
+    m_Localized: Claim an 8 Echo bounty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576450
+    m_Localized: Seize two items and wound one frontliner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070281576451
+    m_Localized: 'Supplies, Echo, extract bonus, or wound risk changes immediately.
+
+      A
+      deserter quartermaster offers a deal while hiding the ledger.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338496
+    m_Localized: Gain 10 extract bonus and route to the boss variant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338497
+    m_Localized: Route to the standard boss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338498
+    m_Localized: Take the relic and wound one frontliner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453070751338499
+    m_Localized: 'Extract Echo, boss route, or item-and-wound state changes.
+
+      A
+      sealed reliquary cart blocks the flooded passage.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294848
+    m_Localized: Route into the bonus fight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294849
+    m_Localized: Pay 10 Echo and take the easier deep route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294850
+    m_Localized: Leave without changing anything
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071225294851
+    m_Localized: 'Choose a bonus-fight route or pay 10 Echo for the easier deep route.
+
+      A
+      hostage standoff blocks the passage.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834112
+    m_Localized: Gain 5 Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834113
+    m_Localized: The lowest deployed hero gains 25 experience
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834114
+    m_Localized: Cure one wounded hero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834115
+    m_Localized: 'Gain 5 Echo, 25 experience, or cure one wound immediately.
+
+      An
+      old memorial at {siteId} stops the company.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834116
+    m_Localized: 'Gain 5 Echo, 25 experience, or cure one wound immediately.
+
+      Names
+      emerge from the ash of a burned chapel.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834117
+    m_Localized: 'Gain 5 Echo, 25 experience, or cure one wound immediately.
+
+      Every
+      cairn on Wolfpine Trail bears the same mark.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40453071711834118
+    m_Localized: 'Gain 5 Echo, 25 experience, or cure one wound immediately.
+
+      The
+      drowned garrison register is still legible.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

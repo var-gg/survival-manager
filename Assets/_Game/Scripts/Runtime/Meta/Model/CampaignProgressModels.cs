@@ -20,7 +20,9 @@ public sealed record SiteTrackNodeState(
     string RewardSourceId,
     bool RequiresBattle,
     bool IsResolved,
-    IReadOnlyList<int> NextNodeIndices);
+    IReadOnlyList<int> NextNodeIndices,
+    string EventId = "",
+    int EchoIncome = 0);
 
 public sealed record BattleContextState(
     string ChapterId,

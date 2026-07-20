@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d3345b058e356743b2b12cc479c5766, type: 3}
+  m_Name: site_event_collapsed_aid_station
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.SiteEventDefinition
+  Id: site_event_collapsed_aid_station
+  SiteId: site_ashen_gate
+  SetupKey: content.site_event.site_event_collapsed_aid_station.setup
+  Choices:
+  - Id: rescue
+    LabelKey: content.site_event.site_event_collapsed_aid_station.choice.rescue
+    Outcomes:
+    - Kind: 6
+      PayloadId: priest
+      AuxiliaryId: trait_frail
+      Amount: 0
+      TargetRule: 0
+  - Id: take_supplies
+    LabelKey: content.site_event.site_event_collapsed_aid_station.choice.take_supplies
+    Outcomes:
+    - Kind: 7
+      PayloadId: consumable_field_dressing
+      AuxiliaryId: 
+      Amount: 2
+      TargetRule: 0
+    - Kind: 0
+      PayloadId: item_layered_armor
+      AuxiliaryId: 
+      Amount: 0
+      TargetRule: 0
+  - Id: burn_it
+    LabelKey: content.site_event.site_event_collapsed_aid_station.choice.burn_it
+    Outcomes:
+    - Kind: 1
+      PayloadId: 
+      AuxiliaryId: 
+      Amount: 6
+      TargetRule: 0

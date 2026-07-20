@@ -75,6 +75,29 @@ internal static class CampaignConverter
                 .ToList());
     }
 
+    internal static SiteEventTemplate BuildSiteEventTemplate(SiteEventDefinition definition)
+    {
+        return new SiteEventTemplate(
+            definition.Id,
+            definition.SiteId,
+            definition.SetupKey,
+            Enumerate(definition.Choices)
+                .Where(choice => choice != null && !string.IsNullOrWhiteSpace(choice.Id))
+                .Select(choice => new SiteEventChoiceTemplate(
+                    choice.Id,
+                    choice.LabelKey,
+                    Enumerate(choice.Outcomes)
+                        .Where(outcome => outcome != null)
+                        .Select(outcome => new SiteEventOutcomeTemplate(
+                            outcome.Kind,
+                            outcome.PayloadId,
+                            outcome.AuxiliaryId,
+                            outcome.Amount,
+                            outcome.TargetRule))
+                        .ToList()))
+                .ToList());
+    }
+
     internal static EncounterTemplate BuildEncounterTemplate(EncounterDefinition definition)
     {
         return new EncounterTemplate(

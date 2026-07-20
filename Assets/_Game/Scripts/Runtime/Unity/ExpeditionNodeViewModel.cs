@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 
 namespace SM.Unity;
 
@@ -23,8 +24,13 @@ public sealed record ExpeditionNodeViewModel(
     int EffectAmount,
     string EffectPayloadId,
     IReadOnlyList<int> NextNodeIndices,
-    string NodeId = "")
+    string NodeId = "",
+    SiteNodeKindValue NodeKind = SiteNodeKindValue.Unknown,
+    string EventId = "",
+    string AuthoredRewardSourceId = "")
 {
-    public string RewardSourceId => RequiresBattle ? EffectPayloadId : string.Empty;
+    public string RewardSourceId => !string.IsNullOrWhiteSpace(AuthoredRewardSourceId)
+        ? AuthoredRewardSourceId
+        : RequiresBattle ? EffectPayloadId : string.Empty;
     public string GraphNodeId => string.IsNullOrWhiteSpace(NodeId) ? Id : NodeId;
 }

@@ -179,6 +179,10 @@ internal static class StatusFileParser
                 {
                     rule.MaxStacks = ParseInt(trimmed["MaxStacks:".Length..].Trim());
                 }
+                else if (trimmed.StartsWith("StackCap:", StringComparison.Ordinal))
+                {
+                    rule.StackCap = ParseInt(trimmed["StackCap:".Length..].Trim());
+                }
                 else if (trimmed.StartsWith("RefreshDurationOnReapply:", StringComparison.Ordinal))
                 {
                     rule.RefreshDurationOnReapply = ParseBool(trimmed["RefreshDurationOnReapply:".Length..].Trim());

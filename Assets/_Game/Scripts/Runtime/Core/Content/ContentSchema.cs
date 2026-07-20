@@ -103,6 +103,26 @@ public enum SiteNodeKindValue
     Extract = 12,
 }
 
+public enum OutcomeKind
+{
+    GrantItem = 0,
+    GrantEcho = 1,
+    GrantExp = 2,
+    CureWound = 3,
+    InflictWound = 4,
+    RouteToNode = 5,
+    GrantRecruitOffer = 6,
+    GrantConsumable = 7,
+    ExtractBonus = 8,
+}
+
+public enum OutcomeTargetRule
+{
+    None = 0,
+    LowestDeployIndex = 1,
+    LowestDeployIndexFrontline = 2,
+}
+
 public enum ThreatTierValue
 {
     Tier1 = 1,

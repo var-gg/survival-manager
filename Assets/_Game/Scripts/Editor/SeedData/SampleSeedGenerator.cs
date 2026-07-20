@@ -76,6 +76,7 @@ public static partial class SampleSeedGenerator
         CreateTraitTokens();
         CreateRewardSourcesAndDropTables();
         CreateCampaignEncounterCatalog();
+        CreateSiteEventContent();
         var extraActors = CreateExtraActorCharacters();
         var rewardTables = CreateRewardTables();
         CreateExpedition(rewardTables);
@@ -295,6 +296,7 @@ public static partial class SampleSeedGenerator
             $"{ResourcesRoot}/StableTags",
             $"{ResourcesRoot}/CampaignChapters",
             $"{ResourcesRoot}/ExpeditionSites",
+            $"{ResourcesRoot}/SiteEvents",
             $"{ResourcesRoot}/Encounters",
             $"{ResourcesRoot}/EnemySquads",
             $"{ResourcesRoot}/BossOverlays",
