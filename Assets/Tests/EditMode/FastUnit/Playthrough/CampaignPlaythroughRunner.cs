@@ -154,8 +154,17 @@ public sealed class CampaignPlaythroughRunner
         // 패배는 사이트 미클리어로 원정 중단(골든은 승리 전제이므로 패배가 표면화됨).
         var battleNodeIds = new List<string>();
         var battleOutcomes = new List<PlaythroughBattleOutcome>();
-        while (_session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+        while (true)
         {
+            while (TryAdvanceIntermediateNonBattle())
+            {
+            }
+
+            if (_session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+            {
+                break;
+            }
+
             var node = _session.GetSelectedExpeditionNode()!;
             battleNodeIds.Add(node.Id);
             _nav.Go(ExpeditionFlowResolver.ResolveAtlasContinue(_session)); // → Battle
@@ -215,6 +224,35 @@ public sealed class CampaignPlaythroughRunner
             RewardCommitIdAtSettlement: commitIdAtSettlement,
             ChosenRewardKind: chosenKind,
             RewardLedgerDelta: ledgerDelta);
+    }
+
+    // SM.Tests.FastUnit cannot reference the editor-only CampaignDefaultRouteNavigator.
+    // Keep the same first-edge/first-legal-choice semantics locally so real-content and
+    // editor-free consumers share the safe canonical route without widening asmdef edges.
+    private bool TryAdvanceIntermediateNonBattle()
+    {
+        var node = _session.GetSelectedExpeditionNode();
+        if (node == null || node.RequiresBattle || node.NextNodeIndices.Count == 0)
+        {
+            return false;
+        }
+
+        if (!_session.ResolveSelectedNodeToRewardSettlement())
+        {
+            throw new InvalidOperationException($"Failed to resolve default non-battle node '{node.GraphNodeId}'.");
+        }
+
+        if (_session.PendingSiteEvent != null)
+        {
+            var defaultAction = _session.SiteEvents.GetLegalActions().FirstOrDefault();
+            if (defaultAction == null || !_session.SiteEvents.ApplyChoice(defaultAction.ChoiceId))
+            {
+                throw new InvalidOperationException($"Failed to apply the default choice for site event '{node.EventId}'.");
+            }
+        }
+
+        _session.ReturnToTownAfterReward();
+        return true;
     }
 
     private void ApplyDeployment()

@@ -1116,6 +1116,22 @@ MonoBehaviour:
     m_Localized: site_worldscar_depths Boss
     m_Metadata:
       m_Items: []
+  - m_Id: 40466690679836672
+    m_Localized: site_ashen_gate_risk_skirmish_1_squad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40466690738556928
+    m_Localized: "faction_solarum_border \uBD84\uB300"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40466691044741120
+    m_Localized: site_ashen_gate_risk_skirmish_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40466691044741121
+    m_Localized: site_ashen_gate Skirmish
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

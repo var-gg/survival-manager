@@ -295,6 +295,97 @@ public sealed class ContentValidationComponentTests
     }
 
     [Test]
+    public void SiteGraphCatalogValidator_RejectsDuplicateUnknownOrphanAndTerminalLessCycle()
+    {
+        var site = Own(ScriptableObject.CreateInstance<ExpeditionSiteDefinition>());
+        site.Id = "site_graph_probe";
+        var graph = Own(ScriptableObject.CreateInstance<SiteGraphDefinition>());
+        graph.Id = "site_graph_malformed_probe";
+        graph.SiteId = site.Id;
+        graph.Nodes = new List<SiteGraphNodeDefinition>
+        {
+            new() { NodeId = "entry", NextNodeIds = new List<string> { "cycle_a", "missing" } },
+            new() { NodeId = "cycle_a", NextNodeIds = new List<string> { "cycle_b" } },
+            new() { NodeId = "cycle_a", NextNodeIds = new List<string> { "cycle_b" } },
+            new() { NodeId = "cycle_b", NextNodeIds = new List<string> { "cycle_a" } },
+            new() { NodeId = "orphan", NextNodeIds = new List<string> { "orphan_terminal" } },
+            new() { NodeId = "orphan_terminal" },
+        };
+        var issues = new List<ContentValidationIssue>();
+
+        new SiteGraphCatalogValidator().Validate(
+            new CatalogValidationContext(ToCatalog(new ScriptableObject[] { site, graph })),
+            issues);
+
+        var codes = issues.Select(issue => issue.Code).ToList();
+        Assert.That(codes, Contains.Item("site_graph.duplicate_node_id"));
+        Assert.That(codes, Contains.Item("site_graph.unknown_target"));
+        Assert.That(codes, Contains.Item("site_graph.orphan_node"));
+        Assert.That(codes, Contains.Item("site_graph.no_terminal_path"));
+    }
+
+    [Test]
+    public void SiteGraphCatalogValidator_RejectsLegacyIdentityDriftAndRiskFirstDefaultRoute()
+    {
+        var site = Own(ScriptableObject.CreateInstance<ExpeditionSiteDefinition>());
+        site.Id = "site_graph_identity_probe";
+        site.EncounterIds = new List<string> { "legacy_skirmish", "legacy_boss" };
+
+        var skirmish = Own(ScriptableObject.CreateInstance<EncounterDefinition>());
+        skirmish.Id = "legacy_skirmish";
+        skirmish.RewardSourceId = "reward_source_skirmish";
+        var boss = Own(ScriptableObject.CreateInstance<EncounterDefinition>());
+        boss.Id = "legacy_boss";
+        boss.RewardSourceId = "reward_source_boss";
+
+        var graph = Own(ScriptableObject.CreateInstance<SiteGraphDefinition>());
+        graph.Id = "site_graph_identity_drift_probe";
+        graph.SiteId = site.Id;
+        graph.Nodes = new List<SiteGraphNodeDefinition>
+        {
+            new()
+            {
+                NodeId = "wrong_first_coordinate",
+                LaneTag = "safe",
+                EncounterId = boss.Id,
+                RewardSourceId = boss.RewardSourceId,
+                NextNodeIds = new List<string> { "safe_second" },
+            },
+            new()
+            {
+                NodeId = "safe_second",
+                LaneTag = "safe",
+                EncounterId = boss.Id,
+                RewardSourceId = skirmish.RewardSourceId,
+                NextNodeIds = new List<string> { "extract" },
+            },
+            new() { NodeId = "extract", LaneTag = "safe" },
+            new()
+            {
+                NodeId = "entry",
+                LaneTag = "safe",
+                NextNodeIds = new List<string> { "risk_first", "wrong_first_coordinate" },
+            },
+            new()
+            {
+                NodeId = "risk_first",
+                LaneTag = "risk",
+                NextNodeIds = new List<string> { "safe_second" },
+            },
+        };
+        var issues = new List<ContentValidationIssue>();
+
+        new SiteGraphCatalogValidator().Validate(
+            new CatalogValidationContext(ToCatalog(new ScriptableObject[] { site, skirmish, boss, graph })),
+            issues);
+
+        var codes = issues.Select(issue => issue.Code).ToList();
+        Assert.That(codes, Contains.Item("site_graph.safe_lane_coordinate"));
+        Assert.That(codes, Contains.Item("site_graph.safe_lane_reward_source"));
+        Assert.That(codes, Contains.Item("site_graph.default_route_risk"));
+    }
+
+    [Test]
     public void CharacterCatalogValidator_LocksExecutableCharacterCoverage()
     {
         var fullCatalog = ContentValidationPolicyCatalog.RequiredExecutableCharacterIdsInRosterOrder

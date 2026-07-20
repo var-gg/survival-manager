@@ -158,8 +158,17 @@ internal static class CampaignBossLearningWitness
         {
             H100SessionDriver.AdvanceToNextUnclearedSite(session);
             session.BeginNewExpedition();
-            while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            while (true)
             {
+                while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                {
+                }
+
+                if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+                {
+                    break;
+                }
+
                 var node = session.GetSelectedExpeditionNode()!;
                 if (string.Equals(node.Id, EncounterId, StringComparison.Ordinal))
                 {

@@ -45,8 +45,17 @@ internal static class H100SunkenSiteRunner
             ApplyDeployment(session, oracleCase);
             session.BeginNewExpedition();
             var localBattleIndex = 0;
-            while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            while (true)
             {
+                while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                {
+                }
+
+                if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+                {
+                    break;
+                }
+
                 if (localBattleIndex >= MaxBattleNodesPerSite)
                 {
                     failureCode = "battle-node-safety-exhausted";

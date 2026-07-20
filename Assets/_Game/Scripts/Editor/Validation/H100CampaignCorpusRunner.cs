@@ -159,8 +159,17 @@ internal static class H100CampaignCorpusRunner
                     deploymentDecision));
                 session.BeginNewExpedition();
                 var siteBattleCount = 0;
-                while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+                while (true)
                 {
+                    while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                    {
+                    }
+
+                    if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+                    {
+                        break;
+                    }
+
                     siteBattleCount++;
                     if (siteBattleCount > MaxBattleNodesPerSite)
                     {

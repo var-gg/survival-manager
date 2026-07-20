@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 342c28ed40134f7f8a764226e4534af3, type: 3}
+  m_Name: site_graph_ashen_gate
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.SiteGraphDefinition
+  Id: site_graph_ashen_gate
+  SiteId: site_ashen_gate
+  Nodes:
+  - NodeId: site_ashen_gate_skirmish_1
+    Rank: 1
+    Kind: 2
+    LaneTag: safe
+    EncounterId: site_ashen_gate_skirmish_1
+    EventId: 
+    NextNodeIds:
+    - site_ashen_gate_skirmish_2
+    EchoIncome: 0
+    RewardSourceId: reward_source_skirmish
+  - NodeId: site_ashen_gate_skirmish_2
+    Rank: 2
+    Kind: 2
+    LaneTag: safe
+    EncounterId: site_ashen_gate_skirmish_2
+    EventId: 
+    NextNodeIds:
+    - site_ashen_gate:event:collapsed_aid_station
+    EchoIncome: 0
+    RewardSourceId: reward_source_skirmish
+  - NodeId: site_ashen_gate_elite_1
+    Rank: 4
+    Kind: 3
+    LaneTag: safe
+    EncounterId: site_ashen_gate_elite_1
+    EventId: 
+    NextNodeIds:
+    - site_ashen_gate_boss_1
+    EchoIncome: 0
+    RewardSourceId: reward_source_elite
+  - NodeId: site_ashen_gate_boss_1
+    Rank: 6
+    Kind: 4
+    LaneTag: safe
+    EncounterId: site_ashen_gate_boss_1
+    EventId: 
+    NextNodeIds:
+    - site_ashen_gate:extract
+    EchoIncome: 0
+    RewardSourceId: reward_source_boss
+  - NodeId: site_ashen_gate:extract
+    Rank: 7
+    Kind: 12
+    LaneTag: safe
+    EncounterId: 
+    EventId: 
+    NextNodeIds: []
+    EchoIncome: 0
+    RewardSourceId: reward_source_extract
+  - NodeId: site_ashen_gate:entry
+    Rank: 0
+    Kind: 1
+    LaneTag: safe
+    EncounterId: 
+    EventId: 
+    NextNodeIds:
+    - site_ashen_gate_skirmish_1
+    - site_ashen_gate_risk_skirmish_1
+    EchoIncome: 0
+    RewardSourceId: 
+  - NodeId: site_ashen_gate_risk_skirmish_1
+    Rank: 1
+    Kind: 2
+    LaneTag: risk
+    EncounterId: site_ashen_gate_risk_skirmish_1
+    EventId: 
+    NextNodeIds:
+    - site_ashen_gate_skirmish_2
+    EchoIncome: 2
+    RewardSourceId: reward_source_elite
+  - NodeId: site_ashen_gate:event:collapsed_aid_station
+    Rank: 3
+    Kind: 5
+    LaneTag: safe
+    EncounterId: 
+    EventId: site_event_collapsed_aid_station
+    NextNodeIds:
+    - site_ashen_gate_elite_1
+    EchoIncome: 0
+    RewardSourceId: reward_source_shrine_event

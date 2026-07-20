@@ -77,6 +77,7 @@ public static partial class SampleSeedGenerator
         CreateRewardSourcesAndDropTables();
         CreateCampaignEncounterCatalog();
         CreateSiteEventContent();
+        CreateAshenGateBranchingSiteContent();
         var extraActors = CreateExtraActorCharacters();
         var rewardTables = CreateRewardTables();
         CreateExpedition(rewardTables);
@@ -296,6 +297,7 @@ public static partial class SampleSeedGenerator
             $"{ResourcesRoot}/StableTags",
             $"{ResourcesRoot}/CampaignChapters",
             $"{ResourcesRoot}/ExpeditionSites",
+            $"{ResourcesRoot}/SiteGraphs",
             $"{ResourcesRoot}/SiteEvents",
             $"{ResourcesRoot}/Encounters",
             $"{ResourcesRoot}/EnemySquads",
@@ -4378,6 +4380,7 @@ public static partial class SampleSeedGenerator
                 $"{site.SiteId}_boss_1.asset",
             })
             .ToHashSet(StringComparer.Ordinal);
+        encounterFiles.Add("site_ashen_gate_risk_skirmish_1.asset");
         var squadFiles = sites
             .SelectMany(site => new[]
             {
@@ -4387,6 +4390,7 @@ public static partial class SampleSeedGenerator
                 $"{site.SiteId}_boss_1_squad.asset",
             })
             .ToHashSet(StringComparer.Ordinal);
+        squadFiles.Add("site_ashen_gate_risk_skirmish_1_squad.asset");
 
         DeleteUnexpectedCampaignAssets("CampaignChapters", chapterFiles);
         DeleteUnexpectedCampaignAssets("ExpeditionSites", siteFiles);

@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using SM.Editor.SeedData;
+using SM.Editor.Validation;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -24,6 +25,10 @@ public sealed class EncounterAndLootResolutionTests
         var session = new GameSessionState(lookup);
         session.BindProfile(new SaveProfile());
         session.BeginNewExpedition();
+        while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+        {
+        }
+
         session.BuildBattleLoadoutSnapshot();
 
         Assert.That(session.TryResolveCurrentEncounter(out var first, out var firstError), Is.True, firstError);

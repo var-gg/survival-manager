@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Core.Content;
@@ -39,6 +40,40 @@ public sealed class SiteGraphBackboneFastTests
     }
 
     [Test]
+    public void BuildSiteTrack_WithoutGraph_UsesEveryAuthoredEncounter_WhenCountIsNotFour()
+    {
+        var baseline = EditorFreeCombatContentFixture.CreateRunLoopLookup().Snapshot;
+        var site = baseline.ExpeditionSites!["site_alpha_gate"];
+        var bonusEncounterId = "site_alpha_gate:bonus_skirmish";
+        var expandedSite = site with
+        {
+            EncounterIds = site.EncounterIds.Concat(new[] { bonusEncounterId }).ToArray(),
+        };
+        var expandedSites = baseline.ExpeditionSites.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        expandedSites[expandedSite.Id] = expandedSite;
+        var expandedEncounters = baseline.Encounters!.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        expandedEncounters[bonusEncounterId] = expandedEncounters[site.EncounterIds[0]] with
+        {
+            Id = bonusEncounterId,
+            Name = bonusEncounterId,
+        };
+        var resolver = new EncounterResolutionService(baseline with
+        {
+            ExpeditionSites = expandedSites,
+            Encounters = expandedEncounters,
+        });
+
+        var track = resolver.BuildSiteTrack("chapter_alpha", "site_alpha_gate");
+
+        Assert.That(track, Has.Count.EqualTo(6));
+        Assert.That(track[4].Index, Is.EqualTo(4));
+        Assert.That(track[4].EncounterId, Is.EqualTo(bonusEncounterId));
+        Assert.That(track[4].NextNodeIndices, Is.EqualTo(new[] { 5 }));
+        Assert.That(track[5].Index, Is.EqualTo(5));
+        Assert.That(track[5].NodeKind, Is.EqualTo(SiteNodeKindValue.Extract));
+    }
+
+    [Test]
     public void BranchGraph_ProjectsEdges_AndChosenEdgeFlowIsDeterministic()
     {
         var graph = CreateBranchGraph();
@@ -63,19 +98,40 @@ public sealed class SiteGraphBackboneFastTests
         Assert.That(ResolveBriefingThroughRiskEdge(lookup), Is.EqualTo(2));
     }
 
+    [Test]
+    public void RestoreActiveRun_OnRiskBranch_DoesNotResolveUnvisitedSafeSibling()
+    {
+        var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup(CreateBranchGraph());
+        var session = GameSessionTestFactory.Create(lookup);
+        session.BindProfile(CreateProfile());
+        session.SetCurrentScene(SceneNames.Town);
+        session.BeginNewExpedition();
+
+        Assert.That(session.ResolveSelectedNodeToRewardSettlement(), Is.True);
+        Assert.That(session.SelectNextExpeditionNode(2), Is.True);
+        session.ReturnToTownAfterReward();
+        Assert.That(session.GetCurrentExpeditionNode()?.GraphNodeId, Is.EqualTo("risk"));
+
+        Assert.That(session.PrepareSelectedBattleNodeHandoff(), Is.True);
+        session.MarkBattleResolved(victory: true, stepCount: 8, eventCount: 4);
+        session.ReturnToTownAfterReward();
+        Assert.That(session.GetCurrentExpeditionNode()?.GraphNodeId, Is.EqualTo("elite"));
+        Assert.That(session.Profile.ActiveRun.ResolvedExpeditionNodeIds, Is.EquivalentTo(new[] { "briefing", "risk" }));
+
+        var resumed = GameSessionTestFactory.Create(lookup);
+        resumed.BindProfile(session.Profile);
+
+        Assert.That(resumed.GetCurrentExpeditionNode()?.GraphNodeId, Is.EqualTo("elite"));
+        Assert.That(resumed.IsExpeditionNodeResolved("briefing"), Is.True);
+        Assert.That(resumed.IsExpeditionNodeResolved("risk"), Is.True);
+        Assert.That(resumed.IsExpeditionNodeResolved("safe"), Is.False,
+            "A restored branched run must not infer list-position siblings as traversed.");
+    }
+
     private static int ResolveBriefingThroughRiskEdge(FakeCombatContentLookup lookup)
     {
         var session = GameSessionTestFactory.Create(lookup);
-        session.BindProfile(new SaveProfile
-        {
-            Heroes = new List<HeroInstanceRecord>
-            {
-                CreateHero("hero-1", "vanguard"),
-                CreateHero("hero-2", "ranger"),
-                CreateHero("hero-3", "duelist"),
-                CreateHero("hero-4", "mystic"),
-            },
-        });
+        session.BindProfile(CreateProfile());
         session.SetCurrentScene(SceneNames.Town);
         session.BeginNewExpedition();
 
@@ -86,6 +142,20 @@ public sealed class SiteGraphBackboneFastTests
 
         Assert.That(session.GetCurrentExpeditionNode()?.NodeId, Is.EqualTo("risk"));
         return session.CurrentExpeditionNodeIndex;
+    }
+
+    private static SaveProfile CreateProfile()
+    {
+        return new SaveProfile
+        {
+            Heroes = new List<HeroInstanceRecord>
+            {
+                CreateHero("hero-1", "vanguard"),
+                CreateHero("hero-2", "ranger"),
+                CreateHero("hero-3", "duelist"),
+                CreateHero("hero-4", "mystic"),
+            },
+        };
     }
 
     private static SiteGraphTemplate CreateBranchGraph()

@@ -16,6 +16,7 @@ public sealed class ActiveRunRecord
     public List<string> PendingRewardIds = new();
     public List<string> BattleDeployHeroIds = new();
     public List<string> ActiveWoundHeroIds = new();
+    public List<string> ResolvedExpeditionNodeIds = new();
     public RecruitPhaseState RecruitPhase = new();
     public RecruitPityState RecruitPity = new();
     public string CompileVersion = string.Empty;

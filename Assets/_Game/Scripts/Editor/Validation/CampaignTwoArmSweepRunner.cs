@@ -175,8 +175,17 @@ internal static partial class CampaignTwoArmSweepRunner
 
             session.BeginNewExpedition();
             var siteFirstVisitClear = true;
-            while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            while (true)
             {
+                while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                {
+                }
+
+                if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+                {
+                    break;
+                }
+
                 var node = session.GetSelectedExpeditionNode()!;
                 if (!session.TryBuildSelectedBattleState(
                         out _,

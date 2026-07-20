@@ -901,6 +901,10 @@ public sealed partial class GameSessionState
             PendingRewardIds = ActiveRun.Overlay.PendingRewardIds.ToList(),
             BattleDeployHeroIds = ActiveRun.BattleDeployHeroIds.ToList(),
             ActiveWoundHeroIds = (ActiveRun.ActiveWoundHeroIds ?? Array.Empty<string>()).ToList(),
+            ResolvedExpeditionNodeIds = _resolvedExpeditionNodeIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList(),
             RecruitPhase = _recruitPhaseState.Clone(),
             RecruitPity = _recruitPityState.Clone(),
             CompileVersion = ActiveRun.Overlay.CompileVersion,

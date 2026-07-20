@@ -453,6 +453,8 @@ public sealed partial class GameSessionState
 
     public IReadOnlyList<int> GetSelectableNextNodeIndices() => _expeditionFlow.GetSelectableNextNodeIndices();
 
+    internal bool IsExpeditionNodeResolved(string graphNodeId) => _expeditionFlow.IsExpeditionNodeResolved(graphNodeId);
+
     public bool ResolveSelectedExpeditionNode() => _expeditionFlow.ResolveSelectedExpeditionNode();
 
     public void AbandonExpeditionRun() => _expeditionFlow.AbandonExpeditionRun();

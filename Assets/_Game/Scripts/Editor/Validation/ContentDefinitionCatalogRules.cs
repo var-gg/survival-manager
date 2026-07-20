@@ -20,6 +20,11 @@ internal sealed class CatalogValidationContext
         Catalog = catalog;
         Chapters = catalog.OfType<CampaignChapterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Sites = catalog.OfType<ExpeditionSiteDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
+        SiteGraphs = catalog.OfType<SiteGraphDefinition>().ToList();
+        SiteEventIds = catalog.OfType<SiteEventDefinition>()
+            .Where(asset => !string.IsNullOrWhiteSpace(asset.Id))
+            .Select(asset => asset.Id)
+            .ToHashSet(StringComparer.Ordinal);
         Encounters = catalog.OfType<EncounterDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Squads = catalog.OfType<EnemySquadTemplateDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
         Overlays = catalog.OfType<BossOverlayDefinition>().ToDictionary(asset => asset.Id, StringComparer.Ordinal);
@@ -46,6 +51,8 @@ internal sealed class CatalogValidationContext
     internal ValidationAssetCatalog Catalog { get; }
     internal IReadOnlyDictionary<string, CampaignChapterDefinition> Chapters { get; }
     internal IReadOnlyDictionary<string, ExpeditionSiteDefinition> Sites { get; }
+    internal IReadOnlyList<SiteGraphDefinition> SiteGraphs { get; }
+    internal IReadOnlyCollection<string> SiteEventIds { get; }
     internal IReadOnlyDictionary<string, EncounterDefinition> Encounters { get; }
     internal IReadOnlyDictionary<string, EnemySquadTemplateDefinition> Squads { get; }
     internal IReadOnlyDictionary<string, BossOverlayDefinition> Overlays { get; }
@@ -97,6 +104,7 @@ internal sealed class CatalogValidationRuleRegistry
         return new CatalogValidationRuleRegistry(new ICatalogValidationRule[]
         {
             new CampaignCatalogValidator(),
+            new SiteGraphCatalogValidator(),
             new FirstPlayableSliceCatalogValidator(),
             new EncounterAuthoringCatalogValidator(),
             new CharacterCatalogValidator(),
@@ -135,9 +143,9 @@ internal sealed class CampaignCatalogValidator : ICatalogValidationRule
             ContentValidationIssueFactory.AddError(issues, "campaign.site_count", $"Expedition sites must be locked to 10. Found {context.Sites.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
-        if (context.Encounters.Count != 40)
+        if (context.Encounters.Count != 41)
         {
-            ContentValidationIssueFactory.AddError(issues, "campaign.encounter_count", $"Encounter catalog must be locked to 40 battle encounters. Found {context.Encounters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "campaign.encounter_count", $"Encounter catalog must contain the 40 canonical battles plus the authored Ashen Gate risk variant. Found {context.Encounters.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         foreach (var chapter in context.Chapters.Values)

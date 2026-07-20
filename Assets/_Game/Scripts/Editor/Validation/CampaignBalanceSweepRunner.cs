@@ -276,8 +276,17 @@ public static class CampaignBalanceSweepRunner
             var perSeedSiteClear = Enumerable.Repeat(true, scope.SeedCount).ToArray();
             var forcedMarch = false;
 
-            while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            while (true)
             {
+                while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                {
+                }
+
+                if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+                {
+                    break;
+                }
+
                 var node = session.GetSelectedExpeditionNode()!;
                 var measurement = MeasureSelectedBattleNode(session, node, scope.SeedCount, out var progression, out var progressionKind);
                 nodes.Add(measurement);
@@ -810,8 +819,17 @@ public static class CampaignBalanceSweepRunner
         session.BeginNewExpedition();
         var rates = new List<BenchmarkNodeRate>();
         var battleNodeIndex = 0;
-        while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+        while (true)
         {
+            while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+            {
+            }
+
+            if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+            {
+                break;
+            }
+
             var node = session.GetSelectedExpeditionNode()!;
             var measurement = MeasureSelectedBattleNode(session, node, seedCount, out _, out _);
             rates.Add(new BenchmarkNodeRate(battleNodeIndex, node.Id, measurement.WinRate));
@@ -828,8 +846,17 @@ public static class CampaignBalanceSweepRunner
     {
         session.BeginNewExpedition();
         var currentIndex = 0;
-        while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+        while (true)
         {
+            while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+            {
+            }
+
+            if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+            {
+                break;
+            }
+
             var node = session.GetSelectedExpeditionNode()!;
             if (currentIndex == battleNodeIndex)
             {

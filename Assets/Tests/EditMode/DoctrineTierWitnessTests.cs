@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Editor.SeedData;
+using SM.Editor.Validation;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 
@@ -239,6 +240,10 @@ public sealed class DoctrineTierWitnessTests
     private static BattleState BuildFirstBattleState(GameSessionState session)
     {
         session.BeginNewExpedition();
+        while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+        {
+        }
+
         Assert.That(
             session.TryBuildSelectedBattleState(
                 out var state,

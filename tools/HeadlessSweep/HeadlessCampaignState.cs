@@ -128,14 +128,16 @@ internal sealed class HeadlessCampaignState
 
     internal void BeginSite()
     {
-        CurrentNodeIndex = 0;
         _siteTrack = _encounterResolver.BuildSiteTrack(SelectedChapterId, SelectedSiteId);
         if (_siteTrack.Count == 0)
         {
             throw new InvalidOperationException($"Campaign site track is empty: {SelectedChapterId}/{SelectedSiteId}");
         }
 
+        CurrentNodeIndex = ResolveEntryNodeIndex();
+        AdvanceThroughDefaultNonBattleNodes();
         ActiveRun = RunStateService.StartRun(SelectedSiteId, BuildBlueprint(), false);
+        ActiveRun = RunStateService.AdvanceNode(ActiveRun, CurrentNodeIndex);
     }
 
     internal void ApplyBuildPower(CampaignBuildPowerQuantileSpec quantile)
@@ -344,15 +346,55 @@ internal sealed class HeadlessCampaignState
 
     internal void AdvanceBattleNode()
     {
-        if (CurrentNodeIndex + 1 < _siteTrack.Count)
+        if (CurrentNodeIndex >= 0 && CurrentNodeIndex < _siteTrack.Count)
         {
-            CurrentNodeIndex++;
+            CurrentNodeIndex = ResolveDefaultNextNodeIndex(_siteTrack[CurrentNodeIndex]);
+            AdvanceThroughDefaultNonBattleNodes();
         }
 
         if (ActiveRun != null)
         {
             ActiveRun = RunStateService.AdvanceNode(ActiveRun, CurrentNodeIndex);
         }
+    }
+
+    private int ResolveEntryNodeIndex()
+    {
+        var targetedIndices = _siteTrack
+            .SelectMany(node => node.NextNodeIndices ?? Array.Empty<int>())
+            .Where(index => index >= 0 && index < _siteTrack.Count)
+            .ToHashSet();
+        var entries = _siteTrack
+            .Select(node => node.Index)
+            .Where(index => !targetedIndices.Contains(index))
+            .ToList();
+        return entries.Count == 1 ? entries[0] : 0;
+    }
+
+    private void AdvanceThroughDefaultNonBattleNodes()
+    {
+        var visited = new HashSet<int>();
+        while (CurrentNodeIndex >= 0
+               && CurrentNodeIndex < _siteTrack.Count
+               && !_siteTrack[CurrentNodeIndex].RequiresBattle
+               && _siteTrack[CurrentNodeIndex].NextNodeIndices.Count > 0
+               && visited.Add(CurrentNodeIndex))
+        {
+            CurrentNodeIndex = ResolveDefaultNextNodeIndex(_siteTrack[CurrentNodeIndex]);
+        }
+    }
+
+    private int ResolveDefaultNextNodeIndex(SiteTrackNodeState node)
+    {
+        foreach (var index in node.NextNodeIndices ?? Array.Empty<int>())
+        {
+            if (index >= 0 && index < _siteTrack.Count)
+            {
+                return index;
+            }
+        }
+
+        return node.Index;
     }
 
     internal void CompleteSite()

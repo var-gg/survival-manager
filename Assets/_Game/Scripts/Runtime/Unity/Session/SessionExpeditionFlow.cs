@@ -90,6 +90,7 @@ public sealed partial class GameSessionState
             _session.EnsureBattleDeployReady();
             _session.EnsureCampaignSelection();
             _session.EnsureExpeditionNodes(reset: true);
+            _session.CurrentExpeditionNodeIndex = _session.ResolveExpeditionEntryNodeIndex();
             _session.AutoSelectNextExpeditionNode();
             _session.EnsureRewardChoices(reset: true);
         }
@@ -393,6 +394,12 @@ public sealed partial class GameSessionState
             return current.NextNodeIndices ?? Array.Empty<int>();
         }
 
+        internal bool IsExpeditionNodeResolved(string graphNodeId)
+        {
+            return !string.IsNullOrWhiteSpace(graphNodeId)
+                   && _session._resolvedExpeditionNodeIds.Contains(graphNodeId);
+        }
+
         internal bool ResolveSelectedExpeditionNode()
         {
             var selected = GetSelectedExpeditionNode();
@@ -488,6 +495,11 @@ public sealed partial class GameSessionState
             if (CurrentExpeditionNodeIndex >= _expeditionNodes.Count)
             {
                 CurrentExpeditionNodeIndex = 0;
+            }
+
+            if (reset && string.IsNullOrWhiteSpace(Profile.ActiveRun?.RunId))
+            {
+                CurrentExpeditionNodeIndex = ResolveExpeditionEntryNodeIndex();
             }
 
             return;
@@ -922,19 +934,28 @@ public sealed partial class GameSessionState
 
     private void RestoreResolvedProgressMarkers(bool includeCurrentNode)
     {
+        var persistedNodeIds = _resolvedExpeditionNodeIds.Count > 0
+            ? _resolvedExpeditionNodeIds.ToHashSet(StringComparer.Ordinal)
+            : (Profile.ActiveRun?.ResolvedExpeditionNodeIds ?? new List<string>())
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .ToHashSet(StringComparer.Ordinal);
+        var restoredNodeIndices = persistedNodeIds.Count > 0
+            ? _expeditionNodes.Where(node => persistedNodeIds.Contains(node.GraphNodeId)).Select(node => node.Index)
+            : ExpeditionGraphTraversal.ResolveGuaranteedTraversedNodeIndices(_expeditionNodes, CurrentExpeditionNodeIndex);
+
         _resolvedExpeditionNodeIds.Clear();
-        for (var index = 0; index < CurrentExpeditionNodeIndex && index < _expeditionNodes.Count; index++)
+        foreach (var nodeIndex in restoredNodeIndices)
         {
-            MarkNodeResolved(_expeditionNodes[index]);
+            MarkNodeResolved(_expeditionNodes[nodeIndex]);
         }
 
-        if (includeCurrentNode
-            && CurrentExpeditionNodeIndex >= 0
-            && CurrentExpeditionNodeIndex < _expeditionNodes.Count)
+        if (includeCurrentNode && CurrentExpeditionNodeIndex >= 0 && CurrentExpeditionNodeIndex < _expeditionNodes.Count)
         {
             MarkNodeResolved(_expeditionNodes[CurrentExpeditionNodeIndex]);
         }
     }
+
+    private int ResolveExpeditionEntryNodeIndex() => ExpeditionGraphTraversal.ResolveEntryNodeIndex(_expeditionNodes);
 
     private int ResolveNextActiveNodeIndex(int resolvedNodeIndex)
     {

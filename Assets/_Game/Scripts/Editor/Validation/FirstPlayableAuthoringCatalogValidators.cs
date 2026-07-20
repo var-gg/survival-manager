@@ -144,6 +144,10 @@ internal sealed class EncounterAuthoringCatalogValidator : ICatalogValidationRul
 {
     public void Validate(CatalogValidationContext context, ICollection<ContentValidationIssue> issues)
     {
+        var canonicalEncounterIds = context.Sites.Values
+            .SelectMany(site => site.EncounterIds)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.Ordinal);
         var familyCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var encounterFamilies = new Dictionary<string, string>(StringComparer.Ordinal);
         var encounterAnswerLanes = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -165,7 +169,10 @@ internal sealed class EncounterAuthoringCatalogValidator : ICatalogValidationRul
             }
 
             encounterFamilies[encounter.Id] = familyId;
-            familyCounts[familyId] = familyCounts.TryGetValue(familyId, out var count) ? count + 1 : 1;
+            if (canonicalEncounterIds.Contains(encounter.Id))
+            {
+                familyCounts[familyId] = familyCounts.TryGetValue(familyId, out var count) ? count + 1 : 1;
+            }
 
             var answerLanes = FirstPlayableAuthoringContract.ExtractAnswerLanes(encounter.RewardDropTags);
             if (answerLanes.Count != 1)

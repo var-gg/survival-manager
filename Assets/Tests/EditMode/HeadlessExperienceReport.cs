@@ -9,6 +9,7 @@ using SM.Content;
 using SM.Content.Definitions;
 using SM.Core;
 using SM.Editor.SeedData;
+using SM.Editor.Validation;
 using SM.Meta;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Playthrough;
@@ -94,8 +95,17 @@ public sealed class HeadlessExperienceReport
             Drain(session, "SiteEntered", text, beats, report);
 
             var battleNodes = 0;
-            while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            while (true)
             {
+                while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                {
+                }
+
+                if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+                {
+                    break;
+                }
+
                 battleNodes++;
                 // AutoResolve는 sim 없이 커서만 전진 → 전투 moment를 하네스가 발화(커서가 전투 노드에 있을 때 NodeIndex 정확).
                 FireAndDrain(session, NarrativeMoment.BattleStarted, text, beats, report);
@@ -207,8 +217,17 @@ public sealed class HeadlessExperienceReport
 
             var defeated = false;
             var battleIdx = 0;
-            while (session.GetSelectedExpeditionNode()?.RequiresBattle == true)
+            while (true)
             {
+                while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                {
+                }
+
+                if (session.GetSelectedExpeditionNode()?.RequiresBattle != true)
+                {
+                    break;
+                }
+
                 var node = session.GetSelectedExpeditionNode()!;
                 battleIdx++;
                 FireAndDrain(session, NarrativeMoment.BattleStarted, text, beats, report); // 전투 진입 발화(boss-bark 등, 씬 controller 등가)

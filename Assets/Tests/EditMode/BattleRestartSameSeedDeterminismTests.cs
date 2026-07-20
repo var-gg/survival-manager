@@ -5,6 +5,7 @@ using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Contracts;
 using SM.Editor.SeedData;
+using SM.Editor.Validation;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 
@@ -41,6 +42,9 @@ public sealed class BattleRestartSameSeedDeterminismTests
         var session = new GameSessionState(lookup);
         session.BindProfile(new SaveProfile()); // 기본 분대(헤더 배치 포함) 시드
         session.BeginNewExpedition();
+        while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+        {
+        }
 
         // 첫 전투 — 씬 RunBattle과 동일한 세션 단일 소스 진입점.
         Assert.That(
