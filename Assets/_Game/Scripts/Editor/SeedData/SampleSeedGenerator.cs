@@ -53,6 +53,13 @@ public static class SampleSeedGenerator
         var archetypes = CreateArchetypes(races, classes, traitPools, skills, footprintProfiles, behaviorProfiles, mobilityProfiles);
         var skillCatalog = LoadDefinitionsById<SkillDefinitionAsset>($"{ResourcesRoot}/Skills");
         PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog, stableTags, footprintProfiles, behaviorProfiles, mobilityProfiles);
+        SyncSunkenBastionAntiClusterWallAssets(
+            races,
+            classes,
+            traitPools,
+            footprintProfiles,
+            behaviorProfiles,
+            mobilityProfiles);
         var patchedArchetypes = LoadDefinitionsById<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes");
         var roleInstructions = LoadDefinitionsById<RoleInstructionDefinition>($"{ResourcesRoot}/RoleInstructions");
         EnsureRoleGlossaryLocalization(roleInstructions);
@@ -92,6 +99,44 @@ public static class SampleSeedGenerator
         }
 
         Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={patchedArchetypes.Count}, Characters={characters.Count}, ExtraActors={extraActors.Count}");
+    }
+
+    [MenuItem("SM/Internal/Content/Sync Sunken Bastion Anti-Cluster Wall")]
+    public static void SyncSunkenBastionAntiClusterWall()
+    {
+        EnsureFolders();
+        var traitPools = new Dictionary<string, TraitPoolDefinition>(StringComparer.Ordinal)
+        {
+            ["guardian"] = LoadDefinition<TraitPoolDefinition>($"{ResourcesRoot}/Traits/traitpool_guardian.asset"),
+        };
+        var footprintProfiles = new Dictionary<string, FootprintProfileDefinition>(StringComparer.Ordinal)
+        {
+            ["vanguard"] = LoadDefinition<FootprintProfileDefinition>($"{ResourcesRoot}/FootprintProfiles/footprint_vanguard.asset"),
+        };
+        var behaviorProfiles = new Dictionary<string, BehaviorProfileDefinition>(StringComparer.Ordinal)
+        {
+            ["vanguard"] = LoadDefinition<BehaviorProfileDefinition>($"{ResourcesRoot}/BehaviorProfiles/behavior_vanguard.asset"),
+        };
+        var mobilityProfiles = new Dictionary<string, MobilityProfileDefinition>(StringComparer.Ordinal)
+        {
+            ["vanguard"] = LoadDefinition<MobilityProfileDefinition>($"{ResourcesRoot}/MobilityProfiles/mobility_vanguard.asset"),
+        };
+        SyncSunkenBastionAntiClusterWallAssets(
+            LoadDefinitionsById<RaceDefinition>($"{ResourcesRoot}/Races"),
+            LoadDefinitionsById<ClassDefinition>($"{ResourcesRoot}/Classes"),
+            traitPools,
+            footprintProfiles,
+            behaviorProfiles,
+            mobilityProfiles);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        Debug.Log("SM sunken bastion anti-cluster wall synchronized without a full reseed.");
+    }
+
+    public static void SyncSunkenBastionAntiClusterWallAndExportSnapshot()
+    {
+        SyncSunkenBastionAntiClusterWall();
+        ContentSnapshotExporter.ExportSnapshot();
     }
 
     [MenuItem("SM/Internal/Content/Migrate Legacy Sample Content")]
@@ -955,6 +1000,193 @@ public static class SampleSeedGenerator
         result["pale_executor"] = CreateArchetype("pale_executor", "Pale Executor", races["undead"], classes["duelist"], traitPools["pale_executor"], skills["skill_power_strike"], footprintProfiles["duelist"], behaviorProfiles["duelist"], mobilityProfiles["duelist"], 20, 8, 2, 4, 0, DeploymentAnchorValue.FrontBottom, TeamPostureTypeValue.CollapseWeakSide, ArchetypeScopeValue.Specialist);
         result["mirror_cantor"] = CreateArchetype("mirror_cantor", "Mirror Cantor", races["human"], classes["mystic"], traitPools["mirror_cantor"], skills["skill_minor_heal"], footprintProfiles["mystic"], behaviorProfiles["mystic"], mobilityProfiles["mystic"], 18, 3, 2, 4, 5, DeploymentAnchorValue.BackCenter, TeamPostureTypeValue.ProtectCarry, ArchetypeScopeValue.Specialist);
         return result;
+    }
+
+    private static void SyncSunkenBastionAntiClusterWallAssets(
+        IReadOnlyDictionary<string, RaceDefinition> races,
+        IReadOnlyDictionary<string, ClassDefinition> classes,
+        IReadOnlyDictionary<string, TraitPoolDefinition> traitPools,
+        IReadOnlyDictionary<string, FootprintProfileDefinition> footprintProfiles,
+        IReadOnlyDictionary<string, BehaviorProfileDefinition> behaviorProfiles,
+        IReadOnlyDictionary<string, MobilityProfileDefinition> mobilityProfiles)
+    {
+        const string skillId = "skill_sunken_anticluster_bombardment";
+        const string archetypeId = "sunken_adjudicator_boss";
+        const string utilityTag = "boss_utility_anticluster_bombardment";
+
+        var skill = CreateAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/{skillId}.asset", asset =>
+        {
+            asset.Id = skillId;
+            asset.NameKey = ContentLocalizationTables.BuildSkillNameKey(skillId);
+            asset.DescriptionKey = ContentLocalizationTables.BuildSkillDescriptionKey(skillId);
+            asset.Kind = SkillKindValue.Strike;
+            asset.SlotKind = SkillSlotKindValue.UtilityActive;
+            asset.DamageType = DamageTypeValue.Magical;
+            asset.Delivery = SkillDeliveryValue.Zone;
+            asset.TargetRule = SkillTargetRuleValue.LowestHpEnemy;
+            asset.Power = 14f;
+            asset.Range = 12f;
+            asset.RangeMin = 0f;
+            asset.RangeMax = 12f;
+            asset.Radius = 1.85f;
+            asset.AreaEffectFamily = AreaEffectFamilyValue.GroundAoe;
+            asset.PunishCluster = true;
+            asset.PowerFlat = 14f;
+            asset.PhysCoeff = 0f;
+            asset.MagCoeff = 0f;
+            asset.HealCoeff = 0f;
+            asset.HealthCoeff = 0.12f;
+            asset.CanCrit = false;
+            asset.ActivationModel = ActivationModel.Cooldown;
+            asset.Lane = ActionLane.Primary;
+            asset.LockRule = ActionLockRule.HardCommit;
+            asset.ManaCost = 0f;
+            asset.BaseCooldownSeconds = 3.25f;
+            asset.CastWindupSeconds = 0.35f;
+            asset.InterruptRefundScalar = 0.5f;
+            asset.IconId = "skill_icon_sunken_anticluster_bombardment";
+            asset.VfxHookId = "vfx.skill_sunken_anticluster_bombardment";
+            asset.SfxHookId = "sfx.skill.skill_sunken_anticluster_bombardment";
+            asset.EffectFamilyId = "sunken_anticluster_bombardment";
+            asset.TargetRuleData = new TargetRule
+            {
+                Domain = TargetDomain.EnemyUnit,
+                PrimarySelector = TargetSelector.LargestEnemyCluster,
+                FallbackPolicy = TargetFallbackPolicy.NearestReachableEnemy,
+                Filters = TargetFilterFlags.InRange | TargetFilterFlags.ExcludeUntargetable,
+                ReevaluateIntervalSeconds = 0.25f,
+                MinimumCommitSeconds = 0.75f,
+                MaxAcquireRange = 12f,
+                PreferredMinTargets = 2,
+                ClusterRadius = 1.85f,
+                LockTargetAtCastStart = true,
+                RetargetLockMode = RetargetLockMode.UntilCastComplete,
+            };
+            asset.AppliedStatuses = new List<StatusApplicationRule>();
+            ApplyLoopCSkillGovernance(asset);
+        });
+
+        var archetype = CreateAsset<UnitArchetypeDefinition>($"{ResourcesRoot}/Archetypes/archetype_{archetypeId}.asset", asset =>
+        {
+            asset.Id = archetypeId;
+            asset.NameKey = ContentLocalizationTables.BuildArchetypeNameKey(archetypeId);
+            asset.ScopeKind = ArchetypeScopeValue.Specialist;
+            asset.Race = races["human"];
+            asset.Class = classes["vanguard"];
+            asset.TraitPool = traitPools["guardian"];
+            asset.Skills = new List<SkillDefinitionAsset> { skill };
+            asset.TacticPreset = new List<TacticPresetEntry>
+            {
+                new()
+                {
+                    Priority = 0,
+                    ConditionType = TacticConditionTypeValue.EnemyInRange,
+                    Threshold = 12f,
+                    ActionType = BattleActionTypeValue.ActiveSkill,
+                    TargetSelector = TargetSelectorTypeValue.LowestHpEnemy,
+                    Skill = skill,
+                },
+                new()
+                {
+                    Priority = 1,
+                    ConditionType = TacticConditionTypeValue.LowestHpEnemy,
+                    ActionType = BattleActionTypeValue.BasicAttack,
+                    TargetSelector = TargetSelectorTypeValue.LowestHpEnemy,
+                },
+            };
+            asset.DefaultAnchor = DeploymentAnchorValue.FrontCenter;
+            asset.PreferredTeamPosture = TeamPostureTypeValue.ProtectCarry;
+            asset.RoleTag = "artillery";
+            asset.RoleFamilyTag = "vanguard";
+            asset.PrimaryWeaponFamilyTag = "focus";
+            asset.IsRecruitable = false;
+            asset.IsSummonOnly = false;
+            asset.IsEventOnly = false;
+            asset.IsBossOnly = true;
+            asset.IsUnreleased = false;
+            asset.IsTestOnly = false;
+            asset.FlexUtilitySkillPool = new List<SkillDefinitionAsset> { skill };
+            asset.RecruitFlexActivePool = new List<SkillDefinitionAsset>();
+            asset.RecruitFlexPassivePool = new List<SkillDefinitionAsset>();
+            asset.Loadout ??= new UnitLoadoutDefinition();
+            asset.Loadout.FlexActive = skill;
+            asset.FootprintProfile = footprintProfiles["vanguard"];
+            asset.BehaviorProfile = behaviorProfiles["vanguard"];
+            asset.MobilityProfile = mobilityProfiles["vanguard"];
+            asset.BaseMaxHealth = 35f;
+            asset.BaseArmor = 5f;
+            asset.BaseResist = 3f;
+            asset.BasePhysPower = 3f;
+            asset.BaseMagPower = 5f;
+            asset.BaseAttackSpeed = 2f;
+            asset.BaseAttack = 3f;
+            asset.BaseDefense = 5f;
+            asset.BaseSpeed = 2f;
+            asset.BaseMoveSpeed = 1.55f;
+            asset.BaseAttackRange = 1.3f;
+            asset.BaseMaxEnergy = 100f;
+            asset.BaseStartingEnergy = 0f;
+            asset.BaseAggroRadius = 12f;
+            asset.BasePreferredDistance = 1f;
+            asset.BaseAttackWindup = 0.24f;
+            asset.BaseCastWindup = 0.35f;
+            asset.BaseProjectileSpeed = 0f;
+            asset.BaseCollisionRadius = 0.55f;
+            asset.BaseAttackCooldown = 1.1f;
+            asset.BaseLeashDistance = 8f;
+            asset.BaseTargetSwitchDelay = 0.4f;
+            ApplyLoopCArchetypeGovernance(asset);
+        });
+
+        var squad = LoadDefinition<EnemySquadTemplateDefinition>($"{ResourcesRoot}/EnemySquads/site_sunken_bastion_boss_1_squad.asset");
+        if (squad != null)
+        {
+            var captain = squad.Members.FirstOrDefault(member => member.Role == EnemySquadMemberRoleValue.Captain)
+                          ?? squad.Members.FirstOrDefault();
+            if (captain != null)
+            {
+                captain.ArchetypeId = archetype.Id;
+                captain.CharacterId = "extra_sunken_bastion_adjudicator";
+                captain.Anchor = DeploymentAnchorValue.FrontCenter;
+            }
+
+            EditorUtility.SetDirty(squad);
+        }
+
+        var overlay = LoadDefinition<BossOverlayDefinition>($"{ResourcesRoot}/BossOverlays/boss_overlay_sunken_bastion.asset");
+        if (overlay != null)
+        {
+            overlay.SignatureUtilityTag = utilityTag;
+            overlay.RewardDropTags = overlay.RewardDropTags
+                .Where(tag => !tag.StartsWith("boss_utility_", StringComparison.Ordinal))
+                .Append(utilityTag)
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+            EditorUtility.SetDirty(overlay);
+        }
+
+        var encounter = LoadDefinition<EncounterDefinition>($"{ResourcesRoot}/Encounters/site_sunken_bastion_boss_1.asset");
+        if (encounter != null)
+        {
+            encounter.RewardDropTags = encounter.RewardDropTags
+                .Where(tag => !tag.StartsWith("answer_lane_", StringComparison.Ordinal))
+                .Append("answer_lane_anticluster_spread")
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+            EditorUtility.SetDirty(encounter);
+        }
+
+        var slice = LoadDefinition<FirstPlayableSliceDefinitionAsset>($"{ResourcesRoot}/FirstPlayable/first_playable_slice.asset");
+        if (slice != null)
+        {
+            slice.ParkingLotContentIds = slice.ParkingLotContentIds
+                .Append(archetypeId)
+                .Append(skillId)
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+            EditorUtility.SetDirty(slice);
+        }
     }
 
     private static UnitArchetypeDefinition CreateArchetype(string id, string name, RaceDefinition race, ClassDefinition @class, TraitPoolDefinition pool, SkillDefinitionAsset skill, FootprintProfileDefinition footprintProfile, BehaviorProfileDefinition behaviorProfile, MobilityProfileDefinition mobilityProfile, float hp, float atk, float def, float spd, float heal, DeploymentAnchorValue defaultAnchor, TeamPostureTypeValue preferredPosture, ArchetypeScopeValue scopeKind = ArchetypeScopeValue.Core)

@@ -48,7 +48,7 @@ internal sealed class HeadlessCampaignState
             Array.Empty<string>(),
             false,
             false));
-        _expeditionSquadHeroIds.AddRange(Heroes.Take(MetaBalanceDefaults.ExpeditionSquadCap).Select(hero => hero.Id));
+        _expeditionSquadHeroIds.AddRange(Heroes.Take(MetaBalanceDefaults.BattleDeployCap).Select(hero => hero.Id));
         ApplyClassBasedDeployment();
     }
 
@@ -387,7 +387,7 @@ internal sealed class HeadlessCampaignState
             DeploymentAnchorId.BackTop,
             DeploymentAnchorId.BackBottom,
         });
-        foreach (var hero in Heroes.Take(MetaBalanceDefaults.ExpeditionSquadCap))
+        foreach (var hero in Heroes.Take(MetaBalanceDefaults.BattleDeployCap))
         {
             var prefersFront = hero.ClassId is "vanguard" or "duelist";
             var primary = prefersFront ? front : back;

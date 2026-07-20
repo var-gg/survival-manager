@@ -70,6 +70,7 @@ internal static class HeadlessCampaignSweepRunner
                 Result: primary.Canonical,
                 TargetBoss: primary.TargetBoss,
                 TargetBossSurvival: primary.TargetBossSurvival,
+                TargetBossAoeSurvival: primary.TargetBossAoeSurvival,
                 Verification: verification);
             var outputPath = Resolve(repositoryRoot, options.OutputPath);
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
@@ -82,8 +83,10 @@ internal static class HeadlessCampaignSweepRunner
                 + $"hash={primary.Hash} boss={primary.TargetBoss.Naive.WinRate.ToString("0.000000", CultureInfo.InvariantCulture)}"
                 + $"->{primary.TargetBoss.Informed.WinRate.ToString("0.000000", CultureInfo.InvariantCulture)} "
                 + $"gap={primary.TargetBoss.Gap.ToString("0.000000", CultureInfo.InvariantCulture)} "
-                + $"flanked-survival={primary.TargetBossSurvival.Naive.SurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}"
-                + $"->{primary.TargetBossSurvival.Informed.SurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}");
+                + $"aoe-catch={primary.TargetBossAoeSurvival.Naive.MeanShooterAoeCatches.ToString("0.000000", CultureInfo.InvariantCulture)}"
+                + $"->{primary.TargetBossAoeSurvival.Informed.MeanShooterAoeCatches.ToString("0.000000", CultureInfo.InvariantCulture)} "
+                + $"shooter-survival={primary.TargetBossAoeSurvival.Naive.ShooterSurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}"
+                + $"->{primary.TargetBossAoeSurvival.Informed.ShooterSurvivalRate.ToString("0.000000", CultureInfo.InvariantCulture)}");
             Console.WriteLine($"headless-campaign-sweep report={outputPath}");
             return 0;
         }
@@ -182,6 +185,10 @@ internal static class HeadlessCampaignSweepRunner
             executions,
             config,
             stopAfterEncounterId);
+        var targetBossAoeSurvival = BuildAoeBand(
+            executions,
+            config,
+            stopAfterEncounterId);
         var canonical = new HeadlessCampaignCanonicalResult(
             SchemaVersion: "headless-campaign-canonical-v1",
             StopAfterEncounterId: stopAfterEncounterId,
@@ -198,7 +205,8 @@ internal static class HeadlessCampaignSweepRunner
                             node.Won,
                             node.FormationHash,
                             node.GearCounterUsed,
-                            node.FlankSurvival)))
+                            node.FlankSurvival,
+                            node.AntiClusterAoeSurvival)))
                         .ToArray()))
                 .ToArray());
         var canonicalJson = JsonConvert.SerializeObject(canonical, Formatting.None, SerializerSettings());
@@ -207,8 +215,54 @@ internal static class HeadlessCampaignSweepRunner
             canonical,
             targetBoss,
             targetBossSurvival,
+            targetBossAoeSurvival,
             hash,
             stopwatch.Elapsed.TotalSeconds);
+    }
+
+    private static HeadlessCampaignAoeBand BuildAoeBand(
+        IReadOnlyList<HeadlessCampaignCellExecution> executions,
+        CampaignBalanceSweepConfig config,
+        string encounterId)
+    {
+        var squadIds = executions.Select(value => value.SquadId)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
+        return new HeadlessCampaignAoeBand(
+            encounterId,
+            BuildAoeArm(executions, config.Arms[0], encounterId),
+            BuildAoeArm(executions, config.Arms[1], encounterId),
+            squadIds.Select(squadId => new HeadlessCampaignSquadAoeBand(
+                    squadId,
+                    BuildAoeArm(executions, config.Arms[0], encounterId, squadId),
+                    BuildAoeArm(executions, config.Arms[1], encounterId, squadId)))
+                .ToArray());
+    }
+
+    private static HeadlessCampaignAoeArmCount BuildAoeArm(
+        IEnumerable<HeadlessCampaignCellExecution> executions,
+        CampaignBalanceArmSpec arm,
+        string encounterId,
+        string? squadId = null)
+    {
+        var observations = executions
+            .Where(cell => squadId == null || string.Equals(cell.SquadId, squadId, StringComparison.Ordinal))
+            .SelectMany(cell => cell.Arms)
+            .Where(execution => string.Equals(execution.Arm.ArmId, arm.ArmId, StringComparison.Ordinal))
+            .SelectMany(execution => execution.Nodes)
+            .Where(node => string.Equals(node.Identity.EncounterId, encounterId, StringComparison.Ordinal))
+            .Select(node => node.AntiClusterAoeSurvival)
+            .ToArray();
+        return new HeadlessCampaignAoeArmCount(
+            arm.ArmId,
+            arm.PolicyId,
+            observations.Length,
+            observations.Sum(value => value.BossAoeCastCount),
+            observations.Sum(value => value.AoeCatchCount),
+            observations.Sum(value => value.ShooterAoeCatchCount),
+            observations.Sum(value => value.ShooterCount),
+            observations.Sum(value => value.SurvivingShooterCount));
     }
 
     private static HeadlessCampaignSurvivalBand BuildSurvivalBand(
@@ -277,7 +331,8 @@ internal static class HeadlessCampaignSweepRunner
             aggregate.ArmId,
             aggregate.PolicyId,
             aggregate.SampleCount,
-            aggregate.WinCount);
+            aggregate.WinCount,
+            aggregate.BossWinWithAnswerTagCount);
 
     private static IReadOnlyList<CampaignBalanceGridCell> SampleCells(
         IReadOnlyList<CampaignBalanceGridCell> grid,
@@ -367,6 +422,7 @@ internal static class HeadlessCampaignSweepRunner
         HeadlessCampaignCanonicalResult Canonical,
         HeadlessCampaignNodeBand TargetBoss,
         HeadlessCampaignSurvivalBand TargetBossSurvival,
+        HeadlessCampaignAoeBand TargetBossAoeSurvival,
         string Hash,
         double ElapsedSeconds);
 }

@@ -257,6 +257,51 @@ public sealed class PreviewGroundedConceptPolicyFastTests
         Assert.DoesNotThrow(() => HeadlessPrepPolicyGuard.ValidateDecision(observation, decision));
     }
 
+    [Test]
+    public void Prep_AntiClusterPreview_SpreadsClusteredShootersWithinOneEdit()
+    {
+        var roster = new[]
+        {
+            Hero("hero-warden", "warden", "vanguard", "anchor", DeploymentAnchorId.FrontTop, true,
+                Skill("warden-guard", SkillKind.Shield, SkillDelivery.Aura, SkillTargetRule.Self, DamageType.Physical, 0f, "guarded")),
+            Hero("hero-marksman", "marksman", "ranger", "carry", DeploymentAnchorId.BackTop, true,
+                Skill("marksman-shot", SkillKind.Strike, SkillDelivery.Projectile, SkillTargetRule.MostExposedEnemy, DamageType.Physical, 5.6f)),
+            Hero("hero-hunter", "hunter", "ranger", "carry", DeploymentAnchorId.BackCenter, true,
+                Skill("hunter-shot", SkillKind.Strike, SkillDelivery.Projectile, SkillTargetRule.MostExposedEnemy, DamageType.Physical, 5.6f)),
+            Hero("hero-scout", "scout", "ranger", "carry", DeploymentAnchorId.BackBottom, true,
+                Skill("scout-shot", SkillKind.Strike, SkillDelivery.Projectile, SkillTargetRule.MostExposedEnemy, DamageType.Physical, 5.4f)),
+        };
+        var preview = new HeadlessEnemyPreview(
+            true,
+            "visible-boss",
+            "visible-faction",
+            "site_boss",
+            3,
+            new[]
+            {
+                new HeadlessEnemyUnitPreview("visible-boss-shell", "human", "vanguard", "artillery", DeploymentAnchorId.FrontCenter),
+                new HeadlessEnemyUnitPreview("visible-escort", "human", "vanguard", "anchor", DeploymentAnchorId.FrontTop),
+            },
+            "boss_aura_drowned_bastion",
+            "boss_utility_anticluster_bombardment",
+            Array.Empty<string>());
+        var observation = Observation("visible-site", "visible-boss", 4, roster, preview);
+        var profile = EnemyThreatProfileParser.Parse(EnemyThreatObservation.FromVisiblePreview(preview));
+        var policy = ConceptCommitPolicy.CreatePreviewGrounded(GuardedIntent());
+
+        var decision = policy.DecidePrep(observation);
+
+        var beforeByHero = observation.CurrentPlacements.ToDictionary(value => value.HeroId, value => value.Anchor, StringComparer.Ordinal);
+        var formationEdits = decision.Placements.Count(value => beforeByHero[value.HeroId] != value.Anchor);
+        Assert.That(profile.Tags, Does.Contain(EnemyThreatTag.AntiClusterAoe));
+        Assert.That(decision.Rationale, Does.Contain("formation_rule=anticluster_spread"));
+        Assert.That(formationEdits, Is.EqualTo(1));
+        Assert.That(
+            decision.Placements.Single(value => value.HeroId == "hero-hunter").Anchor,
+            Is.EqualTo(DeploymentAnchorId.FrontCenter));
+        Assert.DoesNotThrow(() => HeadlessPrepPolicyGuard.ValidateDecision(observation, decision));
+    }
+
     private static string Run(HeadlessPolicyObservation observation)
     {
         var policy = ConceptCommitPolicy.CreatePreviewGrounded(GuardedIntent());

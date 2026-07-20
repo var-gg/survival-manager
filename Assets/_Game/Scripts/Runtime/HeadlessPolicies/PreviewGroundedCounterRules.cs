@@ -7,6 +7,7 @@ namespace SM.HeadlessPolicies;
 
 public static class PreviewCounterCapability
 {
+    public const string AntiClusterSpacing = "anti_cluster_spacing";
     public const string PriorityAccess = "priority_access";
     public const string SustainDisruption = "sustain_disruption";
     public const string WallBreak = "wall_break";
@@ -82,6 +83,11 @@ public static class PreviewGroundedCounterRules
     {
         return threatTag switch
         {
+            EnemyThreatTag.AntiClusterAoe => FindSkill(hero, PreviewCounterCapability.AntiClusterSpacing, skill =>
+                string.Equals(hero.ClassId, "ranger", StringComparison.Ordinal)
+                && skill.Kind == SkillKind.Strike
+                && (skill.Range >= 2.5f
+                    || skill.Delivery is SkillDelivery.Ranged or SkillDelivery.Projectile)),
             EnemyThreatTag.BacklineDive => FindSkill(hero, PreviewCounterCapability.Protection, skill =>
                 skill.Kind is SkillKind.Heal or SkillKind.Shield
                 || HasStatus(skill, "guarded", "barrier", "shield")),

@@ -105,7 +105,8 @@ internal static class HeadlessCampaignPlaythrough
                         config.FindBossLearningSpec(identity.EncounterId)),
                     state.FormationHash(),
                     prepEquipmentAssignmentCount > 0,
-                    measured.FlankSurvival));
+                    measured.FlankSurvival,
+                    measured.AntiClusterAoeSurvival));
 
                 if (string.Equals(identity.EncounterId, stopAfterEncounterId, StringComparison.Ordinal))
                 {
@@ -180,13 +181,19 @@ internal static class HeadlessCampaignPlaythrough
         }
 
         var survivalObserver = new PackPursuitSurvivalObserver();
+        var antiClusterAoeObserver = new AntiClusterAoeSurvivalObserver();
         var result = BattleResolver.Run(
             battleState,
             BattleSimulator.DefaultMaxSteps,
-            step => survivalObserver.Observe(battleState, step));
+            step =>
+            {
+                survivalObserver.Observe(battleState, step);
+                antiClusterAoeObserver.Observe(battleState, step);
+            });
         return new HeadlessCampaignBattleOutcome(
             result,
-            survivalObserver.Complete(battleState));
+            survivalObserver.Complete(battleState),
+            antiClusterAoeObserver.Complete(battleState));
     }
 
     private static BattleResult? FindProgressionResult(

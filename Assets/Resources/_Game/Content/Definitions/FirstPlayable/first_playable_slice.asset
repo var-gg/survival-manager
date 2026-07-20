@@ -235,6 +235,8 @@ MonoBehaviour:
   - skill_shardblade_sever
   - skill_signal_flare
   - skill_square_wall
+  - skill_sunken_anticluster_bombardment
+  - sunken_adjudicator_boss
   - support_line_anchor
   - support_resonance_cleanse
   SynergyGrammar:

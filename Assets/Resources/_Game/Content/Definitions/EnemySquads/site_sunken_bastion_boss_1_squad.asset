@@ -25,12 +25,15 @@ MonoBehaviour:
   Members:
   - Id: site_sunken_bastion_boss_1_squad_captain
     NameKey: 
-    ArchetypeId: guardian
-    CharacterId: hero_iron_pelt
+    ArchetypeId: sunken_adjudicator_boss
+    CharacterId: extra_sunken_bastion_adjudicator
     Anchor: 1
     Role: 1
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 0
+    EquipmentItemBaseId: 
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_boss_1_squad_escort_1
@@ -41,6 +44,9 @@ MonoBehaviour:
     Role: 2
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 0
+    EquipmentItemBaseId: 
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_boss_1_squad_escort_2
@@ -51,6 +57,9 @@ MonoBehaviour:
     Role: 2
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 0
+    EquipmentItemBaseId: 
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

@@ -18,13 +18,13 @@ MonoBehaviour:
   PhaseTrigger: 1
   ThreatCost: 1
   SignatureAuraTag: boss_aura_drowned_bastion
-  SignatureUtilityTag: boss_utility_reliquary_seal
+  SignatureUtilityTag: boss_utility_anticluster_bombardment
   RewardDropTags:
   - boss
   - boss_overlay_sunken_bastion
   - site_sunken_bastion
   - boss_aura_drowned_bastion
-  - boss_utility_reliquary_seal
+  - boss_utility_anticluster_bombardment
   AppliedStatuses:
   - Id: boss_overlay_sunken_bastion_barrier
     StatusId: barrier

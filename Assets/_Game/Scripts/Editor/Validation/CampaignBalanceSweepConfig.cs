@@ -218,7 +218,7 @@ public sealed record CampaignBalanceSweepConfig(
         {
             Boss(1, 1, Band(.40, .55, .46), Band(.75, .85, .80), .34),
             Boss(1, 2, Band(.20, .40, .30), Band(.70, .85, .76), .46),
-            Boss(2, 1, Band(.35, .50, .42), Band(.72, .85, .78), .36),
+            Boss(2, 1, Band(.20, .45, .32), Band(.70, .85, .77), .38),
             Boss(2, 2, Band(.28, .43, .35), Band(.70, .82, .75), .40),
             Boss(3, 1, Band(.30, .44, .37), Band(.72, .84, .77), .40),
             Boss(3, 2, Band(.25, .40, .32), Band(.70, .82, .75), .43),
@@ -238,6 +238,12 @@ public sealed record CampaignBalanceSweepConfig(
                     CampaignBossAnswerTag.DurableBackCornerBait,
                     CampaignBossAnswerTag.MarkFocusBurst,
                 },
+                PatternTaxPI: 15,
+                LessonRetryClearRates: new[] { .70, .80 },
+                BossGapMin: .30),
+            new CampaignBossLearningSpec(
+                "site_sunken_bastion_boss_1",
+                new[] { CampaignBossAnswerTag.AnticlusterSpread },
                 PatternTaxPI: 15,
                 LessonRetryClearRates: new[] { .70, .80 },
                 BossGapMin: .30),

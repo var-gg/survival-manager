@@ -46,6 +46,38 @@ internal static class PreviewGroundedPrepSelector
                 PreviewGroundedEquipmentSelector.Select(observation, current));
         }
 
+        if (AntiClusterSpreadPlanner.TryPlan(
+                observation,
+                profile,
+                current,
+                currentHeroes,
+                out var antiClusterPlacements,
+                out var antiClusterEdits))
+        {
+            var connections = PreviewGroundedCounterRules.Connect(profile, currentHeroes)
+                .Where(value => string.Equals(value.ThreatTag, EnemyThreatTag.AntiClusterAoe, StringComparison.Ordinal))
+                .ToArray();
+            var antiClusterEquipment = PreviewGroundedEquipmentSelector.Select(observation, antiClusterPlacements);
+            var antiClusterSignals = connections
+                .SelectMany(value => new[] { value.ThreatEvidenceSignalKey, value.HeroEvidenceSignalKey })
+                .Append(HeadlessPolicyEvidence.DeploymentSurfaceSignal)
+                .Append(HeadlessPolicyEvidence.RosterSurfaceSignal)
+                .Append(HeadlessPolicyEvidence.EnemyPreviewSignal)
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(value => value, StringComparer.Ordinal)
+                .ToArray();
+            return new PreviewGroundedPrepSelection(
+                antiClusterPlacements,
+                antiClusterEquipment.Assignments,
+                HeadlessPolicyScoring.EvaluateDeployment(observation, currentHeroes, antiClusterPlacements)
+                + (connections.Length * 24d)
+                + antiClusterEquipment.EstimatedValue,
+                AppendEquipmentDetail(
+                    $"threats={string.Join(",", profile.Tags)};covered={connections.Length};formation_rule={AntiClusterSpreadPlanner.RuleId};formation_edits={antiClusterEdits};bench_swaps=0",
+                    antiClusterEquipment),
+                antiClusterSignals);
+        }
+
         var heroSets = new List<IReadOnlyList<HeadlessHeroObservation>> { currentHeroes };
         var bench = observation.Roster.Where(value => !currentIds.Contains(value.HeroId)).ToArray();
         foreach (var removed in currentHeroes)

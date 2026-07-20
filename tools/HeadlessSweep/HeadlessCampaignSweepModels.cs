@@ -61,7 +61,20 @@ internal sealed record HeadlessCampaignFlankSurvival(
 
 internal sealed record HeadlessCampaignBattleOutcome(
     BattleResult Result,
-    HeadlessCampaignFlankSurvival FlankSurvival);
+    HeadlessCampaignFlankSurvival FlankSurvival,
+    HeadlessCampaignAoeSurvival AntiClusterAoeSurvival);
+
+internal sealed record HeadlessCampaignAoeSurvival(
+    int BossAoeCastCount,
+    int AoeCatchCount,
+    int ShooterAoeCatchCount,
+    int ShooterCount,
+    int SurvivingShooterCount)
+{
+    public double ShooterSurvivalRate => ShooterCount == 0
+        ? 0d
+        : SurvivingShooterCount / (double)ShooterCount;
+}
 
 internal sealed record HeadlessCampaignNodeObservation(
     CampaignNodeIdentity Identity,
@@ -69,7 +82,8 @@ internal sealed record HeadlessCampaignNodeObservation(
     bool AnswerTagPresent,
     string FormationHash,
     bool GearCounterUsed,
-    HeadlessCampaignFlankSurvival FlankSurvival);
+    HeadlessCampaignFlankSurvival FlankSurvival,
+    HeadlessCampaignAoeSurvival AntiClusterAoeSurvival);
 
 internal sealed record HeadlessCampaignSiteObservation(
     CampaignSiteIdentity Identity,
@@ -104,9 +118,11 @@ internal sealed record HeadlessCampaignArmCount(
     string ArmId,
     string PolicyId,
     int Samples,
-    int Wins)
+    int Wins,
+    int AnswerTaggedWins)
 {
     public double WinRate => Samples == 0 ? 0d : Wins / (double)Samples;
+    public double? AnswerTagGivenWinRate => Wins == 0 ? null : AnswerTaggedWins / (double)Wins;
 }
 
 internal sealed record HeadlessCampaignSquadBand(
@@ -140,7 +156,8 @@ internal sealed record HeadlessCampaignCellNodeResult(
     bool Won,
     string FormationHash,
     bool GearCounterUsed,
-    HeadlessCampaignFlankSurvival FlankSurvival);
+    HeadlessCampaignFlankSurvival FlankSurvival,
+    HeadlessCampaignAoeSurvival AntiClusterAoeSurvival);
 
 internal sealed record HeadlessCampaignSurvivalArmCount(
     string ArmId,
@@ -164,6 +181,32 @@ internal sealed record HeadlessCampaignSurvivalBand(
     HeadlessCampaignSurvivalArmCount Naive,
     HeadlessCampaignSurvivalArmCount Informed,
     IReadOnlyList<HeadlessCampaignSquadSurvivalBand> ByReferenceSquad);
+
+internal sealed record HeadlessCampaignAoeArmCount(
+    string ArmId,
+    string PolicyId,
+    int Samples,
+    int BossAoeCasts,
+    int AoeCatches,
+    int ShooterAoeCatches,
+    int Shooters,
+    int SurvivingShooters)
+{
+    public double MeanAoeCatches => Samples == 0 ? 0d : AoeCatches / (double)Samples;
+    public double MeanShooterAoeCatches => Samples == 0 ? 0d : ShooterAoeCatches / (double)Samples;
+    public double ShooterSurvivalRate => Shooters == 0 ? 0d : SurvivingShooters / (double)Shooters;
+}
+
+internal sealed record HeadlessCampaignSquadAoeBand(
+    string SquadId,
+    HeadlessCampaignAoeArmCount Naive,
+    HeadlessCampaignAoeArmCount Informed);
+
+internal sealed record HeadlessCampaignAoeBand(
+    string EncounterId,
+    HeadlessCampaignAoeArmCount Naive,
+    HeadlessCampaignAoeArmCount Informed,
+    IReadOnlyList<HeadlessCampaignSquadAoeBand> ByReferenceSquad);
 
 internal sealed record HeadlessCampaignCellResult(
     int CellIndex,
@@ -199,4 +242,5 @@ internal sealed record HeadlessCampaignSweepReport(
     HeadlessCampaignCanonicalResult Result,
     HeadlessCampaignNodeBand TargetBoss,
     HeadlessCampaignSurvivalBand TargetBossSurvival,
+    HeadlessCampaignAoeBand TargetBossAoeSurvival,
     HeadlessCampaignVerification Verification);

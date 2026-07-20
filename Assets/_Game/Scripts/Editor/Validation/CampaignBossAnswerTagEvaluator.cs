@@ -9,6 +9,7 @@ namespace SM.Editor.Validation;
 /// <summary>BossLearningSpec이 참조하는 formation/build 답 어휘.</summary>
 public static class CampaignBossAnswerTag
 {
+    public const string AnticlusterSpread = "anticluster_spread";
     public const string BacklineGuardAnchor = "backline_guard_anchor";
     public const string DurableBackCornerBait = "durable_back_corner_bait";
     public const string MarkFocusBurst = "mark_focus_burst";
@@ -35,6 +36,7 @@ public static class CampaignBossAnswerTagEvaluator
         return learningSpec.AnswerTags
             .Where(tag => tag switch
             {
+                CampaignBossAnswerTag.AnticlusterSpread => HasAnticlusterSpread(allies),
                 CampaignBossAnswerTag.BacklineGuardAnchor => HasBacklineGuardAnchor(allies),
                 CampaignBossAnswerTag.DurableBackCornerBait => HasDurableBackCornerBait(allies),
                 CampaignBossAnswerTag.MarkFocusBurst => HasMarkFocusBurst(allies),
@@ -81,6 +83,43 @@ public static class CampaignBossAnswerTagEvaluator
             && (unit.Skills ?? Array.Empty<BattleSkillSpec>()).Any(skill => skill.Kind == SkillKind.Strike));
         return hasAppliedMark && focusBurstCount >= 2;
     }
+
+    private static bool HasAnticlusterSpread(IReadOnlyList<BattleUnitLoadout> allies)
+    {
+        const int telegraphRadiusSquared = 185 * 185;
+        var shooterAnchors = allies
+            .Where(unit => string.Equals(unit.ClassId, "ranger", StringComparison.Ordinal)
+                           && (unit.Skills ?? Array.Empty<BattleSkillSpec>()).Any(skill =>
+                               skill.Kind == SkillKind.Strike
+                               && (skill.Range >= 2.5f
+                                   || skill.Delivery is SkillDelivery.Ranged or SkillDelivery.Projectile)))
+            .Select(unit => unit.PreferredAnchor)
+            .ToArray();
+        if (shooterAnchors.Length < 2)
+        {
+            return false;
+        }
+
+        var maximumCatch = shooterAnchors.Max(center => shooterAnchors.Count(anchor =>
+        {
+            var (centerX, centerY) = AnchorPosition(center);
+            var (anchorX, anchorY) = AnchorPosition(anchor);
+            var deltaX = centerX - anchorX;
+            var deltaY = centerY - anchorY;
+            return (deltaX * deltaX) + (deltaY * deltaY) <= telegraphRadiusSquared;
+        }));
+        return maximumCatch == 1;
+    }
+
+    private static (int X, int Y) AnchorPosition(DeploymentAnchorId anchor)
+        => (
+            anchor.IsFrontRow() ? 280 : 490,
+            anchor switch
+            {
+                DeploymentAnchorId.FrontTop or DeploymentAnchorId.BackTop => 180,
+                DeploymentAnchorId.FrontCenter or DeploymentAnchorId.BackCenter => 0,
+                _ => -180,
+            });
 
     private static bool HasLegacyAnswer(BattleLoadoutSnapshot snapshot)
     {

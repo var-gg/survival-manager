@@ -7,6 +7,7 @@ namespace SM.HeadlessPolicies;
 
 public static class EnemyThreatTag
 {
+    public const string AntiClusterAoe = "anti_cluster_aoe";
     public const string BacklineDive = "backline_dive";
     public const string BacklineFirepower = "backline_firepower";
     public const string SustainEngine = "sustain_engine";
@@ -146,6 +147,14 @@ public static class EnemyThreatProfileParser
                 StringComparison.Ordinal))
         {
             findings.Add(Finding(EnemyThreatTag.BacklineDive, divers));
+        }
+
+        if (string.Equals(
+                observation.BossUtilityTag,
+                "boss_utility_anticluster_bombardment",
+                StringComparison.Ordinal))
+        {
+            findings.Add(AggregateFinding(EnemyThreatTag.AntiClusterAoe));
         }
 
         var sustain = observation.Units.Where(IsSustainSource).ToArray();
