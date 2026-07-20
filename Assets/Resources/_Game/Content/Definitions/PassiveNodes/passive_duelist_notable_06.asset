@@ -18,21 +18,22 @@ MonoBehaviour:
   DescriptionKey: content.passive_node.passive_duelist_notable_06.desc
   NodeKind: 1
   PrerequisiteNodeIds:
-  - passive_duelist_small_13
+  - passive_duelist_small_11
   MutualExclusionTags: []
-  BoardDepth: 4
+  BoardDepth: 5
   CompileTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
-  RuleModifierTags: []
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  RuleModifierTags:
+  - {fileID: 11400000, guid: 60c4fe9833aaaed4e9bab78f2e51ac9a, type: 2}
   Modifiers:
-  - StatId: phys_power
+  - StatId: protect_radius
     Op: 0
-    Value: 0.8
-  - StatId: crit_multiplier
-    Op: 0
-    Value: 0.08
+    Value: 0.6
+  - StatId: max_health
+    Op: 1
+    Value: 0.05
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
+  m_Name: skill_sunder_rhythm
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.SkillDefinitionAsset
+  Id: skill_sunder_rhythm
+  NameKey: content.skill.skill_sunder_rhythm.name
+  DescriptionKey: content.skill.skill_sunder_rhythm.desc
+  TemplateType: 11
+  Kind: 3
+  SlotKind: 3
+  DamageType: 0
+  Delivery: 0
+  TargetRule: 2
+  Power: 0
+  Range: 0
+  RangeMin: 0
+  RangeMax: -1
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
+  AreaEffectFamily: 0
+  PunishCluster: 0
+  DisplacementKind: 0
+  DisplacementDistance: 0
+  PowerFlat: 0
+  PhysCoeff: 0
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 0
+  ActivationModel: 0
+  Lane: 0
+  LockRule: 2
+  AuthorityLayer: 1
+  BudgetCard:
+    Domain: 1
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 2
+      BurstDamage: 2
+      Durability: 0
+      Control: 0
+      Mobility: 1
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 3
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  ManaCost: 0
+  ResourceCost: -1
+  BaseCooldownSeconds: 0
+  CooldownSeconds: -1
+  CastWindupSeconds: 0
+  RecoverySeconds: -1
+  PowerBudget: 0
+  InterruptRefundScalar: 0.5
+  AiIntents: 
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId: 
+  IconId: skill_icon_sunder_rhythm
+  VfxHookId: vfx.skill_sunder_rhythm
+  SfxHookId: sfx.skill_sunder_rhythm
+  LearnSource: 2
+  EffectFamilyId: duelist_sunder_rhythm
+  MutuallyExclusiveGroupId: 
+  RecruitNativeTags: []
+  RecruitPlanTags: []
+  RecruitScoutTags: []
+  TargetRuleData:
+    Domain: 2
+    PrimarySelector: 1
+    FallbackPolicy: 2
+    Filters: 5
+    ReevaluateIntervalSeconds: 0.25
+    MinimumCommitSeconds: 0.75
+    MaxAcquireRange: 0
+    PreferredMinTargets: 1
+    ClusterRadius: 2.5
+    LockTargetAtCastStart: 1
+    RetargetLockMode: 3
+  SummonProfile:
+    EntityKind: 1
+    BehaviorKind: 1
+    Eligibility: 24
+    CreditPolicy: 15
+    MaxConcurrentPerSource: 2
+    MaxConcurrentPerOwner: 4
+    DespawnOnOwnerDeath: 1
+    OwnerDeathDespawnDelaySeconds: 1
+    InheritOwnerTarget: 1
+    IsPersistent: 1
+    Inheritance:
+      OffenseBonusScalar: 0.5
+      DefenseBonusScalar: 0.35
+      UtilityBonusScalar: 0.25
+      InheritCritChance: 0
+      InheritDodge: 0
+      InheritBlock: 0
+  Effects: []
+  CompileTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  - {fileID: 11400000, guid: cdb217deb42ffb342806a4bb87db46f3, type: 2}
+  RuleModifierTags: []
+  SupportAllowedTags:
+  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  SupportBlockedTags:
+  - {fileID: 11400000, guid: 56f2ffc08c9f8014fa4d63021ffd878d, type: 2}
+  - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
+  - {fileID: 11400000, guid: 21302356fb3b0f144838934d6387e5a4, type: 2}
+  RequiredWeaponTags:
+  - {fileID: 11400000, guid: 6579675f3d02790408543c39e489282b, type: 2}
+  RequiredClassTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  AppliedStatuses: []
+  CleanseProfileId: 
+  TriggeredEffects: []
+  SupportModifier:
+    PowerMultiplier: 1
+    CooldownMultiplier: 1
+    CastWindupMultiplier: 1
+    RangeBonus: 0
+    StatusDurationMultiplier: 1
+    ForceCanCrit: 0
+    AddedStatuses:
+    - Id: skill_sunder_rhythm:sunder
+      StatusId: sunder
+      DurationSeconds: 3.5
+      Magnitude: 0.06
+      MaxStacks: 3
+      RefreshDurationOnReapply: 1
+      StackCap: 3
+      StackPolicy: 0
+      RefreshPolicy: 0
+      ProcAttributionPolicy: 0
+      OwnershipPolicy: 0
+      Effects: []
+    GrantCleanseProfileId: 
+    OwnerModifiers: []
+  legacyDisplayName: 

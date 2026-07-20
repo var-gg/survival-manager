@@ -762,6 +762,25 @@ MonoBehaviour:
       \uC9E7\uC740 unstoppable \uD30C\uB3D9\uB3C4 \uBD80\uC5EC\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 40752930520109056
+    m_Localized: "\uD30C\uC1C4 \uB9AC\uB4EC"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930545274880
+    m_Localized: "\uADFC\uC811 \uD0C0\uACA9\uC774 \uBC29\uC5B4\uB97C 6%\uC529 \uD30C\uC1C4\uD558\uBA70
+      3\uD68C\uAE4C\uC9C0 \uC911\uCCA9\uB418\uACE0 \uC7AC\uD0C0\uACA9 \uC2DC 3.5\uCD08
+      \uC9C0\uC18D\uC2DC\uAC04\uC774 \uAC31\uC2E0\uB429\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930947928064
+    m_Localized: "\uCD5C\uD6C4\uC758 \uBCF4\uB8E8"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930947928065
+    m_Localized: "\uCCB4\uB825\uC774 \uCC98\uC74C 40% \uC774\uD558\uAC00 \uB418\uBA74
+      \uBCF4\uD638\uB9C9 6\uACFC 2.5\uCD08 \uC218\uD638\uB97C \uC5BB\uC2B5\uB2C8\uB2E4."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

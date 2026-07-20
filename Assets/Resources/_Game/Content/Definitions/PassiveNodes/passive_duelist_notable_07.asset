@@ -18,13 +18,14 @@ MonoBehaviour:
   DescriptionKey: content.passive_node.passive_duelist_notable_07.desc
   NodeKind: 1
   PrerequisiteNodeIds:
-  - passive_duelist_small_14
+  - passive_duelist_small_13
   MutualExclusionTags: []
-  BoardDepth: 4
+  BoardDepth: 5
   CompileTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  - {fileID: 11400000, guid: 56f2ffc08c9f8014fa4d63021ffd878d, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   RuleModifierTags: []
   Modifiers:
   - StatId: move_speed
@@ -33,6 +34,9 @@ MonoBehaviour:
   - StatId: attack_windup
     Op: 0
     Value: -0.04
+  - StatId: crit_chance
+    Op: 0
+    Value: 0.02
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

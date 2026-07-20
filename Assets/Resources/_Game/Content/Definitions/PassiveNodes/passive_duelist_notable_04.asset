@@ -18,18 +18,23 @@ MonoBehaviour:
   DescriptionKey: content.passive_node.passive_duelist_notable_04.desc
   NodeKind: 1
   PrerequisiteNodeIds:
-  - passive_duelist_small_11
+  - passive_duelist_small_07
   MutualExclusionTags: []
-  BoardDepth: 4
-  CompileTags: []
+  BoardDepth: 5
+  CompileTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 56f2ffc08c9f8014fa4d63021ffd878d, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   RuleModifierTags: []
   Modifiers:
   - StatId: move_speed
     Op: 0
-    Value: 0.06
-  - StatId: target_switch_delay
+    Value: 0.05
+  - StatId: attack_windup
     Op: 0
-    Value: -0.05
+    Value: -0.04
+  GrantedSkillId: skill_edge_of_sentence
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

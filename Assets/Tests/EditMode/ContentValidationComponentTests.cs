@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Contracts;
@@ -87,6 +88,40 @@ public sealed class ContentValidationComponentTests
 
         Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.range_band"));
         Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.ai_score_hints"));
+    }
+
+    [Test]
+    public void RuleTagSchemaGuard_AcceptsOnlyRuntimeInterpretedBehaviorTags()
+    {
+        var interpretedTag = Own(ScriptableObject.CreateInstance<StableTagDefinition>());
+        interpretedTag.Id = CombatBehaviorTags.DuelistDiveCommit;
+        var issues = new List<ContentValidationIssue>();
+
+        ContentDefinitionSchemaRuleSupport.ValidateRuleTagScaffold(
+            issues,
+            new[] { interpretedTag },
+            "Assets/interpreted_rule_tag.asset",
+            "Probe");
+
+        Assert.That(issues.Select(issue => issue.Code), Does.Not.Contain("rule_tag.scaffold_only"));
+    }
+
+    [Test]
+    public void RuleTagSchemaGuard_StillRejectsUninterpretedBehaviorTags()
+    {
+        var scaffoldTag = Own(ScriptableObject.CreateInstance<StableTagDefinition>());
+        scaffoldTag.Id = "uninterpreted_probe";
+        var issues = new List<ContentValidationIssue>();
+
+        ContentDefinitionSchemaRuleSupport.ValidateRuleTagScaffold(
+            issues,
+            new[] { scaffoldTag },
+            "Assets/uninterpreted_rule_tag.asset",
+            "Probe");
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("rule_tag.scaffold_only"));
+        Assert.That(issues.Single(issue => issue.Code == "rule_tag.scaffold_only").Message,
+            Does.Contain("uninterpreted_probe"));
     }
 
     [Test]

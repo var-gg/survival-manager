@@ -20,23 +20,23 @@ MonoBehaviour:
   PrerequisiteNodeIds:
   - passive_duelist_notable_06
   MutualExclusionTags: []
-  BoardDepth: 5
+  BoardDepth: 6
   CompileTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
-  - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   RuleModifierTags: []
   Modifiers:
-  - StatId: phys_power
+  - StatId: armor
     Op: 0
-    Value: 1.2
-  - StatId: crit_chance
+    Value: 1
+  - StatId: lifesteal
     Op: 0
     Value: 0.02
-  - StatId: target_switch_delay
-    Op: 0
-    Value: -0.06
+  - StatId: move_speed
+    Op: 2
+    Value: -0.05
+  GrantedSkillId: skill_last_bastion
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

@@ -19,7 +19,6 @@ public static class MovementResolver
     private const float BacklineMaxLaneOffset = 1.1f;
     private const float BaseLaneGap = 1.8f;
     private const float BaseRowGap = 2.1f;
-    private const string PackPursuitBehaviorTag = "pack_pursuit";
     private const int PackPursuitTimeoutStep = 64;
     private const float PackPursuitDiveMaxForwardDepth = 5.0f;
     private const float PackPursuitDiveMaxPathDistance = 5.5f;
@@ -710,7 +709,7 @@ public static class MovementResolver
             || actor.Anchor.LaneIndex() == 0
             || (context.Posture != TeamPostureType.AllInBackline
                 && context.Posture != TeamPostureType.CollapseWeakSide)
-            || !HasPackPursuitBehaviorTag(actor))
+            || !actor.HasBehaviorTag(CombatBehaviorTags.PackPursuit))
         {
             return false;
         }
@@ -744,14 +743,6 @@ public static class MovementResolver
             : actor.Position.X - candidate.Position.X;
         return forwardDepth > PackPursuitDiveMaxForwardDepth
                || actor.Position.DistanceTo(candidate.Position) > PackPursuitDiveMaxPathDistance;
-    }
-
-    private static bool HasPackPursuitBehaviorTag(UnitSnapshot actor)
-    {
-        return (actor.Definition.RulePackages ?? Array.Empty<CombatRuleModifierPackage>())
-            .SelectMany(package => package.Modifiers ?? Array.Empty<RuleModifier>())
-            .Any(modifier => modifier.Kind == RuleModifierKind.BehaviorTag
-                             && string.Equals(modifier.Value, PackPursuitBehaviorTag, StringComparison.Ordinal));
     }
 
     private static CombatVector2 ResolveBestZoneCandidate(

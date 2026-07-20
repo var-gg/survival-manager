@@ -299,7 +299,7 @@ public sealed class LoadoutCompiler
                 "role_instruction",
                 BuildRoleInstructionDetails(roleInstruction)));
 
-            var roleVariant = ResolveRoleVariant(archetype, roleInstruction);
+            var roleVariant = ResolveRoleVariant(archetype, roleInstruction, artifacts.RulePackages);
             artifacts.CompileTags.Add($"role_variant:{roleVariant}");
             var dominantHand = ResolveDominantHand(hero, archetype, content);
             artifacts.CompileTags.Add($"dominant_hand:{dominantHand}");
@@ -1000,7 +1000,8 @@ public sealed class LoadoutCompiler
 
     private static RoleVariantTag ResolveRoleVariant(
         CombatArchetypeTemplate archetype,
-        SlotRoleInstruction roleInstruction)
+        SlotRoleInstruction roleInstruction,
+        IReadOnlyList<CombatRuleModifierPackage> rulePackages)
     {
         var isFrontRow = roleInstruction.Anchor.IsFrontRow();
         var hasHeal = archetype.Skills.Any(skill => skill.HealCoeff > 0f);
@@ -1008,6 +1009,26 @@ public sealed class LoadoutCompiler
             skill.Kind is SkillKind.Debuff or SkillKind.Utility);
         var hasSummon = archetype.Skills.Any(skill => skill.SummonProfile != null);
         var rangeDiscipline = archetype.Behavior?.RangeDiscipline ?? RangeDiscipline.HoldBand;
+
+        if (archetype.ClassId == "duelist")
+        {
+            // Build identity is a pure function of the assembled tag set. Precedence is explicit so passive
+            // selection order cannot change the derived role variant.
+            if (CombatBehaviorTags.Contains(rulePackages, CombatBehaviorTags.DuelistHoldBruiser))
+            {
+                return RoleVariantTag.Peeler;
+            }
+
+            if (CombatBehaviorTags.Contains(rulePackages, CombatBehaviorTags.ExecuteLowHp))
+            {
+                return RoleVariantTag.Executioner;
+            }
+
+            if (CombatBehaviorTags.Contains(rulePackages, CombatBehaviorTags.DuelistDiveCommit))
+            {
+                return RoleVariantTag.Diver;
+            }
+        }
 
         return archetype.ClassId switch
         {

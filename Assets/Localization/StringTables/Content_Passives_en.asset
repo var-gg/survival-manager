@@ -174,149 +174,155 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 168053210865664
-    m_Localized: duelist small 01
+    m_Localized: Honed Edge
     m_Metadata:
       m_Items: []
   - m_Id: 168053210865665
-    m_Localized: Adjust phys_power.
+    m_Localized: Invest in physical output first to strengthen early strikes.
     m_Metadata:
       m_Items: []
   - m_Id: 168053772902400
-    m_Localized: duelist small 02
+    m_Localized: Light Wrist
     m_Metadata:
       m_Items: []
   - m_Id: 168053772902401
-    m_Localized: Adjust attack_speed.
+    m_Localized: Invest in attack speed first to strengthen early tempo.
     m_Metadata:
       m_Items: []
   - m_Id: 168054301384704
-    m_Localized: duelist small 03
+    m_Localized: Blood Habit
     m_Metadata:
       m_Items: []
   - m_Id: 168054301384705
-    m_Localized: Adjust crit_chance.
+    m_Localized: Gain lifesteal and open the sustain path toward Shield Oath.
     m_Metadata:
       m_Items: []
   - m_Id: 168054863421440
-    m_Localized: duelist small 04
+    m_Localized: Stride
     m_Metadata:
       m_Items: []
   - m_Id: 168054863421441
-    m_Localized: Adjust lifesteal.
+    m_Localized: Gain movement speed and open the approach path toward Hunt Begins.
     m_Metadata:
       m_Items: []
   - m_Id: 168055442235392
-    m_Localized: duelist small 05
+    m_Localized: Rush
     m_Metadata:
       m_Items: []
   - m_Id: 168055442235393
-    m_Localized: Adjust phys_pen.
+    m_Localized: Reach the backline sooner and improve the chance to arrive before
+      dangerous skills land.
     m_Metadata:
       m_Items: []
   - m_Id: 168056067186688
-    m_Localized: duelist small 06
+    m_Localized: Vital Sense
     m_Metadata:
       m_Items: []
   - m_Id: 168056067186689
-    m_Localized: Adjust move_speed.
+    m_Localized: Raise critical chance after arrival to strengthen dive damage.
     m_Metadata:
       m_Items: []
   - m_Id: 168056759246848
-    m_Localized: duelist small 07
+    m_Localized: Unhesitating Blade
     m_Metadata:
       m_Items: []
   - m_Id: 168056759246849
-    m_Localized: Adjust phys_power.
+    m_Localized: Shorten attack windup to seek one more hit during the dive commitment.
     m_Metadata:
       m_Items: []
   - m_Id: 168057388392448
-    m_Localized: duelist small 08
+    m_Localized: Killing Angle
     m_Metadata:
       m_Items: []
   - m_Id: 168057388392449
-    m_Localized: Adjust attack_speed.
+    m_Localized: Raise critical multiplier and open the peak-damage path to Execution
+      Sentence.
     m_Metadata:
       m_Items: []
   - m_Id: 168058084646912
-    m_Localized: duelist small 09
+    m_Localized: Thick Hide
     m_Metadata:
       m_Items: []
   - m_Id: 168058084646913
-    m_Localized: Adjust crit_chance.
+    m_Localized: Increase base health and open the bruiser path against burst damage.
     m_Metadata:
       m_Items: []
   - m_Id: 168058797678592
-    m_Localized: duelist small 10
+    m_Localized: Blood Absorption
     m_Metadata:
       m_Items: []
   - m_Id: 168058797678593
-    m_Localized: Adjust lifesteal.
+    m_Localized: Increase lifesteal and open the bruiser path for long fights.
     m_Metadata:
       m_Items: []
   - m_Id: 168059519098880
-    m_Localized: duelist small 11
+    m_Localized: Steel Shoulder
     m_Metadata:
       m_Items: []
   - m_Id: 168059519098881
-    m_Localized: Adjust phys_pen.
+    m_Localized: Increase armor to strengthen the choice against physical attackers.
     m_Metadata:
       m_Items: []
   - m_Id: 168060173410304
-    m_Localized: duelist small 12
+    m_Localized: Piercing Blow
     m_Metadata:
       m_Items: []
   - m_Id: 168060173410305
-    m_Localized: Adjust move_speed.
+    m_Localized: Gain physical penetration to reward staying on durable targets.
     m_Metadata:
       m_Items: []
   - m_Id: 168060748029952
-    m_Localized: Shard Memory
+    m_Localized: Hunt Begins
     m_Metadata:
       m_Items: []
   - m_Id: 168060748029953
-    m_Localized: Improves physical output and attack speed. On kill, remaining enemies
-      are exposed for 2.5 seconds.
+    m_Localized: Dive toward enemy backliners even under Standard Advance. Trade
+      health and sustain caps for critical chance.
     m_Metadata:
       m_Items: []
   - m_Id: 168061335232512
-    m_Localized: Edge of the Sentence
+    m_Localized: Shield Oath
     m_Metadata:
       m_Items: []
   - m_Id: 168061335232513
-    m_Localized: Improves critical chance and lifesteal. On kill, gain 20 energy.
+    m_Localized: Never dive in any posture and hold the frontline. Trade critical
+      peaks and movement speed for health and armor.
     m_Metadata:
       m_Items: []
   - m_Id: 168061972766720
-    m_Localized: duelist notable 03
+    m_Localized: Execution Sentence
     m_Metadata:
       m_Items: []
   - m_Id: 168061972766721
-    m_Localized: duelist notable node.
+    m_Localized: Prioritize targets at 35% health or lower and deal 25% more damage
+      to them. Also raise critical multiplier.
     m_Metadata:
       m_Items: []
   - m_Id: 168062572552192
-    m_Localized: duelist notable 04
+    m_Localized: Shadow Step
     m_Metadata:
       m_Items: []
   - m_Id: 168062572552193
-    m_Localized: duelist notable node.
+    m_Localized: Kills restore 20 energy to accelerate the next signature. Movement
+      and attack windup also improve.
     m_Metadata:
       m_Items: []
   - m_Id: 168063159754752
-    m_Localized: Bloodless Form
+    m_Localized: Sunder Rhythm
     m_Metadata:
       m_Items: []
   - m_Id: 168063159754753
-    m_Localized: Improves physical output and critical chance. On kill, take reduced
-      damage for 2.5 seconds.
+    m_Localized: Melee core strikes stack defense shred up to three times, rewarding
+      focus on durable targets.
     m_Metadata:
       m_Items: []
   - m_Id: 168063767928832
-    m_Localized: duelist keystone
+    m_Localized: Isolation Sentence
     m_Metadata:
       m_Items: []
   - m_Id: 168063767928833
-    m_Localized: duelist keystone node.
+    m_Localized: Hold a dive target for 2.5 seconds. Kills expose nearby enemies,
+      but maximum health falls further.
     m_Metadata:
       m_Items: []
   - m_Id: 168064380297216
@@ -686,51 +692,55 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7050088995086336
-    m_Localized: Killing Angle
+    m_Localized: Fixed Gaze
     m_Metadata:
       m_Items: []
   - m_Id: 7050088995086337
-    m_Localized: Slightly improves critical multiplier.
+    m_Localized: Switch targets faster after the first kill to prepare a kill chain.
     m_Metadata:
       m_Items: []
   - m_Id: 7050090198851584
-    m_Localized: Quick Pivot
+    m_Localized: Steadfast Core
     m_Metadata:
       m_Items: []
   - m_Id: 7050090198851585
-    m_Localized: Reduces target switch delay.
+    m_Localized: Raise tenacity to open a counter-pick against control-heavy enemies.
     m_Metadata:
       m_Items: []
   - m_Id: 7050091364868096
-    m_Localized: Execution Stance
+    m_Localized: Spacing Control
     m_Metadata:
       m_Items: []
   - m_Id: 7050091364868097
-    m_Localized: Improves physical output and critical multiplier.
+    m_Localized: Intercept enemy divers threatening the backline within 3 meters.
+      Health and protect radius also increase.
     m_Metadata:
       m_Items: []
   - m_Id: 7050094317658112
-    m_Localized: Relentless Chase
+    m_Localized: Pursuit Instinct
     m_Metadata:
       m_Items: []
   - m_Id: 7050094317658113
-    m_Localized: Improves movement and attack windup.
+    m_Localized: Improve movement and attack windup without a long target lock to
+      form a flexible assassin path.
     m_Metadata:
       m_Items: []
   - m_Id: 7050095680806912
-    m_Localized: Blood Opening
+    m_Localized: Price of Blood
     m_Metadata:
       m_Items: []
   - m_Id: 7050095680806913
-    m_Localized: Improves lifesteal and penetration.
+    m_Localized: Gain Guarded for 2.5 seconds on kill, becoming tougher as you secure
+      kills in a brawl.
     m_Metadata:
       m_Items: []
   - m_Id: 7050096762937344
-    m_Localized: Pale Finale
+    m_Localized: Last Bastion
     m_Metadata:
       m_Items: []
   - m_Id: 7050096762937345
-    m_Localized: Greatly improves execution burst.
+    m_Localized: The first time health reaches 40% or lower, gain a 6 barrier and
+      Guarded for 2.5 seconds. Sacrifice more movement speed.
     m_Metadata:
       m_Items: []
   - m_Id: 7050098428076032

@@ -23,6 +23,9 @@ public static class HitResolutionService
 
     /// <summary>Maximum fraction of damage that block mitigation can absorb.</summary>
     private const float MaxBlockMitigationFraction = 0.9f;
+    private const int HealthPercentScale = 100;
+    private const int ExecuteTargetHealthPercent = 35;
+    private const int ExecuteDamageMultiplierPercent = 125;
 
     public static HitResolutionResult ResolveBasicAttack(BattleState state, UnitSnapshot actor, UnitSnapshot target)
     {
@@ -91,6 +94,16 @@ public static class HitResolutionService
             : Fixed32.One;
         powerHp *= critMultiplier;
 
+        // Execute is evaluated from the target's authoritative pre-hit HP snapshot and joins immediately after
+        // crit. The 1.25 multiplier is constructed in integer Q16.16 space; no new float branch or RNG is added.
+        var executeApplied = actor.HasBehaviorTag(CombatBehaviorTags.ExecuteLowHp)
+                             && target.IsHealthRatioAtOrBelow(ExecuteTargetHealthPercent, HealthPercentScale);
+        if (executeApplied)
+        {
+            powerHp *= Fixed32.FromRaw(
+                Fixed32.OneRaw * ExecuteDamageMultiplierPercent / HealthPercentScale);
+        }
+
         var blocked = target.CanAttemptBlock && ChanceHits(state, actor, target, $"{actionType}:block", target.Behavior.BlockChance);
         if (blocked)
         {
@@ -112,10 +125,17 @@ public static class HitResolutionService
         state.ActivityTelemetry.RecordFocusDamageContribution((resolved - baseResolved).ToFloat());
 
         // P0 positional consequence — 위치가 결과를 바꾸는 항. 판정 진실은 BattleFormationConsequence,
-        // 곱셈 체인 합류(crit→block→mitigation→incoming→focus→screen→flank)와 1 HP floor는 여기가 소유.
-        var note = blocked
-            ? critical ? "crit+block" : "block"
-            : critical ? "crit" : string.Empty;
+        // 곱셈 체인 합류(crit→execute→block→mitigation→incoming→focus→screen→flank)와 1 HP floor는 여기가 소유.
+        var note = critical ? "crit" : string.Empty;
+        if (executeApplied)
+        {
+            note = ComposeNoteToken(note, "execute");
+        }
+
+        if (blocked)
+        {
+            note = ComposeNoteToken(note, "block");
+        }
         var screenMitigation = BattleFormationConsequence.ResolveScreenMitigation(state, actor, target, out var screeningUnit);
         if (screenMitigation > 0f)
         {

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-21
+- 최종수정일: 2026-07-21
 - 소스오브트루스: `docs/03_architecture/sim-sweep-and-balance-kpis.md`
 - 관련문서:
   - `docs/03_architecture/loadout-compiler-and-battle-snapshot.md`
@@ -38,6 +38,27 @@
   - `Logs/loop-d-balance/prune_ledger_v1.json`
   - `Logs/loop-d-balance/readability_watchlist.json`
   - `Logs/loop-d-balance/first_playable_slice.md`
+
+## Duelist 양대 빌드 게이트
+
+- runner: `tools/HeadlessSweep/BalanceFrameworkGateRunner.cs`
+- 전용 셀: `tools/HeadlessSweep/DuelistBuildBalanceGate.cs`
+- 실행:
+  - `dotnet run --project tools/HeadlessSweep/HeadlessSweep.csproj -- balance-framework --samples 32 --output Temp/HeadlessSweep/duelist-build-balance.json`
+- 입력: export된 `Assets/Resources/_Game/Content/content-snapshot.json`
+- 표본: 셀마다 seed `54000..54031`의 32회 paired 비교
+- 보스군:
+  - 후열 중심: `guardian / hunter / marksman / priest`
+  - 2탱커: `guardian / bulwark / raider / priest`
+- informed 대표 루트:
+  - 후열 중심: `dive_isolation` 대 `bruiser_bastion`
+  - 2탱커: `dive_execution` 대 `bruiser_sunder`
+- 판정:
+  - 양 빌드의 보스군 등가중 승률 `48% ~ 53%`
+  - 양 빌드 승률 차이 `5%p` 이하
+  - 각 전문 매치업의 적합 빌드 우위 `8%p ~ 15%p`
+  - 다이브 6초 생존율 `45% ~ 55%`, 브루저 10초 생존율 `65% ~ 75%`
+- `duelist_builds.in_band`는 위 조건의 합성 판정이다. 밸런스 이탈은 관측값을 보존한 review 신호이며, 러너는 실행·직렬화 실패만 비정상 종료로 처리한다.
 
 ## deterministic input 계약
 

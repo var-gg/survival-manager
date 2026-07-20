@@ -271,6 +271,30 @@ MonoBehaviour:
     m_Key: content.tag.wildcard_risk.name
     m_Metadata:
       m_Items: []
+  - m_Id: 40752918943830016
+    m_Key: content.tag.duelist_dive_commit.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752919405203456
+    m_Key: content.tag.duelist_hold_bruiser.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752919828828160
+    m_Key: content.tag.duelist_peel.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752920244064256
+    m_Key: content.tag.execute_low_hp.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752920663494656
+    m_Key: content.tag.dive_assassin_keystone.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752921087119360
+    m_Key: content.tag.tag_duelist_build_gate.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -719,6 +719,22 @@ MonoBehaviour:
     m_Key: content.skill.support_resonance_cleanse.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 40752930520109056
+    m_Key: content.skill.skill_sunder_rhythm.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930545274880
+    m_Key: content.skill.skill_sunder_rhythm.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930947928064
+    m_Key: content.skill.skill_last_bastion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930947928065
+    m_Key: content.skill.skill_last_bastion.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -142,6 +142,7 @@ internal static class BalanceFrameworkGateRunner
 
             var crit = BuildCritDump(content);
             var peak = BuildPeakReport(raw, crit);
+            var duelistBuilds = DuelistBuildBalanceGate.Run(content);
             var report = new
             {
                 schema = "balance-framework-gate-v1",
@@ -180,6 +181,7 @@ internal static class BalanceFrameworkGateRunner
                     ratio_in_band = ratio is >= 0.92f and <= 0.98f,
                 },
                 peak,
+                duelist_builds = DuelistBuildBalanceGate.BuildReport(duelistBuilds),
             };
 
             var json = JsonConvert.SerializeObject(report, Formatting.Indented);

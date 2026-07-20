@@ -18,21 +18,24 @@ MonoBehaviour:
   DescriptionKey: content.passive_node.passive_duelist_keystone_01.desc
   NodeKind: 2
   PrerequisiteNodeIds:
-  - passive_duelist_notable_05
+  - passive_duelist_notable_04
   MutualExclusionTags: []
-  BoardDepth: 5
-  CompileTags: []
-  RuleModifierTags: []
+  BoardDepth: 6
+  CompileTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: 56f2ffc08c9f8014fa4d63021ffd878d, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
+  RuleModifierTags:
+  - {fileID: 11400000, guid: a502159496c7ace4b8cf2397bed2f4b5, type: 2}
   Modifiers:
-  - StatId: phys_power
+  - StatId: crit_chance
     Op: 0
-    Value: 1.5
-  - StatId: attack_speed
-    Op: 0
-    Value: 0.12
-  - StatId: crit_multiplier
-    Op: 0
-    Value: 0.15
+    Value: 0.02
+  - StatId: max_health
+    Op: 2
+    Value: -0.065
+  GrantedSkillId: skill_shard_memory
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

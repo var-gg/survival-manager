@@ -18,7 +18,7 @@ using UnityEngine.Localization.Tables;
 
 namespace SM.Editor.SeedData;
 
-public static class SampleSeedGenerator
+public static partial class SampleSeedGenerator
 {
     public const string ResourcesRoot = "Assets/Resources/_Game/Content/Definitions";
     public const string LegacyRoot = "Assets/_Game/Content/Definitions";
@@ -68,6 +68,7 @@ public static class SampleSeedGenerator
         CreateItems();
         CreateAffixes();
         CreateSafeTargetPassiveNodes(stableTags);
+        CreateDuelistBuildContent(stableTags);
         PatchGrantedSkillHostNodes();
         PatchLaunchFloorItemsAndSkills(stableTags);
         PatchBalanceFrameworkCore();
@@ -98,6 +99,8 @@ public static class SampleSeedGenerator
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         }
+
+        NormalizeEmptyDuelistGrantedSkillYaml();
 
         Debug.Log($"SM sample content generated under Resources. Root={ResourcesRoot}, Stats={stats.Count}, Races={races.Count}, Classes={classes.Count}, Skills={skills.Count}, Archetypes={patchedArchetypes.Count}, Characters={characters.Count}, ExtraActors={extraActors.Count}");
     }
@@ -1929,16 +1932,6 @@ public static class SampleSeedGenerator
             NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_vanguard_notable_06" }, "불굴의 방패", "Unbroken Shield", "전열 유지력을 크게 높입니다.", "Greatly improves frontline staying power.", new[] { "frontline", "guard", "shield_skill" }, Mods(("armor", 1.2f), ("max_health", 3f), ("tenacity", 0.08f))),
         });
 
-        CreateClassSafeTargetPassiveNodes("duelist", tags, new[]
-        {
-            NodeSeed("small_13", PassiveNodeKindValue.Small, 3, new[] { "passive_duelist_small_10" }, "치명 각도", "Killing Angle", "치명타 배율을 소폭 높입니다.", "Slightly improves critical multiplier.", new[] { "frontline", "strike" }, Mods(("crit_multiplier", 0.08f))),
-            NodeSeed("small_14", PassiveNodeKindValue.Small, 3, new[] { "passive_duelist_small_11" }, "빠른 전환", "Quick Pivot", "대상 전환 지연을 줄입니다.", "Reduces target switch delay.", new[] { "frontline", "physical" }, Mods(("target_switch_delay", -0.04f))),
-            NodeSeed("notable_06", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_small_13" }, "처형 자세", "Execution Stance", "물리 출력과 치명타 배율을 높입니다.", "Improves physical output and critical multiplier.", new[] { "frontline", "execute" }, Mods(("phys_power", 0.8f), ("crit_multiplier", 0.08f))),
-            NodeSeed("notable_07", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_small_14" }, "끊김 없는 추격", "Relentless Chase", "이동과 공격 예열을 개선합니다.", "Improves movement and attack windup.", new[] { "frontline", "physical" }, Mods(("move_speed", 0.05f), ("attack_windup", -0.04f))),
-            NodeSeed("notable_08", PassiveNodeKindValue.Notable, 4, new[] { "passive_duelist_notable_05" }, "피의 빈틈", "Blood Opening", "흡혈과 관통력을 높입니다.", "Improves lifesteal and penetration.", new[] { "frontline", "execute" }, Mods(("lifesteal", 0.02f), ("phys_pen", 0.6f))),
-            NodeSeed("keystone_02", PassiveNodeKindValue.Keystone, 5, new[] { "passive_duelist_notable_06" }, "창백한 결말", "Pale Finale", "마무리 폭발력을 크게 높입니다.", "Greatly improves execution burst.", new[] { "frontline", "execute", "physical" }, Mods(("phys_power", 1.2f), ("crit_chance", 0.02f), ("target_switch_delay", -0.06f))),
-        });
-
         CreateClassSafeTargetPassiveNodes("ranger", tags, new[]
         {
             NodeSeed("small_13", PassiveNodeKindValue.Small, 3, new[] { "passive_ranger_small_10" }, "긴 호흡", "Long Breath", "공격 사거리를 소폭 늘립니다.", "Slightly increases attack range.", new[] { "backline", "projectile" }, Mods(("attack_range", 0.15f))),
@@ -1962,7 +1955,7 @@ public static class SampleSeedGenerator
 
     private static void PatchGrantedSkillHostNodes()
     {
-        // PoE식 노드 도달 보상(passive-granted-skill.v1) — 유령 패시브 12종의 획득 경로.
+        // PoE식 노드 도달 보상(passive-granted-skill.v1) — 비-duelist 유령 패시브의 획득 경로.
         // 호스트 노드(base notable)는 seed 비생성이라 커밋 YAML이 truth이고, 여기서는
         // grant 지정과 노드 정체성 로컬라이즈(스킬 이름 = 노드 이름)만 수렴시킨다.
         // 스킬 payload(TriggeredEffects/SupportModifier) 저작은 스킬 asset이 단독 truth.
@@ -1977,15 +1970,6 @@ public static class SampleSeedGenerator
             ("passive_vanguard_notable_05", "skill_lattice_bastion", "격자 보루", "Lattice Bastion",
                 "체력과 대상 전환이 개선됩니다. 아군이 쓰러질 때마다 남은 아군 전체가 보호막 12를 얻습니다.",
                 "Improves health and target switching. Whenever an ally falls, surviving allies gain a 12 barrier."),
-            ("passive_duelist_notable_01", "skill_shard_memory", "파편 기억", "Shard Memory",
-                "물리 출력과 공격 속도가 오릅니다. 적을 처치하면 2.5초간 남은 적들의 빈틈이 드러납니다.",
-                "Improves physical output and attack speed. On kill, remaining enemies are exposed for 2.5 seconds."),
-            ("passive_duelist_notable_02", "skill_edge_of_sentence", "선고의 칼끝", "Edge of the Sentence",
-                "치명타와 흡혈이 오릅니다. 적을 처치하면 에너지 20을 얻습니다.",
-                "Improves critical chance and lifesteal. On kill, gain 20 energy."),
-            ("passive_duelist_notable_05", "skill_bloodless_form", "무혈식", "Bloodless Form",
-                "물리 출력과 치명타가 오릅니다. 적을 처치하면 2.5초간 받는 피해가 줄어듭니다.",
-                "Improves physical output and critical chance. On kill, take reduced damage for 2.5 seconds."),
             ("passive_ranger_notable_01", "skill_prism_sight", "프리즘 시야", "Prism Sight",
                 "사거리와 교전 거리가 늘어납니다. 자신의 액티브 스킬이 치명타를 낼 수 있게 되고 사거리가 더 늘어납니다.",
                 "Improves attack range and preferred distance. Your active skills can critically strike and reach farther."),
@@ -2878,6 +2862,12 @@ public static class SampleSeedGenerator
             ("support_siphon", "Siphon", "흡수"),
             ("support_anchored", "Anchored", "고정"),
             ("support_hunter_mark", "Hunter Mark", "사냥 표식"),
+            ("duelist_dive_commit", "Duelist Dive Commit", "결투가 다이브 헌신"),
+            ("duelist_hold_bruiser", "Duelist Hold Bruiser", "결투가 전선 브루저"),
+            ("duelist_peel", "Duelist Peel", "결투가 요격"),
+            ("execute_low_hp", "Low-HP Execute", "빈사 처형"),
+            ("dive_assassin_keystone", "Dive Assassin Keystone", "다이브 암살 키스톤"),
+            ("tag_duelist_build_gate", "Duelist Build Gate", "결투가 빌드 게이트"),
         };
 
         return definitions.ToDictionary(tuple => tuple.id, tuple => CreateAsset<StableTagDefinition>($"{ResourcesRoot}/StableTags/tag_{tuple.id}.asset", asset =>

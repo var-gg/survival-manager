@@ -274,6 +274,30 @@ MonoBehaviour:
     m_Localized: Wildcard Risk
     m_Metadata:
       m_Items: []
+  - m_Id: 40752918943830016
+    m_Localized: Duelist Dive Commit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752919405203456
+    m_Localized: Duelist Hold Bruiser
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752919828828160
+    m_Localized: Duelist Peel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752920244064256
+    m_Localized: Low-HP Execute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752920663494656
+    m_Localized: Dive Assassin Keystone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752921087119360
+    m_Localized: Duelist Build Gate
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

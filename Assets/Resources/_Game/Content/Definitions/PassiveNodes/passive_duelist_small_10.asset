@@ -18,15 +18,18 @@ MonoBehaviour:
   DescriptionKey: content.passive_node.passive_duelist_small_10.desc
   NodeKind: 0
   PrerequisiteNodeIds:
-  - passive_duelist_small_07
+  - passive_duelist_notable_02
   MutualExclusionTags: []
   BoardDepth: 3
-  CompileTags: []
+  CompileTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
   RuleModifierTags: []
   Modifiers:
   - StatId: lifesteal
     Op: 0
-    Value: 0.02
+    Value: 0.04
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

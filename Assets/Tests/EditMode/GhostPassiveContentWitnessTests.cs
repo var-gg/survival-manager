@@ -15,29 +15,31 @@ using SM.Unity;
 namespace SM.Tests.EditMode;
 
 /// <summary>
-/// 유령 패시브 12종의 획득 경로(PoE식 패시브 보드 도달 보상, passive-granted-skill.v1) 실 콘텐츠 witness.
-/// 과거 이 12종은 payload 전무 + 획득 경로 0의 이중 유령이었다 — 여기서는 실 committed asset 쌍으로
-/// (a) 호스트 노드 grant 지정, (b) 부여 스킬의 sim-effective payload, (c) 5노드 예산 내 합법 도달,
+/// 유령 패시브 획득 경로(PoE식 패시브 보드 도달 보상, passive-granted-skill.v1) 실 콘텐츠 witness.
+/// 과거 이 스킬들은 payload 전무 + 획득 경로 0의 이중 유령이었다 — 여기서는 실 committed asset 쌍으로
+/// (a) 호스트 노드 grant 지정, (b) 부여 스킬의 sim-effective payload, (c) 해당 레벨 예산 내 합법 도달,
 /// (d) 컴파일 채널 도달, (e) 실 BattleSimulator 랜딩까지 전 사슬을 단언한다.
 /// 설계 SoT: pindoc analysis-ghost-passive-board-placement-v1.
 /// </summary>
 [Category("BatchOnly")]
 public sealed class GhostPassiveContentWitnessTests
 {
-    private static readonly (string NodeId, string SkillId)[] HostGrants =
+    private static readonly (string NodeId, string SkillId, int MaxBudget)[] HostGrants =
     {
-        ("passive_vanguard_notable_01", "skill_iron_hide_memory"),
-        ("passive_vanguard_notable_02", "skill_sentinel_oath"),
-        ("passive_vanguard_notable_05", "skill_lattice_bastion"),
-        ("passive_duelist_notable_01", "skill_shard_memory"),
-        ("passive_duelist_notable_02", "skill_edge_of_sentence"),
-        ("passive_duelist_notable_05", "skill_bloodless_form"),
-        ("passive_ranger_notable_01", "skill_prism_sight"),
-        ("passive_ranger_notable_02", "skill_quick_kindling"),
-        ("passive_ranger_notable_04", "skill_heat_haze"),
-        ("passive_ranger_notable_05", "skill_glass_pathfinder"),
-        ("passive_mystic_notable_01", "skill_echo_archive"),
-        ("passive_mystic_notable_04", "skill_lattice_listener"),
+        ("passive_vanguard_notable_01", "skill_iron_hide_memory", 5),
+        ("passive_vanguard_notable_02", "skill_sentinel_oath", 5),
+        ("passive_vanguard_notable_05", "skill_lattice_bastion", 5),
+        ("passive_duelist_notable_04", "skill_edge_of_sentence", 8),
+        ("passive_duelist_keystone_01", "skill_shard_memory", 8),
+        ("passive_duelist_notable_05", "skill_sunder_rhythm", 8),
+        ("passive_duelist_notable_08", "skill_bloodless_form", 8),
+        ("passive_duelist_keystone_02", "skill_last_bastion", 8),
+        ("passive_ranger_notable_01", "skill_prism_sight", 5),
+        ("passive_ranger_notable_02", "skill_quick_kindling", 5),
+        ("passive_ranger_notable_04", "skill_heat_haze", 5),
+        ("passive_ranger_notable_05", "skill_glass_pathfinder", 5),
+        ("passive_mystic_notable_01", "skill_echo_archive", 5),
+        ("passive_mystic_notable_04", "skill_lattice_listener", 5),
     };
 
     [SetUp]
@@ -50,7 +52,7 @@ public sealed class GhostPassiveContentWitnessTests
     public void RealHostNodes_CarryGrants_AndGrantedSkillsAreSimEffective()
     {
         var snapshot = new RuntimeCombatContentLookup().Snapshot;
-        foreach (var (nodeId, skillId) in HostGrants)
+        foreach (var (nodeId, skillId, _) in HostGrants)
         {
             Assert.That(snapshot.PassiveNodes.ContainsKey(nodeId), Is.True, $"{nodeId} 노드 존재");
             Assert.That(snapshot.PassiveNodes[nodeId].GrantedSkillId, Is.EqualTo(skillId),
@@ -66,22 +68,22 @@ public sealed class GhostPassiveContentWitnessTests
     }
 
     [Test]
-    public void RealHostNodes_AreReachable_WithinFiveNodeBudget()
+    public void RealHostNodes_AreReachable_WithinAuthoredLevelBudget()
     {
-        // 도달 비용(선행 closure 크기)이 기본 선택 예산(5)을 넘으면 grant는 초반 죽은 콘텐츠다 —
-        // grant 호스트는 레벨 예산 계단과 무관하게 Lv1 기본 예산에서 도달 가능해야 한다(배치 설계 계약).
+        // 도달 비용(선행 closure 크기)이 해당 호스트가 목표로 한 레벨 예산을 넘으면 grant는 죽은 콘텐츠다.
+        // 기존 호스트는 Lv1 예산(5), 심층 duelist 빌드 호스트는 상한 예산(8)을 계약한다.
         var snapshot = new RuntimeCombatContentLookup().Snapshot;
-        foreach (var (nodeId, skillId) in HostGrants)
+        foreach (var (nodeId, skillId, maxBudget) in HostGrants)
         {
             var closure = BuildPrerequisiteClosure(snapshot, nodeId);
-            Assert.That(closure.Count, Is.LessThanOrEqualTo(PassiveBoardSelectionValidator.BaseActiveNodeCount),
-                $"{nodeId}({skillId})의 도달 비용({closure.Count})이 기본 선택 예산({PassiveBoardSelectionValidator.BaseActiveNodeCount})을 넘으면 안 된다");
+            Assert.That(closure.Count, Is.LessThanOrEqualTo(maxBudget),
+                $"{nodeId}({skillId})의 도달 비용({closure.Count})이 저작 선택 예산({maxBudget})을 넘으면 안 된다");
 
             var boardId = snapshot.PassiveNodes[nodeId].BoardId;
             var boardNodes = snapshot.PassiveNodes.Values
                 .Where(node => node.BoardId == boardId)
                 .ToDictionary(node => node.Id, StringComparer.Ordinal);
-            var normalized = PassiveBoardSelectionValidator.Normalize(boardId, closure, boardNodes, PassiveBoardSelectionValidator.BaseActiveNodeCount);
+            var normalized = PassiveBoardSelectionValidator.Normalize(boardId, closure, boardNodes, maxBudget);
             Assert.That(normalized.NormalizedNodeIds, Does.Contain(nodeId),
                 $"{nodeId}의 선행 closure 전체 선택은 합법이어야 한다(선행/예산/키스톤 규칙 통과)");
         }

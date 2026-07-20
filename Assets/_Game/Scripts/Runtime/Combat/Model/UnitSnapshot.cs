@@ -237,6 +237,34 @@ public sealed partial class UnitSnapshot
     public float Defense => Armor;
     public float Speed => AttackSpeed;
     public float HealthRatio => MaxHealth <= 0 ? 0 : CurrentHealth / MaxHealth;
+    public bool HasBehaviorTag(string behaviorTag)
+        => CombatBehaviorTags.Contains(Definition.RulePackages, behaviorTag);
+
+    /// <summary>
+    /// Authoritative HP-ratio comparison using the Q16.16 health snapshot. This avoids using the float
+    /// read-model projection as a behavior discriminator.
+    /// </summary>
+    public bool IsHealthRatioAtOrBelow(int numerator, int denominator)
+    {
+        var maxHealth = Hp64.FromFloatQuantized(MaxHealth);
+        if (denominator <= 0 || numerator < 0 || maxHealth.Raw <= 0)
+        {
+            return false;
+        }
+
+        return _health.Raw * denominator <= maxHealth.Raw * numerator;
+    }
+
+    public bool IsHealthRatioAtOrAbove(int numerator, int denominator)
+    {
+        var maxHealth = Hp64.FromFloatQuantized(MaxHealth);
+        if (denominator <= 0 || numerator < 0 || maxHealth.Raw <= 0)
+        {
+            return false;
+        }
+
+        return _health.Raw * denominator >= maxHealth.Raw * numerator;
+    }
     // 행동 차단 membership은 콘텐츠 kind(BlocksAction)가 파생한 set — "stun" 리터럴 조회의 승격(3보 3e).
     public bool IsStunned => HasAnyStatusOf(_blocksActionStatusIds);
     // 타게팅 표식 membership은 콘텐츠 kind(MarksTarget)가 파생한 set — "marked" 타게팅 조회의 승격(3보 3g).

@@ -18,15 +18,18 @@ MonoBehaviour:
   DescriptionKey: content.passive_node.passive_duelist_small_12.desc
   NodeKind: 0
   PrerequisiteNodeIds:
-  - passive_duelist_small_09
+  - passive_duelist_small_10
   MutualExclusionTags: []
-  BoardDepth: 3
-  CompileTags: []
+  BoardDepth: 4
+  CompileTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: cdb217deb42ffb342806a4bb87db46f3, type: 2}
   RuleModifierTags: []
   Modifiers:
-  - StatId: move_speed
+  - StatId: phys_pen
     Op: 0
-    Value: 0.05
+    Value: 0.7
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

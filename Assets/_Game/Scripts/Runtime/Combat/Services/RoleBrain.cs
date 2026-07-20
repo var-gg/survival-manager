@@ -51,6 +51,13 @@ public static class RoleBrain
     private const float DiveSupportRadius = 4.0f;       // "not alone": allied frontliner nearby
     private const float LaneEngagedBuffer = 0.8f;       // "own front engages enemy front" proxy
     private const float DiveLowHpTargetRatio = 0.45f;   // bonus for a low-HP backline target
+    private const int HealthPercentScale = 100;
+    private const int DuelistDiveCommitMinHealthPercent = 45;
+    private const int DuelistDiveCommitScoreThreshold = 55;
+    private const int DuelistExecuteTargetHealthPercent = 35;
+    private const int DuelistExecuteTargetScoreBonus = 50;
+    private const int DuelistAssassinCommitSteps = 25;
+    private const int DuelistAssassinContinueScoreThreshold = 35;
     // === Phase 2 블랙보드 소비 (마스터 플랜 기본값 — V1 authority 튜닝 노브) ===
     private const int DiveFocusMarkScore = 25;          // "+25 target has FocusMark" — 팀 화력과 다이브가 같은 곳을 본다
     private const float HoldLineDiveLowHpRatio = 0.35f; // HoldLine에서 다이브가 열리는 빈사 문턱
@@ -60,6 +67,7 @@ public static class RoleBrain
     // === Vanguard Peel knobs (conservative defaults — owner-tunable) ===
     private const float PeelThreatBuffer = 0.8f;        // an enemy is "threatening" within enemy.AttackRange + this
     private const float PeelMaxInterceptDistance = 3.5f; // vanguard must be near enough to plausibly intercept
+    private const float DuelistPeelMaxInterceptDistance = 3.0f;
     private const int PeelCommitSteps = 10;             // 1.0s commit
     private const float PeelInterceptAttackRangeFraction = 0.75f; // intercept lies attack-range-close to the threat
 
@@ -172,7 +180,9 @@ public static class RoleBrain
     private static bool TryBuildRoleCriticalIntent(BattleState state, UnitSnapshot actor, out CombatIntent intent)
     {
         // Vanguard Peel: intercept a diver threatening a backline ally — checked every tick.
-        if (actor.Definition.ClassId == "vanguard" && TryBuildPeelIntent(state, actor, out intent))
+        if ((actor.Definition.ClassId == "vanguard"
+             || (actor.Definition.ClassId == "duelist" && actor.HasBehaviorTag(CombatBehaviorTags.DuelistPeel)))
+            && TryBuildPeelIntent(state, actor, out intent))
         {
             return true;
         }
@@ -224,6 +234,10 @@ public static class RoleBrain
     private static bool TryBuildDiveIntent(BattleState state, UnitSnapshot actor, out CombatIntent intent)
     {
         intent = CombatIntent.None;
+        if (actor.HasBehaviorTag(CombatBehaviorTags.DuelistHoldBruiser))
+        {
+            return false;
+        }
 
         // 지속(continuation) 계약: 이미 다이빙 중이면 진입 게이트(support proxy/threat/posture)를 다시 묻지
         // 않는다 — 진입 게이트를 지속 조건으로 재적용하면 전선을 떠나는 순간 갱신이 끊겨 다이브가 1.2초
@@ -236,10 +250,10 @@ public static class RoleBrain
             && LivingUnit(state, diveTargetId) is { } diveTarget)
         {
             var continueScore = ScoreDiveTarget(state, actor, diveTarget);
-            if (continueScore >= DiveContinueScoreThreshold)
+            if (continueScore >= ResolveDiveContinueScoreThreshold(actor))
             {
                 intent = new CombatIntent(CombatIntentType.Dive, diveTarget.Id, null,
-                    MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + DiveCommitSteps, continueScore);
+                    MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), continueScore);
                 return true;
             }
 
@@ -258,7 +272,7 @@ public static class RoleBrain
         }
 
         intent = new CombatIntent(CombatIntentType.Dive, selection.Value.Target.Id, null,
-            MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + DiveCommitSteps, selection.Value.Score);
+            MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), selection.Value.Score);
         return true;
     }
 
@@ -266,6 +280,11 @@ public static class RoleBrain
     // primary diver). Posture-gated to aggressive postures so default StandardAdvance behavior is unchanged.
     private static bool IsDiveEntryEligibleIgnoringSlot(BattleState state, UnitSnapshot actor)
     {
+        if (actor.HasBehaviorTag(CombatBehaviorTags.DuelistHoldBruiser))
+        {
+            return false;
+        }
+
         if (actor.AttackRange > MeleeRangeThreshold)
         {
             return false;
@@ -277,12 +296,16 @@ public static class RoleBrain
         var posture = state.GetPosture(actor.Side);
         if (posture != TeamPostureType.AllInBackline
             && posture != TeamPostureType.CollapseWeakSide
-            && posture != TeamPostureType.HoldLine)
+            && posture != TeamPostureType.HoldLine
+            && !(posture == TeamPostureType.StandardAdvance
+                 && actor.HasBehaviorTag(CombatBehaviorTags.DuelistDiveCommit)))
         {
             return false;
         }
 
-        if (actor.HealthRatio < DiveMinHealthRatio)
+        if (actor.HasBehaviorTag(CombatBehaviorTags.DuelistDiveCommit)
+            ? !actor.IsHealthRatioAtOrAbove(DuelistDiveCommitMinHealthPercent, HealthPercentScale)
+            : actor.HealthRatio < DiveMinHealthRatio)
         {
             return false;
         }
@@ -298,7 +321,9 @@ public static class RoleBrain
         }
 
         return state.GetOpponents(actor.Side)
-            .Any(e => e.IsAlive && IsDiveCandidateUnderPosture(state, actor, e) && ScoreDiveTarget(state, actor, e) >= DiveScoreThreshold);
+            .Any(e => e.IsAlive
+                      && IsDiveCandidateUnderPosture(state, actor, e)
+                      && ScoreDiveTarget(state, actor, e) >= ResolveDiveEntryScoreThreshold(actor));
     }
 
     // The concurrency ceiling is the number of living duelists that are either continuing a Dive or currently pass
@@ -357,7 +382,7 @@ public static class RoleBrain
             var candidates = state.GetOpponents(diver.Side)
                 .Where(enemy => enemy.IsAlive && IsDiveCandidateUnderPosture(state, diver, enemy))
                 .Select(enemy => new { Target = enemy, Score = ScoreDiveTarget(state, diver, enemy) })
-                .Where(candidate => candidate.Score >= DiveScoreThreshold)
+                .Where(candidate => candidate.Score >= ResolveDiveEntryScoreThreshold(diver))
                 .OrderByDescending(candidate => candidate.Score)
                 .ThenBy(candidate => candidate.Target.HealthRatio)
                 .ThenBy(candidate => diver.Position.DistanceTo(candidate.Target.Position))
@@ -385,6 +410,7 @@ public static class RoleBrain
         return state.GetTeam(side)
             .Where(unit => unit.IsAlive
                            && unit.Definition.ClassId == "duelist"
+                           && !unit.HasBehaviorTag(CombatBehaviorTags.DuelistHoldBruiser)
                            && (unit.CurrentCombatIntent.Type == CombatIntentType.Dive
                                || IsDiveEntryEligibleIgnoringSlot(state, unit)))
             .OrderBy(unit => unit.Id.Value, StringComparer.Ordinal)
@@ -408,7 +434,14 @@ public static class RoleBrain
             score += 40;
         }
 
-        if (target.HealthRatio <= DiveLowHpTargetRatio)
+        if (actor.HasBehaviorTag(CombatBehaviorTags.ExecuteLowHp))
+        {
+            if (target.IsHealthRatioAtOrBelow(DuelistExecuteTargetHealthPercent, HealthPercentScale))
+            {
+                score += DuelistExecuteTargetScoreBonus;
+            }
+        }
+        else if (target.HealthRatio <= DiveLowHpTargetRatio)
         {
             score += 30;
         }
@@ -530,7 +563,7 @@ public static class RoleBrain
             .Where(a => a.IsAlive && a.Id != actor.Id && a.Behavior.FormationLine == FormationLine.Backline)
             .SelectMany(ally => state.GetOpponents(actor.Side)
                 .Where(e => e.IsAlive && IsThreateningBacklineAlly(e, ally)
-                            && actor.Position.DistanceTo(e.Position) <= PeelMaxInterceptDistance)
+                            && actor.Position.DistanceTo(e.Position) <= ResolvePeelMaxInterceptDistance(actor))
                 .Select(enemy => new { Ally = ally, Enemy = enemy, Score = ScorePeelThreat(state, actor, ally, enemy) }))
             .OrderByDescending(c => c.Score)
             .ThenBy(c => c.Ally.HealthRatio)
@@ -549,6 +582,26 @@ public static class RoleBrain
             state.StepIndex + PeelCommitSteps, best.Score);
         return true;
     }
+
+    private static int ResolveDiveEntryScoreThreshold(UnitSnapshot actor)
+        => actor.HasBehaviorTag(CombatBehaviorTags.DuelistDiveCommit)
+            ? DuelistDiveCommitScoreThreshold
+            : DiveScoreThreshold;
+
+    private static int ResolveDiveContinueScoreThreshold(UnitSnapshot actor)
+        => actor.HasBehaviorTag(CombatBehaviorTags.DiveAssassinKeystone)
+            ? DuelistAssassinContinueScoreThreshold
+            : DiveContinueScoreThreshold;
+
+    private static int ResolveDiveCommitSteps(UnitSnapshot actor)
+        => actor.HasBehaviorTag(CombatBehaviorTags.DiveAssassinKeystone)
+            ? DuelistAssassinCommitSteps
+            : DiveCommitSteps;
+
+    private static float ResolvePeelMaxInterceptDistance(UnitSnapshot actor)
+        => actor.HasBehaviorTag(CombatBehaviorTags.DuelistPeel)
+            ? DuelistPeelMaxInterceptDistance
+            : PeelMaxInterceptDistance;
 
     private static bool IsPeelAllowedPosture(TeamPostureType posture)
     {

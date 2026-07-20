@@ -730,6 +730,24 @@ MonoBehaviour:
       pulse.
     m_Metadata:
       m_Items: []
+  - m_Id: 40752930520109056
+    m_Localized: Sunder Rhythm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930545274880
+    m_Localized: Melee strikes shred 6% defense, stack up to three times, and refresh
+      the 3.5-second duration on hit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930947928064
+    m_Localized: Last Bastion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40752930947928065
+    m_Localized: The first time health reaches 40% or lower, gain a 6 barrier and
+      Guarded for 2.5 seconds.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1103,18 +1103,26 @@ internal static class ContentDefinitionSchemaRuleSupport
     }
 
     /// <summary>
-    /// RuleModifierTags(BehaviorTag rule 축)는 도입 이래 sim 해석기가 존재한 적 없는 스캐폴드다.
-    /// 저작된 rule tag는 아무 전투 효과 없이 운반만 되므로(저작자 오해 유발 = inert 계열)
-    /// 해석기가 실제로 생기기 전까지 콘텐츠 저작을 금지한다 — 2026-07-13 위생 정리로 기존 16개 전량 제거.
+    /// RuleModifierTags(BehaviorTag rule 축)는 전투 런타임에 명시적 해석기가 있는 태그만 허용한다.
+    /// 허용 목록 밖의 저작된 rule tag는 아무 전투 효과 없이 운반만 되므로(저작자 오해 유발 = inert 계열)
+    /// 계속 차단한다. 허용 목록은 CombatBehaviorTags의 실제 소비 계약과 함께 갱신해야 한다.
     /// </summary>
     internal static void ValidateRuleTagScaffold(ICollection<ContentValidationIssue> issues, IEnumerable<StableTagDefinition> tags, string assetPath, string scope)
     {
-        if (tags != null && tags.Any(tag => tag != null))
+        var unsupportedTagIds = tags?
+            .Where(tag => tag != null)
+            .Select(tag => tag.Id)
+            .Where(id => !CombatBehaviorTags.IsInterpreted(id))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToArray()
+            ?? Array.Empty<string>();
+        if (unsupportedTagIds.Length > 0)
         {
             ContentValidationIssueFactory.AddError(
                 issues,
                 "rule_tag.scaffold_only",
-                $"{scope}: RuleModifierTags는 sim 해석기가 없는 스캐폴드 — 전투 효과가 필요하면 CompileTags/TriggeredEffects/SupportModifier를 사용하고, rule tag는 해석기 도입 전까지 저작 금지.",
+                $"{scope}: sim 해석기가 없는 RuleModifierTags [{string.Join(", ", unsupportedTagIds)}] — 전투 효과가 필요하면 CompileTags/TriggeredEffects/SupportModifier를 사용하고, rule tag는 해석기 도입 전까지 저작 금지.",
                 assetPath);
         }
     }

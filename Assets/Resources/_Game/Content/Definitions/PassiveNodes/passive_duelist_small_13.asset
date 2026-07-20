@@ -18,18 +18,22 @@ MonoBehaviour:
   DescriptionKey: content.passive_node.passive_duelist_small_13.desc
   NodeKind: 0
   PrerequisiteNodeIds:
-  - passive_duelist_small_10
+  - passive_duelist_small_06
   MutualExclusionTags: []
-  BoardDepth: 3
+  BoardDepth: 4
   CompileTags:
   - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
-  - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: 56f2ffc08c9f8014fa4d63021ffd878d, type: 2}
+  - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
   RuleModifierTags: []
   Modifiers:
-  - StatId: crit_multiplier
+  - StatId: crit_chance
     Op: 0
-    Value: 0.08
+    Value: 0.02
+  - StatId: target_switch_delay
+    Op: 0
+    Value: -0.04
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

@@ -20,17 +20,17 @@ MonoBehaviour:
   PrerequisiteNodeIds:
   - passive_duelist_small_12
   MutualExclusionTags: []
-  BoardDepth: 4
-  CompileTags: []
+  BoardDepth: 5
+  CompileTags:
+  - {fileID: 11400000, guid: 8b5d2e9d4a2e5a6409935be75f6c5145, type: 2}
+  - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
+  - {fileID: 11400000, guid: cdb217deb42ffb342806a4bb87db46f3, type: 2}
   RuleModifierTags: []
   Modifiers:
   - StatId: phys_power
     Op: 0
-    Value: 1
-  - StatId: crit_chance
-    Op: 0
-    Value: 0.02
-  GrantedSkillId: skill_bloodless_form
+    Value: 0.6
+  GrantedSkillId: skill_sunder_rhythm
   legacyIsKeystone: 0
   legacyDisplayName: 
   legacyDescription: 

@@ -2,6 +2,8 @@ using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Ids;
+using SM.Core.Stats;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SM.Tests.EditMode;
@@ -82,5 +84,81 @@ public sealed class HitResolutionServiceTests
         var actual = (int)method.Invoke(null, new object[] { probability });
 
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ExecuteLowHp_UsesInclusiveThirtyFivePercentPreHitBoundary_Deterministically()
+    {
+        var atBoundary = ResolveExecuteHit(targetDamage: 65f, tagged: true);
+        var repeated = ResolveExecuteHit(targetDamage: 65f, tagged: true);
+        var aboveBoundary = ResolveExecuteHit(targetDamage: 64.99f, tagged: true);
+        var untaggedAtBoundary = ResolveExecuteHit(targetDamage: 65f, tagged: false);
+
+        Assert.That(atBoundary.Note, Does.Contain("execute"));
+        Assert.That(atBoundary.Value, Is.EqualTo(repeated.Value));
+        Assert.That(atBoundary.Note, Is.EqualTo(repeated.Note));
+        Assert.That(atBoundary.Value, Is.GreaterThan(untaggedAtBoundary.Value));
+        Assert.That(aboveBoundary.Note, Does.Not.Contain("execute"));
+    }
+
+    private static HitResolutionResult ResolveExecuteHit(float targetDamage, bool tagged)
+    {
+        var noAvoidance = new BehaviorProfile(
+            0.25f,
+            0f,
+            0f,
+            0f,
+            0f,
+            1f,
+            0f,
+            0f,
+            0f,
+            1f);
+        var actorLoadout = CombatTestFactory.CreateLoopAUnit(
+            "execute_actor",
+            classId: "duelist",
+            hp: 100f,
+            physPower: 8f,
+            armor: 0f,
+            behavior: noAvoidance);
+        if (tagged)
+        {
+            actorLoadout = actorLoadout with
+            {
+                RulePackages = new[]
+                {
+                    new CombatRuleModifierPackage(
+                        "test:execute",
+                        ModifierSource.Other,
+                        new[]
+                        {
+                            new RuleModifier(RuleModifierKind.BehaviorTag, CombatBehaviorTags.ExecuteLowHp),
+                        }),
+                },
+            };
+        }
+
+        var targetLoadout = CombatTestFactory.CreateLoopAUnit(
+            "execute_target",
+            classId: "dummy",
+            hp: 100f,
+            armor: 0f,
+            behavior: noAvoidance);
+        var actor = new UnitSnapshot(
+            new EntityId("execute_actor"),
+            TeamSide.Ally,
+            actorLoadout,
+            new CombatVector2(-1f, 0f),
+            new CombatVector2(-1f, 0f));
+        var target = new UnitSnapshot(
+            new EntityId("execute_target"),
+            TeamSide.Enemy,
+            targetLoadout,
+            new CombatVector2(1f, 0f),
+            new CombatVector2(1f, 0f));
+        target.TakeDamage(targetDamage);
+        var state = MakeState(actor, target);
+
+        return HitResolutionService.ResolveBasicAttack(state, actor, target);
     }
 }
