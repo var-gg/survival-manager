@@ -15,6 +15,11 @@ if (args.Length == 1 && string.Equals(args[0], "snapshot-load", StringComparison
     return RunSnapshotLoad();
 }
 
+if (args.Length == 1 && string.Equals(args[0], "snapshot-freshness-self-check", StringComparison.Ordinal))
+{
+    return ContentSnapshotFreshnessGuardSelfCheck.Run();
+}
+
 if (args.Length >= 1 && string.Equals(args[0], "campaign-battle", StringComparison.Ordinal))
 {
     string? unityReportPath = null;
@@ -50,7 +55,8 @@ if (args.Length >= 1 && string.Equals(args[0], "balance-framework", StringCompar
 }
 
 Console.Error.WriteLine(
-    "Usage: HeadlessSweep [snapshot-load | campaign-battle [--unity <report>] [--output <path>] "
+    "Usage: HeadlessSweep [snapshot-load | snapshot-freshness-self-check "
+    + "| campaign-battle [--unity <report>] [--output <path>] "
     + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] "
     + "[--output <path>] [--verify] | balance-framework [--samples <n>] [--neutral-health-more <n>] "
     + "[--neutral-power-more <n>] [--snapshot <path>] [--neutral-snapshot <path>] "

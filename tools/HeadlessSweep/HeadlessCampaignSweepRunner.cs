@@ -19,6 +19,7 @@ internal static class HeadlessCampaignSweepRunner
         {
             var options = Parse(arguments);
             var snapshotPath = Resolve(repositoryRoot, SnapshotRelativePath);
+            ContentSnapshotFreshnessGuard.EnsureFresh(repositoryRoot);
             var snapshot = ContentSnapshotJsonSerializer.Deserialize(File.ReadAllText(snapshotPath));
             var lookup = new SnapshotSessionContentLookup(snapshot);
             var config = CampaignBalanceSweepConfig.Default;
