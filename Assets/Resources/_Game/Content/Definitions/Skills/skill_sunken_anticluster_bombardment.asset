@@ -87,7 +87,7 @@ MonoBehaviour:
   IconId: skill_icon_sunken_anticluster_bombardment
   VfxHookId: vfx.skill_sunken_anticluster_bombardment
   SfxHookId: sfx.skill.skill_sunken_anticluster_bombardment
-  LearnSource: 0
+  LearnSource: 6
   EffectFamilyId: sunken_anticluster_bombardment
   MutuallyExclusiveGroupId: 
   RecruitNativeTags: []

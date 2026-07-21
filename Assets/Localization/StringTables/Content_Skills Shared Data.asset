@@ -735,6 +735,14 @@ MonoBehaviour:
     m_Key: content.skill.skill_last_bastion.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 40850058953166848
+    m_Key: content.skill.skill_sunken_anticluster_bombardment.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40850059003498496
+    m_Key: content.skill.skill_sunken_anticluster_bombardment.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

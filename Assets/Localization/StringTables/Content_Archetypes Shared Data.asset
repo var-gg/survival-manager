@@ -79,6 +79,10 @@ MonoBehaviour:
     m_Key: content.archetype.mirror_cantor.name
     m_Metadata:
       m_Items: []
+  - m_Id: 40850053664149504
+    m_Key: content.archetype.sunken_adjudicator_boss.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

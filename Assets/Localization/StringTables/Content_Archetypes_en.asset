@@ -82,6 +82,10 @@ MonoBehaviour:
     m_Localized: Mirror Cantor
     m_Metadata:
       m_Items: []
+  - m_Id: 40850053664149504
+    m_Localized: Sunken Adjudicator
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

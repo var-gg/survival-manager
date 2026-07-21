@@ -748,6 +748,15 @@ MonoBehaviour:
       Guarded for 2.5 seconds.
     m_Metadata:
       m_Items: []
+  - m_Id: 40850058953166848
+    m_Localized: Anti-Cluster Bombardment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40850059003498496
+    m_Localized: "Zones the densest backline cluster in place \u2014 the tighter
+      the formation, the more it hurts."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
