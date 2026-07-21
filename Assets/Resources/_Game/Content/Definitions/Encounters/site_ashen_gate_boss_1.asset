@@ -29,7 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_solarum_border
   - boss
-  - encounter_family_sustain_grind
   - answer_lane_guard_anchor
+  - encounter_family_sustain_grind
   legacyDisplayName: 
   legacyDescription: 

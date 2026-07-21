@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be14c1833dae4ff4896bf12a128b8957, type: 3}
+  m_Name: p09_appearance_extra_tithe_chain_cantor
+  m_EditorClassIdentifier: SM.Unity::SM.Unity.BattleP09AppearancePreset
+  characterId: extra_tithe_chain_cantor
+  displayName: "\uBA85\uC74C (\u660E\u97F3) / Mirror Cantor"
+  catalog: {fileID: 11400000, guid: 87cc2b66c5c497347b12463a8afa1ca8, type: 2}
+  weaponId: 9
+  shieldId: 5
+  headId: 9
+  chestId: 9
+  armId: 8
+  waistId: 9
+  legId: 8
+  sexId: 2
+  faceTypeId: 2
+  hairStyleId: 9
+  hairColorId: 8
+  skinId: 1
+  eyeColorId: 4
+  facialHairId: 0
+  bustSizeId: 2
+  materialColorOverrides:
+  - Label: "\uBA38\uB9AC"
+    UsePartTarget: 1
+    TargetPart: 10
+    TargetContains: Hair
+    Enabled: 1
+    MainColor: {r: 0.1764706, g: 0.12156863, b: 0.24705882, a: 1}
+    SecondColor: {r: 0.07058824, g: 0.039215688, b: 0.1254902, a: 1}
+    ThirdColor: {r: 0.78039217, g: 0.7529412, b: 0.84705883, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uBA38\uB9AC \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 3
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.84705883, g: 0.8235294, b: 0.8901961, a: 1}
+    SecondColor: {r: 0.7529412, g: 0.35686275, b: 0.8784314, a: 1}
+    ThirdColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uC0C1\uC758"
+    UsePartTarget: 1
+    TargetPart: 4
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.84705883, g: 0.8235294, b: 0.8901961, a: 1}
+    SecondColor: {r: 0.7529412, g: 0.35686275, b: 0.8784314, a: 1}
+    ThirdColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD314 \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 5
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.6862745, g: 0.654902, b: 0.72156864, a: 1}
+    SecondColor: {r: 0.2901961, g: 0.22745098, b: 0.36078432, a: 1}
+    ThirdColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD5C8\uB9AC \uC7A5\uBE44"
+    UsePartTarget: 1
+    TargetPart: 6
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.78039217, g: 0.7529412, b: 0.84705883, a: 1}
+    SecondColor: {r: 0.43529412, g: 0.3647059, b: 0.53333336, a: 1}
+    ThirdColor: {r: 0.7529412, g: 0.35686275, b: 0.8784314, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uD558\uC758"
+    UsePartTarget: 1
+    TargetPart: 7
+    TargetContains: Armor
+    Enabled: 1
+    MainColor: {r: 0.2901961, g: 0.22745098, b: 0.36078432, a: 1}
+    SecondColor: {r: 0.1764706, g: 0.14117648, b: 0.21960784, a: 1}
+    ThirdColor: {r: 0.84705883, g: 0.8235294, b: 0.8901961, a: 1}
+    UseEmissionColor: 0
+    EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  - Label: "\uAC70\uC6B8 \uC9C0\uD321\uC774"
+    UsePartTarget: 1
+    TargetPart: 1
+    TargetContains: Weapon
+    Enabled: 1
+    MainColor: {r: 0.84705883, g: 0.8235294, b: 0.8901961, a: 1}
+    SecondColor: {r: 0.7529412, g: 0.35686275, b: 0.8784314, a: 1}
+    ThirdColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    UseEmissionColor: 1
+    EmissionColor: {r: 0.16470589, g: 0.3254902, b: 0.3764706, a: 1}
+  - Label: "\uC758\uB840 \uAC70\uC6B8"
+    UsePartTarget: 1
+    TargetPart: 2
+    TargetContains: Shield
+    Enabled: 1
+    MainColor: {r: 0.78039217, g: 0.7529412, b: 0.84705883, a: 1}
+    SecondColor: {r: 0.56078434, g: 0.83137256, b: 0.9098039, a: 1}
+    ThirdColor: {r: 0.7529412, g: 0.35686275, b: 0.8784314, a: 1}
+    UseEmissionColor: 1
+    EmissionColor: {r: 0.16470589, g: 0.3254902, b: 0.3764706, a: 1}

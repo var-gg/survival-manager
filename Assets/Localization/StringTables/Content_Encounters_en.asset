@@ -19,11 +19,12 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 1542447104
-    m_Localized: Ashen Gate Boss Overlay
+    m_Localized: Gate Warden
     m_Metadata:
       m_Items: []
   - m_Id: 1626333184
-    m_Localized: answer_lane_guard_anchor aura and reward tags
+    m_Localized: Two front bodies and a hunter teach the campaign's basic boss-wall
+      grammar.
     m_Metadata:
       m_Items: []
   - m_Id: 2502942720
@@ -51,11 +52,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4528791552
-    m_Localized: site_ashen_gate_boss_1_squad boss squad
+    m_Localized: Gate Warden
     m_Metadata:
       m_Items: []
   - m_Id: 4528791553
-    m_Localized: Boss captain plus escorts
+    m_Localized: Two front bodies and a hunter teach the campaign's basic boss-wall
+      grammar.
     m_Metadata:
       m_Items: []
   - m_Id: 5174714368
@@ -83,11 +85,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7678713856
-    m_Localized: site_ashen_gate_boss_1
+    m_Localized: Gate Warden
     m_Metadata:
       m_Items: []
   - m_Id: 7678713857
-    m_Localized: site_ashen_gate Boss
+    m_Localized: Two front bodies and a hunter teach the campaign's basic boss-wall
+      grammar.
     m_Metadata:
       m_Items: []
   - m_Id: 9402572800
@@ -523,11 +526,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453008454836224
-    m_Localized: Sunken Bastion Boss Overlay
+    m_Localized: Sunken Adjudicator
     m_Metadata:
       m_Items: []
   - m_Id: 16453008454836225
-    m_Localized: answer_lane_break_formation aura and reward tags
+    m_Localized: Artillery punishes a clustered backline, then a non-diving executor
+      finishes low-health targets.
     m_Metadata:
       m_Items: []
   - m_Id: 16453010275164160
@@ -555,11 +559,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453016474345472
-    m_Localized: site_sunken_bastion_boss_1_squad boss squad
+    m_Localized: Sunken Adjudicator
     m_Metadata:
       m_Items: []
   - m_Id: 16453016474345473
-    m_Localized: Boss captain plus escorts
+    m_Localized: Artillery punishes a clustered backline, then a non-diving executor
+      finishes low-health targets.
     m_Metadata:
       m_Items: []
   - m_Id: 16453018219175936
@@ -583,23 +588,25 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453022375731201
-    m_Localized: site_sunken_bastion Elite
+    m_Localized: A held line previews punishment for clustered formations.
     m_Metadata:
       m_Items: []
   - m_Id: 16453024531603456
-    m_Localized: site_sunken_bastion_boss_1
+    m_Localized: Sunken Adjudicator
     m_Metadata:
       m_Items: []
   - m_Id: 16453024531603457
-    m_Localized: site_sunken_bastion Boss
+    m_Localized: Artillery punishes a clustered backline, then a non-diving executor
+      finishes low-health targets.
     m_Metadata:
       m_Items: []
   - m_Id: 16453028428111872
-    m_Localized: Tithe Road Boss Overlay
+    m_Localized: Tithe Collector
     m_Metadata:
       m_Items: []
   - m_Id: 16453028428111873
-    m_Localized: answer_lane_anti_mark_cleanse aura and reward tags
+    m_Localized: The collector's mark converges focus fire and an executor dive on
+      one target.
     m_Metadata:
       m_Items: []
   - m_Id: 16453030248439808
@@ -627,11 +634,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453035726200832
-    m_Localized: site_tithe_road_boss_1_squad boss squad
+    m_Localized: Tithe Collector
     m_Metadata:
       m_Items: []
   - m_Id: 16453035726200833
-    m_Localized: Boss captain plus escorts
+    m_Localized: The collector's mark converges focus fire and an executor dive on
+      one target.
     m_Metadata:
       m_Items: []
   - m_Id: 16453037391339520
@@ -655,23 +663,25 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453040549650433
-    m_Localized: site_tithe_road Elite
+    m_Localized: An executioner dives the marked weak side.
     m_Metadata:
       m_Items: []
   - m_Id: 16453042663579648
-    m_Localized: site_tithe_road_boss_1
+    m_Localized: Tithe Collector
     m_Metadata:
       m_Items: []
   - m_Id: 16453042663579649
-    m_Localized: site_tithe_road Boss
+    m_Localized: The collector's mark converges focus fire and an executor dive on
+      one target.
     m_Metadata:
       m_Items: []
   - m_Id: 16453046430064640
-    m_Localized: Ruined Crypts Boss Overlay
+    m_Localized: Archive Choir
     m_Metadata:
       m_Items: []
   - m_Id: 16453046430064641
-    m_Localized: answer_lane_anti_sustain_finish aura and reward tags
+    m_Localized: A healing wall endures while archive scorch drives the fight to
+      a decision.
     m_Metadata:
       m_Items: []
   - m_Id: 16453048338472960
@@ -699,11 +709,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453054147584000
-    m_Localized: site_ruined_crypts_boss_1_squad boss squad
+    m_Localized: Archive Choir
     m_Metadata:
       m_Items: []
   - m_Id: 16453054147584001
-    m_Localized: Boss captain plus escorts
+    m_Localized: A healing wall endures while archive scorch drives the fight to
+      a decision.
     m_Metadata:
       m_Items: []
   - m_Id: 16453056102129664
@@ -727,23 +738,25 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453059717619713
-    m_Localized: site_ruined_crypts Elite
+    m_Localized: A mender-backed priest and guardian preview the sustain wall.
     m_Metadata:
       m_Items: []
   - m_Id: 16453062397779968
-    m_Localized: site_ruined_crypts_boss_1
+    m_Localized: Archive Choir
     m_Metadata:
       m_Items: []
   - m_Id: 16453062397779969
-    m_Localized: site_ruined_crypts Boss
+    m_Localized: A healing wall endures while archive scorch drives the fight to
+      a decision.
     m_Metadata:
       m_Items: []
   - m_Id: 16453067347058688
-    m_Localized: Bone Orchard Boss Overlay
+    m_Localized: Orchard Warden
     m_Metadata:
       m_Items: []
   - m_Id: 16453067347058689
-    m_Localized: answer_lane_anti_summon_burst aura and reward tags
+    m_Localized: A retaliating frontline and burn pulses test cleansing and engine
+      removal.
     m_Metadata:
       m_Items: []
   - m_Id: 16453070023024640
@@ -771,11 +784,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453076138319872
-    m_Localized: site_bone_orchard_boss_1_squad boss squad
+    m_Localized: Orchard Warden
     m_Metadata:
       m_Items: []
   - m_Id: 16453076138319873
-    m_Localized: Boss captain plus escorts
+    m_Localized: A retaliating frontline and burn pulses test cleansing and engine
+      removal.
     m_Metadata:
       m_Items: []
   - m_Id: 16453078248054784
@@ -799,15 +813,16 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453082098425857
-    m_Localized: site_bone_orchard Elite
+    m_Localized: A shaman burn pulse previews the orchard attrition clock.
     m_Metadata:
       m_Items: []
   - m_Id: 16453084082331648
-    m_Localized: site_bone_orchard_boss_1
+    m_Localized: Orchard Warden
     m_Metadata:
       m_Items: []
   - m_Id: 16453084082331649
-    m_Localized: site_bone_orchard Boss
+    m_Localized: A retaliating frontline and burn pulses test cleansing and engine
+      removal.
     m_Metadata:
       m_Items: []
   - m_Id: 16453088004005888

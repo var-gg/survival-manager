@@ -38,5 +38,17 @@ MonoBehaviour:
     ProcAttributionPolicy: 0
     OwnershipPolicy: 0
     Effects: []
+  - Id: boss_overlay_ashen_gate_opening_barrier
+    StatusId: barrier
+    DurationSeconds: 0
+    Magnitude: 14
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
   legacyDisplayName: 
   legacyDescription: 

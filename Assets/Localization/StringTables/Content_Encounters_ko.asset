@@ -19,12 +19,12 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 1542447104
-    m_Localized: "\uC7BF\uBB38 \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Localized: "\uAD00\uBB38 \uC218\uBB38\uC7A5"
     m_Metadata:
       m_Items: []
   - m_Id: 1626333184
-    m_Localized: "answer_lane_guard_anchor \uC804\uC6A9 \uC624\uB77C\uC640 \uBCF4\uC0C1
-      \uD0DC\uADF8"
+    m_Localized: "\uB450 \uC804\uC5F4\uACFC \uC0AC\uB0E5\uAFBC\uC774 \uBCF4\uC2A4\uC804\uC758
+      \uAE30\uBCF8 \uBCBD \uBB38\uBC95\uC744 \uAC00\uB974\uCE5C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 2502942720
@@ -52,11 +52,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4528791552
-    m_Localized: "site_ashen_gate_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Localized: "\uAD00\uBB38 \uC218\uBB38\uC7A5"
     m_Metadata:
       m_Items: []
   - m_Id: 4528791553
-    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Localized: "\uB450 \uC804\uC5F4\uACFC \uC0AC\uB0E5\uAFBC\uC774 \uBCF4\uC2A4\uC804\uC758
+      \uAE30\uBCF8 \uBCBD \uBB38\uBC95\uC744 \uAC00\uB974\uCE5C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 5174714368
@@ -84,11 +85,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7678713856
-    m_Localized: site_ashen_gate_boss_1
+    m_Localized: "\uAD00\uBB38 \uC218\uBB38\uC7A5"
     m_Metadata:
       m_Items: []
   - m_Id: 7678713857
-    m_Localized: site_ashen_gate Boss
+    m_Localized: "\uB450 \uC804\uC5F4\uACFC \uC0AC\uB0E5\uAFBC\uC774 \uBCF4\uC2A4\uC804\uC758
+      \uAE30\uBCF8 \uBCBD \uBB38\uBC95\uC744 \uAC00\uB974\uCE5C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 9402572800
@@ -530,13 +532,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453008454836224
-    m_Localized: "\uAC00\uB77C\uC549\uC740 \uBCF4\uB8E8 \uC6B0\uB450\uBA38\uB9AC
-      \uC704\uC0C1"
+    m_Localized: "\uCE68\uBAB0\uD55C \uC7AC\uC815\uAD00"
     m_Metadata:
       m_Items: []
   - m_Id: 16453008454836225
-    m_Localized: "answer_lane_break_formation \uC804\uC6A9 \uC624\uB77C\uC640 \uBCF4\uC0C1
-      \uD0DC\uADF8"
+    m_Localized: "\uBC00\uC9D1\uD55C \uD6C4\uC5F4\uC744 \uD3EC\uACA9\uD55C \uB4A4
+      \uBE44\uB2E4\uC774\uBE0C \uC9D1\uD589\uB9AC\uAC00 \uBE48\uC0AC \uD45C\uC801\uC744
+      \uCC98\uD615\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453010275164160
@@ -564,11 +566,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453016474345472
-    m_Localized: "site_sunken_bastion_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Localized: "\uCE68\uBAB0\uD55C \uC7AC\uC815\uAD00"
     m_Metadata:
       m_Items: []
   - m_Id: 16453016474345473
-    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Localized: "\uBC00\uC9D1\uD55C \uD6C4\uC5F4\uC744 \uD3EC\uACA9\uD55C \uB4A4
+      \uBE44\uB2E4\uC774\uBE0C \uC9D1\uD589\uB9AC\uAC00 \uBE48\uC0AC \uD45C\uC801\uC744
+      \uCC98\uD615\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453018219175936
@@ -592,24 +596,28 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453022375731201
-    m_Localized: site_sunken_bastion Elite
+    m_Localized: "\uCE68\uBAB0\uD55C \uC804\uC5F4\uC774 \uBC00\uC9D1 \uB300\uD615\uC744
+      \uBC8C\uD558\uB3C4\uB85D \uAE30\uB2E4\uB9B0\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453024531603456
-    m_Localized: site_sunken_bastion_boss_1
+    m_Localized: "\uCE68\uBAB0\uD55C \uC7AC\uC815\uAD00"
     m_Metadata:
       m_Items: []
   - m_Id: 16453024531603457
-    m_Localized: site_sunken_bastion Boss
+    m_Localized: "\uBC00\uC9D1\uD55C \uD6C4\uC5F4\uC744 \uD3EC\uACA9\uD55C \uB4A4
+      \uBE44\uB2E4\uC774\uBE0C \uC9D1\uD589\uB9AC\uAC00 \uBE48\uC0AC \uD45C\uC801\uC744
+      \uCC98\uD615\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453028428111872
-    m_Localized: "\uC2ED\uC77C\uC870\uB85C \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Localized: "\uC2ED\uC77C\uC870 \uC9D1\uC804\uC790"
     m_Metadata:
       m_Items: []
   - m_Id: 16453028428111873
-    m_Localized: "answer_lane_anti_mark_cleanse \uC804\uC6A9 \uC624\uB77C\uC640 \uBCF4\uC0C1
-      \uD0DC\uADF8"
+    m_Localized: "\uC9D1\uC804\uC790\uC758 \uC9C0\uBAA9\uC774 \uC9D1\uC911 \uC0AC\uACA9\uACFC
+      \uC9D1\uD589\uB9AC\uC758 \uB2E4\uC774\uBE0C\uB97C \uD55C \uD45C\uC801\uC5D0
+      \uBAA8\uC740\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453030248439808
@@ -637,11 +645,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453035726200832
-    m_Localized: "site_tithe_road_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Localized: "\uC2ED\uC77C\uC870 \uC9D1\uC804\uC790"
     m_Metadata:
       m_Items: []
   - m_Id: 16453035726200833
-    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Localized: "\uC9D1\uC804\uC790\uC758 \uC9C0\uBAA9\uC774 \uC9D1\uC911 \uC0AC\uACA9\uACFC
+      \uC9D1\uD589\uB9AC\uC758 \uB2E4\uC774\uBE0C\uB97C \uD55C \uD45C\uC801\uC5D0
+      \uBAA8\uC740\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453037391339520
@@ -665,24 +675,28 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453040549650433
-    m_Localized: site_tithe_road Elite
+    m_Localized: "\uC9D1\uD589\uB9AC\uAC00 \uC57D\uD55C \uCE21\uBA74\uC73C\uB85C
+      \uB6F0\uC5B4\uB4E4\uC5B4 \uC9C0\uBAA9 \uCC98\uBC8C\uC744 \uC608\uACE0\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453042663579648
-    m_Localized: site_tithe_road_boss_1
+    m_Localized: "\uC2ED\uC77C\uC870 \uC9D1\uC804\uC790"
     m_Metadata:
       m_Items: []
   - m_Id: 16453042663579649
-    m_Localized: site_tithe_road Boss
+    m_Localized: "\uC9D1\uC804\uC790\uC758 \uC9C0\uBAA9\uC774 \uC9D1\uC911 \uC0AC\uACA9\uACFC
+      \uC9D1\uD589\uB9AC\uC758 \uB2E4\uC774\uBE0C\uB97C \uD55C \uD45C\uC801\uC5D0
+      \uBAA8\uC740\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453046430064640
-    m_Localized: "\uBB34\uB108\uC9C4 \uBB18\uC5ED \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Localized: "\uAE30\uB85D \uC131\uAC00\uB300"
     m_Metadata:
       m_Items: []
   - m_Id: 16453046430064641
-    m_Localized: "answer_lane_anti_sustain_finish \uC804\uC6A9 \uC624\uB77C\uC640
-      \uBCF4\uC0C1 \uD0DC\uADF8"
+    m_Localized: "\uD68C\uBCF5 \uC804\uC5F4\uC774 \uBC84\uD2F0\uB294 \uB3D9\uC548
+      \uAE30\uB85D \uC18C\uAC01\uC774 \uC804\uD22C\uB97C \uACB0\uB860\uC73C\uB85C
+      \uBAB0\uC544\uAC04\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453048338472960
@@ -710,11 +724,13 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453054147584000
-    m_Localized: "site_ruined_crypts_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Localized: "\uAE30\uB85D \uC131\uAC00\uB300"
     m_Metadata:
       m_Items: []
   - m_Id: 16453054147584001
-    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Localized: "\uD68C\uBCF5 \uC804\uC5F4\uC774 \uBC84\uD2F0\uB294 \uB3D9\uC548
+      \uAE30\uB85D \uC18C\uAC01\uC774 \uC804\uD22C\uB97C \uACB0\uB860\uC73C\uB85C
+      \uBAB0\uC544\uAC04\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453056102129664
@@ -738,24 +754,28 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453059717619713
-    m_Localized: site_ruined_crypts Elite
+    m_Localized: "\uD68C\uBCF5 \uC811\uB450\uAC00 \uBD99\uC740 \uC0AC\uC81C\uC640
+      \uC218\uD638\uC790\uAC00 \uC131\uAC00\uB300\uC758 \uD68C\uBCF5\uBCBD\uC744
+      \uC608\uACE0\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453062397779968
-    m_Localized: site_ruined_crypts_boss_1
+    m_Localized: "\uAE30\uB85D \uC131\uAC00\uB300"
     m_Metadata:
       m_Items: []
   - m_Id: 16453062397779969
-    m_Localized: site_ruined_crypts Boss
+    m_Localized: "\uD68C\uBCF5 \uC804\uC5F4\uC774 \uBC84\uD2F0\uB294 \uB3D9\uC548
+      \uAE30\uB85D \uC18C\uAC01\uC774 \uC804\uD22C\uB97C \uACB0\uB860\uC73C\uB85C
+      \uBAB0\uC544\uAC04\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453067347058688
-    m_Localized: "\uBF08 \uACFC\uC218\uC6D0 \uC6B0\uB450\uBA38\uB9AC \uC704\uC0C1"
+    m_Localized: "\uACFC\uC218\uC6D0 \uAC10\uC2DC\uC790"
     m_Metadata:
       m_Items: []
   - m_Id: 16453067347058689
-    m_Localized: "answer_lane_anti_summon_burst \uC804\uC6A9 \uC624\uB77C\uC640 \uBCF4\uC0C1
-      \uD0DC\uADF8"
+    m_Localized: "\uB418\uBC1B\uC544\uCE58\uB294 \uC804\uC5F4\uACFC \uC5F0\uC18C
+      \uB9E5\uB3D9\uC774 \uC815\uD654\uC640 \uC5D4\uC9C4 \uC808\uB2E8\uC744 \uC2DC\uD5D8\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453070023024640
@@ -783,11 +803,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453076138319872
-    m_Localized: "site_bone_orchard_boss_1_squad \uC6B0\uB450\uBA38\uB9AC \uBD84\uB300"
+    m_Localized: "\uACFC\uC218\uC6D0 \uAC10\uC2DC\uC790"
     m_Metadata:
       m_Items: []
   - m_Id: 16453076138319873
-    m_Localized: "\uC6B0\uB450\uBA38\uB9AC + \uD638\uC704 \uAD6C\uC870"
+    m_Localized: "\uB418\uBC1B\uC544\uCE58\uB294 \uC804\uC5F4\uACFC \uC5F0\uC18C
+      \uB9E5\uB3D9\uC774 \uC815\uD654\uC640 \uC5D4\uC9C4 \uC808\uB2E8\uC744 \uC2DC\uD5D8\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453078248054784
@@ -811,15 +832,17 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16453082098425857
-    m_Localized: site_bone_orchard Elite
+    m_Localized: "\uC8FC\uC220\uC2B9\uC758 \uC5F0\uC18C \uB9E5\uB3D9\uC774 \uACFC\uC218\uC6D0\uC758
+      \uC18C\uBAA8\uC804 \uC2DC\uACC4\uB97C \uC608\uACE0\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453084082331648
-    m_Localized: site_bone_orchard_boss_1
+    m_Localized: "\uACFC\uC218\uC6D0 \uAC10\uC2DC\uC790"
     m_Metadata:
       m_Items: []
   - m_Id: 16453084082331649
-    m_Localized: site_bone_orchard Boss
+    m_Localized: "\uB418\uBC1B\uC544\uCE58\uB294 \uC804\uC5F4\uACFC \uC5F0\uC18C
+      \uB9E5\uB3D9\uC774 \uC815\uD654\uC640 \uC5D4\uC9C4 \uC808\uB2E8\uC744 \uC2DC\uD5D8\uD55C\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 16453088004005888

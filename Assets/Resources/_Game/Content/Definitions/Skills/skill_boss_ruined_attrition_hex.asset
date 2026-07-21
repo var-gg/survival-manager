@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
+  m_Name: skill_boss_ruined_attrition_hex
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_boss_ruined_attrition_hex
+  NameKey: content.skill.skill_boss_ruined_attrition_hex.name
+  DescriptionKey: content.skill.skill_boss_ruined_attrition_hex.desc
+  TemplateType: 4
+  Kind: 0
+  SlotKind: 1
+  DamageType: 1
+  Delivery: 2
+  TargetRule: 1
+  Power: 4
+  Range: 12
+  RangeMin: 0
+  RangeMax: 12
+  Radius: 0.85
+  Width: 0
+  ArcDegrees: 0
+  AreaEffectFamily: 1
+  PunishCluster: 0
+  DisplacementKind: 0
+  DisplacementDistance: 0
+  PowerFlat: 4
+  PhysCoeff: 0
+  MagCoeff: 0.75
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 0
+  ActivationModel: 2
+  Lane: 0
+  LockRule: 2
+  AuthorityLayer: 1
+  BudgetCard:
+    Domain: 1
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 2
+      BurstDamage: 2
+      Durability: 0
+      Control: 2
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 2
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns:
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  ManaCost: 0
+  ResourceCost: -1
+  BaseCooldownSeconds: 5.6
+  CooldownSeconds: -1
+  CastWindupSeconds: 3.35
+  RecoverySeconds: -1
+  PowerBudget: 0
+  InterruptRefundScalar: 0.5
+  AiIntents:
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId:
+  IconId: skill_icon_hexer_core
+  VfxHookId: vfx.skill_hexer_core
+  SfxHookId: sfx.skill.skill_hexer_core
+  LearnSource: 6
+  EffectFamilyId: skill_boss_ruined_attrition_hex
+  MutuallyExclusiveGroupId:
+  RecruitNativeTags: []
+  RecruitPlanTags: []
+  RecruitScoutTags: []
+  TargetRuleData:
+    Domain: 2
+    PrimarySelector: 4
+    FallbackPolicy: 3
+    Filters: 5
+    ReevaluateIntervalSeconds: 0.25
+    MinimumCommitSeconds: 0.75
+    MaxAcquireRange: 12
+    PreferredMinTargets: 1
+    ClusterRadius: 0.85
+    LockTargetAtCastStart: 1
+    RetargetLockMode: 3
+  SummonProfile:
+    EntityKind: 1
+    BehaviorKind: 1
+    Eligibility: 24
+    CreditPolicy: 15
+    MaxConcurrentPerSource: 2
+    MaxConcurrentPerOwner: 4
+    DespawnOnOwnerDeath: 1
+    OwnerDeathDespawnDelaySeconds: 1
+    InheritOwnerTarget: 1
+    IsPersistent: 1
+    Inheritance:
+      OffenseBonusScalar: 0.5
+      DefenseBonusScalar: 0.35
+      UtilityBonusScalar: 0.25
+      InheritCritChance: 0
+      InheritDodge: 0
+      InheritBlock: 0
+  Effects:
+  - Layer: 1
+    Scope: 1
+    Capabilities: 6
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
+  CompileTags: []
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  SupportBlockedTags: []
+  RequiredWeaponTags: []
+  RequiredClassTags: []
+  AppliedStatuses:
+  - Id: skill_boss_ruined_attrition_hex_burn
+    StatusId: burn
+    DurationSeconds: 0.8
+    Magnitude: 1
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
+  CleanseProfileId:
+  TriggeredEffects: []
+  SupportModifier:
+    PowerMultiplier: 1
+    CooldownMultiplier: 1
+    CastWindupMultiplier: 1
+    RangeBonus: 0
+    StatusDurationMultiplier: 1
+    ForceCanCrit: 0
+    AddedStatuses: []
+    GrantCleanseProfileId:
+    OwnerModifiers: []
+  legacyDisplayName:

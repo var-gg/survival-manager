@@ -753,8 +753,52 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 40850059003498496
-    m_Localized: "Zones the densest backline cluster in place \u2014 the tighter
-      the formation, the more it hurts."
+    m_Localized: Bombards a clustered backline for unchanged raw damage; spreading
+      denies the execution window.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887370655272960
+    m_Localized: Low-HP Execution Shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887370705604608
+    m_Localized: Targets the lowest-health enemy at range so the low-HP execute tag
+      can convert an artillery opening.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371116646400
+    m_Localized: Tithe Mark Sentence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371116646401
+    m_Localized: Marks the lowest-health enemy so the execution line converges on
+      one deterministic target.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371540271104
+    m_Localized: Choir Mend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371540271105
+    m_Localized: Heals the most injured ally to sustain the authored frontline wall.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372018421760
+    m_Localized: Archive Scorch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372018421761
+    m_Localized: Repeats a short backline burn so the Archive Choir fight reaches
+      a decision before the battle cap.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372437852160
+    m_Localized: Orchard Burn Pulse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372437852161
+    m_Localized: Stacks short burn pulses on the backline to drive the orchard attrition
+      clock.
     m_Metadata:
       m_Items: []
   references:

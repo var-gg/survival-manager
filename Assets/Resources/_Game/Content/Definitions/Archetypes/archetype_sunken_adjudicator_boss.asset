@@ -23,7 +23,7 @@ MonoBehaviour:
   TacticPreset:
   - Priority: 0
     ConditionType: 2
-    Threshold: 12
+    Threshold: 0
     ActionType: 1
     TargetSelector: 3
     Skill: {fileID: 11400000, guid: 596d0dbe3650e494193e1891db73f5e4, type: 2}
@@ -34,7 +34,7 @@ MonoBehaviour:
     TargetSelector: 3
     Skill: {fileID: 0}
   DefaultAnchor: 1
-  PreferredTeamPosture: 2
+  PreferredTeamPosture: 0
   RoleTag: artillery
   RoleFamilyTag: vanguard
   PrimaryWeaponFamilyTag: focus

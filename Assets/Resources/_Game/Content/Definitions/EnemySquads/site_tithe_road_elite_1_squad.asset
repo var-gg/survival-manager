@@ -24,44 +24,57 @@ MonoBehaviour:
   - tier2
   Members:
   - Id: site_tithe_road_elite_1_squad_1
-    NameKey: 
+    NameKey:
     ArchetypeId: priest
     CharacterId: npc_lyra_sternfeld
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_tithe_road_elite_1_squad_2
-    NameKey: 
+    NameKey:
     ArchetypeId: pale_executor
     CharacterId: extra_tithe_executioner_proxy
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
-    RuleModifierTags: []
-    legacyDisplayName: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
+    RuleModifierTags:
+    - duelist_dive_commit
+    legacyDisplayName:
   - Id: site_tithe_road_elite_1_squad_3
-    NameKey: 
+    NameKey:
     ArchetypeId: scout
     CharacterId: extra_tithe_mark_bearer
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_tithe_road_elite_1_squad_4
-    NameKey: 
+    NameKey:
     ArchetypeId: hexer
     CharacterId: extra_tithe_inquisitor_pureflame
     Anchor: 5
     Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
-  legacyDisplayName: 
-  legacyDescription: 
+    legacyDisplayName:
+  legacyDisplayName:
+  legacyDescription:

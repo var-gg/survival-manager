@@ -17,19 +17,31 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_ruined_crypts.desc
   PhaseTrigger: 1
   ThreatCost: 1
-  SignatureAuraTag: boss_aura_pale_record
+  SignatureAuraTag: boss_aura_pale_sustain_choir
   SignatureUtilityTag: boss_utility_memorial_loop
   RewardDropTags:
   - boss
   - boss_overlay_ruined_crypts
   - site_ruined_crypts
-  - boss_aura_pale_record
+  - boss_aura_pale_sustain_choir
   - boss_utility_memorial_loop
   AppliedStatuses:
-  - Id: boss_overlay_ruined_crypts_silence
-    StatusId: silence
+  - Id: boss_overlay_ruined_crypts_guarded
+    StatusId: guarded
     DurationSeconds: 999
     Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
+  - Id: boss_overlay_ruined_crypts_opening_barrier
+    StatusId: barrier
+    DurationSeconds: 0
+    Magnitude: 14
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

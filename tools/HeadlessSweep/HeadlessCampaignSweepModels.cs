@@ -62,7 +62,8 @@ internal sealed record HeadlessCampaignFlankSurvival(
 internal sealed record HeadlessCampaignBattleOutcome(
     BattleResult Result,
     HeadlessCampaignFlankSurvival FlankSurvival,
-    HeadlessCampaignAoeSurvival AntiClusterAoeSurvival);
+    HeadlessCampaignAoeSurvival AntiClusterAoeSurvival,
+    CampaignThreatLandingObservation? ThreatLanding);
 
 internal sealed record HeadlessCampaignAoeSurvival(
     int BossAoeCastCount,
@@ -84,6 +85,7 @@ internal sealed record HeadlessCampaignNodeObservation(
     bool GearCounterUsed,
     HeadlessCampaignFlankSurvival FlankSurvival,
     HeadlessCampaignAoeSurvival AntiClusterAoeSurvival,
+    CampaignThreatLandingObservation? ThreatLanding,
     int WoundsApplied);
 
 internal sealed record HeadlessCampaignSiteObservation(
@@ -113,7 +115,8 @@ internal sealed record HeadlessCampaignCellExecution(
     int CellIndex,
     string CellId,
     string SquadId,
-    IReadOnlyList<HeadlessCampaignArmExecution> Arms);
+    IReadOnlyList<HeadlessCampaignArmExecution> Arms,
+    CampaignBalanceGridCell Cell);
 
 internal sealed record HeadlessCampaignArmCount(
     string ArmId,
@@ -252,5 +255,6 @@ internal sealed record HeadlessCampaignSweepReport(
     HeadlessCampaignNodeBand TargetBoss,
     HeadlessCampaignSurvivalBand TargetBossSurvival,
     HeadlessCampaignAoeBand TargetBossAoeSurvival,
+    CampaignThreatLandingWitnessReport ThreatLandingWitness,
     HeadlessCampaignWoundMeasure WoundMeasure,
     HeadlessCampaignVerification Verification);

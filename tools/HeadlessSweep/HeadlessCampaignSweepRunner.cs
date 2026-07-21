@@ -71,6 +71,7 @@ internal static class HeadlessCampaignSweepRunner
                 TargetBoss: primary.TargetBoss,
                 TargetBossSurvival: primary.TargetBossSurvival,
                 TargetBossAoeSurvival: primary.TargetBossAoeSurvival,
+                ThreatLandingWitness: primary.ThreatLandingWitness,
                 WoundMeasure: primary.WoundMeasure,
                 Verification: verification);
             var outputPath = Resolve(repositoryRoot, options.OutputPath);
@@ -126,7 +127,8 @@ internal static class HeadlessCampaignSweepRunner
                     cellIndex,
                     cell.CellId,
                     cell.Squad.SquadId,
-                    arms);
+                    arms,
+                    cell);
             });
         stopwatch.Stop();
 
@@ -146,6 +148,10 @@ internal static class HeadlessCampaignSweepRunner
                         node.AnswerTagPresent,
                         node.FormationHash,
                         node.GearCounterUsed);
+                    if (node.ThreatLanding != null)
+                    {
+                        accumulator.RecordThreatLanding(arm.Arm, cell.Cell, node.Identity, node.ThreatLanding);
+                    }
                 }
 
                 foreach (var site in arm.Sites)
@@ -191,6 +197,7 @@ internal static class HeadlessCampaignSweepRunner
             executions,
             config,
             stopAfterEncounterId);
+        var threatLandingWitness = accumulator.BuildThreatLandingReport();
         var woundMeasure = BuildWoundMeasure(executions);
         var canonical = new HeadlessCampaignCanonicalResult(
             SchemaVersion: "headless-campaign-canonical-v1",
@@ -219,6 +226,7 @@ internal static class HeadlessCampaignSweepRunner
             targetBoss,
             targetBossSurvival,
             targetBossAoeSurvival,
+            threatLandingWitness,
             woundMeasure,
             hash,
             stopwatch.Elapsed.TotalSeconds);
@@ -441,6 +449,7 @@ internal static class HeadlessCampaignSweepRunner
         HeadlessCampaignNodeBand TargetBoss,
         HeadlessCampaignSurvivalBand TargetBossSurvival,
         HeadlessCampaignAoeBand TargetBossAoeSurvival,
+        CampaignThreatLandingWitnessReport ThreatLandingWitness,
         HeadlessCampaignWoundMeasure WoundMeasure,
         string Hash,
         double ElapsedSeconds);

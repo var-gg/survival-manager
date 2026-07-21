@@ -29,7 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_pale_archive
   - boss
-  - encounter_family_summon_pressure
   - answer_lane_anti_sustain_finish
+  - encounter_family_summon_pressure
   legacyDisplayName: 
   legacyDescription: 

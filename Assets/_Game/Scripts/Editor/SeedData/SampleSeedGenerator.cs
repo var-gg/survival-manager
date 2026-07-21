@@ -76,6 +76,7 @@ public static partial class SampleSeedGenerator
         CreateTraitTokens();
         CreateRewardSourcesAndDropTables();
         CreateCampaignEncounterCatalog();
+        SyncBossDeckBuild2AAssets();
         CreateSiteEventContent();
         CreateAshenGateBranchingSiteContent();
         var extraActors = CreateExtraActorCharacters();
@@ -4213,8 +4214,16 @@ public static partial class SampleSeedGenerator
                 Members(Member("guardian", "extra_kojin_gate_warden", "guardian_encounter_dampened_assault"), Member("scout", "extra_solarum_border_lancer", "scout_encounter_dampened_assault"), Member("hexer", "extra_solarum_sigil_scribe", "hexer_encounter_dampened_assault"), Member("hunter", "extra_border_reliquary_carry", "hunter_encounter_dampened_assault")),
                 Members(Member("bulwark", "hero_aegis_sentinel"), Member("hunter", "extra_solarum_border_lancer"), Member("mirror_cantor", "extra_solarum_sigil_scribe"), Member("warden", "extra_kojin_gate_warden")),
                 Member("warden", "hero_aegis_sentinel"),
-                Members(Member("hunter", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe")),
-                "boss_overlay_ashen_gate", "boss_aura_guard_anchor", "boss_utility_gate_lock", "guarded"),
+                Members(
+                    Member("guardian", "extra_kojin_gate_warden", equipmentBudget: 1f, equipmentItemBaseId: "item_layered_armor"),
+                    Member("hunter", "extra_solarum_border_lancer", equipmentBudget: 2f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("hexer", "extra_solarum_sigil_scribe")),
+                "boss_overlay_ashen_gate", "boss_aura_guard_anchor", "boss_utility_gate_lock", "guarded",
+                BossPosture: TeamPostureTypeValue.ProtectCarry,
+                BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
+                BossEscortTwoAnchor: DeploymentAnchorValue.BackTop,
+                BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
+                BossOpeningBarrier: 14f),
             new CampaignSiteSeed(
                 "chapter_ashen_gate", 1, "Ashen Gate", "잿문 장", "Break the Solarium border gate.", "솔라룸 국경 관문을 돌파한다.",
                 "site_wolfpine_trail", 2, "Wolfpine Trail", "늑대소나무길", "Pack scouts and Grey Fang's vanguard turn the route into a pursuit.", "팩 정찰대와 회조의 선봉대가 추적전으로 압박하는 숲길.",
@@ -4262,9 +4271,17 @@ public static partial class SampleSeedGenerator
                 // sweep 2회전 조정(GPT 결정): elite 비네임드 3체 화력 ×0.82(눌린 수행단) — 힐 노브(잠긴 성가)는
                 // 적측 회복 실측 0.0으로 죽은 노브 판명·삭제. 네임드(iron_pelt)·comp 무접촉.
                 Members(Member("guardian", "hero_iron_pelt"), Member("slayer", "extra_bastion_reliquary_guard", "slayer_encounter_suppressed_retinue"), Member("mirror_cantor", "extra_sunken_adjudicator_lieutenant", "mirror_cantor_encounter_suppressed_retinue"), Member("marksman", "extra_sunken_bastion_adjudicator", "marksman_encounter_suppressed_retinue")),
-                Member("guardian", "hero_iron_pelt"),
-                Members(Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant")),
-                "boss_overlay_sunken_bastion", "boss_aura_drowned_bastion", "boss_utility_reliquary_seal", "barrier"),
+                Member("sunken_adjudicator_boss", "extra_sunken_bastion_adjudicator"),
+                Members(
+                    Member("bastion_penitent", "extra_bastion_reliquary_guard", equipmentBudget: 2f, equipmentItemBaseId: "item_penitent_shield", equipmentAffixIds: new[] { "affix_sturdy" }),
+                    Member("pale_executor_nondiving_boss", "extra_tithe_executioner_proxy", equipmentBudget: 2f, equipmentItemBaseId: "item_reaver_blade", ruleModifierTags: new[] { "duelist_hold_bruiser", "execute_low_hp" }),
+                    Member("priest_sustain_boss", "extra_sunken_adjudicator_lieutenant", equipmentBudget: 1f, equipmentItemBaseId: "item_priest_focus")),
+                "boss_overlay_sunken_bastion", "boss_aura_drowned_bastion", "boss_utility_anticluster_bombardment", "guarded",
+                BossPosture: TeamPostureTypeValue.HoldLine,
+                BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
+                BossEscortTwoAnchor: DeploymentAnchorValue.FrontBottom,
+                BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
+                BossOpeningBarrier: 8f),
             new CampaignSiteSeed(
                 "chapter_sunken_bastion", 2, "Sunken Bastion", "가라앉은 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
                 "site_tithe_road", 2, "Tithe Road", "십일조로", "Marked carriers and pureflame escorts test cleanse timing.", "표식을 짊어진 징수 행렬과 순화 호위가 해제 타이밍을 시험한다.",
@@ -4273,9 +4290,17 @@ public static partial class SampleSeedGenerator
                 Members(Member("scout", "extra_tithe_mark_bearer"), Member("priest", "extra_tithe_chain_cantor"), Member("raider", "extra_tithe_executioner_proxy"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
                 Members(Member("marksman", "extra_tithe_mark_bearer"), Member("scout", "extra_tithe_executioner_proxy"), Member("guardian", "extra_tithe_chain_cantor"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
                 Members(Member("priest", "npc_lyra_sternfeld"), Member("pale_executor", "extra_tithe_executioner_proxy"), Member("scout", "extra_tithe_mark_bearer"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
-                Member("priest", "npc_lyra_sternfeld"),
-                Members(Member("pale_executor", "extra_tithe_executioner_proxy"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
-                "boss_overlay_tithe_road", "boss_aura_pureflame_tithe", "boss_utility_mark_chain", "marked"),
+                Member("bastion_penitent_tithe_boss", "npc_lyra_sternfeld", equipmentBudget: 2f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" }),
+                Members(
+                    Member("warden", "extra_tithe_mark_bearer", equipmentBudget: 1f, equipmentItemBaseId: "item_layered_armor"),
+                    Member("pale_executor_tithe_boss", "extra_tithe_executioner_proxy", equipmentBudget: 2f, equipmentItemBaseId: "item_reaver_blade", ruleModifierTags: new[] { "duelist_dive_commit" }),
+                    Member("mirror_cantor_sustain_boss", "extra_tithe_chain_cantor", equipmentBudget: 2f, equipmentItemBaseId: "item_cantor_focus")),
+                "boss_overlay_tithe_road", "boss_aura_pureflame_tithe", "boss_utility_mark_chain", "guarded",
+                BossPosture: TeamPostureTypeValue.StandardAdvance,
+                BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
+                BossEscortTwoAnchor: DeploymentAnchorValue.FrontBottom,
+                BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
+                BossOpeningBarrier: 8f),
             new CampaignSiteSeed(
                 "chapter_ruined_crypts", 3, "Ruined Crypts", "무너진 묘역", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
                 "site_ruined_crypts", 1, "Ruined Crypts", "무너진 묘역", "Archive keepers turn memorial records into attrition pressure.", "기록 수호자들이 추모 기록을 소모전 압박으로 바꾼다.",
@@ -4284,9 +4309,17 @@ public static partial class SampleSeedGenerator
                 Members(Member("guardian", "extra_pale_memorial_keeper"), Member("hexer", "extra_pale_tomb_sentinel"), Member("mirror_cantor", "extra_black_roll_bailiff"), Member("hunter", "extra_crypt_list_keeper")),
                 Members(Member("bulwark", "extra_pale_tomb_sentinel"), Member("hexer", "npc_silent_moon"), Member("priest", "extra_pale_memorial_keeper"), Member("marksman", "extra_crypt_list_keeper")),
                 Members(Member("hexer", "npc_silent_moon"), Member("guardian", "extra_pale_tomb_sentinel"), Member("priest", "extra_pale_memorial_keeper"), Member("mirror_cantor", "extra_black_roll_bailiff")),
-                Member("hexer", "npc_silent_moon"),
-                Members(Member("priest", "extra_pale_memorial_keeper"), Member("guardian", "extra_pale_tomb_sentinel")),
-                "boss_overlay_ruined_crypts", "boss_aura_pale_record", "boss_utility_memorial_loop", "silence"),
+                Member("guardian", "npc_silent_moon", equipmentBudget: 3f, equipmentItemBaseId: "item_guardian_shield", equipmentAffixIds: new[] { "affix_sturdy" }),
+                Members(
+                    Member("bastion_penitent", "extra_pale_tomb_sentinel", equipmentBudget: 3f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" }),
+                    Member("priest_sustain_boss", "extra_pale_memorial_keeper", equipmentBudget: 2f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_mender" }),
+                    Member("hexer_attrition_boss", "extra_black_roll_bailiff", equipmentBudget: 2f, equipmentItemBaseId: "item_hexer_focus")),
+                "boss_overlay_ruined_crypts", "boss_aura_pale_sustain_choir", "boss_utility_memorial_loop", "guarded",
+                BossPosture: TeamPostureTypeValue.HoldLine,
+                BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
+                BossEscortTwoAnchor: DeploymentAnchorValue.BackTop,
+                BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
+                BossOpeningBarrier: 14f),
             new CampaignSiteSeed(
                 "chapter_ruined_crypts", 3, "Ruined Crypts", "무너진 묘역", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
                 "site_bone_orchard", 2, "Bone Orchard", "뼈 과수원", "Lattice-root watchers flood the lane with summoned bodies.", "격자뿌리 감시자들이 소환체로 전선을 채운다.",
@@ -4295,9 +4328,17 @@ public static partial class SampleSeedGenerator
                 Members(Member("shaman", "extra_lattice_root_usher"), Member("scout", "extra_lattice_echo_caretaker"), Member("reaver", "extra_bone_orchard_watcher"), Member("hunter", "extra_lattice_root_usher")),
                 Members(Member("rift_stalker", "extra_bone_orchard_watcher"), Member("shaman", "npc_black_vellum"), Member("raider", "extra_lattice_echo_caretaker"), Member("priest", "extra_lattice_root_usher")),
                 Members(Member("shaman", "npc_black_vellum"), Member("reaver", "extra_bone_orchard_watcher"), Member("mirror_cantor", "extra_lattice_echo_caretaker"), Member("hunter", "extra_lattice_root_usher")),
-                Member("shaman", "npc_black_vellum"),
-                Members(Member("reaver", "extra_bone_orchard_watcher"), Member("mirror_cantor", "extra_lattice_echo_caretaker")),
-                "boss_overlay_bone_orchard", "boss_aura_lattice_growth", "boss_utility_body_bloom", "burn"),
+                Member("warden", "npc_black_vellum", equipmentBudget: 3f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" }),
+                Members(
+                    Member("reaver", "extra_bone_orchard_watcher", equipmentBudget: 3f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_sturdy" }, ruleModifierTags: new[] { "duelist_hold_bruiser" }),
+                    Member("shaman_burn_boss", "extra_lattice_root_usher", equipmentBudget: 2f, equipmentItemBaseId: "item_priest_focus"),
+                    Member("mirror_cantor_sustain_boss", "extra_lattice_echo_caretaker", equipmentBudget: 2f, equipmentItemBaseId: "item_cantor_focus", equipmentAffixIds: new[] { "affix_mender" })),
+                "boss_overlay_bone_orchard", "boss_aura_lattice_growth", "boss_utility_body_bloom", "guarded",
+                BossPosture: TeamPostureTypeValue.ProtectCarry,
+                BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
+                BossEscortTwoAnchor: DeploymentAnchorValue.BackTop,
+                BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
+                BossOpeningBarrier: 12f),
             new CampaignSiteSeed(
                 "chapter_glass_forest", 4, "Glass Forest", "유리숲", "Enter the refracted Solarium record field.", "굴절된 솔라룸 기록장을 통과한다.",
                 "site_glass_forest", 1, "Glass Forest", "유리숲", "Shards, clerics, and recordkeepers split targeting priorities.", "유리 파편, 성직자, 기록관이 타깃 우선순위를 흔든다.",

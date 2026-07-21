@@ -25,7 +25,7 @@ MonoBehaviour:
   Members:
   - Id: site_bone_orchard_elite_1_squad_1
     NameKey: 
-    ArchetypeId: shaman
+    ArchetypeId: shaman_burn_boss
     CharacterId: npc_black_vellum
     Anchor: 0
     Role: 0

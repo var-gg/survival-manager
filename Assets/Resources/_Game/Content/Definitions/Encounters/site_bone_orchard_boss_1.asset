@@ -29,7 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_bone_orchard
   - boss
-  - encounter_family_control_cleanse
   - answer_lane_anti_summon_burst
+  - encounter_family_control_cleanse
   legacyDisplayName: 
   legacyDescription: 

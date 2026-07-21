@@ -29,7 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_tithe_road
   - boss
-  - encounter_family_sustain_grind
   - answer_lane_anti_mark_cleanse
+  - encounter_family_sustain_grind
   legacyDisplayName: 
   legacyDescription: 

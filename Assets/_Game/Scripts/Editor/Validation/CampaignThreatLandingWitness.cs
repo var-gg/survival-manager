@@ -14,6 +14,7 @@ internal sealed class CampaignThreatLandingBattleObserver
     private readonly HashSet<string> _enemyCoreIds;
     private readonly Dictionary<string, HashSet<string>> _areaSkillIdsByActor;
     private readonly double _enemyCoreMaxHealth;
+    private readonly bool _hasBossCaptain;
 
     private int? _firstThreatLandingTick;
     private double? _firstThreatLandingSeconds;
@@ -37,10 +38,7 @@ internal sealed class CampaignThreatLandingBattleObserver
             .Where(unit => string.Equals(unit.Definition.RoleTag, "boss_captain", StringComparison.Ordinal))
             .Select(unit => unit.Id.Value)
             .ToHashSet(StringComparer.Ordinal);
-        if (_enemyCoreIds.Count == 0)
-        {
-            throw new InvalidOperationException("Threat-landing witness requires an enemy boss_captain role.");
-        }
+        _hasBossCaptain = _enemyCoreIds.Count > 0;
 
         _enemyFrontlineBodyIds = state.Enemies
             .Where(unit => !_enemyCoreIds.Contains(unit.Id.Value) && IsFrontlineBody(unit))
@@ -60,6 +58,11 @@ internal sealed class CampaignThreatLandingBattleObserver
 
     internal void ObserveStep(BattleSimulationStep step)
     {
+        if (!_hasBossCaptain)
+        {
+            return;
+        }
+
         var threatKind = !_firstThreatLandingTick.HasValue
             ? DetectThreatKind(step)
             : string.Empty;
@@ -102,6 +105,26 @@ internal sealed class CampaignThreatLandingBattleObserver
 
     internal CampaignThreatLandingObservation BuildObservation()
     {
+        if (!_hasBossCaptain)
+        {
+            return new CampaignThreatLandingObservation(
+                _state.Seed,
+                null,
+                null,
+                string.Empty,
+                false,
+                null,
+                null,
+                null,
+                0d,
+                0d,
+                0d,
+                null,
+                null,
+                null,
+                null);
+        }
+
         if (!_captainDeathTick.HasValue
             && _enemyCoreIds.All(id => _state.FindUnitById(id) is { IsAlive: false }))
         {

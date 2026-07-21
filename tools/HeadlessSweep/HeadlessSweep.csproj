@@ -29,6 +29,8 @@
              Link="SM.Editor.Validation/CampaignBossAnswerTagEvaluator.cs" />
     <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignBalanceGridProjector.cs"
              Link="SM.Editor.Validation/CampaignBalanceGridProjector.cs" />
+    <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignThreatLandingWitness.cs"
+             Link="SM.Editor.Validation/CampaignThreatLandingWitness.cs" />
     <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignTwoArmSweepEvaluator.cs"
              Link="SM.Editor.Validation/CampaignTwoArmSweepEvaluator.cs" />
     <Compile Include="../../Assets/_Game/Scripts/Editor/Validation/CampaignTwoArmSweepReport.cs"

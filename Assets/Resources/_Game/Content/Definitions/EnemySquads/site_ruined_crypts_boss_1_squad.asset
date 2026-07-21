@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: content.enemy_squad.site_ruined_crypts_boss_1_squad.name
   DescriptionKey: content.enemy_squad.site_ruined_crypts_boss_1_squad.desc
   FactionId: faction_pale_archive
-  EnemyPosture: 2
+  EnemyPosture: 0
   ThreatTier: 3
   ThreatCost: 3
   RewardDropTags:
@@ -24,45 +24,59 @@ MonoBehaviour:
   - boss
   Members:
   - Id: site_ruined_crypts_boss_1_squad_captain
-    NameKey: 
-    ArchetypeId: hexer
+    NameKey:
+    ArchetypeId: guardian
     CharacterId: npc_silent_moon
     Anchor: 1
     Role: 1
-    PositiveTraitId: 
-    NegativeTraitId: 
-    EquipmentBudget: 2
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 3
+    EquipmentItemBaseId: item_guardian_shield
+    EquipmentAffixIds:
+    - affix_sturdy
+    RuleModifierTags: []
+    legacyDisplayName:
+  - Id: site_ruined_crypts_boss_1_squad_escort_1
+    NameKey:
+    ArchetypeId: bastion_penitent
+    CharacterId: extra_pale_tomb_sentinel
+    Anchor: 0
+    Role: 2
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 3
     EquipmentItemBaseId: item_layered_armor
     EquipmentAffixIds:
     - affix_sturdy
     RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_ruined_crypts_boss_1_squad_escort_1
-    NameKey: 
-    ArchetypeId: priest
+    legacyDisplayName:
+  - Id: site_ruined_crypts_boss_1_squad_escort_2
+    NameKey:
+    ArchetypeId: priest_sustain_boss
     CharacterId: extra_pale_memorial_keeper
     Anchor: 3
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
     EquipmentBudget: 2
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:
-    - affix_sturdy
+    - affix_mender
     RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_ruined_crypts_boss_1_squad_escort_2
-    NameKey: 
-    ArchetypeId: guardian
-    CharacterId: extra_pale_tomb_sentinel
+    legacyDisplayName:
+  - Id: site_ruined_crypts_boss_1_squad_escort_3
+    NameKey:
+    ArchetypeId: hexer_attrition_boss
+    CharacterId: extra_black_roll_bailiff
     Anchor: 5
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_hexer_focus
     EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
-  legacyDisplayName: 
-  legacyDescription: 
+    legacyDisplayName:
+  legacyDisplayName:
+  legacyDescription:

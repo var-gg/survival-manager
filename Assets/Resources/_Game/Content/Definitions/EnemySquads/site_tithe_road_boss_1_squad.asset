@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: content.enemy_squad.site_tithe_road_boss_1_squad.name
   DescriptionKey: content.enemy_squad.site_tithe_road_boss_1_squad.desc
   FactionId: faction_tithe_road
-  EnemyPosture: 2
+  EnemyPosture: 1
   ThreatTier: 3
   ThreatCost: 3
   RewardDropTags:
@@ -24,34 +24,58 @@ MonoBehaviour:
   - boss
   Members:
   - Id: site_tithe_road_boss_1_squad_captain
-    NameKey: 
-    ArchetypeId: priest
+    NameKey:
+    ArchetypeId: bastion_penitent_tithe_boss
     CharacterId: npc_lyra_sternfeld
     Anchor: 1
     Role: 1
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds:
+    - affix_sturdy
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_tithe_road_boss_1_squad_escort_1
-    NameKey: 
-    ArchetypeId: pale_executor
-    CharacterId: extra_tithe_executioner_proxy
-    Anchor: 3
+    NameKey:
+    ArchetypeId: warden
+    CharacterId: extra_tithe_mark_bearer
+    Anchor: 0
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_tithe_road_boss_1_squad_escort_2
-    NameKey: 
-    ArchetypeId: hexer
-    CharacterId: extra_tithe_inquisitor_pureflame
+    NameKey:
+    ArchetypeId: pale_executor_tithe_boss
+    CharacterId: extra_tithe_executioner_proxy
+    Anchor: 2
+    Role: 2
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds: []
+    RuleModifierTags:
+    - duelist_dive_commit
+    legacyDisplayName:
+  - Id: site_tithe_road_boss_1_squad_escort_3
+    NameKey:
+    ArchetypeId: mirror_cantor_sustain_boss
+    CharacterId: extra_tithe_chain_cantor
     Anchor: 5
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_cantor_focus
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
-  legacyDisplayName: 
-  legacyDescription: 
+    legacyDisplayName:
+  legacyDisplayName:
+  legacyDescription:

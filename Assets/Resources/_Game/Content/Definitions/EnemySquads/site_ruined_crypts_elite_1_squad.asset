@@ -58,9 +58,10 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_priest_focus
+    EquipmentAffixIds:
+    - affix_mender
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ruined_crypts_elite_1_squad_4

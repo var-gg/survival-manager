@@ -24,45 +24,60 @@ MonoBehaviour:
   - boss
   Members:
   - Id: site_bone_orchard_boss_1_squad_captain
-    NameKey: 
-    ArchetypeId: shaman
+    NameKey:
+    ArchetypeId: warden
     CharacterId: npc_black_vellum
     Anchor: 1
     Role: 1
-    PositiveTraitId: 
-    NegativeTraitId: 
-    EquipmentBudget: 2
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 3
     EquipmentItemBaseId: item_layered_armor
     EquipmentAffixIds:
     - affix_sturdy
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_bone_orchard_boss_1_squad_escort_1
-    NameKey: 
+    NameKey:
     ArchetypeId: reaver
     CharacterId: extra_bone_orchard_watcher
-    Anchor: 3
+    Anchor: 0
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
-    EquipmentBudget: 2
-    EquipmentItemBaseId: item_layered_armor
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 3
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds:
     - affix_sturdy
-    RuleModifierTags: []
-    legacyDisplayName: 
+    RuleModifierTags:
+    - duelist_hold_bruiser
+    legacyDisplayName:
   - Id: site_bone_orchard_boss_1_squad_escort_2
-    NameKey: 
-    ArchetypeId: mirror_cantor
+    NameKey:
+    ArchetypeId: shaman_burn_boss
+    CharacterId: extra_lattice_root_usher
+    Anchor: 3
+    Role: 2
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_priest_focus
+    EquipmentAffixIds: []
+    RuleModifierTags: []
+    legacyDisplayName:
+  - Id: site_bone_orchard_boss_1_squad_escort_3
+    NameKey:
+    ArchetypeId: mirror_cantor_sustain_boss
     CharacterId: extra_lattice_echo_caretaker
     Anchor: 5
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_cantor_focus
+    EquipmentAffixIds:
+    - affix_mender
     RuleModifierTags: []
-    legacyDisplayName: 
-  legacyDisplayName: 
-  legacyDescription: 
+    legacyDisplayName:
+  legacyDisplayName:
+  legacyDescription:

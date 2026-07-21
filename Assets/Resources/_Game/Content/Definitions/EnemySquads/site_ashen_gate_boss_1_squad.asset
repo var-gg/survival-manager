@@ -24,34 +24,56 @@ MonoBehaviour:
   - boss
   Members:
   - Id: site_ashen_gate_boss_1_squad_captain
-    NameKey: 
+    NameKey:
     ArchetypeId: warden
     CharacterId: hero_aegis_sentinel
     Anchor: 1
     Role: 1
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_ashen_gate_boss_1_squad_escort_1
-    NameKey: 
+    NameKey:
+    ArchetypeId: guardian
+    CharacterId: extra_kojin_gate_warden
+    Anchor: 0
+    Role: 2
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds: []
+    RuleModifierTags: []
+    legacyDisplayName:
+  - Id: site_ashen_gate_boss_1_squad_escort_2
+    NameKey:
     ArchetypeId: hunter
     CharacterId: extra_solarum_border_lancer
     Anchor: 3
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 2
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
-  - Id: site_ashen_gate_boss_1_squad_escort_2
-    NameKey: 
+    legacyDisplayName:
+  - Id: site_ashen_gate_boss_1_squad_escort_3
+    NameKey:
     ArchetypeId: hexer
     CharacterId: extra_solarum_sigil_scribe
     Anchor: 5
     Role: 2
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
-  legacyDisplayName: 
-  legacyDescription: 
+    legacyDisplayName:
+  legacyDisplayName:
+  legacyDescription:

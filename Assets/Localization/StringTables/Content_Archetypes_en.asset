@@ -86,6 +86,34 @@ MonoBehaviour:
     m_Localized: Sunken Adjudicator
     m_Metadata:
       m_Items: []
+  - m_Id: 40887367555682304
+    m_Localized: Court Executor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887368033832960
+    m_Localized: Tithe Collector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887368520372224
+    m_Localized: Choir Priest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887368948191232
+    m_Localized: Sustain Cantor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887369409564672
+    m_Localized: Archive Scorcher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887369837383680
+    m_Localized: Orchard Burn Shaman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40891780051570688
+    m_Localized: Tithe Executor
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

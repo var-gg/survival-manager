@@ -743,6 +743,46 @@ MonoBehaviour:
     m_Key: content.skill.skill_sunken_anticluster_bombardment.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 40887370655272960
+    m_Key: content.skill.skill_boss_low_hp_execution_shot.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887370705604608
+    m_Key: content.skill.skill_boss_low_hp_execution_shot.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371116646400
+    m_Key: content.skill.skill_boss_tithe_mark_sentence.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371116646401
+    m_Key: content.skill.skill_boss_tithe_mark_sentence.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371540271104
+    m_Key: content.skill.skill_boss_sustain_mend.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887371540271105
+    m_Key: content.skill.skill_boss_sustain_mend.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372018421760
+    m_Key: content.skill.skill_boss_ruined_attrition_hex.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372018421761
+    m_Key: content.skill.skill_boss_ruined_attrition_hex.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372437852160
+    m_Key: content.skill.skill_boss_orchard_burn_pulse.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372437852161
+    m_Key: content.skill.skill_boss_orchard_burn_pulse.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

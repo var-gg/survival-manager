@@ -22,9 +22,9 @@ MonoBehaviour:
   Delivery: 6
   TargetRule: 1
   Power: 14
-  Range: 12
+  Range: 6
   RangeMin: 0
-  RangeMax: 12
+  RangeMax: 6
   Radius: 1.85
   Width: 0
   ArcDegrees: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   ResourceCost: -1
   BaseCooldownSeconds: 3.25
   CooldownSeconds: -1
-  CastWindupSeconds: 0.35
+  CastWindupSeconds: 3.75
   RecoverySeconds: -1
   PowerBudget: 0
   InterruptRefundScalar: 0.5
@@ -100,8 +100,8 @@ MonoBehaviour:
     Filters: 5
     ReevaluateIntervalSeconds: 0.25
     MinimumCommitSeconds: 0.75
-    MaxAcquireRange: 12
-    PreferredMinTargets: 2
+    MaxAcquireRange: 6
+    PreferredMinTargets: 3
     ClusterRadius: 1.85
     LockTargetAtCastStart: 1
     RetargetLockMode: 3

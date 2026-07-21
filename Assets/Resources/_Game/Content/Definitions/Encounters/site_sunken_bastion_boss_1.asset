@@ -29,7 +29,7 @@ MonoBehaviour:
   - reward_source_boss
   - faction_sunken_adjudicators
   - boss
-  - encounter_family_protect_carry
   - answer_lane_break_formation
+  - encounter_family_protect_carry
   legacyDisplayName: 
   legacyDescription: 

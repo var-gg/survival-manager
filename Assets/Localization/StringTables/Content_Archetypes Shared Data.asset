@@ -83,6 +83,34 @@ MonoBehaviour:
     m_Key: content.archetype.sunken_adjudicator_boss.name
     m_Metadata:
       m_Items: []
+  - m_Id: 40887367555682304
+    m_Key: content.archetype.pale_executor_nondiving_boss.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887368033832960
+    m_Key: content.archetype.bastion_penitent_tithe_boss.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887368520372224
+    m_Key: content.archetype.priest_sustain_boss.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887368948191232
+    m_Key: content.archetype.mirror_cantor_sustain_boss.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887369409564672
+    m_Key: content.archetype.hexer_attrition_boss.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887369837383680
+    m_Key: content.archetype.shaman_burn_boss.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40891780051570688
+    m_Key: content.archetype.pale_executor_tithe_boss.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

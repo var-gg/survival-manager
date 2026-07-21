@@ -118,6 +118,7 @@ internal static class HeadlessCampaignPlaythrough
                     prepEquipmentAssignmentCount > 0,
                     measured.FlankSurvival,
                     measured.AntiClusterAoeSurvival,
+                    measured.ThreatLanding,
                     won ? woundsApplied : 0));
 
                 if (stopAtCurrentNode)
@@ -186,6 +187,9 @@ internal static class HeadlessCampaignPlaythrough
 
         var survivalObserver = new PackPursuitSurvivalObserver();
         var antiClusterAoeObserver = new AntiClusterAoeSurvivalObserver();
+        var threatLandingObserver = encounter.Context.IsBoss
+            ? new CampaignThreatLandingBattleObserver(battleState)
+            : null;
         var result = BattleResolver.Run(
             battleState,
             BattleSimulator.DefaultMaxSteps,
@@ -193,11 +197,13 @@ internal static class HeadlessCampaignPlaythrough
             {
                 survivalObserver.Observe(battleState, step);
                 antiClusterAoeObserver.Observe(battleState, step);
+                threatLandingObserver?.ObserveStep(step);
             });
         return new HeadlessCampaignBattleOutcome(
             result,
             survivalObserver.Complete(battleState),
-            antiClusterAoeObserver.Complete(battleState));
+            antiClusterAoeObserver.Complete(battleState),
+            threatLandingObserver?.BuildObservation());
     }
 
     private static BattleResult? FindProgressionResult(

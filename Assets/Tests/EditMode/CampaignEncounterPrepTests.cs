@@ -55,6 +55,14 @@ public sealed class CampaignEncounterPrepTests
             [EncounterKindValue.Elite] = 1.10d,
             [EncounterKindValue.Boss] = 1.25d,
         };
+        var authoredBossDeckBudgets = new Dictionary<string, float[]>(StringComparer.Ordinal)
+        {
+            ["site_ashen_gate_boss_1"] = new[] { 0f, 1f, 2f, 0f },
+            ["site_sunken_bastion_boss_1"] = new[] { 0f, 2f, 2f, 1f },
+            ["site_tithe_road_boss_1"] = new[] { 2f, 1f, 2f, 2f },
+            ["site_ruined_crypts_boss_1"] = new[] { 3f, 3f, 2f, 2f },
+            ["site_bone_orchard_boss_1"] = new[] { 3f, 3f, 2f, 2f },
+        };
 
         foreach (var chapter in snapshot.CampaignChapters!.Values.OrderBy(value => value.StoryOrder))
         foreach (var siteId in chapter.SiteIds)
@@ -66,8 +74,9 @@ public sealed class CampaignEncounterPrepTests
                 encounter.Id,
                 "site_wolfpine_trail_boss_1",
                 StringComparison.Ordinal);
+            var isAuthoredBossDeck = authoredBossDeckBudgets.TryGetValue(encounter.Id, out var bossDeckBudgets);
             var expectedHeadcount = encounter.Kind == EncounterKindValue.Boss
-                ? isWolfpineLearningBoss ? 4 : 3
+                ? isWolfpineLearningBoss || isAuthoredBossDeck ? 4 : 3
                 : 4;
             Assert.That(squad.Members, Has.Count.EqualTo(expectedHeadcount), encounter.Id);
 
@@ -76,6 +85,8 @@ public sealed class CampaignEncounterPrepTests
                 average,
                 Is.EqualTo(isWolfpineLearningBoss
                     ? 3d
+                    : isAuthoredBossDeck
+                        ? bossDeckBudgets!.Average()
                     : expected[(chapter.StoryOrder, encounter.Kind)]).Within(0.25d),
                 encounter.Id);
 
@@ -83,6 +94,16 @@ public sealed class CampaignEncounterPrepTests
             {
                 Assert.That(squad.Members.All(value => value.EquipmentBudget > 0f), Is.True, encounter.Id);
                 Assert.That(squad.Members.All(value => !string.IsNullOrWhiteSpace(value.EquipmentItemBaseId)), Is.True, encounter.Id);
+            }
+            else if (isAuthoredBossDeck)
+            {
+                Assert.That(squad.Members.Select(value => value.EquipmentBudget), Is.EqualTo(bossDeckBudgets), encounter.Id);
+                Assert.That(
+                    squad.Members.All(value => value.EquipmentBudget > 0f
+                        ? !string.IsNullOrWhiteSpace(value.EquipmentItemBaseId)
+                        : string.IsNullOrWhiteSpace(value.EquipmentItemBaseId)),
+                    Is.True,
+                    encounter.Id);
             }
             else if (chapter.StoryOrder <= 2)
             {

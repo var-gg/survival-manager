@@ -15,6 +15,38 @@ namespace SM.Tests.EditMode;
 public sealed class CampaignThreatLandingWitnessTests
 {
     [Test]
+    public void MissingBossCaptain_ProducesEmptyObservationWithoutThrowing()
+    {
+        var state = BattleFactory.Create(
+            new[] { Unit("ally", DeploymentAnchorId.FrontCenter, "vanguard", "anchor") },
+            new[] { Unit("enemy", DeploymentAnchorId.FrontCenter, "vanguard", "enemy_unit") },
+            TeamPostureType.StandardAdvance,
+            TeamPostureType.StandardAdvance,
+            0.1f,
+            1700);
+
+        var observer = new CampaignThreatLandingBattleObserver(state);
+        observer.ObserveStep(new BattleSimulationStep(
+            1,
+            0.1f,
+            ReadModels(state),
+            Array.Empty<BattleEvent>(),
+            false,
+            null));
+
+        var observation = observer.BuildObservation();
+        Assert.That(observation.BattleSeed, Is.EqualTo(1700));
+        Assert.That(observation.FirstThreatLandingTick, Is.Null);
+        Assert.That(observation.FirstThreatLandingSeconds, Is.Null);
+        Assert.That(observation.FirstThreatKind, Is.Empty);
+        Assert.That(observation.ThreatLandedBeforeCaptainDeath, Is.False);
+        Assert.That(observation.CaptainDeathTick, Is.Null);
+        Assert.That(observation.FirstFrontlineBodyDeathTick, Is.Null);
+        Assert.That(observation.PreThreatPlayerDamage, Is.Zero);
+        Assert.That(observation.CoreEhpFractionAtFirstThreat, Is.Null);
+    }
+
+    [Test]
     public void TypedSteps_ProjectThreatRoutingCoreEhpAndFrontlineTtk()
     {
         var state = BuildWitnessState(areaThreat: false);

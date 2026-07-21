@@ -1,0 +1,164 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317f0135c04991a4e91ddd8d0479dbe4, type: 3}
+  m_Name: skill_boss_tithe_mark_sentence
+  m_EditorClassIdentifier: SM.Content:SM.Content.Definitions:SkillDefinitionAsset
+  Id: skill_boss_tithe_mark_sentence
+  NameKey: content.skill.skill_boss_tithe_mark_sentence.name
+  DescriptionKey: content.skill.skill_boss_tithe_mark_sentence.desc
+  TemplateType: 1
+  Kind: 4
+  SlotKind: 1
+  DamageType: 1
+  Delivery: 2
+  TargetRule: 1
+  Power: 0
+  Range: 6.5
+  RangeMin: 0
+  RangeMax: 6.5
+  Radius: 0
+  Width: 0
+  ArcDegrees: 0
+  AreaEffectFamily: 0
+  PunishCluster: 0
+  DisplacementKind: 0
+  DisplacementDistance: 0
+  PowerFlat: 0
+  PhysCoeff: 0
+  MagCoeff: 0
+  HealCoeff: 0
+  HealthCoeff: 0
+  CanCrit: 0
+  ActivationModel: 2
+  Lane: 0
+  LockRule: 2
+  AuthorityLayer: 1
+  BudgetCard:
+    Domain: 1
+    Rarity: 0
+    PowerBand: 1
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 2
+      BurstDamage: 2
+      Durability: 0
+      Control: 2
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 2
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns:
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  ManaCost: 0
+  ResourceCost: -1
+  BaseCooldownSeconds: 3.5
+  CooldownSeconds: -1
+  CastWindupSeconds: 0.2
+  RecoverySeconds: -1
+  PowerBudget: 0
+  InterruptRefundScalar: 0.5
+  AiIntents:
+  AiScoreHints:
+    BurstBias: 0
+    ProtectBias: 0
+    MaintainRangeBias: 0
+    ExecuteBias: 0
+    ControlBias: 0
+    MinimumTargetHealthRatio: 0
+    MaximumTargetHealthRatio: 1
+    MinimumDistance: 0
+    MaximumDistance: 0
+  AnimationHookId:
+  IconId: skill_icon_raider_core
+  VfxHookId: vfx.skill_raider_core
+  SfxHookId: sfx.skill.skill_raider_core
+  LearnSource: 6
+  EffectFamilyId: skill_boss_tithe_mark_sentence
+  MutuallyExclusiveGroupId:
+  RecruitNativeTags: []
+  RecruitPlanTags: []
+  RecruitScoutTags: []
+  TargetRuleData:
+    Domain: 2
+    PrimarySelector: 4
+    FallbackPolicy: 3
+    Filters: 5
+    ReevaluateIntervalSeconds: 0.25
+    MinimumCommitSeconds: 0.75
+    MaxAcquireRange: 6.5
+    PreferredMinTargets: 1
+    ClusterRadius: 1
+    LockTargetAtCastStart: 1
+    RetargetLockMode: 3
+  SummonProfile:
+    EntityKind: 1
+    BehaviorKind: 1
+    Eligibility: 24
+    CreditPolicy: 15
+    MaxConcurrentPerSource: 2
+    MaxConcurrentPerOwner: 4
+    DespawnOnOwnerDeath: 1
+    OwnerDeathDespawnDelaySeconds: 1
+    InheritOwnerTarget: 1
+    IsPersistent: 1
+    Inheritance:
+      OffenseBonusScalar: 0.5
+      DefenseBonusScalar: 0.35
+      UtilityBonusScalar: 0.25
+      InheritCritChance: 0
+      InheritDodge: 0
+      InheritBlock: 0
+  Effects:
+  - Layer: 1
+    Scope: 1
+    Capabilities: 6
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
+  CompileTags: []
+  RuleModifierTags: []
+  SupportAllowedTags: []
+  SupportBlockedTags: []
+  RequiredWeaponTags: []
+  RequiredClassTags: []
+  AppliedStatuses:
+  - Id: boss_tithe_marked
+    StatusId: marked
+    DurationSeconds: 4
+    Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
+  CleanseProfileId:
+  TriggeredEffects: []
+  SupportModifier:
+    PowerMultiplier: 1
+    CooldownMultiplier: 1
+    CastWindupMultiplier: 1
+    RangeBonus: 0
+    StatusDurationMultiplier: 1
+    ForceCanCrit: 0
+    AddedStatuses: []
+    GrantCleanseProfileId:
+    OwnerModifiers: []
+  legacyDisplayName:

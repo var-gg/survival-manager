@@ -26,10 +26,22 @@ MonoBehaviour:
   - boss_aura_drowned_bastion
   - boss_utility_anticluster_bombardment
   AppliedStatuses:
-  - Id: boss_overlay_sunken_bastion_barrier
-    StatusId: barrier
+  - Id: boss_overlay_sunken_bastion_guarded
+    StatusId: guarded
     DurationSeconds: 999
     Magnitude: 0
+    MaxStacks: 1
+    RefreshDurationOnReapply: 1
+    StackCap: 0
+    StackPolicy: 0
+    RefreshPolicy: 0
+    ProcAttributionPolicy: 0
+    OwnershipPolicy: 0
+    Effects: []
+  - Id: boss_overlay_sunken_bastion_opening_barrier
+    StatusId: barrier
+    DurationSeconds: 0
+    Magnitude: 8
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

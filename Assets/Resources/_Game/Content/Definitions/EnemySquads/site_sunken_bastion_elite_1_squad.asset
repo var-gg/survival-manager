@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: content.enemy_squad.site_sunken_bastion_elite_1_squad.name
   DescriptionKey: content.enemy_squad.site_sunken_bastion_elite_1_squad.desc
   FactionId: faction_sunken_adjudicators
-  EnemyPosture: 3
+  EnemyPosture: 0
   ThreatTier: 2
   ThreatCost: 2
   RewardDropTags:
@@ -24,44 +24,56 @@ MonoBehaviour:
   - tier2
   Members:
   - Id: site_sunken_bastion_elite_1_squad_1
-    NameKey: 
+    NameKey:
     ArchetypeId: guardian
     CharacterId: hero_iron_pelt
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId:
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_sunken_bastion_elite_1_squad_2
-    NameKey: 
+    NameKey:
     ArchetypeId: slayer
     CharacterId: extra_bastion_reliquary_guard
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId:
     NegativeTraitId: slayer_encounter_suppressed_retinue
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_sunken_bastion_elite_1_squad_3
-    NameKey: 
+    NameKey:
     ArchetypeId: mirror_cantor
     CharacterId: extra_sunken_adjudicator_lieutenant
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId:
     NegativeTraitId: mirror_cantor_encounter_suppressed_retinue
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
+    legacyDisplayName:
   - Id: site_sunken_bastion_elite_1_squad_4
-    NameKey: 
+    NameKey:
     ArchetypeId: marksman
     CharacterId: extra_sunken_bastion_adjudicator
     Anchor: 5
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId:
     NegativeTraitId: marksman_encounter_suppressed_retinue
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
+    EquipmentAffixIds: []
     RuleModifierTags: []
-    legacyDisplayName: 
-  legacyDisplayName: 
-  legacyDescription: 
+    legacyDisplayName:
+  legacyDisplayName:
+  legacyDescription:
