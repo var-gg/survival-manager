@@ -5,6 +5,7 @@ using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Contracts;
+using SM.Core.Numerics;
 using SM.Core.Stats;
 using SM.Meta.Model;
 
@@ -103,24 +104,38 @@ internal static class ContentConversionShared
         }
 
         var sourceId = $"class:{definition.Id}:stat_caps";
+        var damageMultiplierRaw = Fixed32.OneRaw * Math.Clamp(definition.BaselineDamageMultiplierPercent, 1, 200) / 100;
+        var modifiers = new List<StatModifier>();
+        if (damageMultiplierRaw != Fixed32.OneRaw)
+        {
+            modifiers.Add(new StatModifier(
+                StatKey.PhysPower,
+                ModifierOp.More,
+                Fixed32.FromRaw(damageMultiplierRaw - Fixed32.OneRaw).ToFloat(),
+                ModifierSource.Other,
+                $"class:{definition.Id}:baseline_damage"));
+        }
+
+        modifiers.AddRange(new[]
+        {
+            new StatModifier(
+                StatKey.CritChance,
+                ModifierOp.ClampMax,
+                Math.Max(0f, definition.CritChanceCap),
+                ModifierSource.Other,
+                sourceId),
+            new StatModifier(
+                StatKey.CritMultiplier,
+                ModifierOp.ClampMax,
+                Math.Max(0f, definition.CritMultiplierCap - 1f),
+                ModifierSource.Other,
+                sourceId),
+        });
+
         return new CombatModifierPackage(
             sourceId,
             ModifierSource.Other,
-            new[]
-            {
-                new StatModifier(
-                    StatKey.CritChance,
-                    ModifierOp.ClampMax,
-                    Math.Max(0f, definition.CritChanceCap),
-                    ModifierSource.Other,
-                    sourceId),
-                new StatModifier(
-                    StatKey.CritMultiplier,
-                    ModifierOp.ClampMax,
-                    Math.Max(0f, definition.CritMultiplierCap - 1f),
-                    ModifierSource.Other,
-                    sourceId),
-            });
+            modifiers);
     }
 
     internal static float PreferPrimaryOrFallback(float primary, float fallback)

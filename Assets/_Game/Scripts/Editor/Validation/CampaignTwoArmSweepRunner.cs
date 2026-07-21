@@ -254,11 +254,6 @@ internal static partial class CampaignTwoArmSweepRunner
                 }
 
                 setupObserver?.Invoke(session, allySnapshot, state, measuredEncounter);
-                var measured = battleRunner != null
-                    ? battleRunner(state, measuredEncounter)
-                    : BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
-                var won = measured.Winner == TeamSide.Ally;
-                siteFirstVisitClear &= won;
                 var identity = new CampaignNodeIdentity(
                     chapterId,
                     chapterOrder,
@@ -269,6 +264,21 @@ internal static partial class CampaignTwoArmSweepRunner
                     encounter.Context.EncounterId,
                     IsElite(encounter),
                     encounter.Context.IsBoss);
+                var threatObserver = identity.IsBoss && battleRunner == null
+                    ? new CampaignThreatLandingBattleObserver(state)
+                    : null;
+                var measured = battleRunner != null
+                    ? battleRunner(state, measuredEncounter)
+                    : threatObserver == null
+                        ? BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps)
+                        : BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps, threatObserver.ObserveStep);
+                var won = measured.Winner == TeamSide.Ally;
+                siteFirstVisitClear &= won;
+                if (threatObserver != null)
+                {
+                    accumulator.RecordThreatLanding(arm, cell, identity, threatObserver.BuildObservation());
+                }
+
                 accumulator.RecordNode(
                     arm,
                     cell.CellId,

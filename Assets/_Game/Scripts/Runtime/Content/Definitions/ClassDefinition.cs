@@ -12,6 +12,7 @@ namespace SM.Content.Definitions
         public string DescriptionKey = string.Empty;
 
         [Header("Combat Baseline")]
+        [Range(1, 200)] public int BaselineDamageMultiplierPercent = 100;
         [Range(0f, 1f)] public float BaseCritChance;
         [Min(1f)] public float BaseCritMultiplier = 1f;
         [Range(0f, 1f)] public float CritChanceCap = 1f;

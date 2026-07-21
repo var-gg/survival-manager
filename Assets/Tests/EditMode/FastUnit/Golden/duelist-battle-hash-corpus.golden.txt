@@ -1,0 +1,94 @@
+# CanonicalStateHashV1 duelist-content-corpus schema=CanonicalStateHashV1 interval=10
+fixture=duelist-class-1v1
+seed=7
+0:a566764283c2dcd7
+10:113fd7c451799e89
+20:dc25c0b4e43151c2
+30:4fbec94a67bcefaf
+40:dda14bfba889c82f
+50:4c0a2ac90a5529f6
+57:15b06f5fcc78e50d
+final:15b06f5fcc78e50d steps=57 winner=Ally
+seed=23
+0:613f86cf07b122c7
+10:bc0298ecd5b780d9
+20:253f133a6f373b6c
+30:da3f1beeeca5c3fe
+40:8748b16ee008d6e3
+47:5db433db52e56185
+final:5db433db52e56185 steps=47 winner=Ally
+seed=42
+0:57f45b6fc5cef886
+10:acfc6945f3bcd120
+20:be0988fc0ec1639e
+30:c479496426a14845
+40:6ae593c475f19e72
+50:846f218d3188420d
+57:3bd51a1795acbc9c
+final:3bd51a1795acbc9c steps=57 winner=Ally
+seed=101
+0:120d3e8eddd2248d
+10:3aa3a7c4aece449b
+20:39b34587ec78fa1f
+30:c007e4dc72bf6659
+40:4a8333ca7fd88cde
+50:7ba372a656725f80
+57:cbded649dbac62ac
+final:cbded649dbac62ac steps=57 winner=Ally
+seed=2024
+0:fe0ad3df0e4a2a71
+10:e3c87a47e9c17087
+20:115c3656cc8fe280
+30:ba6f5597deb88aa2
+40:74cf0dcf8f33cc69
+50:08bb8b42425adc39
+60:1ab2bff40c1e94b9
+67:586f7bcd4d48a063
+final:586f7bcd4d48a063 steps=67 winner=Ally
+fixture=duelist-build-gate-1v1
+seed=7
+0:008be7426cdea3a7
+10:0e5dcf871c6f8d57
+20:270489460689aabb
+30:dc23a1d61b21b955
+40:e80d885dbb1d627e
+46:4e9cdbeeee745a9b
+final:4e9cdbeeee745a9b steps=46 winner=Ally
+seed=23
+0:df4ac2c3b9c52a37
+10:8e7ebbabc335e987
+20:c7c00445a9c6c5e5
+30:833f87e50f192fe7
+40:29d8fbc0e42fa8bc
+50:2a2e395ab626f7d5
+56:e965009a215ee78f
+final:e965009a215ee78f steps=56 winner=Ally
+seed=42
+0:2e6032ef22cfbc3c
+10:b2bfedc8e6dfa83c
+20:10e91f107d77c0c6
+30:70799dc2a9b3684e
+40:aed41109cf57c3af
+50:f0a63419ae566050
+60:b256b861bfa7a43a
+70:538f6176afad1b41
+76:e43197ef702d0597
+final:e43197ef702d0597 steps=76 winner=Ally
+seed=101
+0:538317553b5e6cb1
+10:112c4d181abab761
+20:74d4eb773c761e0e
+30:7bd29f075e4089ef
+40:65a26b6e22d8c40a
+50:6e3e1be99d229b63
+56:6d4ade83e7ce4717
+final:6d4ade83e7ce4717 steps=56 winner=Ally
+seed=2024
+0:b37d90bff7519bad
+10:d29058e910f7ddad
+20:f290a6e6b60eaa6d
+30:6a7765d973f1faae
+40:959fe7925056bb53
+50:334676d608c4a46f
+56:c2548f5e2237486e
+final:c2548f5e2237486e steps=56 winner=Ally

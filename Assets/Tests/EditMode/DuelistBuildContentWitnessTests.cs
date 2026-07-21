@@ -6,6 +6,7 @@ using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Contracts;
+using SM.Core.Numerics;
 using SM.Core.Stats;
 using SM.Editor.SeedData;
 using SM.Meta;
@@ -42,6 +43,38 @@ public sealed class DuelistBuildContentWitnessTests
     public void SetUp()
     {
         SampleSeedGenerator.RequireCanonicalSampleContentReady(nameof(DuelistBuildContentWitnessTests));
+    }
+
+    [Test]
+    public void RatifiedBalance_UsesExactClassBaselineAndPointNineEightBuildGate()
+    {
+        var classAsset = AssetDatabase.LoadAssetAtPath<ClassDefinition>(
+            "Assets/Resources/_Game/Content/Definitions/Classes/class_duelist.asset");
+        Assert.That(classAsset, Is.Not.Null);
+        Assert.That(classAsset!.BaselineDamageMultiplierPercent, Is.EqualTo(102));
+        Assert.That(classAsset.BaseCritChance, Is.EqualTo(0.12f));
+        Assert.That(classAsset.CritMultiplierCap, Is.EqualTo(1.85f));
+
+        var content = new RuntimeCombatContentLookup().Snapshot;
+        var classPackage = content.Archetypes["slayer"].ClassStatPackage;
+        Assert.That(classPackage, Is.Not.Null);
+        var baseline = classPackage!.Modifiers.Single(modifier =>
+            modifier.Stat == StatKey.PhysPower && modifier.Op == ModifierOp.More);
+        const int expectedMultiplierRaw = Fixed32.OneRaw * 102 / 100;
+        Assert.That(
+            Fixed32.OneRaw + Fixed32.FromFloatQuantized(baseline.Value).Raw,
+            Is.EqualTo(expectedMultiplierRaw),
+            "Duelist baseline must use the exact 65536*102/100 multiplier.");
+
+        var rangerClassPackage = content.Archetypes["hunter"].ClassStatPackage;
+        Assert.That(rangerClassPackage, Is.Not.Null);
+        Assert.That(rangerClassPackage!.Modifiers.Any(modifier =>
+            modifier.Stat == StatKey.PhysPower && modifier.Op == ModifierOp.More), Is.False);
+
+        var gate = content.PassiveNodes["passive_duelist_notable_01"].Package.Modifiers.Single(modifier =>
+            modifier.Stat == StatKey.MaxHealth && modifier.Op == ModifierOp.More);
+        Assert.That(gate.Value, Is.EqualTo(-0.02f));
+        Assert.That(classPackage.Modifiers.Any(modifier => modifier.Stat == StatKey.AttackSpeed), Is.False);
     }
 
     [Test]

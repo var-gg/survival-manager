@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: duelist
   NameKey: content.class.duelist.name
   DescriptionKey: content.class.duelist.desc
+  BaselineDamageMultiplierPercent: 102
   BaseCritChance: 0.12
   BaseCritMultiplier: 1.75
   CritChanceCap: 0.4

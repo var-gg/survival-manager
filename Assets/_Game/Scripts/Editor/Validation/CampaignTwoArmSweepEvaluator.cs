@@ -12,6 +12,7 @@ internal sealed class CampaignTwoArmSweepAccumulator
     private readonly Dictionary<string, SiteBucket> _sites = new(StringComparer.Ordinal);
     private readonly Dictionary<string, DecisionBucket> _decisions = new(StringComparer.Ordinal);
     private readonly Dictionary<string, PairedNodeObservation> _pairedNodes = new(StringComparer.Ordinal);
+    private readonly CampaignThreatLandingSweepAccumulator _threatLanding = new();
     private int _equipmentAssignmentCount;
 
     public CampaignTwoArmSweepAccumulator(CampaignBalanceSweepConfig config)
@@ -56,6 +57,15 @@ internal sealed class CampaignTwoArmSweepAccumulator
         }
 
         paired.Record(arm.ArmId, won, formationHash, gearCounterUsed);
+    }
+
+    public void RecordThreatLanding(
+        CampaignBalanceArmSpec arm,
+        CampaignBalanceGridCell cell,
+        CampaignNodeIdentity node,
+        CampaignThreatLandingObservation observation)
+    {
+        _threatLanding.Record(arm, cell, node, observation);
     }
 
     public void RecordSite(
@@ -136,6 +146,11 @@ internal sealed class CampaignTwoArmSweepAccumulator
 
     public IReadOnlyList<CampaignDecisionDensityRaw> BuildDecisionAggregates()
         => _config.Arms.Select(arm => _decisions[arm.ArmId].Build()).ToArray();
+
+    public CampaignThreatLandingWitnessReport BuildThreatLandingReport()
+    {
+        return _threatLanding.BuildReport();
+    }
 
     public CampaignPrepMechanismSummary BuildPrepMechanismSummary()
     {
@@ -480,6 +495,7 @@ public static class CampaignTwoArmBandEvaluator
             Sites = sites,
             Chapters = chapters,
             DecisionDensity = decisionDensity,
+            ThreatLandingWitness = accumulator.BuildThreatLandingReport(),
             Summary = BuildSummary(config, nodes, sites, samplingPass, accumulator.BuildPrepMechanismSummary()),
             PhaseAApproximations = new[]
             {

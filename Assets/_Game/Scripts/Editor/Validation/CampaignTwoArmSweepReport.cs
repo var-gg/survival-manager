@@ -14,6 +14,7 @@ public sealed record CampaignTwoArmSweepReport
     public IReadOnlyList<CampaignTwoArmSiteReport> Sites { get; init; } = Array.Empty<CampaignTwoArmSiteReport>();
     public IReadOnlyList<CampaignTwoArmChapterReport> Chapters { get; init; } = Array.Empty<CampaignTwoArmChapterReport>();
     public IReadOnlyList<CampaignDecisionDensityReport> DecisionDensity { get; init; } = Array.Empty<CampaignDecisionDensityReport>();
+    public CampaignThreatLandingWitnessReport ThreatLandingWitness { get; init; } = new();
     public CampaignTwoArmSweepSummary Summary { get; init; } = new();
     public IReadOnlyList<string> PhaseAApproximations { get; init; } = Array.Empty<string>();
     public string JsonReportPath { get; init; } = string.Empty;

@@ -756,7 +756,7 @@ public static partial class SampleSeedGenerator
                 a.Id = tuple.Item1;
                 a.NameKey = ContentLocalizationTables.BuildClassNameKey(tuple.Item1);
                 a.DescriptionKey = ContentLocalizationTables.BuildClassDescriptionKey(tuple.Item1);
-                ApplyClassCritBaseline(a);
+                ApplyClassCombatBaseline(a);
                 UpsertStringEntry(ContentLocalizationTables.Classes, a.NameKey, tuple.Item3, tuple.Item2);
                 UpsertStringEntry(ContentLocalizationTables.Classes, a.DescriptionKey, tuple.Item5, tuple.Item4);
             });
@@ -765,7 +765,7 @@ public static partial class SampleSeedGenerator
         });
     }
 
-    private static void ApplyClassCritBaseline(ClassDefinition asset)
+    private static void ApplyClassCombatBaseline(ClassDefinition asset)
     {
         var values = asset.Id switch
         {
@@ -779,6 +779,9 @@ public static partial class SampleSeedGenerator
         asset.BaseCritMultiplier = values.Multiplier;
         asset.CritChanceCap = values.ChanceCap;
         asset.CritMultiplierCap = values.MultiplierCap;
+        asset.BaselineDamageMultiplierPercent = string.Equals(asset.Id, "duelist", StringComparison.Ordinal)
+            ? 102
+            : 100;
     }
 
     private static Dictionary<string, FootprintProfileDefinition> CreateFootprintProfiles()
@@ -3065,7 +3068,7 @@ public static partial class SampleSeedGenerator
                 continue;
             }
 
-            ApplyClassCritBaseline(definition);
+            ApplyClassCombatBaseline(definition);
             EditorUtility.SetDirty(definition);
         }
 
