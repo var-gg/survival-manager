@@ -1044,6 +1044,7 @@ public static partial class SampleSeedGenerator
             asset.Id = skillId;
             asset.NameKey = ContentLocalizationTables.BuildSkillNameKey(skillId);
             asset.DescriptionKey = ContentLocalizationTables.BuildSkillDescriptionKey(skillId);
+            asset.LearnSource = SkillLearnSourceValue.EnemyOnly;
             asset.Kind = SkillKindValue.Strike;
             asset.SlotKind = SkillSlotKindValue.UtilityActive;
             asset.DamageType = DamageTypeValue.Magical;
@@ -1088,6 +1089,8 @@ public static partial class SampleSeedGenerator
                 RetargetLockMode = RetargetLockMode.UntilCastComplete,
             };
             asset.AppliedStatuses = new List<StatusApplicationRule>();
+            UpsertStringEntry(ContentLocalizationTables.Skills, asset.NameKey, "밀집 처벌 폭격", "Anti-Cluster Bombardment");
+            UpsertStringEntry(ContentLocalizationTables.Skills, asset.DescriptionKey, "가장 빽빽한 후열 군집을 겨냥해 제자리에서 장판 폭격을 퍼붓는다. 대열이 뭉칠수록 피해가 커진다.", "Zones the densest backline cluster in place — the tighter the formation, the more it hurts.");
             ApplyLoopCSkillGovernance(asset);
         });
 
@@ -1160,6 +1163,7 @@ public static partial class SampleSeedGenerator
             asset.BaseAttackCooldown = 1.1f;
             asset.BaseLeashDistance = 8f;
             asset.BaseTargetSwitchDelay = 0.4f;
+            UpsertStringEntry(ContentLocalizationTables.Archetypes, asset.NameKey, "가라앉은 심판관", "Sunken Adjudicator");
             ApplyLoopCArchetypeGovernance(asset);
         });
 
@@ -1193,9 +1197,14 @@ public static partial class SampleSeedGenerator
         var encounter = LoadDefinition<EncounterDefinition>($"{ResourcesRoot}/Encounters/site_sunken_bastion_boss_1.asset");
         if (encounter != null)
         {
+            // reward.answer_lane_site_contract requires every encounter in a site to expose the SAME
+            // single answer lane; site_sunken_bastion's other 3 encounters use break_formation, and the
+            // anti-cluster answer IS a formation break. The mechanic's headless answer-tag
+            // (anticluster_spread) lives on the boss learning spec, judged from ally formation — not on
+            // this reward tag — so keep the site lane consistent here.
             encounter.RewardDropTags = encounter.RewardDropTags
                 .Where(tag => !tag.StartsWith("answer_lane_", StringComparison.Ordinal))
-                .Append("answer_lane_anticluster_spread")
+                .Append("answer_lane_break_formation")
                 .Distinct(StringComparer.Ordinal)
                 .ToList();
             EditorUtility.SetDirty(encounter);

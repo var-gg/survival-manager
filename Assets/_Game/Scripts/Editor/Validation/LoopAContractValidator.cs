@@ -16,14 +16,21 @@ internal static class LoopAContractValidator
             ?? archetype.Skills.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.CoreActive);
         var flexActive = archetype.Loadout?.FlexActive
             ?? archetype.Skills.FirstOrDefault(skill => skill != null && skill.SlotKind == SkillSlotKindValue.UtilityActive);
-        if (signatureActive == null)
-        {
-            AddError(issues, "loop_a.loadout.signature_active", "Loop A loadout must resolve a signature active slot.", assetPath);
-        }
 
-        if (flexActive == null)
+        // Signature/flex active slots are a recruit-loadout preview contract. Boss/summon/event-only
+        // archetypes are not recruitable and drive their kit through Skills[]/TacticPreset directly,
+        // so they carry no recruit loadout — mirror LoopBContractValidator's IsRecruitable gate.
+        if (archetype.IsRecruitable)
         {
-            AddError(issues, "loop_a.loadout.flex_active", "Loop A loadout must resolve a flex active slot.", assetPath);
+            if (signatureActive == null)
+            {
+                AddError(issues, "loop_a.loadout.signature_active", "Loop A loadout must resolve a signature active slot.", assetPath);
+            }
+
+            if (flexActive == null)
+            {
+                AddError(issues, "loop_a.loadout.flex_active", "Loop A loadout must resolve a flex active slot.", assetPath);
+            }
         }
 
         if (archetype.Loadout == null)

@@ -638,6 +638,7 @@ internal sealed class SkillCatalogValidator : ICatalogValidationRule
 
             if (!skill.Id.StartsWith("support_", StringComparison.Ordinal)
                 && skill.SlotKind is not SkillSlotKindValue.Support
+                && skill.LearnSource != SkillLearnSourceValue.EnemyOnly
                 && requiredClassIds.Count == 0)
             {
                 ContentValidationIssueFactory.AddError(issues, "skill.class_gate_required", $"Class-owned skill '{skill.Id}' must define at least one RequiredClassTags entry.", assetPath);

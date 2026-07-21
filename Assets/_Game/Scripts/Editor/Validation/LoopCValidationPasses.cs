@@ -102,7 +102,10 @@ internal sealed class DefaultLoopCGovernanceSubjectExtractor : ILoopCGovernanceS
             var assetPath = catalog.GetPath(asset);
             switch (asset)
             {
-                case UnitArchetypeDefinition archetype:
+                // Boss-only archetypes and enemy-only skills sit outside the player content economy:
+                // their base stats are overlay-scaled and their kit is authored for encounters, not the
+                // recruit budget window, so the derived-vs-budget governance does not apply to them.
+                case UnitArchetypeDefinition archetype when !archetype.IsBossOnly:
                     subjects.Add(new LoopCGovernanceSubject(archetype.Id, nameof(UnitArchetypeDefinition), assetPath, nameof(UnitArchetypeDefinition), archetype, archetype.BudgetCard));
                     if (HasGovernedNestedContent(archetype.Loadout?.SignaturePassive))
                     {
@@ -138,7 +141,7 @@ internal sealed class DefaultLoopCGovernanceSubjectExtractor : ILoopCGovernanceS
                     }
 
                     break;
-                case SkillDefinitionAsset skill:
+                case SkillDefinitionAsset skill when skill.LearnSource != SkillLearnSourceValue.EnemyOnly:
                     subjects.Add(new LoopCGovernanceSubject(skill.Id, nameof(SkillDefinitionAsset), assetPath, nameof(SkillDefinitionAsset), skill, skill.BudgetCard));
                     break;
                 case AffixDefinition affix:
