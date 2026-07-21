@@ -218,7 +218,7 @@ public sealed class CombatTriggerEngineTests
     }
 
     [Test]
-    public void OnKill_Heal_RestoresKillerHealth()
+    public void OnKill_Heal_RestoresKillerHealth_AndRecordsHealingTelemetry()
     {
         var effect = new CombatTriggeredEffect(
             "aug_test_reap", CombatTriggerKind.OnKill, TriggeredEffectOp.Heal,
@@ -233,6 +233,14 @@ public sealed class CombatTriggerEngineTests
         CombatTriggerEngine.OnKill(state, killer);
 
         Assert.That(killer.CurrentHealth, Is.GreaterThan(hpBefore), "OnKill Heal should restore killer health");
+        var telemetry = state.TelemetryEvents.Single(record =>
+            record.EventKind == TelemetryEventKind.HealingApplied);
+        Assert.That(telemetry.Actor?.UnitInstanceId, Is.EqualTo(killer.Id.Value));
+        Assert.That(telemetry.Target?.UnitInstanceId, Is.EqualTo(killer.Id.Value));
+        Assert.That(telemetry.ValueA, Is.EqualTo(15f));
+        Assert.That(telemetry.Explain?.SourceContentId, Is.EqualTo(effect.SourceId));
+        Assert.That(telemetry.Explain?.ReasonCode, Is.EqualTo(DecisionReasonCode.TriggeredReaction));
+        Assert.That(telemetry.StringValueA, Is.EqualTo("triggered_flat_heal"));
     }
 
     [Test]

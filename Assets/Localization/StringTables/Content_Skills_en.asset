@@ -283,11 +283,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 167937280303104
-    m_Localized: Hex Mend
+    m_Localized: Hex Silence
     m_Metadata:
       m_Items: []
   - m_Id: 167937280303105
-    m_Localized: Hex Mend slot skill.
+    m_Localized: Silences an enemy.
     m_Metadata:
       m_Items: []
   - m_Id: 167937955586048

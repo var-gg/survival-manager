@@ -100,6 +100,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
   - {fileID: 11400000, guid: d33f586ea1fa04847808cfc697d92505, type: 2}
   - {fileID: 11400000, guid: fc6bd916959c0b04995bc0d9d8ba3770, type: 2}
+  - {fileID: 11400000, guid: 4a8c26b6b6db61d05b0df692f623cd57, type: 2}
   FlexSupportSkillPool:
   - {fileID: 11400000, guid: c6b69d993a0f7784aba596f64453ae2e, type: 2}
   - {fileID: 11400000, guid: 0305e0c3579d4f447b14848e5cb53ece, type: 2}
@@ -111,6 +112,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e2d7ee6ee06dac741a143bf9d1705ae3, type: 2}
   - {fileID: 11400000, guid: d33f586ea1fa04847808cfc697d92505, type: 2}
   - {fileID: 11400000, guid: fc6bd916959c0b04995bc0d9d8ba3770, type: 2}
+  - {fileID: 11400000, guid: 4a8c26b6b6db61d05b0df692f623cd57, type: 2}
   RecruitFlexPassivePool:
   - {fileID: 11400000, guid: c6b69d993a0f7784aba596f64453ae2e, type: 2}
   - {fileID: 11400000, guid: 0305e0c3579d4f447b14848e5cb53ece, type: 2}

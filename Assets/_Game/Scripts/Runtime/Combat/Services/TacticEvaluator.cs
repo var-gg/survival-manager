@@ -18,6 +18,7 @@ public sealed record EvaluatedAction(
 
 public static class TacticEvaluator
 {
+    private const float HealActivationHealthRatio = 0.9f;
     private const float MeleeSlotRangeMin = 0.55f;
     private const float MeleeSlotRangeMax = 0.85f;
     private const float SupportMaxRangeFloor = 1.4f;
@@ -53,6 +54,12 @@ public static class TacticEvaluator
         BattleState state, UnitSnapshot actor, EvaluatedAction evaluated, out EvaluatedAction retargeted)
     {
         retargeted = evaluated;
+        if (evaluated.Target?.Side == actor.Side
+            || evaluated.Skill?.Kind is SkillKind.Heal or SkillKind.Shield or SkillKind.Buff)
+        {
+            return false;
+        }
+
         var intent = actor.CurrentCombatIntent;
         if (intent.Type != CombatIntentType.Dive && intent.Type != CombatIntentType.Peel)
         {
@@ -106,9 +113,10 @@ public static class TacticEvaluator
             return signatureResult;
         }
 
-        // Combat-relevant flex interrupt — Strike/Debuff flex interrupts the ground state
+        // Ground-state flex interrupt — offensive flexes always qualify; allied Heal flexes qualify only when
+        // their authored rule resolves an injured same-side target (validated again in TryActiveSkill).
         var flex = actor.Definition.EffectiveFlexActive;
-        if (flex != null && IsCombatRelevantFlex(flex))
+        if (flex != null && IsGroundStateInterruptingFlex(flex))
         {
             var combatFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason,
                 skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
@@ -125,8 +133,8 @@ public static class TacticEvaluator
             return basicResult;
         }
 
-        // Non-combat flex fallback — Heal/Shield/Buff/Utility when no basic attack target
-        if (flex != null && !IsCombatRelevantFlex(flex))
+        // Non-interrupting flex fallback — Shield/Buff/Utility when no basic attack target.
+        if (flex != null && !IsGroundStateInterruptingFlex(flex))
         {
             var utilityFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason,
                 skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
@@ -143,6 +151,13 @@ public static class TacticEvaluator
     private static bool IsCombatRelevantFlex(BattleSkillSpec skill)
     {
         return skill.Kind is SkillKind.Strike or SkillKind.Debuff;
+    }
+
+    private static bool IsGroundStateInterruptingFlex(BattleSkillSpec skill)
+    {
+        return IsCombatRelevantFlex(skill)
+               || skill.Kind == SkillKind.Heal
+               && skill.TargetRuleData?.Domain is TargetDomain.AlliedUnit or TargetDomain.Self;
     }
 
     private static EvaluatedAction? TryMobility(
@@ -178,9 +193,25 @@ public static class TacticEvaluator
             return null;
         }
 
-        var target = ResolveStableTarget(state, actor, skill.TargetRuleData)
-                     ?? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData);
+        // A combat target lock must never redirect a Heal onto the current enemy. Heal asks its own authored
+        // rule directly, then the same-side/meaningful-injury gate below prevents both wrong-side restoration
+        // and low-value fallback self-casts (heal-lock). Other skills preserve the existing stable-target contract.
+        var target = skill.Kind == SkillKind.Heal
+            ? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData)
+            : ResolveStableTarget(state, actor, skill.TargetRuleData)
+              ?? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData);
         if (target == null)
+        {
+            return null;
+        }
+
+        var isAlliedSupportKind = skill.Kind is SkillKind.Heal or SkillKind.Shield or SkillKind.Buff;
+        if (isAlliedSupportKind && target.Side != actor.Side)
+        {
+            return null;
+        }
+
+        if (skill.Kind == SkillKind.Heal && target.HealthRatio >= HealActivationHealthRatio)
         {
             return null;
         }
@@ -299,7 +330,7 @@ public static class TacticEvaluator
     private static UnitSnapshot? ResolveStableTarget(BattleState state, UnitSnapshot actor, TargetRule? targetRule)
     {
         var currentTarget = state.FindUnit(actor.CurrentTargetId);
-        if (currentTarget == null || !currentTarget.IsAlive)
+        if (currentTarget == null || !currentTarget.IsAlive || currentTarget.Side == actor.Side)
         {
             return null;
         }

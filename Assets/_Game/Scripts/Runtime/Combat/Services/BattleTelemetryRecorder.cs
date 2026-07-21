@@ -247,6 +247,36 @@ public static class BattleTelemetryRecorder
         });
     }
 
+    internal static void RecordTriggeredHealing(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        CombatTriggeredEffect effect)
+    {
+        var sourceKind = ResolveTriggeredSourceKind(actor, effect.SourceId);
+        state.AddTelemetry(new TelemetryEventRecord
+        {
+            Domain = TelemetryDomain.Combat,
+            EventKind = TelemetryEventKind.HealingApplied,
+            TimeSeconds = state.ElapsedSeconds,
+            Actor = BuildEntityRef(actor),
+            Target = BuildEntityRef(target),
+            Explain = new ExplainStamp
+            {
+                SourceKind = sourceKind,
+                SourceContentId = effect.SourceId,
+                SourceDisplayName = effect.SourceId,
+                ReasonCode = DecisionReasonCode.TriggeredReaction,
+                Salience = ResolveImpactSalience(TelemetryEventKind.HealingApplied, effect.Magnitude, sourceKind),
+            },
+            SkillId = sourceKind is ExplainedSourceKind.SignaturePassive or ExplainedSourceKind.FlexPassive
+                ? effect.SourceId
+                : string.Empty,
+            ValueA = effect.Magnitude,
+            StringValueA = "triggered_flat_heal",
+        });
+    }
+
     public static void RecordStatus(BattleState state, TelemetryEventKind eventKind, UnitSnapshot actor, UnitSnapshot target, string statusId, float value, ExplainedSourceKind sourceKind = ExplainedSourceKind.Status)
     {
         state.AddTelemetry(new TelemetryEventRecord
@@ -523,6 +553,23 @@ public static class BattleTelemetryRecorder
 
         return skill?.EffectiveSlotKind == ActionSlotKind.FlexActive
             ? ExplainedSourceKind.FlexActive
+            : ExplainedSourceKind.SystemRule;
+    }
+
+    private static ExplainedSourceKind ResolveTriggeredSourceKind(UnitSnapshot actor, string sourceId)
+    {
+        if (string.Equals(actor.EffectiveSignaturePassive.Id, sourceId, StringComparison.Ordinal))
+        {
+            return ExplainedSourceKind.SignaturePassive;
+        }
+
+        if (string.Equals(actor.EffectiveFlexPassive.Id, sourceId, StringComparison.Ordinal))
+        {
+            return ExplainedSourceKind.FlexPassive;
+        }
+
+        return sourceId?.StartsWith("augment_", StringComparison.Ordinal) == true
+            ? ExplainedSourceKind.Augment
             : ExplainedSourceKind.SystemRule;
     }
 

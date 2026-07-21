@@ -91,7 +91,7 @@ internal static class ContentFallbackData
         ["vanguard"] = new[] { "skill_guardian_utility", "skill_warden_utility" },
         ["duelist"] = new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility" },
         ["ranger"] = new[] { "skill_hunter_utility", "skill_marksman_utility", "skill_scout_utility" },
-        ["mystic"] = new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility" },
+        ["mystic"] = new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility", "skill_memory_tuning" },
     };
 
     internal static readonly IReadOnlyDictionary<string, string[]> LoopBFlexPassivePoolFallbacks = new Dictionary<string, string[]>(StringComparer.Ordinal)
@@ -130,6 +130,7 @@ internal static class ContentFallbackData
         ["skill_minor_heal"] = new("minor_heal", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" }),
         ["skill_hexer_utility"] = new("hexer_silence", string.Empty, new[] { "mystic", "backline", "silence" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" }),
         ["skill_shaman_utility"] = new("shaman_zone", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" }),
+        ["skill_memory_tuning"] = new("expansion_v1_mystic", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" }),
         ["skill_vanguard_support_1"] = new("guard_support", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "guard" }, new[] { "frontline", "support" }),
         ["skill_vanguard_support_2"] = new("bulwark_support", string.Empty, new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "support" }),
         ["skill_duelist_support_1"] = new("slayer_support", string.Empty, new[] { "duelist", "frontline", "execute" }, new[] { "duelist", "physical", "execute" }, new[] { "frontline", "physical" }),

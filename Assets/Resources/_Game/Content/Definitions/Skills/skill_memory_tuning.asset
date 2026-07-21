@@ -96,7 +96,7 @@ MonoBehaviour:
     Filters: 21
     ReevaluateIntervalSeconds: 0.25
     MinimumCommitSeconds: 0.75
-    MaxAcquireRange: 0
+    MaxAcquireRange: 4
     PreferredMinTargets: 1
     ClusterRadius: 2.5
     LockTargetAtCastStart: 1

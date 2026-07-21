@@ -52,6 +52,7 @@ public static partial class SampleSeedGenerator
         var traitPools = CreateTraitPools();
         var archetypes = CreateArchetypes(races, classes, traitPools, skills, footprintProfiles, behaviorProfiles, mobilityProfiles);
         var skillCatalog = LoadDefinitionsById<SkillDefinitionAsset>($"{ResourcesRoot}/Skills");
+        PatchHealingRepairSkills(skillCatalog);
         PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog, stableTags, footprintProfiles, behaviorProfiles, mobilityProfiles);
         SyncSunkenBastionAntiClusterWallAssets(
             races,
@@ -1588,7 +1589,7 @@ public static partial class SampleSeedGenerator
             "vanguard" => new[] { "skill_guardian_utility", "skill_warden_utility" },
             "duelist" => new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility" },
             "ranger" => new[] { "skill_hunter_utility", "skill_marksman_utility", "skill_scout_utility" },
-            "mystic" => new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility" },
+            "mystic" => new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility", "skill_memory_tuning" },
             _ => Array.Empty<string>(),
         };
     }
@@ -1661,6 +1662,7 @@ public static partial class SampleSeedGenerator
         PatchRecruitSkillMetadata("skill_minor_heal", tags, "minor_heal", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" });
         PatchRecruitSkillMetadata("skill_hexer_utility", tags, "hexer_silence", string.Empty, new[] { "mystic", "backline", "silence" }, new[] { "mystic", "magical", "silence" }, new[] { "backline", "magical" });
         PatchRecruitSkillMetadata("skill_shaman_utility", tags, "shaman_zone", string.Empty, new[] { "mystic", "backline", "burn" }, new[] { "mystic", "magical", "zone" }, new[] { "backline", "magical" });
+        PatchRecruitSkillMetadata("skill_memory_tuning", tags, "expansion_v1_mystic", string.Empty, new[] { "mystic", "backline", "heal" }, new[] { "mystic", "support", "heal" }, new[] { "backline", "support" });
 
         PatchRecruitSkillMetadata("skill_vanguard_support_1", tags, "guard_support", string.Empty, new[] { "vanguard", "frontline", "guard" }, new[] { "vanguard", "support", "guard" }, new[] { "frontline", "support" });
         PatchRecruitSkillMetadata("skill_vanguard_support_2", tags, "bulwark_support", string.Empty, new[] { "vanguard", "frontline", "shield_skill" }, new[] { "vanguard", "support", "shield_skill" }, new[] { "frontline", "support" });

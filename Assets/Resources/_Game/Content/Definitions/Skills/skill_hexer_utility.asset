@@ -16,11 +16,11 @@ MonoBehaviour:
   NameKey: content.skill.skill_hexer_utility.name
   DescriptionKey: content.skill.skill_hexer_utility.desc
   TemplateType: 12
-  Kind: 1
+  Kind: 4
   SlotKind: 1
-  DamageType: 2
+  DamageType: 1
   Delivery: 1
-  TargetRule: 3
+  TargetRule: 0
   Power: 3.8
   Range: 2.9
   RangeMin: 0
@@ -31,7 +31,7 @@ MonoBehaviour:
   PowerFlat: 3.8
   PhysCoeff: 0
   MagCoeff: 0
-  HealCoeff: 1
+  HealCoeff: 0
   HealthCoeff: 0
   CanCrit: 0
   ActivationModel: 2

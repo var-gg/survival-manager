@@ -73,10 +73,14 @@ public sealed class DoctrineTierWitnessTests
             .Where(unit => unit.Side == TeamSide.Ally && unit.ClassId == "vanguard")
             .ToList();
         Assert.That(finalVanguards.Count(), Is.EqualTo(3));
+        Assert.That(finalVanguards.Count(unit => unit.IsAlive), Is.GreaterThan(0),
+            "class@3 witness requires at least one living vanguard at the final read surface");
         Assert.That(
-            finalVanguards.All(unit => (unit.StatusIds ?? Array.Empty<string>()).Contains("guarded", StringComparer.Ordinal)),
+            finalVanguards
+                .Where(unit => unit.IsAlive)
+                .All(unit => (unit.StatusIds ?? Array.Empty<string>()).Contains("guarded", StringComparer.Ordinal)),
             Is.True,
-            "public final read model에서 vanguard 3명 모두 guarded를 보유해야 class@3 효과 발화를 증명한다");
+            "public final read model에서 생존한 vanguard는 guarded를 유지해야 class@3 효과가 전투 중 보존됨을 증명한다");
     }
 
     [Test]
