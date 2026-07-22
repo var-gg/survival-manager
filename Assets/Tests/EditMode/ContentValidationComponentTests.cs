@@ -185,6 +185,7 @@ public sealed class ContentValidationComponentTests
         slow.Id = "slow";
         slow.DampensTempo = true;
         slow.MagnitudeScale = 1f;
+        slow.MagnitudeUnit = MagnitudeUnit.Rate;
 
         var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
         skill.Id = "skill_status_magnitude_probe";
@@ -288,6 +289,178 @@ public sealed class ContentValidationComponentTests
             "SkillDefinition.AppliedStatuses[0]",
             "SkillDefinition.AppliedStatuses[1]",
         }), "즉시 보호막과 주기 피해가 runtime 1.0 floor에 의해 조용히 보정되면 안 된다");
+    }
+
+    [Test]
+    public void DefaultCatalogValidation_AllowsMembershipOnlyZeroButRejectsMagnitudeOnlyZero()
+    {
+        var marked = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        marked.Id = "marked";
+        marked.AmplifiesIncomingDamage = true;
+        marked.MarksTarget = true;
+        marked.MagnitudeScale = 1f;
+        marked.MagnitudeUnit = MagnitudeUnit.Rate;
+        var exposed = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        exposed.Id = "exposed";
+        exposed.AmplifiesIncomingDamage = true;
+        exposed.MagnitudeScale = 1f;
+        exposed.MagnitudeUnit = MagnitudeUnit.Rate;
+        var wound = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        wound.Id = "wound";
+        wound.ReducesHealing = true;
+        wound.MagnitudeScale = 1f;
+        wound.MagnitudeUnit = MagnitudeUnit.Rate;
+        var slow = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        slow.Id = "slow";
+        slow.DampensTempo = true;
+        slow.MagnitudeScale = 1f;
+        slow.MagnitudeUnit = MagnitudeUnit.Rate;
+        var sunder = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        sunder.Id = "sunder";
+        sunder.ShredsDefense = true;
+        sunder.MagnitudeScale = 1f;
+        sunder.MagnitudeUnit = MagnitudeUnit.Flat;
+
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_zero_channel_probe";
+        foreach (var family in new[] { marked, exposed, wound, slow, sunder })
+        {
+            skill.AppliedStatuses.Add(new StatusApplicationRule
+            {
+                Id = $"zero.{family.Id}",
+                StatusId = family.Id,
+                Magnitude = 0f,
+            });
+        }
+
+        var issues = new List<ContentValidationIssue>();
+        CatalogValidationRuleRegistry.CreateDefault().Validate(
+            ToCatalog(new ScriptableObject[] { marked, exposed, wound, slow, sunder, skill }),
+            issues);
+
+        Assert.That(
+            issues.Where(issue => issue.Code == "status.channel_zero_membership_only")
+                .Select(issue => (issue.Scope, issue.Severity))
+                .ToArray(),
+            Is.EqualTo(new[]
+            {
+                ("SkillDefinition.AppliedStatuses[0]", ContentValidationSeverity.Warning),
+            }),
+            "marked zero는 MarksTarget membership을 유지하므로 warning이어야 한다");
+        Assert.That(
+            issues.Where(issue => issue.Code == "status.channel_magnitude_range")
+                .Select(issue => issue.Scope)
+                .OrderBy(scope => scope, StringComparer.Ordinal)
+                .ToArray(),
+            Is.EqualTo(new[]
+            {
+                "SkillDefinition.AppliedStatuses[1]",
+                "SkillDefinition.AppliedStatuses[2]",
+                "SkillDefinition.AppliedStatuses[3]",
+                "SkillDefinition.AppliedStatuses[4]",
+            }),
+            "비-magnitude kind가 없는 amplify/reduce/tempo/sunder 적용은 effective 0을 허용하면 안 된다");
+    }
+
+    [Test]
+    public void DefaultCatalogValidation_RejectsUnitMismatchButAllowsAnyPositiveFlatSunder()
+    {
+        var sunder = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        sunder.Id = "sunder";
+        sunder.ShredsDefense = true;
+        sunder.MagnitudeScale = 1f;
+        sunder.MagnitudeUnit = MagnitudeUnit.Flat;
+        var mistypedSunder = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        mistypedSunder.Id = "mistyped_sunder";
+        mistypedSunder.ShredsDefense = true;
+        mistypedSunder.MagnitudeScale = 1f;
+        mistypedSunder.MagnitudeUnit = MagnitudeUnit.Rate;
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_sunder_unit_probe";
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "sunder.small_flat",
+            StatusId = sunder.Id,
+            Magnitude = 0.06f,
+        });
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "sunder.quarter_flat",
+            StatusId = sunder.Id,
+            Magnitude = 0.25f,
+        });
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "sunder.large_flat",
+            StatusId = sunder.Id,
+            Magnitude = 2f,
+        });
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "sunder.rate_mismatch",
+            StatusId = mistypedSunder.Id,
+            Magnitude = 0.06f,
+        });
+
+        var issues = new List<ContentValidationIssue>();
+        CatalogValidationRuleRegistry.CreateDefault().Validate(
+            ToCatalog(new ScriptableObject[] { sunder, mistypedSunder, skill }),
+            issues);
+
+        Assert.That(
+            issues.Where(issue => issue.Code == "status.channel_magnitude_range"),
+            Is.Empty,
+            "flat channel은 magnitude 크기만으로 단위를 추론하지 않으며 0.06, 0.25, 2.0을 모두 허용해야 한다");
+        Assert.That(
+            issues.Where(issue => issue.Code == "status.channel_magnitude_unit_mismatch")
+                .Select(issue => issue.Scope)
+                .ToArray(),
+            Is.EqualTo(new[] { "StatusFamilyDefinition.MagnitudeUnit" }),
+            "rate로 선언된 defense shred는 숫자 band가 아니라 consuming channel과의 단위 불일치로 거부해야 한다");
+    }
+
+    [Test]
+    public void DefaultCatalogValidation_RejectsMaxStacksOutsideShredsDefense()
+    {
+        var marked = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        marked.Id = "marked";
+        marked.AmplifiesIncomingDamage = true;
+        marked.MarksTarget = true;
+        marked.MagnitudeScale = 1f;
+        marked.MagnitudeUnit = MagnitudeUnit.Rate;
+        var sunder = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        sunder.Id = "sunder";
+        sunder.ShredsDefense = true;
+        sunder.MagnitudeScale = 1f;
+        sunder.MagnitudeUnit = MagnitudeUnit.Flat;
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_stack_channel_probe";
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "marked.inert_stacks",
+            StatusId = marked.Id,
+            Magnitude = 0.2f,
+            MaxStacks = 3,
+        });
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "sunder.live_stacks",
+            StatusId = sunder.Id,
+            Magnitude = 0.25f,
+            MaxStacks = 3,
+        });
+
+        var issues = new List<ContentValidationIssue>();
+        CatalogValidationRuleRegistry.CreateDefault().Validate(
+            ToCatalog(new ScriptableObject[] { marked, sunder, skill }),
+            issues);
+
+        Assert.That(
+            issues.Where(issue => issue.Code == "status.channel_inert_stacking")
+                .Select(issue => issue.Scope)
+                .ToArray(),
+            Is.EqualTo(new[] { "SkillDefinition.AppliedStatuses[0]" }),
+            "V1에서 stacks를 소비하지 않는 family의 MaxStacks > 1은 silently inert authoring이므로 error여야 한다");
     }
 
     [Test]

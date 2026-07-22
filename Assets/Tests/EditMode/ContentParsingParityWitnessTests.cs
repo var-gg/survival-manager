@@ -100,6 +100,22 @@ public sealed class ContentParsingParityWitnessTests
     }
 
     [Test]
+    public void ParserLane_MatchesResourcesLane_ForStatusMagnitudeUnits()
+    {
+        Assert.That(RuntimeCombatContentFileParser.TryLoad(out var parsed, out var error), Is.True, error);
+        var parsedStatuses = parsed.StatusFamilies.ToDictionary(status => status.Id, StringComparer.Ordinal);
+        var assetStatuses = Resources.LoadAll<StatusFamilyDefinition>("_Game/Content/Definitions/StatusFamilies");
+        Assert.That(assetStatuses, Is.Not.Empty);
+
+        foreach (var expected in assetStatuses)
+        {
+            Assert.That(parsedStatuses.TryGetValue(expected.Id, out var actual), Is.True, expected.Id);
+            Assert.That(actual!.MagnitudeUnit, Is.EqualTo(expected.MagnitudeUnit),
+                $"'{expected.Id}' MagnitudeUnit이 Resources와 file-parser lane에서 일치해야 한다");
+        }
+    }
+
+    [Test]
     public void ParserLane_MatchesResourcesLane_ForSiteEvents()
     {
         Assert.That(RuntimeCombatContentFileParser.TryLoad(out var parsed, out var error), Is.True, error);

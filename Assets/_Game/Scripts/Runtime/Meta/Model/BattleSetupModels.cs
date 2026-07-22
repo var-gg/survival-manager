@@ -235,7 +235,9 @@ public sealed record StatusFamilyTemplate(
     bool ReducesHealing = false,
     bool DampensTempo = false,
     // 타게팅 표식 membership(marked) — 3g. false=표식 아님(현행 기본).
-    bool MarksTarget = false);
+    bool MarksTarget = false,
+    // application magnitude의 단위 계약. authored family -> parser/converter -> pure template로 보존한다.
+    MagnitudeUnit MagnitudeUnit = SM.Core.Content.MagnitudeUnit.Flat);
 
 public sealed record CleanseProfileTemplate(
     string Id,

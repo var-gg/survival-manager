@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Core.Contracts;
 
 namespace SM.Editor.Validation;
 
 /// <summary>
-/// Fractional status channels must be authored as rates, while instant channels must clear their
-/// runtime floor. Runtime safeguards are not a substitute for valid content authoring.
+/// Status magnitude units must match their consuming channel, finite payloads must satisfy the
+/// channel's runtime-backed coherence rules, and inert stack authoring is rejected.
 /// </summary>
 internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidationRule
 {
@@ -47,6 +48,7 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
                         context,
                         effect.StatusId,
                         effect.Magnitude,
+                        effect.MaxStacks,
                         assetPath,
                         $"SkillDefinition.TriggeredEffects[{index}]",
                         reportMissingReference: true,
@@ -67,6 +69,7 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
                         context,
                         effect.StatusId,
                         effect.Magnitude,
+                        effect.MaxStacks,
                         assetPath,
                         $"AugmentDefinition.TriggeredEffects[{index}]",
                         reportMissingReference: true,
@@ -101,6 +104,31 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
                     "StatusFamilyDefinition.MagnitudeScale");
             }
 
+            var consumesFlat = ConsumesFlatMagnitude(family);
+            var consumesRate = ConsumesRateMagnitude(family);
+            if (consumesFlat && consumesRate)
+            {
+                ContentValidationIssueFactory.AddError(
+                    issues,
+                    "status.channel_magnitude_unit_conflict",
+                    $"Status family '{family.Id}' combines flat and rate magnitude consumers and cannot have one coherent MagnitudeUnit.",
+                    assetPath,
+                    "StatusFamilyDefinition.MagnitudeUnit");
+            }
+            else if (consumesFlat || consumesRate)
+            {
+                var expectedUnit = consumesRate ? MagnitudeUnit.Rate : MagnitudeUnit.Flat;
+                if (family.MagnitudeUnit != expectedUnit)
+                {
+                    ContentValidationIssueFactory.AddError(
+                        issues,
+                        "status.channel_magnitude_unit_mismatch",
+                        $"Status family '{family.Id}' declares {family.MagnitudeUnit} magnitude but its consuming channel requires {expectedUnit}.",
+                        assetPath,
+                        "StatusFamilyDefinition.MagnitudeUnit");
+                }
+            }
+
             if (family.GrantsGuardedDefense
                 && (!IsFinite(family.IncomingDamageDelta)
                     || family.IncomingDamageDelta > 0f
@@ -130,6 +158,7 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
                 context,
                 application.StatusId,
                 application.Magnitude,
+                application.MaxStacks,
                 assetPath,
                 scope,
                 reportMissingReference,
@@ -151,6 +180,7 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
         CatalogValidationContext context,
         string statusId,
         float magnitude,
+        int maxStacks,
         string assetPath,
         string scope,
         bool reportMissingReference,
@@ -172,6 +202,16 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
             return;
         }
 
+        if (maxStacks > 1 && !family.ShredsDefense)
+        {
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "status.channel_inert_stacking",
+                $"Status '{statusId}' authors MaxStacks {maxStacks}, but only ShredsDefense consumes stacks in V1.",
+                assetPath,
+                scope);
+        }
+
         if (!ConsumesApplicationMagnitude(family))
         {
             return;
@@ -183,7 +223,32 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
             return;
         }
 
+        if (magnitude == 0f)
+        {
+            if (HasNonMagnitudeKind(family))
+            {
+                ContentValidationIssueFactory.AddWarning(
+                    issues,
+                    "status.channel_zero_membership_only",
+                    $"Status '{statusId}' has a zero magnitude payload; its non-magnitude membership remains active while its magnitude channel is intentionally inert.",
+                    assetPath,
+                    scope);
+            }
+            else
+            {
+                AddMagnitudeError(issues, assetPath, scope, statusId, magnitude, "a finite positive magnitude for a magnitude-only family");
+            }
+
+            return;
+        }
+
         var effective = magnitude * family.MagnitudeScale;
+        if (!IsFinite(effective))
+        {
+            AddMagnitudeError(issues, assetPath, scope, statusId, magnitude, "a finite effective magnitude");
+            return;
+        }
+
         if (family.DampensTempo || family.ReducesHealing)
         {
             var maximumReduction = 1f - MinimumRuntimeMultiplier;
@@ -211,13 +276,36 @@ internal sealed class StatusMagnitudeChannelCatalogValidator : ICatalogValidatio
 
     private static bool ConsumesApplicationMagnitude(StatusFamilyDefinition family)
     {
-        // ShredsDefense is flat armor subtraction, not a fractional channel. It is intentionally
-        // out of scope for this guard and needs a separately ratified sunder authoring pass.
-        return family.AmplifiesIncomingDamage
+        return family.ShredsDefense
+               || family.AmplifiesIncomingDamage
                || family.ReducesHealing
                || family.DampensTempo
                || family.AppliesPeriodicDamage
                || family.GrantsBarrierOnApply;
+    }
+
+    private static bool ConsumesFlatMagnitude(StatusFamilyDefinition family)
+    {
+        return family.ShredsDefense
+               || family.AppliesPeriodicDamage
+               || family.GrantsBarrierOnApply;
+    }
+
+    private static bool ConsumesRateMagnitude(StatusFamilyDefinition family)
+    {
+        return family.AmplifiesIncomingDamage
+               || family.ReducesHealing
+               || family.DampensTempo;
+    }
+
+    private static bool HasNonMagnitudeKind(StatusFamilyDefinition family)
+    {
+        return family.GrantsUnstoppable
+               || family.BlocksActiveSkills
+               || family.BlocksMovement
+               || family.BlocksAction
+               || family.GrantsGuardedDefense
+               || family.MarksTarget;
     }
 
     private static void AddMagnitudeError(

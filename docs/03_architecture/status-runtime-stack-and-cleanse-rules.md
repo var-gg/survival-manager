@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-13
+- 최종수정일: 2026-07-23
 - 소스오브트루스: `docs/03_architecture/status-runtime-stack-and-cleanse-rules.md`
 - 관련문서:
   - `docs/02_design/combat/status-effects-cc-and-cleanse-taxonomy.md`
@@ -20,6 +20,7 @@ launch floor에서는 OOP status 계층 대신 typed family + resolver chain을 
 ### content / authoring
 
 - `StatusFamilyDefinition`
+- `MagnitudeUnit` (`Flat` / `Rate`)
 - `StatusApplicationRule`
 - `CleanseProfileDefinition`
 - `ControlDiminishingRuleDefinition`
@@ -44,8 +45,10 @@ launch floor에서는 OOP status 계층 대신 typed family + resolver chain을 
 ## V1 stack / refresh 정책
 
 - active status slot은 `StatusId`당 하나다. 같은 `StatusId`를 여러 독립 인스턴스로 보관하지 않는다.
-- 재적용 시 `Stacks = min(spec.MaxStacks, existing.Stacks + 1)`이다.
-- magnitude는 `max(existing.Magnitude, spec.Magnitude)`로 유지한다. additive intensity stacking은 V1에서 열지 않는다.
+- 재적용 시 `Stacks = max(existing.Stacks, min(spec.MaxStacks, existing.Stacks + 1))`이다. 이미 쌓인 상태에 더 낮은 incoming `MaxStacks`가 들어와도 기존 stack을 줄이지 않는다.
+- 저장 magnitude는 `max(existing.Magnitude, spec.Magnitude)`로 유지한다. 전역 additive intensity stacking은 V1에서 열지 않는다.
+- `ShredsDefense` consumer만 flat 차감량을 `stored Magnitude × Stacks`로 계산한다. 따라서 sunder 재적용은 실제로 누적되지만, 저장 merge와 다른 status channel의 해석은 바꾸지 않는다.
+- `MaxStacks > 1`은 V1에서 `ShredsDefense` family에만 허용한다. 다른 channel은 stack을 소비하지 않으므로 validator가 silently inert 저작을 error로 거부한다.
 - `RefreshDurationOnReapply=true`면 remaining duration은 기존 remaining과 새 duration 중 큰 값을 쓴다.
 - duration cap은 기존 duration과 새 duration 중 큰 값을 보존한다. duration additive stacking은 V1에서 열지 않는다.
 
@@ -126,3 +129,8 @@ status 관련 event는 typed envelope로 기록한다.
 - hard-CC chain DR
 - tenacity / cleanse / DR interaction
 - replay round-trip에서 status event가 유실되지 않는지 검증
+- `StatusFamilyDefinition.MagnitudeUnit`은 `ShredsDefense`·주기 피해·즉시 보호막에서 `Flat`, 받는 피해 가산·치유 감소·공속/이속 감쇠에서 `Rate`여야 한다. 숫자 크기로 단위를 추론하지 않는다.
+- magnitude-only family의 zero payload는 error다. `MarksTarget`, `BlocksAction`, `GrantsUnstoppable`처럼 독립적인 non-magnitude kind를 함께 가진 family의 zero는 membership-only 저작으로 허용하되 warning을 남긴다.
+- flat `ShredsDefense` magnitude에 임의의 하한/상한 band를 두지 않는다. finite positive magnitude와 finite positive `MagnitudeScale`만 요구하며 방어/저항 0 바닥은 runtime이 소유한다.
+- `ShredsDefense` 외 family의 `MaxStacks > 1`은 runtime이 소비하지 않으므로 error로 거부한다.
+- shipped `skill_sunder_rhythm`의 1 stack과 3 stack이 각각 flat `0.5`, `1.5`를 차감하는지 검증

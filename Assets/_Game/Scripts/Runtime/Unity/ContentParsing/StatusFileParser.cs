@@ -30,6 +30,8 @@ internal static class StatusFileParser
             definition.IncomingDamageDelta = ExtractFloat(lines, "IncomingDamageDelta:");
             // 기본 1(=magnitude 직소비) 필드 — 미저작 asset이 0으로 추락해 채널이 통째로 꺼지지 않도록 fallback 필수.
             definition.MagnitudeScale = ExtractFloat(lines, "MagnitudeScale:", 1f);
+            // enum 0=Flat이라 구버전 asset도 기존 절대량 기본 계약으로 결정적으로 폴백한다.
+            definition.MagnitudeUnit = (MagnitudeUnit)ExtractInt(lines, "MagnitudeUnit:");
             definition.GrantsBarrierOnApply = ExtractBool(lines, "GrantsBarrierOnApply:");
             definition.GrantsUnstoppable = ExtractBool(lines, "GrantsUnstoppable:");
             definition.BlocksActiveSkills = ExtractBool(lines, "BlocksActiveSkills:");

@@ -45,7 +45,8 @@ public static class CombatStatusRuleCompiler
                 // 콤보 payoff는 전투 튜닝 노브(코드 SoT=Default, 콤보 window/ICD·타게팅 bias와 동종) —
                 // StatusFamilyTemplate/asset 저작면 밖이다. content 경로가 family를 저작하면 payoff는
                 // 여기서 Default를 id로 overlay해 실게임에 실린다. content-lane 승격은 seed-sync 감사와 함께(후속).
-                ComboPayoffDamageBonus: DefaultComboPayoff(family.Id)))
+                ComboPayoffDamageBonus: DefaultComboPayoff(family.Id),
+                MagnitudeUnit: family.MagnitudeUnit))
             .ToDictionary(rule => rule.Id, StringComparer.Ordinal);
         var cleanses = (content.CleanseProfiles ?? new Dictionary<string, CleanseProfileTemplate>())
             .Values

@@ -27,7 +27,7 @@ public sealed partial class UnitSnapshot
     private readonly float _guardedIncomingDamageDelta;
     // 채널 membership 엔트리 스냅샷(효과 종류 데이터화 3보 3f) — 규칙이 id ordinal 정렬로 파생한 배열
     // 참조를 생성 시 1회 확정(가산 순서 고정 = IEEE 결정성, 핫패스 조회 0). 합산 규칙: family 간 가산·
-    // family 내 Max(스택 병합이 이미 Max)·클램프는 코드 소유.
+    // family 내 Max. ShredsDefense만 저장 magnitude×stack을 consumer에서 해석하고, 클램프는 코드 소유.
     private readonly StatusChannelEntry[] _amplifyIncomingEntries;
     private readonly StatusChannelEntry[] _guardedDefenseEntries;
     private readonly StatusChannelEntry[] _shredsDefenseEntries;
@@ -193,9 +193,10 @@ public sealed partial class UnitSnapshot
     public BattleMobilitySpec? EffectiveMobilityReaction => Definition.EffectiveMobilityReaction;
     public float MaxHealth => Stats.Get(StatKey.MaxHealth);
     public float MaxEnergy => Math.Max(0f, Definition.EffectiveEnergy.Max);
-    // 방어/저항 차감 채널(ShredsDefense membership, 3f) — Σ(magnitude×배율) 가산, 바닥 0 클램프 코드 소유.
-    public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - SumChannelMagnitude(_shredsDefenseEntries));
-    public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - SumChannelMagnitude(_shredsDefenseEntries));
+    // 방어/저항 차감 채널(ShredsDefense membership, 3f) — Σ(magnitude×stack×배율) 가산,
+    // 바닥 0 클램프 코드 소유. stack 소비는 이 채널에만 한정하며 저장 magnitude 병합은 Max를 유지한다.
+    public float Armor => Math.Max(0f, Stats.Get(StatKey.Armor) - SumStackedChannelMagnitude(_shredsDefenseEntries));
+    public float Resist => Math.Max(0f, Stats.Get(StatKey.Resist) - SumStackedChannelMagnitude(_shredsDefenseEntries));
     public float PhysPen => Math.Max(0f, Stats.Get(StatKey.PhysPen));
     public float MagPen => Math.Max(0f, Stats.Get(StatKey.MagPen));
     public float Lifesteal => Math.Max(0f, Stats.Get(StatKey.Lifesteal));
@@ -610,7 +611,7 @@ public sealed partial class UnitSnapshot
         {
             var existing = _statuses[existingIndex];
             var durationTicks = BattleTickMath.DurationToTicks(spec.DurationSeconds);
-            var stacks = Math.Min(spec.MaxStacks, existing.Stacks + 1);
+            var stacks = Math.Max(existing.Stacks, Math.Min(spec.MaxStacks, existing.Stacks + 1));
             var remaining = spec.RefreshDurationOnReapply ? Math.Max(existing.RemainingTicks, durationTicks) : existing.RemainingTicks;
             var magnitude = Math.Max(existing.Magnitude, spec.Magnitude);
             var nextApplicationId = string.IsNullOrWhiteSpace(sourceApplicationId) ? spec.Id : sourceApplicationId;
@@ -882,6 +883,24 @@ public sealed partial class UnitSnapshot
         foreach (var entry in entries)
         {
             total += GetStatusMagnitude(entry.StatusId) * entry.Value;
+        }
+
+        return total;
+    }
+
+    /// <summary>ShredsDefense 전용 magnitude×stack×배율 합. global status merge는 Max로 유지하고
+    /// 실제 stack 축적 효과만 flat 방어/저항 차감 consumer에서 해석한다.</summary>
+    private float SumStackedChannelMagnitude(StatusChannelEntry[] entries)
+    {
+        var total = 0f;
+        foreach (var entry in entries)
+        {
+            var stackedMagnitude = _statuses
+                .Where(status => string.Equals(status.StatusId, entry.StatusId, StringComparison.Ordinal))
+                .Select(status => status.Magnitude * status.Stacks)
+                .DefaultIfEmpty(0f)
+                .Max();
+            total += stackedMagnitude * entry.Value;
         }
 
         return total;

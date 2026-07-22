@@ -160,7 +160,7 @@ public static partial class SampleSeedGenerator
                         Id = "skill_sunder_rhythm:sunder",
                         StatusId = "sunder",
                         DurationSeconds = 3.5f,
-                        Magnitude = 0.06f,
+                        Magnitude = 0.50f,
                         MaxStacks = 3,
                         StackCap = 3,
                         RefreshDurationOnReapply = true,
@@ -171,8 +171,8 @@ public static partial class SampleSeedGenerator
             UpsertStringEntry(
                 ContentLocalizationTables.Skills,
                 asset.DescriptionKey,
-                 "근접 타격이 방어를 6%씩 파쇄하며 3회까지 중첩되고 재타격 시 3.5초 지속시간이 갱신됩니다.",
-                 "Melee strikes shred 6% defense, stack up to three times, and refresh the 3.5-second duration on hit.");
+                "근접 타격이 방어와 저항을 각각 0.5씩 낮추며 3회까지 중첩되고 재타격 시 3.5초 지속시간이 갱신됩니다.",
+                "Melee strikes reduce Armor and Resist by 0.5, stack up to three times, and refresh the 3.5-second duration on hit.");
             ApplyLoopCSkillGovernance(asset);
         });
         PatchDuelistGhostSkillReferences(sunder);

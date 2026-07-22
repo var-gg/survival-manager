@@ -28,6 +28,13 @@ public static partial class SampleSeedGenerator
         PatchAppliedStatusMagnitude("skill_mirror_cut", "exposed", 0.30f);
         PatchTriggeredStatusMagnitude("skill_shard_memory", "exposed", 0.30f);
         PatchAppliedStatusMagnitude("skill_signal_flare", "exposed", 0.30f);
+
+        // ShredsDefense is flat subtraction. Stacking is interpreted only by the ShredsDefense runtime consumer.
+        PatchAppliedStatusMagnitude("skill_aegis_linebreaker", "sunder", 0.50f);
+        PatchAppliedStatusMagnitude("skill_shardblade_sever", "sunder", 0.50f);
+
+        // Membership-only mark: MarksTarget is independently live while amplification intentionally stays zero.
+        PatchAppliedStatusMagnitude("skill_raider_utility", "marked", 0f);
     }
 
     private static void PatchAppliedStatusMagnitude(string skillId, string statusId, float magnitude)
@@ -108,5 +115,18 @@ public static partial class SampleSeedGenerator
 
         rule.Magnitude = magnitude;
         EditorUtility.SetDirty(skill);
+    }
+
+    private static float ResolveBossOverlayStatusMagnitude(string statusId)
+    {
+        return statusId switch
+        {
+            "marked" => 0.20f,
+            "exposed" => 0.30f,
+            "wound" => 0.25f,
+            "sunder" => 0.50f,
+            _ => throw new InvalidOperationException(
+                $"Boss overlay status '{statusId}' has no explicit magnitude authoring contract."),
+        };
     }
 }

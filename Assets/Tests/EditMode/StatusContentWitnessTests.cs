@@ -6,6 +6,7 @@ using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Content;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 using SM.Editor.SeedData;
 using SM.Meta;
 using SM.Meta.Model;
@@ -69,7 +70,7 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
-    public void RealMagnitudeChannelFamilies_CarryMagnitudeScale()
+    public void RealMagnitudeChannelFamilies_CarryMagnitudeScaleAndUnit()
     {
         // 숫자 콘텐츠화 2보 — magnitude 직소비 채널(sunder=방어/저항 차감, marked/exposed=받는 피해 가산,
         // wound=치유 감소, slow=공속/이속 감쇠, burn/bleed=주기 틱 피해)의 배율이
@@ -84,6 +85,11 @@ public sealed class StatusContentWitnessTests
             Assert.That(rule.MagnitudeScale, Is.EqualTo(1f).Within(0.0001f),
                 $"{statusId}의 MagnitudeScale(1)이 콘텐츠(status_family_{statusId}.asset)에서 전투 규칙까지 실려야 한다 — " +
                 "0이면 미저작/파서 결손으로 해당 숫자 채널이 통째로 무효화되는 회귀");
+            var expectedUnit = statusId is "marked" or "exposed" or "wound" or "slow"
+                ? MagnitudeUnit.Rate
+                : MagnitudeUnit.Flat;
+            Assert.That(rule.MagnitudeUnit, Is.EqualTo(expectedUnit),
+                $"{statusId}의 MagnitudeUnit이 authored definition에서 compiled combat rule까지 보존돼야 한다");
             Assert.That(rules.ResolveMagnitudeScale(statusId), Is.EqualTo(1f).Within(0.0001f));
         }
     }
@@ -114,6 +120,64 @@ public sealed class StatusContentWitnessTests
         Assert.That(matchesFractionalContract, Is.True,
             $"cinder_overrun shipped path must author a 0.20 rate and produce 0.80 tempo multipliers; " +
             $"actual magnitude={slow.Magnitude:R}, move={moveMultiplier:R}, attack={attackMultiplier:R}");
+    }
+
+    [Test]
+    public void SunderRhythm_ThreeShippedApplicationsDrainMoreArmorThanOne()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rhythm = snapshot.SkillCatalog["skill_sunder_rhythm"].SupportModifier!.AddedStatuses
+            .Single(status => status.StatusId == "sunder");
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { CombatTestFactory.CreateUnit("sunder.target", defense: 5f) },
+            new[] { CombatTestFactory.CreateUnit("sunder.source") },
+            statusRules: CombatStatusRuleCompiler.Compile(snapshot));
+        var target = state.Allies.Single();
+        var baseArmor = target.Stats.Get(StatKey.Armor);
+
+        target.ApplyStatus(rhythm);
+        var oneStackArmor = target.Armor;
+        target.ApplyStatus(rhythm);
+        target.ApplyStatus(rhythm);
+
+        Assert.That(rhythm.MaxStacks, Is.EqualTo(3));
+        Assert.That(oneStackArmor, Is.EqualTo(baseArmor - rhythm.Magnitude).Within(0.0001f));
+        Assert.That(target.Armor, Is.EqualTo(baseArmor - (3f * rhythm.Magnitude)).Within(0.0001f),
+            "실 skill_sunder_rhythm asset의 3스택은 1스택보다 flat 방어를 더 깎아야 한다");
+    }
+
+    [Test]
+    public void ShippedMagnitudeChannels_UseRatifiedValuesIncludingMembershipOnlyMarks()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+
+        StatusApplicationSpec Applied(string skillId, string statusId) => snapshot.SkillCatalog[skillId]
+            .AppliedStatuses!.Single(status => status.StatusId == statusId);
+        StatusApplicationSpec Support(string skillId, string statusId) => snapshot.SkillCatalog[skillId]
+            .SupportModifier!.AddedStatuses.Single(status => status.StatusId == statusId);
+        StatusApplicationSpec Overlay(string overlayId, string statusId) => snapshot.BossOverlays![overlayId]
+            .AppliedStatuses.Single(status => status.StatusId == statusId);
+
+        var expectations = new (string Site, StatusApplicationSpec Status, float Magnitude)[]
+        {
+            ("skill_aegis_linebreaker", Applied("skill_aegis_linebreaker", "sunder"), 0.50f),
+            ("skill_shardblade_sever", Applied("skill_shardblade_sever", "sunder"), 0.50f),
+            ("support_piercing", Support("support_piercing", "sunder"), 0.50f),
+            ("skill_marksman_utility", Applied("skill_marksman_utility", "sunder"), 0.50f),
+            ("skill_sunder_rhythm", Support("skill_sunder_rhythm", "sunder"), 0.50f),
+            ("skill_raider_core", Applied("skill_raider_core", "marked"), 0f),
+            ("skill_raider_utility", Applied("skill_raider_utility", "marked"), 0f),
+            ("skill_boss_tithe_mark_sentence", Applied("skill_boss_tithe_mark_sentence", "marked"), 0f),
+            ("skill_scout_utility", Applied("skill_scout_utility", "exposed"), 0.30f),
+            ("boss_overlay_glass_forest", Overlay("boss_overlay_glass_forest", "exposed"), 0.30f),
+            ("boss_overlay_starved_menagerie", Overlay("boss_overlay_starved_menagerie", "wound"), 0.25f),
+            ("boss_overlay_heartforge_gate", Overlay("boss_overlay_heartforge_gate", "sunder"), 0.50f),
+        };
+
+        foreach (var (site, status, expectedMagnitude) in expectations)
+        {
+            Assert.That(status.Magnitude, Is.EqualTo(expectedMagnitude).Within(0.0001f), site);
+        }
     }
 
     [Test]

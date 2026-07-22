@@ -735,8 +735,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 40752930545274880
-    m_Localized: Melee strikes shred 6% defense, stack up to three times, and refresh
-      the 3.5-second duration on hit.
+    m_Localized: Melee strikes reduce Armor and Resist by 0.5, stack up to three
+      times, and refresh the 3.5-second duration on hit.
     m_Metadata:
       m_Items: []
   - m_Id: 40752930947928064

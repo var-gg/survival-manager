@@ -39,7 +39,8 @@ internal static class StatusConverter
             ShredsDefense: definition.ShredsDefense,
             ReducesHealing: definition.ReducesHealing,
             DampensTempo: definition.DampensTempo,
-            MarksTarget: definition.MarksTarget);
+            MarksTarget: definition.MarksTarget,
+            MagnitudeUnit: definition.MagnitudeUnit);
     }
 
     internal static CleanseProfileTemplate BuildCleanseProfileTemplate(CleanseProfileDefinition definition)

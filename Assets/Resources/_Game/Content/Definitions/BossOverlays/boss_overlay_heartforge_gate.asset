@@ -29,7 +29,7 @@ MonoBehaviour:
   - Id: boss_overlay_heartforge_gate_sunder
     StatusId: sunder
     DurationSeconds: 999
-    Magnitude: 0
+    Magnitude: 0.5
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

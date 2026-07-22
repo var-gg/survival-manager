@@ -13,6 +13,61 @@ namespace SM.Tests.EditMode;
 public sealed class StatusResolutionServiceTests
 {
     [Test]
+    public void SunderRhythmThenLinebreaker_LowerIncomingCapDoesNotStripStacks()
+    {
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { CombatTestFactory.CreateUnit("guardian", defense: 4f) },
+            new[] { CombatTestFactory.CreateUnit("sunder.source") });
+        var target = state.Allies.Single();
+        var rhythm = new StatusApplicationSpec("skill_sunder_rhythm:sunder", "sunder", 3.5f, 0.5f, 3);
+        var linebreaker = new StatusApplicationSpec("status_sunder", "sunder", 3f, 0.5f, 1);
+
+        target.ApplyStatus(rhythm);
+        target.ApplyStatus(rhythm);
+        target.ApplyStatus(rhythm);
+        var armorAfterRhythm = target.Armor;
+        target.ApplyStatus(linebreaker);
+
+        var sunder = target.Statuses.Single(status => status.StatusId == "sunder");
+        Assert.That(sunder.Stacks, Is.EqualTo(3),
+            "incoming MaxStacks=1 must not reduce an already accumulated three-stack status");
+        Assert.That(armorAfterRhythm, Is.EqualTo(2.5f).Within(0.0001f));
+        Assert.That(target.Armor, Is.EqualTo(armorAfterRhythm).Within(0.0001f),
+            "a teammate's one-stack linebreaker application must not strip existing rhythm shred");
+    }
+
+    [Test]
+    public void ShredsDefenseStacks_AccumulatePerStack_WithoutChangingOtherChannelMerge()
+    {
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { CombatTestFactory.CreateUnit("stack.target", defense: 5f) },
+            new[] { CombatTestFactory.CreateUnit("stack.source") });
+        var target = state.Allies.Single();
+        var baseArmor = target.Stats.Get(StatKey.Armor);
+        var sunder = new StatusApplicationSpec("stack.sunder", "sunder", 5f, 0.5f, 3);
+
+        target.ApplyStatus(sunder);
+        var oneStackArmor = target.Armor;
+        target.ApplyStatus(sunder);
+        target.ApplyStatus(sunder);
+
+        var stackedSunder = target.Statuses.Single(status => status.StatusId == "sunder");
+        Assert.That(stackedSunder.Stacks, Is.EqualTo(3));
+        Assert.That(stackedSunder.Magnitude, Is.EqualTo(0.5f).Within(0.0001f),
+            "sunder의 저장 magnitude는 다른 상태와 같은 Max 병합을 유지하고 stack 소비만 ShredsDefense에 한정한다");
+        Assert.That(oneStackArmor, Is.EqualTo(baseArmor - 0.5f).Within(0.0001f));
+        Assert.That(target.Armor, Is.EqualTo(baseArmor - 1.5f).Within(0.0001f),
+            "sunder 3스택은 1스택보다 정확히 1.0 더 많은 flat 방어를 깎아야 한다");
+
+        var marked = new StatusApplicationSpec("stack.marked", "marked", 5f, 0.2f, 3);
+        target.ApplyStatus(marked);
+        target.ApplyStatus(marked);
+        target.ApplyStatus(marked);
+        Assert.That(target.GetIncomingDamageMultiplier(), Is.EqualTo(1.2f).Within(0.0001f),
+            "ShredsDefense 밖의 fractional channel은 기존 family 내 Max 병합을 유지해야 한다");
+    }
+
+    [Test]
     public void ChannelMembership_SumsAcrossFamilies_WithinChannel()
     {
         // 3f 합산 규칙(오너 비준 2026-07-12)의 실행 스펙 — 채널 내 family 간 **가산**, family 내 Max

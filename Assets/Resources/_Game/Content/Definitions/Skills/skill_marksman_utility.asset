@@ -152,7 +152,7 @@ MonoBehaviour:
   - Id: status_sunder
     StatusId: sunder
     DurationSeconds: 3
-    Magnitude: 0.15
+    Magnitude: 0.5
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

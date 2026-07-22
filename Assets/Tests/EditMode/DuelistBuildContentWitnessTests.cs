@@ -15,6 +15,10 @@ using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 using UnityEditor;
+using UnityEditor.Localization;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization.Tables;
 
 namespace SM.Tests.EditMode;
 
@@ -125,7 +129,7 @@ public sealed class DuelistBuildContentWitnessTests
         Assert.That(sunder.SupportBlockedTags.Select(tag => tag.Id), Does.Contain("dash"));
         var sunderStatus = sunder.SupportModifier.AddedStatuses.Single();
         Assert.That(sunderStatus.StatusId, Is.EqualTo("sunder"));
-        Assert.That(sunderStatus.Magnitude, Is.EqualTo(0.06f));
+        Assert.That(sunderStatus.Magnitude, Is.EqualTo(0.50f));
         Assert.That(sunderStatus.MaxStacks, Is.EqualTo(3));
         Assert.That(sunderStatus.DurationSeconds, Is.EqualTo(3.5f));
         Assert.That(sunderStatus.RefreshDurationOnReapply, Is.True);
@@ -143,6 +147,23 @@ public sealed class DuelistBuildContentWitnessTests
             effect.Op == TriggeredEffectOp.ApplyStatus
             && effect.StatusId == "guarded"
             && Math.Abs(effect.DurationSeconds - 2.5f) < 0.0001f), Is.True);
+    }
+
+    [Test]
+    public void SunderRhythm_DisplayStatesFlatArmorAndResistDrain()
+    {
+        const string descriptionKey = "content.skill.skill_sunder_rhythm.desc";
+        LocalizationSettings.InitializationOperation.WaitForCompletion();
+        var collection = LocalizationEditorSettings.GetStringTableCollection(ContentLocalizationTables.Skills);
+        var ko = collection!.GetTable(new LocaleIdentifier("ko")) as StringTable;
+        var en = collection.GetTable(new LocaleIdentifier("en")) as StringTable;
+
+        Assert.That(
+            ko!.GetEntry(descriptionKey)!.Value,
+            Is.EqualTo("근접 타격이 방어와 저항을 각각 0.5씩 낮추며 3회까지 중첩되고 재타격 시 3.5초 지속시간이 갱신됩니다."));
+        Assert.That(
+            en!.GetEntry(descriptionKey)!.Value,
+            Is.EqualTo("Melee strikes reduce Armor and Resist by 0.5, stack up to three times, and refresh the 3.5-second duration on hit."));
     }
 
     [Test]
@@ -172,7 +193,7 @@ public sealed class DuelistBuildContentWitnessTests
         var sunderUnit = CompileHero(content, "slayer", sunderChain).Allies.Single();
         var sunderStatus = sunderUnit.Skills.Single(skill => skill.Id == "skill_slayer_core")
             .AppliedStatuses!.Single(status => status.StatusId == "sunder");
-        Assert.That(sunderStatus.Magnitude, Is.EqualTo(0.06f));
+        Assert.That(sunderStatus.Magnitude, Is.EqualTo(0.50f));
         Assert.That(sunderStatus.MaxStacks, Is.EqualTo(3));
         Assert.That(sunderStatus.DurationSeconds, Is.EqualTo(3.5f));
 

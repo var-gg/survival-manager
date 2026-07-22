@@ -153,6 +153,12 @@ public enum StatusGroupValue
     DefensiveBoon = 3,
 }
 
+public enum MagnitudeUnit
+{
+    Flat = 0,
+    Rate = 1,
+}
+
 public enum BudgetDomain
 {
     UnitBlueprint = 0,

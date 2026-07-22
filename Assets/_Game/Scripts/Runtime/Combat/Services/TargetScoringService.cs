@@ -265,6 +265,7 @@ public static class TargetScoringService
 
     public static float EstimateEhpAgainst(UnitSnapshot source, UnitSnapshot target)
     {
+        // status magnitude는 target.Armor/Resist와 GetIncomingDamageMultiplier 양쪽을 통해 이 타겟 선택 점수도 바꾼다.
         var mitigation = Math.Max(target.Armor, target.Resist);
         var incomingScalar = Math.Max(0.25f, target.GetIncomingDamageMultiplier());
         var sourcePressure = Math.Max(1f, source.PhysPower + source.MagPower);
@@ -273,6 +274,7 @@ public static class TargetScoringService
 
     public static float EstimateEhpAgainstAverageThreat(UnitSnapshot target)
     {
+        // 위와 동일하게 defense shred와 incoming-damage amplification은 피해량뿐 아니라 타겟 선택에도 관여한다.
         return (target.CurrentHealth + target.Barrier + Math.Max(target.Armor, target.Resist)) * Math.Max(0.25f, target.GetIncomingDamageMultiplier());
     }
 

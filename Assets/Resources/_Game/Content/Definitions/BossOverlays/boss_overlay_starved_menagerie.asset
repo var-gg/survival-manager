@@ -29,7 +29,7 @@ MonoBehaviour:
   - Id: boss_overlay_starved_menagerie_wound
     StatusId: wound
     DurationSeconds: 999
-    Magnitude: 0
+    Magnitude: 0.25
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

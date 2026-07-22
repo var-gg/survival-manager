@@ -153,7 +153,7 @@ MonoBehaviour:
     - Id: skill_sunder_rhythm:sunder
       StatusId: sunder
       DurationSeconds: 3.5
-      Magnitude: 0.06
+      Magnitude: 0.5
       MaxStacks: 3
       RefreshDurationOnReapply: 1
       StackCap: 3

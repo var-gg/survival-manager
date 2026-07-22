@@ -722,6 +722,7 @@ internal sealed class StatusFamilySchemaRule : DefinitionSchemaRule<StatusFamily
         ICollection<ContentValidationIssue> issues)
     {
         ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(statusFamily.Group, "Status group", assetPath, issues);
+        ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(statusFamily.MagnitudeUnit, "Status magnitude unit", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(statusFamily.DefaultStackPolicy, "Status default stack policy", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(statusFamily.DefaultRefreshPolicy, "Status default refresh policy", assetPath, issues);
         ContentDefinitionSchemaRuleSupport.ValidateDefinedEnum(statusFamily.DefaultProcAttributionPolicy, "Status default proc attribution policy", assetPath, issues);

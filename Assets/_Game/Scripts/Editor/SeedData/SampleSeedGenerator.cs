@@ -2967,7 +2967,7 @@ public static partial class SampleSeedGenerator
             {
                 AddedStatuses = new List<StatusApplicationRule>
                 {
-                    new() { Id = "support_piercing:sunder", StatusId = "sunder", DurationSeconds = 2f, Magnitude = 1f, MaxStacks = 1 },
+                    new() { Id = "support_piercing:sunder", StatusId = "sunder", DurationSeconds = 2f, Magnitude = 0.50f, MaxStacks = 1 },
                 },
             },
             "support_echo" => new SupportModifierSpec { CooldownMultiplier = 0.85f },
@@ -3055,8 +3055,8 @@ public static partial class SampleSeedGenerator
         PatchSkill("skill_slayer_core", tags, new[] { "strike", "bleed", "execute" }, Array.Empty<string>(), new[] { "blade" }, new[] { "duelist" }, new[] { MakeStatus("status_bleed", "bleed", 3f, 2f) }, string.Empty);
         PatchSkill("skill_raider_core", tags, new[] { "strike", "mark", "execute" }, Array.Empty<string>(), new[] { "blade" }, new[] { "duelist" }, new[] { MakeStatus("status_marked", "marked", 3f, 0f) }, string.Empty);
         PatchSkill("skill_hunter_utility", tags, new[] { "projectile", "slow", "mark" }, Array.Empty<string>(), new[] { "bow" }, new[] { "ranger" }, new[] { MakeStatus("status_slow", "slow", 2f, 0.25f) }, string.Empty);
-        PatchSkill("skill_marksman_utility", tags, new[] { "projectile", "sunder", "pierce" }, Array.Empty<string>(), new[] { "bow" }, new[] { "ranger" }, new[] { MakeStatus("status_sunder", "sunder", 3f, 0.15f) }, string.Empty);
-        PatchSkill("skill_scout_utility", tags, new[] { "projectile", "exposed", "trap" }, Array.Empty<string>(), new[] { "bow" }, new[] { "ranger" }, new[] { MakeStatus("status_exposed", "exposed", 2.5f, 0f) }, string.Empty);
+        PatchSkill("skill_marksman_utility", tags, new[] { "projectile", "sunder", "pierce" }, Array.Empty<string>(), new[] { "bow" }, new[] { "ranger" }, new[] { MakeStatus("status_sunder", "sunder", 3f, 0.50f) }, string.Empty);
+        PatchSkill("skill_scout_utility", tags, new[] { "projectile", "exposed", "trap" }, Array.Empty<string>(), new[] { "bow" }, new[] { "ranger" }, new[] { MakeStatus("status_exposed", "exposed", 2.5f, 0.30f) }, string.Empty);
         PatchSkill("skill_hexer_core", tags, new[] { "burst", "burn", "silence" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_burn", "burn", 3f, 2f), MakeStatus("status_silence", "silence", 1.25f, 0f) }, string.Empty);
         PatchSkill("skill_priest_core", tags, new[] { "heal", "cleanse", "shield_skill" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_barrier_priest", "barrier", 0f, 5f) }, "cleanse_control");
         PatchSkill("skill_shaman_core", tags, new[] { "burst", "zone", "burn" }, Array.Empty<string>(), new[] { "focus" }, new[] { "mystic" }, new[] { MakeStatus("status_burn_shaman", "burn", 4f, 1.5f) }, string.Empty);
@@ -3946,6 +3946,9 @@ public static partial class SampleSeedGenerator
                 // C# 기본값으로 추락해 guarded delta(-0.1)가 조용히 0이 되는 잠재 함정(2026-07-12 실측).
                 asset.IncomingDamageDelta = definition.Id == "guarded" ? -0.1f : 0f;
                 asset.MagnitudeScale = 1f;
+                asset.MagnitudeUnit = definition.Id is "slow" or "wound" or "marked" or "exposed"
+                    ? MagnitudeUnit.Rate
+                    : MagnitudeUnit.Flat;
                 // 효과 종류 서술자(3보 1슬라이스) — barrier의 즉시 보호막 전환. 미명시면 fresh 재생성 시
                 // false 추락으로 barrier가 무효과 잔존 상태가 되는 함정(guarded delta와 동일 축).
                 asset.GrantsBarrierOnApply = definition.Id == "barrier";
@@ -4681,7 +4684,11 @@ public static partial class SampleSeedGenerator
             asset.RewardDropTags = new List<string> { "boss", site.OverlayId, site.SiteId, site.OverlayAuraTag, site.OverlayUtilityTag };
             asset.AppliedStatuses = new List<StatusApplicationRule>
             {
-                MakeStatus($"{site.OverlayId}_{site.OverlayStatusId}", site.OverlayStatusId, 999f, 0f),
+                MakeStatus(
+                    $"{site.OverlayId}_{site.OverlayStatusId}",
+                    site.OverlayStatusId,
+                    999f,
+                    ResolveBossOverlayStatusMagnitude(site.OverlayStatusId)),
             };
             if (site.BossOpeningBarrier > 0f)
             {

@@ -16,6 +16,7 @@ namespace SM.Content.Definitions
         public float Magnitude = 0f;
         public int MaxStacks = 1;
         public bool RefreshDurationOnReapply = true;
+        // Authoring/schema cross-check only. AppliedStatusState에는 cap이 없고 runtime stack 상한은 MaxStacks가 소유한다.
         public int StackCap = 0;
         public StatusStackPolicyValue StackPolicy = StatusStackPolicyValue.LegacyDerived;
         public StatusRefreshPolicyValue RefreshPolicy = StatusRefreshPolicyValue.LegacyDerived;
@@ -42,6 +43,9 @@ namespace SM.Content.Definitions
 
         [Tooltip("적용 magnitude가 이 상태의 숫자 채널에 실리는 배율 — sunder=방어/저항 차감량, marked/exposed=받는 피해 가산, wound=치유 감소율, slow=공속/이속 감쇠율. 1=magnitude 그대로(현행 공식). 과거 sim에 magnitude 직소비로 박혀 있던 식의 콘텐츠 승격(숫자 콘텐츠화 2보).")]
         public float MagnitudeScale = 1f;
+
+        [Tooltip("적용 magnitude의 단위. Flat은 방어/저항 차감·주기 피해·즉시 보호막 같은 절대량, Rate는 받는 피해 가산·치유 감소·공속/이속 감쇠 같은 비율이다.")]
+        public MagnitudeUnit MagnitudeUnit = SM.Core.Content.MagnitudeUnit.Flat;
 
         [Tooltip("적용 시 상태로 잔존하는 대신 즉시 보호막(barrier)으로 전환한다 (barrier=true). 과거 sim에 StatusId==\"barrier\" 문자열 분기로 박혀 있던 효과 종류의 콘텐츠 승격 — 효과 종류 데이터화 3보 1슬라이스. 바닥 1은 코드 소유 클램프.")]
         public bool GrantsBarrierOnApply;
