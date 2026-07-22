@@ -69,6 +69,7 @@ internal sealed class CounterplayInstrumentationAccumulator
                         ? ClassifyNonselection(observation)
                         : string.Empty,
                     dive_predicate_ticks = observation.DiveIntentEvaluations,
+                    dive_hard_aborts = observation.DiveHardAborts,
                     target_selection_calls = observation.TargetSelections,
                     tactic_evaluations = observation.TacticEvaluations,
                     intent_overrides = observation.IntentOverrides,

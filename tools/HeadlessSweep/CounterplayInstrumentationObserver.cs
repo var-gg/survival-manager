@@ -48,6 +48,7 @@ internal sealed record CounterplayBattleObservation(
     IReadOnlyList<TacticEvaluationDiagnosticEvent> TacticEvaluations,
     IReadOnlyList<IntentOverrideDiagnosticEvent> IntentOverrides,
     IReadOnlyList<DiveIntentDiagnosticEvent> DiveIntentEvaluations,
+    IReadOnlyList<DiveHardAbortDiagnosticEvent> DiveHardAborts,
     IReadOnlyList<DisplacementLifecycleDiagnosticEvent> DisplacementLifecycle,
     IReadOnlyList<HealingApplicationDiagnosticEvent> HealingApplications,
     IReadOnlyList<RangedFreeFireSample> RangedFreeFire,
@@ -72,6 +73,7 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
     private readonly List<TacticEvaluationDiagnosticEvent> _tacticEvaluations = new();
     private readonly List<IntentOverrideDiagnosticEvent> _intentOverrides = new();
     private readonly List<DiveIntentDiagnosticEvent> _diveIntentEvaluations = new();
+    private readonly List<DiveHardAbortDiagnosticEvent> _diveHardAborts = new();
     private readonly List<DisplacementLifecycleDiagnosticEvent> _displacementLifecycle = new();
     private readonly List<HealingApplicationDiagnosticEvent> _healingApplications = new();
 
@@ -93,6 +95,14 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
             .ToArray();
     }
 
+    internal IReadOnlyList<TargetSelectionDiagnosticEvent> TargetSelections => _targetSelections;
+
+    internal IReadOnlyList<IntentOverrideDiagnosticEvent> IntentOverrides => _intentOverrides;
+
+    internal IReadOnlyList<DiveIntentDiagnosticEvent> DiveIntentEvaluations => _diveIntentEvaluations;
+
+    internal IReadOnlyList<DiveHardAbortDiagnosticEvent> DiveHardAborts => _diveHardAborts;
+
     public bool ShouldObserve(BattleDiagnosticKind kind, string actorId, string skillId = "")
     {
         return kind switch
@@ -101,6 +111,7 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
                 or BattleDiagnosticKind.TacticEvaluation
                 or BattleDiagnosticKind.IntentOverride
                 or BattleDiagnosticKind.DiveIntentEvaluation
+                or BattleDiagnosticKind.DiveHardAbort
                 => string.Equals(actorId, _diverId, StringComparison.Ordinal),
             BattleDiagnosticKind.DisplacementLifecycle
                 => string.Equals(skillId, ChargeSkillId, StringComparison.Ordinal)
@@ -126,6 +137,9 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
             case DiveIntentDiagnosticEvent diveIntent:
                 _diveIntentEvaluations.Add(diveIntent);
                 break;
+            case DiveHardAbortDiagnosticEvent hardAbort:
+                _diveHardAborts.Add(hardAbort);
+                break;
             case DisplacementLifecycleDiagnosticEvent displacement:
                 _displacementLifecycle.Add(displacement);
                 break;
@@ -148,6 +162,7 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
             _tacticEvaluations.ToArray(),
             _intentOverrides.ToArray(),
             _diveIntentEvaluations.ToArray(),
+            _diveHardAborts.ToArray(),
             _displacementLifecycle.ToArray(),
             _healingApplications.ToArray(),
             BuildRangedFreeFire(result),

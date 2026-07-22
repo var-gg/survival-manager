@@ -16,6 +16,7 @@ internal enum BattleDiagnosticKind
     DiveIntentEvaluation = 3,
     DisplacementLifecycle = 4,
     HealingApplication = 5,
+    DiveHardAbort = 6,
 }
 
 internal interface IBattleDiagnosticObserver
@@ -63,6 +64,7 @@ internal sealed record TargetCandidateDiagnostic(
     float CurrentHealth,
     float HealthRatio,
     float EdgeDistance,
+    float CenterPathDistance,
     float AcquireRange,
     string AcquireRangeSource,
     TargetCandidateRejectionReason InitialRejection,
@@ -93,6 +95,7 @@ internal sealed record TargetSelectionDiagnosticEvent(
     TargetFallbackPolicy FallbackPolicy,
     TargetFilterFlags Filters,
     float AuthoredMaxAcquireRange,
+    float ActorAttackRange,
     float ResolvedAcquireRange,
     string AcquireRangeSource,
     string CurrentTargetId,
@@ -174,6 +177,7 @@ internal sealed record DiveTargetCandidateDiagnostic(
     bool HasFrontlineProtector,
     float ForwardDepth,
     float PathDistance,
+    float EdgeDistance,
     int FormationLineScore,
     int ClassScore,
     int LowHealthScore,
@@ -206,8 +210,25 @@ internal sealed record DiveIntentDiagnosticEvent(
     int NearbyEnemyLimit,
     int ActiveDiverCount,
     int EligibleDiverCount,
+    float ActorMoveSpeed,
+    float ActorBaseMoveSpeed,
+    float FixedStepSeconds,
+    int CurrentCommitUntilStep,
+    int SelectedCommitUntilStep,
     IReadOnlyList<DiveTargetCandidateDiagnostic> Candidates)
     : BattleDiagnosticEvent(BattleDiagnosticKind.DiveIntentEvaluation, StepIndex, TimeSeconds, ActorId);
+
+internal sealed record DiveHardAbortDiagnosticEvent(
+    int StepIndex,
+    float TimeSeconds,
+    string ActorId,
+    string ActorArchetypeId,
+    string ActorClassId,
+    string DiveTargetId,
+    float ActorHealthRatio,
+    float AbortHealthRatio,
+    int CommitUntilStep)
+    : BattleDiagnosticEvent(BattleDiagnosticKind.DiveHardAbort, StepIndex, TimeSeconds, ActorId);
 
 internal enum DisplacementLifecycleStage
 {

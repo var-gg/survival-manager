@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
+using SM.Core.Stats;
 
 namespace SM.Combat.Services;
 
@@ -143,6 +144,7 @@ internal sealed class TargetSelectionTrace
             _rule.FallbackPolicy,
             _rule.Filters,
             _rule.MaxAcquireRange,
+            _actor.AttackRange,
             _acquireRange,
             _acquireRangeSource,
             _currentTargetId,
@@ -193,6 +195,7 @@ internal sealed class TargetSelectionTrace
             string acquireRangeSource)
         {
             var edgeDistance = MovementResolver.ComputeEdgeDistance(actor, Target);
+            var centerPathDistance = actor.Position.DistanceTo(Target.Position);
             return new TargetCandidateDiagnostic(
                 Target.Id.Value,
                 Target.Definition.ArchetypeId,
@@ -202,6 +205,7 @@ internal sealed class TargetSelectionTrace
                 Target.CurrentHealth,
                 Target.HealthRatio,
                 edgeDistance,
+                centerPathDistance,
                 acquireRange,
                 acquireRangeSource,
                 InitialRejection,
@@ -301,6 +305,7 @@ internal sealed class DiveIntentTrace
     private int _nearbyEnemyCount;
     private int _activeDiverCount;
     private int _eligibleDiverCount;
+    private int _selectedCommitUntilStep = -1;
 
     internal DiveIntentTrace(
         BattleState state,
@@ -325,10 +330,11 @@ internal sealed class DiveIntentTrace
         _reason = reason;
     }
 
-    internal void Select(string targetId)
+    internal void Select(string targetId, int commitUntilStep)
     {
         _reason = DiveIntentGateReason.Selected;
         _selectedTargetId = targetId;
+        _selectedCommitUntilStep = commitUntilStep;
     }
 
     internal void SetContinuation(string targetId)
@@ -418,9 +424,14 @@ internal sealed class DiveIntentTrace
             _nearbyEnemyLimit,
             _activeDiverCount,
             _eligibleDiverCount,
+            _actor.MoveSpeed,
+            _actor.Stats.Get(StatKey.MoveSpeed),
+            _state.FixedStepSeconds,
+            _actor.CurrentCombatIntent.CommitUntilStep,
+            _selectedCommitUntilStep,
             _candidates.Values
                 .OrderBy(candidate => candidate.Target.Id.Value, StringComparer.Ordinal)
-                .Select(candidate => candidate.Build())
+                .Select(candidate => candidate.Build(_actor))
                 .ToArray()));
     }
 
@@ -459,7 +470,7 @@ internal sealed class DiveIntentTrace
         internal int TotalScore { get; set; }
         internal int RequiredScore { get; set; }
 
-        internal DiveTargetCandidateDiagnostic Build()
+        internal DiveTargetCandidateDiagnostic Build(UnitSnapshot actor)
             => new(
                 Target.Id.Value,
                 Target.Definition.ArchetypeId,
@@ -472,6 +483,7 @@ internal sealed class DiveIntentTrace
                 HasFrontlineProtector,
                 ForwardDepth,
                 PathDistance,
+                MovementResolver.ComputeEdgeDistance(actor, Target),
                 FormationLineScore,
                 ClassScore,
                 LowHealthScore,

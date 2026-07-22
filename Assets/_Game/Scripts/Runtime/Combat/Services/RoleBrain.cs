@@ -81,7 +81,12 @@ public static class RoleBrain
 
         var current = actor.CurrentCombatIntent;
         var step = state.StepIndex;
-        var hardInterrupt = HasHardInterrupt(state, actor, current);
+        var hardInterruptReason = ResolveHardInterruptReason(state, actor, current);
+        var hardInterrupt = hardInterruptReason != HardInterruptReason.None;
+        if (hardInterruptReason == HardInterruptReason.DiveHealthBelowAbortThreshold)
+        {
+            BattleDiagnosticRecorder.RecordDiveHardAbort(state, actor, current, DiveAbortHealthRatio);
+        }
 
         // Role-critical interrupts (vanguard Peel, duelist Dive entry) are evaluated EVERY tick, before cadence —
         // they are tactical interrupts, not generic re-evaluation. (Wired in Stage 2.)
@@ -213,33 +218,36 @@ public static class RoleBrain
         return false;
     }
 
-    private static bool HasHardInterrupt(BattleState state, UnitSnapshot actor, CombatIntent current)
+    private static HardInterruptReason ResolveHardInterruptReason(
+        BattleState state,
+        UnitSnapshot actor,
+        CombatIntent current)
     {
         if (!actor.IsAlive)
         {
-            return true;
+            return HardInterruptReason.ActorDead;
         }
 
         // The intent's chosen target died/became invalid.
         if (current.TargetId.HasValue && LivingUnit(state, current.TargetId) == null)
         {
-            return true;
+            return HardInterruptReason.TargetInvalid;
         }
 
         // A diver that drops below the abort HP bails immediately (regardless of commit).
         if (current.Type == CombatIntentType.Dive && actor.HealthRatio < DiveAbortHealthRatio)
         {
-            return true;
+            return HardInterruptReason.DiveHealthBelowAbortThreshold;
         }
 
         // A peel is moot once the protected ally is gone.
         if (current.Type == CombatIntentType.Peel
             && current.ProtectAllyId.HasValue && LivingUnit(state, current.ProtectAllyId) == null)
         {
-            return true;
+            return HardInterruptReason.ProtectedAllyInvalid;
         }
 
-        return false;
+        return HardInterruptReason.None;
     }
 
     // ===== Duelist Dive ===== (target reshape applied by TacticEvaluator.TryApplyIntentTargetOverride)
@@ -287,7 +295,7 @@ public static class RoleBrain
                     actor.CurrentCombatIntent.DiveEntryTargetId,
                     actor.CurrentCombatIntent.DiveEntryPathDistance,
                     actor.CurrentCombatIntent.DiveEntryActorPosition);
-                trace?.Select(diveTarget.Id.Value);
+                trace?.Select(diveTarget.Id.Value, state.StepIndex + ResolveDiveCommitSteps(actor));
                 trace?.Emit(state);
                 return true;
             }
@@ -325,7 +333,7 @@ public static class RoleBrain
             selectedTarget.Id,
             actor.Position.DistanceTo(selectedTarget.Position),
             actor.Position);
-        trace?.Select(selectedTarget.Id.Value);
+        trace?.Select(selectedTarget.Id.Value, state.StepIndex + ResolveDiveCommitSteps(actor));
         trace?.Emit(state);
         return true;
     }
@@ -788,6 +796,15 @@ public static class RoleBrain
         => actor.HasBehaviorTag(CombatBehaviorTags.DiveAssassinKeystone)
             ? DuelistAssassinCommitSteps
             : DiveCommitSteps;
+
+    private enum HardInterruptReason
+    {
+        None = 0,
+        ActorDead = 1,
+        TargetInvalid = 2,
+        DiveHealthBelowAbortThreshold = 3,
+        ProtectedAllyInvalid = 4,
+    }
 
     private static float ResolvePeelMaxInterceptDistance(UnitSnapshot actor)
         => actor.HasBehaviorTag(CombatBehaviorTags.DuelistPeel)

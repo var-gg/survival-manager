@@ -204,6 +204,49 @@ internal static class CredibleDeckMatchupRunner
         }
     }
 
+    internal static DiveFailureObservation RunWitnessRegressionFixture(string repositoryRoot)
+    {
+        ContentSnapshotFreshnessGuard.EnsureFresh(repositoryRoot);
+        var snapshotPath = Resolve(repositoryRoot, SnapshotRelativePath);
+        var content = ContentSnapshotJsonSerializer.Deserialize(File.ReadAllText(snapshotPath));
+        var statusRules = CombatStatusRuleCompiler.Compile(content);
+        var config = SM.Editor.Validation.CampaignBalanceSweepConfig.Default;
+        var reference = config.ReferenceSquads.Single(value =>
+            string.Equals(value.SquadId, "ranged", StringComparison.Ordinal));
+        var probe = CredibleProbes.Single(value =>
+            string.Equals(value.Id, "P-ASSASSIN-C", StringComparison.Ordinal));
+        var nodeBudget = PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(CredibleHeroLevel);
+        ValidatePassiveRoute(content, probe, nodeBudget);
+
+        var player = DeckMatchupDiagnosticRunner.CompileSquad(
+            content,
+            "credible.player.ranged",
+            reference.CoreArchetypeIds,
+            DeckMatchupDiagnosticRunner.PlayerAnchors(reference.SquadId),
+            Array.Empty<string>(),
+            equipDuelistBlade: false);
+        var enemy = DeckMatchupDiagnosticRunner.CompileSquad(
+            content,
+            "credible.enemy.p-assassin-c",
+            probe.ArchetypeIds,
+            CredibleAnchors,
+            probe.PassiveNodes,
+            equipDuelistBlade: true,
+            heroLevel: CredibleHeroLevel);
+        ValidateCompiledLever(probe, enemy);
+
+        var state = CreateState(player, enemy, statusRules, MatchupSeedStart);
+        var diver = state.Enemies.Single(value =>
+            string.Equals(value.Definition.ArchetypeId, "slayer", StringComparison.Ordinal));
+        var diagnostics = new CounterplayInstrumentationObserver(state, reference.SquadId, diver.Id.Value);
+        var witness = new DiveFailureBattleObserver(state, diagnostics, reference.SquadId, diver.Id.Value);
+        var result = new BattleSimulator(state, BattleSimulator.DefaultMaxSteps, diagnostics)
+            .RunToEnd(witness.ObserveStep);
+        var observation = witness.Complete();
+        _ = diagnostics.Complete(result, observation);
+        return observation;
+    }
+
     private static CredibleMatchupObservation ObserveMatchup(
         BattleLoadoutSnapshot player,
         BattleLoadoutSnapshot enemy,
@@ -239,8 +282,8 @@ internal static class CredibleDeckMatchupRunner
             if (diveObservations != null)
             {
                 var diver = state.Enemies.Single(unit => string.Equals(unit.Definition.ArchetypeId, "slayer", StringComparison.Ordinal));
-                diveObserver = new DiveFailureBattleObserver(state, referenceSquadId, diver.Id.Value);
                 diagnosticObserver = new CounterplayInstrumentationObserver(state, referenceSquadId, diver.Id.Value);
+                diveObserver = new DiveFailureBattleObserver(state, diagnosticObserver, referenceSquadId, diver.Id.Value);
             }
 
             Action<BattleSimulationStep>? stepObserver = diveObserver == null
@@ -347,6 +390,7 @@ internal static class CredibleDeckMatchupRunner
                     .ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal),
                 mean_elapsed_seconds = MeanOrNull(matching.Where(value => value.ElapsedSeconds.HasValue).Select(value => value.ElapsedSeconds!.Value)),
                 mean_remaining_distance = MeanOrNull(matching.Where(value => value.RemainingDistance.HasValue).Select(value => value.RemainingDistance!.Value)),
+                mean_remaining_center_path = MeanOrNull(matching.Where(value => value.RemainingCenterPath.HasValue).Select(value => value.RemainingCenterPath!.Value)),
                 mean_remaining_time_budget_seconds = MeanOrNull(matching.Where(value => value.RemainingTimeBudgetSeconds.HasValue).Select(value => value.RemainingTimeBudgetSeconds!.Value)),
             };
         }).ToArray();
@@ -362,8 +406,8 @@ internal static class CredibleDeckMatchupRunner
         var baselineHashes = new List<string>();
         var observedHashes = new List<string>();
         var diver = observedState.Enemies.Single(unit => string.Equals(unit.Definition.ArchetypeId, "slayer", StringComparison.Ordinal));
-        var witness = new DiveFailureBattleObserver(observedState, "ranged", diver.Id.Value);
         var diagnosticObserver = new CounterplayInstrumentationObserver(observedState, "ranged", diver.Id.Value);
+        var witness = new DiveFailureBattleObserver(observedState, diagnosticObserver, "ranged", diver.Id.Value);
         var baselineResult = BattleResolver.Run(
             baselineState,
             BattleSimulator.DefaultMaxSteps,

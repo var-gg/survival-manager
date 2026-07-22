@@ -8,6 +8,29 @@ namespace SM.Combat.Services;
 /// </summary>
 internal static class BattleDiagnosticRecorder
 {
+    internal static void RecordDiveHardAbort(
+        BattleState state,
+        UnitSnapshot actor,
+        CombatIntent current,
+        float abortHealthRatio)
+    {
+        if (!state.ShouldObserveDiagnostic(BattleDiagnosticKind.DiveHardAbort, actor.Id.Value))
+        {
+            return;
+        }
+
+        state.RecordDiagnostic(new DiveHardAbortDiagnosticEvent(
+            state.StepIndex,
+            state.ElapsedSeconds,
+            actor.Id.Value,
+            actor.Definition.ArchetypeId,
+            actor.Definition.ClassId,
+            current.TargetId?.Value ?? string.Empty,
+            actor.HealthRatio,
+            abortHealthRatio,
+            current.CommitUntilStep));
+    }
+
     internal static void RecordIntentOverride(
         BattleState state,
         UnitSnapshot actor,
