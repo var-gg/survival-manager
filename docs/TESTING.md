@@ -165,6 +165,8 @@ pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 4. **authored Unity object in FastUnit**: `[Category("FastUnit")]` 테스트에서 `ScriptableObject.CreateInstance`, `UnityEngine.Object`, `DestroyImmediate`, `using SM.Content.Definitions`, `RuntimeCombatContentLookup` token을 사용하면 실패한다. `UnityEngine.Object`/`ScriptableObject` alias, `Resources` alias/static import도 실패한다.
 5. **test category closure**: `[Test]`, `[TestCase]`, `[UnityTest]`가 있는 EditMode test class가 class-level `FastUnit`, `BatchOnly`, `ManualLoopD` category를 선언하지 않으면 실패.
 6. **quit-with-runTests**: 스크립트/문서에서 `-quit`와 `-runTests`를 같이 사용하면 실패.
+7. **FinalUnits raw id comparison**: `FinalUnits`의 prefixed runtime id를 raw loadout id literal과 직접 비교하면 항상 false가 되므로 실패한다.
+8. **authored content reachability**: `tools/content-reachability/field-catalog.tsv`에 없는 새 authored field, runtime consumer 증거가 없는 live 판정, marker가 없는 dead 판정, 등록되지 않은 fallback trap이면 실패한다. trap 경고는 저작값이 실제로 어떤 값으로 대체되는지와 `wire it / delete it / mark it` 처분을 함께 출력한다.
 
 추가 메모:
 - 기본 playable/runtime 경로는 `new RuntimeCombatContentLookup()`의 default mode를 사용한다.
@@ -180,6 +182,9 @@ pure asmdef exact reference allowlist, `SM.Tests.FastUnit`의 `SM.Editor`/editor
 `Assets/_Game/Scripts/Runtime/Unity/ContentConversion/**`는 현재 별도 asmdef가 아니라 `SM.Unity`
 내부 converter 경계로 남기며, guard는 namespace, public surface, session/persistence/UI ownership,
 registry 밖 resource/editor fallback을 함께 막는다.
+authored content reachability 검사는 Unity 로딩이나 `BatchOnly`에 의존하지 않는 source/YAML lint다.
+따라서 새 field가 컴파일되기 전에도 누락을 잡고, 전체 분류표와 sentinel 계약은 각각
+`tools/content-reachability/field-catalog.tsv`, `tools/content-reachability/fallback-registry.tsv`가 소유한다.
 
 ## 에이전트 테스트 실행 순서
 

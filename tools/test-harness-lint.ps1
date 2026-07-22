@@ -470,6 +470,22 @@ if (-not $check7Fail) {
 }
 
 # ────────────────────────────────────────────────
+# Check 8: authored content field reachability + silent fallback registry
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 8: Authored content runtime reachability and fallback traps ==" -ForegroundColor Cyan
+$reachabilityLint = Join-Path $RepoRoot 'tools/content-reachability/lint.ps1'
+if (-not (Test-Path -LiteralPath $reachabilityLint)) {
+    Write-LintError -Check 'Authored-content-reachability' -File 'tools/content-reachability/lint.ps1' -Detail 'Reachability lint is missing. Wrong: newly authored fields can have no runtime consumer. Runtime actually ignores those values. Choose wire it / delete it / mark it before adding the field.'
+}
+else {
+    & $reachabilityLint -RepoRoot $RepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        Write-LintError -Check 'Authored-content-reachability' -File 'tools/content-reachability/field-catalog.tsv' -Detail 'Reachability catalog validation failed. Wrong: an authored field or sentinel lacks proven runtime behavior. Runtime actually ignores an unconsumed field or applies the registered fallback. Choose wire it / delete it / mark it, then repair the evidence above.'
+    }
+}
+
+# ────────────────────────────────────────────────
 # Summary
 # ────────────────────────────────────────────────
 

@@ -94,7 +94,7 @@
 ## 데이터와 콘텐츠 문서
 
 - `data-model.md`: authored definition, runtime instance, save model 분리 기준
-- `content-authoring-model.md`: 콘텐츠 authoring/validation 경계
+- `content-authoring-model.md`: 콘텐츠 authoring/validation 경계와 authored field reachability/fallback lint 계약
 - `content-authoring-and-balance-data.md`: launch authoring schema와 Loop C governance/audit 경계
 - `content-pipeline.md`: 콘텐츠 intake와 파이프라인 운영 방향
 - `content-loading-contract.md`: canonical content root와 runtime/editor 계약
