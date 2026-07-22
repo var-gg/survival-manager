@@ -19,9 +19,15 @@ public sealed class BattleSimulator
     private readonly int _maxSteps;
 
     public BattleSimulator(BattleState state, int maxSteps = DefaultMaxSteps)
+        : this(state, maxSteps, null)
+    {
+    }
+
+    internal BattleSimulator(BattleState state, int maxSteps, IBattleDiagnosticObserver? diagnosticObserver)
     {
         State = state;
         _maxSteps = Math.Max(1, maxSteps);
+        State.AttachDiagnosticObserver(diagnosticObserver);
         BattleTelemetryRecorder.RecordBattleStarted(State);
         // Phase 3: battle-start triggers + synergy activation fire BEFORE the initial read model is
         // built, so their effects (barrier, statuses) and beats are visible at step 0 — the acceptance
@@ -89,7 +95,7 @@ public sealed class BattleSimulator
 
             if (actor.IsStunned)
             {
-                EmitCanceledIfPending(actor);
+                EmitCanceledIfPending(actor, "actor_stunned");
                 actor.ClearTarget(applySwitchDelay: false);
                 actor.SetActionState(CombatActionState.AcquireTarget);
                 continue;
@@ -133,6 +139,8 @@ public sealed class BattleSimulator
                 BattleTelemetryRecorder.RecordPositioningIntent(State, actor, evaluated.Target);
             }
 
+            var preIntentTarget = evaluated.Target;
+
             // Phase 1 tactical brain: choose what the unit is trying to do (its CombatIntent) now that its
             // target is set. The movement executor reads it (e.g. AnchorFire holds the backline anchor); the
             // attack rule below is unchanged — intent biases positioning, not hit validity.
@@ -141,11 +149,22 @@ public sealed class BattleSimulator
             // Phase 1 narrow retarget seam: a Dive/Peel intent overrides the target that the begin-gate and
             // movement both read, so the duelist visibly dives the backline (and the vanguard peels the diver)
             // instead of the melee-nearest baseline. Default (non-Dive/Peel) targeting is untouched.
-            if (TacticEvaluator.TryApplyIntentTargetOverride(State, actor, evaluated, out var retargetedEvaluation))
+            var intentOverrideApplied = TacticEvaluator.TryApplyIntentTargetOverride(
+                State,
+                actor,
+                evaluated,
+                out var retargetedEvaluation);
+            if (intentOverrideApplied)
             {
                 evaluated = retargetedEvaluation;
                 actor.SetCurrentTarget(evaluated.Target.Id);
             }
+            BattleDiagnosticRecorder.RecordIntentOverride(
+                State,
+                actor,
+                preIntentTarget,
+                intentOverrideApplied,
+                evaluated.Target);
 
             // A scoped pack-pursuit approach is an intentional movement override, not an attack or Dive gate.
             // Resolve it after RoleBrain has had the normal chance to open Dive, but before the current frontline
@@ -173,6 +192,11 @@ public sealed class BattleSimulator
                     BattleTelemetryRecorder.RecordActionStarted(State, actor, evaluated);
                     actor.BeginWindup(evaluated.ActionType, evaluated.Target.Id, evaluated.Skill?.Id);
                     EmitWindupStarted(actor, evaluated);
+                    BattleDiagnosticRecorder.RecordDisplacementCastStarted(
+                        State,
+                        actor,
+                        evaluated.Target,
+                        evaluated.Skill);
                 }
                 else
                 {
@@ -338,7 +362,7 @@ public sealed class BattleSimulator
         var target = State.FindUnit(actor.PendingTargetId);
         if (target == null || !target.IsAlive)
         {
-            EmitCanceledIfPending(actor);
+            EmitCanceledIfPending(actor, "target_missing_or_dead");
             actor.ClearTarget(applySwitchDelay: true);
             actor.SetActionState(CombatActionState.AcquireTarget);
             return false;
@@ -352,7 +376,7 @@ public sealed class BattleSimulator
             // back-pedals during the swing no longer triggers the per-tick cancel→re-approach "treadmill" —
             // the swing simply connects on resolve. Skills/casts still abort if the target leaves the cast
             // envelope mid-windup (a deliberate whiff path), keeping their original behavior.
-            EmitCanceledIfPending(actor);
+            EmitCanceledIfPending(actor, "target_left_cast_range");
             actor.ClearTarget(applySwitchDelay: true);
             actor.SetActionState(CombatActionState.AcquireTarget);
             return false;
@@ -373,9 +397,20 @@ public sealed class BattleSimulator
         var pendingKind = actor.PendingActionType == BattleActionType.ActiveSkill ? CombatEventKind.Skill : CombatEventKind.BasicAttack;
         var pendingSkillId = actor.PendingSkillId;
         var pendingTargetId = actor.PendingTargetId;
+        var pendingSkill = actor.ResolveSkill(pendingSkillId);
+        var actorPositionBefore = actor.Position;
+        var targetPositionBefore = target.Position;
 
         var resolveEvents = CombatActionResolver.Resolve(State, actor);
         stepEvents.AddRange(resolveEvents);
+        BattleDiagnosticRecorder.RecordDisplacementResolved(
+            State,
+            actor,
+            target,
+            pendingSkill,
+            pendingActionInstanceId.Value,
+            actorPositionBefore,
+            targetPositionBefore);
         EmitContacted(
             actor,
             pendingActionInstanceId,
@@ -478,12 +513,19 @@ public sealed class BattleSimulator
         actor.ClearPendingActionInstance();
     }
 
-    private void EmitCanceledIfPending(UnitSnapshot actor)
+    private void EmitCanceledIfPending(UnitSnapshot actor, string reason)
     {
         if (!actor.PendingActionInstanceId.IsValid)
         {
             return;
         }
+
+        BattleDiagnosticRecorder.RecordDisplacementAborted(
+            State,
+            actor,
+            State.FindUnit(actor.PendingTargetId),
+            actor.ResolveSkill(actor.PendingSkillId),
+            reason);
 
         var cancelTick = State.StepIndex + 1;
         var kind = actor.PendingActionType == BattleActionType.ActiveSkill ? CombatEventKind.Skill : CombatEventKind.BasicAttack;
@@ -609,6 +651,18 @@ public sealed class BattleSimulator
         }
 
         IsFinished = true;
+        foreach (var unit in State.AllUnits)
+        {
+            if (unit.PendingActionInstanceId.IsValid)
+            {
+                BattleDiagnosticRecorder.RecordDisplacementAborted(
+                    State,
+                    unit,
+                    State.FindUnit(unit.PendingTargetId),
+                    unit.ResolveSkill(unit.PendingSkillId),
+                    "battle_ended");
+            }
+        }
         State.DespawnNonRosterEntities();
         foreach (var unit in State.AllUnits.Where(unit => !unit.IsAlive))
         {

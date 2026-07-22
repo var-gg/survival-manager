@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Services;
@@ -8,6 +9,8 @@ namespace SM.Combat.Model;
 
 public sealed class BattleState
 {
+    [NonSerialized]
+    private IBattleDiagnosticObserver? _diagnosticObserver;
     private readonly Dictionary<string, HashSet<string>> _damageContributorsByVictim = new();
     private readonly HashSet<string> _scheduledOwnerDeaths = new();
     private readonly Dictionary<string, int> _ownedEntityDespawnTimers = new();
@@ -100,6 +103,19 @@ public sealed class BattleState
     public IEnumerable<UnitSnapshot> AllUnits => Allies.Concat(Enemies);
     public IEnumerable<UnitSnapshot> LivingAllies => Allies.Where(x => x.IsAlive);
     public IEnumerable<UnitSnapshot> LivingEnemies => Enemies.Where(x => x.IsAlive);
+
+    internal void AttachDiagnosticObserver(IBattleDiagnosticObserver? observer)
+    {
+        _diagnosticObserver = observer;
+    }
+
+    internal bool ShouldObserveDiagnostic(BattleDiagnosticKind kind, string actorId, string skillId = "")
+        => _diagnosticObserver?.ShouldObserve(kind, actorId, skillId) == true;
+
+    internal void RecordDiagnostic(BattleDiagnosticEvent diagnosticEvent)
+    {
+        _diagnosticObserver?.Observe(diagnosticEvent);
+    }
 
     public IEnumerable<UnitSnapshot> GetTeam(TeamSide side) => side == TeamSide.Ally ? Allies : Enemies;
     public IEnumerable<UnitSnapshot> GetOpponents(TeamSide side) => side == TeamSide.Ally ? Enemies : Allies;

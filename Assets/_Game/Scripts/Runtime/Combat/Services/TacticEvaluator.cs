@@ -29,18 +29,21 @@ public static class TacticEvaluator
 
     public static EvaluatedAction Evaluate(BattleState state, UnitSnapshot actor)
     {
+        var trace = state.ShouldObserveDiagnostic(BattleDiagnosticKind.TacticEvaluation, actor.Id.Value)
+            ? new TacticEvaluationTrace(state, actor)
+            : null;
         var reevaluationReason = actor.PendingReevaluationReason != ReevaluationReason.None
             ? actor.PendingReevaluationReason
             : actor.NeedsReevaluation
                 ? ReevaluationReason.Cadence
                 : ReevaluationReason.None;
 
-        if (actor.Definition.HasLoopALoadout)
-        {
-            return EvaluateLoopA(state, actor, reevaluationReason);
-        }
-
-        return EvaluateLegacy(state, actor, reevaluationReason);
+        var evaluated = actor.Definition.HasLoopALoadout
+            ? EvaluateLoopA(state, actor, reevaluationReason, trace)
+            : EvaluateLegacy(state, actor, reevaluationReason, trace);
+        trace?.Emit(state, evaluated);
+        BattleDiagnosticRecorder.RecordDisplacementSelected(state, actor, evaluated);
+        return evaluated;
     }
 
     /// <summary>
@@ -86,7 +89,11 @@ public static class TacticEvaluator
         return true;
     }
 
-    private static EvaluatedAction EvaluateLoopA(BattleState state, UnitSnapshot actor, ReevaluationReason reevaluationReason)
+    private static EvaluatedAction EvaluateLoopA(
+        BattleState state,
+        UnitSnapshot actor,
+        ReevaluationReason reevaluationReason,
+        TacticEvaluationTrace? trace)
     {
         var fallbackRule = new TacticRule(999, TacticConditionType.Fallback, 0f, BattleActionType.WaitDefend, TargetSelectorType.Self, null);
         // P1 플레이어 타겟 지시: 기본공격(=교전 대상) 타게팅에만 적용한다. 저작된 스킬 규칙은 보존,
@@ -95,7 +102,7 @@ public static class TacticEvaluator
         var directedBasicRule = PlayerTargetDirectiveRules.Apply(
             actor.Definition.TargetDirective,
             actor.Definition.EffectiveBasicAttack.TargetRuleData);
-        var stableTarget = ResolveStableTarget(state, actor, directedBasicRule);
+        var stableTarget = ResolveStableTarget(state, actor, directedBasicRule, trace);
         var baseRangeBand = ResolveLoopARangeBand(actor, null, BattleActionType.BasicAttack);
 
         // Mobility interrupt
@@ -106,7 +113,7 @@ public static class TacticEvaluator
         }
 
         // Signature interrupt — energy-gated, highest skill priority
-        var signatureResult = TryActiveSkill(state, actor, actor.Definition.EffectiveSignatureActive, stableTarget, fallbackRule, reevaluationReason,
+        var signatureResult = TryActiveSkill(state, actor, actor.Definition.EffectiveSignatureActive, stableTarget, fallbackRule, reevaluationReason, TargetSelectionPurpose.Signature,
             skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CanSpendSignatureCastEnergy());
         if (signatureResult != null)
         {
@@ -118,7 +125,7 @@ public static class TacticEvaluator
         var flex = actor.Definition.EffectiveFlexActive;
         if (flex != null && IsGroundStateInterruptingFlex(flex))
         {
-            var combatFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason,
+            var combatFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason, TargetSelectionPurpose.Flex,
                 skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
             if (combatFlexResult != null)
             {
@@ -136,7 +143,7 @@ public static class TacticEvaluator
         // Non-interrupting flex fallback — Shield/Buff/Utility when no basic attack target.
         if (flex != null && !IsGroundStateInterruptingFlex(flex))
         {
-            var utilityFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason,
+            var utilityFlexResult = TryActiveSkill(state, actor, flex, stableTarget, fallbackRule, reevaluationReason, TargetSelectionPurpose.Flex,
                 skill => StatusResolutionService.CanUseSkillSlot(actor, skill) && actor.CooldownRemaining <= 0f);
             if (utilityFlexResult != null)
             {
@@ -170,7 +177,12 @@ public static class TacticEvaluator
             return null;
         }
 
-        var mobilityTarget = stableTarget ?? TargetScoringService.SelectTarget(state, actor, mobilityReaction.TargetRuleData);
+        var mobilityTarget = stableTarget ?? TargetScoringService.SelectTarget(
+            state,
+            actor,
+            mobilityReaction.TargetRuleData,
+            TargetSelectionPurpose.Mobility,
+            mobilityReaction.Id);
         var mobilityDecision = mobilityTarget == null ? null : MovementResolver.BuildMobilityDecision(actor, mobilityTarget, baseRangeBand);
         if (mobilityDecision == null)
         {
@@ -186,6 +198,7 @@ public static class TacticEvaluator
     private static EvaluatedAction? TryActiveSkill(
         BattleState state, UnitSnapshot actor, BattleSkillSpec? skill, UnitSnapshot? stableTarget,
         TacticRule fallbackRule, ReevaluationReason reevaluationReason,
+        TargetSelectionPurpose selectionPurpose,
         Func<BattleSkillSpec, bool> readyCheck)
     {
         if (skill == null || !readyCheck(skill))
@@ -197,9 +210,9 @@ public static class TacticEvaluator
         // rule directly, then the same-side/meaningful-injury gate below prevents both wrong-side restoration
         // and low-value fallback self-casts (heal-lock). Other skills preserve the existing stable-target contract.
         var target = skill.Kind == SkillKind.Heal
-            ? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData)
+            ? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData, selectionPurpose, skill.Id)
             : ResolveStableTarget(state, actor, skill.TargetRuleData)
-              ?? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData);
+              ?? TargetScoringService.SelectTarget(state, actor, skill.TargetRuleData, selectionPurpose, skill.Id);
         if (target == null)
         {
             return null;
@@ -229,7 +242,12 @@ public static class TacticEvaluator
         FloatRange baseRangeBand, TacticRule fallbackRule, ReevaluationReason reevaluationReason)
     {
         var basicTarget = stableTarget
-                          ?? TargetScoringService.SelectTarget(state, actor, basicRule);
+                          ?? TargetScoringService.SelectTarget(
+                              state,
+                              actor,
+                              basicRule,
+                              TargetSelectionPurpose.BasicAttack,
+                              string.Empty);
         if (basicTarget != null)
         {
             var positioningIntent = ApproachOffsetService.ResolvePositioningIntent(state, actor, basicTarget, baseRangeBand);
@@ -245,9 +263,13 @@ public static class TacticEvaluator
             reevaluationReason, null);
     }
 
-    private static EvaluatedAction EvaluateLegacy(BattleState state, UnitSnapshot actor, ReevaluationReason reevaluationReason)
+    private static EvaluatedAction EvaluateLegacy(
+        BattleState state,
+        UnitSnapshot actor,
+        ReevaluationReason reevaluationReason,
+        TacticEvaluationTrace? trace)
     {
-        var stableTarget = ResolveStableTarget(state, actor, null);
+        var stableTarget = ResolveStableTarget(state, actor, null, trace);
         var ordered = actor.Definition.Tactics.OrderBy(x => x.Priority);
         foreach (var rule in ordered)
         {
@@ -327,16 +349,32 @@ public static class TacticEvaluator
         return TargetScoringService.SelectTarget(state, actor, rule.TargetSelector, rule.ActionType, rule.SkillId);
     }
 
-    private static UnitSnapshot? ResolveStableTarget(BattleState state, UnitSnapshot actor, TargetRule? targetRule)
+    private static UnitSnapshot? ResolveStableTarget(
+        BattleState state,
+        UnitSnapshot actor,
+        TargetRule? targetRule,
+        TacticEvaluationTrace? trace = null)
     {
         var currentTarget = state.FindUnit(actor.CurrentTargetId);
-        if (currentTarget == null || !currentTarget.IsAlive || currentTarget.Side == actor.Side)
+        if (currentTarget == null)
         {
+            trace?.RecordStableTarget(StableTargetDisposition.NoCurrentTarget, null, 0f, 0f);
+            return null;
+        }
+
+        if (!currentTarget.IsAlive || currentTarget.Side == actor.Side)
+        {
+            trace?.RecordStableTarget(StableTargetDisposition.CurrentTargetInvalid, currentTarget, 0f, 0f);
             return null;
         }
 
         if (actor.TargetSwitchLockRemaining > 0f)
         {
+            trace?.RecordStableTarget(
+                StableTargetDisposition.HeldBySwitchLock,
+                currentTarget,
+                MovementResolver.ComputeEdgeDistance(actor, currentTarget),
+                targetRule?.MaxAcquireRange > 0f ? targetRule.MaxAcquireRange + 1f : actor.AttackRange + 1f);
             return currentTarget;
         }
 
@@ -345,13 +383,31 @@ public static class TacticEvaluator
             var maxAcquireRange = targetRule.MaxAcquireRange > 0f ? targetRule.MaxAcquireRange : actor.AttackRange;
             if (MovementResolver.ComputeEdgeDistance(actor, currentTarget) > maxAcquireRange + 1f)
             {
+                trace?.RecordStableTarget(
+                    StableTargetDisposition.ReleasedOutsideAcquireLeash,
+                    currentTarget,
+                    MovementResolver.ComputeEdgeDistance(actor, currentTarget),
+                    maxAcquireRange + 1f);
                 return null;
             }
         }
 
-        return !actor.NeedsReevaluation
-            ? currentTarget
-            : null;
+        if (!actor.NeedsReevaluation)
+        {
+            trace?.RecordStableTarget(
+                StableTargetDisposition.HeldUntilReevaluation,
+                currentTarget,
+                MovementResolver.ComputeEdgeDistance(actor, currentTarget),
+                targetRule?.MaxAcquireRange > 0f ? targetRule.MaxAcquireRange + 1f : actor.AttackRange + 1f);
+            return currentTarget;
+        }
+
+        trace?.RecordStableTarget(
+            StableTargetDisposition.ReleasedForReevaluation,
+            currentTarget,
+            MovementResolver.ComputeEdgeDistance(actor, currentTarget),
+            targetRule?.MaxAcquireRange > 0f ? targetRule.MaxAcquireRange + 1f : actor.AttackRange + 1f);
+        return null;
     }
 
     private static FloatRange ResolveLoopARangeBand(UnitSnapshot actor, BattleSkillSpec? skill, BattleActionType actionType)
@@ -465,4 +521,5 @@ public static class TacticEvaluator
                 return false;
         }
     }
+
 }

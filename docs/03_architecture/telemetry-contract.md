@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-02
+- 최종수정일: 2026-07-22
 - 소스오브트루스: `docs/03_architecture/telemetry-contract.md`
 - 관련문서:
   - `docs/03_architecture/readability-gate-contract.md`
@@ -26,6 +26,13 @@ Loop D에서 battle/meta/economy 계측의 authoritative source를 runtime telem
   - UI overlay
   - animation hook
   - VFX/floating text
+  - `IBattleDiagnosticObserver`로 전달되는 measurement-only `BattleDiagnosticEvent`
+
+## 진단 side channel 경계
+
+- target predicate, tactic hold, intent override, displacement lifecycle처럼 canonical telemetry보다 세밀한 원인 계측은 internal `IBattleDiagnosticObserver`를 선택적으로 주입해 수집한다.
+- 이 side channel은 authoritative telemetry가 아니며 replay bundle, `BattleStateCanonicalHash`, RNG, 전투 판정의 입력으로 사용하지 않는다.
+- headless consumer는 observation을 별도 report로 집계한다. observer 유무의 step별 canonical hash와 event bytes 동일성을 검증하지 못하면 계측 결과를 유효한 증거로 쓰지 않는다.
 
 ## 핵심 타입
 

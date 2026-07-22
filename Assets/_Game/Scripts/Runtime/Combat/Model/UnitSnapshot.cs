@@ -512,8 +512,18 @@ public sealed partial class UnitSnapshot
 
     public void Heal(float amount)
     {
+        _ = HealMeasured(amount);
+    }
+
+    internal HealingApplicationResult HealMeasured(float amount)
+    {
         var adjusted = Hp64.FromFloatQuantized(amount) * Fixed32.FromFloatQuantized(GetHealingTakenMultiplier());
+        var before = _health;
         _health = Hp64.Min(Hp64.FromFloatQuantized(MaxHealth), _health + adjusted);
+        return new HealingApplicationResult(
+            amount,
+            adjusted.ToFloat(),
+            (_health - before).ToFloat());
     }
 
     public void AddBarrier(float amount)

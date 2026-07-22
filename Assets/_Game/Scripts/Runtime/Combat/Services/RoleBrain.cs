@@ -234,8 +234,22 @@ public static class RoleBrain
     private static bool TryBuildDiveIntent(BattleState state, UnitSnapshot actor, out CombatIntent intent)
     {
         intent = CombatIntent.None;
+        var trace = state.ShouldObserveDiagnostic(BattleDiagnosticKind.DiveIntentEvaluation, actor.Id.Value)
+            ? new DiveIntentTrace(
+                state,
+                actor,
+                actor.HasBehaviorTag(CombatBehaviorTags.DuelistDiveCommit)
+                    ? DuelistDiveCommitMinHealthPercent / (float)HealthPercentScale
+                    : DiveMinHealthRatio,
+                MeleeRangeThreshold,
+                DiveMaxForwardDepth,
+                DiveMaxPathDistance,
+                DiveStartMaxNearbyEnemies)
+            : null;
         if (actor.HasBehaviorTag(CombatBehaviorTags.DuelistHoldBruiser))
         {
+            trace?.Fail(DiveIntentGateReason.HoldBruiserTag);
+            trace?.Emit(state);
             return false;
         }
 
@@ -249,44 +263,66 @@ public static class RoleBrain
             && actor.CurrentCombatIntent.TargetId is { } diveTargetId
             && LivingUnit(state, diveTargetId) is { } diveTarget)
         {
-            var continueScore = ScoreDiveTarget(state, actor, diveTarget);
+            trace?.SetContinuation(diveTarget.Id.Value);
+            var continueScore = ScoreDiveTarget(state, actor, diveTarget, trace);
             if (continueScore >= ResolveDiveContinueScoreThreshold(actor))
             {
                 intent = new CombatIntent(CombatIntentType.Dive, diveTarget.Id, null,
                     MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), continueScore);
+                trace?.Select(diveTarget.Id.Value);
+                trace?.Emit(state);
                 return true;
             }
 
+            trace?.Fail(DiveIntentGateReason.ContinueScoreBelowThreshold);
+            trace?.Emit(state);
             return false;
         }
 
-        if (!IsDiveEntryEligibleIgnoringSlot(state, actor) || !CanEnterTeamDiveSlot(state, actor))
+        if (!IsDiveEntryEligibleIgnoringSlot(state, actor, trace))
         {
+            trace?.Emit(state);
             return false;
         }
 
-        var selection = ResolveDistinctDiveTarget(state, actor);
+        if (!CanEnterTeamDiveSlot(state, actor, trace))
+        {
+            trace?.Fail(DiveIntentGateReason.TeamDiveSlotUnavailable);
+            trace?.Emit(state);
+            return false;
+        }
+
+        var selection = ResolveDistinctDiveTarget(state, actor, trace);
         if (selection == null)
         {
+            trace?.Fail(DiveIntentGateReason.DistinctTargetUnavailable);
+            trace?.Emit(state);
             return false;
         }
 
         intent = new CombatIntent(CombatIntentType.Dive, selection.Value.Target.Id, null,
             MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), selection.Value.Score);
+        trace?.Select(selection.Value.Target.Id.Value);
+        trace?.Emit(state);
         return true;
     }
 
     // Dive entry gates that do NOT depend on the team dive-slot (used to gate entry AND to pick the deterministic
     // primary diver). Posture-gated to aggressive postures so default StandardAdvance behavior is unchanged.
-    private static bool IsDiveEntryEligibleIgnoringSlot(BattleState state, UnitSnapshot actor)
+    private static bool IsDiveEntryEligibleIgnoringSlot(
+        BattleState state,
+        UnitSnapshot actor,
+        DiveIntentTrace? trace = null)
     {
         if (actor.HasBehaviorTag(CombatBehaviorTags.DuelistHoldBruiser))
         {
+            trace?.Fail(DiveIntentGateReason.HoldBruiserTag);
             return false;
         }
 
         if (actor.AttackRange > MeleeRangeThreshold)
         {
+            trace?.Fail(DiveIntentGateReason.AttackRangeAboveMeleeThreshold);
             return false;
         }
 
@@ -300,6 +336,7 @@ public static class RoleBrain
             && !(posture == TeamPostureType.StandardAdvance
                  && actor.HasBehaviorTag(CombatBehaviorTags.DuelistDiveCommit)))
         {
+            trace?.Fail(DiveIntentGateReason.PostureDisallowsDive);
             return false;
         }
 
@@ -307,29 +344,86 @@ public static class RoleBrain
             ? !actor.IsHealthRatioAtOrAbove(DuelistDiveCommitMinHealthPercent, HealthPercentScale)
             : actor.HealthRatio < DiveMinHealthRatio)
         {
+            trace?.Fail(DiveIntentGateReason.HealthBelowEntryThreshold);
             return false;
         }
 
-        if (!HasDiveSupportProxy(state, actor))
+        var hasSupportProxy = HasDiveSupportProxy(state, actor);
+        trace?.SetSupportProxy(hasSupportProxy);
+        if (!hasSupportProxy)
         {
+            trace?.Fail(DiveIntentGateReason.SupportProxyMissing);
             return false;
         }
 
-        if (CountLivingEnemiesWithin(state, actor, DiveStartDangerRadius) > DiveStartMaxNearbyEnemies)
+        var nearbyEnemyCount = CountLivingEnemiesWithin(state, actor, DiveStartDangerRadius);
+        trace?.SetNearbyEnemyCount(nearbyEnemyCount);
+        if (nearbyEnemyCount > DiveStartMaxNearbyEnemies)
         {
+            trace?.Fail(DiveIntentGateReason.TooManyNearbyEnemies);
             return false;
         }
 
-        return state.GetOpponents(actor.Side)
-            .Any(e => e.IsAlive
-                      && IsDiveCandidateUnderPosture(state, actor, e)
-                      && ScoreDiveTarget(state, actor, e) >= ResolveDiveEntryScoreThreshold(actor));
+        if (trace == null)
+        {
+            return state.GetOpponents(actor.Side)
+                .Any(e => e.IsAlive
+                          && IsDiveCandidateUnderPosture(state, actor, e)
+                          && ScoreDiveTarget(state, actor, e) >= ResolveDiveEntryScoreThreshold(actor));
+        }
+
+        var runtimeBacklineCandidates = 0;
+        var postureEligibleCandidates = 0;
+        var scoreEligibleCandidates = 0;
+        var requiredScore = ResolveDiveEntryScoreThreshold(actor);
+        foreach (var enemy in state.GetOpponents(actor.Side).Where(enemy => enemy.IsAlive))
+        {
+            var isRuntimeBackline = IsDiveCandidate(enemy);
+            var postureEligible = isRuntimeBackline && IsDiveCandidateUnderPosture(state, actor, enemy);
+            trace.RecordCandidateShape(enemy, postureEligible, requiredScore);
+            if (!isRuntimeBackline)
+            {
+                continue;
+            }
+
+            runtimeBacklineCandidates++;
+            if (!postureEligible)
+            {
+                continue;
+            }
+
+            postureEligibleCandidates++;
+            if (ScoreDiveTarget(state, actor, enemy, trace) >= requiredScore)
+            {
+                scoreEligibleCandidates++;
+            }
+        }
+
+        if (runtimeBacklineCandidates == 0)
+        {
+            trace.Fail(DiveIntentGateReason.NoRuntimeBacklineCandidate);
+            return false;
+        }
+
+        if (postureEligibleCandidates == 0)
+        {
+            trace.Fail(DiveIntentGateReason.PostureFilteredAllCandidates);
+            return false;
+        }
+
+        if (scoreEligibleCandidates == 0)
+        {
+            trace.Fail(DiveIntentGateReason.CandidateScoreBelowEntryThreshold);
+            return false;
+        }
+
+        return true;
     }
 
     // The concurrency ceiling is the number of living duelists that are either continuing a Dive or currently pass
     // the entry gates. Admission is derived deterministically from battle state, so authored duelist count is the
     // pressure lever instead of a hard-coded team cap.
-    private static bool CanEnterTeamDiveSlot(BattleState state, UnitSnapshot actor)
+    private static bool CanEnterTeamDiveSlot(BattleState state, UnitSnapshot actor, DiveIntentTrace? trace = null)
     {
         var activeDivers = state.GetTeam(actor.Side)
             .Where(a => a.IsAlive && a.CurrentCombatIntent.Type == CombatIntentType.Dive)
@@ -341,6 +435,7 @@ public static class RoleBrain
 
         var eligibleDivers = GetOrderedDiveParticipants(state, actor.Side);
         var maxConcurrentDives = eligibleDivers.Count;
+        trace?.SetDiveSlotCounts(activeDivers.Count, eligibleDivers.Count);
         if (activeDivers.Count >= maxConcurrentDives)
         {
             return false;
@@ -357,7 +452,10 @@ public static class RoleBrain
     // only for membership, never iteration: matching is a pure deterministic function of battle state. In the common
     // symmetric case it is also independent of act order; when divers outnumber reachable targets, candidates[0]
     // resolves through deterministic act order and remains reproducible without RNG.
-    private static (UnitSnapshot Target, int Score)? ResolveDistinctDiveTarget(BattleState state, UnitSnapshot actor)
+    private static (UnitSnapshot Target, int Score)? ResolveDistinctDiveTarget(
+        BattleState state,
+        UnitSnapshot actor,
+        DiveIntentTrace? trace = null)
     {
         var eligibleDivers = GetOrderedDiveParticipants(state, actor.Side);
         var claimedTargetIds = new HashSet<EntityId>();
@@ -381,7 +479,11 @@ public static class RoleBrain
 
             var candidates = state.GetOpponents(diver.Side)
                 .Where(enemy => enemy.IsAlive && IsDiveCandidateUnderPosture(state, diver, enemy))
-                .Select(enemy => new { Target = enemy, Score = ScoreDiveTarget(state, diver, enemy) })
+                .Select(enemy => new
+                {
+                    Target = enemy,
+                    Score = ScoreDiveTarget(state, diver, enemy, diver.Id == actor.Id ? trace : null),
+                })
                 .Where(candidate => candidate.Score >= ResolveDiveEntryScoreThreshold(diver))
                 .OrderByDescending(candidate => candidate.Score)
                 .ThenBy(candidate => candidate.Target.HealthRatio)
@@ -417,57 +519,80 @@ public static class RoleBrain
             .ToList();
     }
 
-    private static int ScoreDiveTarget(BattleState state, UnitSnapshot actor, UnitSnapshot target)
+    private static int ScoreDiveTarget(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        DiveIntentTrace? trace = null)
     {
-        var score = 0;
+        var formationLineScore = 0;
         if (target.Behavior.FormationLine == FormationLine.Backline)
         {
-            score += 35;
+            formationLineScore = 35;
         }
 
+        var classScore = 0;
         if (target.Definition.ClassId == "mystic")
         {
-            score += 50;
+            classScore = 50;
         }
         else if (target.Definition.ClassId == "ranger")
         {
-            score += 40;
+            classScore = 40;
         }
 
+        var lowHealthScore = 0;
         if (actor.HasBehaviorTag(CombatBehaviorTags.ExecuteLowHp))
         {
             if (target.IsHealthRatioAtOrBelow(DuelistExecuteTargetHealthPercent, HealthPercentScale))
             {
-                score += DuelistExecuteTargetScoreBonus;
+                lowHealthScore = DuelistExecuteTargetScoreBonus;
             }
         }
         else if (target.HealthRatio <= DiveLowHpTargetRatio)
         {
-            score += 30;
+            lowHealthScore = 30;
         }
 
-        if (HasEnemyFrontlineProtectorNear(state, actor, target))
-        {
-            score -= 45;
-        }
+        var hasFrontlineProtector = HasEnemyFrontlineProtectorNear(state, actor, target);
+        var protectorScore = hasFrontlineProtector ? -45 : 0;
 
         // Phase 2 FocusMark: 팀 블랙보드가 지목한 표적은 다이브 가치가 오른다 — 팀 화력과 다이버가
         // 같은 곳을 보면서 집중 사격 + 다이브 마무리가 한 그림으로 읽힌다.
-        if (state.GetTeamBlackboard(actor.Side).FocusMarkId == target.Id)
-        {
-            score += DiveFocusMarkScore;
-        }
+        var hasFocusMark = state.GetTeamBlackboard(actor.Side).FocusMarkId == target.Id;
+        var focusMarkScore = hasFocusMark ? DiveFocusMarkScore : 0;
 
-        if (ForwardDepth(actor, target) > DiveMaxForwardDepth)
-        {
-            score -= 1000;
-        }
+        var forwardDepth = ForwardDepth(actor, target);
+        var forwardDepthScore = forwardDepth > DiveMaxForwardDepth ? -1000 : 0;
 
-        if (actor.Position.DistanceTo(target.Position) > DiveMaxPathDistance)
-        {
-            score -= 1000;
-        }
+        var pathDistance = actor.Position.DistanceTo(target.Position);
+        var pathDistanceScore = pathDistance > DiveMaxPathDistance ? -1000 : 0;
 
+        var score = formationLineScore
+                    + classScore
+                    + lowHealthScore
+                    + protectorScore
+                    + focusMarkScore
+                    + forwardDepthScore
+                    + pathDistanceScore;
+        trace?.RecordCandidateScore(
+            target,
+            IsDiveCandidateUnderPosture(state, actor, target),
+            hasFocusMark,
+            hasFrontlineProtector,
+            forwardDepth,
+            pathDistance,
+            formationLineScore,
+            classScore,
+            lowHealthScore,
+            protectorScore,
+            focusMarkScore,
+            forwardDepthScore,
+            pathDistanceScore,
+            score,
+            actor.CurrentCombatIntent.Type == CombatIntentType.Dive
+                ? ResolveDiveContinueScoreThreshold(actor)
+                : ResolveDiveEntryScoreThreshold(actor));
         return score;
     }
 

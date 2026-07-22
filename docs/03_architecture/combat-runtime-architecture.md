@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-14
+- 최종수정일: 2026-07-22
 - 소스오브트루스: `docs/03_architecture/combat-runtime-architecture.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -29,6 +29,7 @@
   - `HitResolutionService`: dodge -> crit -> block -> armor 순서를 소유한다.
   - `CombatActionResolver`: hit, heal, defend event와 수치 변화를 적용한다.
   - `BattleReadModelBuilder`: domain state를 step read model로 변환한다.
+  - `IBattleDiagnosticObserver`: headless 계측 run이 실제 target/tactic/intent/action predicate의 입력과 판정 결과를 읽는 internal side channel이다. observer는 생성 시 선택적으로 주입하며 전투 resolution, RNG, canonical telemetry, replay/hash 입력에 참여하지 않는다.
 - `SM.Unity`
   - `GameSessionState`: 배치 assignment와 team posture를 session에 유지한다.
   - `RuntimePanelHost`: battle shell의 runtime panel seam을 소유한다. 현재 backend는 `UIDocument`다.
@@ -63,6 +64,7 @@
 - NavMesh, physics collision, scene object state는 battle truth source가 아니다.
 - snapshot render path는 cue를 재생성하지 않는다.
 - normal lane과 debug lane은 같은 read model / event stream을 다르게 표현할 뿐, 다른 truth를 만들지 않는다.
+- `BattleDiagnosticEvent`는 `TelemetryEventRecord`의 대체 source가 아니다. 진단 observer가 없을 때는 record를 만들지 않고, 있을 때도 별도 consumer가 읽기만 하며 `BattleState.TelemetryEvents`, `ActivityTelemetry`, replay와 canonical hash에는 기록하지 않는다.
 - Battle observer UI 입력은 runtime 수동 `onClick.Invoke()`나 `StandaloneInputModule` fallback에 의존하지 않는다. scene/runtime 모두 `InputSystemUIInputModule` + canonical `UI` action map 바인딩을 사용한다.
 
 ## 현재 단순화

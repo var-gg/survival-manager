@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SM.Combat.Model;
 using SM.Combat.Services;
 using SM.Core.Contracts;
@@ -104,6 +105,7 @@ internal static class CredibleDeckMatchupRunner
             var rows = new List<object>();
             var firstDeathRows = new List<object>();
             var diveObservations = new List<DiveFailureObservation>();
+            var counterplayInstrumentation = new CounterplayInstrumentationAccumulator();
             foreach (var probe in CredibleProbes)
             {
                 var compiled = probeSquads[probe.Id];
@@ -119,7 +121,8 @@ internal static class CredibleDeckMatchupRunner
                         seeds,
                         MatchupSeedStart,
                         reference.SquadId,
-                        observeDive ? diveObservations : null);
+                        observeDive ? diveObservations : null,
+                        observeDive ? counterplayInstrumentation : null);
                 }
 
                 rows.Add(new
@@ -179,12 +182,18 @@ internal static class CredibleDeckMatchupRunner
                 matchup_matrix = rows,
                 first_death_rates = firstDeathRows,
                 dive_failure_witness = BuildDiveWitnessReport(diveObservations),
+                counterplay_stage0 = counterplayInstrumentation.BuildReport(),
                 observer_determinism = observerDeterminism,
             };
 
             var outputPath = Resolve(repositoryRoot, outputRelativePath);
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
-            File.WriteAllText(outputPath, JsonConvert.SerializeObject(report, Formatting.Indented));
+            File.WriteAllText(
+                outputPath,
+                JsonConvert.SerializeObject(
+                    report,
+                    Formatting.Indented,
+                    new StringEnumConverter()));
             Console.WriteLine($"credible-deck-matchup COMPLETE seeds={seeds} report={outputPath}");
             return 0;
         }
@@ -202,7 +211,8 @@ internal static class CredibleDeckMatchupRunner
         int seeds,
         int seedStart,
         string referenceSquadId,
-        ICollection<DiveFailureObservation>? diveObservations)
+        ICollection<DiveFailureObservation>? diveObservations,
+        CounterplayInstrumentationAccumulator? counterplayInstrumentation)
     {
         var observation = new CredibleMatchupObservation(seeds);
         for (var sample = 0; sample < seeds; sample++)
@@ -225,16 +235,20 @@ internal static class CredibleDeckMatchupRunner
             }
 
             DiveFailureBattleObserver? diveObserver = null;
+            CounterplayInstrumentationObserver? diagnosticObserver = null;
             if (diveObservations != null)
             {
                 var diver = state.Enemies.Single(unit => string.Equals(unit.Definition.ArchetypeId, "slayer", StringComparison.Ordinal));
                 diveObserver = new DiveFailureBattleObserver(state, referenceSquadId, diver.Id.Value);
+                diagnosticObserver = new CounterplayInstrumentationObserver(state, referenceSquadId, diver.Id.Value);
             }
 
             Action<BattleSimulationStep>? stepObserver = diveObserver == null
                 ? null
                 : diveObserver.ObserveStep;
-            var result = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps, stepObserver);
+            var result = diagnosticObserver == null
+                ? BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps, stepObserver)
+                : new BattleSimulator(state, BattleSimulator.DefaultMaxSteps, diagnosticObserver).RunToEnd(stepObserver);
             if (result.Winner == TeamSide.Enemy)
             {
                 observation.ProbeWins++;
@@ -256,7 +270,9 @@ internal static class CredibleDeckMatchupRunner
 
             if (diveObserver != null)
             {
-                diveObservations!.Add(diveObserver.Complete());
+                var diveObservation = diveObserver.Complete();
+                diveObservations!.Add(diveObservation);
+                counterplayInstrumentation!.Add(diagnosticObserver!.Complete(result, diveObservation));
             }
         }
 
@@ -347,19 +363,22 @@ internal static class CredibleDeckMatchupRunner
         var observedHashes = new List<string>();
         var diver = observedState.Enemies.Single(unit => string.Equals(unit.Definition.ArchetypeId, "slayer", StringComparison.Ordinal));
         var witness = new DiveFailureBattleObserver(observedState, "ranged", diver.Id.Value);
+        var diagnosticObserver = new CounterplayInstrumentationObserver(observedState, "ranged", diver.Id.Value);
         var baselineResult = BattleResolver.Run(
             baselineState,
             BattleSimulator.DefaultMaxSteps,
             _ => baselineHashes.Add(BattleStateCanonicalHash.Compute(baselineState)));
-        var observedResult = BattleResolver.Run(
-            observedState,
-            BattleSimulator.DefaultMaxSteps,
-            step =>
+        var observedResult = new BattleSimulator(
+                observedState,
+                BattleSimulator.DefaultMaxSteps,
+                diagnosticObserver)
+            .RunToEnd(step =>
             {
                 witness.ObserveStep(step);
                 observedHashes.Add(BattleStateCanonicalHash.Compute(observedState));
             });
-        _ = witness.Complete();
+        var diveObservation = witness.Complete();
+        _ = diagnosticObserver.Complete(observedResult, diveObservation);
         var eventBytesIdentical = string.Equals(
             JsonConvert.SerializeObject(baselineResult.Events),
             JsonConvert.SerializeObject(observedResult.Events),

@@ -325,7 +325,14 @@ public static class CombatTriggerEngine
 
                     break;
                 case TriggeredEffectOp.Heal:
-                    target.Heal(effect.Magnitude);
+                    var healing = target.HealMeasured(effect.Magnitude);
+                    BattleDiagnosticRecorder.RecordHealingApplication(
+                        state,
+                        owner,
+                        target,
+                        string.Empty,
+                        effect.SourceId,
+                        healing);
                     BattleTelemetryRecorder.RecordTriggeredHealing(state, owner, target, effect);
                     applied = true;
                     break;

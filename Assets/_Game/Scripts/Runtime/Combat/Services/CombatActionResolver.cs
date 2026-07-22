@@ -119,7 +119,14 @@ public static class CombatActionResolver
                     var isSaveMoment = target.Side == actor.Side
                                        && target.HealthRatio < SaveMomentHealthRatio
                                        && state.ActivityTelemetry.TryBeginSaveMomentEpisode(target.Id.Value);
-                    target.Heal(heal);
+                    var healing = target.HealMeasured(heal);
+                    BattleDiagnosticRecorder.RecordHealingApplication(
+                        state,
+                        actor,
+                        target,
+                        skill.Id,
+                        skill.Id,
+                        healing);
                     actor.StartRecovery(actor.ResolveActionCooldown(skill?.Id));
                     BattleTelemetryRecorder.RecordActionResolved(state, actor, target, BattleActionType.ActiveSkill, skill, heal);
                     BattleTelemetryRecorder.RecordImpact(
@@ -377,7 +384,14 @@ public static class CombatActionResolver
         }
 
         var heal = damageValue * ratio;
-        actor.Heal(heal);
+        var healing = actor.HealMeasured(heal);
+        BattleDiagnosticRecorder.RecordHealingApplication(
+            state,
+            actor,
+            actor,
+            skill?.Id ?? string.Empty,
+            ResolveDamageDrainNote(actor, actionType),
+            healing);
         BattleTelemetryRecorder.RecordImpact(
             state,
             TelemetryEventKind.HealingApplied,
