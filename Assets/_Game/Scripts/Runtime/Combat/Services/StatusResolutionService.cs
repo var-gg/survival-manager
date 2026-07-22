@@ -57,9 +57,11 @@ public static class StatusResolutionService
 
         foreach (var status in skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
         {
-            var payloadTarget = IsFriendlyStatusPayload(state, status.StatusId)
-                ? ResolveFriendlyPayloadTarget(actor, target)
-                : target;
+            var payloadTarget = status.Scope == EffectScope.Self
+                ? actor
+                : IsFriendlyStatusPayload(state, status.StatusId)
+                    ? ResolveFriendlyPayloadTarget(actor, target)
+                    : target;
             ApplyStatus(state, actor, payloadTarget, skill, status, stepEvents);
         }
     }
@@ -101,7 +103,7 @@ public static class StatusResolutionService
 
         if (skill.EffectiveSlotKind is ActionSlotKind.SignatureActive or ActionSlotKind.FlexActive)
         {
-            return !actor.IsSilenced;
+            return !actor.IsSilenced && !actor.IsSkillOpeningLocked(skill);
         }
 
         return true;

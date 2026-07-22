@@ -1174,7 +1174,7 @@ public sealed class LoadoutCompiler
                     .Append(string.Join(",", skill.RequiredWeaponTags ?? Array.Empty<string>())).Append(':')
                     .Append(string.Join(",", skill.RequiredClassTags ?? Array.Empty<string>())).Append(':')
                     .Append(string.Join(",", (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
-                        .Select(status => $"{status.StatusId}:{status.DurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)}:{status.Magnitude.ToString("0.###", CultureInfo.InvariantCulture)}:{status.MaxStacks}:{status.RefreshDurationOnReapply}"))).Append(':')
+                        .Select(status => $"{status.StatusId}:{status.DurationSeconds.ToString("0.###", CultureInfo.InvariantCulture)}:{status.Magnitude.ToString("0.###", CultureInfo.InvariantCulture)}:{status.MaxStacks}:{status.RefreshDurationOnReapply}{(status.Scope == EffectScope.CurrentTarget ? string.Empty : $":scope={status.Scope}")}"))).Append(':')
                     .Append(skill.CleanseProfileId ?? string.Empty).Append(':')
                     .Append(skill.VfxHookId ?? string.Empty).Append(':')
                     // P3 강제이동은 전투 결과를 바꾸는 저작 입력 — hash 포함(replay/audit).
@@ -1184,8 +1184,14 @@ public sealed class LoadoutCompiler
                     .Append(skill.AreaEffectFamily).Append(':')
                     .Append(skill.AreaRadius.ToString("0.###", CultureInfo.InvariantCulture)).Append(':')
                     .Append(skill.PunishCluster ? "1" : "0").Append(':')
-                    .Append(skill.AllowsEliteFocusCap ? "1" : "0")
-                    .Append('|');
+                    .Append(skill.AllowsEliteFocusCap ? "1" : "0");
+                if (skill.StartsOnCooldown)
+                {
+                    sb.Append(":opening-lock=")
+                        .Append(skill.OpeningLockSeconds.ToString("0.###", CultureInfo.InvariantCulture));
+                }
+
+                sb.Append('|');
             }
 
             foreach (var package in unit.NumericPackages.OrderBy(package => package.SourceId, StringComparer.Ordinal))

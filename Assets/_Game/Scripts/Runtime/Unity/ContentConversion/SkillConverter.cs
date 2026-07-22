@@ -30,7 +30,8 @@ internal static class SkillConverter
                 rule.DurationSeconds,
                 rule.Magnitude,
                 Math.Max(1, rule.MaxStacks),
-                rule.RefreshDurationOnReapply))
+                rule.RefreshDurationOnReapply,
+                rule.Scope))
             .ToList();
         var effectFamilyId = string.IsNullOrWhiteSpace(skill.EffectFamilyId) ? fallback.EffectFamilyId : skill.EffectFamilyId;
         var presentationProfile = SkillPresentationProfileResolver.Resolve(
@@ -110,7 +111,9 @@ internal static class SkillConverter
             DisplacementKind: skill.DisplacementKind,
             DisplacementDistance: Mathf.Max(0f, skill.DisplacementDistance),
             TriggeredEffects: BuildTriggeredEffects(skill),
-            SupportModifier: BuildSupportModifier(skill));
+            SupportModifier: BuildSupportModifier(skill),
+            StartsOnCooldown: skill.StartsOnCooldown,
+            OpeningLockSeconds: Mathf.Max(0f, skill.OpeningLockSeconds));
     }
 
     private static BattleSupportModifierSpec? BuildSupportModifier(SkillDefinitionAsset skill)
@@ -129,7 +132,8 @@ internal static class SkillConverter
                 rule.DurationSeconds,
                 rule.Magnitude,
                 Math.Max(1, rule.MaxStacks),
-                rule.RefreshDurationOnReapply))
+                rule.RefreshDurationOnReapply,
+                rule.Scope))
             .ToList();
         var ownerModifiers = Enumerate(spec.OwnerModifiers)
             .Where(modifier => modifier != null)

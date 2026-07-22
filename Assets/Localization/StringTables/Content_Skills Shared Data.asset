@@ -783,6 +783,14 @@ MonoBehaviour:
     m_Key: content.skill.skill_boss_orchard_burn_pulse.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 40887372437852162
+    m_Key: content.skill.skill_veil_breach.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372437852163
+    m_Key: content.skill.skill_veil_breach.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -801,6 +801,15 @@ MonoBehaviour:
       clock.
     m_Metadata:
       m_Items: []
+  - m_Id: 40887372437852162
+    m_Localized: Veil Breach
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40887372437852163
+    m_Localized: Blink behind the current dive target, deal physical damage, and
+      become Exposed for 2 seconds.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

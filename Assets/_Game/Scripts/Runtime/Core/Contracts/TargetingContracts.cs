@@ -97,6 +97,9 @@ public enum SkillDisplacementKind
 
     /// <summary>끌기 — 적 대상을 시전자 쪽으로 끌어온다(최소 간격 유지).</summary>
     EnemyTowardCaster = 3,
+
+    /// <summary>점멸 — 시전 사거리에서 윈드업을 시작하고 결의 직전에 표적 뒤로 이동.</summary>
+    SelfBlinkToTarget = 4,
 }
 
 /// <summary>

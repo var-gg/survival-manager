@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using SM.Unity;
 using UnityEngine;
 
@@ -674,6 +675,18 @@ internal sealed class SkillCatalogValidator : ICatalogValidationRule
                 if (!statusIds.Contains(status.StatusId))
                 {
                     ContentValidationIssueFactory.AddError(issues, "skill.status_ref", $"Skill '{skill.Id}' references missing status '{status.StatusId}'.", assetPath);
+                }
+
+                if (status.Scope == EffectScope.Self
+                    && context.Statuses.TryGetValue(status.StatusId, out var family)
+                    && family.Group != StatusGroupValue.DefensiveBoon
+                    && (skill.BudgetCard?.Vector?.DrawbackCredit ?? 0) <= 0)
+                {
+                    ContentValidationIssueFactory.AddError(
+                        issues,
+                        "skill.self_hostile_status_drawback_credit",
+                        $"Skill '{skill.Id}' applies hostile status '{status.StatusId}' to Self and must declare positive DrawbackCredit.",
+                        assetPath);
                 }
             }
 

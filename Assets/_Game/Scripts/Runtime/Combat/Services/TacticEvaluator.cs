@@ -226,6 +226,15 @@ public static class TacticEvaluator
             return null;
         }
 
+        // 장막 찢기는 RoleBrain이 이미 검증한 Dive 표적에게만 발화한다. 이 게이트가 posture/HP/
+        // frontline-support 진입 조건을 재사용하고 duelist_hold_bruiser 빌드의 점멸을 구조적으로 막는다.
+        if (skill.DisplacementKind == SkillDisplacementKind.SelfBlinkToTarget
+            && (actor.CurrentCombatIntent.Type != CombatIntentType.Dive
+                || actor.CurrentCombatIntent.TargetId != target.Id))
+        {
+            return null;
+        }
+
         var isAlliedSupportKind = skill.Kind is SkillKind.Heal or SkillKind.Shield or SkillKind.Buff;
         if (isAlliedSupportKind && target.Side != actor.Side)
         {

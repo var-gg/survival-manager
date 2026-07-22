@@ -14,6 +14,7 @@ namespace SM.Content.Definitions
         public string StatusId = string.Empty;
         public float DurationSeconds = 1f;
         public float Magnitude = 0f;
+        public EffectScope Scope = EffectScope.CurrentTarget;
         public int MaxStacks = 1;
         public bool RefreshDurationOnReapply = true;
         // Authoring/schema cross-check only. AppliedStatusState에는 cap이 없고 runtime stack 상한은 MaxStacks가 소유한다.

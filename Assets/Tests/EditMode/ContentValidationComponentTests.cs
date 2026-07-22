@@ -161,6 +161,72 @@ public sealed class ContentValidationComponentTests
     }
 
     [Test]
+    public void SkillSchemaRule_RequiresDedicatedOpeningLockAndSaneBlinkGeometry()
+    {
+        var rule = new SkillSchemaRule();
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_blink_validation_probe";
+        skill.StartsOnCooldown = true;
+        skill.OpeningLockSeconds = 0f;
+        skill.Range = 8f;
+        skill.DisplacementKind = SkillDisplacementKind.SelfBlinkToTarget;
+        skill.DisplacementDistance = 0f;
+
+        var issues = new List<ContentValidationIssue>();
+        var descriptor = new ValidationAssetDescriptor(
+            skill,
+            "Assets/test_skill_blink_validation.asset",
+            ValidationAssetSourceKind.Explicit,
+            skill.GetType());
+        rule.Validate(descriptor, EmptyCatalog(), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.opening_lock_seconds"));
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.self_blink_geometry"));
+
+        skill.OpeningLockSeconds = 1f;
+        skill.DisplacementDistance = 8.5f;
+        issues.Clear();
+        rule.Validate(descriptor, EmptyCatalog(), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Does.Not.Contain("skill.opening_lock_seconds"));
+        Assert.That(issues.Select(issue => issue.Code), Does.Not.Contain("skill.self_blink_geometry"));
+    }
+
+    [Test]
+    public void SkillCatalogValidator_RequiresDrawbackCreditForSelfScopedHostileStatus()
+    {
+        var exposed = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        exposed.Id = "exposed_probe";
+        exposed.Group = StatusGroupValue.TacticalMark;
+
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_self_hostile_probe";
+        skill.BudgetCard = new BudgetCard
+        {
+            Domain = BudgetDomain.Skill,
+            Vector = new BudgetVector(),
+        };
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "skill_self_hostile_probe:self_exposed",
+            StatusId = exposed.Id,
+            Scope = EffectScope.Self,
+        });
+
+        var catalog = ToCatalog(new ScriptableObject[] { exposed, skill });
+        var issues = new List<ContentValidationIssue>();
+        new SkillCatalogValidator().Validate(new CatalogValidationContext(catalog), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("skill.self_hostile_status_drawback_credit"));
+
+        skill.BudgetCard.Vector.DrawbackCredit = 1;
+        issues.Clear();
+        new SkillCatalogValidator().Validate(new CatalogValidationContext(catalog), issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Does.Not.Contain("skill.self_hostile_status_drawback_credit"));
+    }
+
+    [Test]
     public void SkillCatalogValidator_FlagsMissingStatusReference()
     {
         var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());

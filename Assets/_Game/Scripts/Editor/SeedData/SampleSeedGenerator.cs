@@ -46,6 +46,7 @@ public static partial class SampleSeedGenerator
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         var stableTags = LoadDefinitionsById<StableTagDefinition>($"{ResourcesRoot}/StableTags");
+        CreateVeilBreachSkill(stableTags);
         CreateSupportModifierSkills(stableTags);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
@@ -1589,7 +1590,7 @@ public static partial class SampleSeedGenerator
         return classId switch
         {
             "vanguard" => new[] { "skill_guardian_utility", "skill_warden_utility" },
-            "duelist" => new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility" },
+            "duelist" => new[] { "skill_slayer_utility", "skill_raider_utility", "skill_reaver_utility", "skill_veil_breach" },
             "ranger" => new[] { "skill_hunter_utility", "skill_marksman_utility", "skill_scout_utility" },
             "mystic" => new[] { "skill_minor_heal", "skill_hexer_utility", "skill_shaman_utility", "skill_memory_tuning" },
             _ => Array.Empty<string>(),
@@ -3258,6 +3259,7 @@ public static partial class SampleSeedGenerator
         {
             SkillSlotKindValue.CoreActive => PowerBand.Standard,
             SkillSlotKindValue.UtilityActive when string.Equals(skill.Id, "skill_minor_heal", StringComparison.Ordinal) => PowerBand.Standard,
+            SkillSlotKindValue.UtilityActive when IsOpeningLockedSelfBlinkCategory(skill) => PowerBand.Standard,
             SkillSlotKindValue.UtilityActive => PowerBand.Minor,
             SkillSlotKindValue.Passive => PowerBand.Minor,
             SkillSlotKindValue.Support => PowerBand.Minor,
@@ -3267,6 +3269,15 @@ public static partial class SampleSeedGenerator
         var target = LoopCContentGovernance.PowerBandTargets[band].Target;
         var counters = ResolveSkillCounterHints(skill);
         var vector = ResolveSkillBudgetVector(skill, target, counters);
+        if (IsOpeningLockedSelfBlinkCategory(skill)
+            && skill.AppliedStatuses.Any(status => status != null && status.Scope == EffectScope.Self))
+        {
+            // Declared category accounting: the long-range discrete reposition earns two Mobility points,
+            // while its authored hostile self-status earns one DrawbackCredit. The net +1 remains inside the
+            // standard budget window and derived-delta threshold without an id carve-out or tolerance inflation.
+            vector.Mobility += 2;
+            vector.DrawbackCredit += 1;
+        }
         var rarity = band == PowerBand.Minor ? ContentRarity.Common : ContentRarity.Rare;
         skill.BudgetCard = BuildBudgetCard(
             BudgetDomain.Skill,
@@ -3279,6 +3290,13 @@ public static partial class SampleSeedGenerator
             ruleExceptionCount: 0,
             Array.Empty<ThreatPattern>(),
             counters);
+    }
+
+    private static bool IsOpeningLockedSelfBlinkCategory(SkillDefinitionAsset skill)
+    {
+        return skill.DisplacementKind == SkillDisplacementKind.SelfBlinkToTarget
+               && skill.StartsOnCooldown
+               && skill.OpeningLockSeconds > 0f;
     }
 
     private static void ApplyLoopCAffixGovernance(AffixDefinition affix)
@@ -5395,6 +5413,7 @@ public static partial class SampleSeedGenerator
             element.FindPropertyRelative(nameof(StatusApplicationRule.StatusId))!.stringValue = values[index].StatusId;
             element.FindPropertyRelative(nameof(StatusApplicationRule.DurationSeconds))!.floatValue = values[index].DurationSeconds;
             element.FindPropertyRelative(nameof(StatusApplicationRule.Magnitude))!.floatValue = values[index].Magnitude;
+            element.FindPropertyRelative(nameof(StatusApplicationRule.Scope))!.enumValueIndex = (int)values[index].Scope;
             element.FindPropertyRelative(nameof(StatusApplicationRule.MaxStacks))!.intValue = values[index].MaxStacks;
             element.FindPropertyRelative(nameof(StatusApplicationRule.RefreshDurationOnReapply))!.boolValue = values[index].RefreshDurationOnReapply;
             element.FindPropertyRelative(nameof(StatusApplicationRule.StackCap))!.intValue = values[index].StackCap;

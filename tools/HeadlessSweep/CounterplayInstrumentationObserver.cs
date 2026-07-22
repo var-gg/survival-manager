@@ -63,6 +63,7 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
 {
     internal const string ChargeSkillId = "skill_rusthide_charge";
     internal const string KnockbackSkillId = "skill_cinder_overrun";
+    internal const string VeilBreachSkillId = "skill_veil_breach";
 
     private readonly BattleState _state;
     private readonly string _panel;
@@ -103,6 +104,8 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
 
     internal IReadOnlyList<DiveHardAbortDiagnosticEvent> DiveHardAborts => _diveHardAborts;
 
+    internal IReadOnlyList<DisplacementLifecycleDiagnosticEvent> DisplacementLifecycle => _displacementLifecycle;
+
     public bool ShouldObserve(BattleDiagnosticKind kind, string actorId, string skillId = "")
     {
         return kind switch
@@ -115,7 +118,8 @@ internal sealed class CounterplayInstrumentationObserver : IBattleDiagnosticObse
                 => string.Equals(actorId, _diverId, StringComparison.Ordinal),
             BattleDiagnosticKind.DisplacementLifecycle
                 => string.Equals(skillId, ChargeSkillId, StringComparison.Ordinal)
-                   || string.Equals(skillId, KnockbackSkillId, StringComparison.Ordinal),
+                   || string.Equals(skillId, KnockbackSkillId, StringComparison.Ordinal)
+                   || string.Equals(skillId, VeilBreachSkillId, StringComparison.Ordinal),
             BattleDiagnosticKind.HealingApplication => true,
             _ => false,
         };

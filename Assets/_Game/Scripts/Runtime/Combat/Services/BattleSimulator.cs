@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Core.Contracts;
 using SM.Core.Ids;
 
 namespace SM.Combat.Services;
@@ -369,7 +370,9 @@ public sealed class BattleSimulator
         }
 
         var desiredRange = actor.ResolveActionRange(actor.PendingSkillId);
+        var pendingSkillAtRangeGate = actor.ResolveSkill(actor.PendingSkillId);
         if (actor.PendingActionType != BattleActionType.BasicAttack
+            && pendingSkillAtRangeGate?.DisplacementKind != SkillDisplacementKind.SelfBlinkToTarget
             && !MovementResolver.IsInActionRange(actor, target, desiredRange + ActionRangeTolerance))
         {
             // A basic-attack windup is COMMITTED once begun: it never cancels for range, so a target that
@@ -387,6 +390,15 @@ public sealed class BattleSimulator
             return false;
         }
 
+        if (pendingSkillAtRangeGate?.DisplacementKind == SkillDisplacementKind.SelfBlinkToTarget
+            && (!actor.IsAlive || actor.IsRooted || actor.IsStunned || !target.IsAlive))
+        {
+            EmitCanceledIfPending(actor, "blink_fizzled_control_or_death");
+            actor.ClearTarget(applySwitchDelay: true);
+            actor.SetActionState(CombatActionState.AcquireTarget);
+            return false;
+        }
+
         // Capture the in-flight action-choreography identity BEFORE Resolve runs (Resolve -> StartRecovery
         // mutates the actor's pending fields). The Contacted intent is then emitted at the authoritative
         // resolve tick, paired to the Started intent by ActionInstanceId.
@@ -400,6 +412,23 @@ public sealed class BattleSimulator
         var pendingSkill = actor.ResolveSkill(pendingSkillId);
         var actorPositionBefore = actor.Position;
         var targetPositionBefore = target.Position;
+
+        if (pendingSkill?.DisplacementKind == SkillDisplacementKind.SelfBlinkToTarget
+            && (actor.CurrentCombatIntent.Type != CombatIntentType.Dive
+                || actor.CurrentCombatIntent.TargetId != actor.PendingTargetId))
+        {
+            EmitCanceledIfPending(actor, "blink_fizzled_intent_changed");
+            actor.ClearTarget(applySwitchDelay: true);
+            actor.SetActionState(CombatActionState.AcquireTarget);
+            return false;
+        }
+
+        if (pendingSkill?.DisplacementKind == SkillDisplacementKind.SelfBlinkToTarget
+            && MovementResolver.TryApplySkillSelfBlink(State, actor, target, pendingSkill, out var landedBehind)
+            && landedBehind)
+        {
+            actor.ReanchorDiveEntry(State.StepIndex, target.Id);
+        }
 
         var resolveEvents = CombatActionResolver.Resolve(State, actor);
         stepEvents.AddRange(resolveEvents);

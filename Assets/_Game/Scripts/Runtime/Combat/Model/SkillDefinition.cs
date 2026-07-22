@@ -209,7 +209,11 @@ public record BattleSkillSpec(
     // CombatTriggerEngine이 소비한다. 패시브/서포트 슬롯 스킬의 실전투 통로(증강과 동일 계약).
     IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null,
     // 서포트 젬 페어-변조 계약 — null이면 일반 스킬. 소비는 LoadoutCompiler(컴파일 타임 변환).
-    BattleSupportModifierSpec? SupportModifier = null)
+    BattleSupportModifierSpec? SupportModifier = null,
+    // 전투 시작 시 이 스킬만 OpeningLockSeconds 동안 잠근다. 반복 BaseCooldownSeconds와
+    // 유닛 공용 action cooldown 양쪽에서 분리된 authored gate다.
+    bool StartsOnCooldown = false,
+    float OpeningLockSeconds = 0f)
 {
     public float ResolvedPowerFlat => PowerFlat == 0f ? Power : PowerFlat;
 
@@ -227,7 +231,8 @@ public sealed record StatusApplicationSpec(
     float DurationSeconds,
     float Magnitude,
     int MaxStacks = 1,
-    bool RefreshDurationOnReapply = true);
+    bool RefreshDurationOnReapply = true,
+    EffectScope Scope = EffectScope.CurrentTarget);
 
 /// <summary>
 /// 서포트 젬의 페어-변조 계약(컴파일 입력) — LoadoutCompiler가 SupportAllowedTags/BlockedTags

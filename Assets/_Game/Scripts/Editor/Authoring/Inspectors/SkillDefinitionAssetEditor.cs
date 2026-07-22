@@ -94,6 +94,8 @@ public sealed class SkillDefinitionAssetEditor : UnityEditor.Editor
             nameof(SkillDefinitionAsset.ManaCost),
             nameof(SkillDefinitionAsset.ResourceCost),
             nameof(SkillDefinitionAsset.BaseCooldownSeconds),
+            nameof(SkillDefinitionAsset.StartsOnCooldown),
+            nameof(SkillDefinitionAsset.OpeningLockSeconds),
             nameof(SkillDefinitionAsset.CooldownSeconds),
             nameof(SkillDefinitionAsset.CastWindupSeconds),
             nameof(SkillDefinitionAsset.RecoverySeconds),
@@ -233,6 +235,8 @@ public sealed class SkillDefinitionAssetEditor : UnityEditor.Editor
 
         builder.AppendLine($"Activation: {skill.ActivationModel}  Lane: {skill.Lane}  Lock: {skill.LockRule}");
         builder.AppendLine($"Cooldown: {effectiveCooldown:0.##}s  Windup: {skill.CastWindupSeconds:0.##}s  Recovery: {effectiveRecovery:0.##}s");
+        if (skill.StartsOnCooldown)
+            builder.AppendLine($"Opening Lock: {skill.OpeningLockSeconds:0.##}s");
         builder.AppendLine($"Total Cycle: {totalCycleTime:0.##}s");
 
         if (skill.ManaCost > 0f)

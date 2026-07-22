@@ -96,6 +96,26 @@ internal static class LoopAContractValidator
             AddError(issues, "loop_a.skill.authority_layer", "SkillDefinitionAsset.AuthorityLayer must remain Skill.", assetPath);
         }
 
+        if (skill.StartsOnCooldown
+            && (skill.OpeningLockSeconds <= 0f
+                || float.IsNaN(skill.OpeningLockSeconds)
+                || float.IsInfinity(skill.OpeningLockSeconds)))
+        {
+            AddError(issues, "skill.opening_lock_seconds", "StartsOnCooldown skills must author a positive finite OpeningLockSeconds independent of repeat cooldown.", assetPath);
+        }
+
+        if (skill.DisplacementKind == SkillDisplacementKind.SelfBlinkToTarget
+            && (skill.Range <= 0f
+                || float.IsNaN(skill.Range)
+                || float.IsInfinity(skill.Range)
+                || skill.DisplacementDistance <= 0f
+                || float.IsNaN(skill.DisplacementDistance)
+                || float.IsInfinity(skill.DisplacementDistance)
+                || skill.DisplacementDistance < skill.Range))
+        {
+            AddError(issues, "skill.self_blink_geometry", "SelfBlinkToTarget requires a positive finite Range and DisplacementDistance >= Range so a max-range cast can reach its target.", assetPath);
+        }
+
         if (skill.SummonProfile != null && skill.Effects.Any(effect => effect.AllowsPersistentSummonChain))
         {
             AddError(issues, "loop_a.summon_chain", "Persistent summon/deployable chain authoring is blocked in Loop A.", assetPath);

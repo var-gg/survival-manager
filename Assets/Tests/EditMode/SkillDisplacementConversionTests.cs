@@ -1,7 +1,9 @@
+using System.Linq;
 using NUnit.Framework;
 using SM.Content.Definitions;
 using SM.Core.Contracts;
 using SM.Unity.ContentConversion;
+using UnityEditor;
 using UnityEngine;
 
 namespace SM.Tests.EditMode;
@@ -55,6 +57,40 @@ public sealed class SkillDisplacementConversionTests
         finally
         {
             Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
+    public void ShippedVeilBreach_CarriesBlinkOpeningLockSelfExposureAndRecruitDistribution()
+    {
+        const string skillPath = "Assets/Resources/_Game/Content/Definitions/Skills/skill_veil_breach.asset";
+        var asset = AssetDatabase.LoadAssetAtPath<SkillDefinitionAsset>(skillPath);
+
+        Assert.That(asset, Is.Not.Null, "the shipped recruit-flex skill asset must exist");
+        var spec = SkillConverter.BuildSkillSpec(asset!);
+
+        Assert.That(spec.Id, Is.EqualTo("skill_veil_breach"));
+        Assert.That(spec.Range, Is.EqualTo(8f).Within(0.001f));
+        Assert.That(spec.CastWindupSeconds, Is.EqualTo(0.9f).Within(0.001f));
+        Assert.That(spec.BaseCooldownSeconds, Is.EqualTo(10f).Within(0.001f));
+        Assert.That(spec.StartsOnCooldown, Is.True);
+        Assert.That(spec.OpeningLockSeconds, Is.EqualTo(10f).Within(0.001f));
+        Assert.That(spec.DisplacementKind, Is.EqualTo(SkillDisplacementKind.SelfBlinkToTarget));
+        Assert.That(spec.DisplacementDistance, Is.EqualTo(8.5f).Within(0.001f));
+        Assert.That(spec.TargetRuleData?.PrimarySelector, Is.EqualTo(TargetSelector.CurrentTarget));
+        Assert.That(spec.TargetRuleData?.FallbackPolicy, Is.EqualTo(TargetFallbackPolicy.Abort));
+        Assert.That(spec.AppliedStatuses, Has.Count.EqualTo(1));
+        Assert.That(spec.AppliedStatuses![0].StatusId, Is.EqualTo("exposed"));
+        Assert.That(spec.AppliedStatuses[0].Scope, Is.EqualTo(EffectScope.Self));
+        Assert.That(spec.AppliedStatuses[0].Magnitude, Is.EqualTo(0.25f).Within(0.001f));
+
+        foreach (var archetypeId in new[] { "slayer", "reaver", "raider" })
+        {
+            var archetype = AssetDatabase.LoadAssetAtPath<UnitArchetypeDefinition>(
+                $"Assets/Resources/_Game/Content/Definitions/Archetypes/archetype_{archetypeId}.asset");
+            Assert.That(archetype, Is.Not.Null, $"missing shipped archetype {archetypeId}");
+            Assert.That(archetype!.RecruitFlexActivePool.Any(skill => skill != null && skill.Id == spec.Id), Is.True,
+                $"{archetypeId} must distribute Veil Breach through RecruitFlexActivePool");
         }
     }
 }

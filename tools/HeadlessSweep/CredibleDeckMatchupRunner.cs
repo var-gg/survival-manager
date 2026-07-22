@@ -14,6 +14,8 @@ internal static class CredibleDeckMatchupRunner
     private const int DefaultSeeds = 128;
     private const int MatchupSeedStart = 62000;
     private const int CredibleHeroLevel = 5;
+    private const string AssassinControlProbeId = "P-ASSASSIN-C";
+    private const string AssassinBlinkProbeId = "P-ASSASSIN-BLINK-C";
 
     private static readonly string[] CredibleDiveNodes =
     {
@@ -46,7 +48,7 @@ internal static class CredibleDeckMatchupRunner
     private static readonly CredibleProbeSpec[] CredibleProbes =
     {
         new(
-            "P-ASSASSIN-C",
+            AssassinControlProbeId,
             "assassin-reach",
             new[] { "warden", "slayer", "scout", "priest" },
             CredibleDiveNodes,
@@ -63,10 +65,23 @@ internal static class CredibleDeckMatchupRunner
     {
         try
         {
-            var (seeds, outputRelativePath) = Parse(arguments);
+            var (seeds, outputRelativePath, openingLockSecondsOverride) = Parse(arguments);
             ContentSnapshotFreshnessGuard.EnsureFresh(repositoryRoot);
             var snapshotPath = Resolve(repositoryRoot, SnapshotRelativePath);
             var content = ContentSnapshotJsonSerializer.Deserialize(File.ReadAllText(snapshotPath));
+            if (!content.SkillCatalog.TryGetValue(CounterplayInstrumentationObserver.VeilBreachSkillId, out var authoredVeilBreach))
+            {
+                throw new InvalidDataException("The exported content snapshot does not contain skill_veil_breach.");
+            }
+
+            var openingLockSeconds = openingLockSecondsOverride ?? authoredVeilBreach.OpeningLockSeconds;
+            var repeatCooldownSeconds = authoredVeilBreach.BaseCooldownSeconds;
+            content = ApplyVeilBreachOpeningLock(content, openingLockSeconds);
+            if (BitConverter.SingleToInt32Bits(content.SkillCatalog[CounterplayInstrumentationObserver.VeilBreachSkillId].BaseCooldownSeconds)
+                != BitConverter.SingleToInt32Bits(repeatCooldownSeconds))
+            {
+                throw new InvalidDataException("The opening-lock override changed Veil Breach's repeat cooldown.");
+            }
             var statusRules = CombatStatusRuleCompiler.Compile(content);
             var config = SM.Editor.Validation.CampaignBalanceSweepConfig.Default;
             var nodeBudget = PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(CredibleHeroLevel);
@@ -102,18 +117,34 @@ internal static class CredibleDeckMatchupRunner
                     heroLevel: CredibleHeroLevel),
                 StringComparer.Ordinal);
 
+            var assassinProbe = CredibleProbes.Single(probe =>
+                string.Equals(probe.Id, AssassinControlProbeId, StringComparison.Ordinal));
+            var blinkAssassinSquad = DeckMatchupDiagnosticRunner.CompileSquad(
+                content,
+                "credible.enemy.p-assassin-c",
+                assassinProbe.ArchetypeIds,
+                CredibleAnchors,
+                assassinProbe.PassiveNodes,
+                equipDuelistBlade: true,
+                heroLevel: CredibleHeroLevel,
+                duelistFlexActiveSkillId: CounterplayInstrumentationObserver.VeilBreachSkillId);
+            ValidateBlinkArmSlots(probeSquads[AssassinControlProbeId], blinkAssassinSquad);
+
             var rows = new List<object>();
             var firstDeathRows = new List<object>();
-            var diveObservations = new List<DiveFailureObservation>();
+            var controlDiveObservations = new List<DiveFailureObservation>();
+            var blinkDiveObservations = new List<DiveFailureObservation>();
             var counterplayInstrumentation = new CounterplayInstrumentationAccumulator();
+            var veilBreachMeasurements = new List<VeilBreachBattleMeasurement>();
+            Dictionary<string, CredibleMatchupObservation>? controlCells = null;
             foreach (var probe in CredibleProbes)
             {
                 var compiled = probeSquads[probe.Id];
                 ValidateCompiledLever(probe, compiled);
                 var cells = new Dictionary<string, CredibleMatchupObservation>(StringComparer.Ordinal);
+                var observeDive = string.Equals(probe.Id, AssassinControlProbeId, StringComparison.Ordinal);
                 foreach (var reference in config.ReferenceSquads)
                 {
-                    var observeDive = string.Equals(probe.Id, "P-ASSASSIN-C", StringComparison.Ordinal);
                     cells[reference.SquadId] = ObserveMatchup(
                         playerSquads[reference.SquadId],
                         compiled,
@@ -121,8 +152,14 @@ internal static class CredibleDeckMatchupRunner
                         seeds,
                         MatchupSeedStart,
                         reference.SquadId,
-                        observeDive ? diveObservations : null,
-                        observeDive ? counterplayInstrumentation : null);
+                        observeDive ? controlDiveObservations : null,
+                        counterplayInstrumentation: null,
+                        veilBreachMeasurements: null);
+                }
+
+                if (observeDive)
+                {
+                    controlCells = cells;
                 }
 
                 rows.Add(new
@@ -141,9 +178,44 @@ internal static class CredibleDeckMatchupRunner
                 }));
             }
 
+            var blinkCells = new Dictionary<string, CredibleMatchupObservation>(StringComparer.Ordinal);
+            foreach (var reference in config.ReferenceSquads)
+            {
+                blinkCells[reference.SquadId] = ObserveMatchup(
+                    playerSquads[reference.SquadId],
+                    blinkAssassinSquad,
+                    statusRules,
+                    seeds,
+                    MatchupSeedStart,
+                    reference.SquadId,
+                    blinkDiveObservations,
+                    counterplayInstrumentation,
+                    veilBreachMeasurements);
+            }
+
+            rows.Add(new
+            {
+                probe_deck = AssassinBlinkProbeId,
+                vs_ranged_3r1t = CellReport(blinkCells["ranged"]),
+                vs_frontline = CellReport(blinkCells["frontline"]),
+                vs_mixed = CellReport(blinkCells["mixed"]),
+                seeds,
+            });
+            firstDeathRows.AddRange(config.ReferenceSquads.Select(reference => new
+            {
+                panel = $"{AssassinBlinkProbeId}_vs_{reference.SquadId}",
+                vanguard_first_death_rate = blinkCells[reference.SquadId].VanguardFellFirst / (double)seeds,
+                battles_with_player_vanguard = blinkCells[reference.SquadId].BattlesWithVanguard,
+            }));
+
+            if (controlCells == null)
+            {
+                throw new InvalidOperationException("The P-ASSASSIN-C control arm was not measured.");
+            }
+
             var observerDeterminism = VerifyObserverDeterminism(
                 playerSquads["ranged"],
-                probeSquads["P-ASSASSIN-C"],
+                blinkAssassinSquad,
                 statusRules);
             if (!observerDeterminism.Identical)
             {
@@ -156,13 +228,15 @@ internal static class CredibleDeckMatchupRunner
                 method = new
                 {
                     reference_build = "Unchanged CampaignBalanceSweepConfig P20 reference compositions: four base-grade heroes, zero equipment, zero passive growth.",
-                    credible_build = "Four base-grade shipped heroes; one common tier-0 blade on the sole slayer; one Level-5 six-node legal duelist route; no affixes, augments, traits, rarity boosts, or stat scalars.",
+                    credible_build = "Both assassin arms use the same four base-grade shipped heroes, anchors, common tier-0 slayer blade, and Level-5 six-node legal duelist route. The blink arm differs only by an explicit player-style FlexActive loadout selection.",
                     credible_level = CredibleHeroLevel,
                     credible_node_budget = nodeBudget,
                     level_basis = "Level 5 is reachable after 18 wins at 50 XP per win and is available during chapter 3; ResolveMaxActiveNodeCount(5) is 6.",
                     anchor_rule = "One hero per unique legal anchor; FrontCenter, FrontTop, BackBottom, BackCenter; no overlap.",
                     paired_seed_start = MatchupSeedStart,
                     seeds_per_matchup = seeds,
+                    veil_breach_opening_lock_seconds = openingLockSeconds,
+                    veil_breach_repeat_cooldown_seconds = repeatCooldownSeconds,
                     contact_definition = "First positive DamageApplied telemetry from the authored diver to an eligible player backline target (FormationLine.Backline and class ranger or mystic).",
                     in_range_definition = "MovementResolver.IsInActionRange against the diver basic-attack range; gate opened only when an attack/skill start targets that eligible backline unit.",
                 },
@@ -179,9 +253,39 @@ internal static class CredibleDeckMatchupRunner
                     rationale = probe.Rationale,
                     compiled_lever_evidence = BuildCompiledLeverEvidence(probe, probeSquads[probe.Id]),
                 }).ToArray(),
+                blink_probe = new
+                {
+                    id = AssassinBlinkProbeId,
+                    control_probe = AssassinControlProbeId,
+                    equip_method = "A SkillInstanceState for skill_veil_breach is placed in the slayer HeroLoadoutState.EquippedSkillInstanceIds with ResolvedSlotKind=FlexActive, matching the player loadout compile path.",
+                    matched_properties = new
+                    {
+                        composition = assassinProbe.ArchetypeIds,
+                        anchors = CredibleAnchors.Select(value => value.ToString()).ToArray(),
+                        grade = "base",
+                        hero_level = CredibleHeroLevel,
+                        node_budget = nodeBudget,
+                        passive_nodes = assassinProbe.PassiveNodes,
+                        equipment = new[] { "item_slayer_blade (rarity tier 0, sole slayer only)" },
+                    },
+                    compiled_slot_evidence = BuildCompiledLeverEvidence(assassinProbe, blinkAssassinSquad),
+                },
                 matchup_matrix = rows,
                 first_death_rates = firstDeathRows,
-                dive_failure_witness = BuildDiveWitnessReport(diveObservations),
+                control_arm = new
+                {
+                    probe = AssassinControlProbeId,
+                    compiled_slot_evidence = BuildCompiledLeverEvidence(assassinProbe, probeSquads[AssassinControlProbeId]),
+                    matchup = new
+                    {
+                        vs_ranged_3r1t = CellReport(controlCells["ranged"]),
+                        vs_frontline = CellReport(controlCells["frontline"]),
+                        vs_mixed = CellReport(controlCells["mixed"]),
+                    },
+                    dive_failure_witness = BuildDiveWitnessReport(controlDiveObservations),
+                },
+                dive_failure_witness = BuildDiveWitnessReport(blinkDiveObservations),
+                veil_breach = BuildVeilBreachMeasurementReport(veilBreachMeasurements, openingLockSeconds),
                 counterplay_stage0 = counterplayInstrumentation.BuildReport(),
                 observer_determinism = observerDeterminism,
             };
@@ -255,7 +359,8 @@ internal static class CredibleDeckMatchupRunner
         int seedStart,
         string referenceSquadId,
         ICollection<DiveFailureObservation>? diveObservations,
-        CounterplayInstrumentationAccumulator? counterplayInstrumentation)
+        CounterplayInstrumentationAccumulator? counterplayInstrumentation,
+        ICollection<VeilBreachBattleMeasurement>? veilBreachMeasurements)
     {
         var observation = new CredibleMatchupObservation(seeds);
         for (var sample = 0; sample < seeds; sample++)
@@ -315,7 +420,15 @@ internal static class CredibleDeckMatchupRunner
             {
                 var diveObservation = diveObserver.Complete();
                 diveObservations!.Add(diveObservation);
-                counterplayInstrumentation!.Add(diagnosticObserver!.Complete(result, diveObservation));
+                var diagnosticObservation = diagnosticObserver!.Complete(result, diveObservation);
+                counterplayInstrumentation?.Add(diagnosticObservation);
+                if (veilBreachMeasurements != null)
+                {
+                    veilBreachMeasurements.Add(BuildVeilBreachBattleMeasurement(
+                        result,
+                        diveObservation,
+                        diagnosticObserver));
+                }
             }
         }
 
@@ -353,6 +466,139 @@ internal static class CredibleDeckMatchupRunner
                 .OrderBy(value => value.ReferenceSquadId, StringComparer.Ordinal)
                 .ThenBy(value => value.BattleSeed)
                 .ThenBy(value => value.DiverId, StringComparer.Ordinal)
+                .ToArray(),
+        };
+    }
+
+    private static VeilBreachBattleMeasurement BuildVeilBreachBattleMeasurement(
+        BattleResult result,
+        DiveFailureObservation diveObservation,
+        CounterplayInstrumentationObserver diagnosticObserver)
+    {
+        var lifecycle = diagnosticObserver.DisplacementLifecycle
+            .Where(value => string.Equals(
+                value.SkillId,
+                CounterplayInstrumentationObserver.VeilBreachSkillId,
+                StringComparison.Ordinal))
+            .OrderBy(value => value.StepIndex)
+            .ThenBy(value => value.Stage)
+            .ToArray();
+        var landing = lifecycle.FirstOrDefault(value =>
+            value.Stage == DisplacementLifecycleStage.Resolved
+            && value.ActorDisplacement > 0f);
+        var postLandingVeto = false;
+        if (landing != null)
+        {
+            var windowEnd = landing.TimeSeconds + 1f + 0.0001f;
+            postLandingVeto = diagnosticObserver.DiveIntentEvaluations.Any(value =>
+                                  value.TimeSeconds > landing.TimeSeconds
+                                  && value.TimeSeconds <= windowEnd
+                                  && value.ContinuingExistingDive
+                                  && value.Reason == DiveIntentGateReason.ContinueScoreBelowThreshold)
+                              || diagnosticObserver.DiveHardAborts.Any(value =>
+                                  value.TimeSeconds > landing.TimeSeconds
+                                  && value.TimeSeconds <= windowEnd)
+                              || diveObservation.Switch is { } targetSwitch
+                              && targetSwitch.ElapsedSeconds > landing.TimeSeconds
+                              && targetSwitch.ElapsedSeconds <= windowEnd;
+        }
+
+        return new VeilBreachBattleMeasurement(
+            diveObservation.ReferenceSquadId,
+            diveObservation.BattleSeed,
+            diveObservation,
+            result.Winner == TeamSide.Enemy,
+            landing != null,
+            lifecycle.Any(value => value.Stage == DisplacementLifecycleStage.Aborted),
+            landing?.TimeSeconds,
+            postLandingVeto);
+    }
+
+    private static object BuildVeilBreachMeasurementReport(
+        IReadOnlyList<VeilBreachBattleMeasurement> measurements,
+        float openingLockSeconds)
+    {
+        var eligible = measurements.Where(value => value.Dive.HasEligibleBackline).ToArray();
+        var contacts = eligible.Where(value => value.Dive.TimeToFirstBacklineContactSeconds.HasValue).ToArray();
+        var noncontacts = eligible.Where(value => !value.Dive.TimeToFirstBacklineContactSeconds.HasValue).ToArray();
+        var contactTimes = contacts
+            .Select(value => value.Dive.TimeToFirstBacklineContactSeconds!.Value)
+            .OrderBy(value => value)
+            .ToArray();
+        var landings = eligible.Where(value => value.BlinkLanded).ToArray();
+        var contactRate = Rate(contacts.Length, eligible.Length);
+        var observedWinRate = Rate(eligible.Count(value => value.ProbeWon), eligible.Length);
+        var winOnContact = RateOrNull(contacts.Count(value => value.ProbeWon), contacts.Length);
+        var winWithoutContact = RateOrNull(noncontacts.Count(value => value.ProbeWon), noncontacts.Length);
+        var assumedBandArithmetic = (contactRate * 0.90d) + ((1d - contactRate) * 0.55d);
+        var measuredMixture = winOnContact.HasValue && winWithoutContact.HasValue
+            ? (double?)((contactRate * winOnContact.Value) + ((1d - contactRate) * winWithoutContact.Value))
+            : null;
+
+        return new
+        {
+            opening_lock_seconds = openingLockSeconds,
+            eligible_backline_battles = eligible.Length,
+            selected_battles = eligible.Count(value => value.Dive.DiveIntentEverSelectedBackline),
+            selection_rate = Rate(eligible.Count(value => value.Dive.DiveIntentEverSelectedBackline), eligible.Length),
+            contact_battles = contacts.Length,
+            contact_rate = contactRate,
+            time_to_first_backline_contact = new
+            {
+                mean = MeanOrNull(contactTimes),
+                p50 = Quantile(contactTimes, 0.50),
+                p90 = Quantile(contactTimes, 0.90),
+                n = contactTimes.Length,
+            },
+            win_on_contact = winOnContact,
+            win_without_contact = winWithoutContact,
+            observed_probe_win_rate = observedWinRate,
+            band_arithmetic = new
+            {
+                assumed_win_on_contact = 0.90,
+                assumed_win_without_contact = 0.55,
+                assumed_mixture = assumedBandArithmetic,
+                measured_mixture = measuredMixture,
+                measured_minus_assumed = measuredMixture - assumedBandArithmetic,
+                observed_minus_assumed = observedWinRate - assumedBandArithmetic,
+            },
+            failure_histogram = eligible
+                .Where(value => !value.Dive.TimeToFirstBacklineContactSeconds.HasValue)
+                .GroupBy(value => value.Dive.Outcome, StringComparer.Ordinal)
+                .OrderByDescending(group => group.Count())
+                .ThenBy(group => group.Key, StringComparer.Ordinal)
+                .Select(group => new
+                {
+                    outcome = group.Key,
+                    count = group.Count(),
+                    rate = Rate(group.Count(), eligible.Length),
+                })
+                .ToArray(),
+            blink_landings = landings.Length,
+            windup_fizzle_battles = eligible.Count(value => value.BlinkAborted),
+            post_landing_veto_count = landings.Count(value => value.PostLandingVeto),
+            post_landing_veto_rate = RateOrNull(landings.Count(value => value.PostLandingVeto), landings.Length),
+            post_landing_veto_definition = "A continuing-dive score veto, hard abort, or observed target drop within 1.0 seconds after a resolved blink landing.",
+            per_panel = measurements
+                .GroupBy(value => value.Panel, StringComparer.Ordinal)
+                .OrderBy(group => group.Key, StringComparer.Ordinal)
+                .Select(group =>
+                {
+                    var panelEligible = group.Where(value => value.Dive.HasEligibleBackline).ToArray();
+                    var panelContacts = panelEligible.Count(value => value.Dive.TimeToFirstBacklineContactSeconds.HasValue);
+                    var panelLandings = panelEligible.Where(value => value.BlinkLanded).ToArray();
+                    return new
+                    {
+                        panel = group.Key,
+                        battles = group.Count(),
+                        eligible_backline_battles = panelEligible.Length,
+                        selection_rate = Rate(panelEligible.Count(value => value.Dive.DiveIntentEverSelectedBackline), panelEligible.Length),
+                        contact_rate = Rate(panelContacts, panelEligible.Length),
+                        probe_win_rate = Rate(group.Count(value => value.ProbeWon), group.Count()),
+                        blink_landings = panelLandings.Length,
+                        post_landing_veto_rate = RateOrNull(panelLandings.Count(value => value.PostLandingVeto), panelLandings.Length),
+                    };
+                })
                 .ToArray(),
         };
     }
@@ -454,6 +700,29 @@ internal static class CredibleDeckMatchupRunner
             seed,
             statusRules: statusRules);
 
+    private static CombatContentSnapshot ApplyVeilBreachOpeningLock(
+        CombatContentSnapshot source,
+        float openingLockSeconds)
+    {
+        if (openingLockSeconds < 0f)
+        {
+            throw new ArgumentOutOfRangeException(nameof(openingLockSeconds));
+        }
+
+        if (!source.SkillCatalog.TryGetValue(CounterplayInstrumentationObserver.VeilBreachSkillId, out var skill))
+        {
+            throw new InvalidDataException("Cannot tune the opening lock because skill_veil_breach is absent.");
+        }
+
+        var catalog = source.SkillCatalog.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        catalog[skill.Id] = skill with
+        {
+            OpeningLockSeconds = openingLockSeconds,
+            StartsOnCooldown = true,
+        };
+        return source with { SkillCatalog = catalog };
+    }
+
     private static void ValidatePassiveRoute(CombatContentSnapshot content, CredibleProbeSpec probe, int nodeBudget)
     {
         if (probe.PassiveNodes.Count != nodeBudget)
@@ -475,7 +744,7 @@ internal static class CredibleDeckMatchupRunner
     private static void ValidateCompiledLever(CredibleProbeSpec probe, BattleLoadoutSnapshot compiled)
     {
         var slayer = compiled.Allies.Single(value => string.Equals(value.ArchetypeId, "slayer", StringComparison.Ordinal));
-        if (string.Equals(probe.Id, "P-ASSASSIN-C", StringComparison.Ordinal)
+        if (string.Equals(probe.Id, AssassinControlProbeId, StringComparison.Ordinal)
             && !CombatBehaviorTags.Contains(slayer.RulePackages, CombatBehaviorTags.DuelistDiveCommit))
         {
             throw new InvalidDataException("P-ASSASSIN-C did not compile duelist_dive_commit.");
@@ -488,14 +757,69 @@ internal static class CredibleDeckMatchupRunner
         }
     }
 
+    private static void ValidateBlinkArmSlots(
+        BattleLoadoutSnapshot control,
+        BattleLoadoutSnapshot blink)
+    {
+        var controlSlayer = control.Allies.Single(value =>
+            string.Equals(value.ArchetypeId, "slayer", StringComparison.Ordinal));
+        var blinkSlayer = blink.Allies.Single(value =>
+            string.Equals(value.ArchetypeId, "slayer", StringComparison.Ordinal));
+        var blinkFlexActive = blinkSlayer.FlexActive;
+        if (string.Equals(
+                controlSlayer.FlexActive?.Id,
+                CounterplayInstrumentationObserver.VeilBreachSkillId,
+                StringComparison.Ordinal))
+        {
+            throw new InvalidDataException("The P-ASSASSIN-C control unexpectedly equipped skill_veil_breach.");
+        }
+
+        if (blinkFlexActive == null
+            || !string.Equals(
+                blinkFlexActive.Id,
+                CounterplayInstrumentationObserver.VeilBreachSkillId,
+                StringComparison.Ordinal)
+            || blinkFlexActive.EffectiveSlotKind != ActionSlotKind.FlexActive)
+        {
+            throw new InvalidDataException("The blink arm did not compile skill_veil_breach into FlexActive.");
+        }
+
+        var loadoutProvenance = (blink.Provenance ?? Array.Empty<CompileProvenanceEntry>()).Any(entry =>
+            string.Equals(entry.SubjectId, blinkSlayer.Id, StringComparison.Ordinal)
+            && string.Equals(entry.SourceId, CounterplayInstrumentationObserver.VeilBreachSkillId, StringComparison.Ordinal)
+            && string.Equals(entry.ArtifactKind, "skill_slot", StringComparison.Ordinal)
+            && entry.Details.Contains("source:loadout_skill", StringComparer.Ordinal)
+            && entry.Details.Contains("slot:utility_active", StringComparer.Ordinal));
+        if (!loadoutProvenance)
+        {
+            throw new InvalidDataException("The blink arm lacks compiled loadout-skill provenance for FlexActive.");
+        }
+    }
+
     private static object BuildCompiledLeverEvidence(CredibleProbeSpec probe, BattleLoadoutSnapshot compiled)
     {
         var slayer = compiled.Allies.Single(value => string.Equals(value.ArchetypeId, "slayer", StringComparison.Ordinal));
+        var flexActive = slayer.FlexActive;
+        var flexProvenance = (compiled.Provenance ?? Array.Empty<CompileProvenanceEntry>())
+            .Where(entry => string.Equals(entry.SubjectId, slayer.Id, StringComparison.Ordinal)
+                            && string.Equals(entry.ArtifactKind, "skill_slot", StringComparison.Ordinal)
+                            && string.Equals(entry.SourceId, flexActive?.Id, StringComparison.Ordinal))
+            .Select(entry => new
+            {
+                entry.SourceId,
+                entry.ArtifactKind,
+                entry.Details,
+            })
+            .ToArray();
         return new
         {
             unique_slayer_count = compiled.Allies.Count(value => string.Equals(value.ArchetypeId, "slayer", StringComparison.Ordinal)),
             dive_commit_compiled = CombatBehaviorTags.Contains(slayer.RulePackages, CombatBehaviorTags.DuelistDiveCommit),
             sunder_rhythm_compiled = HasAppliedSunder(compiled, slayer.Id),
+            flex_active_skill_id = flexActive?.Id ?? string.Empty,
+            flex_active_compiled_slot = flexActive?.SlotKind ?? string.Empty,
+            flex_active_resolved_slot = flexActive?.EffectiveSlotKind.ToString() ?? string.Empty,
+            flex_active_provenance = flexProvenance,
             expected_lever = probe.Lever,
         };
     }
@@ -515,10 +839,11 @@ internal static class CredibleDeckMatchupRunner
         vanguard_first_death_rate = observation.VanguardFellFirst / (double)observation.Seeds,
     };
 
-    private static (int Seeds, string Output) Parse(IReadOnlyList<string> arguments)
+    private static (int Seeds, string Output, float? OpeningLockSeconds) Parse(IReadOnlyList<string> arguments)
     {
         var seeds = DefaultSeeds;
         var output = DefaultOutputRelativePath;
+        float? openingLockSeconds = null;
         for (var index = 0; index < arguments.Count; index++)
         {
             if (arguments[index] == "--seeds" && index + 1 < arguments.Count)
@@ -528,6 +853,12 @@ internal static class CredibleDeckMatchupRunner
             else if (arguments[index] == "--output" && index + 1 < arguments.Count)
             {
                 output = arguments[++index];
+            }
+            else if (arguments[index] == "--opening-lock-seconds" && index + 1 < arguments.Count)
+            {
+                openingLockSeconds = float.Parse(
+                    arguments[++index],
+                    System.Globalization.CultureInfo.InvariantCulture);
             }
             else
             {
@@ -540,11 +871,19 @@ internal static class CredibleDeckMatchupRunner
             throw new ArgumentOutOfRangeException(nameof(arguments), "At least 32 seeds per cell are required.");
         }
 
-        return (seeds, output);
+        if (openingLockSeconds is < 0f)
+        {
+            throw new ArgumentOutOfRangeException(nameof(arguments), "Opening lock seconds must be non-negative.");
+        }
+
+        return (seeds, output, openingLockSeconds);
     }
 
     private static double Rate(int numerator, int denominator)
         => denominator == 0 ? 0d : numerator / (double)denominator;
+
+    private static double? RateOrNull(int numerator, int denominator)
+        => denominator == 0 ? null : numerator / (double)denominator;
 
     private static double? MeanOrNull(IEnumerable<double> source)
     {
@@ -594,4 +933,14 @@ internal static class CredibleDeckMatchupRunner
         int ComparedSteps,
         bool EventBytesIdentical,
         bool CanonicalStateHashesIdentical);
+
+    private sealed record VeilBreachBattleMeasurement(
+        string Panel,
+        int BattleSeed,
+        DiveFailureObservation Dive,
+        bool ProbeWon,
+        bool BlinkLanded,
+        bool BlinkAborted,
+        double? LandingSeconds,
+        bool PostLandingVeto);
 }

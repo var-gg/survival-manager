@@ -17,6 +17,7 @@ public enum BattleMotionKind
     MobilityDash = 3,
     Knockback = 4,
     ForcedDisplacement = 5,
+    Blink = 6,
 }
 
 /// <summary>

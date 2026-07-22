@@ -46,6 +46,8 @@ namespace SM.Content.Definitions
         public float ManaCost = 0f;
         public float ResourceCost = -1f;
         public float BaseCooldownSeconds = 0f;
+        public bool StartsOnCooldown;
+        public float OpeningLockSeconds = 0f;
         public float CooldownSeconds = -1f;
         public float CastWindupSeconds = 0f;
         public float RecoverySeconds = -1f;

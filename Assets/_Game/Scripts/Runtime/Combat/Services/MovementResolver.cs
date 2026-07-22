@@ -635,6 +635,67 @@ public static class MovementResolver
         return true;
     }
 
+    /// <summary>
+    /// 장막 찢기 점멸. 시전 사거리에서 시작한 윈드업의 결의 틱에 현재 좌표로 도달 가능성을 다시
+    /// 계산하고, 닫아야 할 edge gap이 저작 거리 안이면 시전자→표적 축의 등 뒤 접촉점으로 이동한다.
+    /// 도달하지 못하면 저작 거리만큼만 전진해 이후 impact-range 판정이 자연스럽게 miss를 결정한다.
+    /// </summary>
+    public static bool TryApplySkillSelfBlink(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        BattleSkillSpec skill,
+        out bool landedBehind)
+    {
+        landedBehind = false;
+        if (skill.DisplacementKind != SkillDisplacementKind.SelfBlinkToTarget
+            || skill.DisplacementDistance <= 0f
+            || !actor.IsAlive
+            || actor.IsRooted
+            || actor.IsStunned
+            || !target.IsAlive
+            || target.Side == actor.Side)
+        {
+            return false;
+        }
+
+        var contactGap = MathF.Max(SkillDashContactGapFloor, actor.CombatReach * 0.5f);
+        var gapClosure = MathF.Max(0f, ComputeEdgeDistance(actor, target) - contactGap);
+        var travel = MathF.Min(skill.DisplacementDistance, gapClosure);
+        if (travel <= SkillDisplacementMinTravel)
+        {
+            return false;
+        }
+
+        var direction = FixedDirection(actor, target, actor.Side == TeamSide.Ally
+            ? new CombatVector2(1f, 0f)
+            : new CombatVector2(-1f, 0f));
+        var reachesTarget = travel + SkillDisplacementMinTravel >= gapClosure;
+        var next = actor.Position + (direction * travel);
+        if (reachesTarget)
+        {
+            var landingSeparation = actor.NavigationRadius + target.NavigationRadius + contactGap;
+            var farSideDistance = MathF.Min(
+                landingSeparation,
+                ResolveArenaDistanceAlongAxis(target.Position, direction, landingSeparation));
+            if (farSideDistance + SkillDisplacementMinTravel >= landingSeparation)
+            {
+                landedBehind = true;
+                next = target.Position + (direction * farSideDistance);
+            }
+            else
+            {
+                // The arena edge leaves no collision-safe far side. Stay on the caster side of the
+                // target along the same axis instead of letting ClampToArena collapse both centers.
+                next = target.Position - (direction * landingSeparation);
+            }
+        }
+
+        next = ClampToArena(next);
+        MovePosition(state, actor, next, BattleMotionKind.Blink, isDiscrete: true, sourceActorId: null);
+        return true;
+    }
+
     // 넉백 결정적 roll의 정수 basis [0, 9999]. 각도(turn-LUT)·거리(float) 모두 이 basis에서 파생한다.
     private static int KnockbackRollBasis(BattleState state, UnitSnapshot actor, UnitSnapshot target, string context)
     {
@@ -1431,6 +1492,33 @@ public static class MovementResolver
         return new CombatVector2(
             Math.Clamp(position.X, -ArenaHalfWidth, ArenaHalfWidth),
             Math.Clamp(position.Y, -ArenaHalfHeight, ArenaHalfHeight));
+    }
+
+    private static float ResolveArenaDistanceAlongAxis(
+        CombatVector2 origin,
+        CombatVector2 direction,
+        float desiredDistance)
+    {
+        var available = MathF.Max(0f, desiredDistance);
+        if (direction.X > SkillDisplacementMinTravel)
+        {
+            available = MathF.Min(available, MathF.Max(0f, (ArenaHalfWidth - origin.X) / direction.X));
+        }
+        else if (direction.X < -SkillDisplacementMinTravel)
+        {
+            available = MathF.Min(available, MathF.Max(0f, (-ArenaHalfWidth - origin.X) / direction.X));
+        }
+
+        if (direction.Y > SkillDisplacementMinTravel)
+        {
+            available = MathF.Min(available, MathF.Max(0f, (ArenaHalfHeight - origin.Y) / direction.Y));
+        }
+        else if (direction.Y < -SkillDisplacementMinTravel)
+        {
+            available = MathF.Min(available, MathF.Max(0f, (-ArenaHalfHeight - origin.Y) / direction.Y));
+        }
+
+        return available;
     }
 
     private static float Lerp(float from, float to, float t)

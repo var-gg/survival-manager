@@ -236,6 +236,7 @@ MonoBehaviour:
   - skill_signal_flare
   - skill_square_wall
   - skill_sunken_anticluster_bombardment
+  - skill_veil_breach
   - sunken_adjudicator_boss
   - support_line_anchor
   - support_resonance_cleanse

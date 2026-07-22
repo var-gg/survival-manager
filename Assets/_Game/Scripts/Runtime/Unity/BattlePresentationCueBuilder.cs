@@ -353,7 +353,9 @@ public sealed class BattlePresentationCueBuilder
             foreach (var candidate in actorMotions)
             {
                 if (candidate.IsDiscrete
-                    && (candidate.Kind == BattleMotionKind.Approach || candidate.Kind == BattleMotionKind.MobilityDash))
+                    && (candidate.Kind == BattleMotionKind.Approach
+                        || candidate.Kind == BattleMotionKind.MobilityDash
+                        || candidate.Kind == BattleMotionKind.Blink))
                 {
                     motion = candidate;
                     break;
@@ -746,6 +748,7 @@ public sealed class BattlePresentationCueBuilder
     {
         return kind switch
         {
+            BattleMotionKind.Blink => BattleAnimationSemantic.DashEngage,
             BattleMotionKind.MobilityDash => BattleAnimationSemantic.DashEngage,
             BattleMotionKind.Approach => BattleAnimationSemantic.DashEngage,
             BattleMotionKind.Disengage => BattleAnimationSemantic.BackstepDisengage,

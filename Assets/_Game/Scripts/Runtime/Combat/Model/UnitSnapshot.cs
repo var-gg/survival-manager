@@ -52,6 +52,7 @@ public sealed partial class UnitSnapshot
     private readonly HashSet<string> _blocksMovementStatusIds;
     private readonly HashSet<string> _blocksActionStatusIds;
     private readonly HashSet<string> _marksTargetStatusIds;
+    private readonly Dictionary<string, int> _openingSkillCooldownTicks = new(StringComparer.Ordinal);
     private bool _pendingSignatureEnergySpent;
 
     public UnitSnapshot(
@@ -98,6 +99,8 @@ public sealed partial class UnitSnapshot
         Mobility = CombatProfileDefaults.ResolveMobility(definition.Mobility, definition.ClassId);
         _health = Hp64.FromFloatQuantized(MaxHealth);
         _energy = Resource64.FromFloatQuantized(Math.Clamp(definition.EffectiveEnergy.Starting, 0f, Math.Max(0f, definition.EffectiveEnergy.Max)));
+        InitializeOpeningSkillCooldown(definition.EffectiveSignatureActive);
+        InitializeOpeningSkillCooldown(definition.EffectiveFlexActive);
         RequestReevaluation(ReevaluationReason.Cadence);
     }
 
@@ -301,6 +304,22 @@ public sealed partial class UnitSnapshot
             }
         }
 
+        foreach (var skillId in _openingSkillCooldownTicks.Keys.ToArray())
+        {
+            var remaining = _openingSkillCooldownTicks[skillId];
+            if (remaining <= 0)
+            {
+                continue;
+            }
+
+            remaining--;
+            _openingSkillCooldownTicks[skillId] = remaining;
+            if (remaining == 0)
+            {
+                RequestReevaluation(ReevaluationReason.SkillReady);
+            }
+        }
+
         if (MobilityCooldownTicksRemaining > 0)
         {
             MobilityCooldownTicksRemaining--;
@@ -379,6 +398,9 @@ public sealed partial class UnitSnapshot
     {
         var hadTarget = CurrentTargetId != null || PendingTargetId != null;
         var shouldRefundSignature = PendingActionType == BattleActionType.ActiveSkill && _pendingSignatureEnergySpent;
+        var interruptedSkill = PendingActionType == BattleActionType.ActiveSkill
+            ? ResolveSkill(PendingSkillId)
+            : null;
         CurrentTargetId = null;
         PendingTargetId = null;
         PendingActionType = null;
@@ -403,6 +425,14 @@ public sealed partial class UnitSnapshot
         if (shouldRefundSignature)
         {
             RefundInterruptedSignatureCast();
+        }
+
+        if (interruptedSkill?.DisplacementKind == SkillDisplacementKind.SelfBlinkToTarget)
+        {
+            var interruptedCooldown = interruptedSkill.BaseCooldownSeconds * (1f - interruptedSkill.InterruptRefundScalar);
+            CooldownTicksRemaining = Math.Max(
+                CooldownTicksRemaining,
+                BattleTickMath.DurationToTicks(Math.Max(0f, interruptedCooldown)));
         }
     }
 
@@ -685,6 +715,33 @@ public sealed partial class UnitSnapshot
         return Definition.Skills.FirstOrDefault(skill => skill.Id == skillId);
     }
 
+    public bool IsSkillOpeningLocked(BattleSkillSpec skill)
+    {
+        return skill.StartsOnCooldown
+               && _openingSkillCooldownTicks.TryGetValue(skill.Id, out var remaining)
+               && remaining > 0;
+    }
+
+    public float ResolveOpeningSkillCooldownRemaining(string skillId)
+    {
+        return _openingSkillCooldownTicks.TryGetValue(skillId, out var remaining)
+            ? remaining * BattleTickMath.TickSeconds
+            : 0f;
+    }
+
+    private void InitializeOpeningSkillCooldown(BattleSkillSpec? skill)
+    {
+        if (skill is not { StartsOnCooldown: true } || skill.OpeningLockSeconds <= 0f)
+        {
+            return;
+        }
+
+        var ticks = BattleTickMath.DurationToTicks(skill.OpeningLockSeconds);
+        _openingSkillCooldownTicks[skill.Id] = Math.Max(
+            _openingSkillCooldownTicks.GetValueOrDefault(skill.Id),
+            ticks);
+    }
+
     public float ResolveActionRange(string? skillId)
     {
         var skill = ResolveSkill(skillId);
@@ -819,6 +876,28 @@ public sealed partial class UnitSnapshot
         return changed;
     }
 
+    /// <summary>
+    /// 점멸 착지 위치를 Dive 시도 기하의 새 기준점으로 한 번 갱신한다. 커밋 만료는 그대로 둬
+    /// 착지가 지속 시간 연장이 되지 않게 한다.
+    /// </summary>
+    public bool ReanchorDiveEntry(int stepIndex, EntityId targetId)
+    {
+        if (CurrentCombatIntent.Type != CombatIntentType.Dive
+            || CurrentCombatIntent.TargetId != targetId)
+        {
+            return false;
+        }
+
+        CurrentCombatIntent = CurrentCombatIntent with
+        {
+            DiveEntryStep = stepIndex,
+            DiveEntryTargetId = targetId,
+            DiveEntryPathDistance = 0f,
+            DiveEntryActorPosition = Position,
+        };
+        return true;
+    }
+
     /// <summary>Phase 1 anti-jitter: schedule the next step at which RoleBrain may re-decide this unit's intent.</summary>
     public void SetNextCombatIntentDecisionStep(int step)
     {
@@ -853,6 +932,7 @@ public sealed partial class UnitSnapshot
         MobilityCooldownTicksRemaining = 0;
         BlockCooldownTicksRemaining = 0;
         DirectHitEnergyIcdTicksRemaining = 0;
+        _openingSkillCooldownTicks.Clear();
         ActionState = CombatActionState.Dead;
         _statuses.Clear();
         ControlResistWindow = null;

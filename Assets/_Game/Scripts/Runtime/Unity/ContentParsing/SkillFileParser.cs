@@ -50,6 +50,8 @@ internal static class SkillFileParser
             definition.ManaCost = ExtractFloat(lines, "ManaCost:");
             definition.ResourceCost = ExtractFloat(lines, "ResourceCost:");
             definition.BaseCooldownSeconds = ExtractFloat(lines, "BaseCooldownSeconds:");
+            definition.StartsOnCooldown = ExtractBool(lines, "StartsOnCooldown:");
+            definition.OpeningLockSeconds = ExtractFloat(lines, "OpeningLockSeconds:");
             definition.CooldownSeconds = ExtractFloat(lines, "CooldownSeconds:");
             definition.CastWindupSeconds = ExtractFloat(lines, "CastWindupSeconds:");
             definition.RecoverySeconds = ExtractFloat(lines, "RecoverySeconds:");

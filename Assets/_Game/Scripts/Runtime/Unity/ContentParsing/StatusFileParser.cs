@@ -177,6 +177,10 @@ internal static class StatusFileParser
                 {
                     rule.Magnitude = ParseFloat(trimmed["Magnitude:".Length..].Trim());
                 }
+                else if (trimmed.StartsWith("Scope:", StringComparison.Ordinal))
+                {
+                    rule.Scope = (EffectScope)ParseInt(trimmed["Scope:".Length..].Trim());
+                }
                 else if (trimmed.StartsWith("MaxStacks:", StringComparison.Ordinal))
                 {
                     rule.MaxStacks = ParseInt(trimmed["MaxStacks:".Length..].Trim());

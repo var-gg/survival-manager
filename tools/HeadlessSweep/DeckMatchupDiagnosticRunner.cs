@@ -401,7 +401,8 @@ internal static class DeckMatchupDiagnosticRunner
         IReadOnlyList<DeploymentAnchorId> anchors,
         IReadOnlyList<string> passiveNodes,
         bool equipDuelistBlade,
-        int heroLevel = 1)
+        int heroLevel = 1,
+        string? duelistFlexActiveSkillId = null)
     {
         if (archetypeIds.Count != anchors.Count)
         {
@@ -412,6 +413,7 @@ internal static class DeckMatchupDiagnosticRunner
         var loadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal);
         var progressions = new Dictionary<string, HeroProgressionState>(StringComparer.Ordinal);
         var items = new Dictionary<string, ItemInstanceState>(StringComparer.Ordinal);
+        var skillInstances = new Dictionary<string, SkillInstanceState>(StringComparer.Ordinal);
         var selections = new Dictionary<string, PassiveBoardSelectionState>(StringComparer.Ordinal);
         var assignments = new Dictionary<DeploymentAnchorId, string>();
         for (var index = 0; index < archetypeIds.Count; index++)
@@ -433,6 +435,24 @@ internal static class DeckMatchupDiagnosticRunner
                 equipped = new[] { itemId };
             }
 
+            var equippedSkills = Array.Empty<string>();
+            if (appliesDuelistRoute && !string.IsNullOrWhiteSpace(duelistFlexActiveSkillId))
+            {
+                if (!content.SkillCatalog.ContainsKey(duelistFlexActiveSkillId))
+                {
+                    throw new InvalidDataException($"Missing flex skill '{duelistFlexActiveSkillId}'.");
+                }
+
+                var skillInstanceId = $"{heroId}.skill.flex";
+                skillInstances[skillInstanceId] = new SkillInstanceState(
+                    skillInstanceId,
+                    duelistFlexActiveSkillId,
+                    CompiledSkillSlots.UtilityActive,
+                    Array.Empty<string>(),
+                    ActionSlotKind.FlexActive);
+                equippedSkills = new[] { skillInstanceId };
+            }
+
             heroes.Add(new HeroRecord(
                 heroId,
                 archetype.DisplayName,
@@ -444,7 +464,7 @@ internal static class DeckMatchupDiagnosticRunner
             loadouts[heroId] = new HeroLoadoutState(
                 heroId,
                 equipped,
-                Array.Empty<string>(),
+                equippedSkills,
                 appliesDuelistRoute ? "board_duelist" : string.Empty,
                 appliesDuelistRoute ? passiveNodes : Array.Empty<string>(),
                 Array.Empty<string>());
@@ -453,7 +473,12 @@ internal static class DeckMatchupDiagnosticRunner
                 heroLevel,
                 0,
                 appliesDuelistRoute ? passiveNodes : Array.Empty<string>(),
-                archetype.Skills.Select(skill => skill.Id).Distinct(StringComparer.Ordinal).ToArray());
+                archetype.Skills.Select(skill => skill.Id)
+                    .Concat(string.IsNullOrWhiteSpace(duelistFlexActiveSkillId)
+                        ? Array.Empty<string>()
+                        : new[] { duelistFlexActiveSkillId })
+                    .Distinct(StringComparer.Ordinal)
+                    .ToArray());
             if (appliesDuelistRoute)
             {
                 selections[heroId] = new PassiveBoardSelectionState(heroId, "board_duelist", passiveNodes);
@@ -467,7 +492,7 @@ internal static class DeckMatchupDiagnosticRunner
             loadouts,
             progressions,
             items,
-            new Dictionary<string, SkillInstanceState>(StringComparer.Ordinal),
+            skillInstances,
             selections,
             new PermanentAugmentLoadoutState(blueprintId, Array.Empty<string>()),
             new SquadBlueprintState(

@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SM.Content.Definitions;
+using SM.Core.Contracts;
 using SM.Editor.SeedData;
 using SM.Unity;
+using SM.Unity.ContentConversion;
 using UnityEngine;
 
 namespace SM.Tests.EditMode;
@@ -42,6 +45,9 @@ public sealed class ContentParsingParityWitnessTests
 
             AssertTriggeredEffectsEqual(asset.Id, asset.TriggeredEffects, fromParser!.TriggeredEffects);
             AssertSupportModifierEqual(asset.Id, asset.SupportModifier, fromParser.SupportModifier);
+            AssertStatusApplicationsEqual(asset.Id, asset.AppliedStatuses, fromParser.AppliedStatuses);
+            Assert.That(fromParser.StartsOnCooldown, Is.EqualTo(asset.StartsOnCooldown), $"{asset.Id}.StartsOnCooldown");
+            Assert.That(fromParser.OpeningLockSeconds, Is.EqualTo(asset.OpeningLockSeconds), $"{asset.Id}.OpeningLockSeconds");
 
             if (asset.TriggeredEffects.Count > 0)
             {
@@ -62,6 +68,25 @@ public sealed class ContentParsingParityWitnessTests
             "발동형 payload 보유 스킬이 최소 하나는 있어야 parity 검증이 공허하지 않다");
         Assert.That(nonIdentitySupports, Is.GreaterThan(0),
             "비-identity SupportModifier 젬이 최소 하나는 있어야 parity 검증이 공허하지 않다");
+    }
+
+    [Test]
+    public void OmittedAppliedStatusScope_CompilesToCurrentTargetInBothContentLanes()
+    {
+        const string relativePath = "Assets/Resources/_Game/Content/Definitions/Skills/skill_ember_arrow.asset";
+        var rawAsset = File.ReadAllText(Path.GetFullPath(relativePath));
+        Assert.That(rawAsset, Does.Not.Contain("    Scope:"),
+            "the witness must keep exercising an authored status rule with no serialized Scope key");
+
+        Assert.That(RuntimeCombatContentFileParser.TryLoad(out var parsed, out var error), Is.True, error);
+        var parsedSkill = parsed.Skills.Single(skill => string.Equals(skill.Id, "skill_ember_arrow", StringComparison.Ordinal));
+        var resourceSkill = Resources.LoadAll<SkillDefinitionAsset>("_Game/Content/Definitions/Skills")
+            .Single(skill => string.Equals(skill.Id, parsedSkill.Id, StringComparison.Ordinal));
+
+        Assert.That(SkillConverter.BuildSkillSpec(resourceSkill).AppliedStatuses!.Single().Scope,
+            Is.EqualTo(EffectScope.CurrentTarget));
+        Assert.That(SkillConverter.BuildSkillSpec(parsedSkill).AppliedStatuses!.Single().Scope,
+            Is.EqualTo(EffectScope.CurrentTarget));
     }
 
     [Test]
@@ -169,6 +194,24 @@ public sealed class ContentParsingParityWitnessTests
             Assert.That(actual.StatusId, Is.EqualTo(expected.StatusId), $"{contentId}[{i}].StatusId");
             Assert.That(actual.DurationSeconds, Is.EqualTo(expected.DurationSeconds), $"{contentId}[{i}].DurationSeconds");
             Assert.That(actual.MaxStacks, Is.EqualTo(expected.MaxStacks), $"{contentId}[{i}].MaxStacks");
+        }
+    }
+
+    private static void AssertStatusApplicationsEqual(
+        string contentId,
+        IReadOnlyList<StatusApplicationRule> expected,
+        IReadOnlyList<StatusApplicationRule> actual)
+    {
+        Assert.That(actual.Count, Is.EqualTo(expected.Count), $"'{contentId}' AppliedStatuses count");
+        for (var i = 0; i < expected.Count; i++)
+        {
+            Assert.That(actual[i].Id, Is.EqualTo(expected[i].Id), $"{contentId}.AppliedStatuses[{i}].Id");
+            Assert.That(actual[i].StatusId, Is.EqualTo(expected[i].StatusId), $"{contentId}.AppliedStatuses[{i}].StatusId");
+            Assert.That(actual[i].DurationSeconds, Is.EqualTo(expected[i].DurationSeconds), $"{contentId}.AppliedStatuses[{i}].DurationSeconds");
+            Assert.That(actual[i].Magnitude, Is.EqualTo(expected[i].Magnitude), $"{contentId}.AppliedStatuses[{i}].Magnitude");
+            Assert.That(actual[i].Scope, Is.EqualTo(expected[i].Scope), $"{contentId}.AppliedStatuses[{i}].Scope");
+            Assert.That(actual[i].MaxStacks, Is.EqualTo(expected[i].MaxStacks), $"{contentId}.AppliedStatuses[{i}].MaxStacks");
+            Assert.That(actual[i].RefreshDurationOnReapply, Is.EqualTo(expected[i].RefreshDurationOnReapply), $"{contentId}.AppliedStatuses[{i}].RefreshDurationOnReapply");
         }
     }
 

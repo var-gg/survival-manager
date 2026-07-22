@@ -72,7 +72,7 @@ if (args.Length >= 1 && string.Equals(args[0], "balance-framework", StringCompar
 Console.Error.WriteLine(
     "Usage: HeadlessSweep [snapshot-load | snapshot-freshness-self-check | dive-failure-witness-self-check "
     + "| deck-matchup-diagnostic [--seeds <n>] [--output <path>] "
-    + "| credible-deck-matchup [--seeds <n>] [--output <path>] "
+    + "| credible-deck-matchup [--seeds <n>] [--output <path>] [--opening-lock-seconds <n>] "
     + "| campaign-battle [--unity <report>] [--output <path>] "
     + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] "
     + "[--output <path>] [--verify] | balance-framework [--samples <n>] [--neutral-health-more <n>] "

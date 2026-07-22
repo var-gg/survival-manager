@@ -53,7 +53,7 @@ public static partial class SampleSeedGenerator
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         NormalizeEmptyDuelistGrantedSkillYaml();
-        Debug.Log("[SampleSeedGenerator] synchronized duelist build content: 24 nodes, 6 tags, 2 skills.");
+        Debug.Log("[SampleSeedGenerator] synchronized duelist build content: 24 nodes, 6 tags, 3 skills.");
     }
 
     private static void EnsureDuelistBuildStableTags()
@@ -75,6 +75,7 @@ public static partial class SampleSeedGenerator
     {
         ValidateDuelistBuildTags(tags);
         CreateDuelistBuildSkills(tags);
+        CreateVeilBreachSkill(tags);
 
         var board = LoadDefinition<PassiveBoardDefinition>($"{ResourcesRoot}/PassiveBoards/{DuelistBoardId}.asset")
                     ?? throw new InvalidOperationException($"Missing canonical passive board '{DuelistBoardId}'.");
@@ -227,6 +228,111 @@ public static partial class SampleSeedGenerator
         PatchDuelistGhostSkillReferences(lastBastion);
     }
 
+    private static SkillDefinitionAsset CreateVeilBreachSkill(IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        var skill = CreateAsset<SkillDefinitionAsset>($"{ResourcesRoot}/Skills/skill_veil_breach.asset", asset =>
+        {
+            ResetDuelistGhostSkill(asset, "skill_veil_breach", SkillTemplateTypeValue.BlinkRepositionUtility,
+                SkillKindValue.Strike, SkillSlotKindValue.UtilityActive, SkillTargetRuleValue.MostExposedEnemy);
+            asset.DamageType = DamageTypeValue.Physical;
+            asset.Delivery = SkillDeliveryValue.Melee;
+            asset.Power = 3.6f;
+            asset.Range = 8f;
+            asset.PowerFlat = 3.6f;
+            asset.PhysCoeff = 1f;
+            asset.CanCrit = true;
+            asset.ActivationModel = ActivationModel.Cooldown;
+            asset.BaseCooldownSeconds = 10f;
+            asset.StartsOnCooldown = true;
+            asset.OpeningLockSeconds = 10f;
+            asset.CastWindupSeconds = 0.9f;
+            asset.InterruptRefundScalar = 0.5f;
+            asset.DisplacementKind = SkillDisplacementKind.SelfBlinkToTarget;
+            asset.DisplacementDistance = 8.5f;
+            asset.AiIntents = new List<SkillAiIntentValue>
+            {
+                SkillAiIntentValue.Burst,
+                SkillAiIntentValue.Engage,
+                SkillAiIntentValue.Execute,
+            };
+            asset.AiScoreHints = new SkillAiScoreHints
+            {
+                BurstBias = 1f,
+                ExecuteBias = 1f,
+                MinimumDistance = 3.5f,
+                MaximumDistance = 8f,
+                MaximumTargetHealthRatio = 1f,
+            };
+            asset.TargetRuleData = new TargetRule
+            {
+                Domain = TargetDomain.EnemyUnit,
+                PrimarySelector = TargetSelector.CurrentTarget,
+                FallbackPolicy = TargetFallbackPolicy.Abort,
+                Filters = TargetFilterFlags.InRange | TargetFilterFlags.ExcludeUntargetable,
+                ReevaluateIntervalSeconds = 0.25f,
+                MinimumCommitSeconds = 0.9f,
+                MaxAcquireRange = 8f,
+                LockTargetAtCastStart = true,
+                RetargetLockMode = RetargetLockMode.UntilCastComplete,
+            };
+            asset.Effects = new List<EffectDescriptor>
+            {
+                new()
+                {
+                    Layer = AuthorityLayer.Skill,
+                    Scope = EffectScope.CurrentTarget,
+                    Capabilities = EffectCapability.DealDamage,
+                },
+                new()
+                {
+                    Layer = AuthorityLayer.Skill,
+                    Scope = EffectScope.Self,
+                    Capabilities = EffectCapability.Reposition | EffectCapability.ApplyStatus,
+                },
+            };
+            asset.CompileTags = ResolveRequiredTags(tags, new[] { "duelist", "physical", "melee", "strike", "dash", "execute", "exposed" });
+            asset.SupportAllowedTags = ResolveRequiredTags(tags, new[] { "strike", "dash" });
+            asset.RequiredWeaponTags = ResolveRequiredTags(tags, new[] { "blade" });
+            asset.RequiredClassTags = ResolveRequiredTags(tags, new[] { "duelist" });
+            asset.AppliedStatuses = new List<StatusApplicationRule>
+            {
+                new()
+                {
+                    Id = "skill_veil_breach:self_exposed",
+                    StatusId = "exposed",
+                    DurationSeconds = 2f,
+                    Magnitude = 0.25f,
+                    Scope = EffectScope.Self,
+                    MaxStacks = 1,
+                    RefreshDurationOnReapply = true,
+                    Effects = new List<EffectDescriptor>
+                    {
+                        new()
+                        {
+                            Layer = AuthorityLayer.Skill,
+                            Scope = EffectScope.Self,
+                            Capabilities = EffectCapability.ApplyStatus,
+                        },
+                    },
+                },
+            };
+            asset.IconId = "skill_icon_veil_breach";
+            asset.VfxHookId = "vfx.skill_veil_breach";
+            asset.SfxHookId = "sfx.skill.skill_veil_breach";
+            asset.LearnSource = SkillLearnSourceValue.RecruitFlex;
+            asset.EffectFamilyId = "duelist_veil_breach";
+            UpsertStringEntry(ContentLocalizationTables.Skills, asset.NameKey, "장막 찢기", "Veil Breach");
+            UpsertStringEntry(
+                ContentLocalizationTables.Skills,
+                asset.DescriptionKey,
+                "다이브 표적 뒤로 점멸해 물리 피해를 주고 자신을 2초 동안 노출합니다.",
+                "Blink behind the current dive target, deal physical damage, and become Exposed for 2 seconds.");
+            ApplyLoopCSkillGovernance(asset);
+        });
+        PatchDuelistGhostSkillReferences(skill);
+        return skill;
+    }
+
     private static void ResetDuelistGhostSkill(
         SkillDefinitionAsset asset,
         string id,
@@ -264,6 +370,8 @@ public static partial class SampleSeedGenerator
         asset.ManaCost = 0f;
         asset.ResourceCost = -1f;
         asset.BaseCooldownSeconds = 0f;
+        asset.StartsOnCooldown = false;
+        asset.OpeningLockSeconds = 0f;
         asset.CooldownSeconds = -1f;
         asset.CastWindupSeconds = 0f;
         asset.RecoverySeconds = -1f;
@@ -288,6 +396,8 @@ public static partial class SampleSeedGenerator
         asset.CleanseProfileId = string.Empty;
         asset.TriggeredEffects = new List<TriggeredEffectSpec>();
         asset.SupportModifier = new SupportModifierSpec();
+        asset.DisplacementKind = SkillDisplacementKind.None;
+        asset.DisplacementDistance = 0f;
     }
 
     private static void PatchDuelistGhostSkillReferences(SkillDefinitionAsset skill)
