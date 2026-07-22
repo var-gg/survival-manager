@@ -208,6 +208,78 @@ done은 아래를 모두 포함한다.
 - 실제 사용자 경로가 한 번은 확인된다
 - 어떤 명령과 로그로 확인했는지 기록한다
 
+## 저작-런타임 함정 (판단 전 필수 확인)
+
+이 저장소에는 **저작된 값이 런타임에 도달하지 않거나 다르게 해석되는** 구조적 함정이 있다.
+2026-07-22~23 한 세션에서 이 함정으로 **죽은 메커니즘 7개**가 발견됐고, 정적 코드 읽기로 내린
+판단이 **8번 중 5번 틀렸다**. 매번 실행이 판정을 뒤집었다.
+
+**원칙: 자산의 필드명을 보고 동작을 추론하지 않는다. 소비자를 찾아 확인한다.**
+
+### 함정 1 — 죽은 필드가 산 필드 옆에 표식 없이 산다
+
+| 읽으면 이렇게 보임 | 실제 sim이 쓰는 것 |
+| --- | --- |
+| `CooldownSeconds` | `BaseCooldownSeconds` (전자는 미사용 레거시) |
+| `TargetRule` (레거시 enum) | `TargetRuleData.Domain` (있으면 이쪽이 이김) |
+| `Loadout.SignatureActive` | `LoadoutCompiler.ResolveLoopASkill`의 resolved 선택이 우선 |
+| `StackCap` | 런타임은 `MaxStacks`만 읽음 |
+
+```bash
+grep -rn "\.필드명" --include=*.cs Assets/_Game/Scripts/Runtime | grep -v Test
+```
+소비자가 안 나오면 그 필드는 **거짓말이다.** 두 필드가 같은 뜻인데 값이 어긋나면 **미마이그레이션 지문**이다.
+
+### 함정 2 — 조용한 폴백/클램프가 저작 오류를 삼킨다
+
+- `MaxAcquireRange: 0` → `actor.AttackRange + 0.05`로 폴백. **한 세션에 4번 물었다.**
+- `Max(0.1, 1 − magnitude)` → 100% 저작이 90%로 바닥 처리, 저작자는 모름
+- `ApplyStatus`의 `Math.Max` 병합 → `MaxStacks: 3` 저작이 통째로 no-op
+
+**포화값(0 / 100% / 전부 동일)을 보면 게임플레이 결론 전에 폴백·클램프를 먼저 의심한다.**
+
+### 함정 3 — 풀 소속 ≠ 장착
+
+`RecruitFlexActivePool` / `FlexUtilitySkillPool`에 있어도 **컴파일 슬롯이 아니다.** 유일한 돌진기가
+이 자리에 있어서 아무 다이버도 못 썼고, 그걸 발견한 세션이 **신규 점멸을 같은 자리에 넣어 같은 함정을 재생산했다.**
+
+```bash
+grep -n "SignatureActive:\|FlexActive:" Assets/Resources/_Game/Content/Definitions/Archetypes/archetype_X.asset
+```
+
+### 함정 4 — 캐리어가 5종이다
+
+`AppliedStatuses`만 grep하면 놓친다. 전수: `SkillDefinition.AppliedStatuses` ·
+`SkillDefinition.SupportModifier.AddedStatuses` · `Skill/Augment.TriggeredEffects.ApplyStatus` ·
+`BossOverlayDefinition.AppliedStatuses`.
+
+### 함정 5 — 위트니스가 추론한 것을 관측인 척 보고한다
+
+`DiveFailureWitness`가 리타겟 시각에 **전투 종료 시각**을 대입해 7.7배 틀렸고, 원인 라벨을
+시간적 상관으로 **추론**해 163건을 통째로 오분류했다.
+**위트니스는 관측한 것만 보고한다. 관측 불가면 `unattributed`로 원시 항을 낸다.**
+
+### 측정 발주 전 계약
+
+측정을 지시하기 전에 **직접** 확인한다. 아래 둘을 건너뛰어 한 세션에서 두 사이클이 날아갔다.
+
+1. **측정 대상이 컴파일 슬롯에 있는가** (풀 소속이 아니라)
+2. **스윕하려는 파라미터가 실존하는 독립 필드인가** — 없으면 코더가 다른 필드를 덮어써서
+   두 변수가 동시에 움직이고, 그럴듯한 confound된 숫자가 나온다
+
+### 가드는 모순을 잡고 설계 범위를 강제하지 않는다
+
+검증기에 밸런스 밴드를 박으면 미래 저작을 막는다. 단위 버그는 값이 아니라 **단위 타입**으로
+잡는다(`MagnitudeUnit { Flat, Rate }` 선례). 그리고 **실패 메시지에 무엇이 왜 틀렸는지 적는다** —
+새 세션이 확실히 읽는 유일한 문서다.
+
+### 초록 게이트가 무의미할 수 있다
+
+`test-batch-fast`는 `FastUnit`만 돌린다. 골든 테스트와 콘텐츠 위트니스 대부분은 `BatchOnly`라
+**보이지 않는다.** 변경이 어느 레인에서 목격되는지 먼저 확인하고 하중 게이트를 명시한다.
+골든 코퍼스가 **구조적으로 목격 못 하는** 코드 변경도 있다(출고 픽스처에 해당 조건이 없는 경우) —
+그럴 땐 안전망이 단위 테스트뿐임을 명시적으로 기록한다.
+
 ## Codex 앱과의 공존
 
 이 저장소는 Codex 앱도 현역으로 사용한다.
