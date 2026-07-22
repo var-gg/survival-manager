@@ -133,7 +133,7 @@ MonoBehaviour:
   - Id: status_marked
     StatusId: marked
     DurationSeconds: 5
-    Magnitude: 1
+    Magnitude: 0.2
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   - Id: status_exposed
     StatusId: exposed
     DurationSeconds: 2.5
-    Magnitude: 1
+    Magnitude: 0.3
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

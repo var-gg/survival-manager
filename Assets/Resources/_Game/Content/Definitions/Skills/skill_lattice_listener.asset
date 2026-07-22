@@ -135,7 +135,7 @@ MonoBehaviour:
   - Trigger: 0
     Op: 0
     Scope: 5
-    Magnitude: 1
+    Magnitude: 0.15
     ThresholdRatio: 0
     StatusId: slow
     DurationSeconds: 3

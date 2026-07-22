@@ -75,6 +75,7 @@ public static partial class SampleSeedGenerator
         PatchLaunchFloorItemsAndSkills(stableTags);
         PatchBalanceFrameworkCore();
         CreateStatusCatalog();
+        PatchStatusChannelMagnitudes();
         CreateTraitTokens();
         CreateRewardSourcesAndDropTables();
         CreateCampaignEncounterCatalog();
@@ -2999,7 +3000,7 @@ public static partial class SampleSeedGenerator
             {
                 AddedStatuses = new List<StatusApplicationRule>
                 {
-                    new() { Id = "support_hunter_mark:marked", StatusId = "marked", DurationSeconds = 3f, Magnitude = 1f, MaxStacks = 1 },
+                    new() { Id = "support_hunter_mark:marked", StatusId = "marked", DurationSeconds = 3f, Magnitude = 0.20f, MaxStacks = 1 },
                 },
             },
             _ => new SupportModifierSpec(),

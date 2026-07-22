@@ -179,6 +179,163 @@ public sealed class ContentValidationComponentTests
     }
 
     [Test]
+    public void DefaultCatalogValidation_RejectsClampedFractionalStatusMagnitudes_FromEveryAuthoredCarrier()
+    {
+        var slow = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        slow.Id = "slow";
+        slow.DampensTempo = true;
+        slow.MagnitudeScale = 1f;
+
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_status_magnitude_probe";
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "skill.applied",
+            StatusId = slow.Id,
+            Magnitude = 1f,
+        });
+        skill.SupportModifier.AddedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "skill.support",
+            StatusId = slow.Id,
+            Magnitude = 1f,
+        });
+        skill.TriggeredEffects.Add(new TriggeredEffectSpec
+        {
+            Op = TriggeredEffectOp.ApplyStatus,
+            StatusId = slow.Id,
+            Magnitude = 1f,
+        });
+
+        var augment = Own(ScriptableObject.CreateInstance<AugmentDefinition>());
+        augment.Id = "augment_status_magnitude_probe";
+        augment.TriggeredEffects.Add(new TriggeredEffectSpec
+        {
+            Op = TriggeredEffectOp.ApplyStatus,
+            StatusId = slow.Id,
+            Magnitude = 1f,
+        });
+
+        var overlay = Own(ScriptableObject.CreateInstance<BossOverlayDefinition>());
+        overlay.Id = "overlay_status_magnitude_probe";
+        overlay.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "overlay.applied",
+            StatusId = slow.Id,
+            Magnitude = 1f,
+        });
+
+        var issues = new List<ContentValidationIssue>();
+        CatalogValidationRuleRegistry.CreateDefault().Validate(
+            ToCatalog(new ScriptableObject[] { slow, skill, augment, overlay }),
+            issues);
+
+        var magnitudeIssues = issues
+            .Where(issue => issue.Code == "status.channel_magnitude_range")
+            .Select(issue => issue.Scope)
+            .OrderBy(scope => scope, StringComparer.Ordinal)
+            .ToArray();
+        Assert.That(magnitudeIssues, Is.EqualTo(new[]
+        {
+            "AugmentDefinition.TriggeredEffects[0]",
+            "BossOverlayDefinition.AppliedStatuses[0]",
+            "SkillDefinition.AppliedStatuses[0]",
+            "SkillDefinition.SupportModifier.AddedStatuses[0]",
+            "SkillDefinition.TriggeredEffects[0]",
+        }), "모든 shipped authoring carrier가 runtime clamp에 닿는 fractional magnitude를 차단해야 한다");
+    }
+
+    [Test]
+    public void DefaultCatalogValidation_RejectsInstantMagnitudesSilentlyRaisedByRuntimeFloors()
+    {
+        var barrier = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        barrier.Id = "barrier";
+        barrier.GrantsBarrierOnApply = true;
+        barrier.MagnitudeScale = 1f;
+
+        var burn = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        burn.Id = "burn";
+        burn.AppliesPeriodicDamage = true;
+        burn.MagnitudeScale = 1f;
+
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_status_floor_probe";
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "skill.barrier",
+            StatusId = barrier.Id,
+            Magnitude = 0.5f,
+        });
+        skill.AppliedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "skill.burn",
+            StatusId = burn.Id,
+            Magnitude = 0.5f,
+        });
+
+        var issues = new List<ContentValidationIssue>();
+        CatalogValidationRuleRegistry.CreateDefault().Validate(
+            ToCatalog(new ScriptableObject[] { barrier, burn, skill }),
+            issues);
+
+        var magnitudeIssues = issues
+            .Where(issue => issue.Code == "status.channel_magnitude_range")
+            .Select(issue => issue.Scope)
+            .OrderBy(scope => scope, StringComparer.Ordinal)
+            .ToArray();
+        Assert.That(magnitudeIssues, Is.EqualTo(new[]
+        {
+            "SkillDefinition.AppliedStatuses[0]",
+            "SkillDefinition.AppliedStatuses[1]",
+        }), "즉시 보호막과 주기 피해가 runtime 1.0 floor에 의해 조용히 보정되면 안 된다");
+    }
+
+    [Test]
+    public void DefaultCatalogValidation_RejectsUnknownStatuses_FromPreviouslyUncoveredCarriers()
+    {
+        var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());
+        skill.Id = "skill_unknown_status_probe";
+        skill.SupportModifier.AddedStatuses.Add(new StatusApplicationRule
+        {
+            Id = "skill.support.missing",
+            StatusId = "missing_support_status",
+            Magnitude = 0.2f,
+        });
+        skill.TriggeredEffects.Add(new TriggeredEffectSpec
+        {
+            Op = TriggeredEffectOp.ApplyStatus,
+            StatusId = "missing_skill_triggered_status",
+            Magnitude = 0.2f,
+        });
+
+        var augment = Own(ScriptableObject.CreateInstance<AugmentDefinition>());
+        augment.Id = "augment_unknown_status_probe";
+        augment.TriggeredEffects.Add(new TriggeredEffectSpec
+        {
+            Op = TriggeredEffectOp.ApplyStatus,
+            StatusId = "missing_augment_triggered_status",
+            Magnitude = 0.2f,
+        });
+
+        var issues = new List<ContentValidationIssue>();
+        CatalogValidationRuleRegistry.CreateDefault().Validate(
+            ToCatalog(new ScriptableObject[] { skill, augment }),
+            issues);
+
+        var referenceIssues = issues
+            .Where(issue => issue.Code == "status.application_status_ref")
+            .Select(issue => issue.Scope)
+            .OrderBy(scope => scope, StringComparer.Ordinal)
+            .ToArray();
+        Assert.That(referenceIssues, Is.EqualTo(new[]
+        {
+            "AugmentDefinition.TriggeredEffects[0]",
+            "SkillDefinition.SupportModifier.AddedStatuses[0]",
+            "SkillDefinition.TriggeredEffects[0]",
+        }), "기존 reference validator가 걷지 않는 carrier도 잘못된 StatusId를 fail closed 해야 한다");
+    }
+
+    [Test]
     public void SkillCatalogValidator_FlagsMissingClassGate_ForClassOwnedSkill()
     {
         var skill = Own(ScriptableObject.CreateInstance<SkillDefinitionAsset>());

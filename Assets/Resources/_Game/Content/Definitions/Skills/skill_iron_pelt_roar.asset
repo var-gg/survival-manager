@@ -133,7 +133,7 @@ MonoBehaviour:
   - Id: status_exposed
     StatusId: exposed
     DurationSeconds: 3
-    Magnitude: 1
+    Magnitude: 0.3
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

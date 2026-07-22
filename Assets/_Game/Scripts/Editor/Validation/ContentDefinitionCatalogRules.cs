@@ -110,6 +110,7 @@ internal sealed class CatalogValidationRuleRegistry
             new CharacterCatalogValidator(),
             new ExtraActorCatalogValidator(),
             new StatusCatalogValidator(),
+            new StatusMagnitudeChannelCatalogValidator(),
             new RewardCatalogValidator(),
             new BuildLaneCoverageCatalogValidator(),
             new SkillCatalogValidator(),

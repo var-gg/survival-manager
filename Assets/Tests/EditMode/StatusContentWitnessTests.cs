@@ -89,6 +89,34 @@ public sealed class StatusContentWitnessTests
     }
 
     [Test]
+    public void CinderOverrun_UsesFractionalSlowAcrossShippedContentPath()
+    {
+        // 실 .asset -> RuntimeCombatContentLookup -> CombatStatusRuleCompiler -> UnitSnapshot 경로 witness.
+        // magnitude=1을 "활성/한 스택"으로 잘못 저작하면 두 배율이 모두 0.1 clamp로 추락한다.
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var cinder = snapshot.SkillCatalog["skill_cinder_overrun"];
+        var slow = cinder.AppliedStatuses.Single(status => status.StatusId == "slow");
+        var state = CombatTestFactory.CreateBattleState(
+            new[] { CombatTestFactory.CreateLoopAUnit("slow.witness", attackSpeed: 2f, moveSpeed: 2f) },
+            new[] { CombatTestFactory.CreateLoopAUnit("slow.source", race: "undead") },
+            statusRules: CombatStatusRuleCompiler.Compile(snapshot));
+        var target = state.Allies.Single();
+        var baseMoveSpeed = target.MoveSpeed;
+        var baseAttackSpeed = target.AttackSpeed;
+
+        target.ApplyStatus(slow);
+
+        var moveMultiplier = target.MoveSpeed / baseMoveSpeed;
+        var attackMultiplier = target.AttackSpeed / baseAttackSpeed;
+        var matchesFractionalContract = Math.Abs(slow.Magnitude - 0.20f) <= 0.0001f
+                                        && Math.Abs(moveMultiplier - 0.80f) <= 0.0001f
+                                        && Math.Abs(attackMultiplier - 0.80f) <= 0.0001f;
+        Assert.That(matchesFractionalContract, Is.True,
+            $"cinder_overrun shipped path must author a 0.20 rate and produce 0.80 tempo multipliers; " +
+            $"actual magnitude={slow.Magnitude:R}, move={moveMultiplier:R}, attack={attackMultiplier:R}");
+    }
+
+    [Test]
     public void RealBarrierFamily_CarriesGrantsBarrierOnApply()
     {
         // 효과 종류 데이터화 3보 1슬라이스 — 적용 시 즉시 보호막 전환 kind가 실 committed asset

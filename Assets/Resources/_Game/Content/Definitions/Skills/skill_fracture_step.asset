@@ -133,7 +133,7 @@ MonoBehaviour:
   - Id: status_slow
     StatusId: slow
     DurationSeconds: 2
-    Magnitude: 1
+    Magnitude: 0.25
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

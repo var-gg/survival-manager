@@ -164,7 +164,7 @@ MonoBehaviour:
     - Id: support_hunter_mark:marked
       StatusId: marked
       DurationSeconds: 3
-      Magnitude: 1
+      Magnitude: 0.2
       MaxStacks: 1
       RefreshDurationOnReapply: 1
       StackCap: 0

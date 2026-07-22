@@ -135,7 +135,7 @@ MonoBehaviour:
   - Trigger: 1
     Op: 0
     Scope: 5
-    Magnitude: 1
+    Magnitude: 0.3
     ThresholdRatio: 0
     StatusId: exposed
     DurationSeconds: 2.5
