@@ -41,7 +41,8 @@ public enum CombatIntentType
 /// unit wants to occupy; <see cref="TargetId"/> is the intent's chosen target (may differ from the raw nearest
 /// enemy — e.g. a Peel targets the diver). <see cref="CommitUntilStep"/> guards against per-tick churn: the
 /// brain does not reconsider before this step unless a hard interrupt fires. Pure value type — deterministic and
-/// reconstructed on re-sim, never serialized.
+/// reconstructed on re-sim, never serialized. Dive entry metadata survives the one-tick transition back to a
+/// baseline intent so the widened reachability allowance cannot be re-armed without measurable path progress.
 /// </summary>
 public readonly record struct CombatIntent(
     CombatIntentType Type,
@@ -49,7 +50,11 @@ public readonly record struct CombatIntent(
     EntityId? ProtectAllyId,
     CombatVector2 AnchorPoint,
     int CommitUntilStep,
-    int Priority)
+    int Priority,
+    int DiveEntryStep = -1,
+    EntityId? DiveEntryTargetId = null,
+    float DiveEntryPathDistance = 0f,
+    CombatVector2 DiveEntryActorPosition = default)
 {
     public static readonly CombatIntent None = new(CombatIntentType.None, null, null, default, 0, 0);
 

@@ -134,7 +134,15 @@ public static class TacticEvaluator
         }
 
         // Ground state: BasicAttack — default combat action, generates energy
-        var basicResult = TryBasicAttack(state, actor, stableTarget, directedBasicRule, baseRangeBand, fallbackRule, reevaluationReason);
+        var basicResult = TryBasicAttack(
+            state,
+            actor,
+            stableTarget,
+            directedBasicRule,
+            baseRangeBand,
+            fallbackRule,
+            reevaluationReason,
+            trace);
         if (basicResult.ActionType != BattleActionType.WaitDefend)
         {
             return basicResult;
@@ -239,15 +247,33 @@ public static class TacticEvaluator
 
     private static EvaluatedAction TryBasicAttack(
         BattleState state, UnitSnapshot actor, UnitSnapshot? stableTarget, TargetRule basicRule,
-        FloatRange baseRangeBand, TacticRule fallbackRule, ReevaluationReason reevaluationReason)
+        FloatRange baseRangeBand, TacticRule fallbackRule, ReevaluationReason reevaluationReason,
+        TacticEvaluationTrace? trace)
     {
-        var basicTarget = stableTarget
-                          ?? TargetScoringService.SelectTarget(
-                              state,
-                              actor,
-                              basicRule,
-                              TargetSelectionPurpose.BasicAttack,
-                              string.Empty);
+        var currentTarget = state.FindUnit(actor.CurrentTargetId);
+        var holdDiveTarget = currentTarget != null
+                             && currentTarget.IsAlive
+                             && currentTarget.Side != actor.Side
+                             && actor.CurrentCombatIntent.Type == CombatIntentType.Dive
+                             && actor.CurrentCombatIntent.TargetId == currentTarget.Id;
+        if (holdDiveTarget)
+        {
+            trace?.RecordStableTarget(
+                StableTargetDisposition.HeldByDiveIntent,
+                currentTarget!,
+                MovementResolver.ComputeEdgeDistance(actor, currentTarget!),
+                basicRule.MaxAcquireRange > 0f ? basicRule.MaxAcquireRange + 1f : actor.AttackRange + 1f);
+        }
+
+        var basicTarget = holdDiveTarget
+            ? currentTarget!
+            : stableTarget
+              ?? TargetScoringService.SelectTarget(
+                  state,
+                  actor,
+                  basicRule,
+                  TargetSelectionPurpose.BasicAttack,
+                  string.Empty);
         if (basicTarget != null)
         {
             var positioningIntent = ApproachOffsetService.ResolvePositioningIntent(state, actor, basicTarget, baseRangeBand);

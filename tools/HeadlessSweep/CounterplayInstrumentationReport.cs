@@ -383,7 +383,8 @@ internal sealed class CounterplayInstrumentationAccumulator
             required_scores = scoreCandidates.Select(value => value.RequiredScore).Distinct().OrderBy(value => value).ToArray(),
             stable_target_holds = observations.SelectMany(value => value.TacticEvaluations).Count(value =>
                 value.StableTargetDisposition is StableTargetDisposition.HeldBySwitchLock
-                    or StableTargetDisposition.HeldUntilReevaluation),
+                    or StableTargetDisposition.HeldUntilReevaluation
+                    or StableTargetDisposition.HeldByDiveIntent),
             backline_filter_rejections = backlineCandidates
                 .GroupBy(value => value.InitialRejection)
                 .OrderByDescending(group => group.Count())

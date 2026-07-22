@@ -40,8 +40,9 @@ public static class RoleBrain
     private const float MeleeRangeThreshold = 1.8f;     // matches the existing melee-nearest threshold
     private const float DiveMinHealthRatio = 0.55f;     // do not enter a dive while already hurt
     private const float DiveAbortHealthRatio = 0.30f;   // hard-interrupt out of a dive below this
-    private const float DiveMaxForwardDepth = 5.0f;     // entry gate (not a movement clamp)
-    private const float DiveMaxPathDistance = 5.5f;     // entry gate, diagonal distance
+    private const float DiveMaxForwardDepth = 5.0f;     // committed-dive renewal geometry, not a movement clamp
+    private const float DiveMaxPathDistance = 5.5f;     // committed-dive renewal geometry, diagonal distance
+    private const int DiveGeometryHardVetoScore = -1000;
     private const float DiveStartDangerRadius = 1.5f;
     private const int DiveStartMaxNearbyEnemies = 1;    // allow one frontline contact, reject obvious 1v2
     private const float DiveProtectedRadius = 1.5f;     // reject targets bodyguarded by an enemy frontliner
@@ -112,6 +113,18 @@ public static class RoleBrain
 
     private static void ApplyIntent(BattleState state, UnitSnapshot actor, CombatIntent intent)
     {
+        var current = actor.CurrentCombatIntent;
+        if (!intent.DiveEntryTargetId.HasValue && current.DiveEntryTargetId.HasValue)
+        {
+            intent = intent with
+            {
+                DiveEntryStep = current.DiveEntryStep,
+                DiveEntryTargetId = current.DiveEntryTargetId,
+                DiveEntryPathDistance = current.DiveEntryPathDistance,
+                DiveEntryActorPosition = current.DiveEntryActorPosition,
+            };
+        }
+
         actor.SetCombatIntent(intent);
         actor.SetNextCombatIntentDecisionStep(state.StepIndex + GetCadenceSteps(actor));
     }
@@ -234,6 +247,7 @@ public static class RoleBrain
     private static bool TryBuildDiveIntent(BattleState state, UnitSnapshot actor, out CombatIntent intent)
     {
         intent = CombatIntent.None;
+        var geometryLimits = ResolveDiveGeometryLimits(state, actor);
         var trace = state.ShouldObserveDiagnostic(BattleDiagnosticKind.DiveIntentEvaluation, actor.Id.Value)
             ? new DiveIntentTrace(
                 state,
@@ -242,8 +256,8 @@ public static class RoleBrain
                     ? DuelistDiveCommitMinHealthPercent / (float)HealthPercentScale
                     : DiveMinHealthRatio,
                 MeleeRangeThreshold,
-                DiveMaxForwardDepth,
-                DiveMaxPathDistance,
+                geometryLimits.MaxForwardDepth,
+                geometryLimits.MaxPathDistance,
                 DiveStartMaxNearbyEnemies)
             : null;
         if (actor.HasBehaviorTag(CombatBehaviorTags.DuelistHoldBruiser))
@@ -268,7 +282,11 @@ public static class RoleBrain
             if (continueScore >= ResolveDiveContinueScoreThreshold(actor))
             {
                 intent = new CombatIntent(CombatIntentType.Dive, diveTarget.Id, null,
-                    MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), continueScore);
+                    MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), continueScore,
+                    actor.CurrentCombatIntent.DiveEntryStep,
+                    actor.CurrentCombatIntent.DiveEntryTargetId,
+                    actor.CurrentCombatIntent.DiveEntryPathDistance,
+                    actor.CurrentCombatIntent.DiveEntryActorPosition);
                 trace?.Select(diveTarget.Id.Value);
                 trace?.Emit(state);
                 return true;
@@ -300,9 +318,14 @@ public static class RoleBrain
             return false;
         }
 
-        intent = new CombatIntent(CombatIntentType.Dive, selection.Value.Target.Id, null,
-            MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), selection.Value.Score);
-        trace?.Select(selection.Value.Target.Id.Value);
+        var selectedTarget = selection.Value.Target;
+        intent = new CombatIntent(CombatIntentType.Dive, selectedTarget.Id, null,
+            MovementResolver.ResolveHomePosition(state, actor), state.StepIndex + ResolveDiveCommitSteps(actor), selection.Value.Score,
+            state.StepIndex,
+            selectedTarget.Id,
+            actor.Position.DistanceTo(selectedTarget.Position),
+            actor.Position);
+        trace?.Select(selectedTarget.Id.Value);
         trace?.Emit(state);
         return true;
     }
@@ -562,11 +585,12 @@ public static class RoleBrain
         var hasFocusMark = state.GetTeamBlackboard(actor.Side).FocusMarkId == target.Id;
         var focusMarkScore = hasFocusMark ? DiveFocusMarkScore : 0;
 
+        var geometryLimits = ResolveDiveGeometryLimits(state, actor, target);
         var forwardDepth = ForwardDepth(actor, target);
-        var forwardDepthScore = forwardDepth > DiveMaxForwardDepth ? -1000 : 0;
+        var forwardDepthScore = forwardDepth > geometryLimits.MaxForwardDepth ? DiveGeometryHardVetoScore : 0;
 
         var pathDistance = actor.Position.DistanceTo(target.Position);
-        var pathDistanceScore = pathDistance > DiveMaxPathDistance ? -1000 : 0;
+        var pathDistanceScore = pathDistance > geometryLimits.MaxPathDistance ? DiveGeometryHardVetoScore : 0;
 
         var score = formationLineScore
                     + classScore
@@ -670,6 +694,48 @@ public static class RoleBrain
         return actor.Side == TeamSide.Ally
             ? target.Position.X - actor.Position.X
             : actor.Position.X - target.Position.X;
+    }
+
+    private static (float MaxForwardDepth, float MaxPathDistance) ResolveDiveGeometryLimits(
+        BattleState state,
+        UnitSnapshot actor,
+        UnitSnapshot? target = null)
+    {
+        if (actor.CurrentCombatIntent.Type == CombatIntentType.Dive
+            || actor.HasBehaviorTag(CombatBehaviorTags.PackPursuit))
+        {
+            return (DiveMaxForwardDepth, DiveMaxPathDistance);
+        }
+
+        var priorEntry = actor.CurrentCombatIntent;
+        if (target == null
+            && priorEntry.DiveEntryTargetId is { } priorTargetId
+            && LivingUnit(state, priorTargetId) is { } priorTarget)
+        {
+            target = priorTarget;
+        }
+
+        // A target gets another widened entry window only after the actor has strictly reduced its path distance
+        // since the preceding window began. The attempt metadata is carried through the baseline-intent lapse, so
+        // a rooted or displaced-away diver remains on the original 5.0/5.5 gate instead of re-arming forever.
+        if (target != null
+            && priorEntry.DiveEntryStep >= 0
+            && priorEntry.DiveEntryTargetId == target.Id
+            && (actor.IsRooted
+                || actor.Position.DistanceTo(target.Position)
+                    >= priorEntry.DiveEntryActorPosition.DistanceTo(target.Position)))
+        {
+            return (DiveMaxForwardDepth, DiveMaxPathDistance);
+        }
+
+        // Entry asks whether this actor can enter the established safe geometry during one initial commit,
+        // using its content-owned movement speed and tag-owned commit duration. This breaks the old circular
+        // gate (too far to select, therefore never approaches) without making the limits aspirational. Pack-pursuit
+        // units retain the original gate so their authored wing approach remains the way they earn Dive geometry.
+        var initialCommitApproachDistance = actor.MoveSpeed * state.FixedStepSeconds * ResolveDiveCommitSteps(actor);
+        return (
+            DiveMaxForwardDepth + initialCommitApproachDistance,
+            DiveMaxPathDistance + initialCommitApproachDistance);
     }
 
     // ===== Vanguard Peel ===== (target reshape applied by TacticEvaluator.TryApplyIntentTargetOverride)

@@ -112,6 +112,7 @@ internal enum StableTargetDisposition
     HeldUntilReevaluation = 4,
     ReleasedOutsideAcquireLeash = 5,
     ReleasedForReevaluation = 6,
+    HeldByDiveIntent = 7,
 }
 
 internal sealed record TacticEvaluationDiagnosticEvent(

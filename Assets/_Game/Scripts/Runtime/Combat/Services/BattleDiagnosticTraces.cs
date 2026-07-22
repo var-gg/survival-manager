@@ -249,7 +249,8 @@ internal sealed class TacticEvaluationTrace
         float edgeDistance,
         float acquireLeash)
     {
-        if (_stableTargetDisposition != StableTargetDisposition.NotEvaluated)
+        if (_stableTargetDisposition != StableTargetDisposition.NotEvaluated
+            && disposition != StableTargetDisposition.HeldByDiveIntent)
         {
             return;
         }
