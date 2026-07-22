@@ -57,7 +57,10 @@ public static class StatusResolutionService
 
         foreach (var status in skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>())
         {
-            ApplyStatus(state, actor, target, skill, status, stepEvents);
+            var payloadTarget = IsFriendlyStatusPayload(state, status.StatusId)
+                ? ResolveFriendlyPayloadTarget(actor, target)
+                : target;
+            ApplyStatus(state, actor, payloadTarget, skill, status, stepEvents);
         }
     }
 
@@ -187,6 +190,8 @@ public static class StatusResolutionService
             return;
         }
 
+        target = ResolveFriendlyPayloadTarget(actor, target);
+
         var removed = target.RemoveStatuses(cleanseRule.RemovesStatusIds);
         if (cleanseRule.RemovesOneHardControl)
         {
@@ -224,6 +229,17 @@ public static class StatusResolutionService
                 BattleTelemetryRecorder.RecordStatus(state, TelemetryEventKind.StatusApplied, actor, target, cleanseRule.GrantedStatusId, controlRule.ControlResistMultiplier);
             }
         }
+    }
+
+    private static bool IsFriendlyStatusPayload(BattleState state, string statusId)
+    {
+        return state.StatusRules.TryGetStatusFamily(statusId, out var statusRule)
+               && statusRule.Group == StatusGroupValue.DefensiveBoon;
+    }
+
+    private static UnitSnapshot ResolveFriendlyPayloadTarget(UnitSnapshot actor, UnitSnapshot resolvedTarget)
+    {
+        return actor.Side == resolvedTarget.Side ? resolvedTarget : actor;
     }
 
     private static void ApplyPeriodicDamage(BattleState state, UnitSnapshot unit, AppliedStatusState status, List<BattleEvent> stepEvents)

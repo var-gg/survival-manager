@@ -748,6 +748,19 @@ internal sealed class StatusFamilySchemaRule : DefinitionSchemaRule<StatusFamily
             ContentValidationIssueFactory.AddError(issues, "status.periodic_damage_group", "Periodic damage statuses must stay in the Attrition group.", assetPath);
         }
 
+        if ((statusFamily.GrantsBarrierOnApply
+             || statusFamily.GrantsUnstoppable
+             || statusFamily.GrantsGuardedDefense
+             || statusFamily.IncomingDamageDelta < 0f)
+            && statusFamily.Group != StatusGroupValue.DefensiveBoon)
+        {
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "status.defensive_boon_group",
+                "Protective status families must stay in the DefensiveBoon group.",
+                assetPath);
+        }
+
         LoopAContractValidator.ValidateStatusFamily(statusFamily, assetPath, issues);
     }
 }

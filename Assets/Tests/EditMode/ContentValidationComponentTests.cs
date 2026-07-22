@@ -252,6 +252,47 @@ public sealed class ContentValidationComponentTests
         Assert.That(issues.Select(issue => issue.Code), Contains.Item("status.vfx_cue_required"));
     }
 
+    [TestCase("barrier")]
+    [TestCase("unstoppable")]
+    [TestCase("guarded")]
+    [TestCase("damage_reduction")]
+    public void StatusFamilySchemaRule_ProtectiveKindsRequireDefensiveBoonGroup(string protectiveKind)
+    {
+        var status = Own(ScriptableObject.CreateInstance<StatusFamilyDefinition>());
+        status.Id = $"misclassified_{protectiveKind}";
+        status.NameKey = $"content.status.misclassified_{protectiveKind}.name";
+        status.DescriptionKey = $"content.status.misclassified_{protectiveKind}.desc";
+        status.VfxCueId = $"vfx.status.misclassified_{protectiveKind}";
+        status.Group = StatusGroupValue.Control;
+        switch (protectiveKind)
+        {
+            case "barrier":
+                status.GrantsBarrierOnApply = true;
+                break;
+            case "unstoppable":
+                status.GrantsUnstoppable = true;
+                break;
+            case "guarded":
+                status.GrantsGuardedDefense = true;
+                break;
+            case "damage_reduction":
+                status.IncomingDamageDelta = -0.1f;
+                break;
+        }
+
+        var issues = new List<ContentValidationIssue>();
+        new StatusFamilySchemaRule().Validate(
+            new ValidationAssetDescriptor(
+                status,
+                $"Assets/status_{protectiveKind}.asset",
+                ValidationAssetSourceKind.Explicit,
+                status.GetType()),
+            EmptyCatalog(),
+            issues);
+
+        Assert.That(issues.Select(issue => issue.Code), Contains.Item("status.defensive_boon_group"));
+    }
+
     [Test]
     public void SkillSchemaRule_ResolvesPresentationMappingForPilotSkill()
     {

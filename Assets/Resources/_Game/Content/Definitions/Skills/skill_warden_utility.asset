@@ -100,10 +100,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
   TargetRuleData:
-    Domain: 2
-    PrimarySelector: 1
-    FallbackPolicy: 2
-    Filters: 5
+    Domain: 1
+    PrimarySelector: 9
+    FallbackPolicy: 4
+    Filters: 0
     ReevaluateIntervalSeconds: 0.25
     MinimumCommitSeconds: 0.75
     MaxAcquireRange: 0

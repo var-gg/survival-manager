@@ -337,8 +337,12 @@ public sealed class StatusResolutionServiceTests
         StatusResolutionService.AdvanceStatuses(state, events);
         Assert.That(target.CurrentHealth, Is.EqualTo(18f).Within(0.001f));
 
+        actor.ApplyStatus(new StatusApplicationSpec("apply.actor.scorch", "scorch", 3f, 2f));
+
         StatusResolutionService.ApplySkillStatuses(state, actor, target, cleanseSkill, events);
 
-        Assert.That(target.HasStatus("scorch"), Is.False);
+        Assert.That(actor.HasStatus("scorch"), Is.False);
+        Assert.That(target.HasStatus("scorch"), Is.True,
+            "적을 조준한 정화 payload가 상대편의 상태를 제거하면 안 된다");
     }
 }

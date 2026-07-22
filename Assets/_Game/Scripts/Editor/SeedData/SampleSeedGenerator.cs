@@ -53,6 +53,7 @@ public static partial class SampleSeedGenerator
         var archetypes = CreateArchetypes(races, classes, traitPools, skills, footprintProfiles, behaviorProfiles, mobilityProfiles);
         var skillCatalog = LoadDefinitionsById<SkillDefinitionAsset>($"{ResourcesRoot}/Skills");
         PatchHealingRepairSkills(skillCatalog);
+        PatchWrongSidePayloadSkills(skillCatalog);
         PatchLaunchFloorArchetypes(races, classes, traitPools, skillCatalog, stableTags, footprintProfiles, behaviorProfiles, mobilityProfiles);
         SyncSunkenBastionAntiClusterWallAssets(
             races,

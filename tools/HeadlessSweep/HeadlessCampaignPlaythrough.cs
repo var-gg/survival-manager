@@ -14,7 +14,8 @@ internal static class HeadlessCampaignPlaythrough
         CampaignBalanceSweepConfig config,
         CampaignBalanceArmSpec arm,
         CampaignBalanceGridCell cell,
-        string stopAfterEncounterId)
+        string stopAfterEncounterId,
+        Action<BattleLoadoutSnapshot, ResolvedEncounterContext, CampaignNodeIdentity>? bossDiagnostic = null)
     {
         var state = HeadlessCampaignState.Create(lookup, cell);
         state.ApplyBuildPower(cell.BuildPower);
@@ -97,6 +98,11 @@ internal static class HeadlessCampaignPlaythrough
                     authoredEncounter.Context.EncounterId,
                     IsElite(authoredEncounter),
                     authoredEncounter.Context.IsBoss);
+                if (identity.IsBoss)
+                {
+                    bossDiagnostic?.Invoke(setup.AllySnapshot, authoredEncounter, identity);
+                }
+
                 var stopAtCurrentNode = string.Equals(identity.EncounterId, stopAfterEncounterId, StringComparison.Ordinal);
                 var progression = won
                     ? measured.Result

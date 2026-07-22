@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Combat.Services;
+using SM.Core.Content;
 using SM.Core.Contracts;
 using SM.Editor.SeedData;
 using SM.Meta;
@@ -289,6 +290,40 @@ public sealed class StatusContentWitnessTests
                 Is.True,
                 $"{skillId}는 정체성 상태({statusId})를 저작해야 한다");
         }
+    }
+
+    [Test]
+    public void WardenUtility_AuthorsSelfTargetFallback()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var warden = snapshot.SkillCatalog["skill_warden_utility"];
+
+        Assert.That(warden.TargetRuleData?.Domain, Is.EqualTo(TargetDomain.Self));
+        Assert.That(warden.TargetRuleData?.PrimarySelector, Is.EqualTo(TargetSelector.Self));
+        Assert.That(warden.TargetRuleData?.FallbackPolicy, Is.EqualTo(TargetFallbackPolicy.Self));
+        Assert.That(warden.TargetRuleData?.MaxAcquireRange, Is.EqualTo(warden.Range).Within(0.001f));
+    }
+
+    [Test]
+    public void EnemyTargetSkillsWithOwnAppliedDefensiveBoons_AreTheExactRawCatalogSet()
+    {
+        var snapshot = new RuntimeCombatContentLookup().Snapshot;
+        var rules = CombatStatusRuleCompiler.Compile(snapshot);
+        var audited = snapshot.SkillCatalog.Values
+            .Where(skill => skill.TargetRuleData?.Domain == TargetDomain.EnemyUnit)
+            .Where(skill => (skill.AppliedStatuses ?? Array.Empty<StatusApplicationSpec>()).Any(status =>
+                rules.TryGetStatusFamily(status.StatusId, out var rule)
+                && rule.Group == StatusGroupValue.DefensiveBoon))
+            .Select(skill => skill.Id)
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.That(audited, Is.EqualTo(new[]
+        {
+            "skill_bulwark_core",
+            "skill_guardian_core",
+            "skill_priest_core",
+        }), "raw catalog의 own AppliedStatuses만 보는 제한된 집합이다; compiled support graft, cleanse profile, triggered effect는 별도 경로다");
     }
 
     private static BattleLoadoutSnapshot CompileSingleHero(CombatContentSnapshot content, string archetypeId)

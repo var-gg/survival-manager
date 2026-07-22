@@ -20,6 +20,16 @@ if (args.Length == 1 && string.Equals(args[0], "snapshot-freshness-self-check", 
     return ContentSnapshotFreshnessGuardSelfCheck.Run();
 }
 
+if (args.Length >= 1 && string.Equals(args[0], "deck-matchup-diagnostic", StringComparison.Ordinal))
+{
+    return DeckMatchupDiagnosticRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
+}
+
+if (args.Length >= 1 && string.Equals(args[0], "credible-deck-matchup", StringComparison.Ordinal))
+{
+    return CredibleDeckMatchupRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
+}
+
 if (args.Length >= 1 && string.Equals(args[0], "campaign-battle", StringComparison.Ordinal))
 {
     string? unityReportPath = null;
@@ -56,6 +66,8 @@ if (args.Length >= 1 && string.Equals(args[0], "balance-framework", StringCompar
 
 Console.Error.WriteLine(
     "Usage: HeadlessSweep [snapshot-load | snapshot-freshness-self-check "
+    + "| deck-matchup-diagnostic [--seeds <n>] [--output <path>] "
+    + "| credible-deck-matchup [--seeds <n>] [--output <path>] "
     + "| campaign-battle [--unity <report>] [--output <path>] "
     + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] "
     + "[--output <path>] [--verify] | balance-framework [--samples <n>] [--neutral-health-more <n>] "
