@@ -149,6 +149,8 @@ internal static partial class CampaignTwoArmSweepRunner
                         $"unpaired first attempt: target={target.NodeId} cell={cell.CellId}");
                 }
 
+                CampaignRecoverySeedInvariant.RequireStable(pair, target.NodeId);
+
                 if (pair.ArmB.Attempts
                         .SelectMany(attempt => attempt.Settlements)
                         .Any(settlement => !string.IsNullOrWhiteSpace(settlement.ChoiceKind)

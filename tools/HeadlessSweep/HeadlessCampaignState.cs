@@ -41,6 +41,8 @@ internal sealed class HeadlessCampaignState
         Inventory = inventory.ToList();
         _itemInstanceCounter = Inventory.Count;
         _encounterResolver = new EncounterResolutionService(Snapshot);
+        CampaignSeed = CampaignEncounterSeed.FromCampaignIdentity(
+            $"campaign-two-arm-{CellTag(cell)}");
         Progress = _encounterResolver.NormalizeCampaignProgress(new CampaignProgressState(
             string.Empty,
             string.Empty,
@@ -68,6 +70,7 @@ internal sealed class HeadlessCampaignState
     internal string SelectedChapterId => Progress.SelectedChapterId;
     internal string SelectedSiteId => Progress.SelectedSiteId;
     internal bool StoryCleared => Progress.StoryCleared;
+    internal int CampaignSeed { get; }
 
     internal SiteTrackNodeState? SelectedNode
     {
@@ -270,11 +273,11 @@ internal sealed class HeadlessCampaignState
             activeWoundHeroIds: ActiveRun.ActiveWoundHeroIds);
 
         ActiveRun = ActiveRun with { Blueprint = blueprint, Overlay = overlay };
-        var context = _encounterResolver.BuildBattleContext(
+        var context = CampaignEncounterSeed.Apply(_encounterResolver.BuildBattleContext(
             ActiveRun,
             SelectedChapterId,
             SelectedSiteId,
-            CurrentNodeIndex);
+            CurrentNodeIndex), CampaignSeed);
         if (!_encounterResolver.TryResolveEncounter(context, out var encounter, out var error))
         {
             throw new InvalidOperationException(

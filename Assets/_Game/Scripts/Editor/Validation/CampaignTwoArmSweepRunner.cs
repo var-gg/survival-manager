@@ -336,18 +336,12 @@ internal static partial class CampaignTwoArmSweepRunner
     private static ResolvedEncounterContext ProjectEncounter(
         ResolvedEncounterContext authored,
         CampaignEnemyCompositionVariantSpec variant)
-    {
-        var seed = H100SessionDriver.DeriveSeed(
-            authored.Context.BattleContextHash,
-            1000 + variant.VariantIndex);
-        return authored with
+        => authored with
         {
-            Context = authored.Context with { BattleSeed = seed },
             Enemies = CampaignBalanceGridProjector.ProjectEnemyComposition(
                 authored.Enemies,
                 variant.VariantIndex),
         };
-    }
 
     private static HeadlessEnemyPreview ProjectPreview(
         HeadlessEnemyPreview authored,

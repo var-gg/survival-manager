@@ -1232,6 +1232,7 @@ public sealed partial class GameSessionState
             Profile.CampaignProgress.SelectedChapterId,
             Profile.CampaignProgress.SelectedSiteId,
             nodeIndex);
+        context = CampaignEncounterSeed.Apply(context, ResolveCampaignSeed());
         error = string.Empty;
         return true;
     }

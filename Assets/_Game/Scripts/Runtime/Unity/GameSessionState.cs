@@ -59,6 +59,7 @@ public sealed partial class GameSessionState
     private LootBundleResult? _lastAutomaticLootBundle;
     private bool _hasPendingRewardSettlement;
     private int? _quickBattleSeedOverride;
+    private int? _campaignSeedOverride;
     private int _recruitOfferGeneration;
     private RecruitPhaseState _recruitPhaseState = new();
     private RecruitPityState _recruitPityState = new();
@@ -238,6 +239,7 @@ public sealed partial class GameSessionState
             _hasPendingRewardSettlement = false;
             _lastDuplicateConversion = null;
             _quickBattleSeedOverride = null;
+            _campaignSeedOverride = null;
             _compiledQuickBattleScenario = null;
             _atlasSession = null;
             _atlasExpeditionModifierPayload = null;
@@ -286,6 +288,17 @@ public sealed partial class GameSessionState
     /// </summary>
     internal void OverrideStoryDirector(StoryDirectorService director)
         => StoryDirector = director ?? throw new ArgumentNullException(nameof(director));
+
+    /// <summary>
+    /// 측정 하네스가 명시적인 campaign cohort seed를 production encounter path에 주입한다.
+    /// 실제 플레이는 profile identity에서 파생한 seed를 사용한다.
+    /// </summary>
+    internal void OverrideCampaignSeedForValidation(int campaignSeed)
+        => _campaignSeedOverride = campaignSeed;
+
+    private int ResolveCampaignSeed()
+        => _campaignSeedOverride
+           ?? CampaignEncounterSeed.FromCampaignIdentity(Profile.ProfileId);
 
     public void ResetNarrativeRunScopedProgress() => _profileSync.ResetNarrativeRunScopedProgress();
 

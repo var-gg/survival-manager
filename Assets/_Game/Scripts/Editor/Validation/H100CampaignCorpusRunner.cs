@@ -97,6 +97,7 @@ internal static class H100CampaignCorpusRunner
         {
             var policy = policyFactory?.Invoke(campaignIndex) ?? HeadlessPolicyFactory.Create(settings.PolicyId);
             session = H100SessionDriver.CreateSession(lookup, settings.PairingProfileId(campaignId));
+            session.OverrideCampaignSeedForValidation(campaignSeed);
             while (!session.Profile.CampaignProgress.StoryCleared
                    && siteCount < settings.CampaignSiteSafety
                    && !defeated)
@@ -241,16 +242,12 @@ internal static class H100CampaignCorpusRunner
                         break;
                     }
 
-                    var battleSeed = H100SessionDriver.DeriveSeed(
-                        encounter.Context.BattleContextHash,
-                        campaignSeed + battleIndex);
-                    var seededEncounter = encounter with { Context = encounter.Context with { BattleSeed = battleSeed } };
                     var scenarioId = H100SessionDriver.ScenarioId(encounter.Context);
-                    if (!session.TryComposeBattleState(allySnapshot, seededEncounter, out var state, out var composeError))
+                    if (!session.TryComposeBattleState(allySnapshot, encounter, out var state, out var composeError))
                     {
                         campaignBattles.Add(BattleMetricProjector.ProjectFailure(
                             settings.RunId, campaignId, battleId, replayGroupId, 0, scenarioId,
-                            settings.PolicyId, battleSeed, $"compose:{composeError}"));
+                            settings.PolicyId, encounter.Context.BattleSeed, $"compose:{composeError}"));
                         crashCount++;
                         terminalReason = "battle-compose-failed";
                         session.AbandonExpeditionRun();

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SM.Combat.Model;
 using SM.Editor.SeedData;
 using SM.Editor.Validation;
+using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 
@@ -23,7 +24,6 @@ public sealed class DoctrineTierWitnessTests
     private const string ChapterId = "chapter_ashen_gate";
     private const string SiteId = "site_ashen_gate";
     private const string EncounterId = "site_ashen_gate_skirmish_1";
-    private const int FixedBattleSeed = 72_689_751;
 
     [SetUp]
     public void SetUp()
@@ -260,8 +260,11 @@ public sealed class DoctrineTierWitnessTests
         Assert.That(encounter.Context.ChapterId, Is.EqualTo(ChapterId));
         Assert.That(encounter.Context.SiteId, Is.EqualTo(SiteId));
         Assert.That(encounter.Context.EncounterId, Is.EqualTo(EncounterId));
-        Assert.That(encounter.Context.BattleSeed, Is.EqualTo(FixedBattleSeed),
-            "authored first-node 좌표에서 계산한 fixed seed로 모든 doctrine 시나리오를 비교한다");
+        var expectedSeed = CampaignEncounterSeed.Derive(
+            CampaignEncounterSeed.FromCampaignIdentity(session.Profile.ProfileId),
+            EncounterId);
+        Assert.That(encounter.Context.BattleSeed, Is.EqualTo(expectedSeed),
+            "campaign identity와 authored encounter node에서 계산한 fixed seed를 사용한다");
         TestContext.WriteLine(
             $"[DoctrineWitness] encounter={encounter.Context.EncounterId} seed={encounter.Context.BattleSeed} " +
             $"allies={string.Join(",", state.Allies.Select(unit => $"{unit.Definition.RaceId}/{unit.Definition.ClassId}"))}");

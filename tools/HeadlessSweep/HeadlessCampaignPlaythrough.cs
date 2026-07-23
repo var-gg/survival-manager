@@ -248,10 +248,6 @@ internal static class HeadlessCampaignPlaythrough
         CampaignEnemyCompositionVariantSpec variant)
         => authored with
         {
-            Context = authored.Context with
-            {
-                BattleSeed = DeriveSeed(authored.Context.BattleContextHash, 1000 + variant.VariantIndex),
-            },
             Enemies = CampaignBalanceGridProjector.ProjectEnemyComposition(
                 authored.Enemies,
                 variant.VariantIndex),

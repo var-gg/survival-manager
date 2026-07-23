@@ -61,9 +61,16 @@ internal static partial class CampaignTwoArmSweepRunner
                 if (applyRecovery)
                 {
                     ApplyRecoveryDeployment(session, lookup, policy, cell, attempt);
+                    session.BeginNewExpedition();
                 }
-
-                session.BeginNewExpedition();
+                else
+                {
+                    // Control is the exact blocked arrival replayed with no player or run-state change.
+                    // Rebuilding the whole site would reset run-scoped setup and is not a no-recovery control.
+                    session = H100SessionDriver.CreateSession(
+                        lookup,
+                        H100ProfileSnapshotCodec.Restore(arrival.ProfileSnapshot));
+                }
             }
 
             var attemptObservation = RunRecoveryAttempt(
@@ -187,13 +194,7 @@ internal static partial class CampaignTwoArmSweepRunner
             }
 
             var measuredEncounter = ProjectEncounter(encounter, cell.EnemyComposition);
-            var battleSeed = attempt == 1 && isTarget
-                ? measuredEncounter.Context.BattleSeed
-                : RecoveryBattleSeed(cell.CellId, target.NodeId, node.Id, attempt);
-            measuredEncounter = measuredEncounter with
-            {
-                Context = measuredEncounter.Context with { BattleSeed = battleSeed },
-            };
+            var battleSeed = measuredEncounter.Context.BattleSeed;
             if (!session.TryComposeBattleState(
                     allySnapshot,
                     measuredEncounter,
@@ -434,15 +435,6 @@ internal static partial class CampaignTwoArmSweepRunner
             heroLevelSum,
             equippedItemCount);
     }
-
-    private static int RecoveryBattleSeed(
-        string cellId,
-        string targetNodeId,
-        string nodeId,
-        int attempt)
-        => H100SessionDriver.DeriveSeed(
-            $"recovery-battle|{cellId}|{targetNodeId}|{nodeId}",
-            3000 + attempt);
 
     private static int RecoveryDecisionSeed(
         string cellId,
