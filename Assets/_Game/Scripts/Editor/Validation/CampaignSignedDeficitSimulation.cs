@@ -223,7 +223,7 @@ internal static class CampaignSignedDeficitSimulation
             adaptationRetriesUsed);
     }
 
-    private static void ApplyTownWindow(
+    internal static void ApplyTownWindow(
         GameSessionState session,
         RuntimeCombatContentLookup lookup,
         IHeadlessRosterPolicy rosterPolicy,
@@ -262,7 +262,7 @@ internal static class CampaignSignedDeficitSimulation
             $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|town|{phase}|attempt={siteAttempt}|{kind}",
             campaignSeed + siteIndex);
 
-    private static void RequireNoDefeatRewardMutation(
+    internal static void RequireNoDefeatRewardMutation(
         GameSessionState session,
         string nodeId,
         int goldBefore,
@@ -280,7 +280,7 @@ internal static class CampaignSignedDeficitSimulation
         }
     }
 
-    private static bool IsElite(ResolvedEncounterContext encounter)
+    internal static bool IsElite(ResolvedEncounterContext encounter)
         => encounter.Context.EncounterId.Contains("_elite_", StringComparison.Ordinal)
            || encounter.Context.RewardSourceId.Contains("elite", StringComparison.OrdinalIgnoreCase);
 }
