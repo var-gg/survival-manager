@@ -21,9 +21,9 @@ MonoBehaviour:
   - site_starved_menagerie
   UnlocksEndlessOnClear: 0
   Balance:
-    HpEnvelope: 1.09
-    AtkEnvelope: 1.06
-    SiteHpStep: 0.01
-    SiteAtkStep: 0.005
+    HpEnvelope: 1.38
+    AtkEnvelope: 1.24
+    SiteHpStep: 0.045
+    SiteAtkStep: 0.035
   legacyDisplayName: 
   legacyDescription: 

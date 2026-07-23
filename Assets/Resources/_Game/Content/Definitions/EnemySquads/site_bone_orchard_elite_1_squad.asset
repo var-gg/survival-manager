@@ -29,12 +29,12 @@ MonoBehaviour:
     CharacterId: npc_black_vellum
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: shaman_positive_swift
     NegativeTraitId: 
     EquipmentBudget: 2
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:
-    - affix_sturdy
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_elite_1_squad_2
@@ -46,7 +46,7 @@ MonoBehaviour:
     PositiveTraitId: 
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
@@ -65,14 +65,14 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_bone_orchard_elite_1_squad_4
     NameKey: 
-    ArchetypeId: hunter
+    ArchetypeId: marksman
     CharacterId: extra_lattice_root_usher
     Anchor: 5
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 

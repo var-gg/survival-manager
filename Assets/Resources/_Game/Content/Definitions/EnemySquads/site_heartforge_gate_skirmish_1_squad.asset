@@ -31,38 +31,29 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 3
-    EquipmentItemBaseId: item_guardian_shield
-    EquipmentAffixIds:
-    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_heartforge_gate_skirmish_1_squad_2
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: hunter
     CharacterId: extra_record_rights_marker
     Anchor: 2
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 3
+    EquipmentBudget: 1
     EquipmentItemBaseId: item_hunter_bow
-    EquipmentAffixIds:
-    - affix_precise
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_heartforge_gate_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: scout
     CharacterId: extra_heartforge_gate_warden
     Anchor: 3
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 3
-    EquipmentItemBaseId: item_priest_focus
-    EquipmentAffixIds:
-    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_heartforge_gate_skirmish_1_squad_4
@@ -73,7 +64,7 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
+    EquipmentBudget: 1
     EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []
     RuleModifierTags: []

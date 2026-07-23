@@ -19,6 +19,10 @@ MonoBehaviour:
   ThreatCost: 1
   SignatureAuraTag: boss_aura_pale_sustain_choir
   SignatureUtilityTag: boss_utility_memorial_loop
+  PressureClockFirstPulseSeconds: 1.4
+  PressureClockIntervalSeconds: 1
+  PressureClockMaxHealthDamageRatio: 0.333
+  PressureClockMaxPulses: 3
   RewardDropTags:
   - boss
   - boss_overlay_ruined_crypts

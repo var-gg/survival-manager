@@ -25,12 +25,12 @@ MonoBehaviour:
   Members:
   - Id: site_ashen_gate_skirmish_1_squad_1
     NameKey: 
-    ArchetypeId: bastion_penitent
+    ArchetypeId: guardian
     CharacterId: extra_kojin_gate_warden
     Anchor: 0
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: guardian_negative_frail
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_1_squad_2

@@ -29,7 +29,7 @@ MonoBehaviour:
     CharacterId: hero_shardblade
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: slayer_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 3
     EquipmentItemBaseId: item_reaver_blade
@@ -43,11 +43,12 @@ MonoBehaviour:
     CharacterId: extra_sample_b17_survivor
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: reaver_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 2
     EquipmentItemBaseId: item_reaver_blade
-    EquipmentAffixIds: []
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_elite_1_squad_3
@@ -56,11 +57,12 @@ MonoBehaviour:
     CharacterId: extra_menagerie_snare_runner
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: scout_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 2
     EquipmentItemBaseId: item_hunter_bow
-    EquipmentAffixIds: []
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_elite_1_squad_4
@@ -69,7 +71,7 @@ MonoBehaviour:
     CharacterId: extra_menagerie_keeper
     Anchor: 5
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: priest_positive_sturdy
     NegativeTraitId: 
     EquipmentBudget: 2
     EquipmentItemBaseId: item_priest_focus

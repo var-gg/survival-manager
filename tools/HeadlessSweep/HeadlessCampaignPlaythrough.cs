@@ -125,7 +125,8 @@ internal static class HeadlessCampaignPlaythrough
                     measured.FlankSurvival,
                     measured.AntiClusterAoeSurvival,
                     measured.ThreatLanding,
-                    won ? woundsApplied : 0));
+                    won ? woundsApplied : 0,
+                    measured.BossKillDynamics));
 
                 if (stopAtCurrentNode)
                 {
@@ -196,6 +197,9 @@ internal static class HeadlessCampaignPlaythrough
         var threatLandingObserver = encounter.Context.IsBoss
             ? new CampaignThreatLandingBattleObserver(battleState)
             : null;
+        var bossKillDynamicsObserver = encounter.Context.IsBoss
+            ? new BossKillDynamicsObserver(battleState, encounter)
+            : null;
         var result = BattleResolver.Run(
             battleState,
             BattleSimulator.DefaultMaxSteps,
@@ -204,12 +208,14 @@ internal static class HeadlessCampaignPlaythrough
                 survivalObserver.Observe(battleState, step);
                 antiClusterAoeObserver.Observe(battleState, step);
                 threatLandingObserver?.ObserveStep(step);
+                bossKillDynamicsObserver?.Observe(step);
             });
         return new HeadlessCampaignBattleOutcome(
             result,
             survivalObserver.Complete(battleState),
             antiClusterAoeObserver.Complete(battleState),
-            threatLandingObserver?.BuildObservation());
+            threatLandingObserver?.BuildObservation(),
+            bossKillDynamicsObserver?.Complete(result));
     }
 
     private static BattleResult? FindProgressionResult(

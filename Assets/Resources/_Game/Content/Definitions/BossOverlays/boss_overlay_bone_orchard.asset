@@ -19,6 +19,10 @@ MonoBehaviour:
   ThreatCost: 1
   SignatureAuraTag: boss_aura_lattice_growth
   SignatureUtilityTag: boss_utility_body_bloom
+  PressureClockFirstPulseSeconds: 1.4
+  PressureClockIntervalSeconds: 1
+  PressureClockMaxHealthDamageRatio: 0.303
+  PressureClockMaxPulses: 3
   RewardDropTags:
   - boss
   - boss_overlay_bone_orchard

@@ -25,15 +25,16 @@ MonoBehaviour:
   Members:
   - Id: site_bone_orchard_skirmish_2_squad_1
     NameKey: 
-    ArchetypeId: rift_stalker
+    ArchetypeId: scout
     CharacterId: extra_bone_orchard_watcher
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: scout_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_skirmish_2_squad_2
@@ -42,11 +43,12 @@ MonoBehaviour:
     CharacterId: npc_black_vellum
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: shaman_positive_swift
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentItemBaseId: item_priest_focus
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_skirmish_2_squad_3
@@ -55,11 +57,12 @@ MonoBehaviour:
     CharacterId: extra_lattice_echo_caretaker
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: raider_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_skirmish_2_squad_4
@@ -70,9 +73,6 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

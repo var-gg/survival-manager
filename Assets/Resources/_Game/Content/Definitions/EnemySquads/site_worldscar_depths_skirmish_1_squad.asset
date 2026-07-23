@@ -25,27 +25,27 @@ MonoBehaviour:
   Members:
   - Id: site_worldscar_depths_skirmish_1_squad_1
     NameKey: 
-    ArchetypeId: mirror_cantor
+    ArchetypeId: slayer
     CharacterId: extra_worldscar_archive_cell
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: slayer_positive_brave
     NegativeTraitId: 
-    EquipmentBudget: 3
-    EquipmentItemBaseId: item_priest_focus
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds:
     - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_worldscar_depths_skirmish_1_squad_2
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: shaman
     CharacterId: extra_worldscar_rite_echo
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: shaman_positive_swift
     NegativeTraitId: 
-    EquipmentBudget: 3
+    EquipmentBudget: 1
     EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:
     - affix_precise
@@ -53,29 +53,26 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_worldscar_depths_skirmish_1_squad_3
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: scout
     CharacterId: extra_worldscar_record_bailiff
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: scout_positive_brave
     NegativeTraitId: 
-    EquipmentBudget: 3
-    EquipmentItemBaseId: item_guardian_shield
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_hunter_bow
     EquipmentAffixIds:
     - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_worldscar_depths_skirmish_1_squad_4
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: priest
     CharacterId: extra_worldscar_archive_cell
     Anchor: 5
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
-    EquipmentItemBaseId: item_hunter_bow
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

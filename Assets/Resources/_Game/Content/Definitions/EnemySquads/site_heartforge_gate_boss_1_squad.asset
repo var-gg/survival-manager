@@ -58,7 +58,7 @@ MonoBehaviour:
     Anchor: 5
     Role: 2
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: hexer_negative_frail
     EquipmentBudget: 3
     EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:

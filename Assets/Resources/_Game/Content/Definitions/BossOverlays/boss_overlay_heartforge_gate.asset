@@ -19,6 +19,10 @@ MonoBehaviour:
   ThreatCost: 1
   SignatureAuraTag: boss_aura_heartforge_lock
   SignatureUtilityTag: boss_utility_record_rights
+  PressureClockFirstPulseSeconds: 1.5
+  PressureClockIntervalSeconds: 1.1
+  PressureClockMaxHealthDamageRatio: 0.1205
+  PressureClockMaxPulses: 3
   RewardDropTags:
   - boss
   - boss_overlay_heartforge_gate

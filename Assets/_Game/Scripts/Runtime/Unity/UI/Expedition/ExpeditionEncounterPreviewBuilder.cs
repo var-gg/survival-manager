@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
 using SM.Core.Content;
 using SM.Meta.Model;
 
@@ -17,6 +18,7 @@ internal sealed record ExpeditionEncounterPreview(
     string BossOverlayName,
     string BossAuraTag,
     string BossUtilityTag,
+    BossPressureClockSpec? BossPressureClock,
     IReadOnlyList<string> EnemyNames,
     IReadOnlyList<string> RewardDropTags);
 
@@ -69,6 +71,7 @@ internal static class ExpeditionEncounterPreviewBuilder
             hasOverlay ? ResolveDisplayName(overlay.Id, overlay.Name, null) : string.Empty,
             hasOverlay ? overlay.SignatureAuraTag : string.Empty,
             hasOverlay ? overlay.SignatureUtilityTag : string.Empty,
+            hasOverlay ? overlay.PressureClock : null,
             enemyNames,
             MergeRewardTags(encounter, squadRewardTags, overlayRewardTags));
         return true;

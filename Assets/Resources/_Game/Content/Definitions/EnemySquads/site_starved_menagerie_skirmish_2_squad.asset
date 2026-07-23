@@ -25,13 +25,13 @@ MonoBehaviour:
   Members:
   - Id: site_starved_menagerie_skirmish_2_squad_1
     NameKey: 
-    ArchetypeId: slayer
+    ArchetypeId: raider
     CharacterId: hero_shardblade
     Anchor: 0
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
+    EquipmentBudget: 1
     EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []
     RuleModifierTags: []
@@ -44,7 +44,7 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
+    EquipmentBudget: 1
     EquipmentItemBaseId: item_hunter_bow
     EquipmentAffixIds: []
     RuleModifierTags: []
@@ -57,7 +57,7 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
+    EquipmentBudget: 1
     EquipmentItemBaseId: item_hunter_bow
     EquipmentAffixIds: []
     RuleModifierTags: []
@@ -70,9 +70,6 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

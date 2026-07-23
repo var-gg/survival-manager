@@ -41,6 +41,7 @@ public sealed class ExpeditionEncounterPreviewBuilderFastTests
 
         Assert.That(preview.Kind, Is.EqualTo(EncounterKindValue.Boss));
         Assert.That(preview.BossOverlayName, Is.EqualTo("Worldscar Law"));
+        Assert.That(preview.BossPressureClock, Is.EqualTo(new BossPressureClockSpec(2.5f, 1.25f, 0.12f, 3)));
         Assert.That(preview.EnemyNames, Does.Contain("Captain: Baekgyu (Hexer)"));
         Assert.That(preview.EnemyNames, Does.Contain("Escort: Worldscar Archive Cell (Mirror Cantor)"));
         Assert.That(preview.RewardDropTags, Is.SupersetOf(new[] { "reward_source_boss", "answer_lane_adaptive_mastery", "boss_ask_final_record" }));
@@ -210,7 +211,8 @@ public sealed class ExpeditionEncounterPreviewBuilderFastTests
                     "boss_aura_worldscar_law",
                     "boss_utility_final_record",
                     new[] { "boss_ask_final_record" },
-                    Array.Empty<StatusApplicationSpec>()),
+                    Array.Empty<StatusApplicationSpec>(),
+                    new BossPressureClockSpec(2.5f, 1.25f, 0.12f, 3)),
             });
     }
 

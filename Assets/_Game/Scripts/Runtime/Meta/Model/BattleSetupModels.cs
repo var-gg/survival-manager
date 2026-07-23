@@ -199,7 +199,8 @@ public sealed record BossOverlayTemplate(
     string SignatureAuraTag,
     string SignatureUtilityTag,
     IReadOnlyList<string> RewardDropTags,
-    IReadOnlyList<StatusApplicationSpec> AppliedStatuses);
+    IReadOnlyList<StatusApplicationSpec> AppliedStatuses,
+    BossPressureClockSpec? PressureClock = null);
 
 public sealed record StatusFamilyTemplate(
     string Id,

@@ -29,8 +29,11 @@ MonoBehaviour:
     CharacterId: hero_iron_pelt
     Anchor: 0
     Role: 0
-    PositiveTraitId:
+    PositiveTraitId: guardian_positive_sturdy
     NegativeTraitId:
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_guardian_shield
+    EquipmentAffixIds: []
     EquipmentBudget: 0
     EquipmentItemBaseId:
     EquipmentAffixIds: []

@@ -72,6 +72,7 @@ internal static class HeadlessCampaignSweepRunner
                 TargetBoss: primary.TargetBoss,
                 TargetBossSurvival: primary.TargetBossSurvival,
                 TargetBossAoeSurvival: primary.TargetBossAoeSurvival,
+                BossKillDynamics: primary.BossKillDynamics,
                 ThreatLandingWitness: primary.ThreatLandingWitness,
                 WoundMeasure: primary.WoundMeasure,
                 Verification: verification);
@@ -198,6 +199,7 @@ internal static class HeadlessCampaignSweepRunner
             executions,
             config,
             stopAfterEncounterId);
+        var bossKillDynamics = BossKillDynamicsAggregator.Build(executions, config);
         var threatLandingWitness = accumulator.BuildThreatLandingReport();
         var woundMeasure = BuildWoundMeasure(executions);
         var canonical = new HeadlessCampaignCanonicalResult(
@@ -227,6 +229,7 @@ internal static class HeadlessCampaignSweepRunner
             targetBoss,
             targetBossSurvival,
             targetBossAoeSurvival,
+            bossKillDynamics,
             threatLandingWitness,
             woundMeasure,
             hash,
@@ -450,6 +453,7 @@ internal static class HeadlessCampaignSweepRunner
         HeadlessCampaignNodeBand TargetBoss,
         HeadlessCampaignSurvivalBand TargetBossSurvival,
         HeadlessCampaignAoeBand TargetBossAoeSurvival,
+        IReadOnlyList<HeadlessCampaignBossKillDynamicsBand> BossKillDynamics,
         CampaignThreatLandingWitnessReport ThreatLandingWitness,
         HeadlessCampaignWoundMeasure WoundMeasure,
         string Hash,

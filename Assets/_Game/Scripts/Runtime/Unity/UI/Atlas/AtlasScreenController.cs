@@ -207,7 +207,7 @@ public sealed class AtlasScreenController : MonoBehaviour
             : $"보상 징후: {FormatIntelList(preview.RewardDropTags, 3, FormatIntelToken)}";
         var boss = string.IsNullOrWhiteSpace(preview.BossOverlayName)
             ? string.Empty
-            : $"우두머리 징후: {FormatIntelToken(preview.BossOverlayName)}{FormatOptional(FormatIntelToken(preview.BossAuraTag), " · 오라 ")}{FormatOptional(FormatIntelToken(preview.BossUtilityTag), " · 보조 ")}";
+            : $"우두머리 징후: {FormatIntelToken(preview.BossOverlayName)}{FormatOptional(FormatIntelToken(preview.BossAuraTag), " · 오라 ")}{FormatOptional(FormatIntelToken(preview.BossUtilityTag), " · 보조 ")}{FormatBossPressureClock(preview.BossPressureClock)}";
 
         return new AtlasEnemyIntelViewState(
             true,
@@ -218,6 +218,16 @@ public sealed class AtlasScreenController : MonoBehaviour
             $"세력 징후: {FormatIntelToken(preview.FactionId)}",
             rewards,
             boss);
+    }
+
+    private static string FormatBossPressureClock(BossPressureClockSpec? clock)
+    {
+        if (clock?.IsEnabled != true)
+        {
+            return string.Empty;
+        }
+
+        return $" · 압박 시계 {clock.FirstPulseSeconds:0.#}초 후, {clock.IntervalSeconds:0.#}초 간격, 최대 체력 {clock.MaxHealthDamageRatio * 100f:0.#}% × {clock.MaxPulses}회";
     }
 
     private static string FormatIntelList(IEnumerable<string> values, int maxCount, Func<string, string> formatter)

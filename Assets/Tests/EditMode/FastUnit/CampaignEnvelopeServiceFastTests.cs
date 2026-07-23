@@ -39,8 +39,8 @@ public sealed class CampaignEnvelopeServiceFastTests
             5,
             new CampaignChapterBalanceTemplate(2f, 2f, 1f, 1f),
             2));
-        Assert.That(capped[StatKey.MaxHealth].Value, Is.EqualTo(0.14f).Within(0.0001f));
-        Assert.That(capped[StatKey.PhysPower].Value, Is.EqualTo(0.10f).Within(0.0001f));
+        Assert.That(capped[StatKey.MaxHealth].Value, Is.EqualTo(0.85f).Within(0.0001f));
+        Assert.That(capped[StatKey.PhysPower].Value, Is.EqualTo(0.52f).Within(0.0001f));
     }
 
     [Test]

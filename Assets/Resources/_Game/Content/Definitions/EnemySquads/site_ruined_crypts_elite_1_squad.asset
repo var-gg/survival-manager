@@ -29,12 +29,12 @@ MonoBehaviour:
     CharacterId: npc_silent_moon
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: hexer_positive_swift
     NegativeTraitId: 
     EquipmentBudget: 2
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_hexer_focus
     EquipmentAffixIds:
-    - affix_sturdy
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ruined_crypts_elite_1_squad_2
@@ -43,10 +43,10 @@ MonoBehaviour:
     CharacterId: extra_pale_tomb_sentinel
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: guardian_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_guardian_shield
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 

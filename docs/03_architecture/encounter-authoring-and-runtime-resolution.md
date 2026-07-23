@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-14
+- 최종수정일: 2026-07-23
 - 소스오브트루스: `docs/03_architecture/encounter-authoring-and-runtime-resolution.md`
 - 관련문서:
   - `docs/02_design/combat/encounter-catalog-and-scaling.md`
@@ -74,8 +74,17 @@ canonical content root는 아래 경로를 사용한다.
 ## boss bootstrap 규칙
 
 - `EncounterKindValue.Boss`면 `BossOverlayDefinition`을 추가 조회한다.
-- overlay는 captain/escort 구성 자체를 바꾸지 않고, phase/status/aura/reward tag를 bootstrap에 추가한다.
+- overlay는 captain/escort 구성 자체를 바꾸지 않고, phase/status/aura/reward tag와 선택적인 boss 전용 pressure clock을 bootstrap에 추가한다.
 - launch floor에서 boss overlay는 `guarded` 같은 상태와 signature utility tag를 먼저 적용한다.
+
+### boss pressure clock 계약
+
+- authored source는 `BossOverlayDefinition`의 `PressureClockFirstPulseSeconds`, `PressureClockIntervalSeconds`, `PressureClockMaxHealthDamageRatio`, `PressureClockMaxPulses` 네 필드다. 네 값이 모두 양수일 때만 clock이 활성화된다.
+- `SM.Unity.ContentConversion`은 authored 필드를 pure `BossPressureClockSpec`으로 변환하고, `EncounterResolutionService`는 boss captain의 `BattleUnitLoadout.BossPressureClock`에만 이를 부착한다. 일반 적과 escort에는 복제하지 않는다.
+- `BossPressureClockService`는 `BattleState.StepIndex`와 fixed step을 사용해 첫 pulse와 간격을 정수 tick으로 양자화한다. captain이 살아 있는 동안 최대 횟수까지만 발동하며 RNG와 mutable static state를 사용하지 않는다.
+- pulse는 생존 ally 각각에게 대상 최대 체력 비율 피해를 준다. 기존 `TakeDamage` 경로를 사용하므로 barrier가 먼저 흡수하고, 피해를 받은 유닛은 기존 피격 energy를 얻는다. 상시 heal reduction이나 원시 HP/ATK overlay로 대체하지 않는다.
+- 각 pulse는 `boss_pressure_clock:pulse_{n}` battle event와 `boss_pressure_clock` telemetry marker를 남긴다. clock kill도 기존 kill/assist 및 trigger 경로로 합류한다.
+- Atlas encounter preview는 첫 pulse 시점, 간격, 최대 체력 비율, 최대 횟수를 boss 정보에 노출한다. clock을 숨긴 채 런타임에만 발동시키지 않는다.
 
 ## debug-only fallback
 
@@ -100,3 +109,6 @@ normal expedition lane은 `GameSessionState.TryResolveCurrentEncounter()`가 `En
   - all story sites cleared => endless unlock
   - normal runtime path does not resolve `debug_smoke_observer`
   - authored enemy squad member `RuleModifierTags` reach enemy `BattleUnitLoadout.RulePackages`
+  - pressure clock은 authored tick에만 발동하고 barrier를 존중하며 최대 횟수 뒤 멈춤
+  - captain 사망 뒤 pressure clock 미발동
+  - boss preview에 authored pressure clock 값 노출

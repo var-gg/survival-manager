@@ -19,6 +19,10 @@ MonoBehaviour:
   ThreatCost: 1
   SignatureAuraTag: boss_aura_pureflame_tithe
   SignatureUtilityTag: boss_utility_mark_chain
+  PressureClockFirstPulseSeconds: 2.3
+  PressureClockIntervalSeconds: 1.4
+  PressureClockMaxHealthDamageRatio: 0.333
+  PressureClockMaxPulses: 3
   RewardDropTags:
   - boss
   - boss_overlay_tithe_road

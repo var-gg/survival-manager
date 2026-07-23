@@ -25,28 +25,22 @@ MonoBehaviour:
   Members:
   - Id: site_ruined_crypts_skirmish_2_squad_1
     NameKey: 
-    ArchetypeId: bulwark
+    ArchetypeId: guardian
     CharacterId: extra_pale_tomb_sentinel
     Anchor: 0
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ruined_crypts_skirmish_2_squad_2
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: raider
     CharacterId: npc_silent_moon
     Anchor: 2
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ruined_crypts_skirmish_2_squad_3
@@ -57,22 +51,16 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ruined_crypts_skirmish_2_squad_4
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: hunter
     CharacterId: extra_crypt_list_keeper
     Anchor: 5
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

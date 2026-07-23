@@ -29,11 +29,12 @@ MonoBehaviour:
     CharacterId: extra_lattice_root_usher
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: shaman_positive_swift
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentItemBaseId: item_priest_focus
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_skirmish_1_squad_2
@@ -42,11 +43,12 @@ MonoBehaviour:
     CharacterId: extra_lattice_echo_caretaker
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: scout_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_skirmish_1_squad_3
@@ -55,11 +57,12 @@ MonoBehaviour:
     CharacterId: extra_bone_orchard_watcher
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: reaver_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_bone_orchard_skirmish_1_squad_4
@@ -68,11 +71,12 @@ MonoBehaviour:
     CharacterId: extra_lattice_root_usher
     Anchor: 5
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: hunter_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

@@ -16,6 +16,10 @@ namespace SM.Content.Definitions
         public int ThreatCost = 1;
         public string SignatureAuraTag = string.Empty;
         public string SignatureUtilityTag = string.Empty;
+        [Min(0f)] public float PressureClockFirstPulseSeconds;
+        [Min(0f)] public float PressureClockIntervalSeconds;
+        [Range(0f, 1f)] public float PressureClockMaxHealthDamageRatio;
+        [Min(0)] public int PressureClockMaxPulses;
         public List<string> RewardDropTags = new();
         public List<StatusApplicationRule> AppliedStatuses = new();
 

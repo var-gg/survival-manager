@@ -12,8 +12,10 @@ namespace SM.Meta.Services;
 /// </summary>
 public static class CampaignEnvelopeService
 {
-    public const float HpHardCap = 1.14f;
-    public const float AtkHardCap = 1.10f;
+    // 힐-삶 난이도 오버홀(gpt-pro 방향): 기존 1.14/1.10 실링이 후반 엔벌롭을 강제로 밋밋하게
+    // 만들어 ch2+ 보스를 트리비얼화했다. Mid 프로파일(ch5 HP 1.55/ATK 1.35)이 물도록 절대상한까지 개방.
+    public const float HpHardCap = 1.85f;
+    public const float AtkHardCap = 1.52f;
 
     public static IReadOnlyList<CombatModifierPackage> BuildEnemyChapterPackages(
         int chapterOrder,

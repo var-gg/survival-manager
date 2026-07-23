@@ -67,6 +67,8 @@ public sealed class BattleSimulator
 
         StatusResolutionService.AdvanceStatuses(State, stepEvents);
         ProcessKillEvents(stepEvents, processedKillVictimIds);
+        BossPressureClockService.Advance(State, stepEvents);
+        ProcessKillEvents(stepEvents, processedKillVictimIds);
         State.ScheduleOwnedEntityDespawnIfOwnerDead();
         State.AdvanceOwnedEntityDespawns();
         if (CheckForWinner())

@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-18
+- 최종수정일: 2026-07-23
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -104,7 +104,7 @@
 - `sfx-hook-id-contract.md`: skill/status/common combat cue SFX hook id와 생성 주문서 규칙
 - `sfx-sound-style-bible.md`: SFX 음색 규칙, MOSS caption-first 프롬프트 계약, layered 합성 워크플로우
 - `presentation-cue-hook-coverage.md`: visual/audio cue hook 6축 inventory, 4-state(에셋없음/placeholder/필수누락/debug-only) 정책, normal-lane witness + seek/reset·배속 smoke 기준
-- `encounter-authoring-and-runtime-resolution.md`: chapter/site/encounter resolve와 debug fallback 경계
+- `encounter-authoring-and-runtime-resolution.md`: chapter/site/encounter resolve, boss pressure clock, debug fallback 경계
 - `recruit-offer-schema.md`: recruit preview, pack metadata, pity/scout state schema
 - `unit-economy-schema.md`: wallet, retrain state, duplicate conversion, dismiss footprint schema
 - `skill-tag-catalog-and-compatibility-resolution.md`: stable tag catalog와 compile/validation 계약

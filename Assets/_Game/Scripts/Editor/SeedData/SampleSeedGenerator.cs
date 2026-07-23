@@ -4234,56 +4234,74 @@ public static partial class SampleSeedGenerator
                 "site_ashen_gate", 1, "Ashen Gate", "잿문", "Fixed gate line with Solarium P09 patrols.", "솔라룸 P09 경비대와 맞서는 고정 관문 전선.",
                 "faction_solarum_border", ThreatTierValue.Tier1, "answer_lane_guard_anchor",
                 new[] { "encounter_family_bastion_front", "encounter_family_protect_carry", "encounter_family_control_cleanse", "encounter_family_sustain_grind" },
-                Members(Member("bastion_penitent", "extra_kojin_gate_warden"), Member("warden", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe"), Member("raider", "extra_border_reliquary_carry")),
+                Members(Member("guardian", "extra_kojin_gate_warden", "guardian_negative_frail"), Member("warden", "extra_solarum_border_lancer"), Member("hexer", "extra_solarum_sigil_scribe"), Member("raider", "extra_border_reliquary_carry")),
                 // sweep 2회전 조정(GPT 결정): skirmish_2 적 전체 화력 ×0.96 — 1챕 노드 하한(0.90) 복구.
                 Members(Member("guardian", "extra_kojin_gate_warden", "guardian_encounter_dampened_assault"), Member("scout", "extra_solarum_border_lancer", "scout_encounter_dampened_assault"), Member("hexer", "extra_solarum_sigil_scribe", "hexer_encounter_dampened_assault"), Member("hunter", "extra_border_reliquary_carry", "hunter_encounter_dampened_assault")),
-                Members(Member("bulwark", "hero_aegis_sentinel"), Member("hunter", "extra_solarum_border_lancer"), Member("mirror_cantor", "extra_solarum_sigil_scribe"), Member("warden", "extra_kojin_gate_warden")),
+                Members(
+                    Member("bulwark", "hero_aegis_sentinel", positiveTraitId: "bulwark_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield"),
+                    Member("hunter", "extra_solarum_border_lancer", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("mirror_cantor", "extra_solarum_sigil_scribe", equipmentBudget: 1f, equipmentItemBaseId: "item_cantor_focus"),
+                    Member("hunter", "extra_kojin_gate_warden", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow")),
                 Member("warden", "hero_aegis_sentinel"),
                 Members(
-                    Member("guardian", "extra_kojin_gate_warden", equipmentBudget: 1f, equipmentItemBaseId: "item_layered_armor"),
-                    Member("hunter", "extra_solarum_border_lancer", equipmentBudget: 2f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("guardian", "extra_kojin_gate_warden"),
+                    Member("hunter", "extra_solarum_border_lancer"),
                     Member("hexer", "extra_solarum_sigil_scribe")),
                 "boss_overlay_ashen_gate", "boss_aura_guard_anchor", "boss_utility_gate_lock", "guarded",
                 BossPosture: TeamPostureTypeValue.ProtectCarry,
                 BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
                 BossEscortTwoAnchor: DeploymentAnchorValue.BackTop,
                 BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
-                BossOpeningBarrier: 14f),
+                BossOpeningBarrier: 5f),
             new CampaignSiteSeed(
                 "chapter_ashen_gate", 1, "Ashen Gate", "잿문 장", "Break the Solarium border gate.", "솔라룸 국경 관문을 돌파한다.",
                 "site_wolfpine_trail", 2, "Wolfpine Trail", "늑대소나무길", "Pack scouts and Grey Fang's vanguard turn the route into a pursuit.", "팩 정찰대와 회조의 선봉대가 추적전으로 압박하는 숲길.",
                 "faction_wolfpine_pack", ThreatTierValue.Tier1, "answer_lane_peel_anti_dive",
                 new[] { "encounter_family_weakside_dive", "encounter_family_tempo_swarm", "encounter_family_mark_execute", "encounter_family_protect_carry" },
-                Members(Member("scout", "extra_wolfpine_outrider"), Member("raider", "extra_wolfpine_ember_runner_cell"), Member("hunter", "extra_grey_fang_vanguard"), Member("shaman", "extra_wolfpine_outrider")),
+                Members(
+                    Member("scout", "extra_wolfpine_outrider", positiveTraitId: "scout_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("raider", "extra_wolfpine_ember_runner_cell", positiveTraitId: "raider_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade"),
+                    Member("hunter", "extra_grey_fang_vanguard", positiveTraitId: "hunter_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("shaman", "extra_wolfpine_outrider", positiveTraitId: "shaman_positive_swift", equipmentBudget: 1f, equipmentItemBaseId: "item_priest_focus")),
                 // sweep 2회전 조정(GPT 결정): skirmish_2 적 전체 화력 ×0.92 — 1챕 노드 하한(0.90) 복구.
                 Members(Member("rift_stalker", "extra_wolfpine_outrider", "rift_stalker_encounter_pack_fatigue"), Member("raider", "hero_ember_runner", "raider_encounter_pack_fatigue"), Member("scout", "extra_grey_fang_vanguard", "scout_encounter_pack_fatigue"), Member("hunter", "extra_wolfpine_ember_runner_cell", "hunter_encounter_pack_fatigue")),
-                Members(Member("reaver", "npc_grey_fang"), Member("raider", "extra_grey_fang_vanguard"), Member("scout", "hero_ember_runner"), Member("shaman", "extra_wolfpine_outrider")),
+                Members(
+                    Member("reaver", "npc_grey_fang", positiveTraitId: "reaver_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("raider", "extra_grey_fang_vanguard", positiveTraitId: "raider_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("rift_stalker", "hero_ember_runner", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("shaman", "extra_wolfpine_outrider", positiveTraitId: "shaman_positive_swift", equipmentBudget: 1f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_precise" })),
                 Member(
                     "warden",
-                    "npc_grey_fang"),
+                    "npc_grey_fang",
+                    positiveTraitId: "warden_positive_brave",
+                    equipmentBudget: 1f,
+                    equipmentItemBaseId: "item_guardian_shield"),
                 Members(
                     Member(
                         "reaver",
                         "extra_wolfpine_outrider",
+                        positiveTraitId: "reaver_positive_brave",
                         equipmentBudget: 3f,
                         equipmentItemBaseId: "item_reaver_blade",
                         ruleModifierTags: new[] { "pack_pursuit" }),
                     Member(
-                        "reaver",
+                        "raider",
                         "extra_wolfpine_ember_runner_cell",
-                        equipmentBudget: 3f,
-                        equipmentItemBaseId: "item_reaver_blade",
-                        ruleModifierTags: new[] { "pack_pursuit" }),
+                        positiveTraitId: "raider_positive_brave",
+                        equipmentBudget: 1f,
+                        equipmentItemBaseId: "item_reaver_blade"),
                     Member(
                         "shaman",
                         "extra_grey_fang_vanguard",
-                        positiveTraitId: "shaman_positive_swift")),
+                        positiveTraitId: "shaman_positive_swift",
+                        equipmentBudget: 1f,
+                        equipmentItemBaseId: "item_priest_focus")),
                 "boss_overlay_wolfpine_trail", "boss_aura_sustain_guard", "boss_utility_backline_dive", "guarded",
                 BossPosture: TeamPostureTypeValue.AllInBackline,
                 BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
                 BossEscortTwoAnchor: DeploymentAnchorValue.FrontBottom,
                 BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
-                BossOpeningBarrier: 41.5f),
+                BossOpeningBarrier: 38f),
             new CampaignSiteSeed(
                 "chapter_sunken_bastion", 2, "Sunken Bastion", "가라앉은 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
                 "site_sunken_bastion", 1, "Sunken Bastion", "가라앉은 보루", "Shielded adjudicators protect a submerged reliquary.", "방패 든 심판관들이 잠긴 성물고를 지킨다.",
@@ -4291,11 +4309,19 @@ public static partial class SampleSeedGenerator
                 new[] { "encounter_family_bastion_front", "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry" },
                 // sweep 1회전 조정(22414461) 시드 동기 — skirmish1 guardian→raider, elite bastion_penitent→slayer
                 // (vanguard counted 쌍 해제·단역 CharacterId 유지). asset-단독 조정은 재시드가 되돌린다(회귀 함정).
-                Members(Member("raider", "extra_bastion_line_guard"), Member("bastion_penitent", "extra_bastion_reliquary_guard"), Member("priest", "extra_sunken_adjudicator_lieutenant"), Member("marksman", "extra_sunken_bastion_adjudicator")),
-                Members(Member("bulwark", "hero_iron_pelt"), Member("guardian", "extra_bastion_line_guard"), Member("hexer", "extra_sunken_bastion_adjudicator"), Member("priest", "extra_bastion_reliquary_guard")),
+                Members(
+                    Member("raider", "extra_bastion_line_guard", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade"),
+                    Member("guardian", "extra_bastion_reliquary_guard", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield"),
+                    Member("priest", "extra_sunken_adjudicator_lieutenant"),
+                    Member("scout", "extra_sunken_bastion_adjudicator", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow")),
+                Members(
+                    Member("warden", "hero_iron_pelt", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield"),
+                    Member("guardian", "extra_bastion_line_guard"),
+                    Member("scout", "extra_sunken_bastion_adjudicator", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("priest", "extra_bastion_reliquary_guard")),
                 // sweep 2회전 조정(GPT 결정): elite 비네임드 3체 화력 ×0.82(눌린 수행단) — 힐 노브(잠긴 성가)는
                 // 적측 회복 실측 0.0으로 죽은 노브 판명·삭제. 네임드(iron_pelt)·comp 무접촉.
-                Members(Member("guardian", "hero_iron_pelt"), Member("slayer", "extra_bastion_reliquary_guard", "slayer_encounter_suppressed_retinue"), Member("mirror_cantor", "extra_sunken_adjudicator_lieutenant", "mirror_cantor_encounter_suppressed_retinue"), Member("marksman", "extra_sunken_bastion_adjudicator", "marksman_encounter_suppressed_retinue")),
+                Members(Member("guardian", "hero_iron_pelt", positiveTraitId: "guardian_positive_sturdy", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield"), Member("slayer", "extra_bastion_reliquary_guard", "slayer_encounter_suppressed_retinue"), Member("mirror_cantor", "extra_sunken_adjudicator_lieutenant", "mirror_cantor_encounter_suppressed_retinue"), Member("marksman", "extra_sunken_bastion_adjudicator", "marksman_encounter_suppressed_retinue")),
                 Member("sunken_adjudicator_boss", "extra_sunken_bastion_adjudicator"),
                 Members(
                     Member("bastion_penitent", "extra_bastion_reliquary_guard", equipmentBudget: 2f, equipmentItemBaseId: "item_penitent_shield", equipmentAffixIds: new[] { "affix_sturdy" }),
@@ -4306,15 +4332,31 @@ public static partial class SampleSeedGenerator
                 BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
                 BossEscortTwoAnchor: DeploymentAnchorValue.FrontBottom,
                 BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
-                BossOpeningBarrier: 8f),
+                BossOpeningBarrier: 8f,
+                BossClockFirstPulseSeconds: 3f,
+                BossClockIntervalSeconds: 2f,
+                BossClockDamageRatio: 0.12f,
+                BossClockMaxPulses: 3),
             new CampaignSiteSeed(
                 "chapter_sunken_bastion", 2, "Sunken Bastion", "가라앉은 보루", "Break the drowned Solarium adjudication line.", "가라앉은 솔라룸 심판 전선을 무너뜨린다.",
                 "site_tithe_road", 2, "Tithe Road", "십일조로", "Marked carriers and pureflame escorts test cleanse timing.", "표식을 짊어진 징수 행렬과 순화 호위가 해제 타이밍을 시험한다.",
                 "faction_tithe_road", ThreatTierValue.Tier2, "answer_lane_anti_mark_cleanse",
                 new[] { "encounter_family_mark_execute", "encounter_family_control_cleanse", "encounter_family_weakside_dive", "encounter_family_sustain_grind" },
-                Members(Member("scout", "extra_tithe_mark_bearer"), Member("priest", "extra_tithe_chain_cantor"), Member("raider", "extra_tithe_executioner_proxy"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
-                Members(Member("marksman", "extra_tithe_mark_bearer"), Member("scout", "extra_tithe_executioner_proxy"), Member("guardian", "extra_tithe_chain_cantor"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
-                Members(Member("priest", "npc_lyra_sternfeld"), Member("pale_executor", "extra_tithe_executioner_proxy"), Member("scout", "extra_tithe_mark_bearer"), Member("hexer", "extra_tithe_inquisitor_pureflame")),
+                Members(
+                    Member("scout", "extra_tithe_mark_bearer", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("priest", "extra_tithe_chain_cantor"),
+                    Member("raider", "extra_tithe_executioner_proxy", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade"),
+                    Member("hexer", "extra_tithe_inquisitor_pureflame", equipmentBudget: 1f, equipmentItemBaseId: "item_hexer_focus")),
+                Members(
+                    Member("hunter", "extra_tithe_mark_bearer", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("scout", "extra_tithe_executioner_proxy", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("guardian", "extra_tithe_chain_cantor", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield"),
+                    Member("raider", "extra_tithe_inquisitor_pureflame", positiveTraitId: "raider_positive_sturdy", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade")),
+                Members(
+                    Member("priest", "npc_lyra_sternfeld", positiveTraitId: "priest_positive_sturdy", equipmentBudget: 1f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" }),
+                    Member("pale_executor", "extra_tithe_executioner_proxy", positiveTraitId: "pale_executor_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("scout", "extra_tithe_mark_bearer", positiveTraitId: "scout_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("hexer", "extra_tithe_inquisitor_pureflame", positiveTraitId: "hexer_positive_swift", equipmentBudget: 1f, equipmentItemBaseId: "item_hexer_focus", equipmentAffixIds: new[] { "affix_precise" })),
                 Member("bastion_penitent_tithe_boss", "npc_lyra_sternfeld", equipmentBudget: 2f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" }),
                 Members(
                     Member("warden", "extra_tithe_mark_bearer", equipmentBudget: 1f, equipmentItemBaseId: "item_layered_armor"),
@@ -4325,15 +4367,27 @@ public static partial class SampleSeedGenerator
                 BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
                 BossEscortTwoAnchor: DeploymentAnchorValue.FrontBottom,
                 BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
-                BossOpeningBarrier: 8f),
+                BossOpeningBarrier: 8f,
+                BossClockFirstPulseSeconds: 2.3f,
+                BossClockIntervalSeconds: 1.4f,
+                BossClockDamageRatio: 0.333f,
+                BossClockMaxPulses: 3),
             new CampaignSiteSeed(
                 "chapter_ruined_crypts", 3, "Ruined Crypts", "무너진 묘역", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
                 "site_ruined_crypts", 1, "Ruined Crypts", "무너진 묘역", "Archive keepers turn memorial records into attrition pressure.", "기록 수호자들이 추모 기록을 소모전 압박으로 바꾼다.",
                 "faction_pale_archive", ThreatTierValue.Tier3, "answer_lane_anti_sustain_finish",
                 new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_protect_carry", "encounter_family_summon_pressure" },
-                Members(Member("guardian", "extra_pale_memorial_keeper"), Member("hexer", "extra_pale_tomb_sentinel"), Member("mirror_cantor", "extra_black_roll_bailiff"), Member("hunter", "extra_crypt_list_keeper")),
-                Members(Member("bulwark", "extra_pale_tomb_sentinel"), Member("hexer", "npc_silent_moon"), Member("priest", "extra_pale_memorial_keeper"), Member("marksman", "extra_crypt_list_keeper")),
-                Members(Member("hexer", "npc_silent_moon"), Member("guardian", "extra_pale_tomb_sentinel"), Member("priest", "extra_pale_memorial_keeper"), Member("mirror_cantor", "extra_black_roll_bailiff")),
+                Members(
+                    Member("guardian", "extra_pale_memorial_keeper", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield"),
+                    Member("hexer", "extra_pale_tomb_sentinel", equipmentBudget: 1f, equipmentItemBaseId: "item_hexer_focus"),
+                    Member("mirror_cantor", "extra_black_roll_bailiff"),
+                    Member("hunter", "extra_crypt_list_keeper", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow")),
+                Members(Member("guardian", "extra_pale_tomb_sentinel"), Member("raider", "npc_silent_moon"), Member("priest", "extra_pale_memorial_keeper"), Member("hunter", "extra_crypt_list_keeper")),
+                Members(
+                    Member("hexer", "npc_silent_moon", positiveTraitId: "hexer_positive_swift", equipmentBudget: 2f, equipmentItemBaseId: "item_hexer_focus", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("guardian", "extra_pale_tomb_sentinel", positiveTraitId: "guardian_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield"),
+                    Member("priest", "extra_pale_memorial_keeper"),
+                    Member("mirror_cantor", "extra_black_roll_bailiff")),
                 Member("guardian", "npc_silent_moon", equipmentBudget: 3f, equipmentItemBaseId: "item_guardian_shield", equipmentAffixIds: new[] { "affix_sturdy" }),
                 Members(
                     Member("bastion_penitent", "extra_pale_tomb_sentinel", equipmentBudget: 3f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" }),
@@ -4344,15 +4398,31 @@ public static partial class SampleSeedGenerator
                 BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
                 BossEscortTwoAnchor: DeploymentAnchorValue.BackTop,
                 BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
-                BossOpeningBarrier: 14f),
+                BossOpeningBarrier: 14f,
+                BossClockFirstPulseSeconds: 1.4f,
+                BossClockIntervalSeconds: 1f,
+                BossClockDamageRatio: 0.333f,
+                BossClockMaxPulses: 3),
             new CampaignSiteSeed(
                 "chapter_ruined_crypts", 3, "Ruined Crypts", "무너진 묘역", "Cross the Pale Archive and its false memorials.", "창백 기록고와 거짓 추모지를 통과한다.",
                 "site_bone_orchard", 2, "Bone Orchard", "뼈 과수원", "Lattice-root watchers flood the lane with summoned bodies.", "격자뿌리 감시자들이 소환체로 전선을 채운다.",
                 "faction_bone_orchard", ThreatTierValue.Tier3, "answer_lane_anti_summon_burst",
                 new[] { "encounter_family_summon_pressure", "encounter_family_tempo_swarm", "encounter_family_mark_execute", "encounter_family_control_cleanse" },
-                Members(Member("shaman", "extra_lattice_root_usher"), Member("scout", "extra_lattice_echo_caretaker"), Member("reaver", "extra_bone_orchard_watcher"), Member("hunter", "extra_lattice_root_usher")),
-                Members(Member("rift_stalker", "extra_bone_orchard_watcher"), Member("shaman", "npc_black_vellum"), Member("raider", "extra_lattice_echo_caretaker"), Member("priest", "extra_lattice_root_usher")),
-                Members(Member("shaman", "npc_black_vellum"), Member("reaver", "extra_bone_orchard_watcher"), Member("mirror_cantor", "extra_lattice_echo_caretaker"), Member("hunter", "extra_lattice_root_usher")),
+                Members(
+                    Member("shaman", "extra_lattice_root_usher", positiveTraitId: "shaman_positive_swift", equipmentBudget: 1f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("scout", "extra_lattice_echo_caretaker", positiveTraitId: "scout_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("reaver", "extra_bone_orchard_watcher", positiveTraitId: "reaver_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("hunter", "extra_lattice_root_usher", positiveTraitId: "hunter_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" })),
+                Members(
+                    Member("scout", "extra_bone_orchard_watcher", positiveTraitId: "scout_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("shaman", "npc_black_vellum", positiveTraitId: "shaman_positive_swift", equipmentBudget: 1f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("raider", "extra_lattice_echo_caretaker", positiveTraitId: "raider_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("priest", "extra_lattice_root_usher")),
+                Members(
+                    Member("shaman", "npc_black_vellum", positiveTraitId: "shaman_positive_swift", equipmentBudget: 2f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("reaver", "extra_bone_orchard_watcher", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade"),
+                    Member("mirror_cantor", "extra_lattice_echo_caretaker"),
+                    Member("marksman", "extra_lattice_root_usher")),
                 Member("warden", "npc_black_vellum", equipmentBudget: 3f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" }),
                 Members(
                     Member("reaver", "extra_bone_orchard_watcher", equipmentBudget: 3f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_sturdy" }, ruleModifierTags: new[] { "duelist_hold_bruiser" }),
@@ -4363,52 +4433,112 @@ public static partial class SampleSeedGenerator
                 BossEscortOneAnchor: DeploymentAnchorValue.FrontTop,
                 BossEscortTwoAnchor: DeploymentAnchorValue.BackTop,
                 BossEscortThreeAnchor: DeploymentAnchorValue.BackBottom,
-                BossOpeningBarrier: 12f),
+                BossOpeningBarrier: 12f,
+                BossClockFirstPulseSeconds: 1.4f,
+                BossClockIntervalSeconds: 1f,
+                BossClockDamageRatio: 0.303f,
+                BossClockMaxPulses: 3),
             new CampaignSiteSeed(
                 "chapter_glass_forest", 4, "Glass Forest", "유리숲", "Enter the refracted Solarium record field.", "굴절된 솔라룸 기록장을 통과한다.",
                 "site_glass_forest", 1, "Glass Forest", "유리숲", "Shards, clerics, and recordkeepers split targeting priorities.", "유리 파편, 성직자, 기록관이 타깃 우선순위를 흔든다.",
                 "faction_glass_forest", ThreatTierValue.Tier3, "answer_lane_cleanse_mobility",
                 new[] { "encounter_family_control_cleanse", "encounter_family_mark_execute", "encounter_family_weakside_dive", "encounter_family_sustain_grind" },
                 // sweep 1회전 조정(22414461) 시드 동기 — skirmish1 marksman→raider(ranger 쌍 해제 + 근접 접점).
-                Members(Member("priest", "extra_glass_field_cleric"), Member("raider", "extra_glass_shard_bailiff"), Member("scout", "extra_glass_forest_recordkeeper"), Member("hexer", "extra_glass_field_cleric")),
-                Members(Member("marksman", "hero_prism_seeker"), Member("rift_stalker", "extra_glass_shard_bailiff"), Member("priest", "extra_glass_field_cleric"), Member("hexer", "extra_glass_forest_recordkeeper")),
-                Members(Member("marksman", "hero_prism_seeker"), Member("mirror_cantor", "extra_glass_forest_recordkeeper"), Member("scout", "extra_glass_shard_bailiff"), Member("priest", "extra_glass_field_cleric")),
+                Members(Member("priest", "extra_glass_field_cleric"), Member("raider", "extra_glass_shard_bailiff"), Member("scout", "extra_glass_forest_recordkeeper"), Member("hunter", "extra_glass_field_cleric")),
+                Members(
+                    Member("hunter", "hero_prism_seeker", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("raider", "extra_glass_shard_bailiff", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade"),
+                    Member("priest", "extra_glass_field_cleric"),
+                    Member("scout", "extra_glass_forest_recordkeeper")),
+                Members(
+                    Member("reaver", "hero_prism_seeker", "reaver_negative_frail"),
+                    Member("guardian", "extra_glass_forest_recordkeeper", positiveTraitId: "guardian_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_guardian_shield", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("hunter", "extra_glass_shard_bailiff", positiveTraitId: "hunter_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("priest", "extra_glass_field_cleric", positiveTraitId: "priest_positive_sturdy", equipmentBudget: 1f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_sturdy" })),
                 Member("marksman", "hero_prism_seeker"),
                 Members(Member("mirror_cantor", "extra_glass_forest_recordkeeper"), Member("scout", "extra_glass_shard_bailiff")),
-                "boss_overlay_glass_forest", "boss_aura_refraction", "boss_utility_shard_redirect", "exposed"),
+                "boss_overlay_glass_forest", "boss_aura_refraction", "boss_utility_shard_redirect", "exposed",
+                BossClockFirstPulseSeconds: 1.5f,
+                BossClockIntervalSeconds: 1f,
+                BossClockDamageRatio: 0.16f,
+                BossClockMaxPulses: 3),
             new CampaignSiteSeed(
                 "chapter_glass_forest", 4, "Glass Forest", "유리숲", "Enter the refracted Solarium record field.", "굴절된 솔라룸 기록장을 통과한다.",
                 "site_starved_menagerie", 2, "Starved Menagerie", "굶주린 우리", "Broken specimens and snare runners create long swarm pressure.", "부서진 표본과 덫 주자들이 긴 압박을 만든다.",
                 "faction_starved_menagerie", ThreatTierValue.Tier3, "answer_lane_anti_swarm_persistence",
                 new[] { "encounter_family_tempo_swarm", "encounter_family_summon_pressure", "encounter_family_weakside_dive", "encounter_family_mark_execute" },
-                Members(Member("raider", "extra_menagerie_snare_runner"), Member("scout", "extra_sample_b17_survivor"), Member("shaman", "extra_menagerie_keeper"), Member("hunter", "extra_menagerie_snare_runner")),
-                Members(Member("slayer", "hero_shardblade"), Member("hunter", "extra_sample_b17_survivor"), Member("scout", "extra_menagerie_snare_runner"), Member("priest", "extra_menagerie_keeper")),
-                Members(Member("slayer", "hero_shardblade"), Member("reaver", "extra_sample_b17_survivor"), Member("scout", "extra_menagerie_snare_runner"), Member("priest", "extra_menagerie_keeper")),
+                Members(
+                    Member("raider", "extra_menagerie_snare_runner", positiveTraitId: "raider_positive_brave", equipmentBudget: 2f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("scout", "extra_sample_b17_survivor", positiveTraitId: "scout_positive_brave", equipmentBudget: 2f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("shaman", "extra_menagerie_keeper", positiveTraitId: "shaman_positive_swift", equipmentBudget: 2f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("hunter", "extra_menagerie_snare_runner", equipmentBudget: 1f, equipmentItemBaseId: "item_layered_armor", equipmentAffixIds: new[] { "affix_precise" })),
+                Members(
+                    Member("raider", "hero_shardblade", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade"),
+                    Member("hunter", "extra_sample_b17_survivor", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("scout", "extra_menagerie_snare_runner", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("priest", "extra_menagerie_keeper")),
+                Members(
+                    Member("slayer", "hero_shardblade", positiveTraitId: "slayer_positive_brave", equipmentBudget: 3f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("reaver", "extra_sample_b17_survivor", positiveTraitId: "reaver_positive_brave", equipmentBudget: 2f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("scout", "extra_menagerie_snare_runner", positiveTraitId: "scout_positive_brave", equipmentBudget: 2f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("priest", "extra_menagerie_keeper", positiveTraitId: "priest_positive_sturdy")),
                 Member("slayer", "hero_shardblade"),
                 Members(Member("scout", "extra_menagerie_snare_runner"), Member("priest", "extra_menagerie_keeper")),
-                "boss_overlay_starved_menagerie", "boss_aura_starved_swarm", "boss_utility_snare_release", "wound"),
+                "boss_overlay_starved_menagerie", "boss_aura_starved_swarm", "boss_utility_snare_release", "wound",
+                BossClockFirstPulseSeconds: 0.8f,
+                BossClockIntervalSeconds: 0.65f,
+                BossClockDamageRatio: 0.333f,
+                BossClockMaxPulses: 3),
             new CampaignSiteSeed(
                 "chapter_heartforge_descent", 5, "Heartforge Descent", "심장단조 하강", "Push through the final gate into the worldscar.", "최종 관문을 지나 세계상처 심부로 내려간다.",
                 "site_heartforge_gate", 1, "Heartforge Gate", "심장단조 관문", "Gate guards and record-right markers test hybrid break tools.", "관문 경비와 기록권 표식이 혼합 돌파 수단을 시험한다.",
                 "faction_heartforge_gate", ThreatTierValue.Tier3, "answer_lane_hybrid_break",
                 new[] { "encounter_family_bastion_front", "encounter_family_mark_execute", "encounter_family_control_cleanse", "encounter_family_protect_carry" },
-                Members(Member("guardian", "extra_heartforge_gate_guard"), Member("marksman", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_warden"), Member("raider", "extra_heartforge_gate_guard")),
-                Members(Member("bulwark", "extra_heartforge_gate_warden"), Member("pale_executor", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_guard"), Member("shaman", "extra_record_rights_marker")),
+                Members(
+                    Member("guardian", "extra_heartforge_gate_guard"),
+                    Member("hunter", "extra_record_rights_marker", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("scout", "extra_heartforge_gate_warden"),
+                    Member("raider", "extra_heartforge_gate_guard", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade")),
+                Members(
+                    Member("warden", "extra_heartforge_gate_warden"),
+                    Member("raider", "extra_record_rights_marker", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade"),
+                    Member("hunter", "extra_heartforge_gate_guard", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow"),
+                    Member("shaman", "extra_record_rights_marker")),
                 Members(Member("bulwark", "hero_aegis_sentinel"), Member("pale_executor", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_warden"), Member("shaman", "extra_heartforge_gate_guard")),
                 Member("bulwark", "hero_aegis_sentinel"),
-                Members(Member("pale_executor", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_warden")),
-                "boss_overlay_heartforge_gate", "boss_aura_heartforge_lock", "boss_utility_record_rights", "sunder"),
+                Members(Member("pale_executor", "extra_record_rights_marker"), Member("hexer", "extra_heartforge_gate_warden", "hexer_negative_frail")),
+                "boss_overlay_heartforge_gate", "boss_aura_heartforge_lock", "boss_utility_record_rights", "sunder",
+                BossClockFirstPulseSeconds: 1.5f,
+                BossClockIntervalSeconds: 1.1f,
+                BossClockDamageRatio: 0.1205f,
+                BossClockMaxPulses: 3),
             new CampaignSiteSeed(
                 "chapter_heartforge_descent", 5, "Heartforge Descent", "심장단조 하강", "Push through the final gate into the worldscar.", "최종 관문을 지나 세계상처 심부로 내려간다.",
                 "site_worldscar_depths", 2, "Worldscar Depths", "세계상처 심부", "Baekgyu's final archive cell combines every prior pressure lane.", "백규의 최종 기록 감방이 이전 전선 압박을 모두 결합한다.",
                 "faction_worldscar_depths", ThreatTierValue.Tier3, "answer_lane_adaptive_mastery",
                 new[] { "encounter_family_control_cleanse", "encounter_family_sustain_grind", "encounter_family_summon_pressure", "encounter_family_bastion_front" },
-                Members(Member("mirror_cantor", "extra_worldscar_archive_cell"), Member("hexer", "extra_worldscar_rite_echo"), Member("guardian", "extra_worldscar_record_bailiff"), Member("marksman", "extra_worldscar_archive_cell")),
-                Members(Member("pale_executor", "extra_worldscar_record_bailiff"), Member("shaman", "extra_worldscar_rite_echo"), Member("rift_stalker", "extra_worldscar_archive_cell"), Member("priest", "extra_worldscar_record_bailiff")),
-                Members(Member("hexer", "npc_baekgyu_sternheim"), Member("mirror_cantor", "extra_worldscar_archive_cell"), Member("guardian", "extra_worldscar_record_bailiff"), Member("shaman", "extra_worldscar_rite_echo")),
+                Members(
+                    Member("slayer", "extra_worldscar_archive_cell", positiveTraitId: "slayer_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("shaman", "extra_worldscar_rite_echo", positiveTraitId: "shaman_positive_swift", equipmentBudget: 1f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("scout", "extra_worldscar_record_bailiff", positiveTraitId: "scout_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("priest", "extra_worldscar_archive_cell")),
+                Members(
+                    Member("reaver", "extra_worldscar_record_bailiff", positiveTraitId: "reaver_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("shaman", "extra_worldscar_rite_echo", positiveTraitId: "shaman_positive_swift", equipmentBudget: 1f, equipmentItemBaseId: "item_priest_focus", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("scout", "extra_worldscar_archive_cell", positiveTraitId: "scout_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise" }),
+                    Member("priest", "extra_worldscar_record_bailiff")),
+                Members(
+                    Member("reaver", "npc_baekgyu_sternheim", positiveTraitId: "reaver_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_packborn" }),
+                    Member("mirror_cantor", "extra_worldscar_archive_cell"),
+                    Member("hunter", "extra_worldscar_record_bailiff", positiveTraitId: "hunter_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_hunter_bow", equipmentAffixIds: new[] { "affix_precise", "affix_packborn" }),
+                    Member("slayer", "extra_worldscar_rite_echo", positiveTraitId: "slayer_positive_brave", equipmentBudget: 1f, equipmentItemBaseId: "item_reaver_blade", equipmentAffixIds: new[] { "affix_precise" })),
                 Member("hexer", "npc_baekgyu_sternheim"),
                 Members(Member("mirror_cantor", "extra_worldscar_archive_cell"), Member("guardian", "extra_worldscar_record_bailiff")),
-                "boss_overlay_worldscar_depths", "boss_aura_worldscar_law", "boss_utility_final_record", "silence"),
+                "boss_overlay_worldscar_depths", "boss_aura_worldscar_law", "boss_utility_final_record", "silence",
+                BossClockFirstPulseSeconds: 1.5f,
+                BossClockIntervalSeconds: 1.2f,
+                BossClockDamageRatio: 0.225f,
+                BossClockMaxPulses: 4),
         };
     }
 
@@ -4620,7 +4750,11 @@ public static partial class SampleSeedGenerator
         DeploymentAnchorValue BossEscortOneAnchor = DeploymentAnchorValue.BackTop,
         DeploymentAnchorValue BossEscortTwoAnchor = DeploymentAnchorValue.BackBottom,
         DeploymentAnchorValue BossEscortThreeAnchor = DeploymentAnchorValue.FrontBottom,
-        float BossOpeningBarrier = 0f);
+        float BossOpeningBarrier = 0f,
+        float BossClockFirstPulseSeconds = 0f,
+        float BossClockIntervalSeconds = 0f,
+        float BossClockDamageRatio = 0f,
+        int BossClockMaxPulses = 0);
 
     private sealed record EnemyMemberSeed(
         string ArchetypeId,
@@ -4699,6 +4833,10 @@ public static partial class SampleSeedGenerator
             asset.ThreatCost = 1;
             asset.SignatureAuraTag = site.OverlayAuraTag;
             asset.SignatureUtilityTag = site.OverlayUtilityTag;
+            asset.PressureClockFirstPulseSeconds = site.BossClockFirstPulseSeconds;
+            asset.PressureClockIntervalSeconds = site.BossClockIntervalSeconds;
+            asset.PressureClockMaxHealthDamageRatio = site.BossClockDamageRatio;
+            asset.PressureClockMaxPulses = site.BossClockMaxPulses;
             asset.RewardDropTags = new List<string> { "boss", site.OverlayId, site.SiteId, site.OverlayAuraTag, site.OverlayUtilityTag };
             asset.AppliedStatuses = new List<StatusApplicationRule>
             {

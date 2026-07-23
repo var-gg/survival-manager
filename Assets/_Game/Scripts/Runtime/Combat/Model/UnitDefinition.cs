@@ -91,7 +91,8 @@ public record BattleUnitLoadout(
     string RoleInstructionId = "",
     DominantHand DominantHand = DominantHand.Right,
     IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null,
-    PlayerTargetDirective TargetDirective = PlayerTargetDirective.Default)
+    PlayerTargetDirective TargetDirective = PlayerTargetDirective.Default,
+    BossPressureClockSpec? BossPressureClock = null)
 {
     public IReadOnlyList<TacticRule> Tactics => RuleChains.SelectMany(chain => chain.Rules).ToList();
 

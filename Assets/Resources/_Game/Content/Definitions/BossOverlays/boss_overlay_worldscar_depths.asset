@@ -19,6 +19,10 @@ MonoBehaviour:
   ThreatCost: 1
   SignatureAuraTag: boss_aura_worldscar_law
   SignatureUtilityTag: boss_utility_final_record
+  PressureClockFirstPulseSeconds: 1.5
+  PressureClockIntervalSeconds: 1.2
+  PressureClockMaxHealthDamageRatio: 0.225
+  PressureClockMaxPulses: 4
   RewardDropTags:
   - boss
   - boss_overlay_worldscar_depths

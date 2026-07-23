@@ -25,14 +25,14 @@ MonoBehaviour:
   Members:
   - Id: site_worldscar_depths_elite_1_squad_1
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: reaver
     CharacterId: npc_baekgyu_sternheim
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: reaver_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 4
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds:
     - affix_packborn
     RuleModifierTags: []
@@ -53,28 +53,29 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_worldscar_depths_elite_1_squad_3
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: hunter
     CharacterId: extra_worldscar_record_bailiff
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: hunter_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 3
-    EquipmentItemBaseId: item_guardian_shield
+    EquipmentItemBaseId: item_hunter_bow
     EquipmentAffixIds:
     - affix_precise
+    - affix_packborn
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_worldscar_depths_elite_1_squad_4
     NameKey: 
-    ArchetypeId: shaman
+    ArchetypeId: slayer
     CharacterId: extra_worldscar_rite_echo
     Anchor: 5
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: slayer_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 3
-    EquipmentItemBaseId: item_priest_focus
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds:
     - affix_precise
     RuleModifierTags: []

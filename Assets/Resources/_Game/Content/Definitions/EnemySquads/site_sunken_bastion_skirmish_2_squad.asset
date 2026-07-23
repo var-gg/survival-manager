@@ -25,12 +25,15 @@ MonoBehaviour:
   Members:
   - Id: site_sunken_bastion_skirmish_2_squad_1
     NameKey: 
-    ArchetypeId: bulwark
+    ArchetypeId: warden
     CharacterId: hero_iron_pelt
     Anchor: 0
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_guardian_shield
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_skirmish_2_squad_2
@@ -45,12 +48,15 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_sunken_bastion_skirmish_2_squad_3
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: scout
     CharacterId: extra_sunken_bastion_adjudicator
     Anchor: 3
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_skirmish_2_squad_4

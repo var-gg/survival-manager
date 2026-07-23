@@ -31,16 +31,22 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_skirmish_1_squad_2
     NameKey: 
-    ArchetypeId: bastion_penitent
+    ArchetypeId: guardian
     CharacterId: extra_bastion_reliquary_guard
     Anchor: 2
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_guardian_shield
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_sunken_bastion_skirmish_1_squad_3
@@ -55,12 +61,15 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_sunken_bastion_skirmish_1_squad_4
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: scout
     CharacterId: extra_sunken_bastion_adjudicator
     Anchor: 5
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

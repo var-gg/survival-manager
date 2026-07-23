@@ -29,8 +29,11 @@ MonoBehaviour:
     CharacterId: hero_aegis_sentinel
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: bulwark_positive_brave
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_guardian_shield
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_elite_1_squad_2
@@ -41,6 +44,9 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_elite_1_squad_3
@@ -51,16 +57,22 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_cantor_focus
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_elite_1_squad_4
     NameKey: 
-    ArchetypeId: warden
+    ArchetypeId: hunter
     CharacterId: extra_kojin_gate_warden
     Anchor: 5
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

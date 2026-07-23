@@ -29,8 +29,12 @@ MonoBehaviour:
     CharacterId: npc_lyra_sternfeld
     Anchor: 0
     Role: 0
-    PositiveTraitId:
+    PositiveTraitId: priest_positive_sturdy
     NegativeTraitId:
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_layered_armor
+    EquipmentAffixIds:
+    - affix_sturdy
     EquipmentBudget: 0
     EquipmentItemBaseId:
     EquipmentAffixIds: []
@@ -42,8 +46,12 @@ MonoBehaviour:
     CharacterId: extra_tithe_executioner_proxy
     Anchor: 2
     Role: 0
-    PositiveTraitId:
+    PositiveTraitId: pale_executor_positive_brave
     NegativeTraitId:
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_reaver_blade
+    EquipmentAffixIds:
+    - affix_precise
     EquipmentBudget: 0
     EquipmentItemBaseId:
     EquipmentAffixIds: []
@@ -56,8 +64,12 @@ MonoBehaviour:
     CharacterId: extra_tithe_mark_bearer
     Anchor: 3
     Role: 0
-    PositiveTraitId:
+    PositiveTraitId: scout_positive_brave
     NegativeTraitId:
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_hunter_bow
+    EquipmentAffixIds:
+    - affix_precise
     EquipmentBudget: 0
     EquipmentItemBaseId:
     EquipmentAffixIds: []
@@ -69,8 +81,12 @@ MonoBehaviour:
     CharacterId: extra_tithe_inquisitor_pureflame
     Anchor: 5
     Role: 0
-    PositiveTraitId:
+    PositiveTraitId: hexer_positive_swift
     NegativeTraitId:
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_hexer_focus
+    EquipmentAffixIds:
+    - affix_precise
     EquipmentBudget: 0
     EquipmentItemBaseId:
     EquipmentAffixIds: []

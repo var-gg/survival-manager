@@ -158,6 +158,16 @@ internal static class CampaignConverter
 
     internal static BossOverlayTemplate BuildBossOverlayTemplate(BossOverlayDefinition definition)
     {
+        var pressureClock = definition.PressureClockFirstPulseSeconds > 0f
+                            && definition.PressureClockIntervalSeconds > 0f
+                            && definition.PressureClockMaxHealthDamageRatio > 0f
+                            && definition.PressureClockMaxPulses > 0
+            ? new BossPressureClockSpec(
+                definition.PressureClockFirstPulseSeconds,
+                definition.PressureClockIntervalSeconds,
+                Math.Clamp(definition.PressureClockMaxHealthDamageRatio, 0f, 1f),
+                definition.PressureClockMaxPulses)
+            : null;
         return new BossOverlayTemplate(
             definition.Id,
             ResolveLegacyName(definition.NameKey, definition.LegacyDisplayName, definition.Id),
@@ -178,6 +188,7 @@ internal static class CampaignConverter
                     rule.Magnitude,
                     Math.Max(1, rule.MaxStacks),
                     rule.RefreshDurationOnReapply))
-                .ToList());
+                .ToList(),
+            pressureClock);
     }
 }

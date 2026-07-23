@@ -25,27 +25,27 @@ MonoBehaviour:
   Members:
   - Id: site_glass_forest_skirmish_2_squad_1
     NameKey: 
-    ArchetypeId: marksman
+    ArchetypeId: hunter
     CharacterId: hero_prism_seeker
     Anchor: 0
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
+    EquipmentBudget: 1
     EquipmentItemBaseId: item_hunter_bow
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_glass_forest_skirmish_2_squad_2
     NameKey: 
-    ArchetypeId: rift_stalker
+    ArchetypeId: raider
     CharacterId: extra_glass_shard_bailiff
     Anchor: 2
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
-    EquipmentItemBaseId: item_hunter_bow
+    EquipmentBudget: 1
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
@@ -57,22 +57,16 @@ MonoBehaviour:
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 2
-    EquipmentItemBaseId: item_priest_focus
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_glass_forest_skirmish_2_squad_4
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: scout
     CharacterId: extra_glass_forest_recordkeeper
     Anchor: 5
     Role: 0
     PositiveTraitId: 
     NegativeTraitId: 
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

@@ -23,7 +23,7 @@ MonoBehaviour:
   Balance:
     HpEnvelope: 1
     AtkEnvelope: 1
-    SiteHpStep: 0.01
-    SiteAtkStep: 0.005
+    SiteHpStep: 0.035
+    SiteAtkStep: 0.025
   legacyDisplayName: 
   legacyDescription: 

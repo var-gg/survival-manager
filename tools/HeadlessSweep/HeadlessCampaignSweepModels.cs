@@ -63,7 +63,35 @@ internal sealed record HeadlessCampaignBattleOutcome(
     BattleResult Result,
     HeadlessCampaignFlankSurvival FlankSurvival,
     HeadlessCampaignAoeSurvival AntiClusterAoeSurvival,
-    CampaignThreatLandingObservation? ThreatLanding);
+    CampaignThreatLandingObservation? ThreatLanding,
+    HeadlessCampaignBossKillDynamicsSample? BossKillDynamics);
+
+internal sealed record HeadlessCampaignBossKillDynamicsSample(
+    double DurationSeconds,
+    double? BossDeathTimeSeconds,
+    double BossDamageDealt,
+    int PlayerDeaths,
+    double? TimeTo75PercentSeconds,
+    double? TimeTo50PercentSeconds,
+    double? TimeTo25PercentSeconds);
+
+internal sealed record HeadlessCampaignBossKillDynamicsArm(
+    string ArmId,
+    string PolicyId,
+    int Samples,
+    double MedianDurationSeconds,
+    double? MedianBossDeathTimeSeconds,
+    double MedianBossDamageDealt,
+    int TotalPlayerDeaths,
+    int SamplesWithPlayerDeath,
+    double? MedianTimeTo75PercentSeconds,
+    double? MedianTimeTo50PercentSeconds,
+    double? MedianTimeTo25PercentSeconds);
+
+internal sealed record HeadlessCampaignBossKillDynamicsBand(
+    string EncounterId,
+    HeadlessCampaignBossKillDynamicsArm Naive,
+    HeadlessCampaignBossKillDynamicsArm Informed);
 
 internal sealed record HeadlessCampaignAoeSurvival(
     int BossAoeCastCount,
@@ -86,7 +114,8 @@ internal sealed record HeadlessCampaignNodeObservation(
     HeadlessCampaignFlankSurvival FlankSurvival,
     HeadlessCampaignAoeSurvival AntiClusterAoeSurvival,
     CampaignThreatLandingObservation? ThreatLanding,
-    int WoundsApplied);
+    int WoundsApplied,
+    HeadlessCampaignBossKillDynamicsSample? BossKillDynamics);
 
 internal sealed record HeadlessCampaignSiteObservation(
     CampaignSiteIdentity Identity,
@@ -255,6 +284,7 @@ internal sealed record HeadlessCampaignSweepReport(
     HeadlessCampaignNodeBand TargetBoss,
     HeadlessCampaignSurvivalBand TargetBossSurvival,
     HeadlessCampaignAoeBand TargetBossAoeSurvival,
+    IReadOnlyList<HeadlessCampaignBossKillDynamicsBand> BossKillDynamics,
     CampaignThreatLandingWitnessReport ThreatLandingWitness,
     HeadlessCampaignWoundMeasure WoundMeasure,
     HeadlessCampaignVerification Verification);

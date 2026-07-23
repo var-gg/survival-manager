@@ -29,11 +29,12 @@ MonoBehaviour:
     CharacterId: extra_menagerie_snare_runner
     Anchor: 0
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: raider_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 2
     EquipmentItemBaseId: item_reaver_blade
-    EquipmentAffixIds: []
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_skirmish_1_squad_2
@@ -42,11 +43,12 @@ MonoBehaviour:
     CharacterId: extra_sample_b17_survivor
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: scout_positive_brave
     NegativeTraitId: 
     EquipmentBudget: 2
     EquipmentItemBaseId: item_hunter_bow
-    EquipmentAffixIds: []
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_skirmish_1_squad_3
@@ -55,11 +57,12 @@ MonoBehaviour:
     CharacterId: extra_menagerie_keeper
     Anchor: 3
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: shaman_positive_swift
     NegativeTraitId: 
     EquipmentBudget: 2
     EquipmentItemBaseId: item_priest_focus
-    EquipmentAffixIds: []
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_starved_menagerie_skirmish_1_squad_4
@@ -72,7 +75,8 @@ MonoBehaviour:
     NegativeTraitId: 
     EquipmentBudget: 1
     EquipmentItemBaseId: item_layered_armor
-    EquipmentAffixIds: []
+    EquipmentAffixIds:
+    - affix_precise
     RuleModifierTags: []
     legacyDisplayName: 
   legacyDisplayName: 

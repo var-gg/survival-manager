@@ -44,8 +44,8 @@ MonoBehaviour:
     Role: 2
     PositiveTraitId:
     NegativeTraitId:
-    EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName:
@@ -57,8 +57,8 @@ MonoBehaviour:
     Role: 2
     PositiveTraitId:
     NegativeTraitId:
-    EquipmentBudget: 2
-    EquipmentItemBaseId: item_hunter_bow
+    EquipmentBudget: 0
+    EquipmentItemBaseId:
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName:

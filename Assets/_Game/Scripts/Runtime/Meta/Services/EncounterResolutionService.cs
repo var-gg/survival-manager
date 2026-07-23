@@ -567,6 +567,7 @@ public sealed class EncounterResolutionService
             {
                 CompileTags = tags.OrderBy(tag => tag, StringComparer.Ordinal).ToList(),
                 RulePackages = rulePackages,
+                BossPressureClock = overlay.PressureClock,
             });
         }
 

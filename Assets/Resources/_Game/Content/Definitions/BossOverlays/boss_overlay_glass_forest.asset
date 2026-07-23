@@ -19,6 +19,10 @@ MonoBehaviour:
   ThreatCost: 1
   SignatureAuraTag: boss_aura_refraction
   SignatureUtilityTag: boss_utility_shard_redirect
+  PressureClockFirstPulseSeconds: 1.5
+  PressureClockIntervalSeconds: 1
+  PressureClockMaxHealthDamageRatio: 0.16
+  PressureClockMaxPulses: 3
   RewardDropTags:
   - boss
   - boss_overlay_glass_forest

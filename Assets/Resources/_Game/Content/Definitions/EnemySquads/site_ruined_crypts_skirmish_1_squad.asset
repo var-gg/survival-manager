@@ -32,7 +32,7 @@ MonoBehaviour:
     PositiveTraitId: 
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_guardian_shield
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
@@ -45,7 +45,7 @@ MonoBehaviour:
     PositiveTraitId: 
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_hexer_focus
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
@@ -71,7 +71,7 @@ MonoBehaviour:
     PositiveTraitId: 
     NegativeTraitId: 
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_hunter_bow
     EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 

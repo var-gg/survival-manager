@@ -64,7 +64,7 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_glass_forest_skirmish_1_squad_4
     NameKey: 
-    ArchetypeId: hexer
+    ArchetypeId: hunter
     CharacterId: extra_glass_field_cleric
     Anchor: 5
     Role: 0

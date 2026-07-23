@@ -48,7 +48,7 @@ public sealed class BossDeckBuild2AContentTests
         Assert.That(classCounts.Where(pair => pair.Value >= 2).Select(pair => pair.Key), Is.EquivalentTo(expectedPairs));
     }
 
-    [TestCase("site_ashen_gate", 14f)]
+    [TestCase("site_ashen_gate", 5f)]
     [TestCase("site_sunken_bastion", 8f)]
     [TestCase("site_tithe_road", 8f)]
     [TestCase("site_ruined_crypts", 14f)]
