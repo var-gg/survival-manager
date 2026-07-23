@@ -45,6 +45,9 @@ internal static class RewardFileParser
             definition.DescriptionKey = ExtractValue(lines, "DescriptionKey:");
             definition.RewardSourceId = ExtractValue(lines, "RewardSourceId:");
             definition.Entries = ParseLootEntries(lines);
+            definition.GradePowerKappa = ExtractFloat(lines, "GradePowerKappa:");
+            definition.GradeStepBudgetScore = ExtractFloat(lines, "GradeStepBudgetScore:");
+            definition.GradeProfiles = ParseDropGradeProfiles(lines);
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));
             ApplyFallbackIdentity(definition, path);
@@ -153,6 +156,68 @@ internal static class RewardFileParser
             }
 
             result.Add(entry);
+        }
+
+        return result;
+    }
+
+    internal static List<DropGradeProfileDefinition> ParseDropGradeProfiles(string[] lines)
+    {
+        var result = new List<DropGradeProfileDefinition>();
+        var index = FindLineIndex(lines, "GradeProfiles:");
+        if (index < 0)
+        {
+            return result;
+        }
+
+        for (index++; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (!trimmed.StartsWith("- ChapterId:", StringComparison.Ordinal))
+            {
+                if (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            var profile = new DropGradeProfileDefinition
+            {
+                ChapterId = trimmed["- ChapterId:".Length..].Trim(),
+            };
+            for (index++; index < lines.Length; index++)
+            {
+                trimmed = lines[index].Trim();
+                if (trimmed.StartsWith("- ChapterId:", StringComparison.Ordinal)
+                    || (GetIndent(lines[index]) <= 2 && trimmed.EndsWith(":", StringComparison.Ordinal)))
+                {
+                    index--;
+                    break;
+                }
+
+                if (trimmed.StartsWith("InitialLatentMean:", StringComparison.Ordinal))
+                {
+                    profile.InitialLatentMean = ParseFloat(trimmed["InitialLatentMean:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("InitialStandardDeviation:", StringComparison.Ordinal))
+                {
+                    profile.InitialStandardDeviation = ParseFloat(
+                        trimmed["InitialStandardDeviation:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("MeanPreservingLatentMean:", StringComparison.Ordinal))
+                {
+                    profile.MeanPreservingLatentMean = ParseFloat(
+                        trimmed["MeanPreservingLatentMean:".Length..].Trim());
+                }
+                else if (trimmed.StartsWith("StandardDeviation:", StringComparison.Ordinal))
+                {
+                    profile.StandardDeviation = ParseFloat(trimmed["StandardDeviation:".Length..].Trim());
+                }
+            }
+
+            result.Add(profile);
         }
 
         return result;

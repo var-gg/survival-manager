@@ -37,7 +37,7 @@ public sealed class LootResolutionService
             entries.AddRange(dropTable.Entries
                 .Where(entry => MatchesContext(entry, contextTags))
                 .Where(entry => entry.IsGuaranteed)
-                .Select(entry => new LootEntry(entry.Id, entry.RewardType, entry.Amount, entry.RarityBracket)));
+                .Select(entry => BuildDropTableEntry(dropTable, entry, seed, contextTags)));
 
             var weightedEntries = dropTable.Entries
                 .Where(entry => MatchesContext(entry, contextTags))
@@ -48,7 +48,7 @@ public sealed class LootResolutionService
                 var selected = SelectWeightedEntry(weightedEntries, seed);
                 if (selected != null)
                 {
-                    entries.Add(new LootEntry(selected.Id, selected.RewardType, selected.Amount, selected.RarityBracket));
+                    entries.Add(BuildDropTableEntry(dropTable, selected, seed, contextTags));
                 }
             }
         }
@@ -68,12 +68,15 @@ public sealed class LootResolutionService
             sourceId,
             source.Kind.ToString(),
             entries
-                .GroupBy(entry => $"{entry.Id}:{entry.RewardType}:{entry.RarityBracket}", StringComparer.Ordinal)
+                .GroupBy(
+                    entry => $"{entry.Id}:{entry.RewardType}:{entry.RarityBracket}:{entry.ItemGrade}",
+                    StringComparer.Ordinal)
                 .Select(group => new LootEntry(
                     group.First().Id,
                     group.First().RewardType,
                     group.Sum(entry => entry.Amount),
-                    group.First().RarityBracket))
+                    group.First().RarityBracket,
+                    group.First().ItemGrade))
                 .OrderBy(entry => entry.RarityBracket)
                 .ThenBy(entry => entry.Id, StringComparer.Ordinal)
                 .ToList());
@@ -121,11 +124,7 @@ public sealed class LootResolutionService
             return false;
         }
 
-        entry = new LootEntry(
-            selected.Id,
-            selected.RewardType,
-            selected.Amount,
-            selected.RarityBracket);
+        entry = BuildDropTableEntry(dropTable, selected, seed, contextTags);
         return true;
     }
 
@@ -157,6 +156,57 @@ public sealed class LootResolutionService
         return entry.RequiredContextTags
             .Where(tag => !string.IsNullOrWhiteSpace(tag))
             .All(available.Contains);
+    }
+
+    private LootEntry BuildDropTableEntry(
+        DropTableTemplate table,
+        LootBundleEntryTemplate entry,
+        int seed,
+        IReadOnlyList<string> contextTags)
+    {
+        ItemRarityTierValue? grade = null;
+        if (entry.RewardType == RewardType.Item)
+        {
+            grade = DropGradeEconomy.RollGrade(
+                table,
+                ResolveChapterId(contextTags),
+                entry.RarityBracket,
+                seed);
+        }
+
+        return new LootEntry(
+            entry.Id,
+            entry.RewardType,
+            entry.Amount,
+            entry.RarityBracket,
+            grade);
+    }
+
+    private string ResolveChapterId(IReadOnlyList<string> contextTags)
+    {
+        if (_content.CampaignChapters != null)
+        {
+            foreach (var tag in contextTags)
+            {
+                if (_content.CampaignChapters.ContainsKey(tag))
+                {
+                    return tag;
+                }
+            }
+        }
+
+        if (_content.ExpeditionSites != null)
+        {
+            foreach (var tag in contextTags)
+            {
+                if (_content.ExpeditionSites.TryGetValue(tag, out var site))
+                {
+                    return site.ChapterId;
+                }
+            }
+        }
+
+        return string.Empty;
     }
 
     private static LootBundleEntryTemplate? SelectWeightedEntry(IReadOnlyList<LootBundleEntryTemplate> entries, int seed)

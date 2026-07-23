@@ -276,7 +276,17 @@ public sealed record LootBundleEntryTemplate(
 public sealed record DropTableTemplate(
     string Id,
     string RewardSourceId,
-    IReadOnlyList<LootBundleEntryTemplate> Entries);
+    IReadOnlyList<LootBundleEntryTemplate> Entries,
+    float GradePowerKappa = 0f,
+    float GradeStepBudgetScore = 0f,
+    IReadOnlyList<DropGradeProfileTemplate>? GradeProfiles = null);
+
+public sealed record DropGradeProfileTemplate(
+    string ChapterId,
+    double InitialLatentMean,
+    double InitialStandardDeviation,
+    double MeanPreservingLatentMean,
+    double StandardDeviation);
 
 public sealed record LootBundleTemplate(
     string Id,

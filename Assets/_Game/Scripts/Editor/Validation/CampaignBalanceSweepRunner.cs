@@ -1088,7 +1088,11 @@ public static class CampaignBalanceSweepRunner
     /// 측정이 정직하려면 러너가 저작 게이트를 직접 지켜야 한다. 아니면 원거리 활이 vanguard에 붙어
     /// "델타 0 = dead" 허구를 생산한다.
     /// </summary>
-    internal sealed record ItemMeta(string ItemId, ItemSlotType SlotType, IReadOnlyList<string> AllowedClassIds);
+    internal sealed record ItemMeta(
+        string ItemId,
+        ItemSlotType SlotType,
+        IReadOnlyList<string> AllowedClassIds,
+        ItemRarityTierValue RarityTier);
 
     internal static IReadOnlyDictionary<string, ItemMeta> LoadItemMetaIndex()
     {
@@ -1106,7 +1110,8 @@ public static class CampaignBalanceSweepRunner
                 (definition.AllowedClassTags ?? new List<StableTagDefinition>())
                     .Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id))
                     .Select(tag => tag.Id)
-                    .ToList());
+                    .ToList(),
+                definition.RarityTier);
         }
 
         return index;
@@ -1127,7 +1132,8 @@ public static class CampaignBalanceSweepRunner
             index[template.Id] = new ItemMeta(
                 template.Id,
                 slotType,
-                template.AllowedClassIds ?? Array.Empty<string>());
+                template.AllowedClassIds ?? Array.Empty<string>(),
+                template.RarityTier);
         }
 
         return index;
@@ -1282,31 +1288,7 @@ public static class CampaignBalanceSweepRunner
     /// </summary>
     private static void GreedyEquipInventory(GameSessionState session, IReadOnlyDictionary<string, ItemMeta> itemIndex)
     {
-        // 정렬키에 인스턴스 id를 쓰지 않는다 — 드랍 인스턴스 id는 GUID(SessionInventoryItemBuilder)라
-        // 런마다 달라져 장착 배분이 비재현이 된다. base id + 획득 순서(리스트 인덱스)는 시드 결정적.
-        var unequipped = session.Profile.Inventory
-            .Select((item, acquisitionIndex) => (Item: item, AcquisitionIndex: acquisitionIndex))
-            .Where(entry => string.IsNullOrEmpty(entry.Item.EquippedHeroId))
-            .OrderBy(entry => entry.Item.ItemBaseId, StringComparer.Ordinal)
-            .ThenBy(entry => entry.AcquisitionIndex)
-            .Select(entry => entry.Item)
-            .ToList();
-        foreach (var item in unequipped)
-        {
-            if (!itemIndex.TryGetValue(item.ItemBaseId, out var meta))
-            {
-                continue;
-            }
-
-            foreach (var hero in session.Profile.Heroes)
-            {
-                if (CanWear(session, itemIndex, hero, meta)
-                    && session.EquipItem(hero.HeroId, item.ItemInstanceId).IsSuccess)
-                {
-                    break;
-                }
-            }
-        }
+        CampaignEquipmentUpgradePolicy.Apply(session, itemIndex);
     }
 
     /// <summary>

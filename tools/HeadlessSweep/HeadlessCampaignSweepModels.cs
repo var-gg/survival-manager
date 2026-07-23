@@ -1,4 +1,5 @@
 using SM.Combat.Model;
+using SM.Core.Content;
 using SM.Editor.Validation;
 using SM.Meta.Model;
 
@@ -29,13 +30,15 @@ internal sealed class HeadlessCampaignItem
         string itemBaseId,
         IReadOnlyList<string> affixIds,
         string equippedHeroId,
-        int acquisitionIndex)
+        int acquisitionIndex,
+        ItemRarityTierValue rarityTier)
     {
         InstanceId = instanceId;
         ItemBaseId = itemBaseId;
         AffixIds = affixIds;
         EquippedHeroId = equippedHeroId;
         AcquisitionIndex = acquisitionIndex;
+        RarityTier = rarityTier;
     }
 
     internal string InstanceId { get; }
@@ -43,6 +46,7 @@ internal sealed class HeadlessCampaignItem
     internal IReadOnlyList<string> AffixIds { get; }
     internal string EquippedHeroId { get; set; }
     internal int AcquisitionIndex { get; }
+    internal ItemRarityTierValue RarityTier { get; }
 }
 
 internal sealed record HeadlessCampaignBattleSetup(

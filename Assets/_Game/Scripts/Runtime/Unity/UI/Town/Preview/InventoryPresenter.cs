@@ -154,7 +154,7 @@ public sealed class InventoryPresenter : IInventoryActions
                     presentation = EquipmentPresentationPolicy.Build(
                         slotKey,
                         weaponFamilyKey,
-                        itemDef.RarityTier.ToString(),
+                        InventoryItemGradePresentation.Resolve(item, itemDef).ToString(),
                         itemDef.IdentityKind.ToString(),
                         EnumerateCraftOperations(itemDef));
                 }
@@ -350,7 +350,7 @@ public sealed class InventoryPresenter : IInventoryActions
             var presentation = EquipmentPresentationPolicy.Build(
                 slotKey,
                 familyKey,
-                itemDef.RarityTier.ToString(),
+                InventoryItemGradePresentation.Resolve(item, itemDef).ToString(),
                 itemDef.IdentityKind.ToString(),
                 EnumerateCraftOperations(itemDef));
             slotLabel = presentation.SlotLabel;
@@ -550,7 +550,7 @@ public sealed class InventoryPresenter : IInventoryActions
             var presentation = EquipmentPresentationPolicy.Build(
                 slotKey,
                 familyKey,
-                itemDef.RarityTier.ToString(),
+                InventoryItemGradePresentation.Resolve(item, itemDef).ToString(),
                 itemDef.IdentityKind.ToString(),
                 EnumerateCraftOperations(itemDef));
             slotLabel = presentation.SlotLabel;

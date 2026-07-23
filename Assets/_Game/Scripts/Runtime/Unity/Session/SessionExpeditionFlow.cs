@@ -1402,6 +1402,11 @@ public sealed partial class GameSessionState
         }
 
         var tags = new HashSet<string>(StringComparer.Ordinal);
+        if (!string.IsNullOrWhiteSpace(ActiveRun.Overlay.ChapterId))
+        {
+            tags.Add(ActiveRun.Overlay.ChapterId);
+        }
+
         if (!string.IsNullOrWhiteSpace(ActiveRun.Overlay.SiteId))
         {
             tags.Add(ActiveRun.Overlay.SiteId);
@@ -1462,7 +1467,11 @@ public sealed partial class GameSessionState
             case SM.Core.Content.RewardType.Item:
                 for (var i = 0; i < Math.Max(1, entry.Amount); i++)
                 {
-                    var itemRecord = CreateGeneratedInventoryItem(entry.Id);
+                    var itemRecord = CreateGeneratedInventoryItem(
+                        entry.Id,
+                        rolledRarityTier: entry.ItemGrade.HasValue
+                            ? (int)entry.ItemGrade.Value
+                            : -1);
                     Profile.Inventory.Add(itemRecord);
 
                     Profile.InventoryLedger.Add(new InventoryLedgerEntryRecord
@@ -1474,13 +1483,18 @@ public sealed partial class GameSessionState
                         ChangeKind = "automatic_loot",
                         Amount = 1,
                         CreatedAtUtc = timestamp,
-                        Summary = $"automatic loot:{entry.RewardType}",
+                        Summary = entry.ItemGrade.HasValue
+                            ? $"automatic loot:{entry.RewardType}:grade={entry.ItemGrade.Value}"
+                            : $"automatic loot:{entry.RewardType}",
                         SourceId = ActiveRun?.Overlay.RewardSourceId ?? string.Empty,
                         SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId),
                     });
                 }
 
-                summaryParts.Add($"{entry.Id} x{entry.Amount}");
+                summaryParts.Add(
+                    entry.ItemGrade.HasValue
+                        ? $"{entry.Id} [{entry.ItemGrade.Value}] x{entry.Amount}"
+                        : $"{entry.Id} x{entry.Amount}");
                 break;
             case SM.Core.Content.RewardType.SkillManual:
             case SM.Core.Content.RewardType.SkillShard:

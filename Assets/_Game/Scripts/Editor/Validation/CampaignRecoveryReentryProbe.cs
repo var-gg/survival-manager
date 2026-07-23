@@ -39,6 +39,10 @@ internal static partial class CampaignTwoArmSweepRunner
             throw new InvalidOperationException($"reentry probe failed to clear initial site '{siteId}'.");
         }
 
+        CampaignEquipmentUpgradePolicy.Apply(session, itemIndex);
+        var baselineEquippedGradeSum = EquippedGradeSum(session, itemIndex);
+        var effectiveEquipmentSlotCount = session.Profile.Heroes.Count * 3;
+        var gradePowerKappa = ResolveGradePowerKappa(lookup);
         var revisits = new List<CampaignRevisitRewardObservation>();
         for (var revisitIndex = 1;
              revisitIndex <= CampaignRecoveryRewardPolicy.RewardedRevisitLimit + 1;
@@ -56,10 +60,19 @@ internal static partial class CampaignTwoArmSweepRunner
                              && string.Equals(session.SelectedCampaignSiteId, siteId, StringComparison.Ordinal);
             if (!canReenter)
             {
-                return BuildReentryObservation(siteId, false, revisits);
+                return BuildReentryObservation(
+                    siteId,
+                    false,
+                    baselineEquippedGradeSum,
+                    effectiveEquipmentSlotCount,
+                    revisits);
             }
 
             CompleteReentryProbeSite(session, cell, config, revisitIndex);
+            CampaignEquipmentUpgradePolicy.Apply(session, itemIndex);
+            var equippedGradeSum = EquippedGradeSum(session, itemIndex);
+            var cumulativeAverageGradeStep =
+                (equippedGradeSum - baselineEquippedGradeSum) / (double)effectiveEquipmentSlotCount;
             revisits.Add(new CampaignRevisitRewardObservation(
                 revisitIndex,
                 LifetimeExperience(session.Profile.HeroProgressions) - experienceBefore,
@@ -67,15 +80,25 @@ internal static partial class CampaignTwoArmSweepRunner
                 session.Profile.Currencies.Echo - echoBefore,
                 session.Profile.Inventory.Count - inventoryBefore,
                 session.Profile.RewardLedger.Count - rewardLedgerBefore,
-                session.Profile.UnlockedPermanentAugmentIds.Count - permanentBefore));
+                session.Profile.UnlockedPermanentAugmentIds.Count - permanentBefore,
+                equippedGradeSum,
+                cumulativeAverageGradeStep,
+                (Math.Exp(gradePowerKappa * cumulativeAverageGradeStep) - 1d) * 100d));
         }
 
-        return BuildReentryObservation(siteId, true, revisits);
+        return BuildReentryObservation(
+            siteId,
+            true,
+            baselineEquippedGradeSum,
+            effectiveEquipmentSlotCount,
+            revisits);
     }
 
     private static CampaignClearedSiteReentryObservation BuildReentryObservation(
         string siteId,
         bool canReenter,
+        int baselineEquippedGradeSum,
+        int effectiveEquipmentSlotCount,
         IReadOnlyList<CampaignRevisitRewardObservation> revisits)
     {
         var first = revisits.FirstOrDefault();
@@ -87,6 +110,8 @@ internal static partial class CampaignTwoArmSweepRunner
             siteId,
             canReenter,
             rewardsAgain,
+            baselineEquippedGradeSum,
+            effectiveEquipmentSlotCount,
             first?.LifetimeExperienceDelta ?? 0,
             first?.GoldDelta ?? 0,
             first?.EchoDelta ?? 0,
@@ -95,6 +120,39 @@ internal static partial class CampaignTwoArmSweepRunner
             first?.PermanentAugmentDelta ?? 0,
             unboundedFarmClosed,
             revisits);
+    }
+
+    private static int EquippedGradeSum(
+        GameSessionState session,
+        IReadOnlyDictionary<string, CampaignBalanceSweepRunner.ItemMeta> itemIndex)
+    {
+        return session.Profile.Inventory
+            .Where(item => !string.IsNullOrWhiteSpace(item.EquippedHeroId))
+            .Where(item => itemIndex.ContainsKey(item.ItemBaseId))
+            .Sum(item => item.RolledRarityTier >= 0
+                ? item.RolledRarityTier
+                : (int)itemIndex[item.ItemBaseId].RarityTier);
+    }
+
+    private static double ResolveGradePowerKappa(RuntimeCombatContentLookup lookup)
+    {
+        if (!lookup.TryGetCombatSnapshot(out var content, out var error))
+        {
+            throw new InvalidOperationException($"reentry grade power content unavailable: {error}");
+        }
+
+        var values = (content.DropTables?.Values ?? Array.Empty<DropTableTemplate>())
+            .Where(table => table.GradeProfiles is { Count: > 0 })
+            .Select(table => (double)table.GradePowerKappa)
+            .Distinct()
+            .ToArray();
+        if (values.Length != 1 || values[0] <= 0d)
+        {
+            throw new InvalidOperationException(
+                $"reentry probe requires one positive grade-power kappa, got [{string.Join(",", values)}].");
+        }
+
+        return values[0];
     }
 
     private static bool HasPersistentReward(CampaignRevisitRewardObservation observation)

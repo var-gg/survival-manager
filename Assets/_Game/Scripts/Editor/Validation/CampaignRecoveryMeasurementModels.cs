@@ -76,6 +76,8 @@ internal sealed record CampaignClearedSiteReentryObservation(
     string SiteId,
     bool CanReenter,
     bool RewardsAgain,
+    int BaselineEquippedGradeSum,
+    int EffectiveEquipmentSlotCount,
     int RevisitLifetimeExperienceDelta,
     int RevisitGoldDelta,
     int RevisitEchoDelta,
@@ -92,7 +94,10 @@ internal sealed record CampaignRevisitRewardObservation(
     int EchoDelta,
     int InventoryDelta,
     int RewardLedgerDelta,
-    int PermanentAugmentDelta);
+    int PermanentAugmentDelta,
+    int EquippedGradeSum,
+    double CumulativeAverageGradeStep,
+    double CumulativeDropPowerPercent);
 
 internal sealed record CampaignRecoveryReachabilityObservation(
     bool DefeatRewardsDriven,

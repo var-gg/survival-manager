@@ -58,6 +58,82 @@ public static class GeneratedItemAffixSelector
         return selected;
     }
 
+    public static IReadOnlyList<string> Select(
+        ISessionContentLookup lookup,
+        string itemBaseId,
+        int seed,
+        ItemRarityTierValue rolledGrade,
+        float gradeStepBudgetScore)
+    {
+        if (lookup == null)
+        {
+            throw new ArgumentNullException(nameof(lookup));
+        }
+
+        if (lookup.Snapshot.ItemCatalog is not { } items
+            || !items.TryGetValue(itemBaseId, out var item))
+        {
+            return Array.Empty<string>();
+        }
+
+        var tiers = rolledGrade switch
+        {
+            ItemRarityTierValue.Common => new[] { ImplicitTier },
+            ItemRarityTierValue.Magic => new[] { ImplicitTier, PrefixTier },
+            ItemRarityTierValue.Rare => new[] { ImplicitTier, PrefixTier, SuffixTier },
+            ItemRarityTierValue.Epic => new[] { ImplicitTier, PrefixTier, SuffixTier, PrefixTier },
+            _ => new[] { ImplicitTier, PrefixTier, SuffixTier, PrefixTier, SuffixTier },
+        };
+        var targetBudget = Math.Max(0.01f, gradeStepBudgetScore);
+        var rng = new Random(seed);
+        var selected = new List<string>();
+        foreach (var tier in tiers)
+        {
+            var candidates = lookup.GetCanonicalAffixIds()
+                .Where(candidateId => IsCandidate(lookup.Snapshot, item, tier, candidateId, selected))
+                .Select(candidateId => lookup.Snapshot.AffixCatalog![candidateId])
+                .OrderBy(candidate => candidate.Id, StringComparer.Ordinal)
+                .ToList();
+            var chosen = SelectBudgetWeighted(candidates, targetBudget, rng);
+            if (chosen != null)
+            {
+                selected.Add(chosen.Id);
+            }
+        }
+
+        return selected;
+    }
+
+    private static AffixTemplate? SelectBudgetWeighted(
+        IReadOnlyList<AffixTemplate> candidates,
+        float targetBudget,
+        Random random)
+    {
+        if (candidates.Count == 0)
+        {
+            return null;
+        }
+
+        var weights = candidates
+            .Select(candidate =>
+                Math.Max(0.0001d, candidate.SpawnWeight)
+                / (1d + Math.Abs(candidate.BudgetScore - targetBudget)))
+            .ToArray();
+        var total = weights.Sum();
+        var roll = random.NextDouble() * total;
+        var cursor = 0d;
+        for (var index = 0; index < candidates.Count; index++)
+        {
+            cursor += weights[index];
+            if (roll < cursor)
+            {
+                return candidates[index];
+            }
+        }
+
+        return candidates[^1];
+    }
+
     private static bool IsCandidate(
         CombatContentSnapshot snapshot,
         ItemTemplate item,

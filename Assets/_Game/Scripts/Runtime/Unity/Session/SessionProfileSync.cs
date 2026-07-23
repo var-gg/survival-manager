@@ -1125,7 +1125,10 @@ public sealed partial class GameSessionState
                 record.ItemInstanceId,
                 record.ItemBaseId,
                 record.AffixIds,
-                record.EquippedHeroId),
+                record.EquippedHeroId,
+                record.RolledRarityTier >= 0
+                    ? (ItemRarityTierValue)record.RolledRarityTier
+                    : null),
             StringComparer.Ordinal);
     }
 

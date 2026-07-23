@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SM.Combat.Model;
+using SM.Core.Content;
 using SM.Core.Contracts;
 
 namespace SM.Meta.Model;
@@ -23,7 +24,8 @@ public sealed record ItemInstanceState(
     string ItemInstanceId,
     string ItemBaseId,
     IReadOnlyList<string> AffixIds,
-    string EquippedHeroId);
+    string EquippedHeroId,
+    ItemRarityTierValue? RarityTier = null);
 
 public sealed record SkillInstanceState(
     string SkillInstanceId,

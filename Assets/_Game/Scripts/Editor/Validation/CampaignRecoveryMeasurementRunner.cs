@@ -80,7 +80,7 @@ public static class CampaignRecoveryMeasurementCli
 
 internal static partial class CampaignTwoArmSweepRunner
 {
-    private const string RecoverySchemaVersion = "campaign-recovery-measurement-v2";
+    private const string RecoverySchemaVersion = "campaign-recovery-measurement-v3";
 
     private static readonly IReadOnlyList<CampaignRecoveryTarget> RecoveryTargets = new[]
     {

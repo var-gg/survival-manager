@@ -1001,7 +1001,10 @@ public sealed class CombatSandboxScenarioCompiler
             item.ItemInstanceId,
             item.ItemBaseId,
             NormalizeIds(item.AffixIds),
-            item.EquippedHeroId ?? string.Empty);
+            item.EquippedHeroId ?? string.Empty,
+            item.RolledRarityTier >= 0
+                ? (ItemRarityTierValue)item.RolledRarityTier
+                : null);
     }
 
     private static IReadOnlyList<string> NormalizeIds(IEnumerable<string>? ids)

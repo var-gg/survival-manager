@@ -28,7 +28,8 @@ internal sealed class SessionInventoryItemBuilder
         SaveProfile profile,
         string itemBaseId,
         string itemInstanceId = "",
-        string equippedHeroId = "")
+        string equippedHeroId = "",
+        int rolledRarityTier = -1)
     {
         var resolvedInstanceId = itemInstanceId;
         if (string.IsNullOrWhiteSpace(resolvedInstanceId))
@@ -44,13 +45,34 @@ internal sealed class SessionInventoryItemBuilder
         // 인스턴스 id 자체는 profile에 영속되는 생성 순번으로 발급하되, 어픽스 시드와는 계속 분리한다.
         var seed = _buildStableSeed($"{itemBaseId}|{profile.Inventory.Count}", profile.Inventory.Count);
 
+        var rolledGrade = rolledRarityTier >= (int)ItemRarityTierValue.Common
+                          && rolledRarityTier <= (int)ItemRarityTierValue.Legendary
+            ? (ItemRarityTierValue?)rolledRarityTier
+            : null;
+        var affixIds = rolledGrade.HasValue
+            ? GeneratedItemAffixSelector.Select(
+                _sessionLookup,
+                itemBaseId,
+                seed,
+                rolledGrade.Value,
+                ResolveGradeStepBudgetScore())
+            : GeneratedItemAffixSelector.Select(_sessionLookup, itemBaseId, seed);
         return new InventoryItemRecord
         {
             ItemInstanceId = resolvedInstanceId,
             ItemBaseId = itemBaseId,
             EquippedHeroId = equippedHeroId,
-            AffixIds = GeneratedItemAffixSelector.Select(_sessionLookup, itemBaseId, seed).ToList(),
+            AffixIds = affixIds.ToList(),
+            RolledRarityTier = rolledGrade.HasValue ? (int)rolledGrade.Value : -1,
         };
+    }
+
+    private float ResolveGradeStepBudgetScore()
+    {
+        return _sessionLookup.Snapshot.DropTables?.Values
+                   .Select(table => table.GradeStepBudgetScore)
+                   .FirstOrDefault(value => value > 0f)
+               ?? 8f;
     }
 
     internal IReadOnlyList<string> BuildRefitCandidateAffixIds(InventoryItemRecord item, int affixSlotIndex)

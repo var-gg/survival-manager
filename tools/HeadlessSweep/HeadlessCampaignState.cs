@@ -267,7 +267,12 @@ internal sealed class HeadlessCampaignState
                 StringComparer.Ordinal),
             Inventory.ToDictionary(
                 item => item.InstanceId,
-                item => new ItemInstanceState(item.InstanceId, item.ItemBaseId, item.AffixIds, item.EquippedHeroId),
+                item => new ItemInstanceState(
+                    item.InstanceId,
+                    item.ItemBaseId,
+                    item.AffixIds,
+                    item.EquippedHeroId,
+                    item.RarityTier),
                 StringComparer.Ordinal),
             new Dictionary<string, SkillInstanceState>(StringComparer.Ordinal),
             Heroes.Where(hero => hero.SelectedPassiveNodeIds.Count > 0)
@@ -700,7 +705,7 @@ internal sealed class HeadlessCampaignState
                 case RewardType.Item:
                     for (var index = 0; index < Math.Max(1, entry.Amount); index++)
                     {
-                        AddGeneratedItem(entry.Id);
+                        AddGeneratedItem(entry.Id, entry.ItemGrade);
                     }
 
                     break;
@@ -719,6 +724,11 @@ internal sealed class HeadlessCampaignState
         if (!string.IsNullOrWhiteSpace(ActiveRun.Overlay.SiteId))
         {
             tags.Add(ActiveRun.Overlay.SiteId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(SelectedChapterId))
+        {
+            tags.Add(SelectedChapterId);
         }
 
         if (Snapshot.Encounters is { } encounters
@@ -743,17 +753,44 @@ internal sealed class HeadlessCampaignState
         return tags.OrderBy(tag => tag, StringComparer.Ordinal).ToArray();
     }
 
-    private void AddGeneratedItem(string itemBaseId)
+    private void AddGeneratedItem(string itemBaseId, ItemRarityTierValue? rolledGrade)
     {
         _itemInstanceCounter = checked(_itemInstanceCounter + 1);
         var acquisitionIndex = Inventory.Count;
         var seed = BuildStableSeed($"{itemBaseId}|{acquisitionIndex}", acquisitionIndex);
+        var grade = rolledGrade
+                    ?? (Snapshot.ItemCatalog != null
+                        && Snapshot.ItemCatalog.TryGetValue(itemBaseId, out var template)
+                            ? template.RarityTier
+                            : ItemRarityTierValue.Common);
         Inventory.Add(new HeadlessCampaignItem(
             $"{itemBaseId}-i{_itemInstanceCounter.ToString(CultureInfo.InvariantCulture)}",
             itemBaseId,
-            GeneratedItemAffixSelector.Select(Lookup, itemBaseId, seed).ToArray(),
+            GeneratedItemAffixSelector.Select(
+                Lookup,
+                itemBaseId,
+                seed,
+                grade,
+                ResolveGradeStepBudgetScore()).ToArray(),
             string.Empty,
-            acquisitionIndex));
+            acquisitionIndex,
+            grade));
+    }
+
+    private float ResolveGradeStepBudgetScore()
+    {
+        var values = (Snapshot.DropTables?.Values ?? Array.Empty<DropTableTemplate>())
+            .Where(table => table.GradeProfiles is { Count: > 0 })
+            .Select(table => table.GradeStepBudgetScore)
+            .Distinct()
+            .ToArray();
+        if (values.Length != 1 || values[0] <= 0f)
+        {
+            throw new InvalidDataException(
+                $"Headless grade generation requires one positive step budget, got [{string.Join(",", values)}].");
+        }
+
+        return values[0];
     }
 
     private List<string> OrderedChapterIds()
@@ -821,7 +858,10 @@ internal sealed class HeadlessCampaignState
                 itemBaseId,
                 GeneratedItemAffixSelector.Select(lookup, itemBaseId, seed).ToArray(),
                 string.Empty,
-                index));
+                index,
+                lookup.Snapshot.ItemCatalog.TryGetValue(itemBaseId, out var template)
+                    ? template.RarityTier
+                    : ItemRarityTierValue.Common));
         }
 
         return items;

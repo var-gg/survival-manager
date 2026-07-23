@@ -30,6 +30,17 @@ internal static class RewardConverter
             Enumerate(definition.Entries)
                 .Where(entry => entry != null)
                 .Select(BuildLootBundleEntryTemplate)
+                .ToList(),
+            definition.GradePowerKappa,
+            definition.GradeStepBudgetScore,
+            Enumerate(definition.GradeProfiles)
+                .Where(profile => profile != null)
+                .Select(profile => new DropGradeProfileTemplate(
+                    profile.ChapterId,
+                    profile.InitialLatentMean,
+                    profile.InitialStandardDeviation,
+                    profile.MeanPreservingLatentMean,
+                    profile.StandardDeviation))
                 .ToList());
     }
 

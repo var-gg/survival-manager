@@ -10,9 +10,15 @@ public sealed partial class GameSessionState
     private InventoryItemRecord CreateGeneratedInventoryItem(
         string itemBaseId,
         string itemInstanceId = "",
-        string equippedHeroId = "")
+        string equippedHeroId = "",
+        int rolledRarityTier = -1)
     {
-        return InventoryItemBuilder.CreateGeneratedInventoryItem(Profile, itemBaseId, itemInstanceId, equippedHeroId);
+        return InventoryItemBuilder.CreateGeneratedInventoryItem(
+            Profile,
+            itemBaseId,
+            itemInstanceId,
+            equippedHeroId,
+            rolledRarityTier);
     }
 
     /// <summary>

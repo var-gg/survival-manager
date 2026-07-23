@@ -311,7 +311,7 @@ public sealed class TownCharacterSheetFormatter
             iconKey = string.IsNullOrWhiteSpace(itemDefinition.IconId) ? item.ItemBaseId : itemDefinition.IconId;
             // 등급은 한국어로, raw family 태그(weapon_sword 등)는 플레이어 비노출 식별자라 슬롯 라벨(무기/방어구/장신구)이
             // 이미 같은 정보를 주므로 meta 에서 제외한다. family 태그 전체 한국어화는 별도 패스.
-            meta = $"{LocalizeItemRarity(itemDefinition.RarityTier)} · {meta}";
+            meta = $"{LocalizeItemRarity(InventoryItemGradePresentation.Resolve(item, itemDefinition))} · {meta}";
         }
 
         return new TownCharacterSheetEquipmentSlotViewState(

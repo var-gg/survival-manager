@@ -156,7 +156,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                     presentation = EquipmentPresentationPolicy.Build(
                         slotKey,
                         familyKey,
-                        baseDef.RarityTier.ToString(),
+                        InventoryItemGradePresentation.Resolve(item, baseDef).ToString(),
                         baseDef.IdentityKind.ToString(),
                         EnumerateCraftOperations(baseDef));
                 }
@@ -227,7 +227,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 var presentation = EquipmentPresentationPolicy.Build(
                     ResolveSlotKey(baseDef.SlotType),
                     ResolveFamilyKey(baseDef),
-                    baseDef.RarityTier.ToString(),
+                    InventoryItemGradePresentation.Resolve(selectedItem, baseDef).ToString(),
                     baseDef.IdentityKind.ToString(),
                     EnumerateCraftOperations(baseDef));
                 selectedSlotLabel = presentation.SlotLabel;

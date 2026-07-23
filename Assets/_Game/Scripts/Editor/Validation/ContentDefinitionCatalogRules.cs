@@ -593,6 +593,8 @@ internal sealed class RewardCatalogValidator : ICatalogValidationRule
                 ContentValidationIssueFactory.AddError(issues, "reward.loot_bundle_source_ref", $"Loot bundle '{lootBundle.Id}' references missing reward source '{lootBundle.RewardSourceId}'.", assetPath);
             }
         }
+
+        DropGradeProfileCatalogValidator.Validate(context, issues);
     }
 }
 

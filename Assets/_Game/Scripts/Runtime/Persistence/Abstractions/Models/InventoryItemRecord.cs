@@ -10,4 +10,5 @@ public sealed class InventoryItemRecord
     public string ItemBaseId = string.Empty;
     public List<string> AffixIds = new();
     public string EquippedHeroId = string.Empty;
+    public int RolledRarityTier = -1;
 }

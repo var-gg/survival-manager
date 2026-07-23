@@ -7,7 +7,8 @@ public sealed record LootEntry(
     string Id,
     RewardType RewardType,
     int Amount,
-    RarityBracketValue RarityBracket);
+    RarityBracketValue RarityBracket,
+    ItemRarityTierValue? ItemGrade = null);
 
 public sealed record LootBundleResult(
     string SourceId,
