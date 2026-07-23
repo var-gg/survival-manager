@@ -30,7 +30,7 @@ MonoBehaviour:
     Anchor: 0
     Role: 0
     PositiveTraitId: hexer_positive_swift
-    NegativeTraitId: 
+    NegativeTraitId: hexer_negative_frail
     EquipmentBudget: 2
     EquipmentItemBaseId: item_hexer_focus
     EquipmentAffixIds:
@@ -43,8 +43,8 @@ MonoBehaviour:
     CharacterId: extra_pale_tomb_sentinel
     Anchor: 2
     Role: 0
-    PositiveTraitId: guardian_positive_brave
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId: guardian_negative_frail
     EquipmentBudget: 1
     EquipmentItemBaseId: item_guardian_shield
     EquipmentAffixIds: []
@@ -57,7 +57,7 @@ MonoBehaviour:
     Anchor: 3
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: priest_negative_frail
     EquipmentBudget: 2
     EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:
@@ -71,7 +71,7 @@ MonoBehaviour:
     Anchor: 5
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: mirror_cantor_negative_frail
     EquipmentBudget: 1
     EquipmentItemBaseId: item_layered_armor
     EquipmentAffixIds: []

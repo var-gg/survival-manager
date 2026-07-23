@@ -25,12 +25,12 @@ MonoBehaviour:
   Members:
   - Id: site_heartforge_gate_skirmish_1_squad_1
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: raider
     CharacterId: extra_heartforge_gate_guard
     Anchor: 0
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: raider_negative_frail
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_heartforge_gate_skirmish_1_squad_2
@@ -63,7 +63,7 @@ MonoBehaviour:
     Anchor: 5
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: raider_negative_frail
     EquipmentBudget: 1
     EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []

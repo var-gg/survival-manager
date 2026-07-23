@@ -21,7 +21,7 @@ MonoBehaviour:
   SignatureUtilityTag: boss_utility_anticluster_bombardment
   PressureClockFirstPulseSeconds: 3
   PressureClockIntervalSeconds: 2
-  PressureClockMaxHealthDamageRatio: 0.12
+  PressureClockMaxHealthDamageRatio: 0.06
   PressureClockMaxPulses: 3
   RewardDropTags:
   - boss

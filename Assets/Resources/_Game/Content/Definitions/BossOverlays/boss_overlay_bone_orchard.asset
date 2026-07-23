@@ -21,7 +21,7 @@ MonoBehaviour:
   SignatureUtilityTag: boss_utility_body_bloom
   PressureClockFirstPulseSeconds: 1.4
   PressureClockIntervalSeconds: 1
-  PressureClockMaxHealthDamageRatio: 0.303
+  PressureClockMaxHealthDamageRatio: 0.2
   PressureClockMaxPulses: 3
   RewardDropTags:
   - boss
@@ -45,7 +45,7 @@ MonoBehaviour:
   - Id: boss_overlay_bone_orchard_opening_barrier
     StatusId: barrier
     DurationSeconds: 0
-    Magnitude: 12
+    Magnitude: 4
     MaxStacks: 1
     RefreshDurationOnReapply: 1
     StackCap: 0

@@ -15,10 +15,12 @@ internal static class HeadlessCampaignPlaythrough
         CampaignBalanceArmSpec arm,
         CampaignBalanceGridCell cell,
         string stopAfterEncounterId,
-        Action<BattleLoadoutSnapshot, ResolvedEncounterContext, CampaignNodeIdentity>? bossDiagnostic = null)
+        Action<BattleLoadoutSnapshot, ResolvedEncounterContext, CampaignNodeIdentity>? bossDiagnostic = null,
+        int campaignSeedSalt = 0)
     {
-        var state = HeadlessCampaignState.Create(lookup, cell);
+        var state = HeadlessCampaignState.Create(lookup, cell, campaignSeedSalt);
         state.ApplyBuildPower(cell.BuildPower);
+        var panelCellId = state.PanelCellId;
 
         var policy = HeadlessPolicyFactory.Create(arm.PolicyId);
         var siteEntryPolicy = new GreedyPolicy();
@@ -37,7 +39,7 @@ internal static class HeadlessCampaignPlaythrough
             var siteOrder = SiteOrder(state.Snapshot, chapterId, siteId);
 
             var setupBefore = state.FormationHash();
-            var siteEntrySeed = DeriveSeed($"{chapterId}|{siteId}|{cell.CellId}|site-entry", siteCount);
+            var siteEntrySeed = DeriveSeed($"{chapterId}|{siteId}|{panelCellId}|site-entry", siteCount);
             var siteEntryObservation = HeadlessCampaignPolicyObservationBuilder.Build(
                 state,
                 siteEntrySeed,
@@ -63,7 +65,7 @@ internal static class HeadlessCampaignPlaythrough
                 {
                     var prepBefore = state.FormationHash();
                     var prepSeed = DeriveSeed(
-                        $"{chapterId}|{siteId}|{selectedNode.EncounterId}|{cell.CellId}|prep",
+                        $"{chapterId}|{siteId}|{selectedNode.EncounterId}|{panelCellId}|prep",
                         siteCount);
                     var prepObservation = HeadlessCampaignPolicyObservationBuilder.Build(
                         state,
@@ -132,7 +134,7 @@ internal static class HeadlessCampaignPlaythrough
                 {
                     return new HeadlessCampaignArmExecution(
                         arm,
-                        cell.CellId,
+                        panelCellId,
                         cell.Squad.SquadId,
                         nodes,
                         sites,
@@ -166,7 +168,7 @@ internal static class HeadlessCampaignPlaythrough
 
         return new HeadlessCampaignArmExecution(
             arm,
-            cell.CellId,
+            panelCellId,
             cell.Squad.SquadId,
             nodes,
             sites,

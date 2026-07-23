@@ -17,6 +17,9 @@ param(
 
     [string]$Output = 'Temp/HeadlessSweep/headless-campaign-sweep.json',
 
+    [ValidateNotNullOrEmpty()]
+    [string]$SeedSalts = '0',
+
     [switch]$Verify,
 
     [ValidateSet('Debug', 'Release')]
@@ -37,6 +40,8 @@ $taskArguments = @(
     $StopAfter
     '--output'
     $Output
+    '--seed-salts'
+    $SeedSalts
 )
 if ($Verify) {
     $taskArguments += '--verify'

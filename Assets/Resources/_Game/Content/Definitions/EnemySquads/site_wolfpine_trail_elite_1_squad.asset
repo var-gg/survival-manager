@@ -29,7 +29,7 @@ MonoBehaviour:
     CharacterId: npc_grey_fang
     Anchor: 0
     Role: 0
-    PositiveTraitId: reaver_positive_brave
+    PositiveTraitId:
     NegativeTraitId: 
     EquipmentBudget: 1
     EquipmentItemBaseId: item_reaver_blade
@@ -43,12 +43,11 @@ MonoBehaviour:
     CharacterId: extra_grey_fang_vanguard
     Anchor: 2
     Role: 0
-    PositiveTraitId: raider_positive_brave
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId: raider_negative_frail
     EquipmentBudget: 1
     EquipmentItemBaseId: item_reaver_blade
-    EquipmentAffixIds:
-    - affix_precise
+    EquipmentAffixIds: []
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_wolfpine_trail_elite_1_squad_3

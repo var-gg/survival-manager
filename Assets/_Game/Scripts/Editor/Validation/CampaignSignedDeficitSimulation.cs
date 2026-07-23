@@ -21,132 +21,189 @@ internal static class CampaignSignedDeficitSimulation
         int campaignIndex,
         int campaignSeed,
         string policyId,
-        double logPower)
+        double logPower,
+        int adaptationRetryCap)
     {
-        var campaignId = $"signed-deficit-{campaignIndex:D6}";
+        if (adaptationRetryCap < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(adaptationRetryCap));
+        }
+
         var session = H100SessionDriver.CreateSession(lookup, $"campaign-signed-deficit-{campaignSeed:D10}");
         session.OverrideCampaignSeedForValidation(campaignSeed);
         var policy = HeadlessPolicyFactory.Create(policyId);
+        var rosterPolicy = policy as IHeadlessRosterPolicy;
         var siteCount = 0;
         var battleCount = 0;
+        var adaptationRetriesUsed = 0;
 
         while (!session.Profile.CampaignProgress.StoryCleared && siteCount < SiteSafety)
         {
             H100SessionDriver.AdvanceToNextUnclearedSite(session);
-            var deploymentSeed = H100SessionDriver.DeriveSeed(
-                $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|deployment",
-                campaignSeed + siteCount);
-            H100SessionDriver.ApplyPolicyDeployment(
-                session,
-                lookup,
-                policy,
-                deploymentSeed);
-            session.BeginNewExpedition();
-
-            var siteBattleCount = 0;
-            while (true)
+            var siteCompleted = false;
+            var terminalNodeId = session.SelectedCampaignSiteId;
+            for (var siteAttempt = 0;
+                 siteAttempt <= adaptationRetryCap && !siteCompleted;
+                 siteAttempt++)
             {
-                while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                if (siteAttempt > 0)
                 {
-                }
-
-                var selectedNode = session.GetSelectedExpeditionNode();
-                if (selectedNode?.RequiresBattle != true)
-                {
-                    break;
-                }
-
-                siteBattleCount++;
-                if (siteBattleCount > BattleNodeSafety)
-                {
-                    throw new InvalidOperationException(
-                        $"Signed-deficit site battle safety exhausted: {selectedNode.Id}");
-                }
-
-                if (policy is IHeadlessPrepPolicy prepPolicy
-                    && session.TryBuildSelectedBattleState(out _, out var prepEncounter, out _, out _)
-                    && (prepEncounter.Context.IsBoss || IsElite(prepEncounter)))
-                {
-                    var prepSeed = H100SessionDriver.DeriveSeed(
-                        $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|{selectedNode.Id}|prep",
-                        campaignSeed + battleCount);
-                    H100SessionDriver.ApplyPolicyPrep(
-                        session,
-                        policy,
-                        prepPolicy,
-                        prepSeed,
-                        H100PolicyObservationBuilder.Build(
+                    adaptationRetriesUsed++;
+                    if (rosterPolicy != null)
+                    {
+                        ApplyTownWindow(
                             session,
                             lookup,
-                            prepSeed,
-                            includeTownRoster: true));
+                            rosterPolicy,
+                            campaignSeed,
+                            siteCount,
+                            siteAttempt,
+                            "adaptation");
+                    }
                 }
 
-                if (!session.TryBuildSelectedBattleState(
-                        out _,
-                        out var encounter,
-                        out var allySnapshot,
-                        out var buildError))
-                {
-                    throw new InvalidOperationException(
-                        $"Signed-deficit battle build failed ({selectedNode.Id}): {buildError}");
-                }
-
-                var injectedSnapshot = CampaignPowerInjector.Apply(allySnapshot, logPower);
-                if (!session.TryComposeBattleState(
-                        injectedSnapshot,
-                        encounter,
-                        out var state,
-                        out var composeError))
-                {
-                    throw new InvalidOperationException(
-                        $"Signed-deficit battle compose failed ({selectedNode.Id}): {composeError}");
-                }
-
-                var result = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
-                battleCount++;
-                var won = result.Winner == TeamSide.Ally;
-                session.MarkBattleResolved(
-                    won,
-                    result.StepCount,
-                    result.Events.Count,
-                    result.FinalUnits);
-                if (!won)
-                {
-                    session.AbandonExpeditionRun();
-                    return new CampaignCompletionObservation(
-                        false,
-                        selectedNode.Id,
-                        battleCount,
-                        siteCount);
-                }
-
-                session.ResolveSelectedExpeditionNode();
-            }
-
-            session.ResolveSelectedNodeToRewardSettlement();
-            if (session.PendingRewardChoices.Count > 0)
-            {
-                var rewardSeed = H100SessionDriver.DeriveSeed(
-                    $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|reward",
+                var deploymentSeed = H100SessionDriver.DeriveSeed(
+                    $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|deployment|attempt={siteAttempt}",
                     campaignSeed + siteCount);
-                H100SessionDriver.ApplyPolicyReward(
+                H100SessionDriver.ApplyPolicyDeployment(
                     session,
                     lookup,
                     policy,
-                    rewardSeed);
+                    deploymentSeed);
+                session.BeginNewExpedition();
+
+                var siteBattleCount = 0;
+                var siteLost = false;
+                while (true)
+                {
+                    while (CampaignDefaultRouteNavigator.TryAdvanceIntermediateNonBattle(session))
+                    {
+                    }
+
+                    var selectedNode = session.GetSelectedExpeditionNode();
+                    if (selectedNode?.RequiresBattle != true)
+                    {
+                        break;
+                    }
+
+                    terminalNodeId = selectedNode.Id;
+                    siteBattleCount++;
+                    if (siteBattleCount > BattleNodeSafety)
+                    {
+                        throw new InvalidOperationException(
+                            $"Signed-deficit site battle safety exhausted: {selectedNode.Id}");
+                    }
+
+                    if (policy is IHeadlessPrepPolicy prepPolicy
+                        && session.TryBuildSelectedBattleState(out _, out var prepEncounter, out _, out _)
+                        && (prepEncounter.Context.IsBoss || IsElite(prepEncounter)))
+                    {
+                        var prepSeed = H100SessionDriver.DeriveSeed(
+                            $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|{selectedNode.Id}|prep|attempt={siteAttempt}",
+                            campaignSeed + battleCount);
+                        H100SessionDriver.ApplyPolicyPrep(
+                            session,
+                            policy,
+                            prepPolicy,
+                            prepSeed,
+                            H100PolicyObservationBuilder.Build(
+                                session,
+                                lookup,
+                                prepSeed,
+                                includeTownRoster: true));
+                    }
+
+                    if (!session.TryBuildSelectedBattleState(
+                            out _,
+                            out var encounter,
+                            out var allySnapshot,
+                            out var buildError))
+                    {
+                        throw new InvalidOperationException(
+                            $"Signed-deficit battle build failed ({selectedNode.Id}): {buildError}");
+                    }
+
+                    var injectedSnapshot = CampaignPowerInjector.Apply(allySnapshot, logPower);
+                    if (!session.TryComposeBattleState(
+                            injectedSnapshot,
+                            encounter,
+                            out var state,
+                            out var composeError))
+                    {
+                        throw new InvalidOperationException(
+                            $"Signed-deficit battle compose failed ({selectedNode.Id}): {composeError}");
+                    }
+
+                    var goldBefore = session.Profile.Currencies.Gold;
+                    var echoBefore = session.Profile.Currencies.Echo;
+                    var rewardLedgerBefore = session.Profile.RewardLedger.Count;
+                    var result = BattleResolver.Run(state, BattleSimulator.DefaultMaxSteps);
+                    battleCount++;
+                    var won = result.Winner == TeamSide.Ally;
+                    session.MarkBattleResolved(
+                        won,
+                        result.StepCount,
+                        result.Events.Count,
+                        result.FinalUnits);
+                    if (!won)
+                    {
+                        session.AbandonExpeditionRun();
+                        RequireNoDefeatRewardMutation(
+                            session,
+                            selectedNode.Id,
+                            goldBefore,
+                            echoBefore,
+                            rewardLedgerBefore);
+                        siteLost = true;
+                        break;
+                    }
+
+                    session.ResolveSelectedExpeditionNode();
+                }
+
+                if (siteLost)
+                {
+                    continue;
+                }
+
+                session.ResolveSelectedNodeToRewardSettlement();
+                if (session.PendingRewardChoices.Count > 0)
+                {
+                    var rewardSeed = H100SessionDriver.DeriveSeed(
+                        $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|first-clear-reward",
+                        campaignSeed + siteCount);
+                    H100SessionDriver.ApplyPolicyReward(
+                        session,
+                        lookup,
+                        policy,
+                        rewardSeed);
+                }
+
+                session.ReturnToTownAfterReward();
+                if (!session.Profile.CampaignProgress.StoryCleared
+                    && rosterPolicy != null)
+                {
+                    ApplyTownWindow(
+                        session,
+                        lookup,
+                        rosterPolicy,
+                        campaignSeed,
+                        siteCount,
+                        siteAttempt,
+                        "first-clear");
+                }
+
+                siteCompleted = true;
             }
 
-            session.ReturnToTownAfterReward();
-            if (!session.Profile.CampaignProgress.StoryCleared
-                && policy is IHeadlessRosterPolicy rosterPolicy)
+            if (!siteCompleted)
             {
-                ApplyTownWindow(
-                    session,
-                    lookup,
-                    rosterPolicy,
-                    campaignSeed,
-                    siteCount);
+                return new CampaignCompletionObservation(
+                    false,
+                    terminalNodeId,
+                    battleCount,
+                    siteCount,
+                    adaptationRetriesUsed);
             }
 
             siteCount++;
@@ -162,7 +219,8 @@ internal static class CampaignSignedDeficitSimulation
             true,
             "story-complete",
             battleCount,
-            siteCount);
+            siteCount,
+            adaptationRetriesUsed);
     }
 
     private static void ApplyTownWindow(
@@ -170,21 +228,23 @@ internal static class CampaignSignedDeficitSimulation
         RuntimeCombatContentLookup lookup,
         IHeadlessRosterPolicy rosterPolicy,
         int campaignSeed,
-        int siteIndex)
+        int siteIndex,
+        int siteAttempt,
+        string phase)
     {
-        var recruitSeed = TownSeed(session, campaignSeed, siteIndex, "recruit");
+        var recruitSeed = TownSeed(session, campaignSeed, siteIndex, siteAttempt, phase, "recruit");
         H100SessionDriver.ApplyPolicyRecruit(
             session,
             rosterPolicy,
             H100RosterPolicyObservationBuilder.Build(session, lookup, recruitSeed));
 
-        var passiveSeed = TownSeed(session, campaignSeed, siteIndex, "level_node");
+        var passiveSeed = TownSeed(session, campaignSeed, siteIndex, siteAttempt, phase, "level_node");
         H100SessionDriver.ApplyPolicyPassive(
             session,
             rosterPolicy,
             H100RosterPolicyObservationBuilder.Build(session, lookup, passiveSeed));
 
-        var refitSeed = TownSeed(session, campaignSeed, siteIndex, "refit");
+        var refitSeed = TownSeed(session, campaignSeed, siteIndex, siteAttempt, phase, "refit");
         H100SessionDriver.ApplyPolicyRefit(
             session,
             rosterPolicy,
@@ -195,10 +255,30 @@ internal static class CampaignSignedDeficitSimulation
         GameSessionState session,
         int campaignSeed,
         int siteIndex,
+        int siteAttempt,
+        string phase,
         string kind)
         => H100SessionDriver.DeriveSeed(
-            $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|town|{kind}",
+            $"{session.SelectedCampaignChapterId}|{session.SelectedCampaignSiteId}|town|{phase}|attempt={siteAttempt}|{kind}",
             campaignSeed + siteIndex);
+
+    private static void RequireNoDefeatRewardMutation(
+        GameSessionState session,
+        string nodeId,
+        int goldBefore,
+        int echoBefore,
+        int rewardLedgerBefore)
+    {
+        if (session.Profile.Currencies.Gold != goldBefore
+            || session.Profile.Currencies.Echo != echoBefore
+            || session.Profile.RewardLedger.Count != rewardLedgerBefore
+            || session.PendingRewardChoices.Count != 0)
+        {
+            throw new InvalidOperationException(
+                $"Signed-deficit defeat at '{nodeId}' mutated reward resources; "
+                + "the corrected no-farm scope permits first-clear resources only.");
+        }
+    }
 
     private static bool IsElite(ResolvedEncounterContext encounter)
         => encounter.Context.EncounterId.Contains("_elite_", StringComparison.Ordinal)

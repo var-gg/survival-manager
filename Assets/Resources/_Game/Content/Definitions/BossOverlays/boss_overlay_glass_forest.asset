@@ -21,7 +21,7 @@ MonoBehaviour:
   SignatureUtilityTag: boss_utility_shard_redirect
   PressureClockFirstPulseSeconds: 1.5
   PressureClockIntervalSeconds: 1
-  PressureClockMaxHealthDamageRatio: 0.16
+  PressureClockMaxHealthDamageRatio: 0.14
   PressureClockMaxPulses: 3
   RewardDropTags:
   - boss

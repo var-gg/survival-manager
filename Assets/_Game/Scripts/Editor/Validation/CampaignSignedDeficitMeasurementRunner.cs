@@ -27,6 +27,7 @@ public static class CampaignSignedDeficitMeasurementCli
             var searchMinimum = ReadDouble("SM_CAMPAIGN_DEFICIT_MIN_X", -4d, -12d, -0.001d);
             var searchMaximum = ReadDouble("SM_CAMPAIGN_DEFICIT_MAX_X", 4d, 0.001d, 12d);
             var tolerance = ReadDouble("SM_CAMPAIGN_DEFICIT_TOLERANCE", 0.001d, 0.0001d, 0.05d);
+            var adaptationRetryCap = ReadInt("SM_CAMPAIGN_DEFICIT_ADAPTATION_CAP", 4, 0, 10);
             if (searchMinimum >= searchMaximum)
             {
                 throw new InvalidOperationException("Signed-deficit search minimum must be below maximum.");
@@ -44,7 +45,8 @@ public static class CampaignSignedDeficitMeasurementCli
                 seedBase,
                 searchMinimum,
                 searchMaximum,
-                tolerance);
+                tolerance,
+                adaptationRetryCap);
             var absolutePath = Path.IsPathRooted(outputPath)
                 ? Path.GetFullPath(outputPath)
                 : Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), outputPath));
@@ -113,14 +115,15 @@ public static class CampaignSignedDeficitMeasurementCli
 
 internal static class CampaignSignedDeficitMeasurementRunner
 {
-    private const string SchemaVersion = "campaign-signed-deficit-v1";
+    private const string SchemaVersion = "campaign-signed-deficit-v2";
 
     internal static CampaignSignedDeficitMeasurementReport Run(
         int seedCount,
         int seedBase,
         double searchMinimum,
         double searchMaximum,
-        double tolerance)
+        double tolerance,
+        int adaptationRetryCap)
     {
         SM.Editor.SeedData.SampleSeedGenerator.RequireCanonicalSampleContentReady(
             nameof(CampaignSignedDeficitMeasurementCli));
@@ -146,7 +149,8 @@ internal static class CampaignSignedDeficitMeasurementRunner
                 informedPolicyId,
                 searchMinimum,
                 searchMaximum,
-                tolerance));
+                tolerance,
+                adaptationRetryCap));
             if ((index + 1) % 8 == 0 || index + 1 == seeds.Length)
             {
                 Debug.Log(
@@ -155,26 +159,22 @@ internal static class CampaignSignedDeficitMeasurementRunner
             }
         }
 
-        var naive = new List<CampaignZeroPowerSeedObservation>(seedCount);
+        var naive = new List<CampaignSignedDeficitSeedObservation>(seedCount);
         for (var index = 0; index < seeds.Length; index++)
         {
-            var result = CampaignSignedDeficitSimulation.Run(
+            naive.Add(MeasureSeed(
                 lookup,
                 index,
                 seeds[index],
                 naivePolicyId,
-                0d);
-            naive.Add(new CampaignZeroPowerSeedObservation(
-                index,
-                seeds[index],
-                result.Completed,
-                result.TerminalNodeId,
-                result.BattleCount,
-                result.SiteCount));
-            if ((index + 1) % 16 == 0 || index + 1 == seeds.Length)
+                searchMinimum,
+                searchMaximum,
+                tolerance,
+                adaptationRetryCap));
+            if ((index + 1) % 8 == 0 || index + 1 == seeds.Length)
             {
                 Debug.Log(
-                    $"[CampaignSignedDeficit] naive={index + 1}/{seeds.Length} "
+                    $"[CampaignSignedDeficit] naive-deficit={index + 1}/{seeds.Length} "
                     + $"elapsed={stopwatch.Elapsed.TotalMinutes:F1}m");
             }
         }
@@ -194,22 +194,46 @@ internal static class CampaignSignedDeficitMeasurementRunner
                 + $"(exact={exactDeficits.Length}).");
         }
 
+        var exactNaiveDeficits = naive
+            .Where(value => value.SignedDeficit.HasValue
+                            && !value.LeftCensored
+                            && !value.RightCensored
+                            && !value.MonotonicityViolated)
+            .Select(value => value.SignedDeficit!.Value)
+            .OrderBy(value => value)
+            .ToArray();
+        if (exactNaiveDeficits.Length != seedCount)
+        {
+            throw new InvalidOperationException(
+                $"Naive signed-deficit measurement did not produce {seedCount} exact monotone observations "
+                + $"(exact={exactNaiveDeficits.Length}).");
+        }
+
         var delta = exactDeficits.Average();
         var sigma = Math.Sqrt(exactDeficits.Sum(value => Math.Pow(value - delta, 2d)) / exactDeficits.Length);
+        var naiveDelta = exactNaiveDeficits.Average();
+        var naiveSigma = Math.Sqrt(
+            exactNaiveDeficits.Sum(value => Math.Pow(value - naiveDelta, 2d))
+            / exactNaiveDeficits.Length);
         var q0Informed = informed.Count(value => value.ClearedAtZero) / (double)seedCount;
-        var q0Naive = naive.Count(value => value.Cleared) / (double)seedCount;
+        var q0Naive = naive.Count(value => value.ClearedAtZero) / (double)seedCount;
         double? ratio = q0Naive > 0d ? q0Informed / q0Naive : null;
         var quantiles = BuildQuantiles(exactDeficits);
+        var naiveQuantiles = BuildQuantiles(exactNaiveDeficits);
         var payload = new CampaignSignedDeficitMeasurementReport(
             SchemaVersion,
-            "No rewarded revisits; production first-clear loot/reward and normal Town recruit/passive/refit enabled. "
-            + "For each informed-policy campaign seed, binary-search the minimum x whose production session clears, "
+            "A cleared site is never revisited for reward. An uncleared site may be retried after a loss, up to "
+            + $"{adaptationRetryCap} post-loss adaptation cycles, using only resources already earned from first clears. "
+            + "Each cycle may re-form, re-equip, prep, recruit, allocate a passive, and refit through production policy seams; "
+            + "defeat rewards are discarded before returning to Town. For each informed-policy campaign seed, "
+            + "binary-search the minimum x whose production session clears, "
             + "after multiplying ally MaxHealth, PhysPower, and MagPower by exp(x/2).",
             seedBase,
             seedCount,
             searchMinimum,
             searchMaximum,
             tolerance,
+            adaptationRetryCap,
             informedPolicyId,
             naivePolicyId,
             delta,
@@ -218,14 +242,20 @@ internal static class CampaignSignedDeficitMeasurementRunner
             q0Naive,
             ratio,
             quantiles,
+            naiveDelta,
+            naiveSigma,
+            naiveQuantiles,
             informed,
             naive,
             false,
             "Production CampaignEncounterSeed intentionally drives both combat RNG and first-clear loot selection; "
             + "there is no independently validated drop-only/tactics-only seed lane, so variance is not decomposed.",
-            informed.Count(value => value.MonotonicityViolated),
-            informed.Count(value => value.LeftCensored),
-            informed.Count(value => value.RightCensored),
+            informed.Count(value => value.MonotonicityViolated)
+            + naive.Count(value => value.MonotonicityViolated),
+            informed.Count(value => value.LeftCensored)
+            + naive.Count(value => value.LeftCensored),
+            informed.Count(value => value.RightCensored)
+            + naive.Count(value => value.RightCensored),
             string.Empty);
         var canonicalJson = JsonConvert.SerializeObject(
             payload,
@@ -245,7 +275,8 @@ internal static class CampaignSignedDeficitMeasurementRunner
         string policyId,
         double searchMinimum,
         double searchMaximum,
-        double tolerance)
+        double tolerance,
+        int adaptationRetryCap)
     {
         var evaluations = new SortedDictionary<double, CampaignCompletionObservation>();
         CampaignCompletionObservation Evaluate(double logPower)
@@ -257,7 +288,8 @@ internal static class CampaignSignedDeficitMeasurementRunner
                     campaignIndex,
                     campaignSeed,
                     policyId,
-                    logPower);
+                    logPower,
+                    adaptationRetryCap);
                 evaluations.Add(logPower, observation);
             }
 

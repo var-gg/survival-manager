@@ -25,12 +25,12 @@ MonoBehaviour:
   Members:
   - Id: site_ashen_gate_skirmish_2_squad_1
     NameKey: 
-    ArchetypeId: guardian
+    ArchetypeId: raider
     CharacterId: extra_kojin_gate_warden
     Anchor: 0
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: guardian_encounter_dampened_assault
+    NegativeTraitId: raider_negative_frail
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_2_squad_2

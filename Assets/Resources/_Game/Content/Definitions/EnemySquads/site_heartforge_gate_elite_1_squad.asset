@@ -30,7 +30,7 @@ MonoBehaviour:
     Anchor: 0
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: bulwark_negative_frail
     EquipmentBudget: 4
     EquipmentItemBaseId: item_layered_armor
     EquipmentAffixIds:
@@ -44,7 +44,7 @@ MonoBehaviour:
     Anchor: 2
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: pale_executor_negative_frail
     EquipmentBudget: 3
     EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds:
@@ -58,7 +58,7 @@ MonoBehaviour:
     Anchor: 3
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: hexer_negative_frail
     EquipmentBudget: 3
     EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:
@@ -72,7 +72,7 @@ MonoBehaviour:
     Anchor: 5
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: shaman_negative_frail
     EquipmentBudget: 3
     EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:

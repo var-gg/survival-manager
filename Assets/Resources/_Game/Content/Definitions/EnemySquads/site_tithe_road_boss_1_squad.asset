@@ -39,16 +39,17 @@ MonoBehaviour:
     legacyDisplayName:
   - Id: site_tithe_road_boss_1_squad_escort_1
     NameKey:
-    ArchetypeId: warden
+    ArchetypeId: pale_executor_tithe_boss
     CharacterId: extra_tithe_mark_bearer
     Anchor: 0
     Role: 2
     PositiveTraitId:
     NegativeTraitId:
     EquipmentBudget: 1
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []
-    RuleModifierTags: []
+    RuleModifierTags:
+    - duelist_dive_commit
     legacyDisplayName:
   - Id: site_tithe_road_boss_1_squad_escort_2
     NameKey:

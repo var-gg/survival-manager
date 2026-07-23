@@ -77,9 +77,9 @@ MonoBehaviour:
     Modifiers:
     - StatId: phys_power
       Op: 1
-      Value: -0.18
+      Value: -0.06
     - StatId: mag_power
       Op: 1
-      Value: -0.18
+      Value: -0.06
     legacyDisplayName: 
     legacyDescription: 

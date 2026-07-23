@@ -114,6 +114,11 @@ public sealed partial class BattleActorPresentationCatalog
             catalog.SetArchetypeOverride(characterId, wrapper);
         }
 
+        if (wrappers.TryGetValue("pale_executor", out var paleExecutorWrapper))
+        {
+            catalog.SetArchetypeOverride("pale_executor_tithe_boss", paleExecutorWrapper);
+        }
+
         for (var i = 0; i < EditorP09HeroSmokeIds.Length; i++)
         {
             var characterId = EditorP09HeroSmokeIds[i];

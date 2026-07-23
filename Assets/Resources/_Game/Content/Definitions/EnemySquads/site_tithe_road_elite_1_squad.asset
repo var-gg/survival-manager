@@ -65,11 +65,10 @@ MonoBehaviour:
     Anchor: 3
     Role: 0
     PositiveTraitId: scout_positive_brave
-    NegativeTraitId:
+    NegativeTraitId: scout_negative_frail
     EquipmentBudget: 1
     EquipmentItemBaseId: item_hunter_bow
-    EquipmentAffixIds:
-    - affix_precise
+    EquipmentAffixIds: []
     EquipmentBudget: 0
     EquipmentItemBaseId:
     EquipmentAffixIds: []

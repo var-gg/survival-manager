@@ -39,17 +39,18 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_worldscar_depths_boss_1_squad_escort_1
     NameKey: 
-    ArchetypeId: mirror_cantor
+    ArchetypeId: pale_executor_tithe_boss
     CharacterId: extra_worldscar_archive_cell
     Anchor: 3
     Role: 2
     PositiveTraitId: 
     NegativeTraitId: 
     EquipmentBudget: 4
-    EquipmentItemBaseId: item_layered_armor
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds:
     - affix_packborn
-    RuleModifierTags: []
+    RuleModifierTags:
+    - duelist_dive_commit
     legacyDisplayName: 
   - Id: site_worldscar_depths_boss_1_squad_escort_2
     NameKey: 

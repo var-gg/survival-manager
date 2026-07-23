@@ -43,12 +43,13 @@ MonoBehaviour:
     CharacterId: extra_worldscar_archive_cell
     Anchor: 2
     Role: 0
-    PositiveTraitId: 
+    PositiveTraitId: mirror_cantor_positive_sturdy
     NegativeTraitId: 
     EquipmentBudget: 3
     EquipmentItemBaseId: item_priest_focus
     EquipmentAffixIds:
     - affix_precise
+    - affix_packborn
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_worldscar_depths_elite_1_squad_3
@@ -68,17 +69,19 @@ MonoBehaviour:
     legacyDisplayName: 
   - Id: site_worldscar_depths_elite_1_squad_4
     NameKey: 
-    ArchetypeId: slayer
+    ArchetypeId: pale_executor_tithe_boss
     CharacterId: extra_worldscar_rite_echo
     Anchor: 5
     Role: 0
-    PositiveTraitId: slayer_positive_brave
-    NegativeTraitId: 
+    PositiveTraitId:
+    NegativeTraitId: pale_executor_negative_frail
     EquipmentBudget: 3
     EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds:
     - affix_precise
-    RuleModifierTags: []
+    - affix_packborn
+    RuleModifierTags:
+    - duelist_dive_commit
     legacyDisplayName: 
   legacyDisplayName: 
   legacyDescription: 

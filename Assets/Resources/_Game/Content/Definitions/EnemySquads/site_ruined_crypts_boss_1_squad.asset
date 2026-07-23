@@ -67,16 +67,17 @@ MonoBehaviour:
     legacyDisplayName:
   - Id: site_ruined_crypts_boss_1_squad_escort_3
     NameKey:
-    ArchetypeId: hexer_attrition_boss
+    ArchetypeId: pale_executor_tithe_boss
     CharacterId: extra_black_roll_bailiff
     Anchor: 5
     Role: 2
     PositiveTraitId:
     NegativeTraitId:
     EquipmentBudget: 2
-    EquipmentItemBaseId: item_hexer_focus
+    EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []
-    RuleModifierTags: []
+    RuleModifierTags:
+    - duelist_dive_commit
     legacyDisplayName:
   legacyDisplayName:
   legacyDescription:

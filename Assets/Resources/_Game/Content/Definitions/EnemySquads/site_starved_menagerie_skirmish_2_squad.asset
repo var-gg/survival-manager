@@ -30,7 +30,7 @@ MonoBehaviour:
     Anchor: 0
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: raider_negative_frail
     EquipmentBudget: 1
     EquipmentItemBaseId: item_reaver_blade
     EquipmentAffixIds: []
@@ -43,7 +43,7 @@ MonoBehaviour:
     Anchor: 2
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: hunter_negative_frail
     EquipmentBudget: 1
     EquipmentItemBaseId: item_hunter_bow
     EquipmentAffixIds: []

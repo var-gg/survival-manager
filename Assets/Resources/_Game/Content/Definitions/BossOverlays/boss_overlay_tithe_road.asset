@@ -21,7 +21,7 @@ MonoBehaviour:
   SignatureUtilityTag: boss_utility_mark_chain
   PressureClockFirstPulseSeconds: 2.3
   PressureClockIntervalSeconds: 1.4
-  PressureClockMaxHealthDamageRatio: 0.333
+  PressureClockMaxHealthDamageRatio: 0.295
   PressureClockMaxPulses: 3
   RewardDropTags:
   - boss

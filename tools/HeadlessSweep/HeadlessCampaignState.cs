@@ -31,18 +31,26 @@ internal sealed class HeadlessCampaignState
     private HeadlessCampaignState(
         SnapshotSessionContentLookup lookup,
         CampaignBalanceGridCell cell,
+        int campaignSeedSalt,
         IReadOnlyList<HeadlessCampaignHero> heroes,
         IReadOnlyList<HeadlessCampaignItem> inventory)
     {
         Lookup = lookup;
         Snapshot = lookup.Snapshot;
         Cell = cell;
+        CampaignSeedSalt = campaignSeedSalt;
         Heroes = heroes.ToList();
         Inventory = inventory.ToList();
         _itemInstanceCounter = Inventory.Count;
         _encounterResolver = new EncounterResolutionService(Snapshot);
+        var campaignIdentity = $"campaign-two-arm-{CellTag(cell)}";
+        if (campaignSeedSalt != 0)
+        {
+            campaignIdentity += $"|seed-salt={campaignSeedSalt.ToString(CultureInfo.InvariantCulture)}";
+        }
+
         CampaignSeed = CampaignEncounterSeed.FromCampaignIdentity(
-            $"campaign-two-arm-{CellTag(cell)}");
+            campaignIdentity);
         Progress = _encounterResolver.NormalizeCampaignProgress(new CampaignProgressState(
             string.Empty,
             string.Empty,
@@ -62,6 +70,7 @@ internal sealed class HeadlessCampaignState
     internal CampaignProgressState Progress { get; private set; }
     internal ActiveRunState? ActiveRun { get; private set; }
     internal int CurrentNodeIndex { get; private set; }
+    internal int CampaignSeedSalt { get; }
     internal int Gold { get; private set; } = 12;
     internal int Echo { get; private set; } = 45;
     internal IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
@@ -71,6 +80,9 @@ internal sealed class HeadlessCampaignState
     internal string SelectedSiteId => Progress.SelectedSiteId;
     internal bool StoryCleared => Progress.StoryCleared;
     internal int CampaignSeed { get; }
+    internal string PanelCellId => CampaignSeedSalt == 0
+        ? Cell.CellId
+        : $"{Cell.CellId}|seed-salt={CampaignSeedSalt.ToString(CultureInfo.InvariantCulture)}";
 
     internal SiteTrackNodeState? SelectedNode
     {
@@ -87,14 +99,15 @@ internal sealed class HeadlessCampaignState
 
     internal static HeadlessCampaignState Create(
         SnapshotSessionContentLookup lookup,
-        CampaignBalanceGridCell cell)
+        CampaignBalanceGridCell cell,
+        int campaignSeedSalt = 0)
     {
         var cellTag = CellTag(cell);
         var heroes = cell.RosterArchetypeIds
             .Select((archetypeId, index) => BuildHero(lookup, cellTag, archetypeId, index))
             .ToArray();
         var inventory = BuildStarterItems(lookup);
-        return new HeadlessCampaignState(lookup, cell, heroes, inventory);
+        return new HeadlessCampaignState(lookup, cell, campaignSeedSalt, heroes, inventory);
     }
 
     internal void AdvanceToNextUnclearedSite()

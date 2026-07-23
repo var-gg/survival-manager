@@ -74,7 +74,7 @@ Console.Error.WriteLine(
     + "| deck-matchup-diagnostic [--seeds <n>] [--output <path>] "
     + "| credible-deck-matchup [--seeds <n>] [--output <path>] [--opening-lock-seconds <n>] "
     + "| campaign-battle [--unity <report>] [--output <path>] "
-    + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] "
+    + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] [--seed-salts <n,n,...>] "
     + "[--output <path>] [--verify] | balance-framework [--samples <n>] [--neutral-health-more <n>] "
     + "[--neutral-power-more <n>] [--snapshot <path>] [--neutral-snapshot <path>] "
     + "[--emulate-before] [--neutral-emulate-before] [--precision-power <n>] "

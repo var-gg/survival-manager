@@ -17,6 +17,10 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_wolfpine_trail.desc
   PhaseTrigger: 1
   ThreatCost: 1
+  PressureClockFirstPulseSeconds: 3.5
+  PressureClockIntervalSeconds: 2
+  PressureClockMaxHealthDamageRatio: 0.045
+  PressureClockMaxPulses: 2
   SignatureAuraTag: boss_aura_sustain_guard
   SignatureUtilityTag: boss_utility_backline_dive
   RewardDropTags:

@@ -10,6 +10,7 @@ internal sealed record CampaignSignedDeficitMeasurementReport(
     double SearchMinimum,
     double SearchMaximum,
     double SearchTolerance,
+    int AdaptationRetryCap,
     string InformedPolicyId,
     string NaivePolicyId,
     double DeltaMean,
@@ -18,8 +19,11 @@ internal sealed record CampaignSignedDeficitMeasurementReport(
     double Q0Naive,
     double? InformedToNaiveRatio,
     IReadOnlyList<CampaignDeficitQuantile> CdfQuantiles,
+    double NaiveDeltaMean,
+    double NaiveSigmaPopulation,
+    IReadOnlyList<CampaignDeficitQuantile> NaiveCdfQuantiles,
     IReadOnlyList<CampaignSignedDeficitSeedObservation> InformedSeeds,
-    IReadOnlyList<CampaignZeroPowerSeedObservation> NaiveSeeds,
+    IReadOnlyList<CampaignSignedDeficitSeedObservation> NaiveSeeds,
     bool VarianceDecompositionAvailable,
     string VarianceDecompositionNote,
     int MonotonicityViolationCount,
@@ -38,14 +42,6 @@ internal sealed record CampaignSignedDeficitSeedObservation(
     int EvaluationCount,
     string ZeroPowerTerminalNodeId);
 
-internal sealed record CampaignZeroPowerSeedObservation(
-    int CampaignIndex,
-    int CampaignSeed,
-    bool Cleared,
-    string TerminalNodeId,
-    int BattleCount,
-    int SiteCount);
-
 internal sealed record CampaignDeficitQuantile(
     double Probability,
     double Deficit,
@@ -55,4 +51,5 @@ internal sealed record CampaignCompletionObservation(
     bool Completed,
     string TerminalNodeId,
     int BattleCount,
-    int SiteCount);
+    int SiteCount,
+    int AdaptationRetriesUsed);

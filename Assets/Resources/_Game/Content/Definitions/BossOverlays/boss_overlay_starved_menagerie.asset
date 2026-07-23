@@ -21,7 +21,7 @@ MonoBehaviour:
   SignatureUtilityTag: boss_utility_snare_release
   PressureClockFirstPulseSeconds: 0.8
   PressureClockIntervalSeconds: 0.65
-  PressureClockMaxHealthDamageRatio: 0.333
+  PressureClockMaxHealthDamageRatio: 0.3
   PressureClockMaxPulses: 3
   RewardDropTags:
   - boss

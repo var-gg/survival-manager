@@ -275,6 +275,8 @@ internal sealed record HeadlessCampaignWoundMeasure(
 internal sealed record HeadlessCampaignSweepReport(
     string SchemaVersion,
     int Cells,
+    int BaseCells,
+    IReadOnlyList<int> CampaignSeedSalts,
     int Arms,
     int DegreeOfParallelism,
     int LogicalProcessorCount,

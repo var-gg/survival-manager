@@ -17,8 +17,8 @@ public sealed class BossDeckBuild2AContentTests
 
     [TestCase("site_ashen_gate", TeamPostureTypeValue.ProtectCarry, "warden", "guardian", "vanguard")]
     [TestCase("site_sunken_bastion", TeamPostureTypeValue.HoldLine, "sunken_adjudicator_boss", "bastion_penitent", "vanguard")]
-    [TestCase("site_tithe_road", TeamPostureTypeValue.StandardAdvance, "bastion_penitent_tithe_boss", "warden", "vanguard")]
-    [TestCase("site_ruined_crypts", TeamPostureTypeValue.HoldLine, "guardian", "bastion_penitent", "mystic,vanguard")]
+    [TestCase("site_tithe_road", TeamPostureTypeValue.StandardAdvance, "bastion_penitent_tithe_boss", "pale_executor_tithe_boss", "duelist")]
+    [TestCase("site_ruined_crypts", TeamPostureTypeValue.HoldLine, "guardian", "bastion_penitent", "vanguard")]
     [TestCase("site_bone_orchard", TeamPostureTypeValue.ProtectCarry, "warden", "reaver", "mystic")]
     public void BossDecks_UseCaptainAndScreenBodiesWithIntentionalClassPairs(
         string siteId,
@@ -35,7 +35,10 @@ public sealed class BossDeckBuild2AContentTests
         Assert.That(captain.ArchetypeId, Is.EqualTo(captainArchetype));
         Assert.That(captain.Anchor, Is.EqualTo(DeploymentAnchorValue.FrontCenter));
 
-        var screen = squad.Members.Single(member => string.Equals(member.ArchetypeId, screenArchetype, StringComparison.Ordinal));
+        var screen = squad.Members.Single(
+            member =>
+                string.Equals(member.ArchetypeId, screenArchetype, StringComparison.Ordinal)
+                && member.Anchor == DeploymentAnchorValue.FrontTop);
         Assert.That(screen.Role, Is.EqualTo(EnemySquadMemberRoleValue.Escort));
         Assert.That(screen.Anchor, Is.EqualTo(DeploymentAnchorValue.FrontTop));
 
@@ -52,7 +55,7 @@ public sealed class BossDeckBuild2AContentTests
     [TestCase("site_sunken_bastion", 8f)]
     [TestCase("site_tithe_road", 8f)]
     [TestCase("site_ruined_crypts", 14f)]
-    [TestCase("site_bone_orchard", 12f)]
+    [TestCase("site_bone_orchard", 4f)]
     public void BossOverlays_ReplaceDecorativeSelfNerfsWithGuardedAndBarrier(string siteId, float barrier)
     {
         var suffix = siteId.Substring("site_".Length);

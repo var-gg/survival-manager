@@ -40,7 +40,7 @@ MonoBehaviour:
     Anchor: 2
     Role: 0
     PositiveTraitId: 
-    NegativeTraitId: 
+    NegativeTraitId: warden_negative_frail
     RuleModifierTags: []
     legacyDisplayName: 
   - Id: site_ashen_gate_skirmish_1_squad_3

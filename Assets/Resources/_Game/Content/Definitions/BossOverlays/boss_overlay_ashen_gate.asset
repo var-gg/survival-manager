@@ -17,6 +17,10 @@ MonoBehaviour:
   DescriptionKey: content.boss_overlay.boss_overlay_ashen_gate.desc
   PhaseTrigger: 1
   ThreatCost: 1
+  PressureClockFirstPulseSeconds: 3.5
+  PressureClockIntervalSeconds: 2
+  PressureClockMaxHealthDamageRatio: 0.04
+  PressureClockMaxPulses: 2
   SignatureAuraTag: boss_aura_guard_anchor
   SignatureUtilityTag: boss_utility_gate_lock
   RewardDropTags:
