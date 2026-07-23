@@ -264,14 +264,14 @@ internal static partial class CampaignTwoArmSweepRunner
         bool applyRecovery,
         CampaignRecoveryMutationCounter mutations)
     {
+        var goldBefore = session.Profile.Currencies.Gold;
+        var echoBefore = session.Profile.Currencies.Echo;
+        var permanentBefore = session.Profile.UnlockedPermanentAugmentIds.Count;
         session.MarkBattleResolved(
             victory,
             result.StepCount,
             result.Events.Count,
             applyRecovery ? result.FinalUnits : null);
-        var goldBefore = session.Profile.Currencies.Gold;
-        var echoBefore = session.Profile.Currencies.Echo;
-        var permanentBefore = session.Profile.UnlockedPermanentAugmentIds.Count;
         var choiceKind = string.Empty;
         var augmentChoice = 0;
         if (applyRecovery && session.PendingRewardChoices.Count > 0)

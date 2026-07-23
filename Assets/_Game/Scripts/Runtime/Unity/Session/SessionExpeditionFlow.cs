@@ -104,8 +104,9 @@ public sealed partial class GameSessionState
                 runId = $"{runId}#c{endlessCycleIndex}";
             }
 
-            _session.ActiveRun = RunStateService.StartRun(runId, _session.CaptureBlueprintState(), false)
+            var run = RunStateService.StartRun(runId, _session.CaptureBlueprintState(), false)
                 with { EndlessCycleIndex = endlessCycleIndex };
+            _session.ActiveRun = _session._campaignRecoveryFlow.InitializeRun(run, endlessCycleIndex);
         }
 
         internal void PrepareQuickBattleSmoke()
@@ -637,6 +638,19 @@ public sealed partial class GameSessionState
 
     private IEnumerable<RewardChoiceViewModel> BuildRewardChoicesForCurrentContext()
     {
+        if (!LastBattleVictory && _campaignRecoveryFlow.HasPersistentDefeatConsolationContext)
+        {
+            // A single persistent Echo claim replaces the run-scope temporary augment. Keeping it as
+            // the pending settlement preserves reload/commit-once behavior before the run terminates.
+            CombatContentSnapshot? snapshot = null;
+            if (_sessionContentLookup.TryGetCombatSnapshot(out var availableSnapshot, out _))
+            {
+                snapshot = availableSnapshot;
+            }
+
+            return new[] { _campaignRecoveryFlow.BuildDefeatConsolationChoice(snapshot) };
+        }
+
         if (!LastBattleVictory)
         {
             return new[]
@@ -786,22 +800,24 @@ public sealed partial class GameSessionState
 
     private SessionTextToken ApplyGoldNodeEffect(ExpeditionNodeViewModel node)
     {
-        Profile.Currencies.Gold += node.EffectAmount;
+        var amount = _campaignRecoveryFlow.FilterRouteCurrency(node.EffectAmount);
+        Profile.Currencies.Gold += amount;
         return new SessionTextToken(
             GameLocalizationTables.UIExpedition,
             "ui.expedition.effect.gold",
             "+{0} Gold",
-            SessionTextArg.Number(node.EffectAmount));
+            SessionTextArg.Number(amount));
     }
 
     private SessionTextToken ApplyEchoNodeEffect(ExpeditionNodeViewModel node)
     {
-        Profile.Currencies.Echo += node.EffectAmount;
+        var amount = _campaignRecoveryFlow.FilterRouteCurrency(node.EffectAmount);
+        Profile.Currencies.Echo += amount;
         return new SessionTextToken(
             GameLocalizationTables.UIExpedition,
             "ui.expedition.effect.echo",
             "Echo +{0}",
-            SessionTextArg.Number(node.EffectAmount));
+            SessionTextArg.Number(amount));
     }
 
     private SessionTextToken ApplyTemporaryAugmentNodeEffect(ExpeditionNodeViewModel node)
@@ -1314,8 +1330,43 @@ public sealed partial class GameSessionState
     private bool TryApplyAutomaticLoot()
     {
         if (ActiveRun == null
-            || string.IsNullOrWhiteSpace(ActiveRun.Overlay.RewardSourceId)
-            || !_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
+            || string.IsNullOrWhiteSpace(ActiveRun.Overlay.RewardSourceId))
+        {
+            return false;
+        }
+
+        if (_campaignRecoveryFlow.IsRewardedRevisit)
+        {
+            CombatContentSnapshot? revisitSnapshot = null;
+            IReadOnlyList<string> revisitContextTags = Array.Empty<string>();
+            if (_sessionContentLookup.TryGetCombatSnapshot(out var availableSnapshot, out _))
+            {
+                revisitSnapshot = availableSnapshot;
+                revisitContextTags = ResolveCurrentRewardContextTags(availableSnapshot);
+            }
+
+            _campaignRecoveryFlow.TryBuildRevisitAutomaticLoot(
+                revisitSnapshot,
+                revisitContextTags,
+                out var updatedRun,
+                out var revisitEntries);
+            var revisitTimestamp = DateTime.UtcNow.ToString("O");
+            var revisitSummaryParts = new List<string>();
+            foreach (var entry in revisitEntries)
+            {
+                ApplyAutomaticLootEntry(entry, revisitTimestamp, revisitSummaryParts);
+            }
+
+            ActiveRun = updatedRun;
+            _lastAutomaticLootBundle = new LootBundleResult(
+                updatedRun.Overlay.RewardSourceId,
+                "CampaignRecovery:automatic_loot",
+                revisitEntries);
+            SyncActiveRunRecord();
+            return true;
+        }
+
+        if (!_sessionContentLookup.TryGetCombatSnapshot(out var snapshot, out _))
         {
             return false;
         }

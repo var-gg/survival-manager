@@ -132,7 +132,10 @@ public sealed partial class GameSessionState
             // finalUnits == null이면 (sandbox/balance runner처럼 raw 결과를 안 전달하는 path) 건너뜀 — 기존 호환.
             if (finalUnits != null && !_session.IsDirectCombatSandboxLane)
             {
-                ApplyHeroBattleAftermath(finalUnits, victory);
+                ApplyHeroBattleAftermath(
+                    finalUnits,
+                    victory,
+                    _session._campaignRecoveryFlow.ShouldGrantVictoryExperience);
             }
 
             // ludonarrative 루프 P1a: 전투 결과 → 캠페인 영구 dossier 기록.
@@ -207,7 +210,9 @@ public sealed partial class GameSessionState
                 // shouldCreateRewardSettlement=false인 sandbox/quick-battle lane은 commit id를 비운다.
                 var battleContextHash = _session.ActiveRun.Overlay.BattleContextHash;
                 var rewardCommitId = shouldCreateRewardSettlement && !string.IsNullOrWhiteSpace(battleContextHash)
-                    ? RewardCommitIdService.Compute(battleContextHash, victory ? "victory" : "defeat")
+                    ? !victory && _session._campaignRecoveryFlow.HasPersistentDefeatConsolationContext
+                        ? _session._campaignRecoveryFlow.BuildDefeatConsolationCommitId(battleContextHash)
+                        : RewardCommitIdService.Compute(battleContextHash, victory ? "victory" : "defeat")
                     : string.Empty;
 
                 _session.ActiveRun = _session.ActiveRun with
@@ -280,7 +285,10 @@ public sealed partial class GameSessionState
             _session.ActiveRun = resolution.UpdatedRun;
         }
 
-        private void ApplyHeroBattleAftermath(IReadOnlyList<BattleUnitReadModel> finalUnits, bool victory)
+        private void ApplyHeroBattleAftermath(
+            IReadOnlyList<BattleUnitReadModel> finalUnits,
+            bool victory,
+            bool grantVictoryExperience)
         {
             var heroById = _session.Profile.Heroes
                 .GroupBy(h => h.HeroId, StringComparer.Ordinal)
@@ -298,7 +306,7 @@ public sealed partial class GameSessionState
                 hero.MaxHp = (int)Math.Max(1, Math.Round(unit.MaxHealth));
                 hero.CurrentHp = (int)Math.Max(0, Math.Round(unit.CurrentHealth));
 
-                if (!victory) continue;
+                if (!victory || !grantVictoryExperience) continue;
 
                 if (!progressionById.TryGetValue(hero.HeroId, out var progression))
                 {
@@ -473,7 +481,12 @@ public sealed partial class GameSessionState
             // 무한 순환(EndlessCycleIndex>0)에서는 SourceId 절을 건너뛴다 — RewardSourceId는 콘텐츠 고정값이라
             // 회차 재방문을 전부 '기지급'으로 오판한다. 사이클 dedup은 cycle-salt가 들어간 CommitId가 담당.
             var isEndlessCycleRun = (_session.ActiveRun?.EndlessCycleIndex ?? 0) > 0;
-            if ((!isEndlessCycleRun && _session.HasRecordedRewardSettlement(rewardSourceId))
+            var isPersistentDefeatConsolation = !_session.LastBattleVictory
+                                                && _session._campaignRecoveryFlow.HasPersistentDefeatConsolationContext;
+            if (_session._campaignRecoveryFlow.ShouldSuppressRewardChoice
+                || (!isEndlessCycleRun
+                    && !isPersistentDefeatConsolation
+                    && _session.HasRecordedRewardSettlement(rewardSourceId))
                 || _session.HasRecordedRewardSettlementByCommitId(rewardCommitId))
             {
                 _session._pendingRewardChoices.Clear();
@@ -493,6 +506,12 @@ public sealed partial class GameSessionState
             var goldBeforeChoice = _session.Profile.Currencies.Gold;
             var echoBeforeChoice = _session.Profile.Currencies.Echo;
             var timestamp = DateTime.UtcNow.ToString("O");
+            if (!_session.LastBattleVictory
+                && _session._campaignRecoveryFlow.HasPersistentDefeatConsolationContext)
+            {
+                _session._campaignRecoveryFlow.CommitDefeatConsolationClaim();
+            }
+
             switch (choice.Kind)
             {
                 case RewardChoiceKind.Gold:

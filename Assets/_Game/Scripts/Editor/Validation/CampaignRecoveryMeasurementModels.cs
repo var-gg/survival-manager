@@ -81,7 +81,18 @@ internal sealed record CampaignClearedSiteReentryObservation(
     int RevisitEchoDelta,
     int RevisitInventoryDelta,
     int RevisitRewardLedgerDelta,
-    int RevisitPermanentAugmentDelta);
+    int RevisitPermanentAugmentDelta,
+    bool UnboundedFarmClosed,
+    IReadOnlyList<CampaignRevisitRewardObservation> Revisits);
+
+internal sealed record CampaignRevisitRewardObservation(
+    int RevisitIndex,
+    int LifetimeExperienceDelta,
+    int GoldDelta,
+    int EchoDelta,
+    int InventoryDelta,
+    int RewardLedgerDelta,
+    int PermanentAugmentDelta);
 
 internal sealed record CampaignRecoveryReachabilityObservation(
     bool DefeatRewardsDriven,

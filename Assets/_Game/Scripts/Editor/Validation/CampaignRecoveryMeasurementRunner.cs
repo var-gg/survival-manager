@@ -80,7 +80,7 @@ public static class CampaignRecoveryMeasurementCli
 
 internal static partial class CampaignTwoArmSweepRunner
 {
-    private const string RecoverySchemaVersion = "campaign-recovery-measurement-v1";
+    private const string RecoverySchemaVersion = "campaign-recovery-measurement-v2";
 
     private static readonly IReadOnlyList<CampaignRecoveryTarget> RecoveryTargets = new[]
     {
@@ -165,7 +165,7 @@ internal static partial class CampaignTwoArmSweepRunner
 
                 defeatRewardsDriven |= pair.ArmA.Attempts
                     .SelectMany(attempt => attempt.Settlements)
-                    .Any(settlement => !settlement.Victory && !string.IsNullOrWhiteSpace(settlement.ChoiceKind));
+                    .Any(settlement => !settlement.Victory && settlement.EchoDelta > 0);
                 runTerminationDriven |= pair.ArmA.Attempts
                     .SelectMany(attempt => attempt.Settlements)
                     .Any(settlement => !settlement.Victory && settlement.RunTerminated);

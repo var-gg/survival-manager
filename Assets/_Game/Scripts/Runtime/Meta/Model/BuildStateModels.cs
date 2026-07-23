@@ -71,7 +71,10 @@ public sealed record RunOverlayState(
     string FirstSelectedTemporaryAugmentId = "",
     string PendingPermanentUnlockId = "",
     string RewardCommitId = "",
-    string PledgedWarrantId = "");
+    string PledgedWarrantId = "",
+    int RewardedRevisitIndex = 0,
+    int RevisitItemRollsGranted = 0,
+    bool RevisitCurrencyGranted = false);
 
 public sealed record ActiveRunState(
     string RunId,

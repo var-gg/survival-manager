@@ -80,6 +80,55 @@ public sealed class LootResolutionService
         return true;
     }
 
+    /// <summary>
+    /// Resolves one repeat-farm item roll from the source's existing weighted drop-table entries.
+    /// Guaranteed entries and non-item reward types are intentionally excluded; campaign recovery
+    /// owns repeat Gold/Echo separately so their chapter cap cannot leak through automatic loot.
+    /// </summary>
+    public bool TryResolveItemRoll(
+        string sourceId,
+        int seed,
+        IReadOnlyList<string> contextTags,
+        out LootEntry entry,
+        out string error)
+    {
+        entry = null!;
+        error = string.Empty;
+
+        if (_content.RewardSources is not { } rewardSources
+            || !rewardSources.TryGetValue(sourceId, out var source))
+        {
+            error = $"Reward source '{sourceId}' not found.";
+            return false;
+        }
+
+        if (_content.DropTables is not { } dropTables
+            || !dropTables.TryGetValue(source.DropTableId, out var dropTable))
+        {
+            error = $"Drop table '{source.DropTableId}' not found.";
+            return false;
+        }
+
+        var itemEntries = dropTable.Entries
+            .Where(candidate => !candidate.IsGuaranteed)
+            .Where(candidate => candidate.RewardType == RewardType.Item)
+            .Where(candidate => MatchesContext(candidate, contextTags))
+            .ToArray();
+        var selected = SelectWeightedEntry(itemEntries, seed);
+        if (selected == null)
+        {
+            error = $"Reward source '{sourceId}' has no eligible weighted item entries.";
+            return false;
+        }
+
+        entry = new LootEntry(
+            selected.Id,
+            selected.RewardType,
+            selected.Amount,
+            selected.RarityBracket);
+        return true;
+    }
+
     public static string FormatSummary(LootBundleResult bundle)
     {
         if (bundle.Entries.Count == 0)

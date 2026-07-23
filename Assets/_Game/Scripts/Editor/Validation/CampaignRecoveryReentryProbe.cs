@@ -39,53 +39,72 @@ internal static partial class CampaignTwoArmSweepRunner
             throw new InvalidOperationException($"reentry probe failed to clear initial site '{siteId}'.");
         }
 
-        var experienceBefore = LifetimeExperience(session.Profile.HeroProgressions);
-        var goldBefore = session.Profile.Currencies.Gold;
-        var echoBefore = session.Profile.Currencies.Echo;
-        var inventoryBefore = session.Profile.Inventory.Count;
-        var rewardLedgerBefore = session.Profile.RewardLedger.Count;
-        var permanentBefore = session.Profile.UnlockedPermanentAugmentIds.Count;
-
-        session.BeginNewExpedition();
-        var canReenter = session.HasActiveExpeditionRun
-                         && string.Equals(session.SelectedCampaignSiteId, siteId, StringComparison.Ordinal);
-        if (!canReenter)
+        var revisits = new List<CampaignRevisitRewardObservation>();
+        for (var revisitIndex = 1;
+             revisitIndex <= CampaignRecoveryRewardPolicy.RewardedRevisitLimit + 1;
+             revisitIndex++)
         {
-            return new CampaignClearedSiteReentryObservation(
-                siteId,
-                false,
-                false,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0);
+            var experienceBefore = LifetimeExperience(session.Profile.HeroProgressions);
+            var goldBefore = session.Profile.Currencies.Gold;
+            var echoBefore = session.Profile.Currencies.Echo;
+            var inventoryBefore = session.Profile.Inventory.Count;
+            var rewardLedgerBefore = session.Profile.RewardLedger.Count;
+            var permanentBefore = session.Profile.UnlockedPermanentAugmentIds.Count;
+
+            session.BeginNewExpedition();
+            var canReenter = session.HasActiveExpeditionRun
+                             && string.Equals(session.SelectedCampaignSiteId, siteId, StringComparison.Ordinal);
+            if (!canReenter)
+            {
+                return BuildReentryObservation(siteId, false, revisits);
+            }
+
+            CompleteReentryProbeSite(session, cell, config, revisitIndex);
+            revisits.Add(new CampaignRevisitRewardObservation(
+                revisitIndex,
+                LifetimeExperience(session.Profile.HeroProgressions) - experienceBefore,
+                session.Profile.Currencies.Gold - goldBefore,
+                session.Profile.Currencies.Echo - echoBefore,
+                session.Profile.Inventory.Count - inventoryBefore,
+                session.Profile.RewardLedger.Count - rewardLedgerBefore,
+                session.Profile.UnlockedPermanentAugmentIds.Count - permanentBefore));
         }
 
-        CompleteReentryProbeSite(session, cell, config, revisitIndex: 1);
-        var experienceDelta = LifetimeExperience(session.Profile.HeroProgressions) - experienceBefore;
-        var goldDelta = session.Profile.Currencies.Gold - goldBefore;
-        var echoDelta = session.Profile.Currencies.Echo - echoBefore;
-        var inventoryDelta = session.Profile.Inventory.Count - inventoryBefore;
-        var rewardLedgerDelta = session.Profile.RewardLedger.Count - rewardLedgerBefore;
-        var permanentDelta = session.Profile.UnlockedPermanentAugmentIds.Count - permanentBefore;
-        var rewardsAgain = experienceDelta > 0
-                           || goldDelta > 0
-                           || echoDelta > 0
-                           || inventoryDelta > 0
-                           || rewardLedgerDelta > 0
-                           || permanentDelta > 0;
+        return BuildReentryObservation(siteId, true, revisits);
+    }
+
+    private static CampaignClearedSiteReentryObservation BuildReentryObservation(
+        string siteId,
+        bool canReenter,
+        IReadOnlyList<CampaignRevisitRewardObservation> revisits)
+    {
+        var first = revisits.FirstOrDefault();
+        var exhausted = revisits.FirstOrDefault(revisit =>
+            revisit.RevisitIndex == CampaignRecoveryRewardPolicy.RewardedRevisitLimit + 1);
+        var rewardsAgain = first != null && HasPersistentReward(first);
+        var unboundedFarmClosed = exhausted != null && !HasPersistentReward(exhausted);
         return new CampaignClearedSiteReentryObservation(
             siteId,
-            true,
+            canReenter,
             rewardsAgain,
-            experienceDelta,
-            goldDelta,
-            echoDelta,
-            inventoryDelta,
-            rewardLedgerDelta,
-            permanentDelta);
+            first?.LifetimeExperienceDelta ?? 0,
+            first?.GoldDelta ?? 0,
+            first?.EchoDelta ?? 0,
+            first?.InventoryDelta ?? 0,
+            first?.RewardLedgerDelta ?? 0,
+            first?.PermanentAugmentDelta ?? 0,
+            unboundedFarmClosed,
+            revisits);
+    }
+
+    private static bool HasPersistentReward(CampaignRevisitRewardObservation observation)
+    {
+        return observation.LifetimeExperienceDelta > 0
+               || observation.GoldDelta > 0
+               || observation.EchoDelta > 0
+               || observation.InventoryDelta > 0
+               || observation.RewardLedgerDelta > 0
+               || observation.PermanentAugmentDelta > 0;
     }
 
     private static void CompleteReentryProbeSite(

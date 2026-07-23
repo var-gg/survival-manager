@@ -39,6 +39,9 @@ public sealed class ActiveRunRecord
     public string PledgedWarrantId = string.Empty;
     public string FirstSelectedTemporaryAugmentId = string.Empty;
     public string PendingPermanentUnlockId = string.Empty;
+    public int RewardedRevisitIndex;
+    public int RevisitItemRollsGranted;
+    public bool RevisitCurrencyGranted;
     public bool StoryCleared;
     public bool EndlessUnlocked;
 

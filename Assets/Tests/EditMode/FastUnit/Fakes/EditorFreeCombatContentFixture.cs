@@ -140,6 +140,8 @@ public static class EditorFreeCombatContentFixture
         IReadOnlyDictionary<string, BossOverlayTemplate>? bossOverlays = null,
         IReadOnlyDictionary<string, AugmentCatalogEntry>? augmentCatalog = null,
         IReadOnlyDictionary<string, RewardSourceTemplate>? rewardSources = null,
+        IReadOnlyDictionary<string, DropTableTemplate>? dropTables = null,
+        IReadOnlyDictionary<string, LootBundleTemplate>? lootBundles = null,
         IReadOnlyDictionary<string, SiteEventTemplate>? siteEvents = null,
         WarWoundSpec? warWound = null)
     {
@@ -165,6 +167,8 @@ public static class EditorFreeCombatContentFixture
             EnemySquads: enemySquads,
             BossOverlays: bossOverlays,
             RewardSources: rewardSources,
+            DropTables: dropTables,
+            LootBundles: lootBundles,
             FirstPlayableSlice: firstPlayableSlice,
             WarWound: warWound,
             SiteEvents: siteEvents);

@@ -42,6 +42,7 @@ public sealed partial class GameSessionState
     private readonly SessionProfileSync _profileSync;
     private readonly SessionDeploymentFlow _deploymentFlow;
     private readonly SessionRecruitmentFlow _recruitmentFlow;
+    private readonly SessionCampaignRecoveryFlow _campaignRecoveryFlow;
     private readonly SessionExpeditionFlow _expeditionFlow;
     private readonly SiteEventSessionController _siteEventFlow;
     private readonly SessionAtlasFlow _atlasFlow;
@@ -165,6 +166,7 @@ public sealed partial class GameSessionState
         _profileSync = new SessionProfileSync(this);
         _deploymentFlow = new SessionDeploymentFlow(this);
         _recruitmentFlow = new SessionRecruitmentFlow(this);
+        _campaignRecoveryFlow = new SessionCampaignRecoveryFlow(this);
         _expeditionFlow = new SessionExpeditionFlow(this);
         _siteEventFlow = new SiteEventSessionController(this);
         _atlasFlow = new SessionAtlasFlow(this);
@@ -193,6 +195,8 @@ public sealed partial class GameSessionState
             Profile.ItemInstanceCounter = Math.Max(Profile.ItemInstanceCounter, Profile.Inventory.Count);
             Profile.UnlockedPermanentAugmentIds ??= new List<string>();
             Profile.CampaignProgress ??= new CampaignProgressRecord();
+            Profile.CampaignProgress.RewardedRevisitCountsByChapter ??= new Dictionary<string, int>();
+            Profile.CampaignProgress.DefeatConsolationCountsByChapter ??= new Dictionary<string, int>();
             Profile.HeroLoadouts ??= new List<HeroLoadoutRecord>();
             Profile.HeroProgressions ??= new List<HeroProgressionRecord>();
             Profile.SkillInstances ??= new List<SkillInstanceRecord>();

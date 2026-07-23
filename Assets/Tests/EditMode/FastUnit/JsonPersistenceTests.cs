@@ -22,6 +22,8 @@ public class JsonPersistenceTests
             profile.ItemInstanceCounter = 29;
             profile.Currencies.Gold = 12;
             profile.UnlockedPermanentAugmentIds.Add("augment_perm_legacy_blade");
+            profile.CampaignProgress.RewardedRevisitCountsByChapter["chapter_alpha"] = 4;
+            profile.CampaignProgress.DefeatConsolationCountsByChapter["chapter_alpha"] = 2;
             profile.ActiveBlueprintId = "blueprint.default";
             profile.HeroLoadouts.Add(new HeroLoadoutRecord
             {
@@ -37,6 +39,9 @@ public class JsonPersistenceTests
                 CompileVersion = "build-compile-audit.v1",
                 CompileHash = "abc123",
                 PledgedWarrantId = "warrant_intact",
+                RewardedRevisitIndex = 3,
+                RevisitItemRollsGranted = 2,
+                RevisitCurrencyGranted = true,
                 ActiveWoundHeroIds = new System.Collections.Generic.List<string> { "hero-1" },
                 ResolvedExpeditionNodeIds = new System.Collections.Generic.List<string> { "entry", "risk" },
                 TemporaryAugmentIds = new System.Collections.Generic.List<string> { "augment_silver_guard" }
@@ -113,7 +118,12 @@ public class JsonPersistenceTests
             Assert.That(loaded.HeroInstanceCounter, Is.EqualTo(17));
             Assert.That(loaded.ItemInstanceCounter, Is.EqualTo(29));
             Assert.That(loaded.UnlockedPermanentAugmentIds, Has.Count.EqualTo(1));
+            Assert.That(loaded.CampaignProgress.RewardedRevisitCountsByChapter["chapter_alpha"], Is.EqualTo(4));
+            Assert.That(loaded.CampaignProgress.DefeatConsolationCountsByChapter["chapter_alpha"], Is.EqualTo(2));
             Assert.That(loaded.ActiveRun.RunId, Is.EqualTo("run_active_001"));
+            Assert.That(loaded.ActiveRun.RewardedRevisitIndex, Is.EqualTo(3));
+            Assert.That(loaded.ActiveRun.RevisitItemRollsGranted, Is.EqualTo(2));
+            Assert.That(loaded.ActiveRun.RevisitCurrencyGranted, Is.True);
             Assert.That(loaded.HeroLoadouts, Has.Count.EqualTo(1));
             Assert.That(loaded.MatchHeaders, Has.Count.EqualTo(1));
             Assert.That(loaded.MatchBlobs[0].CompileHash, Is.EqualTo("abc123"));
