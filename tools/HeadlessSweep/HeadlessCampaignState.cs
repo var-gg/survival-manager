@@ -9,7 +9,7 @@ using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 
-internal sealed class HeadlessCampaignState
+internal sealed partial class HeadlessCampaignState
 {
     internal static readonly DeploymentAnchorId[] DeploymentAnchors =
     {
@@ -33,6 +33,7 @@ internal sealed class HeadlessCampaignState
         SnapshotSessionContentLookup lookup,
         CampaignBalanceGridCell cell,
         int campaignSeedSalt,
+        int heat,
         IReadOnlyList<HeadlessCampaignHero> heroes,
         IReadOnlyList<HeadlessCampaignItem> inventory)
     {
@@ -40,6 +41,7 @@ internal sealed class HeadlessCampaignState
         Snapshot = lookup.Snapshot;
         Cell = cell;
         CampaignSeedSalt = campaignSeedSalt;
+        Heat = heat;
         Heroes = heroes.ToList();
         Inventory = inventory.ToList();
         _itemInstanceCounter = Inventory.Count;
@@ -72,6 +74,7 @@ internal sealed class HeadlessCampaignState
     internal ActiveRunState? ActiveRun { get; private set; }
     internal int CurrentNodeIndex { get; private set; }
     internal int CampaignSeedSalt { get; }
+    internal int Heat { get; }
     internal int Gold { get; private set; } = 12;
     internal int Echo { get; private set; } = 45;
     internal IReadOnlyList<string> ExpeditionSquadHeroIds => _expeditionSquadHeroIds;
@@ -102,14 +105,20 @@ internal sealed class HeadlessCampaignState
     internal static HeadlessCampaignState Create(
         SnapshotSessionContentLookup lookup,
         CampaignBalanceGridCell cell,
-        int campaignSeedSalt = 0)
+        int campaignSeedSalt = 0,
+        int heat = 0)
     {
+        if (heat < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(heat), heat, "Heat must be non-negative.");
+        }
+
         var cellTag = CellTag(cell);
         var heroes = cell.RosterArchetypeIds
             .Select((archetypeId, index) => BuildHero(lookup, cellTag, archetypeId, index))
             .ToArray();
         var inventory = BuildStarterItems(lookup);
-        return new HeadlessCampaignState(lookup, cell, campaignSeedSalt, heroes, inventory);
+        return new HeadlessCampaignState(lookup, cell, campaignSeedSalt, heat, heroes, inventory);
     }
 
     internal void AdvanceToNextUnclearedSite()
@@ -701,25 +710,37 @@ internal sealed class HeadlessCampaignState
 
     private ResolvedEncounterContext ApplyCampaignEnvelope(ResolvedEncounterContext encounter)
     {
-        if (Snapshot.CampaignChapters is not { } chapters
-            || !chapters.TryGetValue(encounter.Context.ChapterId, out var chapter))
+        var resolved = encounter;
+        if (Snapshot.CampaignChapters is { } chapters
+            && chapters.TryGetValue(encounter.Context.ChapterId, out var chapter))
         {
-            return encounter;
+            var siteOrder = Snapshot.ExpeditionSites is { } sites
+                            && sites.TryGetValue(encounter.Context.SiteId, out var site)
+                ? site.SiteOrder
+                : 1;
+            var campaignPackages = CampaignEnvelopeService.BuildEnemyChapterPackages(
+                chapter.StoryOrder,
+                chapter.Balance,
+                siteOrder);
+            if (campaignPackages.Count > 0)
+            {
+                resolved = resolved with
+                {
+                    Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(
+                        resolved.Enemies,
+                        campaignPackages),
+                };
+            }
         }
 
-        var siteOrder = Snapshot.ExpeditionSites is { } sites
-                        && sites.TryGetValue(encounter.Context.SiteId, out var site)
-            ? site.SiteOrder
-            : 1;
-        var packages = CampaignEnvelopeService.BuildEnemyChapterPackages(
-            chapter.StoryOrder,
-            chapter.Balance,
-            siteOrder);
-        return packages.Count == 0
-            ? encounter
-            : encounter with
+        var heatPackages = EndlessCycleService.BuildEnemyHeatPackages(Heat);
+        return heatPackages.Count == 0
+            ? resolved
+            : resolved with
             {
-                Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(encounter.Enemies, packages),
+                Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(
+                    resolved.Enemies,
+                    heatPackages),
             };
     }
 
@@ -736,7 +757,8 @@ internal sealed class HeadlessCampaignState
                 ActiveRun.Overlay.BattleSeed,
                 ResolveRewardContextTags(),
                 out var bundle,
-                out _))
+                out _,
+                Heat))
         {
             return;
         }

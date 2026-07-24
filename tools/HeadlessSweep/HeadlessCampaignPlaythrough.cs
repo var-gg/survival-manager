@@ -16,9 +16,11 @@ internal static class HeadlessCampaignPlaythrough
         CampaignBalanceGridCell cell,
         string stopAfterEncounterId,
         Action<BattleLoadoutSnapshot, ResolvedEncounterContext, CampaignNodeIdentity>? bossDiagnostic = null,
-        int campaignSeedSalt = 0)
+        int campaignSeedSalt = 0,
+        int heat = 0,
+        Action<HeadlessCampaignState, CampaignNodeIdentity>? beforeMeasuredBattle = null)
     {
-        var state = HeadlessCampaignState.Create(lookup, cell, campaignSeedSalt);
+        var state = HeadlessCampaignState.Create(lookup, cell, campaignSeedSalt, heat);
         state.ApplyBuildPower(cell.BuildPower);
         var panelCellId = state.PanelCellId;
 
@@ -87,9 +89,6 @@ internal static class HeadlessCampaignPlaythrough
                     prepOpportunity,
                     prepChanged,
                     prepEquipmentAssignmentCount));
-                var measured = RunBattle(state, setup.AllySnapshot, measuredEncounter, "measured");
-                var won = measured.Result.Winner == TeamSide.Ally;
-                siteFirstVisitClear &= won;
                 var identity = new CampaignNodeIdentity(
                     chapterId,
                     chapterOrder,
@@ -100,6 +99,10 @@ internal static class HeadlessCampaignPlaythrough
                     authoredEncounter.Context.EncounterId,
                     IsElite(authoredEncounter),
                     authoredEncounter.Context.IsBoss);
+                beforeMeasuredBattle?.Invoke(state, identity);
+                var measured = RunBattle(state, setup.AllySnapshot, measuredEncounter, "measured");
+                var won = measured.Result.Winner == TeamSide.Ally;
+                siteFirstVisitClear &= won;
                 if (identity.IsBoss)
                 {
                     bossDiagnostic?.Invoke(setup.AllySnapshot, authoredEncounter, identity);
@@ -180,7 +183,7 @@ internal static class HeadlessCampaignPlaythrough
             StoppedAtTarget: false);
     }
 
-    private static HeadlessCampaignBattleOutcome RunBattle(
+    internal static HeadlessCampaignBattleOutcome RunBattle(
         HeadlessCampaignState state,
         BattleLoadoutSnapshot allySnapshot,
         ResolvedEncounterContext encounter,
@@ -248,7 +251,7 @@ internal static class HeadlessCampaignPlaythrough
         return null;
     }
 
-    private static ResolvedEncounterContext ProjectEncounter(
+    internal static ResolvedEncounterContext ProjectEncounter(
         ResolvedEncounterContext authored,
         CampaignEnemyCompositionVariantSpec variant)
         => authored with

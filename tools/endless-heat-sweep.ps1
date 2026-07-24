@@ -1,29 +1,25 @@
 <#
 .SYNOPSIS
-Runs the parallel .NET 8 naive/informed campaign sweep.
+Measures endless Heat equipment distribution and fixed/paired endgame clear rates.
 
 .EXAMPLE
-pwsh -File tools/headless-campaign-sweep.ps1 -Cells 24 -Verify
+pwsh -File tools/endless-heat-sweep.ps1 -Seeds 32 -Horizons 25,100 -PairedHorizon 25
 #>
 
 param(
-    [ValidateRange(1, 480)]
-    [int]$Cells = 24,
+    [ValidateRange(1, 512)]
+    [int]$Seeds = 32,
 
     [ValidateRange(1, 512)]
     [int]$Degree = [Environment]::ProcessorCount,
 
-    [string]$StopAfter = 'site_wolfpine_trail_boss_1',
-
-    [string]$Output = 'Temp/HeadlessSweep/headless-campaign-sweep.json',
-
     [ValidateNotNullOrEmpty()]
-    [string]$SeedSalts = '0',
+    [string]$Horizons = '25,100',
 
-    [ValidateRange(0, 1000)]
-    [int]$Heat = 0,
+    [ValidateRange(1, 1000)]
+    [int]$PairedHorizon = 25,
 
-    [switch]$Verify,
+    [string]$Output = 'Temp/HeadlessSweep/endless-heat-sweep.json',
 
     [ValidateSet('Debug', 'Release')]
     [string]$Configuration = 'Release'
@@ -34,27 +30,18 @@ $ErrorActionPreference = 'Stop'
 $taskRepoRoot = Split-Path -Parent $PSScriptRoot
 $taskProjectPath = Join-Path $taskRepoRoot 'tools/HeadlessSweep/HeadlessSweep.csproj'
 $taskArguments = @(
-    'campaign-sweep'
-    '--cells'
-    $Cells.ToString([Globalization.CultureInfo]::InvariantCulture)
+    'endless-heat-sweep'
+    '--seeds'
+    $Seeds.ToString([Globalization.CultureInfo]::InvariantCulture)
     '--degree'
     $Degree.ToString([Globalization.CultureInfo]::InvariantCulture)
-    '--stop-after'
-    $StopAfter
+    '--horizons'
+    $Horizons
+    '--paired-horizon'
+    $PairedHorizon.ToString([Globalization.CultureInfo]::InvariantCulture)
     '--output'
     $Output
-    '--seed-salts'
-    $SeedSalts
 )
-if ($Heat -gt 0) {
-    $taskArguments += @(
-        '--heat'
-        $Heat.ToString([Globalization.CultureInfo]::InvariantCulture)
-    )
-}
-if ($Verify) {
-    $taskArguments += '--verify'
-}
 
 $taskDotnet = Get-Command dotnet -ErrorAction SilentlyContinue
 if ($taskDotnet) {
@@ -67,7 +54,7 @@ if ($taskDotnet) {
 
 $taskDocker = Get-Command docker -ErrorAction SilentlyContinue
 if (-not $taskDocker) {
-    Write-Error 'A .NET 8 SDK or Docker is required to run the headless campaign sweep.'
+    Write-Error 'A .NET 8 SDK or Docker is required to run the endless Heat sweep.'
     exit 2
 }
 

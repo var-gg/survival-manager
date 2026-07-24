@@ -28,7 +28,13 @@ internal static class HeadlessCampaignSweepRunner
             var baseCells = SampleCells(config.BuildGrid(), options.Cells);
             var cells = ExpandPanelCells(baseCells, options.CampaignSeedSalts);
 
-            var primary = Execute(lookup, config, cells, options.Degree, options.StopAfterEncounterId);
+            var primary = Execute(
+                lookup,
+                config,
+                cells,
+                options.Degree,
+                options.StopAfterEncounterId,
+                options.Heat);
             var verification = new HeadlessCampaignVerification(
                 Requested: options.Verify,
                 ReproducibleAcrossParallelRuns: false,
@@ -39,8 +45,20 @@ internal static class HeadlessCampaignSweepRunner
                 SingleThreadElapsedSeconds: 0d);
             if (options.Verify)
             {
-                var repeat = Execute(lookup, config, cells, options.Degree, options.StopAfterEncounterId);
-                var single = Execute(lookup, config, cells, 1, options.StopAfterEncounterId);
+                var repeat = Execute(
+                    lookup,
+                    config,
+                    cells,
+                    options.Degree,
+                    options.StopAfterEncounterId,
+                    options.Heat);
+                var single = Execute(
+                    lookup,
+                    config,
+                    cells,
+                    1,
+                    options.StopAfterEncounterId,
+                    options.Heat);
                 verification = new HeadlessCampaignVerification(
                     Requested: true,
                     ReproducibleAcrossParallelRuns: string.Equals(
@@ -89,6 +107,9 @@ internal static class HeadlessCampaignSweepRunner
             Console.WriteLine(
                 $"headless-campaign-sweep MATCH cells={cells.Count} arms={config.Arms.Count} "
                 + $"base-cells={baseCells.Count} seed-salts={string.Join(",", options.CampaignSeedSalts)} "
+                + (options.Heat > 0
+                    ? $"heat={options.Heat.ToString(CultureInfo.InvariantCulture)} "
+                    : string.Empty)
                 + $"degree={options.Degree} elapsed={primary.ElapsedSeconds.ToString("0.000", CultureInfo.InvariantCulture)}s "
                 + $"hash={primary.Hash} boss={primary.TargetBoss.Naive.WinRate.ToString("0.000000", CultureInfo.InvariantCulture)}"
                 + $"->{primary.TargetBoss.Informed.WinRate.ToString("0.000000", CultureInfo.InvariantCulture)} "
@@ -113,7 +134,8 @@ internal static class HeadlessCampaignSweepRunner
         CampaignBalanceSweepConfig config,
         IReadOnlyList<CampaignPanelCell> cells,
         int degree,
-        string stopAfterEncounterId)
+        string stopAfterEncounterId,
+        int heat)
     {
         var stopwatch = Stopwatch.StartNew();
         var executions = new HeadlessCampaignCellExecution[cells.Count];
@@ -130,7 +152,8 @@ internal static class HeadlessCampaignSweepRunner
                         arm,
                         cell.Cell,
                         stopAfterEncounterId,
-                        campaignSeedSalt: cell.CampaignSeedSalt))
+                        campaignSeedSalt: cell.CampaignSeedSalt,
+                        heat: heat))
                     .ToArray();
                 executions[cellIndex] = new HeadlessCampaignCellExecution(
                     cellIndex,
@@ -448,6 +471,7 @@ internal static class HeadlessCampaignSweepRunner
         var stopAfter = DefaultStopAfterEncounterId;
         var outputPath = DefaultOutputRelativePath;
         IReadOnlyList<int> campaignSeedSalts = new[] { 0 };
+        var heat = 0;
         var verify = false;
         for (var index = 0; index < arguments.Count; index++)
         {
@@ -468,6 +492,9 @@ internal static class HeadlessCampaignSweepRunner
                 case "--seed-salts" when index + 1 < arguments.Count:
                     campaignSeedSalts = ParseSeedSalts(arguments[++index]);
                     break;
+                case "--heat" when index + 1 < arguments.Count:
+                    heat = ParseInt(arguments[++index], "heat", 0, 1000);
+                    break;
                 case "--verify":
                     verify = true;
                     break;
@@ -486,7 +513,7 @@ internal static class HeadlessCampaignSweepRunner
             throw new ArgumentException("--output requires a non-empty path.");
         }
 
-        return new Options(cells, degree, stopAfter, outputPath, campaignSeedSalts, verify);
+        return new Options(cells, degree, stopAfter, outputPath, campaignSeedSalts, heat, verify);
     }
 
     private static int ParseInt(string value, string name, int minimum, int maximum)
@@ -540,6 +567,7 @@ internal static class HeadlessCampaignSweepRunner
         string StopAfterEncounterId,
         string OutputPath,
         IReadOnlyList<int> CampaignSeedSalts,
+        int Heat,
         bool Verify);
 
     private sealed record CampaignPanelCell(

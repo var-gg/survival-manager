@@ -64,6 +64,11 @@ if (args.Length >= 1 && string.Equals(args[0], "campaign-sweep", StringCompariso
     return HeadlessCampaignSweepRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
 }
 
+if (args.Length >= 1 && string.Equals(args[0], "endless-heat-sweep", StringComparison.Ordinal))
+{
+    return EndlessHeatSweepRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
+}
+
 if (args.Length >= 1 && string.Equals(args[0], "balance-framework", StringComparison.Ordinal))
 {
     return BalanceFrameworkGateRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
@@ -75,7 +80,10 @@ Console.Error.WriteLine(
     + "| credible-deck-matchup [--seeds <n>] [--output <path>] [--opening-lock-seconds <n>] "
     + "| campaign-battle [--unity <report>] [--output <path>] "
     + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] [--seed-salts <n,n,...>] "
-    + "[--output <path>] [--verify] | balance-framework [--samples <n>] [--neutral-health-more <n>] "
+    + "[--heat <n>] [--output <path>] [--verify] "
+    + "| endless-heat-sweep [--seeds <n>] [--degree <n>] [--horizons <n,n,...>] "
+    + "[--paired-horizon <n>] [--output <path>] "
+    + "| balance-framework [--samples <n>] [--neutral-health-more <n>] "
     + "[--neutral-power-more <n>] [--snapshot <path>] [--neutral-snapshot <path>] "
     + "[--emulate-before] [--neutral-emulate-before] [--precision-power <n>] "
     + "[--duelist-core-power-scale <n>] [--low-growth-ranger-atk-delta <n>] [--output <path>]]");

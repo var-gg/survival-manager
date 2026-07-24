@@ -72,6 +72,47 @@ public sealed class EndlessCycleServiceFastTests
             Is.EqualTo(EndlessCycleService.HeatPowerIncreasedPerHeat * 3).Within(0.0001f));
     }
 
+    [TestCase(1)]
+    [TestCase(5)]
+    [TestCase(10)]
+    public void EnemyHeatPackages_ThroughProductionChannel_ReachMeasuredEnemyStats(int heat)
+    {
+        var enemy = new BattleUnitLoadout(
+            "enemy.heat-probe",
+            "Heat Probe",
+            "human",
+            "vanguard",
+            DeploymentAnchorId.FrontCenter,
+            new Dictionary<StatKey, float>
+            {
+                [StatKey.MaxHealth] = 100f,
+                [StatKey.PhysPower] = 40f,
+                [StatKey.MagPower] = 25f,
+            },
+            Array.Empty<UnitRuleChain>(),
+            Array.Empty<BattleSkillSpec>());
+        var applied = PoliticalCombatConditionService.ApplyEnemyPackages(
+            new[] { enemy },
+            EndlessCycleService.BuildEnemyHeatPackages(heat)).Single();
+        var measured = HeroEffectiveStatPreview.Resolve(
+                applied,
+                new[] { StatKey.MaxHealth, StatKey.PhysPower, StatKey.MagPower })
+            .ToDictionary(value => value.Key, value => value);
+
+        Assert.That(
+            measured[StatKey.MaxHealth].EffectiveValue / measured[StatKey.MaxHealth].BaseValue,
+            Is.EqualTo(1f + (EndlessCycleService.HeatMaxHealthIncreasedPerHeat * heat)).Within(0.00001f));
+        Assert.That(
+            measured[StatKey.PhysPower].EffectiveValue / measured[StatKey.PhysPower].BaseValue,
+            Is.EqualTo(1f + (EndlessCycleService.HeatPowerIncreasedPerHeat * heat)).Within(0.00001f));
+        Assert.That(
+            measured[StatKey.MagPower].EffectiveValue / measured[StatKey.MagPower].BaseValue,
+            Is.EqualTo(1f + (EndlessCycleService.HeatPowerIncreasedPerHeat * heat)).Within(0.00001f));
+        Assert.That(
+            applied.NumericPackages.Select(package => package.SourceId),
+            Does.Contain($"endless_heat:h{heat}"));
+    }
+
     [Test]
     public void DropLatentMeanShift_UsesSaturatingFormula_AndPreservesHeatZero()
     {

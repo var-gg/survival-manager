@@ -49,6 +49,11 @@ internal sealed class HeadlessCampaignItem
     internal ItemRarityTierValue RarityTier { get; }
 }
 
+internal sealed record HeadlessCampaignFarmResult(
+    int Maps,
+    int BattleRewardNodesPerMap,
+    int ItemDrops);
+
 internal sealed record HeadlessCampaignBattleSetup(
     BattleLoadoutSnapshot AllySnapshot,
     ResolvedEncounterContext AuthoredEncounter);
