@@ -9,10 +9,20 @@ namespace SM.Meta.Services;
 public sealed class LootResolutionService
 {
     private readonly CombatContentSnapshot _content;
+    private readonly Action<DropGradeRollObservation>? _dropGradeObserver;
 
     public LootResolutionService(CombatContentSnapshot content)
     {
         _content = content;
+    }
+
+    internal LootResolutionService(
+        CombatContentSnapshot content,
+        Action<DropGradeRollObservation> dropGradeObserver)
+        : this(content)
+    {
+        _dropGradeObserver = dropGradeObserver
+                             ?? throw new ArgumentNullException(nameof(dropGradeObserver));
     }
 
     public bool TryResolveBundle(
@@ -195,12 +205,14 @@ public sealed class LootResolutionService
         ItemRarityTierValue? grade = null;
         if (entry.RewardType == RewardType.Item)
         {
-            var rolledGrade = DropGradeEconomy.RollGrade(
+            var roll = DropGradeEconomy.RollGradeObserved(
                 table,
                 ResolveChapterId(contextTags),
                 entry.RarityBracket,
                 seed,
                 heat);
+            _dropGradeObserver?.Invoke(roll);
+            var rolledGrade = roll.Grade;
             grade = rolledGrade < minimumGrade ? minimumGrade : rolledGrade;
         }
 

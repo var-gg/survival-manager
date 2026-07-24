@@ -29,6 +29,19 @@ public static class DropGradeEconomy
         RarityBracketValue fallbackBracket,
         int seed,
         int heat = 0)
+        => RollGradeObserved(
+            table,
+            chapterId,
+            fallbackBracket,
+            seed,
+            heat).Grade;
+
+    internal static DropGradeRollObservation RollGradeObserved(
+        DropTableTemplate table,
+        string chapterId,
+        RarityBracketValue fallbackBracket,
+        int seed,
+        int heat = 0)
     {
         var profile = table.GradeProfiles?
             .FirstOrDefault(candidate =>
@@ -37,12 +50,12 @@ public static class DropGradeEconomy
             || profile.StandardDeviation <= 0d
             || table.GradePowerKappa <= 0d)
         {
-            return MapRarityBracket(fallbackBracket);
+            return FallbackObservation(table, fallbackBracket);
         }
 
         if (!HasValidJackpot(table))
         {
-            return MapRarityBracket(fallbackBracket);
+            return FallbackObservation(table, fallbackBracket);
         }
 
         var expectedPower = CampaignExpectedItemPower(table);
@@ -50,22 +63,26 @@ public static class DropGradeEconomy
             FirstClearReferenceKappa * (int)MapRarityBracket(fallbackBracket));
         if (Math.Abs(expectedPower - targetPower) > 0.0005d)
         {
-            return MapRarityBracket(fallbackBracket);
+            return FallbackObservation(table, fallbackBracket);
         }
 
         var ordinaryMean = profile.MeanPreservingLatentMean;
         var jackpotMean = table.GradeJackpotLatentMean;
+        var jackpotWeight = table.GradeJackpotWeight;
         var heatShift = EndlessCycleService.DropLatentMeanShift(heat);
         if (heatShift > 0d)
         {
             ordinaryMean += heatShift;
             jackpotMean += heatShift;
+            jackpotWeight = EndlessCycleService.DropJackpotWeight(
+                table.GradeJackpotWeight,
+                heat);
         }
 
         var probabilities = GradeProbabilities(
             ordinaryMean,
             profile.StandardDeviation,
-            table.GradeJackpotWeight,
+            jackpotWeight,
             jackpotMean,
             table.GradeJackpotStandardDeviation);
         var random = new Random(CampaignEncounterSeed.Derive(seed, "drop-grade"));
@@ -76,11 +93,31 @@ public static class DropGradeEconomy
             cursor += probabilities[grade];
             if (roll < cursor)
             {
-                return (ItemRarityTierValue)grade;
+                return BuildObservation(
+                    (ItemRarityTierValue)grade,
+                    roll,
+                    cursor - probabilities[grade],
+                    ordinaryMean,
+                    profile.StandardDeviation,
+                    table.GradeJackpotWeight,
+                    jackpotWeight,
+                    jackpotMean,
+                    table.GradeJackpotStandardDeviation,
+                    probabilities);
             }
         }
 
-        return ItemRarityTierValue.Legendary;
+        return BuildObservation(
+            ItemRarityTierValue.Legendary,
+            roll,
+            cursor - probabilities[^1],
+            ordinaryMean,
+            profile.StandardDeviation,
+            table.GradeJackpotWeight,
+            jackpotWeight,
+            jackpotMean,
+            table.GradeJackpotStandardDeviation,
+            probabilities);
     }
 
     public static IReadOnlyList<double> GradeProbabilities(double mean, double standardDeviation)
@@ -267,6 +304,55 @@ public static class DropGradeEconomy
                    || (double.IsFinite(table.GradeJackpotLatentMean)
                        && double.IsFinite(table.GradeJackpotStandardDeviation)
                        && table.GradeJackpotStandardDeviation > 0d));
+    }
+
+    private static DropGradeRollObservation BuildObservation(
+        ItemRarityTierValue grade,
+        double roll,
+        double gradeIntervalStart,
+        double ordinaryMean,
+        double ordinaryStandardDeviation,
+        double baseJackpotWeight,
+        double effectiveJackpotWeight,
+        double jackpotMean,
+        double jackpotStandardDeviation,
+        IReadOnlyList<double> probabilities)
+    {
+        var gradeIndex = (int)grade;
+        var ordinaryProbability = GradeProbabilities(
+            ordinaryMean,
+            ordinaryStandardDeviation)[gradeIndex];
+        var ordinaryMass = (1d - effectiveJackpotWeight) * ordinaryProbability;
+        var jackpotSelected = effectiveJackpotWeight > 0d
+                              && roll >= gradeIntervalStart + ordinaryMass;
+        return new DropGradeRollObservation(
+            grade,
+            jackpotSelected,
+            baseJackpotWeight,
+            effectiveJackpotWeight,
+            probabilities,
+            roll,
+            UsedFallback: false);
+    }
+
+    private static DropGradeRollObservation FallbackObservation(
+        DropTableTemplate table,
+        RarityBracketValue fallbackBracket)
+    {
+        var grade = MapRarityBracket(fallbackBracket);
+        var probabilities = new double[5];
+        probabilities[(int)grade] = 1d;
+        var baseWeight = double.IsFinite(table.GradeJackpotWeight)
+            ? table.GradeJackpotWeight
+            : 0d;
+        return new DropGradeRollObservation(
+            grade,
+            JackpotComponentSelected: false,
+            BaseJackpotWeight: baseWeight,
+            EffectiveJackpotWeight: baseWeight,
+            GradeProbabilities: probabilities,
+            RandomRoll: double.NaN,
+            UsedFallback: true);
     }
 
     private static double NormalCdf(double value)

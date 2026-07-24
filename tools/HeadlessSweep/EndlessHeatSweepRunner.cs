@@ -16,8 +16,7 @@ internal static class EndlessHeatSweepRunner
     private const string DefaultOutputRelativePath = "Temp/HeadlessSweep/endless-heat-sweep.json";
     private const string TargetSiteId = "site_worldscar_depths";
     private const string TargetEncounterId = "site_worldscar_depths_boss_1";
-    private static readonly int[] EquipmentHeats = { 0, 1, 3, 5, 10 };
-    private static readonly int[] ClearRateHeats = { 0, 1, 2, 3, 5, 8 };
+    private static readonly int[] ClearRateHeats = { 0, 1, 2, 3, 4, 5 };
     private static readonly int[] ScalingProbeHeats = { 1, 3, 5, 10 };
 
     internal static int Run(string repositoryRoot, IReadOnlyList<string> arguments)
@@ -39,15 +38,18 @@ internal static class EndlessHeatSweepRunner
                 options.SeedsPerCell,
                 options.Degree);
             var scaling = VerifyEnemyScaling();
-            var equipped = MeasureEquippedGrades(
+            var rewards = EndlessHeatRewardMeasurement.Measure(
                 prepared,
+                TargetSiteId,
                 options.EquipmentHorizonsMaps,
-                options.Degree,
-                out var battleRewardNodesPerMap);
+                options.Degree);
             var clearRates = MeasureClearRates(
                 prepared,
-                options.PairedClearRateHorizonMaps,
+                options.EquipmentHorizonsMaps,
                 options.Degree);
+            var acquisition = EndlessHeatRewardMeasurement.BuildAcquisition(
+                rewards.Scenarios,
+                clearRates.Paired);
 
             var report = new EndlessHeatSweepReport(
                 SchemaVersion: "endless-heat-sweep-v1",
@@ -58,15 +60,25 @@ internal static class EndlessHeatSweepRunner
                 AggregateSamplesPerHeat: prepared.Count,
                 MinimumResolvableRatePerCell: 1d / options.SeedsPerCell,
                 MinimumResolvableAggregateRate: 1d / prepared.Count,
-                EquipmentHeats,
+                MinimumResolvableEquippedShare:
+                1d / (prepared.Count
+                      * HeadlessCampaignEquipmentPowerPolicy.ExpectedHeroCount
+                      * HeadlessCampaignEquipmentPowerPolicy.ExpectedSlotsPerHero),
+                BootstrapSeedClusters: options.SeedsPerCell,
+                BootstrapReplicates: EndlessHeatSeedClusteredBootstrap.Replicates,
+                BootstrapMethod:
+                "Paired percentile bootstrap over campaign seed salts; each resampled seed cluster retains all three canonical squads and all 12 equipped slots remain inside their scenario cluster.",
+                EquipmentHeats: EndlessHeatRewardMeasurement.Heats,
                 ClearRateHeats,
                 EquipmentHorizonsMaps: options.EquipmentHorizonsMaps,
                 PairedClearRateHorizonMaps: options.PairedClearRateHorizonMaps,
-                BattleRewardNodesPerFarmMap: battleRewardNodesPerMap,
+                BattleRewardNodesPerFarmMap: rewards.BattleRewardNodesPerMap,
                 EquipmentPowerPolicy:
                 "Exact maximum-total affix BudgetScore matching per slot across four heroes; grade and stable item order break equal-power ties.",
                 EnemyScaling: scaling,
-                EquippedByHeat: equipped,
+                EquippedByHeat: rewards.Equipped,
+                DropsByHeat: rewards.Drops,
+                AcquisitionByHeat: acquisition,
                 ClearRateFixedGear: clearRates.Fixed,
                 ClearRatePairedGear: clearRates.Paired,
                 Pairing: clearRates.Pairing,
@@ -107,7 +119,7 @@ internal static class EndlessHeatSweepRunner
             .ToArray();
     }
 
-    private static IReadOnlyList<PreparedScenario> PrepareScenarios(
+    private static IReadOnlyList<EndlessHeatPreparedScenario> PrepareScenarios(
         SnapshotSessionContentLookup lookup,
         CampaignBalanceSweepConfig config,
         IReadOnlyList<CampaignBalanceGridCell> cells,
@@ -120,7 +132,7 @@ internal static class EndlessHeatSweepRunner
             .SelectMany(cell => Enumerable.Range(0, seedsPerCell)
                 .Select(seedSalt => new ScenarioJob(cell, seedSalt)))
             .ToArray();
-        var prepared = new PreparedScenario[jobs.Length];
+        var prepared = new EndlessHeatPreparedScenario[jobs.Length];
         Parallel.ForEach(
             Enumerable.Range(0, jobs.Length),
             new ParallelOptions { MaxDegreeOfParallelism = degree },
@@ -151,7 +163,7 @@ internal static class EndlessHeatSweepRunner
 
                         captured = state.CloneWithHeat(0);
                     });
-                prepared[index] = new PreparedScenario(
+                prepared[index] = new EndlessHeatPreparedScenario(
                     job.Cell,
                     job.SeedSalt,
                     captured
@@ -217,72 +229,9 @@ internal static class EndlessHeatSweepRunner
         return observations;
     }
 
-    private static IReadOnlyList<EndlessHeatEquippedAggregate> MeasureEquippedGrades(
-        IReadOnlyList<PreparedScenario> prepared,
-        IReadOnlyList<int> horizons,
-        int degree,
-        out int battleRewardNodesPerMap)
-    {
-        var aggregates = new List<EndlessHeatEquippedAggregate>();
-        int? observedNodesPerMap = null;
-        foreach (var horizon in horizons)
-        {
-            foreach (var heat in EquipmentHeats)
-            {
-                var results = new EquipmentScenarioResult[prepared.Count];
-                Parallel.ForEach(
-                    Enumerable.Range(0, prepared.Count),
-                    new ParallelOptions { MaxDegreeOfParallelism = degree },
-                    index =>
-                    {
-                        var scenario = prepared[index];
-                        var state = scenario.State.CloneWithHeat(heat);
-                        var farm = state.FarmSiteMaps(TargetSiteId, horizon);
-                        var loadout = HeadlessCampaignEquipmentPowerPolicy.Apply(state);
-                        results[index] = new EquipmentScenarioResult(loadout, farm);
-                    });
-
-                var slots = results.SelectMany(value => value.Loadout.Slots).ToArray();
-                var histogram = Enumerable.Range(0, 5)
-                    .Select(grade => slots.Count(slot => slot.Grade == grade))
-                    .ToArray();
-                foreach (var result in results)
-                {
-                    if (observedNodesPerMap.HasValue
-                        && observedNodesPerMap.Value != result.Farm.BattleRewardNodesPerMap)
-                    {
-                        throw new InvalidDataException(
-                            "Endless farm maps disagreed on the number of battle reward nodes.");
-                    }
-
-                    observedNodesPerMap = result.Farm.BattleRewardNodesPerMap;
-                }
-
-                aggregates.Add(new EndlessHeatEquippedAggregate(
-                    heat,
-                    horizon,
-                    SeedsPerCell: prepared.Count / 3,
-                    Cells: 3,
-                    EquippedSlots: slots.Length,
-                    ItemDrops: results.Sum(value => value.Farm.ItemDrops),
-                    MeanEquippedGrade: slots.Average(slot => slot.Grade),
-                    EpicPlusShare: slots.Count(slot => slot.Grade >= 3) / (double)slots.Length,
-                    LegendaryShare: slots.Count(slot => slot.Grade == 4) / (double)slots.Length,
-                    Histogram: histogram));
-            }
-        }
-
-        battleRewardNodesPerMap = observedNodesPerMap
-                                  ?? throw new InvalidDataException("No endless farm maps were measured.");
-        return aggregates
-            .OrderBy(value => value.Heat)
-            .ThenBy(value => value.HorizonMaps)
-            .ToArray();
-    }
-
     private static ClearRateMeasurement MeasureClearRates(
-        IReadOnlyList<PreparedScenario> prepared,
-        int pairedHorizon,
+        IReadOnlyList<EndlessHeatPreparedScenario> prepared,
+        IReadOnlyList<int> pairedHorizons,
         int degree)
     {
         var fixedAggregates = new List<EndlessHeatClearRateAggregate>();
@@ -290,7 +239,7 @@ internal static class EndlessHeatSweepRunner
         var pairChecks = new List<PairCheck>();
         foreach (var heat in ClearRateHeats)
         {
-            var results = new ClearRateScenarioResult[prepared.Count];
+            var fixedResults = new MeasuredScenarioBattle[prepared.Count];
             Parallel.ForEach(
                 Enumerable.Range(0, prepared.Count),
                 new ParallelOptions { MaxDegreeOfParallelism = degree },
@@ -299,32 +248,52 @@ internal static class EndlessHeatSweepRunner
                     var scenario = prepared[index];
                     var fixedState = scenario.State.CloneWithHeat(heat);
                     var fixedBattle = RunMeasuredBattle(fixedState, scenario.Cell, "endless-fixed");
-
-                    var pairedState = scenario.State.CloneWithHeat(heat);
-                    _ = pairedState.FarmSiteMaps(TargetSiteId, pairedHorizon);
-                    _ = HeadlessCampaignEquipmentPowerPolicy.Apply(pairedState);
-                    var pairedBattle = RunMeasuredBattle(pairedState, scenario.Cell, "endless-paired");
-
-                    results[index] = new ClearRateScenarioResult(
+                    fixedResults[index] = new MeasuredScenarioBattle(
+                        scenario.SeedSalt,
                         scenario.Cell.Squad.SquadId,
                         fixedBattle.Won,
-                        pairedBattle.Won,
-                        new PairCheck(
-                            fixedBattle.BattleSeed == pairedBattle.BattleSeed,
-                            fixedBattle.EntityIds.SequenceEqual(
-                                pairedBattle.EntityIds,
-                                StringComparer.Ordinal)));
+                        fixedBattle);
                 });
 
             fixedAggregates.Add(AggregateClearRate(
                 heat,
-                results,
-                result => result.FixedWon));
-            pairedAggregates.Add(AggregateClearRate(
-                heat,
-                results,
-                result => result.PairedWon));
-            pairChecks.AddRange(results.Select(value => value.Pairing));
+                gearHorizonMaps: 0,
+                results: fixedResults));
+            foreach (var pairedHorizon in pairedHorizons)
+            {
+                var pairedResults = new MeasuredScenarioBattle[prepared.Count];
+                var pairedChecks = new PairCheck[prepared.Count];
+                Parallel.ForEach(
+                    Enumerable.Range(0, prepared.Count),
+                    new ParallelOptions { MaxDegreeOfParallelism = degree },
+                    index =>
+                    {
+                        var scenario = prepared[index];
+                        var pairedState = scenario.State.CloneWithHeat(heat);
+                        _ = pairedState.FarmSiteMaps(TargetSiteId, pairedHorizon);
+                        _ = HeadlessCampaignEquipmentPowerPolicy.Apply(pairedState);
+                        var pairedBattle = RunMeasuredBattle(
+                            pairedState,
+                            scenario.Cell,
+                            $"endless-paired-{pairedHorizon}");
+                        pairedResults[index] = new MeasuredScenarioBattle(
+                            scenario.SeedSalt,
+                            scenario.Cell.Squad.SquadId,
+                            pairedBattle.Won,
+                            pairedBattle);
+                        pairedChecks[index] = new PairCheck(
+                            fixedResults[index].Battle.BattleSeed == pairedBattle.BattleSeed,
+                            fixedResults[index].Battle.EntityIds.SequenceEqual(
+                                pairedBattle.EntityIds,
+                                StringComparer.Ordinal));
+                    });
+
+                pairedAggregates.Add(AggregateClearRate(
+                    heat,
+                    pairedHorizon,
+                    pairedResults));
+                pairChecks.AddRange(pairedChecks);
+            }
         }
 
         var pairing = new EndlessHeatPairingVerification(
@@ -385,8 +354,8 @@ internal static class EndlessHeatSweepRunner
 
     private static EndlessHeatClearRateAggregate AggregateClearRate(
         int heat,
-        IReadOnlyList<ClearRateScenarioResult> results,
-        Func<ClearRateScenarioResult, bool> won)
+        int gearHorizonMaps,
+        IReadOnlyList<MeasuredScenarioBattle> results)
     {
         var cells = results
             .GroupBy(result => result.SquadId, StringComparer.Ordinal)
@@ -394,7 +363,7 @@ internal static class EndlessHeatSweepRunner
             .Select(group =>
             {
                 var samples = group.Count();
-                var wins = group.Count(won);
+                var wins = group.Count(value => value.Won);
                 return new EndlessHeatCellClearRate(
                     group.Key,
                     wins,
@@ -402,14 +371,26 @@ internal static class EndlessHeatSweepRunner
                     wins / (double)samples);
             })
             .ToArray();
-        var totalWins = results.Count(won);
+        var totalWins = results.Count(value => value.Won);
+        var clustered = results
+            .GroupBy(value => value.SeedSalt)
+            .OrderBy(group => group.Key)
+            .Select(group => new EndlessHeatRatioCluster(
+                group.Key,
+                group.Count(value => value.Won),
+                group.Count()))
+            .ToArray();
         return new EndlessHeatClearRateAggregate(
             heat,
+            gearHorizonMaps,
             totalWins,
             results.Count,
             SeedsPerCell: results.Count / cells.Length,
             WinRate: totalWins / (double)results.Count,
-            Cells: cells);
+            Cells: cells,
+            SeedClusteredCi95: EndlessHeatSeedClusteredBootstrap.EstimateRatio(
+                clustered,
+                $"clear-rate|h={heat}|maps={gearHorizonMaps}"));
     }
 
     private static string HashReport(EndlessHeatSweepReport report)
@@ -524,19 +505,12 @@ internal static class EndlessHeatSweepRunner
         string OutputPath);
 
     private sealed record ScenarioJob(CampaignBalanceGridCell Cell, int SeedSalt);
-    private sealed record PreparedScenario(
-        CampaignBalanceGridCell Cell,
-        int SeedSalt,
-        HeadlessCampaignState State);
-    private sealed record EquipmentScenarioResult(
-        HeadlessEquippedLoadoutObservation Loadout,
-        HeadlessCampaignFarmResult Farm);
     private sealed record PairCheck(bool SeedShared, bool EntityIdsShared);
-    private sealed record ClearRateScenarioResult(
+    private sealed record MeasuredScenarioBattle(
+        int SeedSalt,
         string SquadId,
-        bool FixedWon,
-        bool PairedWon,
-        PairCheck Pairing);
+        bool Won,
+        MeasuredBattle Battle);
     private sealed record ClearRateMeasurement(
         IReadOnlyList<EndlessHeatClearRateAggregate> Fixed,
         IReadOnlyList<EndlessHeatClearRateAggregate> Paired,

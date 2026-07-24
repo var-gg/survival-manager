@@ -30,15 +30,64 @@ internal sealed record EndlessHeatEquippedAggregate(
     double MeanEquippedGrade,
     double EpicPlusShare,
     double LegendaryShare,
-    IReadOnlyList<int> Histogram);
+    IReadOnlyList<int> Histogram,
+    string OrderedInventoryAndEquipHash,
+    EndlessHeatConfidenceInterval MeanEquippedGradeClusteredCi95,
+    EndlessHeatConfidenceInterval EpicPlusShareClusteredCi95,
+    EndlessHeatConfidenceInterval LegendaryShareClusteredCi95,
+    EndlessHeatPairedDelta EpicPlusShareDeltaVsHeatZero,
+    EndlessHeatPairedDelta LegendaryShareDeltaVsHeatZero);
+
+internal sealed record EndlessHeatDropAggregate(
+    int Heat,
+    int HorizonMaps,
+    int SeedClusters,
+    int ScenarioClusters,
+    int GradeRolls,
+    int OrdinaryComponentSelections,
+    int JackpotComponentSelections,
+    double ObservedJackpotFrequency,
+    double ExpectedJackpotFrequency,
+    IReadOnlyList<int> GradeHistogram,
+    double EpicPlusSharePerDrop,
+    double LegendarySharePerDrop,
+    double ExpectedEpicPlusProbabilityPerDrop,
+    double ExpectedLegendaryProbabilityPerDrop,
+    EndlessHeatConfidenceInterval JackpotFrequencyClusteredCi95,
+    EndlessHeatConfidenceInterval EpicPlusSharePerDropClusteredCi95,
+    EndlessHeatConfidenceInterval LegendarySharePerDropClusteredCi95,
+    EndlessHeatPairedDelta EpicPlusSharePerDropDeltaVsHeatZero,
+    EndlessHeatPairedDelta LegendarySharePerDropDeltaVsHeatZero);
+
+internal sealed record EndlessHeatAcquisitionAggregate(
+    int Heat,
+    int HorizonMaps,
+    double PairedClearRate,
+    double EpicPlusPerSuccessfulMap,
+    double LegendaryPerSuccessfulMap,
+    double EpicPlusPerAttemptedMap,
+    double LegendaryPerAttemptedMap,
+    EndlessHeatConfidenceInterval EpicPlusPerSuccessfulMapClusteredCi95,
+    EndlessHeatConfidenceInterval LegendaryPerSuccessfulMapClusteredCi95,
+    EndlessHeatConfidenceInterval PairedClearRateClusteredCi95);
+
+internal sealed record EndlessHeatConfidenceInterval(
+    double Lower,
+    double Upper);
+
+internal sealed record EndlessHeatPairedDelta(
+    double Estimate,
+    EndlessHeatConfidenceInterval ClusteredCi95);
 
 internal sealed record EndlessHeatClearRateAggregate(
     int Heat,
+    int GearHorizonMaps,
     int Wins,
     int Samples,
     int SeedsPerCell,
     double WinRate,
-    IReadOnlyList<EndlessHeatCellClearRate> Cells);
+    IReadOnlyList<EndlessHeatCellClearRate> Cells,
+    EndlessHeatConfidenceInterval SeedClusteredCi95);
 
 internal sealed record EndlessHeatCellClearRate(
     string SquadId,
@@ -61,6 +110,10 @@ internal sealed record EndlessHeatSweepReport(
     int AggregateSamplesPerHeat,
     double MinimumResolvableRatePerCell,
     double MinimumResolvableAggregateRate,
+    double MinimumResolvableEquippedShare,
+    int BootstrapSeedClusters,
+    int BootstrapReplicates,
+    string BootstrapMethod,
     IReadOnlyList<int> EquipmentHeats,
     IReadOnlyList<int> ClearRateHeats,
     IReadOnlyList<int> EquipmentHorizonsMaps,
@@ -69,6 +122,8 @@ internal sealed record EndlessHeatSweepReport(
     string EquipmentPowerPolicy,
     IReadOnlyList<EndlessHeatEnemyScalingObservation> EnemyScaling,
     IReadOnlyList<EndlessHeatEquippedAggregate> EquippedByHeat,
+    IReadOnlyList<EndlessHeatDropAggregate> DropsByHeat,
+    IReadOnlyList<EndlessHeatAcquisitionAggregate> AcquisitionByHeat,
     IReadOnlyList<EndlessHeatClearRateAggregate> ClearRateFixedGear,
     IReadOnlyList<EndlessHeatClearRateAggregate> ClearRatePairedGear,
     EndlessHeatPairingVerification Pairing,

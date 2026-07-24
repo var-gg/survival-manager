@@ -25,10 +25,19 @@ public static class EndlessCycleService
     public const float HeatEchoBonusPerHeat = 0.15f;
 
     /// <summary>Heat 드랍 latent mean 이동식의 분자 계수.</summary>
-    public const float HeatDropLatentMeanNumerator = 0.10f;
+    public const double HeatDropLatentMeanNumerator = 0.12d;
 
     /// <summary>Heat 드랍 latent mean 이동식의 포화 기울기.</summary>
-    public const float HeatDropLatentMeanDenominatorSlope = 0.15f;
+    public const double HeatDropLatentMeanDenominatorSlope = 0.15d;
+
+    /// <summary>Heat 1당 jackpot 성분의 절대 weight 증가량.</summary>
+    public const double HeatDropJackpotWeightStep = 0.002d;
+
+    /// <summary>Heat가 추가할 수 있는 jackpot weight의 최대 절대 증가량.</summary>
+    public const double HeatDropJackpotWeightDeltaCap = 0.10d;
+
+    /// <summary>Heat 적용 후 jackpot weight의 절대 상한.</summary>
+    public const double HeatDropJackpotWeightAbsoluteCap = 0.20d;
 
     /// <summary>
     /// 다음 사이클 상태를 계산한다. Modifiers는 새 dict로 복사 — 공유 static Empty의
@@ -82,6 +91,34 @@ public static class EndlessCycleService
 
         return (HeatDropLatentMeanNumerator * heat)
                / (1d + (HeatDropLatentMeanDenominatorSlope * heat));
+    }
+
+    /// <summary>
+    /// 저장된 campaign jackpot weight를 변이하지 않고 Heat용 로컬 weight를 계산한다.
+    /// heat &lt;= 0이면 입력값을 그대로 반환해 campaign 경로를 보존한다.
+    /// </summary>
+    public static double DropJackpotWeight(double campaignWeight, int heat)
+    {
+        if (!double.IsFinite(campaignWeight)
+            || campaignWeight < 0d
+            || campaignWeight >= 1d)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(campaignWeight),
+                campaignWeight,
+                "Campaign jackpot weight must be finite and in [0, 1).");
+        }
+
+        if (heat <= 0)
+        {
+            return campaignWeight;
+        }
+
+        return Math.Min(
+            Math.Min(
+                campaignWeight + (HeatDropJackpotWeightStep * heat),
+                campaignWeight + HeatDropJackpotWeightDeltaCap),
+            HeatDropJackpotWeightAbsoluteCap);
     }
 
     /// <summary>잔향(Echo) 보상을 Heat에 비례해 스케일한다. heat &lt;= 0 또는 0 이하 금액은 원값 유지.</summary>

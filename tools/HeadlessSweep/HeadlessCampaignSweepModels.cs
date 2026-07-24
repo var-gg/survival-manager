@@ -2,6 +2,7 @@ using SM.Combat.Model;
 using SM.Core.Content;
 using SM.Editor.Validation;
 using SM.Meta.Model;
+using SM.Meta.Services;
 
 internal sealed class HeadlessCampaignHero
 {
@@ -52,7 +53,8 @@ internal sealed class HeadlessCampaignItem
 internal sealed record HeadlessCampaignFarmResult(
     int Maps,
     int BattleRewardNodesPerMap,
-    int ItemDrops);
+    int ItemDrops,
+    IReadOnlyList<DropGradeRollObservation> GradeRolls);
 
 internal sealed record HeadlessCampaignBattleSetup(
     BattleLoadoutSnapshot AllySnapshot,

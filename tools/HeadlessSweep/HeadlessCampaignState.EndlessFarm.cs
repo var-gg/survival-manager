@@ -26,7 +26,8 @@ internal sealed partial class HeadlessCampaignState
             throw new InvalidDataException($"Endless farm site '{siteId}' has no battle reward nodes.");
         }
 
-        var service = new LootResolutionService(Snapshot);
+        var gradeRolls = new List<DropGradeRollObservation>();
+        var service = new LootResolutionService(Snapshot, gradeRolls.Add);
         var itemDrops = 0;
         for (var mapIndex = 0; mapIndex < mapCount; mapIndex++)
         {
@@ -59,7 +60,18 @@ internal sealed partial class HeadlessCampaignState
             }
         }
 
-        return new HeadlessCampaignFarmResult(mapCount, track.Length, itemDrops);
+        if (gradeRolls.Count != itemDrops)
+        {
+            throw new InvalidDataException(
+                $"Endless farm measured {gradeRolls.Count} grade rolls for {itemDrops} item drops. "
+                + "The reward harness requires one grade roll per dropped item.");
+        }
+
+        return new HeadlessCampaignFarmResult(
+            mapCount,
+            track.Length,
+            itemDrops,
+            gradeRolls);
     }
 
     private IReadOnlyList<string> ResolveFarmRewardContextTags(

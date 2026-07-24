@@ -118,9 +118,33 @@ public sealed class EndlessCycleServiceFastTests
     {
         Assert.That(EndlessCycleService.DropLatentMeanShift(0), Is.EqualTo(0d));
         Assert.That(EndlessCycleService.DropLatentMeanShift(-1), Is.EqualTo(0d));
-        Assert.That(EndlessCycleService.DropLatentMeanShift(1), Is.EqualTo(0.10d / 1.15d).Within(0.00000001d));
-        Assert.That(EndlessCycleService.DropLatentMeanShift(5), Is.EqualTo(0.50d / 1.75d).Within(0.00000001d));
-        Assert.That(EndlessCycleService.DropLatentMeanShift(10), Is.EqualTo(1d / 2.5d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(1), Is.EqualTo(0.12d / 1.15d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(5), Is.EqualTo(0.60d / 1.75d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(10), Is.EqualTo(1.20d / 2.5d).Within(0.00000001d));
+    }
+
+    [TestCase(0, 0.011d)]
+    [TestCase(1, 0.013d)]
+    [TestCase(2, 0.015d)]
+    [TestCase(3, 0.017d)]
+    [TestCase(5, 0.021d)]
+    [TestCase(8, 0.027d)]
+    [TestCase(10, 0.031d)]
+    public void DropJackpotWeight_UsesStepAndBothCaps(
+        int heat,
+        double expected)
+    {
+        Assert.That(
+            EndlessCycleService.DropJackpotWeight(0.011d, heat),
+            Is.EqualTo(expected).Within(0.000000000001d));
+    }
+
+    [Test]
+    public void DropJackpotWeight_AbsoluteCapBindsForHighBaseWeight()
+    {
+        Assert.That(
+            EndlessCycleService.DropJackpotWeight(0.15d, 25),
+            Is.EqualTo(0.20d).Within(0.000000000001d));
     }
 
     [Test]

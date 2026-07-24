@@ -133,7 +133,7 @@ public sealed class DropGradeEconomyFastTests
         var heatFiveProbabilities = DropGradeEconomy.GradeProbabilities(
             mean + shift,
             standardDeviation,
-            jackpotWeight,
+            EndlessCycleService.DropJackpotWeight(jackpotWeight, 5),
             jackpotMean: 4.25d + shift,
             jackpotStandardDeviation: 0.25d);
         var expectedAtHeatZero = ExpectedGrade(heatZeroProbabilities);
@@ -208,10 +208,18 @@ public sealed class DropGradeEconomyFastTests
                 seed,
                 heat: 0))
             .ToArray();
+        var legacyRolls = Enumerable.Range(0, 2048)
+            .Select(seed => LegacyRollGrade(
+                table,
+                "chapter_alpha",
+                RarityBracketValue.Elite,
+                seed))
+            .ToArray();
 
         Assert.That(shift, Is.EqualTo(0d));
         Assert.That(heatZeroProbabilities, Is.EqualTo(legacyProbabilities));
         Assert.That(explicitHeatZeroRolls, Is.EqualTo(defaultRolls));
+        Assert.That(explicitHeatZeroRolls, Is.EqualTo(legacyRolls));
     }
 
     [Test]
@@ -476,6 +484,35 @@ public sealed class DropGradeEconomyFastTests
             Is.True,
             error);
         return (int)bundle.Entries.Single().ItemGrade!.Value;
+    }
+
+    private static ItemRarityTierValue LegacyRollGrade(
+        DropTableTemplate table,
+        string chapterId,
+        RarityBracketValue fallbackBracket,
+        int seed)
+    {
+        var profile = table.GradeProfiles.Single(candidate =>
+            string.Equals(candidate.ChapterId, chapterId, StringComparison.Ordinal));
+        var probabilities = DropGradeEconomy.GradeProbabilities(
+            profile.MeanPreservingLatentMean,
+            profile.StandardDeviation,
+            table.GradeJackpotWeight,
+            table.GradeJackpotLatentMean,
+            table.GradeJackpotStandardDeviation);
+        var random = new Random(CampaignEncounterSeed.Derive(seed, "drop-grade"));
+        var roll = random.NextDouble();
+        var cursor = 0d;
+        for (var grade = 0; grade < probabilities.Count; grade++)
+        {
+            cursor += probabilities[grade];
+            if (roll < cursor)
+            {
+                return (ItemRarityTierValue)grade;
+            }
+        }
+
+        return ItemRarityTierValue.Legendary;
     }
 
     private static AffixTemplate BuildAffix(string id, string tier)
