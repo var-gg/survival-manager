@@ -17,12 +17,17 @@ namespace SM.Editor.Validation;
 public static class CampaignSignedDeficitMeasurementCli
 {
     private const string DefaultOutputPath = "Logs/campaign-signed-deficit-measurement.json";
+    private const int MinimumReportSeedCount = 4;
 
     public static void RunFromCli()
     {
         try
         {
-            var seedCount = ReadInt("SM_CAMPAIGN_DEFICIT_SEEDS", 256, 16, 4096);
+            var seedCount = ReadInt(
+                "SM_CAMPAIGN_DEFICIT_SEEDS",
+                256,
+                MinimumReportSeedCount,
+                4096);
             var seedBase = ReadInt("SM_CAMPAIGN_DEFICIT_SEED_BASE", 1701, int.MinValue, int.MaxValue);
             var searchMinimum = ReadDouble("SM_CAMPAIGN_DEFICIT_MIN_X", -4d, -12d, -0.001d);
             var searchMaximum = ReadDouble("SM_CAMPAIGN_DEFICIT_MAX_X", 4d, 0.001d, 12d);

@@ -279,7 +279,10 @@ public sealed record DropTableTemplate(
     IReadOnlyList<LootBundleEntryTemplate> Entries,
     float GradePowerKappa = 0f,
     float GradeStepBudgetScore = 0f,
-    IReadOnlyList<DropGradeProfileTemplate>? GradeProfiles = null);
+    IReadOnlyList<DropGradeProfileTemplate>? GradeProfiles = null,
+    double GradeJackpotWeight = 0d,
+    double GradeJackpotLatentMean = 4.25d,
+    double GradeJackpotStandardDeviation = 0.25d);
 
 public sealed record DropGradeProfileTemplate(
     string ChapterId,

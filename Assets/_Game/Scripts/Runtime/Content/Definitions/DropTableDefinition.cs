@@ -28,6 +28,9 @@ namespace SM.Content.Definitions
         public List<LootBundleEntryDefinition> Entries = new();
         public float GradePowerKappa = 0.15490852f;
         public float GradeStepBudgetScore = 12.3f;
+        public float GradeJackpotWeight;
+        public float GradeJackpotLatentMean = 4.25f;
+        public float GradeJackpotStandardDeviation = 0.25f;
         public List<DropGradeProfileDefinition> GradeProfiles = new();
 
         [FormerlySerializedAs("DisplayName")]

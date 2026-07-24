@@ -106,6 +106,7 @@ internal static class HeadlessCampaignPlaythrough
                 }
 
                 var stopAtCurrentNode = string.Equals(identity.EncounterId, stopAfterEncounterId, StringComparison.Ordinal);
+                state.ResetNodeDropObservation();
                 var progression = won
                     ? measured.Result
                     : stopAtCurrentNode
@@ -128,7 +129,9 @@ internal static class HeadlessCampaignPlaythrough
                     measured.AntiClusterAoeSurvival,
                     measured.ThreatLanding,
                     won ? woundsApplied : 0,
-                    measured.BossKillDynamics));
+                    measured.BossKillDynamics,
+                    state.LatestItemGrades.ToArray(),
+                    state.ExpectedEquippedGrade()));
 
                 if (stopAtCurrentNode)
                 {

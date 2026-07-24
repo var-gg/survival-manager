@@ -41,7 +41,10 @@ internal static class RewardConverter
                     profile.InitialStandardDeviation,
                     profile.MeanPreservingLatentMean,
                     profile.StandardDeviation))
-                .ToList());
+                .ToList(),
+            definition.GradeJackpotWeight,
+            definition.GradeJackpotLatentMean,
+            definition.GradeJackpotStandardDeviation);
     }
 
     internal static LootBundleTemplate BuildLootBundleTemplate(LootBundleDefinition definition)

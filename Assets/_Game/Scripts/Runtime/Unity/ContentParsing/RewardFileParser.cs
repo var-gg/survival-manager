@@ -47,6 +47,11 @@ internal static class RewardFileParser
             definition.Entries = ParseLootEntries(lines);
             definition.GradePowerKappa = ExtractFloat(lines, "GradePowerKappa:");
             definition.GradeStepBudgetScore = ExtractFloat(lines, "GradeStepBudgetScore:");
+            definition.GradeJackpotWeight = ExtractFloat(lines, "GradeJackpotWeight:");
+            definition.GradeJackpotLatentMean = ExtractFloat(lines, "GradeJackpotLatentMean:");
+            definition.GradeJackpotStandardDeviation = ExtractFloat(
+                lines,
+                "GradeJackpotStandardDeviation:");
             definition.GradeProfiles = ParseDropGradeProfiles(lines);
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "legacyDisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "legacyDescription:"));

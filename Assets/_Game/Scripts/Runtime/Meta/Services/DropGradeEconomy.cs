@@ -39,10 +39,12 @@ public static class DropGradeEconomy
             return MapRarityBracket(fallbackBracket);
         }
 
-        var expectedPower = ExpectedItemPower(
-            profile.MeanPreservingLatentMean,
-            profile.StandardDeviation,
-            table.GradePowerKappa);
+        if (!HasValidJackpot(table))
+        {
+            return MapRarityBracket(fallbackBracket);
+        }
+
+        var expectedPower = CampaignExpectedItemPower(table);
         var targetPower = Math.Exp(
             FirstClearReferenceKappa * (int)MapRarityBracket(fallbackBracket));
         if (Math.Abs(expectedPower - targetPower) > 0.0005d)
@@ -52,7 +54,10 @@ public static class DropGradeEconomy
 
         var probabilities = GradeProbabilities(
             profile.MeanPreservingLatentMean,
-            profile.StandardDeviation);
+            profile.StandardDeviation,
+            table.GradeJackpotWeight,
+            table.GradeJackpotLatentMean,
+            table.GradeJackpotStandardDeviation);
         var random = new Random(CampaignEncounterSeed.Derive(seed, "drop-grade"));
         var roll = random.NextDouble();
         var cursor = 0d;
@@ -104,6 +109,37 @@ public static class DropGradeEconomy
         return result;
     }
 
+    public static IReadOnlyList<double> GradeProbabilities(
+        double mean,
+        double standardDeviation,
+        double jackpotWeight,
+        double jackpotMean,
+        double jackpotStandardDeviation)
+    {
+        if (!double.IsFinite(jackpotWeight)
+            || jackpotWeight < 0d
+            || jackpotWeight >= 1d)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(jackpotWeight),
+                jackpotWeight,
+                "Jackpot weight must be finite and in [0, 1).");
+        }
+
+        var ordinary = GradeProbabilities(mean, standardDeviation);
+        if (jackpotWeight == 0d)
+        {
+            return ordinary;
+        }
+
+        var jackpot = GradeProbabilities(jackpotMean, jackpotStandardDeviation);
+        return ordinary
+            .Select((probability, grade) =>
+                ((1d - jackpotWeight) * probability)
+                + (jackpotWeight * jackpot[grade]))
+            .ToArray();
+    }
+
     public static double ExpectedItemPower(
         double mean,
         double standardDeviation,
@@ -112,6 +148,42 @@ public static class DropGradeEconomy
         return GradeProbabilities(mean, standardDeviation)
             .Select((probability, grade) => probability * Math.Exp(kappa * grade))
             .Sum();
+    }
+
+    public static double ExpectedItemPower(
+        double mean,
+        double standardDeviation,
+        double kappa,
+        double jackpotWeight,
+        double jackpotMean,
+        double jackpotStandardDeviation)
+    {
+        return GradeProbabilities(
+                mean,
+                standardDeviation,
+                jackpotWeight,
+                jackpotMean,
+                jackpotStandardDeviation)
+            .Select((probability, grade) => probability * Math.Exp(kappa * grade))
+            .Sum();
+    }
+
+    public static double CampaignExpectedItemPower(DropTableTemplate table)
+    {
+        if (table.GradeProfiles is not { Count: > 0 })
+        {
+            throw new InvalidOperationException(
+                $"Drop table '{table.Id}' has no campaign grade profiles.");
+        }
+
+        return table.GradeProfiles
+            .Average(profile => ExpectedItemPower(
+                profile.MeanPreservingLatentMean,
+                profile.StandardDeviation,
+                table.GradePowerKappa,
+                table.GradeJackpotWeight,
+                table.GradeJackpotLatentMean,
+                table.GradeJackpotStandardDeviation));
     }
 
     public static double CalibrateMean(
@@ -132,13 +204,38 @@ public static class DropGradeEconomy
         double kappa,
         double referenceKappa)
     {
+        return CalibrateMean(
+            baselineGrade,
+            standardDeviation,
+            kappa,
+            referenceKappa,
+            jackpotWeight: 0d,
+            jackpotMean: 4.25d,
+            jackpotStandardDeviation: 0.25d);
+    }
+
+    public static double CalibrateMean(
+        ItemRarityTierValue baselineGrade,
+        double standardDeviation,
+        double kappa,
+        double referenceKappa,
+        double jackpotWeight,
+        double jackpotMean,
+        double jackpotStandardDeviation)
+    {
         var target = Math.Exp(referenceKappa * (int)baselineGrade);
         var low = -12d;
         var high = 12d;
         for (var iteration = 0; iteration < 96; iteration++)
         {
             var midpoint = low + ((high - low) / 2d);
-            if (ExpectedItemPower(midpoint, standardDeviation, kappa) < target)
+            if (ExpectedItemPower(
+                    midpoint,
+                    standardDeviation,
+                    kappa,
+                    jackpotWeight,
+                    jackpotMean,
+                    jackpotStandardDeviation) < target)
             {
                 low = midpoint;
             }
@@ -149,6 +246,17 @@ public static class DropGradeEconomy
         }
 
         return low + ((high - low) / 2d);
+    }
+
+    private static bool HasValidJackpot(DropTableTemplate table)
+    {
+        return double.IsFinite(table.GradeJackpotWeight)
+               && table.GradeJackpotWeight >= 0d
+               && table.GradeJackpotWeight < 1d
+               && (table.GradeJackpotWeight == 0d
+                   || (double.IsFinite(table.GradeJackpotLatentMean)
+                       && double.IsFinite(table.GradeJackpotStandardDeviation)
+                       && table.GradeJackpotStandardDeviation > 0d));
     }
 
     private static double NormalCdf(double value)

@@ -102,6 +102,55 @@ public sealed class DropGradeEconomyFastTests
     }
 
     [Test]
+    public void GradeProbabilities_JackpotMixtureMovesMassIntoLegendaryTail()
+    {
+        var ordinary = DropGradeEconomy.GradeProbabilities(0.5d, 0.5d);
+        var mixed = DropGradeEconomy.GradeProbabilities(
+            0.5d,
+            0.5d,
+            jackpotWeight: 0.01d,
+            jackpotMean: 4.25d,
+            jackpotStandardDeviation: 0.25d);
+
+        Assert.That(mixed.Sum(), Is.EqualTo(1d).Within(0.000000000001d));
+        Assert.That(mixed[(int)ItemRarityTierValue.Legendary],
+            Is.GreaterThan(ordinary[(int)ItemRarityTierValue.Legendary] + 0.009d));
+        Assert.That(mixed[(int)ItemRarityTierValue.Common],
+            Is.LessThan(ordinary[(int)ItemRarityTierValue.Common]));
+    }
+
+    [Test]
+    public void CampaignMeanGuard_AllowsProgressionWhenTableAverageIsPreserved()
+    {
+        const double chapterStep = 0.4d;
+        const double jackpotWeight = 0.01d;
+        var center = CalibrateCampaignCenter(
+            ItemRarityTierValue.Rare,
+            chapterStep,
+            jackpotWeight);
+        var table = BuildTable(
+            ItemRarityTierValue.Rare,
+            new[] { center - chapterStep, center, center + chapterStep },
+            jackpotWeight,
+            standardDeviation: 0.5d);
+
+        var target = Math.Exp(
+            DropGradeEconomy.FirstClearReferenceKappa * (int)ItemRarityTierValue.Rare);
+        Assert.That(
+            DropGradeEconomy.CampaignExpectedItemPower(table),
+            Is.EqualTo(target).Within(0.00000001d));
+
+        var grades = Enumerable.Range(0, 512)
+            .Select(seed => DropGradeEconomy.RollGrade(
+                table,
+                "chapter_omega",
+                RarityBracketValue.Elite,
+                seed))
+            .ToArray();
+        Assert.That(grades.Distinct().Count(), Is.GreaterThan(1));
+    }
+
+    [Test]
     public void MeanGuard_FallsBackWhenAuthoredCalibrationDrifts()
     {
         var table = BuildTable(ItemRarityTierValue.Rare, mean: -4d);
@@ -160,6 +209,17 @@ public sealed class DropGradeEconomyFastTests
     private static DropTableTemplate BuildTable(
         ItemRarityTierValue baseline,
         double mean)
+        => BuildTable(
+            baseline,
+            new[] { mean },
+            jackpotWeight: 0d,
+            standardDeviation: 0.78d);
+
+    private static DropTableTemplate BuildTable(
+        ItemRarityTierValue baseline,
+        IReadOnlyList<double> means,
+        double jackpotWeight,
+        double standardDeviation)
     {
         return new DropTableTemplate(
             "drop_table_test",
@@ -167,15 +227,55 @@ public sealed class DropGradeEconomyFastTests
             Array.Empty<LootBundleEntryTemplate>(),
             (float)MeasuredKappa,
             8f,
-            new[]
-            {
+            means.Select((mean, index) =>
                 new DropGradeProfileTemplate(
-                    "chapter_alpha",
+                    index switch
+                    {
+                        0 => "chapter_alpha",
+                        1 => "chapter_middle",
+                        _ => "chapter_omega",
+                    },
                     InitialLatentMean: 0.3d,
                     InitialStandardDeviation: 0.78d,
                     MeanPreservingLatentMean: mean,
-                    StandardDeviation: 0.78d),
-            });
+                    StandardDeviation: standardDeviation))
+                .ToArray(),
+            jackpotWeight,
+            GradeJackpotLatentMean: 4.25d,
+            GradeJackpotStandardDeviation: 0.25d);
+    }
+
+    private static double CalibrateCampaignCenter(
+        ItemRarityTierValue baseline,
+        double chapterStep,
+        double jackpotWeight)
+    {
+        var target = Math.Exp(
+            DropGradeEconomy.FirstClearReferenceKappa * (int)baseline);
+        var low = -12d;
+        var high = 12d;
+        for (var iteration = 0; iteration < 96; iteration++)
+        {
+            var midpoint = low + ((high - low) / 2d);
+            var expected = new[] { midpoint - chapterStep, midpoint, midpoint + chapterStep }
+                .Average(mean => DropGradeEconomy.ExpectedItemPower(
+                    mean,
+                    0.5d,
+                    MeasuredKappa,
+                    jackpotWeight,
+                    4.25d,
+                    0.25d));
+            if (expected < target)
+            {
+                low = midpoint;
+            }
+            else
+            {
+                high = midpoint;
+            }
+        }
+
+        return low + ((high - low) / 2d);
     }
 
     private static AffixTemplate BuildAffix(string id, string tier)

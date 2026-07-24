@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-05-20
+- 최종수정일: 2026-07-24
 - 소스오브트루스: `docs/02_design/meta/drop-table-rarity-bracket-and-source-matrix.md`
 - 관련문서:
   - `docs/02_design/meta/economy-protection-contract.md`
@@ -50,7 +50,27 @@
 | `elite` | elite 전용 확정 가치 | better manual, trait token, rare pack |
 | `boss` | 보스 전용 고가치 | named item, permanent candidate |
 
-launch floor에서는 ARPG식 5~6단계 rarity ladder를 열지 않는다.
+source bracket은 보상 출처의 floor를 나타내며, 생성된 item의 실제 grade와는 분리된다.
+
+## first-clear item grade 분포
+
+skirmish / elite / boss의 first-clear item은 `Common` / `Magic` / `Rare` / `Epic` /
+`Legendary` 5단계 grade를 사용한다. source bracket은 fallback과 campaign-total power
+anchor를 제공하고, 실제 grade는 chapter별 `DropGradeProfileDefinition`이 결정한다.
+
+- ordinary component는 chapter별 mean과 공통 표준편차를 쓰는 Gaussian이다.
+- jackpot component는 `GradeJackpotWeight`, `GradeJackpotLatentMean`,
+  `GradeJackpotStandardDeviation`가 정의하는 저확률 high-grade Gaussian이다.
+- 두 component의 확률을 합친 뒤 같은 deterministic seed로 grade를 한 번만 뽑는다.
+- `MeanPreservingLatentMean`은 chapter가 뒤로 갈수록 일정한 양만큼 증가해야 한다.
+- mean preservation은 chapter별로 하지 않는다. 각 source table의 5개 chapter 평균
+  expected item power를 기존 bracket anchor에 맞추며, 동일한 chapter별 4/2/2
+  skirmish/elite/boss 구성에서 campaign-total expected item power도 함께 유지한다.
+- early chapter power를 낮추고 late chapter power를 높이는 이동은 허용하지만,
+  validator가 positive chapter step, shared jackpot, campaign-average power drift를 막는다.
+- 이 계약은 first-clear에만 적용된다. repeat/farm의
+  `[Epic, Legendary, Legendary, Legendary]` minimum-grade roll은 별도 채널이며
+  이 mixture로 대체하지 않는다.
 
 ## source matrix 운영 규칙
 
@@ -116,7 +136,6 @@ regular battle drop에서 무작위 추가 trait를 빈번하게 지급하지 �
 
 ## deferred
 
-- advanced rarity ladder
 - market / trade
 - long-form salvage economy
 - post-battle inventory capacity puzzle

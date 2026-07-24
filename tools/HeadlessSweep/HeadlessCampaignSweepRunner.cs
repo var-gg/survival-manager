@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
+using SM.Core.Content;
 using SM.Editor.Validation;
 using SM.Meta.Serialization;
 using SM.Meta.Services;
@@ -78,6 +79,7 @@ internal static class HeadlessCampaignSweepRunner
                 BossKillDynamics: primary.BossKillDynamics,
                 ThreatLandingWitness: primary.ThreatLandingWitness,
                 WoundMeasure: primary.WoundMeasure,
+                DropProgression: primary.DropProgression,
                 Verification: verification);
             var outputPath = Resolve(repositoryRoot, options.OutputPath);
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
@@ -207,6 +209,7 @@ internal static class HeadlessCampaignSweepRunner
         var bossKillDynamics = BossKillDynamicsAggregator.Build(executions, config);
         var threatLandingWitness = accumulator.BuildThreatLandingReport();
         var woundMeasure = BuildWoundMeasure(executions);
+        var dropProgression = BuildDropProgression(executions, config.Arms[1]);
         var canonical = new HeadlessCampaignCanonicalResult(
             SchemaVersion: "headless-campaign-canonical-v1",
             StopAfterEncounterId: stopAfterEncounterId,
@@ -237,8 +240,63 @@ internal static class HeadlessCampaignSweepRunner
             bossKillDynamics,
             threatLandingWitness,
             woundMeasure,
+            dropProgression,
             hash,
             stopwatch.Elapsed.TotalSeconds);
+    }
+
+    private static HeadlessCampaignDropProgressionMeasure BuildDropProgression(
+        IReadOnlyList<HeadlessCampaignCellExecution> executions,
+        CampaignBalanceArmSpec arm)
+    {
+        var campaigns = executions
+            .SelectMany(cell => cell.Arms)
+            .Where(execution => string.Equals(
+                execution.Arm.ArmId,
+                arm.ArmId,
+                StringComparison.Ordinal))
+            .ToArray();
+        var chapterIdentities = campaigns
+            .SelectMany(campaign => campaign.Nodes)
+            .Select(node => (node.Identity.ChapterId, node.Identity.ChapterOrder))
+            .Distinct()
+            .OrderBy(identity => identity.ChapterOrder)
+            .ThenBy(identity => identity.ChapterId, StringComparer.Ordinal)
+            .ToArray();
+        var chapters = chapterIdentities
+            .Select(identity =>
+            {
+                var chapterNodes = campaigns
+                    .SelectMany(campaign => campaign.Nodes)
+                    .Where(node => node.Identity.ChapterOrder == identity.ChapterOrder)
+                    .ToArray();
+                var chapterEndGrades = campaigns
+                    .Select(campaign => campaign.Nodes
+                        .Where(node => node.Identity.ChapterOrder == identity.ChapterOrder)
+                        .Select(node => (double?)node.ExpectedEquippedGrade)
+                        .LastOrDefault())
+                    .Where(value => value.HasValue)
+                    .Select(value => value!.Value)
+                    .ToArray();
+                var itemGrades = chapterNodes
+                    .SelectMany(node => node.ItemGradesDropped)
+                    .ToArray();
+                return new HeadlessCampaignDropChapterMeasure(
+                    identity.ChapterId,
+                    identity.ChapterOrder,
+                    chapterEndGrades.Length == 0 ? 0d : chapterEndGrades.Average(),
+                    itemGrades.Length,
+                    itemGrades.Count(grade => grade >= ItemRarityTierValue.Epic));
+            })
+            .ToArray();
+        return new HeadlessCampaignDropProgressionMeasure(
+            arm.ArmId,
+            arm.PolicyId,
+            campaigns.Length,
+            campaigns.Count(campaign => campaign.Nodes
+                .SelectMany(node => node.ItemGradesDropped)
+                .Any(grade => grade == ItemRarityTierValue.Legendary)),
+            chapters);
     }
 
     private static HeadlessCampaignWoundMeasure BuildWoundMeasure(
@@ -496,6 +554,7 @@ internal static class HeadlessCampaignSweepRunner
         IReadOnlyList<HeadlessCampaignBossKillDynamicsBand> BossKillDynamics,
         CampaignThreatLandingWitnessReport ThreatLandingWitness,
         HeadlessCampaignWoundMeasure WoundMeasure,
+        HeadlessCampaignDropProgressionMeasure DropProgression,
         string Hash,
         double ElapsedSeconds);
 }

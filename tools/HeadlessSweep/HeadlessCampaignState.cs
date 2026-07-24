@@ -25,6 +25,7 @@ internal sealed class HeadlessCampaignState
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly Dictionary<DeploymentAnchorId, string> _assignments = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
+    private readonly List<ItemRarityTierValue> _latestItemGrades = new();
     private IReadOnlyList<SiteTrackNodeState> _siteTrack = Array.Empty<SiteTrackNodeState>();
     private int _itemInstanceCounter;
 
@@ -80,6 +81,7 @@ internal sealed class HeadlessCampaignState
     internal string SelectedSiteId => Progress.SelectedSiteId;
     internal bool StoryCleared => Progress.StoryCleared;
     internal int CampaignSeed { get; }
+    internal IReadOnlyList<ItemRarityTierValue> LatestItemGrades => _latestItemGrades;
     internal string PanelCellId => CampaignSeedSalt == 0
         ? Cell.CellId
         : $"{Cell.CellId}|seed-salt={CampaignSeedSalt.ToString(CultureInfo.InvariantCulture)}";
@@ -363,6 +365,63 @@ internal sealed class HeadlessCampaignState
         }
 
         return woundsApplied;
+    }
+
+    internal void ResetNodeDropObservation()
+    {
+        _latestItemGrades.Clear();
+    }
+
+    internal double ExpectedEquippedGrade()
+    {
+        if (Snapshot.ItemCatalog is not { Count: > 0 } itemCatalog
+            || Heroes.Count == 0)
+        {
+            return 0d;
+        }
+
+        var slotTypes = itemCatalog.Values
+            .Select(item => item.SlotType)
+            .Where(slot => !string.IsNullOrWhiteSpace(slot))
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(slot => slot, StringComparer.Ordinal)
+            .ToArray();
+        if (slotTypes.Length == 0)
+        {
+            return 0d;
+        }
+
+        var occupiedSlots = Heroes.ToDictionary(
+            hero => hero.Id,
+            _ => new HashSet<string>(StringComparer.Ordinal),
+            StringComparer.Ordinal);
+        var gradeSum = 0d;
+        foreach (var item in Inventory
+                     .OrderByDescending(item => item.RarityTier)
+                     .ThenBy(item => item.ItemBaseId, StringComparer.Ordinal)
+                     .ThenBy(item => item.AcquisitionIndex))
+        {
+            if (!itemCatalog.TryGetValue(item.ItemBaseId, out var template))
+            {
+                continue;
+            }
+
+            var hero = Heroes.FirstOrDefault(candidate =>
+                !occupiedSlots[candidate.Id].Contains(template.SlotType)
+                && (template.AllowedClassIds is not { Count: > 0 }
+                    || template.AllowedClassIds.Contains(
+                        candidate.ClassId,
+                        StringComparer.Ordinal)));
+            if (hero == null)
+            {
+                continue;
+            }
+
+            occupiedSlots[hero.Id].Add(template.SlotType);
+            gradeSum += (int)item.RarityTier;
+        }
+
+        return gradeSum / (Heroes.Count * (double)slotTypes.Length);
     }
 
     internal void AdvanceBattleNode()
@@ -763,6 +822,7 @@ internal sealed class HeadlessCampaignState
                         && Snapshot.ItemCatalog.TryGetValue(itemBaseId, out var template)
                             ? template.RarityTier
                             : ItemRarityTierValue.Common);
+        _latestItemGrades.Add(grade);
         Inventory.Add(new HeadlessCampaignItem(
             $"{itemBaseId}-i{_itemInstanceCounter.ToString(CultureInfo.InvariantCulture)}",
             itemBaseId,

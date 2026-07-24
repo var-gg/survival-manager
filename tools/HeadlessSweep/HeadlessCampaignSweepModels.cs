@@ -119,7 +119,9 @@ internal sealed record HeadlessCampaignNodeObservation(
     HeadlessCampaignAoeSurvival AntiClusterAoeSurvival,
     CampaignThreatLandingObservation? ThreatLanding,
     int WoundsApplied,
-    HeadlessCampaignBossKillDynamicsSample? BossKillDynamics);
+    HeadlessCampaignBossKillDynamicsSample? BossKillDynamics,
+    IReadOnlyList<ItemRarityTierValue> ItemGradesDropped,
+    double ExpectedEquippedGrade);
 
 internal sealed record HeadlessCampaignSiteObservation(
     CampaignSiteIdentity Identity,
@@ -276,6 +278,27 @@ internal sealed record HeadlessCampaignWoundMeasure(
     public double OccurrenceRate => WonCells == 0 ? 0d : CellsWithWound / (double)WonCells;
 }
 
+internal sealed record HeadlessCampaignDropChapterMeasure(
+    string ChapterId,
+    int ChapterOrder,
+    double ExpectedEquippedGrade,
+    int ItemDrops,
+    int EpicPlusDrops)
+{
+    public double EpicPlusDropRate => ItemDrops == 0 ? 0d : EpicPlusDrops / (double)ItemDrops;
+}
+
+internal sealed record HeadlessCampaignDropProgressionMeasure(
+    string ArmId,
+    string PolicyId,
+    int Campaigns,
+    int CampaignsWithLegendary,
+    IReadOnlyList<HeadlessCampaignDropChapterMeasure> Chapters)
+{
+    public double LegendaryCampaignRate =>
+        Campaigns == 0 ? 0d : CampaignsWithLegendary / (double)Campaigns;
+}
+
 internal sealed record HeadlessCampaignSweepReport(
     string SchemaVersion,
     int Cells,
@@ -293,4 +316,5 @@ internal sealed record HeadlessCampaignSweepReport(
     IReadOnlyList<HeadlessCampaignBossKillDynamicsBand> BossKillDynamics,
     CampaignThreatLandingWitnessReport ThreatLandingWitness,
     HeadlessCampaignWoundMeasure WoundMeasure,
+    HeadlessCampaignDropProgressionMeasure DropProgression,
     HeadlessCampaignVerification Verification);
