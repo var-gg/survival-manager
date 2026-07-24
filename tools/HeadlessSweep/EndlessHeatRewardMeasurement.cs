@@ -40,6 +40,19 @@ internal static class EndlessHeatRewardMeasurement
             targetSiteId,
             horizons,
             Heats,
+            degree);
+
+    internal static EndlessHeatRewardMeasurementResult Measure(
+        IReadOnlyList<EndlessHeatPreparedScenario> prepared,
+        string targetSiteId,
+        IReadOnlyList<int> horizons,
+        IReadOnlyList<int> heats,
+        int degree)
+        => Measure(
+            prepared,
+            targetSiteId,
+            horizons,
+            heats,
             degree,
             EndlessCycleService.HeatDropLatentMeanNumerator,
             EndlessCycleService.HeatDropJackpotWeightStep);

@@ -18,7 +18,7 @@ internal static class EndlessHeatSweepRunner
     private const string DefaultOutputRelativePath = "Temp/HeadlessSweep/endless-heat-sweep.json";
     private const string TargetSiteId = "site_worldscar_depths";
     private const string TargetEncounterId = "site_worldscar_depths_boss_1";
-    private static readonly int[] ClearRateHeats = { 0, 1, 2, 3, 4, 5 };
+    private static readonly int[] DefaultMeasurementHeats = { 0, 1, 2, 3, 4, 5 };
     private static readonly int[] ScalingProbeHeats = { 1, 3, 5, 10 };
 
     internal static int Run(string repositoryRoot, IReadOnlyList<string> arguments)
@@ -84,12 +84,14 @@ internal static class EndlessHeatSweepRunner
                     prepared,
                     TargetSiteId,
                     options.EquipmentHorizonsMaps,
+                    options.MeasurementHeats,
                     options.Degree);
             var clearRates = options.DifficultyOnly
                 ? null
                 : MeasureClearRates(
                     prepared,
                     options.EquipmentHorizonsMaps,
+                    options.MeasurementHeats,
                     options.Degree);
             var acquisition = options.DifficultyOnly
                 ? Array.Empty<EndlessHeatAcquisitionAggregate>()
@@ -122,7 +124,7 @@ internal static class EndlessHeatSweepRunner
                 BootstrapReplicates: EndlessHeatSeedClusteredBootstrap.Replicates,
                 BootstrapMethod:
                 "Paired percentile bootstrap over campaign seed salts; each resampled seed cluster retains all three canonical squads and all 12 equipped slots remain inside their scenario cluster.",
-                EquipmentHeats: EndlessHeatRewardMeasurement.Heats,
+                EquipmentHeats: options.MeasurementHeats,
                 ClearRateHeats: options.MeasurementHeats,
                 EquipmentHorizonsMaps: options.EquipmentHorizonsMaps,
                 PairedClearRateHorizonMaps: options.PairedClearRateHorizonMaps,
@@ -337,12 +339,13 @@ internal static class EndlessHeatSweepRunner
     private static ClearRateMeasurement MeasureClearRates(
         IReadOnlyList<EndlessHeatPreparedScenario> prepared,
         IReadOnlyList<int> pairedHorizons,
+        IReadOnlyList<int> heats,
         int degree)
     {
         var fixedAggregates = new List<EndlessHeatClearRateAggregate>();
         var pairedAggregates = new List<EndlessHeatClearRateAggregate>();
         var pairChecks = new List<PairCheck>();
-        foreach (var heat in ClearRateHeats)
+        foreach (var heat in heats)
         {
             var fixedResults = new MeasuredScenarioBattle[prepared.Count];
             Parallel.ForEach(
@@ -532,7 +535,7 @@ internal static class EndlessHeatSweepRunner
         var difficultyOnly = false;
         var rewardGrid = false;
         var validationBuildId = "P35";
-        IReadOnlyList<int> measurementHeats = ClearRateHeats;
+        IReadOnlyList<int> measurementHeats = DefaultMeasurementHeats;
         for (var index = 0; index < arguments.Count; index++)
         {
             switch (arguments[index])
@@ -562,7 +565,7 @@ internal static class EndlessHeatSweepRunner
                     validationBuildId = arguments[++index];
                     break;
                 case "--heats" when index + 1 < arguments.Count:
-                    measurementHeats = ParsePositiveIntList(arguments[++index], "heats", 0, 5);
+                    measurementHeats = ParsePositiveIntList(arguments[++index], "heats", 0, 100);
                     break;
                 default:
                     throw new ArgumentException($"Unknown endless-heat-sweep argument: {arguments[index]}");
@@ -589,11 +592,6 @@ internal static class EndlessHeatSweepRunner
         if (!measurementHeats.Contains(0) || !measurementHeats.Contains(3))
         {
             throw new ArgumentException("--heats must include both H0 and H3 for the validation fit.");
-        }
-
-        if (!difficultyOnly && !measurementHeats.SequenceEqual(ClearRateHeats))
-        {
-            throw new ArgumentException("Custom --heats is supported only with --difficulty-only.");
         }
 
         if (difficultyOnly && rewardGrid)

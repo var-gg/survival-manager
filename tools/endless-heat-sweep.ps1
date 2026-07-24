@@ -6,6 +6,9 @@ Measures endless Heat equipment distribution and fixed/paired endgame clear rate
 pwsh -File tools/endless-heat-sweep.ps1 -Seeds 32 -Horizons 25,100 -PairedHorizon 25
 
 .EXAMPLE
+pwsh -File tools/endless-heat-sweep.ps1 -Seeds 32 -Horizons 25,50,75,100 -Heats 0,1,2,3,4,5,6,7,8
+
+.EXAMPLE
 pwsh -File tools/endless-heat-sweep.ps1 -RewardGrid -Seeds 32 -Horizons 25,100
 #>
 

@@ -82,7 +82,7 @@ Console.Error.WriteLine(
     + "| campaign-sweep [--cells <1-480>] [--degree <n>] [--stop-after <encounter>] [--seed-salts <n,n,...>] "
     + "[--heat <n>] [--output <path>] [--verify] "
     + "| endless-heat-sweep [--seeds <n>] [--degree <n>] [--horizons <n,n,...>] "
-    + "[--paired-horizon <n>] [--output <path>] [--reward-grid] "
+    + "[--paired-horizon <n>] [--heats <n,n,...>] [--output <path>] [--difficulty-only] [--reward-grid] "
     + "| balance-framework [--samples <n>] [--neutral-health-more <n>] "
     + "[--neutral-power-more <n>] [--snapshot <path>] [--neutral-snapshot <path>] "
     + "[--emulate-before] [--neutral-emulate-before] [--precision-power <n>] "
