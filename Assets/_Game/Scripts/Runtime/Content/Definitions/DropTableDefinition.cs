@@ -26,8 +26,8 @@ namespace SM.Content.Definitions
         public string DescriptionKey = string.Empty;
         public string RewardSourceId = string.Empty;
         public List<LootBundleEntryDefinition> Entries = new();
-        public float GradePowerKappa = 0.08143976f;
-        public float GradeStepBudgetScore = 8f;
+        public float GradePowerKappa = 0.15490852f;
+        public float GradeStepBudgetScore = 12.3f;
         public List<DropGradeProfileDefinition> GradeProfiles = new();
 
         [FormerlySerializedAs("DisplayName")]

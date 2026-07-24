@@ -21,11 +21,31 @@ public static class CampaignRecoveryRewardPolicy
     public const double SubsequentDefeatEchoMultiplier = 0.50d;
 
     private static readonly int[] ItemRollsByRewardedRevisit = { 4, 3, 2, 1 };
+    private static readonly ItemRarityTierValue[] MinimumItemGradesByRewardedRevisit =
+    {
+        ItemRarityTierValue.Epic,
+        ItemRarityTierValue.Legendary,
+        ItemRarityTierValue.Legendary,
+        ItemRarityTierValue.Legendary,
+    };
 
     public static int GetItemRollCount(int rewardedRevisitIndex)
         => rewardedRevisitIndex >= 1 && rewardedRevisitIndex <= ItemRollsByRewardedRevisit.Length
             ? ItemRollsByRewardedRevisit[rewardedRevisitIndex - 1]
             : 0;
+
+    public static int GetItemRollCountBefore(int rewardedRevisitIndex)
+        => rewardedRevisitIndex <= 1
+            ? 0
+            : ItemRollsByRewardedRevisit
+                .Take(Math.Min(rewardedRevisitIndex - 1, ItemRollsByRewardedRevisit.Length))
+                .Sum();
+
+    public static ItemRarityTierValue GetMinimumItemGrade(int rewardedRevisitIndex)
+        => rewardedRevisitIndex >= 1
+           && rewardedRevisitIndex <= MinimumItemGradesByRewardedRevisit.Length
+            ? MinimumItemGradesByRewardedRevisit[rewardedRevisitIndex - 1]
+            : ItemRarityTierValue.Common;
 
     public static int GetRevisitEcho(int firstFarmRunEcho, int rewardedRevisitIndex)
     {

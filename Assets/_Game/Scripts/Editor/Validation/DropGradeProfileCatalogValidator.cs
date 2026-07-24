@@ -68,7 +68,8 @@ internal static class DropGradeProfileCatalogValidator
                 var expectedCalibrated = DropGradeEconomy.CalibrateMean(
                     DropGradeEconomy.MapRarityBracket(specification.Bracket),
                     profile.StandardDeviation,
-                    table.GradePowerKappa);
+                    table.GradePowerKappa,
+                    DropGradeEconomy.FirstClearReferenceKappa);
                 if (profile.InitialStandardDeviation <= 0f
                     || Math.Abs(profile.InitialStandardDeviation - 0.78d) > MeanTolerance
                     || profile.StandardDeviation <= 0f

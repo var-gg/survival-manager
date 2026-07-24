@@ -94,6 +94,21 @@ public sealed class LootResolutionService
         IReadOnlyList<string> contextTags,
         out LootEntry entry,
         out string error)
+        => TryResolveItemRoll(
+            sourceId,
+            seed,
+            contextTags,
+            ItemRarityTierValue.Common,
+            out entry,
+            out error);
+
+    public bool TryResolveItemRoll(
+        string sourceId,
+        int seed,
+        IReadOnlyList<string> contextTags,
+        ItemRarityTierValue minimumGrade,
+        out LootEntry entry,
+        out string error)
     {
         entry = null!;
         error = string.Empty;
@@ -124,7 +139,7 @@ public sealed class LootResolutionService
             return false;
         }
 
-        entry = BuildDropTableEntry(dropTable, selected, seed, contextTags);
+        entry = BuildDropTableEntry(dropTable, selected, seed, contextTags, minimumGrade);
         return true;
     }
 
@@ -162,16 +177,18 @@ public sealed class LootResolutionService
         DropTableTemplate table,
         LootBundleEntryTemplate entry,
         int seed,
-        IReadOnlyList<string> contextTags)
+        IReadOnlyList<string> contextTags,
+        ItemRarityTierValue minimumGrade = ItemRarityTierValue.Common)
     {
         ItemRarityTierValue? grade = null;
         if (entry.RewardType == RewardType.Item)
         {
-            grade = DropGradeEconomy.RollGrade(
+            var rolledGrade = DropGradeEconomy.RollGrade(
                 table,
                 ResolveChapterId(contextTags),
                 entry.RarityBracket,
                 seed);
+            grade = rolledGrade < minimumGrade ? minimumGrade : rolledGrade;
         }
 
         return new LootEntry(

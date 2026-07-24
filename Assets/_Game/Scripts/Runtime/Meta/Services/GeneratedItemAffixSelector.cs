@@ -76,32 +76,82 @@ public static class GeneratedItemAffixSelector
             return Array.Empty<string>();
         }
 
-        var tiers = rolledGrade switch
+        var gradeStepTiers = rolledGrade switch
         {
-            ItemRarityTierValue.Common => new[] { ImplicitTier },
-            ItemRarityTierValue.Magic => new[] { ImplicitTier, PrefixTier },
-            ItemRarityTierValue.Rare => new[] { ImplicitTier, PrefixTier, SuffixTier },
-            ItemRarityTierValue.Epic => new[] { ImplicitTier, PrefixTier, SuffixTier, PrefixTier },
-            _ => new[] { ImplicitTier, PrefixTier, SuffixTier, PrefixTier, SuffixTier },
+            ItemRarityTierValue.Common => Array.Empty<string>(),
+            ItemRarityTierValue.Magic => new[] { PrefixTier },
+            ItemRarityTierValue.Rare => new[] { PrefixTier, SuffixTier },
+            ItemRarityTierValue.Epic => new[] { PrefixTier, SuffixTier, PrefixTier },
+            _ => new[] { PrefixTier, SuffixTier, PrefixTier, SuffixTier },
         };
         var targetBudget = Math.Max(0.01f, gradeStepBudgetScore);
         var rng = new Random(seed);
         var selected = new List<string>();
-        foreach (var tier in tiers)
+
+        // Common keeps the existing one-implicit baseline. GradeStepBudgetScore applies only to
+        // the four increments above Common, so increasing it does not silently raise every drop's
+        // intercept and the mean-preserving grade calibration can still hold first-clear power.
+        SelectOne(lookup, item, ImplicitTier, targetBudget, rng, selected);
+        foreach (var tier in gradeStepTiers)
         {
-            var candidates = lookup.GetCanonicalAffixIds()
-                .Where(candidateId => IsCandidate(lookup.Snapshot, item, tier, candidateId, selected))
-                .Select(candidateId => lookup.Snapshot.AffixCatalog![candidateId])
-                .OrderBy(candidate => candidate.Id, StringComparer.Ordinal)
-                .ToList();
-            var chosen = SelectBudgetWeighted(candidates, targetBudget, rng);
-            if (chosen != null)
+            var stepBudget = ResolveDiscreteStepBudget(targetBudget, rng);
+            var accumulatedBudget = 0f;
+            while (accumulatedBudget < stepBudget)
             {
+                var candidates = BuildCandidates(lookup, item, tier, selected);
+                var chosen = SelectBudgetWeighted(
+                    candidates,
+                    Math.Max(0.01f, stepBudget - accumulatedBudget),
+                    rng);
+                if (chosen == null)
+                {
+                    break;
+                }
+
                 selected.Add(chosen.Id);
+                accumulatedBudget += Math.Max(0.01f, chosen.BudgetScore);
             }
         }
 
         return selected;
+    }
+
+    private static float ResolveDiscreteStepBudget(float targetBudget, Random random)
+    {
+        var lower = Math.Max(1, (int)Math.Floor(targetBudget));
+        var fraction = targetBudget - lower;
+        return fraction > 0f && random.NextDouble() < fraction
+            ? lower + 1
+            : lower;
+    }
+
+    private static void SelectOne(
+        ISessionContentLookup lookup,
+        ItemTemplate item,
+        string tier,
+        float targetBudget,
+        Random random,
+        List<string> selected)
+    {
+        var candidates = BuildCandidates(lookup, item, tier, selected);
+        var chosen = SelectBudgetWeighted(candidates, targetBudget, random);
+        if (chosen != null)
+        {
+            selected.Add(chosen.Id);
+        }
+    }
+
+    private static IReadOnlyList<AffixTemplate> BuildCandidates(
+        ISessionContentLookup lookup,
+        ItemTemplate item,
+        string tier,
+        IReadOnlyCollection<string> selected)
+    {
+        return lookup.GetCanonicalAffixIds()
+            .Where(candidateId => IsCandidate(lookup.Snapshot, item, tier, candidateId, selected))
+            .Select(candidateId => lookup.Snapshot.AffixCatalog![candidateId])
+            .OrderBy(candidate => candidate.Id, StringComparer.Ordinal)
+            .ToList();
     }
 
     private static AffixTemplate? SelectBudgetWeighted(

@@ -195,10 +195,17 @@ internal sealed class SessionCampaignRecoveryFlow
                     run.Overlay.RewardSourceId,
                     rollSeed,
                     contextTags,
+                    CampaignRecoveryRewardPolicy.GetMinimumItemGrade(revisitIndex),
                     out var item,
                     out _))
             {
-                entries.Add(item);
+                var targetItemBaseId = ResolveRepeatTargetItemBaseId(
+                    snapshot,
+                    revisitIndex,
+                    rollOrdinal);
+                entries.Add(string.IsNullOrWhiteSpace(targetItemBaseId)
+                    ? item
+                    : item with { Id = targetItemBaseId });
             }
 
             // A roll is consumed even when an authored table has no eligible item entry.
@@ -208,6 +215,60 @@ internal sealed class SessionCampaignRecoveryFlow
         updatedRun = BuildUpdatedRun(run, currencyGranted, itemRollsGranted);
         plannedEntries = entries;
         return true;
+    }
+
+    private string ResolveRepeatTargetItemBaseId(
+        CombatContentSnapshot snapshot,
+        int revisitIndex,
+        int rollOrdinal)
+    {
+        if (snapshot.ItemCatalog == null)
+        {
+            return string.Empty;
+        }
+
+        var targets = _session.Profile.Heroes
+            .SelectMany(hero => new[] { "Weapon", "Armor", "Accessory" }
+                .Select(slotType => ResolveRepeatTargetForSlot(snapshot, hero, slotType)))
+            .Where(itemBaseId => !string.IsNullOrWhiteSpace(itemBaseId))
+            .ToArray();
+        if (targets.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        var priorRollCount = CampaignRecoveryRewardPolicy.GetItemRollCountBefore(revisitIndex);
+        var targetIndex = Math.Max(0, priorRollCount + rollOrdinal - 1) % targets.Length;
+        return targets[targetIndex];
+    }
+
+    private string ResolveRepeatTargetForSlot(
+        CombatContentSnapshot snapshot,
+        SM.Persistence.Abstractions.Models.HeroInstanceRecord hero,
+        string slotType)
+    {
+        var equippedBaseId = hero.EquippedItemIds
+            .Select(instanceId => _session.Profile.Inventory.FirstOrDefault(item =>
+                string.Equals(item.ItemInstanceId, instanceId, StringComparison.Ordinal)))
+            .Where(item => item != null
+                           && snapshot.ItemCatalog.TryGetValue(item.ItemBaseId, out var template)
+                           && string.Equals(template.SlotType, slotType, StringComparison.Ordinal))
+            .Select(item => item!.ItemBaseId)
+            .FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(equippedBaseId))
+        {
+            return equippedBaseId;
+        }
+
+        return snapshot.ItemCatalog.Values
+            .Where(template => string.Equals(template.SlotType, slotType, StringComparison.Ordinal))
+            .Where(template => template.AllowedClassIds == null
+                               || template.AllowedClassIds.Count == 0
+                               || template.AllowedClassIds.Contains(hero.ClassId, StringComparer.Ordinal))
+            .OrderBy(template => template.RarityTier)
+            .ThenBy(template => template.Id, StringComparer.Ordinal)
+            .Select(template => template.Id)
+            .FirstOrDefault() ?? string.Empty;
     }
 
     private static ActiveRunState BuildUpdatedRun(

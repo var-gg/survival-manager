@@ -149,33 +149,33 @@ MonoBehaviour:
     Weight: 2
     IsGuaranteed: 0
     RequiredContextTags: []
-  GradePowerKappa: 0.08143976
-  GradeStepBudgetScore: 8
+  GradePowerKappa: 0.15490852
+  GradeStepBudgetScore: 12.3
   GradeProfiles:
   - ChapterId: chapter_ashen_gate
     InitialLatentMean: 0.95
     InitialStandardDeviation: 0.78
-    MeanPreservingLatentMean: 2.9957104812
-    StandardDeviation: 0.25
+    MeanPreservingLatentMean: 1.5500932038
+    StandardDeviation: 0.5
   - ChapterId: chapter_sunken_bastion
     InitialLatentMean: 1.47
     InitialStandardDeviation: 0.78
-    MeanPreservingLatentMean: 2.9957104812
-    StandardDeviation: 0.25
+    MeanPreservingLatentMean: 1.5500932038
+    StandardDeviation: 0.5
   - ChapterId: chapter_ruined_crypts
     InitialLatentMean: 1.99
     InitialStandardDeviation: 0.78
-    MeanPreservingLatentMean: 2.9957104812
-    StandardDeviation: 0.25
+    MeanPreservingLatentMean: 1.5500932038
+    StandardDeviation: 0.5
   - ChapterId: chapter_glass_forest
     InitialLatentMean: 2.51
     InitialStandardDeviation: 0.78
-    MeanPreservingLatentMean: 2.9957104812
-    StandardDeviation: 0.25
+    MeanPreservingLatentMean: 1.5500932038
+    StandardDeviation: 0.5
   - ChapterId: chapter_heartforge_descent
     InitialLatentMean: 3.03
     InitialStandardDeviation: 0.78
-    MeanPreservingLatentMean: 2.9957104812
-    StandardDeviation: 0.25
+    MeanPreservingLatentMean: 1.5500932038
+    StandardDeviation: 0.5
   legacyDisplayName: 
   legacyDescription: 

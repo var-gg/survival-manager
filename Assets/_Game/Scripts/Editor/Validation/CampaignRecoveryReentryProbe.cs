@@ -69,7 +69,15 @@ internal static partial class CampaignTwoArmSweepRunner
             }
 
             CompleteReentryProbeSite(session, cell, config, revisitIndex);
-            CampaignEquipmentUpgradePolicy.Apply(session, itemIndex);
+            var generatedItemIds = session.Profile.Inventory
+                .Skip(inventoryBefore)
+                .Select(item => item.ItemInstanceId)
+                .ToArray();
+            var adoptionFunnel = CampaignEquipmentUpgradePolicy.ApplyAndMeasure(
+                session,
+                itemIndex,
+                revisitIndex,
+                generatedItemIds);
             var equippedGradeSum = EquippedGradeSum(session, itemIndex);
             var cumulativeAverageGradeStep =
                 (equippedGradeSum - baselineEquippedGradeSum) / (double)effectiveEquipmentSlotCount;
@@ -83,7 +91,8 @@ internal static partial class CampaignTwoArmSweepRunner
                 session.Profile.UnlockedPermanentAugmentIds.Count - permanentBefore,
                 equippedGradeSum,
                 cumulativeAverageGradeStep,
-                (Math.Exp(gradePowerKappa * cumulativeAverageGradeStep) - 1d) * 100d));
+                (Math.Exp(gradePowerKappa * cumulativeAverageGradeStep) - 1d) * 100d,
+                adoptionFunnel));
         }
 
         return BuildReentryObservation(
@@ -106,6 +115,9 @@ internal static partial class CampaignTwoArmSweepRunner
             revisit.RevisitIndex == CampaignRecoveryRewardPolicy.RewardedRevisitLimit + 1);
         var rewardsAgain = first != null && HasPersistentReward(first);
         var unboundedFarmClosed = exhausted != null && !HasPersistentReward(exhausted);
+        var adoptionRolls = revisits
+            .SelectMany(revisit => revisit.AdoptionFunnel.Rolls)
+            .ToArray();
         return new CampaignClearedSiteReentryObservation(
             siteId,
             canReenter,
@@ -119,7 +131,13 @@ internal static partial class CampaignTwoArmSweepRunner
             first?.RewardLedgerDelta ?? 0,
             first?.PermanentAugmentDelta ?? 0,
             unboundedFarmClosed,
-            revisits);
+            revisits,
+            new CampaignGradeAdoptionFunnelObservation(
+                adoptionRolls.Length,
+                adoptionRolls.Count(value => value.SlotEligible),
+                adoptionRolls.Count(value => value.StrictlyBetter),
+                adoptionRolls.Count(value => value.Equipped),
+                adoptionRolls));
     }
 
     private static int EquippedGradeSum(

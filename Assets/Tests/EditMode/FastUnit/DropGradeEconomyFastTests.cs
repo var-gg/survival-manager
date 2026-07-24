@@ -14,7 +14,7 @@ namespace SM.Tests.EditMode;
 [Category("FastUnit")]
 public sealed class DropGradeEconomyFastTests
 {
-    private const double MeasuredKappa = 0.081439763626391534d;
+    private const double MeasuredKappa = 0.15490852440732852d;
 
     [TestCase(RarityBracketValue.Common, ItemRarityTierValue.Common)]
     [TestCase(RarityBracketValue.Advanced, ItemRarityTierValue.Magic)]
@@ -27,9 +27,9 @@ public sealed class DropGradeEconomyFastTests
         Assert.That(DropGradeEconomy.MapRarityBracket(bracket), Is.EqualTo(expected));
     }
 
-    [TestCase(ItemRarityTierValue.Magic, 0.9425875d)]
-    [TestCase(ItemRarityTierValue.Rare, 1.9719403d)]
-    [TestCase(ItemRarityTierValue.Epic, 3.0037623d)]
+    [TestCase(ItemRarityTierValue.Magic, 0.9183295d)]
+    [TestCase(ItemRarityTierValue.Rare, 1.9466282d)]
+    [TestCase(ItemRarityTierValue.Epic, 2.9796247d)]
     public void MeanCalibration_PreservesExpectedItemPower(
         ItemRarityTierValue baseline,
         double expectedMean)
@@ -45,6 +45,33 @@ public sealed class DropGradeEconomyFastTests
         Assert.That(actualPower, Is.EqualTo(expectedPower).Within(0.000000001d));
     }
 
+    [TestCase(ItemRarityTierValue.Magic, 0.25d, 0.5039858d)]
+    [TestCase(ItemRarityTierValue.Rare, 0.25d, 1.0999721d)]
+    [TestCase(ItemRarityTierValue.Epic, 0.25d, 1.5365781d)]
+    [TestCase(ItemRarityTierValue.Magic, 0.5d, 0.4780046d)]
+    [TestCase(ItemRarityTierValue.Rare, 0.5d, 1.0256955d)]
+    [TestCase(ItemRarityTierValue.Epic, 0.5d, 1.5500932d)]
+    public void ReferenceMeanCalibration_PreservesPreKappaFirstClearPower(
+        ItemRarityTierValue baseline,
+        double standardDeviation,
+        double expectedMean)
+    {
+        var calibrated = DropGradeEconomy.CalibrateMean(
+            baseline,
+            standardDeviation,
+            MeasuredKappa,
+            DropGradeEconomy.FirstClearReferenceKappa);
+        var expectedPower = Math.Exp(
+            DropGradeEconomy.FirstClearReferenceKappa * (int)baseline);
+        var actualPower = DropGradeEconomy.ExpectedItemPower(
+            calibrated,
+            standardDeviation,
+            MeasuredKappa);
+
+        Assert.That(calibrated, Is.EqualTo(expectedMean).Within(0.000001d));
+        Assert.That(actualPower, Is.EqualTo(expectedPower).Within(0.000000001d));
+    }
+
     [Test]
     public void RollGrade_IsDeterministicAndUsesAuthoredVariance()
     {
@@ -53,7 +80,8 @@ public sealed class DropGradeEconomyFastTests
             DropGradeEconomy.CalibrateMean(
                 ItemRarityTierValue.Rare,
                 0.78d,
-                MeasuredKappa));
+                MeasuredKappa,
+                DropGradeEconomy.FirstClearReferenceKappa));
         var first = Enumerable.Range(0, 512)
             .Select(seed => DropGradeEconomy.RollGrade(
                 table,

@@ -8,6 +8,8 @@ namespace SM.Meta.Services;
 
 public static class DropGradeEconomy
 {
+    public const double FirstClearReferenceKappa = 0.08143976362639153d;
+
     private static readonly double[] CutPoints = { 0.5d, 1.5d, 2.5d, 3.5d };
 
     public static ItemRarityTierValue MapRarityBracket(RarityBracketValue bracket)
@@ -41,7 +43,8 @@ public static class DropGradeEconomy
             profile.MeanPreservingLatentMean,
             profile.StandardDeviation,
             table.GradePowerKappa);
-        var targetPower = Math.Exp(table.GradePowerKappa * (int)MapRarityBracket(fallbackBracket));
+        var targetPower = Math.Exp(
+            FirstClearReferenceKappa * (int)MapRarityBracket(fallbackBracket));
         if (Math.Abs(expectedPower - targetPower) > 0.0005d)
         {
             return MapRarityBracket(fallbackBracket);
@@ -116,7 +119,20 @@ public static class DropGradeEconomy
         double standardDeviation,
         double kappa)
     {
-        var target = Math.Exp(kappa * (int)baselineGrade);
+        return CalibrateMean(
+            baselineGrade,
+            standardDeviation,
+            kappa,
+            kappa);
+    }
+
+    public static double CalibrateMean(
+        ItemRarityTierValue baselineGrade,
+        double standardDeviation,
+        double kappa,
+        double referenceKappa)
+    {
+        var target = Math.Exp(referenceKappa * (int)baselineGrade);
         var low = -12d;
         var high = 12d;
         for (var iteration = 0; iteration < 96; iteration++)

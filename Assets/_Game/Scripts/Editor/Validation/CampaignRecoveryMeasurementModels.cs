@@ -85,7 +85,8 @@ internal sealed record CampaignClearedSiteReentryObservation(
     int RevisitRewardLedgerDelta,
     int RevisitPermanentAugmentDelta,
     bool UnboundedFarmClosed,
-    IReadOnlyList<CampaignRevisitRewardObservation> Revisits);
+    IReadOnlyList<CampaignRevisitRewardObservation> Revisits,
+    CampaignGradeAdoptionFunnelObservation AdoptionFunnel);
 
 internal sealed record CampaignRevisitRewardObservation(
     int RevisitIndex,
@@ -97,7 +98,28 @@ internal sealed record CampaignRevisitRewardObservation(
     int PermanentAugmentDelta,
     int EquippedGradeSum,
     double CumulativeAverageGradeStep,
-    double CumulativeDropPowerPercent);
+    double CumulativeDropPowerPercent,
+    CampaignGradeAdoptionFunnelObservation AdoptionFunnel);
+
+internal sealed record CampaignGradeAdoptionFunnelObservation(
+    int RollsGenerated,
+    int SlotEligible,
+    int StrictlyBetter,
+    int Equipped,
+    IReadOnlyList<CampaignGradeAdoptionRollObservation> Rolls);
+
+internal sealed record CampaignGradeAdoptionRollObservation(
+    int RevisitIndex,
+    string ItemInstanceId,
+    string ItemBaseId,
+    string SlotType,
+    int Grade,
+    int EligibleHeroCount,
+    bool SlotEligible,
+    bool StrictlyBetter,
+    bool Equipped,
+    string EquippedHeroId,
+    int BestUpgradeDelta);
 
 internal sealed record CampaignRecoveryReachabilityObservation(
     bool DefeatRewardsDriven,

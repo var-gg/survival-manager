@@ -72,7 +72,7 @@ internal sealed class SessionInventoryItemBuilder
         return _sessionLookup.Snapshot.DropTables?.Values
                    .Select(table => table.GradeStepBudgetScore)
                    .FirstOrDefault(value => value > 0f)
-               ?? 8f;
+               ?? 12.3f;
     }
 
     internal IReadOnlyList<string> BuildRefitCandidateAffixIds(InventoryItemRecord item, int affixSlotIndex)

@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using SM.Core.Content;
 using SM.Meta.Services;
 
 namespace SM.Tests.EditMode;
@@ -21,6 +22,23 @@ public sealed class CampaignRecoveryRewardPolicyFastTests
                 .Select(index => CampaignRecoveryRewardPolicy.GetRevisitEcho(40, index))
                 .ToArray(),
             Is.EqualTo(new[] { 40, 26, 17, 11, 0 }));
+        Assert.That(
+            Enumerable.Range(1, 5)
+                .Select(CampaignRecoveryRewardPolicy.GetItemRollCountBefore)
+                .ToArray(),
+            Is.EqualTo(new[] { 0, 4, 7, 9, 10 }));
+        Assert.That(
+            Enumerable.Range(1, 5)
+                .Select(CampaignRecoveryRewardPolicy.GetMinimumItemGrade)
+                .ToArray(),
+            Is.EqualTo(new[]
+            {
+                ItemRarityTierValue.Epic,
+                ItemRarityTierValue.Legendary,
+                ItemRarityTierValue.Legendary,
+                ItemRarityTierValue.Legendary,
+                ItemRarityTierValue.Common,
+            }));
     }
 
     [Test]

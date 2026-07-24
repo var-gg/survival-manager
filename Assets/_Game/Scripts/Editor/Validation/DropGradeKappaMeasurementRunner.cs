@@ -58,7 +58,6 @@ public static class DropGradeKappaMeasurementCli
 internal static class DropGradeKappaMeasurementRunner
 {
     private const double AssumedKappa = 0.16551443847757333d;
-    private const float TargetIncrementBudget = 8f;
     private const int CandidateRotationCount = 16;
     private static readonly IReadOnlyList<StatKey> PowerKeys =
         new[] { StatKey.MaxHealth, StatKey.PhysPower, StatKey.MagPower };
@@ -74,6 +73,7 @@ internal static class DropGradeKappaMeasurementRunner
             throw new InvalidOperationException("No canonical smoke scenario is available for kappa measurement.");
         }
 
+        var targetIncrementBudget = ResolveTargetIncrementBudget(scenarios);
         var observations = new List<DropGradeKappaObservation>();
         foreach (var scenario in scenarios)
         {
@@ -83,9 +83,14 @@ internal static class DropGradeKappaMeasurementRunner
                 StringComparer.Ordinal);
             for (var rotation = 0; rotation < CandidateRotationCount; rotation++)
             {
-                var selected = SlotTypes
-                    .Select(slot => candidatesBySlot[slot][rotation % candidatesBySlot[slot].Count])
+                var selectedBySlot = SlotTypes
+                    .Select((slot, slotIndex) => SelectIncrementBundle(
+                        candidatesBySlot[slot],
+                        targetIncrementBudget,
+                        rotation,
+                        slotIndex))
                     .ToArray();
+                var selected = selectedBySlot.SelectMany(value => value).ToArray();
                 var upgraded = AddOneGradeStep(
                     scenario.PlayerSnapshot,
                     scenario.Content,
@@ -104,7 +109,7 @@ internal static class DropGradeKappaMeasurementRunner
                     scenario.ScenarioId,
                     rotation,
                     selected.Select(value => value.Id).ToArray(),
-                    selected.Average(value => (double)value.BudgetScore),
+                    selectedBySlot.Average(bundle => bundle.Sum(value => (double)value.BudgetScore)),
                     baselinePower.Health,
                     upgradedPower.Health,
                     baselinePower.Offense,
@@ -120,13 +125,14 @@ internal static class DropGradeKappaMeasurementRunner
         var recovered = Math.Log(injectionResult.Health / injectionBaseline.Health)
                         + Math.Log(injectionResult.Offense / injectionBaseline.Offense);
         return new DropGradeKappaMeasurementReport(
-            "drop-grade-kappa-v1",
-            "For every hero in each canonical smoke squad, add one live, non-conditional authored affix "
-            + "near BudgetScore 8 to each equipped slot (Weapon, Armor, Accessory). Resolve MaxHealth, "
+            "drop-grade-kappa-v2",
+            "For every hero in each canonical smoke squad, add a live, non-conditional authored affix "
+            + "bundle to each equipped slot (Weapon, Armor, Accessory) until each bundle reaches the "
+            + "configured GradeStepBudgetScore. Resolve MaxHealth, "
             + "PhysPower, and MagPower through HeroEffectiveStatPreview, then compute the log of the "
             + "squad-health ratio plus the log of the squad-offense ratio. CampaignPowerInjector is "
             + "applied at the measured mean as an equivalence check.",
-            TargetIncrementBudget,
+            targetIncrementBudget,
             CandidateRotationCount,
             measured,
             AssumedKappa,
@@ -134,6 +140,26 @@ internal static class DropGradeKappaMeasurementRunner
             recovered,
             Math.Abs(recovered - measured),
             observations);
+    }
+
+    private static float ResolveTargetIncrementBudget(
+        IReadOnlyList<BalanceSweepScenarioInput> scenarios)
+    {
+        var values = scenarios
+            .SelectMany(scenario => scenario.Content.DropTables?.Values
+                ?? Array.Empty<DropTableTemplate>())
+            .Where(table => table.GradeProfiles is { Count: > 0 })
+            .Select(table => table.GradeStepBudgetScore)
+            .Where(value => value > 0f)
+            .Distinct()
+            .ToArray();
+        if (values.Length != 1)
+        {
+            throw new InvalidOperationException(
+                $"Kappa measurement requires one positive grade-step budget, got [{string.Join(",", values)}].");
+        }
+
+        return values[0];
     }
 
     private static IReadOnlyList<AffixTemplate> SelectIncrementCandidates(
@@ -155,9 +181,7 @@ internal static class DropGradeKappaMeasurementRunner
                                    || template.AllowedSlotTypes.Contains(slotType, StringComparer.Ordinal))
                                && content.AffixPackages.TryGetValue(template.Id, out var package)
                                && package.Modifiers.Count > 0)
-            .OrderBy(template => Math.Abs(template.BudgetScore - TargetIncrementBudget))
-            .ThenBy(template => template.Id, StringComparer.Ordinal)
-            .Take(CandidateRotationCount)
+            .OrderBy(template => template.Id, StringComparer.Ordinal)
             .ToArray();
         if (candidates.Length == 0)
         {
@@ -165,6 +189,50 @@ internal static class DropGradeKappaMeasurementRunner
         }
 
         return candidates;
+    }
+
+    private static IReadOnlyList<AffixTemplate> SelectIncrementBundle(
+        IReadOnlyList<AffixTemplate> candidates,
+        float targetIncrementBudget,
+        int rotation,
+        int slotIndex)
+    {
+        var lowerBudget = Math.Max(1, (int)Math.Floor(targetIncrementBudget));
+        var fraction = targetIncrementBudget - lowerBudget;
+        var bucket = ((rotation * 17) + (slotIndex * 37)) % 100;
+        var effectiveBudget = bucket < (int)Math.Round(fraction * 100f)
+            ? lowerBudget + 1f
+            : lowerBudget;
+        var ordered = candidates
+            .OrderBy(template => Math.Abs(template.BudgetScore - effectiveBudget))
+            .ThenBy(template => template.Id, StringComparer.Ordinal)
+            .ToArray();
+        var selected = new List<AffixTemplate>();
+        var accumulated = 0f;
+        for (var offset = 0; offset < ordered.Length && accumulated < effectiveBudget; offset++)
+        {
+            var candidate = ordered[(rotation + offset) % ordered.Length];
+            if (!string.IsNullOrWhiteSpace(candidate.ExclusiveGroupId)
+                && selected.Any(existing => string.Equals(
+                    existing.ExclusiveGroupId,
+                    candidate.ExclusiveGroupId,
+                    StringComparison.Ordinal)))
+            {
+                continue;
+            }
+
+            selected.Add(candidate);
+            accumulated += candidate.BudgetScore;
+        }
+
+        if (accumulated < effectiveBudget)
+        {
+            throw new InvalidOperationException(
+                $"Affix candidates only provide BudgetScore {accumulated:F2} "
+                + $"of requested {effectiveBudget:F2}.");
+        }
+
+        return selected;
     }
 
     private static BattleLoadoutSnapshot AddOneGradeStep(

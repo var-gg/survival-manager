@@ -71,7 +71,9 @@ internal static partial class CampaignTwoArmSweepRunner
             }
 
             var witness = accumulator.BuildPrepMechanismSummary();
-            if (witness.FormationDivergenceCount > 0)
+            if (witness.FormationDivergenceCount > 0
+                && witness.EquipmentAssignmentCount > 0
+                && witness.GearCounterSampleCount > 0)
             {
                 return witness;
             }
