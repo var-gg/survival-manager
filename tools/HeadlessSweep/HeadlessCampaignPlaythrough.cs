@@ -223,7 +223,8 @@ internal static class HeadlessCampaignPlaythrough
             survivalObserver.Complete(battleState),
             antiClusterAoeObserver.Complete(battleState),
             threatLandingObserver?.BuildObservation(),
-            bossKillDynamicsObserver?.Complete(result));
+            bossKillDynamicsObserver?.Complete(result),
+            battleState.SecondaryPressureTelemetry.BuildSnapshot());
     }
 
     private static BattleResult? FindProgressionResult(

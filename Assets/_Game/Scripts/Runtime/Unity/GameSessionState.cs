@@ -1262,10 +1262,14 @@ public sealed partial class GameSessionState
             return context;
         }
 
-        var heatPackages = EndlessCycleService.BuildEnemyHeatPackages(StoryDirector.Progress.EndlessCycle.Heat);
-        return heatPackages.Count == 0
-            ? context
-            : context with { Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(context.Enemies, heatPackages) };
+        var heat = StoryDirector.Progress.EndlessCycle.Heat;
+        var enemies = PoliticalCombatConditionService.ApplyEnemyPackages(
+            context.Enemies,
+            EndlessCycleService.BuildEnemyHeatPackages(heat));
+        enemies = PoliticalCombatConditionService.ApplyEnemyRulePackages(
+            enemies,
+            EndlessCycleService.BuildEnemyHeatSecondaryPressurePackages(heat));
+        return context with { Enemies = enemies };
     }
 
     /// <summary>

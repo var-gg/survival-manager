@@ -11,6 +11,7 @@ public enum RuleModifierKind
     ResourceShift = 3,
     Intercept = 4,
     AdditionalChain = 5,
+    SecondaryPressure = 6,
 }
 
 public sealed record RuleModifier(

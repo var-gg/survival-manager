@@ -733,15 +733,18 @@ internal sealed partial class HeadlessCampaignState
             }
         }
 
-        var heatPackages = EndlessCycleService.BuildEnemyHeatPackages(Heat);
-        return heatPackages.Count == 0
-            ? resolved
-            : resolved with
-            {
-                Enemies = PoliticalCombatConditionService.ApplyEnemyPackages(
-                    resolved.Enemies,
-                    heatPackages),
-            };
+        if (Heat <= 0)
+        {
+            return resolved;
+        }
+
+        var enemies = PoliticalCombatConditionService.ApplyEnemyPackages(
+            resolved.Enemies,
+            EndlessCycleService.BuildEnemyHeatPackages(Heat));
+        enemies = PoliticalCombatConditionService.ApplyEnemyRulePackages(
+            enemies,
+            EndlessCycleService.BuildEnemyHeatSecondaryPressurePackages(Heat));
+        return resolved with { Enemies = enemies };
     }
 
     private void ApplyAutomaticLoot()

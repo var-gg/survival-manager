@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-22
+- 최종수정일: 2026-07-25
 - 소스오브트루스: `docs/03_architecture/combat-runtime-architecture.md`
 - 관련문서:
   - `docs/03_architecture/unity-boundaries.md`
@@ -66,6 +66,14 @@
 - normal lane과 debug lane은 같은 read model / event stream을 다르게 표현할 뿐, 다른 truth를 만들지 않는다.
 - `BattleDiagnosticEvent`는 `TelemetryEventRecord`의 대체 source가 아니다. 진단 observer가 없을 때는 record를 만들지 않고, 있을 때도 별도 consumer가 읽기만 하며 `BattleState.TelemetryEvents`, `ActivityTelemetry`, replay와 canonical hash에는 기록하지 않는다.
 - Battle observer UI 입력은 runtime 수동 `onClick.Invoke()`나 `StandaloneInputModule` fallback에 의존하지 않는다. scene/runtime 모두 `InputSystemUIInputModule` + canonical `UI` action map 바인딩을 사용한다.
+
+## 비수치 enemy rule package와 action-scoped 피해
+
+- `CombatModifierPackage`는 `StatKey` 수치 변경만 소유한다. 타깃 재분배처럼 `StatModifier`로 표현할 수 없는 규칙은 `CombatRuleModifierPackage`로 `BattleUnitLoadout.RulePackages`에 들어간다.
+- `EndlessCycleService`의 Heat 적용은 같은 `sourceId`를 쓰는 numeric package와 rule package로 나뉜다. `UnitSnapshot`은 이 provenance를 이용해 rule package에 연결된 Heat 수치 modifier를 제외한 pre-Heat action budget을 재구성한다.
+- secondary pressure는 `CombatActionResolver`가 primary target을 확정한 뒤 `SecondaryPressureService`를 한 번 호출하는 action-scoped 경로다. AoE 또는 multi-hit 대상 수만큼 재호출하지 않는다.
+- 분배는 살아 있는 non-primary ally를 entity ID 전순서로 정렬한 뒤 fixed-point raw remainder를 앞에서부터 1씩 배정한다. 피해 유형과 armor/resist 및 incoming-damage 배수는 유지하지만 crit, block/dodge roll, drain, direct-hit energy, combo와 offensive kill trigger에는 합류하지 않는다.
+- H0에는 rule package와 secondary battle event가 모두 없다. `SecondaryPressureTelemetryAccumulator`는 측정 전용 side channel이며 `BattleResult`, replay, canonical state hash의 입력이 아니다.
 
 ## 현재 단순화
 

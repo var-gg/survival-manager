@@ -3,6 +3,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using SM.Combat.Model;
+using SM.Combat.Services;
+using SM.Core.Numerics;
 using SM.Core.Stats;
 using SM.Editor.Validation;
 using SM.Meta;
@@ -37,22 +39,51 @@ internal static class EndlessHeatSweepRunner
                 cells,
                 options.SeedsPerCell,
                 options.Degree);
+            var validationCells = BuildValidationCells(config, options.ValidationBuildId);
+            var validationPrepared = PrepareScenarios(
+                lookup,
+                config,
+                validationCells,
+                options.SeedsPerCell,
+                options.Degree);
             var scaling = VerifyEnemyScaling();
-            var rewards = EndlessHeatRewardMeasurement.Measure(
+            var difficulty = EndlessHeatDifficultyMeasurement.Measure(
                 prepared,
+                validationPrepared,
                 TargetSiteId,
-                options.EquipmentHorizonsMaps,
+                options.MeasurementHeats,
+                options.PairedClearRateHorizonMaps,
+                options.ValidationBuildId,
                 options.Degree);
-            var clearRates = MeasureClearRates(
-                prepared,
-                options.EquipmentHorizonsMaps,
-                options.Degree);
-            var acquisition = EndlessHeatRewardMeasurement.BuildAcquisition(
-                rewards.Scenarios,
-                clearRates.Paired);
+            var rewards = options.DifficultyOnly
+                ? null
+                : EndlessHeatRewardMeasurement.Measure(
+                    prepared,
+                    TargetSiteId,
+                    options.EquipmentHorizonsMaps,
+                    options.Degree);
+            var clearRates = options.DifficultyOnly
+                ? null
+                : MeasureClearRates(
+                    prepared,
+                    options.EquipmentHorizonsMaps,
+                    options.Degree);
+            var acquisition = options.DifficultyOnly
+                ? Array.Empty<EndlessHeatAcquisitionAggregate>()
+                : EndlessHeatRewardMeasurement.BuildAcquisition(
+                    rewards!.Scenarios,
+                    clearRates!.Paired);
+            var pairing = clearRates?.Pairing
+                          ?? new EndlessHeatPairingVerification(
+                              SeedsShared: true,
+                              EntityIdsShared: true,
+                              PairsChecked: 0,
+                              Method:
+                              "Difficulty-only run reuses each prepared seed/cell state across every Heat; "
+                              + "per-Heat entity vectors are included in final outcome hashes.");
 
             var report = new EndlessHeatSweepReport(
-                SchemaVersion: "endless-heat-sweep-v1",
+                SchemaVersion: "endless-heat-sweep-v2",
                 TargetEncounterId,
                 TargetSiteId,
                 ReferenceSquads: cells.Select(cell => cell.Squad.SquadId).ToArray(),
@@ -69,21 +100,22 @@ internal static class EndlessHeatSweepRunner
                 BootstrapMethod:
                 "Paired percentile bootstrap over campaign seed salts; each resampled seed cluster retains all three canonical squads and all 12 equipped slots remain inside their scenario cluster.",
                 EquipmentHeats: EndlessHeatRewardMeasurement.Heats,
-                ClearRateHeats,
+                ClearRateHeats: options.MeasurementHeats,
                 EquipmentHorizonsMaps: options.EquipmentHorizonsMaps,
                 PairedClearRateHorizonMaps: options.PairedClearRateHorizonMaps,
-                BattleRewardNodesPerFarmMap: rewards.BattleRewardNodesPerMap,
+                BattleRewardNodesPerFarmMap: rewards?.BattleRewardNodesPerMap ?? 0,
                 EquipmentPowerPolicy:
                 "Exact maximum-total affix BudgetScore matching per slot across four heroes; grade and stable item order break equal-power ties.",
                 EnemyScaling: scaling,
-                EquippedByHeat: rewards.Equipped,
-                DropsByHeat: rewards.Drops,
+                EquippedByHeat: rewards?.Equipped ?? Array.Empty<EndlessHeatEquippedAggregate>(),
+                DropsByHeat: rewards?.Drops ?? Array.Empty<EndlessHeatDropAggregate>(),
                 AcquisitionByHeat: acquisition,
-                ClearRateFixedGear: clearRates.Fixed,
-                ClearRatePairedGear: clearRates.Paired,
-                Pairing: clearRates.Pairing,
+                ClearRateFixedGear: clearRates?.Fixed ?? Array.Empty<EndlessHeatClearRateAggregate>(),
+                ClearRatePairedGear: clearRates?.Paired ?? Array.Empty<EndlessHeatClearRateAggregate>(),
+                Pairing: pairing,
                 ClearRateCodePath:
                 "HeadlessCampaignPlaythrough.RunBattle on a prepared final-boss state. FindProgressionResult is used only to reach prior campaign nodes and never participates in either reported clear-rate arm.",
+                Difficulty: difficulty,
                 CanonicalHash: string.Empty);
             var canonicalHash = HashReport(report);
             report = report with { CanonicalHash = canonicalHash };
@@ -116,6 +148,27 @@ internal static class EndlessHeatSweepRunner
         var coverage = config.RosterCoverageVariants.Single(value => value.BenchArchetypeCount == 0);
         return config.ReferenceSquads
             .Select(squad => new CampaignBalanceGridCell(squad, build, enemy, coverage))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<CampaignBalanceGridCell> BuildValidationCells(
+        CampaignBalanceSweepConfig config,
+        string validationBuildId)
+    {
+        var p80 = config.BuildPowerQuantiles.Single(value =>
+            string.Equals(value.QuantileId, "P80", StringComparison.Ordinal));
+        var validationBuild = config.BuildPowerQuantiles.Single(value =>
+            string.Equals(value.QuantileId, validationBuildId, StringComparison.Ordinal));
+        var enemy = config.EnemyCompositionVariants.Single(value => value.VariantIndex == 0);
+        var coverage = config.RosterCoverageVariants.Single(value => value.BenchArchetypeCount == 0);
+        return config.ReferenceSquads
+            .Select(squad => new CampaignBalanceGridCell(
+                squad,
+                string.Equals(squad.SquadId, "frontline", StringComparison.Ordinal)
+                    ? p80
+                    : validationBuild,
+                enemy,
+                coverage))
             .ToArray();
     }
 
@@ -193,9 +246,13 @@ internal static class EndlessHeatSweepRunner
         foreach (var heat in ScalingProbeHeats)
         {
             var packages = EndlessCycleService.BuildEnemyHeatPackages(heat);
-            var applied = PoliticalCombatConditionService.ApplyEnemyPackages(
+            var appliedNumeric = PoliticalCombatConditionService.ApplyEnemyPackages(
                 new[] { enemy },
                 packages).Single();
+            var rulePackages = EndlessCycleService.BuildEnemyHeatSecondaryPressurePackages(heat);
+            var applied = PoliticalCombatConditionService.ApplyEnemyRulePackages(
+                new[] { appliedNumeric },
+                rulePackages).Single();
             var values = HeroEffectiveStatPreview.Resolve(
                     applied,
                     new[] { StatKey.MaxHealth, StatKey.PhysPower, StatKey.MagPower })
@@ -206,24 +263,49 @@ internal static class EndlessHeatSweepRunner
                                  / values[StatKey.PhysPower].BaseValue;
             var magMultiplier = values[StatKey.MagPower].EffectiveValue
                                 / values[StatKey.MagPower].BaseValue;
-            var expectedHp = 1d + (EndlessCycleService.HeatMaxHealthIncreasedPerHeat * heat);
-            var expectedPower = 1d + (EndlessCycleService.HeatPowerIncreasedPerHeat * heat);
+            var expectedHp = 1d
+                             + (EndlessCycleService.HeatMaxHealthIncreasedPerHeat
+                                * Math.Min(heat, EndlessCycleService.HeatMaxHealthCapHeat));
+            var expectedPower = 1d + (EndlessCycleService.HeatPrimaryPowerIncreasedPerHeat * heat);
             RequireNear(hpMultiplier, expectedHp, $"Heat {heat} MaxHealth multiplier");
             RequireNear(physMultiplier, expectedPower, $"Heat {heat} PhysPower multiplier");
             RequireNear(magMultiplier, expectedPower, $"Heat {heat} MagPower multiplier");
+            var probeState = BattleFactory.Create(
+                new[] { enemy with { Id = "heat-probe-ally" } },
+                new[] { applied },
+                TeamPostureType.StandardAdvance,
+                TeamPostureType.StandardAdvance,
+                BattleSimulator.DefaultFixedStepSeconds,
+                seed: 7);
+            var measuredPressure = probeState.Enemies.Single().SecondaryPressureFraction.ToFloat();
+            var expectedPressure = Fixed32.FromFloatQuantized(
+                    EndlessCycleService.SecondaryPressureFraction(heat))
+                .ToFloat();
+            RequireNear(measuredPressure, expectedPressure, $"Heat {heat} secondary-pressure fraction");
             observations.Add(new EndlessHeatEnemyScalingObservation(
                 heat,
                 hpMultiplier,
                 physMultiplier,
                 magMultiplier,
+                measuredPressure,
                 applied.NumericPackages.Any(package =>
+                    string.Equals(package.SourceId, $"endless_heat:h{heat}", StringComparison.Ordinal)),
+                (applied.RulePackages ?? Array.Empty<CombatRuleModifierPackage>()).Any(package =>
                     string.Equals(package.SourceId, $"endless_heat:h{heat}", StringComparison.Ordinal))));
         }
 
         if (observations.Any(value => !value.ProductionPackagePresent))
         {
             throw new InvalidOperationException(
-                "Heat scaling probe did not observe the EndlessCycleService package after ApplyEnemyPackages.");
+                "Heat scaling probe did not observe the EndlessCycleService numeric package after ApplyEnemyPackages.");
+        }
+
+        if (observations.Any(value =>
+                value.RulePackagePresent
+                != (EndlessCycleService.SecondaryPressureFraction(value.Heat) > 0f)))
+        {
+            throw new InvalidOperationException(
+                "Heat scaling probe observed a secondary-pressure rule package whose presence did not match the production pressure fraction.");
         }
 
         return observations;
@@ -246,7 +328,13 @@ internal static class EndlessHeatSweepRunner
                 index =>
                 {
                     var scenario = prepared[index];
-                    var fixedState = scenario.State.CloneWithHeat(heat);
+                    // Difficulty arm: build the gear snapshot at H0 once, then hold it fixed while Heat varies.
+                    // Re-farming from the same captured state is deterministic and keeps the reward arm out of
+                    // the comparison; CloneWithHeat is applied only after the frozen H0 equipment is equipped.
+                    var fixedState = scenario.State.CloneWithHeat(0);
+                    _ = fixedState.FarmSiteMaps(TargetSiteId, pairedHorizons[0]);
+                    _ = HeadlessCampaignEquipmentPowerPolicy.Apply(fixedState);
+                    fixedState = fixedState.CloneWithHeat(heat);
                     var fixedBattle = RunMeasuredBattle(fixedState, scenario.Cell, "endless-fixed");
                     fixedResults[index] = new MeasuredScenarioBattle(
                         scenario.SeedSalt,
@@ -257,7 +345,7 @@ internal static class EndlessHeatSweepRunner
 
             fixedAggregates.Add(AggregateClearRate(
                 heat,
-                gearHorizonMaps: 0,
+                gearHorizonMaps: pairedHorizons[0],
                 results: fixedResults));
             foreach (var pairedHorizon in pairedHorizons)
             {
@@ -311,7 +399,7 @@ internal static class EndlessHeatSweepRunner
         return new ClearRateMeasurement(fixedAggregates, pairedAggregates, pairing);
     }
 
-    private static MeasuredBattle RunMeasuredBattle(
+    internal static EndlessHeatMeasuredBattle RunMeasuredBattle(
         HeadlessCampaignState state,
         CampaignBalanceGridCell cell,
         string phase)
@@ -341,15 +429,17 @@ internal static class EndlessHeatSweepRunner
             .Select(unit => unit.Id.Value)
             .Concat(battleState.Enemies.Select(unit => unit.Id.Value))
             .ToArray();
-        var result = HeadlessCampaignPlaythrough.RunBattle(
+        var outcome = HeadlessCampaignPlaythrough.RunBattle(
             state,
             setup.AllySnapshot,
             encounter,
-            phase).Result;
-        return new MeasuredBattle(
-            result.Winner == TeamSide.Ally,
+            phase);
+        return new EndlessHeatMeasuredBattle(
+            outcome.Result.Winner == TeamSide.Ally,
             encounter.Context.BattleSeed,
-            entityIds);
+            entityIds,
+            outcome.Result,
+            outcome.SecondaryPressureTelemetry);
     }
 
     private static EndlessHeatClearRateAggregate AggregateClearRate(
@@ -416,6 +506,9 @@ internal static class EndlessHeatSweepRunner
         IReadOnlyList<int> horizons = new[] { 25, 100 };
         var pairedHorizon = 25;
         var outputPath = DefaultOutputRelativePath;
+        var difficultyOnly = false;
+        var validationBuildId = "P35";
+        IReadOnlyList<int> measurementHeats = ClearRateHeats;
         for (var index = 0; index < arguments.Count; index++)
         {
             switch (arguments[index])
@@ -435,6 +528,15 @@ internal static class EndlessHeatSweepRunner
                 case "--output" when index + 1 < arguments.Count:
                     outputPath = arguments[++index];
                     break;
+                case "--difficulty-only":
+                    difficultyOnly = true;
+                    break;
+                case "--validation-build" when index + 1 < arguments.Count:
+                    validationBuildId = arguments[++index];
+                    break;
+                case "--heats" when index + 1 < arguments.Count:
+                    measurementHeats = ParsePositiveIntList(arguments[++index], "heats", 0, 5);
+                    break;
                 default:
                     throw new ArgumentException($"Unknown endless-heat-sweep argument: {arguments[index]}");
             }
@@ -451,7 +553,31 @@ internal static class EndlessHeatSweepRunner
             throw new ArgumentException("--output requires a non-empty path.");
         }
 
-        return new Options(seedsPerCell, degree, horizons, pairedHorizon, outputPath);
+        if (validationBuildId is not ("P20" or "P35" or "P50" or "P65" or "P80"))
+        {
+            throw new ArgumentException(
+                "--validation-build must be one of P20, P35, P50, P65, or P80.");
+        }
+
+        if (!measurementHeats.Contains(0) || !measurementHeats.Contains(3))
+        {
+            throw new ArgumentException("--heats must include both H0 and H3 for the validation fit.");
+        }
+
+        if (!difficultyOnly && !measurementHeats.SequenceEqual(ClearRateHeats))
+        {
+            throw new ArgumentException("Custom --heats is supported only with --difficulty-only.");
+        }
+
+        return new Options(
+            seedsPerCell,
+            degree,
+            horizons,
+            pairedHorizon,
+            outputPath,
+            difficultyOnly,
+            validationBuildId,
+            measurementHeats);
     }
 
     private static int ParseInt(string value, string name, int minimum, int maximum)
@@ -502,7 +628,10 @@ internal static class EndlessHeatSweepRunner
         int Degree,
         IReadOnlyList<int> EquipmentHorizonsMaps,
         int PairedClearRateHorizonMaps,
-        string OutputPath);
+        string OutputPath,
+        bool DifficultyOnly,
+        string ValidationBuildId,
+        IReadOnlyList<int> MeasurementHeats);
 
     private sealed record ScenarioJob(CampaignBalanceGridCell Cell, int SeedSalt);
     private sealed record PairCheck(bool SeedShared, bool EntityIdsShared);
@@ -510,13 +639,9 @@ internal static class EndlessHeatSweepRunner
         int SeedSalt,
         string SquadId,
         bool Won,
-        MeasuredBattle Battle);
+        EndlessHeatMeasuredBattle Battle);
     private sealed record ClearRateMeasurement(
         IReadOnlyList<EndlessHeatClearRateAggregate> Fixed,
         IReadOnlyList<EndlessHeatClearRateAggregate> Paired,
         EndlessHeatPairingVerification Pairing);
-    private sealed record MeasuredBattle(
-        bool Won,
-        int BattleSeed,
-        IReadOnlyList<string> EntityIds);
 }

@@ -1,3 +1,5 @@
+using SM.Combat.Model;
+
 internal sealed record HeadlessEquippedSlotObservation(
     string HeroId,
     string SlotType,
@@ -18,7 +20,9 @@ internal sealed record EndlessHeatEnemyScalingObservation(
     double MeasuredHpMultiplier,
     double MeasuredPhysPowerMultiplier,
     double MeasuredMagPowerMultiplier,
-    bool ProductionPackagePresent);
+    double MeasuredSecondaryPressureFraction,
+    bool ProductionPackagePresent,
+    bool RulePackagePresent);
 
 internal sealed record EndlessHeatEquippedAggregate(
     int Heat,
@@ -101,6 +105,69 @@ internal sealed record EndlessHeatPairingVerification(
     int PairsChecked,
     string Method);
 
+internal sealed record EndlessHeatTargetPressureAggregate(
+    string TargetId,
+    string Anchor,
+    int BattlesPresent,
+    int Deaths,
+    long PrimaryDamageAfterMitigationRaw,
+    long SecondaryRawAllocated,
+    long SecondaryDamageAfterMitigationRaw);
+
+internal sealed record EndlessHeatMeasuredBattle(
+    bool Won,
+    int BattleSeed,
+    IReadOnlyList<string> EntityIds,
+    BattleResult Result,
+    SecondaryPressureTelemetrySnapshot SecondaryPressureTelemetry);
+
+internal sealed record EndlessHeatDifficultyAggregate(
+    int Heat,
+    int GearHorizonMaps,
+    int Wins,
+    int Samples,
+    double WinRate,
+    double MeanDurationSeconds,
+    IReadOnlyList<EndlessHeatCellClearRate> Cells,
+    long NormalizedDamageBudgetRaw,
+    long PrimaryRawBudgetRaw,
+    long PrimaryDamageAfterMitigationRaw,
+    long SecondaryRawAllocated,
+    long SecondaryDamageAfterMitigationRaw,
+    double PrimaryRawBudgetRatio,
+    double SecondaryRawBudgetRatio,
+    double SecondaryShareOfRawOutput,
+    IReadOnlyList<EndlessHeatTargetPressureAggregate> TargetPressure,
+    string EnemyModifierPackageHash,
+    string SecondaryAllocationHash,
+    string FinalBattleOutcomeHash);
+
+internal sealed record EndlessHeatCompositionGamma(
+    string SquadId,
+    double Gamma);
+
+internal sealed record EndlessHeatNeutralityFit(
+    string Method,
+    bool Converged,
+    int Iterations,
+    IReadOnlyList<EndlessHeatCompositionGamma> GammaByComposition,
+    double MaxGammaSpread,
+    double H0ToH3LossSpreadPoints);
+
+internal sealed record EndlessHeatValidationCell(
+    string Description,
+    string FrontlineLoadout,
+    string MixedLoadout,
+    string RangedLoadout,
+    bool ProductionHeatZeroUnchanged,
+    bool AllHeatZeroRatesWithinTwentyToNinety);
+
+internal sealed record EndlessHeatDifficultyReport(
+    EndlessHeatValidationCell ValidationCell,
+    IReadOnlyList<EndlessHeatDifficultyAggregate> RepresentativeFixedGear,
+    IReadOnlyList<EndlessHeatDifficultyAggregate> NonCeilingFixedGear,
+    EndlessHeatNeutralityFit NeutralityFit);
+
 internal sealed record EndlessHeatSweepReport(
     string SchemaVersion,
     string TargetEncounterId,
@@ -128,4 +195,5 @@ internal sealed record EndlessHeatSweepReport(
     IReadOnlyList<EndlessHeatClearRateAggregate> ClearRatePairedGear,
     EndlessHeatPairingVerification Pairing,
     string ClearRateCodePath,
+    EndlessHeatDifficultyReport Difficulty,
     string CanonicalHash);

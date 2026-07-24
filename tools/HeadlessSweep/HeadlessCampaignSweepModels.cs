@@ -75,7 +75,8 @@ internal sealed record HeadlessCampaignBattleOutcome(
     HeadlessCampaignFlankSurvival FlankSurvival,
     HeadlessCampaignAoeSurvival AntiClusterAoeSurvival,
     CampaignThreatLandingObservation? ThreatLanding,
-    HeadlessCampaignBossKillDynamicsSample? BossKillDynamics);
+    HeadlessCampaignBossKillDynamicsSample? BossKillDynamics,
+    SecondaryPressureTelemetrySnapshot SecondaryPressureTelemetry);
 
 internal sealed record HeadlessCampaignBossKillDynamicsSample(
     double DurationSeconds,

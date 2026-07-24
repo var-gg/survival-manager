@@ -15,11 +15,26 @@ namespace SM.Meta.Services;
 /// </summary>
 public static class EndlessCycleService
 {
-    /// <summary>Heat 1당 적 최대체력 증가율(Increased 합산).</summary>
+    /// <summary>Heat 1당 적 최대체력 증가율(Increased 합산). 현재 shipped 규칙을 그대로 유지한다.</summary>
     public const float HeatMaxHealthIncreasedPerHeat = 0.10f;
 
-    /// <summary>Heat 1당 적 공격력(물리/마법) 증가율(Increased 합산).</summary>
-    public const float HeatPowerIncreasedPerHeat = 0.06f;
+    /// <summary>
+    /// 향후 최대체력 증가 cap을 위한 knob. shipped 규칙은 uncapped이므로 모든 유효 int Heat에서
+    /// <c>Math.Min</c>이 입력 Heat를 그대로 반환하도록 사실상 비활성화한다.
+    /// </summary>
+    public const int HeatMaxHealthCapHeat = int.MaxValue;
+
+    /// <summary>Heat 1당 primary-target 공격력(물리/마법) 증가율(Increased 합산). 현재 shipped 규칙.</summary>
+    public const float HeatPrimaryPowerIncreasedPerHeat = 0.06f;
+
+    /// <summary>
+    /// 계산된 secondary-pressure remainder에 적용할 오너 ratifiable 배율. 실패한 difficulty arm은
+    /// 인프라와 계측만 보존하고, shipped 동작을 유지하기 위해 현재 0으로 비활성화한다.
+    /// </summary>
+    public const float HeatSecondaryPressureScale = 0.0f;
+
+    private const double ShippedHeatMaxHealthIncreasedPerHeat = 0.10d;
+    private const double ShippedHeatPowerIncreasedPerHeat = 0.06d;
 
     /// <summary>Heat 1당 잔향(Echo) 보상 증가율.</summary>
     public const float HeatEchoBonusPerHeat = 0.15f;
@@ -67,15 +82,63 @@ public static class EndlessCycleService
         }
 
         var sourceId = $"endless_heat:h{heat}";
+        var cappedHealthHeat = Math.Min(heat, HeatMaxHealthCapHeat);
         return new[]
         {
             new CombatModifierPackage(sourceId, ModifierSource.Other, new[]
             {
-                new StatModifier(StatKey.MaxHealth, ModifierOp.Increased, HeatMaxHealthIncreasedPerHeat * heat, ModifierSource.Other, sourceId),
-                new StatModifier(StatKey.PhysPower, ModifierOp.Increased, HeatPowerIncreasedPerHeat * heat, ModifierSource.Other, sourceId),
-                new StatModifier(StatKey.MagPower, ModifierOp.Increased, HeatPowerIncreasedPerHeat * heat, ModifierSource.Other, sourceId),
+                new StatModifier(StatKey.MaxHealth, ModifierOp.Increased, HeatMaxHealthIncreasedPerHeat * cappedHealthHeat, ModifierSource.Other, sourceId),
+                new StatModifier(StatKey.PhysPower, ModifierOp.Increased, HeatPrimaryPowerIncreasedPerHeat * heat, ModifierSource.Other, sourceId),
+                new StatModifier(StatKey.MagPower, ModifierOp.Increased, HeatPrimaryPowerIncreasedPerHeat * heat, ModifierSource.Other, sourceId),
             }),
         };
+    }
+
+    /// <summary>
+    /// StatModifier로 표현할 수 없는 secondary-pressure 규칙 package. numeric Heat package와 같은
+    /// sourceId를 사용해 combat snapshot이 pre-Heat action budget을 재구성할 수 있게 한다.
+    /// </summary>
+    public static IReadOnlyList<CombatRuleModifierPackage> BuildEnemyHeatSecondaryPressurePackages(int heat)
+    {
+        var fraction = SecondaryPressureFraction(heat);
+        // Scale 0은 source/package를 만들기 전에 여기서 끝나므로 모든 Heat가 shipped action path를 유지한다.
+        if (fraction <= 0f)
+        {
+            return Array.Empty<CombatRuleModifierPackage>();
+        }
+
+        var sourceId = $"endless_heat:h{heat}";
+        return new[]
+        {
+            new CombatRuleModifierPackage(sourceId, ModifierSource.Other, new[]
+            {
+                new RuleModifier(
+                    RuleModifierKind.SecondaryPressure,
+                    "equal-non-primary",
+                    fraction),
+            }),
+        };
+    }
+
+    /// <summary>
+    /// Shipped aggregate exposure proxy에서 capped HP와 primary power를 뺀 pre-Heat raw damage fraction.
+    /// heat &lt;= 0은 정확히 0이라 story/H0 action path에 event나 RNG 소비를 추가하지 않는다.
+    /// </summary>
+    public static float SecondaryPressureFraction(int heat)
+    {
+        if (heat <= 0)
+        {
+            return 0f;
+        }
+
+        var shippedBudget = (1d + (ShippedHeatMaxHealthIncreasedPerHeat * heat))
+                            * (1d + (ShippedHeatPowerIncreasedPerHeat * heat));
+        var healthMultiplier = 1d
+                               + (HeatMaxHealthIncreasedPerHeat
+                                  * Math.Min(heat, HeatMaxHealthCapHeat));
+        var primaryMultiplier = 1d + (HeatPrimaryPowerIncreasedPerHeat * heat);
+        var remainder = Math.Max(0d, (shippedBudget / healthMultiplier) - primaryMultiplier);
+        return (float)(remainder * HeatSecondaryPressureScale);
     }
 
     /// <summary>

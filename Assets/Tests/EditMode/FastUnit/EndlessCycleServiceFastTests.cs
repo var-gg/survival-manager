@@ -50,26 +50,57 @@ public sealed class EndlessCycleServiceFastTests
     {
         Assert.That(EndlessCycleService.BuildEnemyHeatPackages(0), Is.Empty);
         Assert.That(EndlessCycleService.BuildEnemyHeatPackages(-1), Is.Empty);
+        Assert.That(EndlessCycleService.BuildEnemyHeatSecondaryPressurePackages(0), Is.Empty);
+        Assert.That(EndlessCycleService.BuildEnemyHeatSecondaryPressurePackages(-1), Is.Empty);
     }
 
-    [Test]
-    public void BuildEnemyHeatPackages_ScalesWithHeat_OnHealthAndBothPowers()
+    [TestCase(1)]
+    [TestCase(3)]
+    [TestCase(5)]
+    [TestCase(8)]
+    public void SecondaryPressureFraction_ZeroScale_EmitsNoRulePackage(int heat)
     {
-        var packages = EndlessCycleService.BuildEnemyHeatPackages(3);
+        Assert.That(EndlessCycleService.HeatSecondaryPressureScale, Is.Zero);
+        Assert.That(EndlessCycleService.SecondaryPressureFraction(heat), Is.Zero);
+        Assert.That(EndlessCycleService.BuildEnemyHeatSecondaryPressurePackages(heat), Is.Empty);
+    }
+
+    [TestCase(1)]
+    [TestCase(5)]
+    [TestCase(10)]
+    [TestCase(100)]
+    public void EnemyHealthMultiplier_FutureCap_DoesNotBindShippedHeat(int heat)
+    {
+        var package = EndlessCycleService.BuildEnemyHeatPackages(heat).Single();
+        var maxHealth = package.Modifiers.Single(value => value.Stat == StatKey.MaxHealth);
+        Assert.That(EndlessCycleService.HeatMaxHealthCapHeat, Is.EqualTo(int.MaxValue));
+        Assert.That(
+            maxHealth.Value,
+            Is.EqualTo(0.10f * heat)
+                .Within(0.000001f));
+    }
+
+    [TestCase(1)]
+    [TestCase(3)]
+    [TestCase(5)]
+    [TestCase(8)]
+    public void BuildEnemyHeatPackages_IsNumericallyIdenticalToShippedPackage(int heat)
+    {
+        var packages = EndlessCycleService.BuildEnemyHeatPackages(heat);
         Assert.That(packages.Count, Is.EqualTo(1));
 
         var package = packages[0];
-        Assert.That(package.SourceId, Is.EqualTo("endless_heat:h3"),
+        Assert.That(package.SourceId, Is.EqualTo($"endless_heat:h{heat}"),
             "강화 출처가 sourceId로 읽혀야 전투 로그/리플레이에서 추적 가능.");
 
         var byStat = package.Modifiers.ToDictionary(modifier => modifier.Stat, modifier => modifier);
         Assert.That(byStat[StatKey.MaxHealth].Op, Is.EqualTo(ModifierOp.Increased));
         Assert.That(byStat[StatKey.MaxHealth].Value,
-            Is.EqualTo(EndlessCycleService.HeatMaxHealthIncreasedPerHeat * 3).Within(0.0001f));
+            Is.EqualTo(0.10f * heat).Within(0.0001f));
         Assert.That(byStat[StatKey.PhysPower].Value,
-            Is.EqualTo(EndlessCycleService.HeatPowerIncreasedPerHeat * 3).Within(0.0001f));
+            Is.EqualTo(0.06f * heat).Within(0.0001f));
         Assert.That(byStat[StatKey.MagPower].Value,
-            Is.EqualTo(EndlessCycleService.HeatPowerIncreasedPerHeat * 3).Within(0.0001f));
+            Is.EqualTo(0.06f * heat).Within(0.0001f));
     }
 
     [TestCase(1)]
@@ -101,13 +132,13 @@ public sealed class EndlessCycleServiceFastTests
 
         Assert.That(
             measured[StatKey.MaxHealth].EffectiveValue / measured[StatKey.MaxHealth].BaseValue,
-            Is.EqualTo(1f + (EndlessCycleService.HeatMaxHealthIncreasedPerHeat * heat)).Within(0.00001f));
+            Is.EqualTo(1f + (EndlessCycleService.HeatMaxHealthIncreasedPerHeat * Math.Min(heat, EndlessCycleService.HeatMaxHealthCapHeat))).Within(0.00001f));
         Assert.That(
             measured[StatKey.PhysPower].EffectiveValue / measured[StatKey.PhysPower].BaseValue,
-            Is.EqualTo(1f + (EndlessCycleService.HeatPowerIncreasedPerHeat * heat)).Within(0.00001f));
+            Is.EqualTo(1f + (EndlessCycleService.HeatPrimaryPowerIncreasedPerHeat * heat)).Within(0.00001f));
         Assert.That(
             measured[StatKey.MagPower].EffectiveValue / measured[StatKey.MagPower].BaseValue,
-            Is.EqualTo(1f + (EndlessCycleService.HeatPowerIncreasedPerHeat * heat)).Within(0.00001f));
+            Is.EqualTo(1f + (EndlessCycleService.HeatPrimaryPowerIncreasedPerHeat * heat)).Within(0.00001f));
         Assert.That(
             applied.NumericPackages.Select(package => package.SourceId),
             Does.Contain($"endless_heat:h{heat}"));

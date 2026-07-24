@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-23
+- 최종수정일: 2026-07-25
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -112,7 +112,7 @@
 
 ## 전투 런타임 문서
 
-- `combat-runtime-architecture.md`: live simulation 전투 런타임 책임 분리
+- `combat-runtime-architecture.md`: live simulation 전투 런타임 책임 분리와 비수치 enemy rule package/action-scoped 피해 경계
 - `combat-state-and-event-model.md`: 상태, status stack, typed event, 결과 모델 정의
 - `combat-harness-and-debug-contract.md`: battle harness, 8-lane coverage, acceptance 시나리오 기준
 - `telemetry-contract.md`: runtime telemetry taxonomy와 ExplainStamp source-of-truth

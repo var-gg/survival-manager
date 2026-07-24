@@ -252,6 +252,7 @@ public sealed class BattleSimulator
         // combo payoff append 위치가 달라도 OnKill/OnTeamKill/OnAllyDeath 발화 순서는 cross-process 동일하다.
         var killEvents = stepEvents
             .Where(resolvedEvent => resolvedEvent.EventKind == BattleEventKind.Kill)
+            .Where(resolvedEvent => resolvedEvent.LogCode != BattleLogCode.SecondaryPressureDamage)
             .Where(resolvedEvent => !processedKillVictimIds.Contains(
                 resolvedEvent.KillPayload?.ActualVictim.Value
                 ?? resolvedEvent.TargetId?.Value

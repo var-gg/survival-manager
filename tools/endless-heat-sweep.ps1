@@ -21,6 +21,14 @@ param(
 
     [string]$Output = 'Temp/HeadlessSweep/endless-heat-sweep.json',
 
+    [switch]$DifficultyOnly,
+
+    [ValidateSet('P20', 'P35', 'P50', 'P65', 'P80')]
+    [string]$ValidationBuild = 'P35',
+
+    [ValidateNotNullOrEmpty()]
+    [string]$Heats = '0,1,2,3,4,5',
+
     [ValidateSet('Debug', 'Release')]
     [string]$Configuration = 'Release'
 )
@@ -41,7 +49,14 @@ $taskArguments = @(
     $PairedHorizon.ToString([Globalization.CultureInfo]::InvariantCulture)
     '--output'
     $Output
+    '--validation-build'
+    $ValidationBuild
+    '--heats'
+    $Heats
 )
+if ($DifficultyOnly) {
+    $taskArguments += '--difficulty-only'
+}
 
 $taskDotnet = Get-Command dotnet -ErrorAction SilentlyContinue
 if ($taskDotnet) {

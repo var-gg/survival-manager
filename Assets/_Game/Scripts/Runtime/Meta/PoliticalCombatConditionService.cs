@@ -120,6 +120,29 @@ public static class PoliticalCombatConditionService
             .ToList();
     }
 
+    /// <summary>
+    /// 비수치 enemy rule package를 각 적 loadout에 접는다. secondary pressure처럼 StatModifier로
+    /// 표현할 수 없는 전투 규칙이 쓰는 pure compile seam이다.
+    /// </summary>
+    public static IReadOnlyList<BattleUnitLoadout> ApplyEnemyRulePackages(
+        IReadOnlyList<BattleUnitLoadout> enemies,
+        IReadOnlyList<CombatRuleModifierPackage> packages)
+    {
+        if (packages is not { Count: > 0 })
+        {
+            return enemies;
+        }
+
+        return enemies
+            .Select(enemy => enemy with
+            {
+                RulePackages = (enemy.RulePackages ?? Array.Empty<CombatRuleModifierPackage>())
+                    .Concat(packages)
+                    .ToList(),
+            })
+            .ToList();
+    }
+
     private static IReadOnlyList<CombatModifierPackage> Channel(
         IReadOnlyList<PoliticalCombatCondition> conditions,
         PoliticalChannel channel) =>

@@ -89,6 +89,7 @@ public sealed partial class UnitSnapshot
 
         var modifiers = definition.Packages?.SelectMany(x => x.Modifiers).ToList() ?? new List<StatModifier>();
         Stats = new StatBlock(new Dictionary<StatKey, float>(definition.BaseStats), modifiers);
+        InitializeSecondaryPressure(definition);
         Footprint = CombatProfileDefaults.ResolveFootprint(
             definition.Footprint,
             definition.ClassId,

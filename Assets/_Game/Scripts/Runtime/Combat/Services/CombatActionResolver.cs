@@ -96,6 +96,16 @@ public static class CombatActionResolver
                     attackResult.MitigationValue,
                     attackNote));
                 FormationStatusEmitter.EmitForResolvedHit(state, actor, target, attackResult, events);
+                SecondaryPressureService.Apply(
+                    state,
+                    actor,
+                    target,
+                    BattleActionType.BasicAttack,
+                    null,
+                    actor.EffectiveBasicAttack.DamageType,
+                    isDamageAction: true,
+                    attackResult.Value,
+                    events);
                 if (!target.IsAlive)
                 {
                     events.AddRange(ResolveKillAndAssist(state, actor, target, BattleActionType.BasicAttack, null));
@@ -248,6 +258,16 @@ public static class CombatActionResolver
                         skillResult.MitigationValue,
                         skillResult.Note));
                     FormationStatusEmitter.EmitForResolvedHit(state, actor, target, skillResult, events);
+                    SecondaryPressureService.Apply(
+                        state,
+                        actor,
+                        target,
+                        BattleActionType.ActiveSkill,
+                        skill,
+                        skill?.DamageType ?? actor.EffectiveBasicAttack.DamageType,
+                        isDamageAction: skill?.Kind is not (SkillKind.Buff or SkillKind.Utility),
+                        skillResult.Value,
+                        events);
                     StatusResolutionService.ApplySkillStatuses(state, actor, target, skill, events);
                     if (!target.IsAlive)
                     {
@@ -276,6 +296,7 @@ public static class CombatActionResolver
         var selection = EffectMembershipSampler.ResolveAoeSkill(state, actor, primaryTarget, skill);
         var affectedCount = selection.Hits.Count;
         var caughtTargets = new List<UnitSnapshot>();
+        var primaryDamageAfterMitigation = 0f;
         foreach (var hit in selection.Hits)
         {
             var target = state.FindUnitById(hit.TargetUnitId);
@@ -291,6 +312,11 @@ public static class CombatActionResolver
             var resolvedValue = result.Value * hit.DamageMultiplier * punishCluster;
             if (resolvedValue > 0f)
             {
+                if (target.Id == primaryTarget.Id)
+                {
+                    primaryDamageAfterMitigation = resolvedValue;
+                }
+
                 state.RegisterDamage(actor, target);
                 target.TakeDamage(resolvedValue);
                 ApplyDamageDrain(state, actor, BattleActionType.ActiveSkill, skill, resolvedValue);
@@ -337,6 +363,17 @@ public static class CombatActionResolver
                 }
             }
         }
+
+        SecondaryPressureService.Apply(
+            state,
+            actor,
+            primaryTarget,
+            BattleActionType.ActiveSkill,
+            skill,
+            skill.DamageType,
+            isDamageAction: true,
+            primaryDamageAfterMitigation,
+            events);
 
         foreach (var dead in caughtTargets.Where(target => !target.IsAlive).OrderBy(target => target.Id.Value, StringComparer.Ordinal))
         {

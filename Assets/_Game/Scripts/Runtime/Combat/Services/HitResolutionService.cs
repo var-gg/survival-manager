@@ -67,6 +67,78 @@ public static class HitResolutionService
         return Math.Max(1f, ResolveSkillSupportPower(actor, skill));
     }
 
+    internal static Hp64 ResolveActionRawDamageBudget(
+        UnitSnapshot actor,
+        BattleSkillSpec? skill,
+        bool useSecondaryPressureBaseline)
+    {
+        Hp64 Stat(StatKey key)
+            => useSecondaryPressureBaseline
+                ? actor.GetSecondaryPressureBaselineStat(key)
+                : actor.Stats.GetWide(key);
+
+        if (skill == null)
+        {
+            return actor.EffectiveBasicAttack.DamageType == DamageType.Magical
+                ? Stat(StatKey.MagPower)
+                : Stat(StatKey.PhysPower);
+        }
+
+        var flat = Hp64.FromFloatQuantized(skill.ResolvedPowerFlat);
+        if (!UsesAuthoredCoefficients(skill))
+        {
+            var stat = skill.DamageType switch
+            {
+                DamageType.Magical => Stat(StatKey.MagPower),
+                DamageType.Healing => Stat(StatKey.HealPower),
+                _ => Stat(StatKey.PhysPower),
+            };
+            return Hp64.Max(Hp64.Zero, stat + flat);
+        }
+
+        var resolved = flat
+                       + (Stat(StatKey.PhysPower)
+                          * Fixed32.FromFloatQuantized(Math.Max(0f, skill.PhysCoeff)))
+                       + (Stat(StatKey.MagPower)
+                          * Fixed32.FromFloatQuantized(Math.Max(0f, skill.MagCoeff)))
+                       + (Stat(StatKey.HealPower)
+                          * Fixed32.FromFloatQuantized(Math.Max(0f, skill.HealCoeff)))
+                       + (Stat(StatKey.MaxHealth)
+                          * Fixed32.FromFloatQuantized(Math.Max(0f, skill.HealthCoeff)));
+        return Hp64.Max(Hp64.Zero, resolved);
+    }
+
+    internal static HitResolutionResult ResolveSecondaryPressureDamage(
+        UnitSnapshot actor,
+        UnitSnapshot target,
+        DamageType damageType,
+        Hp64 rawDamage)
+    {
+        if (rawDamage.Raw <= 0)
+        {
+            return new HitResolutionResult(0f, false, false, false, 0f, "secondary_pressure");
+        }
+
+        var mitigation = ResolveEffectiveMitigation(actor, target, damageType);
+        var mitigationFixed = Fixed32.FromFloatQuantized(mitigation);
+        var reductionFactor = mitigation <= 0f
+            ? Fixed32.One
+            : Fixed32.One
+              - (mitigationFixed
+                 / (mitigationFixed + Fixed32.FromInt((int)ArmorScalingK)));
+        var incomingMultiplier = Fixed32.FromFloatQuantized(target.GetIncomingDamageMultiplier());
+        var resolved = Hp64.Max(
+            Hp64.Zero,
+            (rawDamage * reductionFactor) * incomingMultiplier);
+        return new HitResolutionResult(
+            resolved.ToFloat(),
+            false,
+            false,
+            false,
+            mitigation,
+            "secondary_pressure");
+    }
+
     private static HitResolutionResult ResolveDamage(
         BattleState state,
         UnitSnapshot actor,
