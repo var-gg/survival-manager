@@ -15,12 +15,23 @@ public sealed class LootResolutionService
         _content = content;
     }
 
-    public bool TryResolveBundle(string sourceId, int seed, out LootBundleResult bundle, out string error)
+    public bool TryResolveBundle(
+        string sourceId,
+        int seed,
+        out LootBundleResult bundle,
+        out string error,
+        int heat = 0)
     {
-        return TryResolveBundle(sourceId, seed, Array.Empty<string>(), out bundle, out error);
+        return TryResolveBundle(sourceId, seed, Array.Empty<string>(), out bundle, out error, heat);
     }
 
-    public bool TryResolveBundle(string sourceId, int seed, IReadOnlyList<string> contextTags, out LootBundleResult bundle, out string error)
+    public bool TryResolveBundle(
+        string sourceId,
+        int seed,
+        IReadOnlyList<string> contextTags,
+        out LootBundleResult bundle,
+        out string error,
+        int heat = 0)
     {
         bundle = null!;
         error = string.Empty;
@@ -37,7 +48,7 @@ public sealed class LootResolutionService
             entries.AddRange(dropTable.Entries
                 .Where(entry => MatchesContext(entry, contextTags))
                 .Where(entry => entry.IsGuaranteed)
-                .Select(entry => BuildDropTableEntry(dropTable, entry, seed, contextTags)));
+                .Select(entry => BuildDropTableEntry(dropTable, entry, seed, contextTags, heat: heat)));
 
             var weightedEntries = dropTable.Entries
                 .Where(entry => MatchesContext(entry, contextTags))
@@ -48,7 +59,7 @@ public sealed class LootResolutionService
                 var selected = SelectWeightedEntry(weightedEntries, seed);
                 if (selected != null)
                 {
-                    entries.Add(BuildDropTableEntry(dropTable, selected, seed, contextTags));
+                    entries.Add(BuildDropTableEntry(dropTable, selected, seed, contextTags, heat: heat));
                 }
             }
         }
@@ -178,7 +189,8 @@ public sealed class LootResolutionService
         LootBundleEntryTemplate entry,
         int seed,
         IReadOnlyList<string> contextTags,
-        ItemRarityTierValue minimumGrade = ItemRarityTierValue.Common)
+        ItemRarityTierValue minimumGrade = ItemRarityTierValue.Common,
+        int heat = 0)
     {
         ItemRarityTierValue? grade = null;
         if (entry.RewardType == RewardType.Item)
@@ -187,7 +199,8 @@ public sealed class LootResolutionService
                 table,
                 ResolveChapterId(contextTags),
                 entry.RarityBracket,
-                seed);
+                seed,
+                heat);
             grade = rolledGrade < minimumGrade ? minimumGrade : rolledGrade;
         }
 

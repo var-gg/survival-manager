@@ -101,6 +101,185 @@ public sealed class DropGradeEconomyFastTests
         Assert.That(first.Distinct().Count(), Is.GreaterThanOrEqualTo(4));
     }
 
+    [TestCase(RarityBracketValue.Advanced)]
+    [TestCase(RarityBracketValue.Elite)]
+    [TestCase(RarityBracketValue.Boss)]
+    public void RollGrade_HeatFiveRaisesExpectedGradeForEveryNodeType(
+        RarityBracketValue bracket)
+    {
+        const double jackpotWeight = 0.011d;
+        const double standardDeviation = 0.5d;
+        var baseline = DropGradeEconomy.MapRarityBracket(bracket);
+        var mean = DropGradeEconomy.CalibrateMean(
+            baseline,
+            standardDeviation,
+            MeasuredKappa,
+            DropGradeEconomy.FirstClearReferenceKappa,
+            jackpotWeight,
+            jackpotMean: 4.25d,
+            jackpotStandardDeviation: 0.25d);
+        var table = BuildTable(
+            baseline,
+            new[] { mean },
+            jackpotWeight,
+            standardDeviation);
+        var shift = EndlessCycleService.DropLatentMeanShift(5);
+        var heatZeroProbabilities = DropGradeEconomy.GradeProbabilities(
+            mean,
+            standardDeviation,
+            jackpotWeight,
+            jackpotMean: 4.25d,
+            jackpotStandardDeviation: 0.25d);
+        var heatFiveProbabilities = DropGradeEconomy.GradeProbabilities(
+            mean + shift,
+            standardDeviation,
+            jackpotWeight,
+            jackpotMean: 4.25d + shift,
+            jackpotStandardDeviation: 0.25d);
+        var expectedAtHeatZero = ExpectedGrade(heatZeroProbabilities);
+        var expectedAtHeatFive = ExpectedGrade(heatFiveProbabilities);
+
+        var sampledAtHeatZero = Enumerable.Range(0, 4096)
+            .Average(seed => (double)DropGradeEconomy.RollGrade(
+                table,
+                "chapter_alpha",
+                bracket,
+                seed,
+                heat: 0));
+        var sampledAtHeatFive = Enumerable.Range(0, 4096)
+            .Average(seed => (double)DropGradeEconomy.RollGrade(
+                table,
+                "chapter_alpha",
+                bracket,
+                seed,
+                heat: 5));
+
+        Assert.That(expectedAtHeatFive, Is.GreaterThan(expectedAtHeatZero));
+        Assert.That(sampledAtHeatFive, Is.GreaterThan(sampledAtHeatZero));
+        Assert.That(sampledAtHeatZero, Is.EqualTo(expectedAtHeatZero).Within(0.04d));
+        Assert.That(sampledAtHeatFive, Is.EqualTo(expectedAtHeatFive).Within(0.04d));
+    }
+
+    [Test]
+    public void HeatZero_UsesExactLegacyProbabilitiesAndRolls()
+    {
+        const double standardDeviation = 0.5d;
+        const double jackpotWeight = 0.011d;
+        const double jackpotMean = 4.25d;
+        const double jackpotStandardDeviation = 0.25d;
+        var mean = DropGradeEconomy.CalibrateMean(
+            ItemRarityTierValue.Rare,
+            standardDeviation,
+            MeasuredKappa,
+            DropGradeEconomy.FirstClearReferenceKappa,
+            jackpotWeight,
+            jackpotMean,
+            jackpotStandardDeviation);
+        var shift = EndlessCycleService.DropLatentMeanShift(0);
+        var legacyProbabilities = DropGradeEconomy.GradeProbabilities(
+            mean,
+            standardDeviation,
+            jackpotWeight,
+            jackpotMean,
+            jackpotStandardDeviation);
+        var heatZeroProbabilities = DropGradeEconomy.GradeProbabilities(
+            mean + shift,
+            standardDeviation,
+            jackpotWeight,
+            jackpotMean + shift,
+            jackpotStandardDeviation);
+        var table = BuildTable(
+            ItemRarityTierValue.Rare,
+            new[] { mean },
+            jackpotWeight,
+            standardDeviation);
+        var defaultRolls = Enumerable.Range(0, 2048)
+            .Select(seed => DropGradeEconomy.RollGrade(
+                table,
+                "chapter_alpha",
+                RarityBracketValue.Elite,
+                seed))
+            .ToArray();
+        var explicitHeatZeroRolls = Enumerable.Range(0, 2048)
+            .Select(seed => DropGradeEconomy.RollGrade(
+                table,
+                "chapter_alpha",
+                RarityBracketValue.Elite,
+                seed,
+                heat: 0))
+            .ToArray();
+
+        Assert.That(shift, Is.EqualTo(0d));
+        Assert.That(heatZeroProbabilities, Is.EqualTo(legacyProbabilities));
+        Assert.That(explicitHeatZeroRolls, Is.EqualTo(defaultRolls));
+    }
+
+    [Test]
+    public void TryResolveBundle_ForwardsHeatIntoItemGradeRoll()
+    {
+        const double jackpotWeight = 0.011d;
+        const double standardDeviation = 0.5d;
+        var mean = DropGradeEconomy.CalibrateMean(
+            ItemRarityTierValue.Rare,
+            standardDeviation,
+            MeasuredKappa,
+            DropGradeEconomy.FirstClearReferenceKappa,
+            jackpotWeight,
+            jackpotMean: 4.25d,
+            jackpotStandardDeviation: 0.25d);
+        var table = BuildTable(
+            ItemRarityTierValue.Rare,
+            new[] { mean },
+            jackpotWeight,
+            standardDeviation) with
+        {
+            Id = "drop.heat",
+            RewardSourceId = "reward.heat",
+            Entries = new[]
+            {
+                new LootBundleEntryTemplate(
+                    "item.heat",
+                    RewardType.Item,
+                    1,
+                    RarityBracketValue.Elite,
+                    1,
+                    true,
+                    Array.Empty<string>()),
+            },
+        };
+        var snapshot = EditorFreeCombatContentFixture.CreateSnapshot(
+            campaignChapters: new Dictionary<string, CampaignChapterTemplate>(StringComparer.Ordinal)
+            {
+                ["chapter_alpha"] = new CampaignChapterTemplate(
+                    "chapter_alpha",
+                    "Chapter Alpha",
+                    0,
+                    Array.Empty<string>(),
+                    false),
+            },
+            rewardSources: new Dictionary<string, RewardSourceTemplate>(StringComparer.Ordinal)
+            {
+                ["reward.heat"] = new RewardSourceTemplate(
+                    "reward.heat",
+                    "Heat",
+                    RewardSourceKindValue.Elite,
+                    table.Id,
+                    true,
+                    new[] { RarityBracketValue.Elite }),
+            },
+            dropTables: new Dictionary<string, DropTableTemplate>(StringComparer.Ordinal)
+            {
+                [table.Id] = table,
+            });
+        var service = new LootResolutionService(snapshot);
+        var heatZero = Enumerable.Range(0, 2048)
+            .Average(seed => ResolveBundleGrade(service, seed, heat: 0));
+        var heatFive = Enumerable.Range(0, 2048)
+            .Average(seed => ResolveBundleGrade(service, seed, heat: 5));
+
+        Assert.That(heatFive, Is.GreaterThan(heatZero));
+    }
+
     [Test]
     public void GradeProbabilities_JackpotMixtureMovesMassIntoLegendaryTail()
     {
@@ -276,6 +455,27 @@ public sealed class DropGradeEconomyFastTests
         }
 
         return low + ((high - low) / 2d);
+    }
+
+    private static double ExpectedGrade(IReadOnlyList<double> probabilities)
+        => probabilities.Select((probability, grade) => probability * grade).Sum();
+
+    private static double ResolveBundleGrade(
+        LootResolutionService service,
+        int seed,
+        int heat)
+    {
+        Assert.That(
+            service.TryResolveBundle(
+                "reward.heat",
+                seed,
+                new[] { "chapter_alpha" },
+                out var bundle,
+                out var error,
+                heat),
+            Is.True,
+            error);
+        return (int)bundle.Entries.Single().ItemGrade!.Value;
     }
 
     private static AffixTemplate BuildAffix(string id, string tier)

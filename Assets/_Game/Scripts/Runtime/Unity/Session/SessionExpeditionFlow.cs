@@ -1372,12 +1372,16 @@ public sealed partial class GameSessionState
         }
 
         var lootService = new LootResolutionService(snapshot);
+        var dropHeat = ActiveRun.EndlessCycleIndex > 0
+            ? StoryDirector.Progress.EndlessCycle.Heat
+            : 0;
         if (!lootService.TryResolveBundle(
                 ActiveRun.Overlay.RewardSourceId,
                 ActiveRun.Overlay.BattleSeed,
                 ResolveCurrentRewardContextTags(snapshot),
                 out var bundle,
-                out _))
+                out _,
+                heat: dropHeat))
         {
             return false;
         }

@@ -27,7 +27,8 @@ public static class DropGradeEconomy
         DropTableTemplate table,
         string chapterId,
         RarityBracketValue fallbackBracket,
-        int seed)
+        int seed,
+        int heat = 0)
     {
         var profile = table.GradeProfiles?
             .FirstOrDefault(candidate =>
@@ -52,11 +53,20 @@ public static class DropGradeEconomy
             return MapRarityBracket(fallbackBracket);
         }
 
+        var ordinaryMean = profile.MeanPreservingLatentMean;
+        var jackpotMean = table.GradeJackpotLatentMean;
+        var heatShift = EndlessCycleService.DropLatentMeanShift(heat);
+        if (heatShift > 0d)
+        {
+            ordinaryMean += heatShift;
+            jackpotMean += heatShift;
+        }
+
         var probabilities = GradeProbabilities(
-            profile.MeanPreservingLatentMean,
+            ordinaryMean,
             profile.StandardDeviation,
             table.GradeJackpotWeight,
-            table.GradeJackpotLatentMean,
+            jackpotMean,
             table.GradeJackpotStandardDeviation);
         var random = new Random(CampaignEncounterSeed.Derive(seed, "drop-grade"));
         var roll = random.NextDouble();

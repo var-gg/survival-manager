@@ -22,7 +22,13 @@ public static class EndlessCycleService
     public const float HeatPowerIncreasedPerHeat = 0.06f;
 
     /// <summary>Heat 1당 잔향(Echo) 보상 증가율.</summary>
-    public const float HeatEchoBonusPerHeat = 0.10f;
+    public const float HeatEchoBonusPerHeat = 0.15f;
+
+    /// <summary>Heat 드랍 latent mean 이동식의 분자 계수.</summary>
+    public const float HeatDropLatentMeanNumerator = 0.10f;
+
+    /// <summary>Heat 드랍 latent mean 이동식의 포화 기울기.</summary>
+    public const float HeatDropLatentMeanDenominatorSlope = 0.15f;
 
     /// <summary>
     /// 다음 사이클 상태를 계산한다. Modifiers는 새 dict로 복사 — 공유 static Empty의
@@ -61,6 +67,21 @@ public static class EndlessCycleService
                 new StatModifier(StatKey.MagPower, ModifierOp.Increased, HeatPowerIncreasedPerHeat * heat, ModifierSource.Other, sourceId),
             }),
         };
+    }
+
+    /// <summary>
+    /// Heat에 따른 드랍 등급 latent mean 이동량. heat &lt;= 0이면 정확히 0을 반환해
+    /// 캠페인 드랍 확률 경로를 byte-identical하게 보존한다.
+    /// </summary>
+    public static double DropLatentMeanShift(int heat)
+    {
+        if (heat <= 0)
+        {
+            return 0d;
+        }
+
+        return (HeatDropLatentMeanNumerator * heat)
+               / (1d + (HeatDropLatentMeanDenominatorSlope * heat));
     }
 
     /// <summary>잔향(Echo) 보상을 Heat에 비례해 스케일한다. heat &lt;= 0 또는 0 이하 금액은 원값 유지.</summary>

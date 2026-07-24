@@ -73,6 +73,16 @@ public sealed class EndlessCycleServiceFastTests
     }
 
     [Test]
+    public void DropLatentMeanShift_UsesSaturatingFormula_AndPreservesHeatZero()
+    {
+        Assert.That(EndlessCycleService.DropLatentMeanShift(0), Is.EqualTo(0d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(-1), Is.EqualTo(0d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(1), Is.EqualTo(0.10d / 1.15d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(5), Is.EqualTo(0.50d / 1.75d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(10), Is.EqualTo(1d / 2.5d).Within(0.00000001d));
+    }
+
+    [Test]
     public void BattleContextHash_DivergesPerCycle_AndStoryPathIsDeterministic()
     {
         var lookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
@@ -111,9 +121,9 @@ public sealed class EndlessCycleServiceFastTests
         Assert.That(EndlessCycleService.ScaleEchoAmount(2, 0), Is.EqualTo(2), "스토리(heat 0)는 원값.");
         Assert.That(EndlessCycleService.ScaleEchoAmount(0, 5), Is.EqualTo(0), "0 지급은 스케일 없음.");
 
-        // base 2, heat 5 → 2 + round(2 * 0.10 * 5) = 3
-        Assert.That(EndlessCycleService.ScaleEchoAmount(2, 5), Is.EqualTo(3));
-        // base 10, heat 10 → 10 + round(10) = 20
-        Assert.That(EndlessCycleService.ScaleEchoAmount(10, 10), Is.EqualTo(20));
+        // base 2, heat 5 → 2 + round(2 * 0.15 * 5) = 4
+        Assert.That(EndlessCycleService.ScaleEchoAmount(2, 5), Is.EqualTo(4));
+        // base 10, heat 10 → 10 + round(15) = 25
+        Assert.That(EndlessCycleService.ScaleEchoAmount(10, 10), Is.EqualTo(25));
     }
 }
