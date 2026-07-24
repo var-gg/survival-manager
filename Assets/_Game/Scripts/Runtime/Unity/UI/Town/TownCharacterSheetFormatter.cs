@@ -463,11 +463,32 @@ public sealed class TownCharacterSheetFormatter
                 "Refit Preview",
                 selectedItem == null
                     ? CommonNone()
-                    : $"{MetaBalanceDefaults.RefitEchoCost} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")} / {FormatItem(selectedItem)}"),
+                    : FormatRefitPreview(session, selectedItem)),
             Row("ui.town.sheet.blueprint_permanent", "Blueprint Permanent", FormatAugmentName(GetEquippedPermanentAugmentId(session))),
             Row("ui.town.sheet.unlocked_permanents", "Unlocked Permanents", FormatAugmentList(session.Profile.UnlockedPermanentAugmentIds)),
             Row("ui.town.sheet.passive_progress", "Passive Progress", FormatPassiveProgress(loadout, progression)),
         };
+    }
+
+    private string FormatRefitPreview(
+        GameSessionState session,
+        InventoryItemRecord selectedItem)
+    {
+        var quote = session.GetRefitQuote(selectedItem.ItemInstanceId);
+        if (quote.RefitMaxed)
+        {
+            return $"{FormatItem(selectedItem)} / Refit maxed";
+        }
+
+        if (!quote.CanPurchase)
+        {
+            return $"{FormatItem(selectedItem)} / Refit unavailable";
+        }
+
+        var current = quote.CurrentPercentileQ64 / (double)ulong.MaxValue * 100d;
+        var floor = quote.TargetFloorQ64 / (double)ulong.MaxValue * 100d;
+        return $"{quote.EchoCost} {LocalizeTown("ui.town.sheet.currency.echo", "Echo")} / "
+               + $"{current:0.0}% → {floor:0.0}% / {FormatItem(selectedItem)}";
     }
 
     private void AddSynergyRow(

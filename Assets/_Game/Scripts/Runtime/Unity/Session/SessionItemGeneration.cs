@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SM.Persistence.Abstractions.Models;
 
 namespace SM.Unity;
@@ -32,8 +31,4 @@ public sealed partial class GameSessionState
         DevDemoInventorySeeder.SeedIfNeeded(Profile, _combatContentLookup, InventoryItemBuilder);
     }
 
-    private IReadOnlyList<string> BuildRefitCandidateAffixIds(InventoryItemRecord item, int affixSlotIndex)
-    {
-        return InventoryItemBuilder.BuildRefitCandidateAffixIds(item, affixSlotIndex);
-    }
 }

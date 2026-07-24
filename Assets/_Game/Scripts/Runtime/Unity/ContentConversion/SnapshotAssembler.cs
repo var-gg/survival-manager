@@ -38,6 +38,7 @@ internal sealed class SnapshotAssembler
     private readonly IReadOnlyDictionary<string, LootBundleDefinition> _lootBundleDefinitions;
     private readonly IReadOnlyDictionary<string, TraitTokenDefinition> _traitTokenDefinitions;
     private readonly IReadOnlyDictionary<string, WarWoundBalanceDefinition> _warWoundDefinitions;
+    private readonly IReadOnlyDictionary<string, RefitBalanceDefinition> _refitBalanceDefinitions;
     private readonly FirstPlayableSliceDefinition? _firstPlayableSlice;
 
     internal SnapshotAssembler(ContentDefinitionRegistry registry)
@@ -69,6 +70,7 @@ internal sealed class SnapshotAssembler
         _lootBundleDefinitions = registry.LootBundleDefinitions;
         _traitTokenDefinitions = registry.TraitTokenDefinitions;
         _warWoundDefinitions = registry.WarWoundDefinitions;
+        _refitBalanceDefinitions = registry.RefitBalanceDefinitions;
         _firstPlayableSlice = registry.FirstPlayableSlice;
     }
 
@@ -189,6 +191,16 @@ internal sealed class SnapshotAssembler
 
             return WarWoundConverter.Build(_warWoundDefinitions.Values.Single());
         });
+        var refitBalance = BuildSection("refit balance", () =>
+        {
+            if (_refitBalanceDefinitions.Count != 1)
+            {
+                throw new InvalidOperationException(
+                    $"Exactly one Refit balance definition is required, found {_refitBalanceDefinitions.Count}.");
+            }
+
+            return RefitBalanceConverter.Build(_refitBalanceDefinitions.Values.Single());
+        });
 
         return new CombatContentSnapshot(
             archetypeTemplates,
@@ -222,6 +234,7 @@ internal sealed class SnapshotAssembler
             archetypeTraitPools,
             sessionContentOrder,
             warWound,
-            siteEventCatalog);
+            siteEventCatalog,
+            refitBalance);
     }
 }

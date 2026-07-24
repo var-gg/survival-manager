@@ -116,28 +116,7 @@ public static class CampaignRecoveryRewardPolicy
     /// </summary>
     public static int ResolveFirstFarmRunEcho(CombatContentSnapshot content, string chapterId)
     {
-        if (content == null
-            || string.IsNullOrWhiteSpace(chapterId)
-            || content.CampaignChapters is not { } chapters
-            || content.ExpeditionSites is not { } sites
-            || content.RewardSources is not { } rewardSources
-            || content.DropTables is not { } dropTables
-            || !chapters.TryGetValue(chapterId, out var chapter))
-        {
-            return 0;
-        }
-
-        var site = chapter.SiteIds
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Select(id => sites.TryGetValue(id, out var candidate) ? candidate : null)
-            .Where(candidate => candidate != null)
-            .OrderBy(candidate => candidate!.SiteOrder)
-            .ThenBy(candidate => candidate!.Id, StringComparer.Ordinal)
-            .FirstOrDefault();
-        if (site == null
-            || string.IsNullOrWhiteSpace(site.ExtractRewardSourceId)
-            || !rewardSources.TryGetValue(site.ExtractRewardSourceId, out var source)
-            || !dropTables.TryGetValue(source.DropTableId, out var dropTable))
+        if (!TryResolveFirstFarmRunDropTable(content, chapterId, out var dropTable))
         {
             return 0;
         }
@@ -159,6 +138,129 @@ public static class CampaignRecoveryRewardPolicy
         return Math.Max(
             0,
             guaranteedEcho + (int)Math.Round(weightedEcho, MidpointRounding.AwayFromZero));
+    }
+
+    /// <summary>
+    /// gbar_c is the mean expected discrete item-grade index across the first site's authored
+    /// encounter rewards, including each table's authored jackpot mixture. E1(c) remains owned by
+    /// the extract reward table because that is the live repeat-reward Echo reference.
+    /// </summary>
+    public static double ResolveFirstFarmRunMeanGrade(CombatContentSnapshot content, string chapterId)
+    {
+        if (!TryResolveFirstFarmSite(content, chapterId, out var site))
+        {
+            return double.NaN;
+        }
+
+        var expectedGrades = new List<double>();
+        if (content.Encounters is { } encounters)
+        {
+            foreach (var encounterId in site.EncounterIds)
+            {
+                if (encounters.TryGetValue(encounterId, out var encounter)
+                    && TryResolveDropTable(content, encounter.RewardSourceId, out var encounterTable)
+                    && TryResolveExpectedGrade(encounterTable, chapterId, out var expectedGrade))
+                {
+                    expectedGrades.Add(expectedGrade);
+                }
+            }
+        }
+
+        if (expectedGrades.Count > 0)
+        {
+            return expectedGrades.Average();
+        }
+
+        // Pure/synthetic fixtures may omit encounter catalogs. Preserve a deterministic fallback
+        // only when the extract table itself explicitly authors a grade profile.
+        return TryResolveFirstFarmRunDropTable(content, chapterId, out var fallbackTable)
+               && TryResolveExpectedGrade(fallbackTable, chapterId, out var fallbackGrade)
+            ? fallbackGrade
+            : double.NaN;
+    }
+
+    private static bool TryResolveExpectedGrade(
+        DropTableTemplate dropTable,
+        string chapterId,
+        out double expectedGrade)
+    {
+        expectedGrade = double.NaN;
+        var profile = dropTable.GradeProfiles?
+            .FirstOrDefault(candidate =>
+                string.Equals(candidate.ChapterId, chapterId, StringComparison.Ordinal));
+        if (profile == null
+            || profile.StandardDeviation <= 0d
+            || dropTable.GradeJackpotWeight < 0d
+            || dropTable.GradeJackpotWeight >= 1d)
+        {
+            return false;
+        }
+
+        try
+        {
+            expectedGrade = DropGradeEconomy.GradeProbabilities(
+                    profile.MeanPreservingLatentMean,
+                    profile.StandardDeviation,
+                    dropTable.GradeJackpotWeight,
+                    dropTable.GradeJackpotLatentMean,
+                    dropTable.GradeJackpotStandardDeviation)
+                .Select((probability, grade) => probability * grade)
+                .Sum();
+            return double.IsFinite(expectedGrade);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            expectedGrade = double.NaN;
+            return false;
+        }
+    }
+
+    private static bool TryResolveFirstFarmRunDropTable(
+        CombatContentSnapshot content,
+        string chapterId,
+        out DropTableTemplate dropTable)
+    {
+        dropTable = null!;
+        return TryResolveFirstFarmSite(content, chapterId, out var site)
+               && TryResolveDropTable(content, site.ExtractRewardSourceId, out dropTable);
+    }
+
+    private static bool TryResolveFirstFarmSite(
+        CombatContentSnapshot content,
+        string chapterId,
+        out ExpeditionSiteTemplate site)
+    {
+        site = null!;
+        if (content == null
+            || string.IsNullOrWhiteSpace(chapterId)
+            || content.CampaignChapters is not { } chapters
+            || content.ExpeditionSites is not { } sites
+            || !chapters.TryGetValue(chapterId, out var chapter))
+        {
+            return false;
+        }
+
+        site = chapter.SiteIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id => sites.TryGetValue(id, out var candidate) ? candidate : null)
+            .Where(candidate => candidate != null)
+            .OrderBy(candidate => candidate!.SiteOrder)
+            .ThenBy(candidate => candidate!.Id, StringComparer.Ordinal)
+            .FirstOrDefault()!;
+        return site != null;
+    }
+
+    private static bool TryResolveDropTable(
+        CombatContentSnapshot content,
+        string rewardSourceId,
+        out DropTableTemplate dropTable)
+    {
+        dropTable = null!;
+        return !string.IsNullOrWhiteSpace(rewardSourceId)
+               && content.RewardSources is { } rewardSources
+               && content.DropTables is { } dropTables
+               && rewardSources.TryGetValue(rewardSourceId, out var source)
+               && dropTables.TryGetValue(source.DropTableId, out dropTable);
     }
 
     private static IReadOnlyList<int> BuildIntegerGoldAllocation(int totalBudget)

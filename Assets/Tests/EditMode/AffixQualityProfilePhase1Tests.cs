@@ -16,6 +16,21 @@ public sealed class AffixQualityProfilePhase1Tests
     private const double SimultaneousSigma = 6d;
 
     [Test]
+    public void ShippedRefitBalance_IsSerializedWithTheAuthoritativeFloorSchedule()
+    {
+        var balance = new RuntimeCombatContentLookup().Snapshot.RefitBalance;
+
+        Assert.That(balance, Is.Not.Null);
+        Assert.That(balance!.MaximumFloorNumerator, Is.EqualTo(70));
+        Assert.That(balance.MaximumFloorDenominator, Is.EqualTo(100));
+        Assert.That(balance.FloorDecayNumerator, Is.EqualTo(55));
+        Assert.That(balance.FloorDecayDenominator, Is.EqualTo(100));
+        Assert.That(RefitFloorSchedule.ToDouble(balance.FloorScheduleQ64[0]), Is.EqualTo(0.315d).Within(1e-12));
+        Assert.That(RefitFloorSchedule.ToDouble(balance.FloorScheduleQ64[1]), Is.EqualTo(0.48825d).Within(1e-12));
+        Assert.That(RefitFloorSchedule.ToDouble(balance.FloorScheduleQ64[2]), Is.EqualTo(0.5835375d).Within(1e-12));
+    }
+
+    [Test]
     [Timeout(30 * 60 * 1000)]
     public void EveryShippedProfile_MatchesProductionSelectorWithinBinomialBounds()
     {
@@ -100,6 +115,11 @@ public sealed class AffixQualityProfilePhase1Tests
             disagreements,
             Is.Empty,
             "Compiled CDF disagreed with production selector. See REFIT_A1_DISAGREEMENT output.");
+        Assert.That(profilesCompiled, Is.EqualTo(210), "shipped matrix remains 42 items x 5 grades");
+        Assert.That(
+            q70EqualsQ80,
+            Is.EqualTo(126),
+            "all 42 Common/Magic/Rare profiles retain the measured q70=q80 collapse");
     }
 
     private static void ValidateFixedPointProfile(AffixQualityProfile profile)

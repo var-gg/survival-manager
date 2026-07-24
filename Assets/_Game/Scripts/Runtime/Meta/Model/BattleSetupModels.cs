@@ -291,6 +291,22 @@ public sealed record DropGradeProfileTemplate(
     double MeanPreservingLatentMean,
     double StandardDeviation);
 
+/// <summary>
+/// Refit의 authored knobs와 closed-form에서 생성된 Q0.64 floor schedule.
+/// Schedule은 content conversion 시 한 번 생성되어 snapshot/save-independent balance data로 직렬화된다.
+/// </summary>
+public sealed record RefitBalanceTemplate(
+    int RulesVersion,
+    string AffixCatalogVersion,
+    int MaximumFloorNumerator,
+    int MaximumFloorDenominator,
+    int FloorDecayNumerator,
+    int FloorDecayDenominator,
+    IReadOnlyList<ulong> FloorScheduleQ64,
+    double CostBaseFirstFarmEchoMultiplier,
+    double CostGrowthPerLevel,
+    double GradeCostRatio);
+
 public sealed record LootBundleTemplate(
     string Id,
     string RewardSourceId,
@@ -390,7 +406,8 @@ public sealed record CombatContentSnapshot(
     IReadOnlyDictionary<string, ArchetypeTraitPoolTemplate>? ArchetypeTraitPools = null,
     SessionContentOrder? SessionContentOrder = null,
     WarWoundSpec? WarWound = null,
-    IReadOnlyDictionary<string, SiteEventTemplate>? SiteEvents = null);
+    IReadOnlyDictionary<string, SiteEventTemplate>? SiteEvents = null,
+    RefitBalanceTemplate? RefitBalance = null);
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,

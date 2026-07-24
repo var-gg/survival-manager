@@ -92,13 +92,13 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
     {
         // affix row — AffixDefinition.Tier 기준 group. 값은 instance 확정 roll 미저장 →
         // AffixDefinition.ValueMin~ValueMax 범위 표기 (가짜 rolled value 아님 — audit §4.1 P1-2).
-        var affixRaw = new (string AffixId, string Group, string Name, string Range, string Icon, bool Selected)[]
+        var affixRaw = new (string AffixId, string Group, string Name, string Range, string Icon)[]
         {
-            ("affix_atk_implicit", "implicit", "기본 공격력",  "8 ~ 15",      "atk",         false),
-            ("affix_crit_chance",  "prefix",   "치명타 확률",  "4 ~ 9",       "crit",        true),
-            ("affix_armor_flat",   "prefix",   "방어도",        "12 ~ 30",     "armor",       false),
-            ("affix_atk_speed",    "suffix",   "공격 속도",     "0.05 ~ 0.15", "speed",       false),
-            ("affix_resist_phys",  "suffix",   "물리 저항",     "6 ~ 14",      "resist_phys", false),
+            ("affix_atk_implicit", "implicit", "기본 공격력",  "8 ~ 15",      "atk"),
+            ("affix_crit_chance",  "prefix",   "치명타 확률",  "4 ~ 9",       "crit"),
+            ("affix_armor_flat",   "prefix",   "방어도",        "12 ~ 30",     "armor"),
+            ("affix_atk_speed",    "suffix",   "공격 속도",     "0.05 ~ 0.15", "speed"),
+            ("affix_resist_phys",  "suffix",   "물리 저항",     "6 ~ 14",      "resist_phys"),
         };
         var affixes = new List<EquipmentRefitAffixRowViewState>(affixRaw.Length);
         foreach (var a in affixRaw)
@@ -109,8 +109,7 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
                 CategoryKey: "utility",
                 Name: a.Name,
                 ValueRange: a.Range,
-                IconSprite: LoadAffixSprite(a.Icon),
-                IsSelectedForReroll: a.Selected));
+                IconSprite: LoadAffixSprite(a.Icon)));
         }
 
         // 8 inventory pool item — ItemBaseDefinition 이름 / slot / rarity.
@@ -162,7 +161,11 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
             EquippedHeroLabel: "장착: Dawn Priest",
             EquippedHeroPortrait: AssetDatabase.LoadAssetAtPath<Texture2D>(PortraitPath),
             EchoSprite: AssetDatabase.LoadAssetAtPath<Texture2D>(EchoIconPath),
-            RefitCost: EquipmentRefitPresenter.RefitEchoCost,
+            CurrentQualityPercent: 41.7d,
+            NextFloorPercent: 58.4d,
+            RefitCost: 24,
+            RefitMaxed: false,
+            RefitStatusMessage: "품질 41.7% → 보장 바닥 58.4%",
             Affixes: affixes,
             Pool: pool);
     }

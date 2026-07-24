@@ -11,4 +11,6 @@ public sealed class InventoryItemRecord
     public List<string> AffixIds = new();
     public string EquippedHeroId = string.Empty;
     public int RolledRarityTier = -1;
+    // Additive save field: absent in legacy JSON deserializes to the CLR default (0).
+    public int RefitLevel;
 }

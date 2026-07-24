@@ -220,7 +220,9 @@ internal static class H100SessionDriver
         HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, decision);
         if (!decision.IsNoOp)
         {
-            var result = session.RefitItem(decision.ItemInstanceId, decision.AffixSlotIndex);
+            var result = session.RefitItem(
+                decision.ItemInstanceId,
+                unchecked((ulong)(uint)observation.DecisionSeed));
             if (!result.IsSuccess)
             {
                 throw new InvalidOperationException($"Validated H100 refit could not be applied: {result.Error}");

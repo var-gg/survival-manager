@@ -26,9 +26,6 @@ public sealed partial class GameSessionState
         internal Result UnequipItem(string heroId, string itemInstanceId) =>
             _session.UnequipItemCore(heroId, itemInstanceId);
 
-        internal Result RefitItem(string itemInstanceId, int affixSlotIndex) =>
-            _session.RefitItemCore(itemInstanceId, affixSlotIndex);
-
         internal Result UnlockPermanentAugmentCandidate(string augmentId) =>
             _session.UnlockPermanentAugmentCandidateCore(augmentId);
 

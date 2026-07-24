@@ -1,14 +1,99 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
+using SM.Core.Content;
+using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Persistence.Json;
+using SM.Tests.EditMode.Fakes;
 
 namespace SM.Tests.EditMode;
 
 [Category("FastUnit")]
 public class JsonPersistenceTests
 {
+    [Test]
+    public void InventoryItemRefitLevel_LegacyJsonDefaultsToZero_AndRoundTrips()
+    {
+        const string legacyJson =
+            "{\"ItemInstanceId\":\"legacy-item\",\"ItemBaseId\":\"legacy-base\",\"AffixIds\":[]}";
+        var legacy = DeserializeNewtonsoft<InventoryItemRecord>(legacyJson);
+
+        Assert.That(legacy, Is.Not.Null);
+        Assert.That(legacy!.RefitLevel, Is.Zero);
+
+        var root = Path.Combine(Path.GetTempPath(), "sm_refit_level_" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var repository = new JsonSaveRepository(root);
+            var profile = new SaveProfile { ProfileId = "refit-level" };
+            legacy.RefitLevel = 7;
+            profile.Inventory.Add(legacy);
+            repository.Save(profile);
+
+            Assert.That(repository.LoadOrCreate("refit-level").Inventory.Single().RefitLevel, Is.EqualTo(7));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, true);
+            }
+        }
+    }
+
+    [Test]
+    public void RefitSaveRoundTrip_PreservesTheSameNextConditionedResult()
+    {
+        var lookup = RefitTestFixture.CreateLookup();
+        var affixes = RefitTestFixture.SelectAtSupportIndex(
+            lookup,
+            RefitTestFixture.AccessoryItemId,
+            ItemRarityTierValue.Legendary,
+            0);
+        var saved = new InventoryItemRecord
+        {
+            ItemInstanceId = "persistent-refit-item",
+            ItemBaseId = RefitTestFixture.AccessoryItemId,
+            RolledRarityTier = (int)ItemRarityTierValue.Legendary,
+            AffixIds = affixes.ToList(),
+            RefitLevel = 0,
+        };
+        var root = Path.Combine(Path.GetTempPath(), "sm_refit_output_" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var repository = new JsonSaveRepository(root);
+            var profile = new SaveProfile { ProfileId = "refit-output" };
+            profile.Inventory.Add(saved);
+            repository.Save(profile);
+            var loaded = repository.LoadOrCreate("refit-output").Inventory.Single();
+            var service = RefitTestFixture.CreateService(lookup);
+
+            var before = service.RefitNextEffective(
+                ToState(saved),
+                RefitTestFixture.CreateEconomy(lookup),
+                0xBEEFUL);
+            var after = service.RefitNextEffective(
+                ToState(loaded),
+                RefitTestFixture.CreateEconomy(lookup),
+                0xBEEFUL);
+
+            Assert.That(before.Applied, Is.True, before.Error);
+            Assert.That(after.Applied, Is.True, after.Error);
+            Assert.That(after.Quote, Is.EqualTo(before.Quote));
+            Assert.That(after.AffixIds, Is.EqualTo(before.AffixIds));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, true);
+            }
+        }
+    }
+
     [Test]
     public void JsonSaveRepository_RoundTrips_Profile_Data()
     {
@@ -160,5 +245,26 @@ public class JsonPersistenceTests
                 Directory.Delete(root, true);
             }
         }
+    }
+
+    private static RefitItemState ToState(InventoryItemRecord item)
+        => new(
+            item.ItemBaseId,
+            $"{item.ItemBaseId}|0",
+            (ItemRarityTierValue)item.RolledRarityTier,
+            item.AffixIds,
+            item.RefitLevel);
+
+    private static T DeserializeNewtonsoft<T>(string json)
+    {
+        var jsonConvert = Assembly.Load("Newtonsoft.Json").GetType("Newtonsoft.Json.JsonConvert");
+        Assert.That(jsonConvert, Is.Not.Null);
+        var method = jsonConvert!.GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(candidate =>
+                candidate.Name == "DeserializeObject"
+                && candidate.IsGenericMethodDefinition
+                && candidate.GetParameters().Length == 1
+                && candidate.GetParameters()[0].ParameterType == typeof(string));
+        return (T)method.MakeGenericMethod(typeof(T)).Invoke(null, new object[] { json })!;
     }
 }

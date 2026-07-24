@@ -80,7 +80,6 @@ internal static class H100RosterPolicyObservationBuilder
                 nodesByBoard);
         }).ToArray();
 
-        var itemBuilder = new SessionInventoryItemBuilder(lookup, GameSessionState.BuildStableSeed);
         var refitItems = (session.Profile.Inventory ?? new List<InventoryItemRecord>())
             .Where(item => item != null && !string.IsNullOrWhiteSpace(item.ItemInstanceId))
             .OrderBy(item => item.ItemBaseId, StringComparer.Ordinal)
@@ -92,10 +91,11 @@ internal static class H100RosterPolicyObservationBuilder
                     item.ItemInstanceId,
                     item.AffixIds,
                     snapshot);
+                var quote = session.GetRefitQuote(item.ItemInstanceId);
                 var slots = mechanics.Affixes.Select((affix, slotIndex) => new HeadlessRefitSlotObservation(
                     slotIndex,
                     affix,
-                    itemBuilder.BuildRefitCandidateAffixIds(item, slotIndex).Count > 0))
+                    quote.CanPurchase && slotIndex == 0))
                     .ToArray();
                 return new HeadlessRefitItemObservation(
                     mechanics.ItemId,
@@ -103,7 +103,7 @@ internal static class H100RosterPolicyObservationBuilder
                     item.EquippedHeroId,
                     mechanics.Tags,
                     mechanics.WeaponFamilyTag,
-                    MetaBalanceDefaults.RefitEchoCost,
+                    quote.EchoCost,
                     slots);
             })
             .ToArray();

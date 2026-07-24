@@ -75,34 +75,6 @@ internal sealed class SessionInventoryItemBuilder
                ?? 12.3f;
     }
 
-    internal IReadOnlyList<string> BuildRefitCandidateAffixIds(InventoryItemRecord item, int affixSlotIndex)
-    {
-        if (item.AffixIds == null
-            || affixSlotIndex < 0
-            || affixSlotIndex >= item.AffixIds.Count
-            || !_lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDefinition)
-            || !_lookup.TryGetAffixDefinition(item.AffixIds[affixSlotIndex], out var oldAffix))
-        {
-            var slice = _lookup.GetFirstPlayableSlice();
-            return slice?.AffixIds ?? Array.Empty<string>();
-        }
-
-        if (oldAffix.Tier == AffixTierValue.Implicit)
-        {
-            return Array.Empty<string>();
-        }
-
-        var otherAffixIds = item.AffixIds
-            .Where((_, index) => index != affixSlotIndex)
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .ToList();
-
-        return _lookup.GetCanonicalAffixIds()
-            .Where(candidateId => IsRefitCandidate(itemDefinition, oldAffix, candidateId, otherAffixIds))
-            .OrderBy(id => id, StringComparer.Ordinal)
-            .ToList();
-    }
-
     internal void EnsureAffixPadding(InventoryItemRecord record, string itemBaseId, int targetCount)
     {
         record.AffixIds ??= new List<string>();
@@ -124,26 +96,6 @@ internal sealed class SessionInventoryItemBuilder
                 existing.Add(candidate);
             }
         }
-    }
-
-    private bool IsRefitCandidate(
-        ItemBaseDefinition itemDefinition,
-        AffixDefinition oldAffix,
-        string candidateId,
-        IReadOnlyList<string> otherAffixIds)
-    {
-        if (string.IsNullOrWhiteSpace(candidateId)
-            || !_lookup.TryGetAffixDefinition(candidateId, out var candidate)
-            || string.Equals(candidate.Id, oldAffix.Id, StringComparison.Ordinal)
-            || candidate.Tier != oldAffix.Tier
-            || !IsLiveAffix(candidate)
-            || !IsAffixCompatibleWithItem(itemDefinition, candidate)
-            || otherAffixIds.Contains(candidate.Id, StringComparer.Ordinal))
-        {
-            return false;
-        }
-
-        return !HasExclusiveGroupConflict(candidate, otherAffixIds);
     }
 
     private bool IsGeneratedAffixCandidate(

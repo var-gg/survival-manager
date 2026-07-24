@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Combat.Model;
+using SM.Core.Content;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
@@ -88,32 +89,61 @@ public sealed class TownBuildHotPathTests
     // ──────────────────────────────────────────────
 
     [Test]
-    public void RefitItem_Success_ChangesAffixAndDeductsEcho()
+    public void RefitItem_Success_ChangesWholeItemAndDeductsDynamicEcho()
     {
-        var lookup = EditorFreeCombatContentFixture.CreateTownBuildLookup();
+        var lookup = RefitTestFixture.CreateLookup();
         var session = CreateBoundSession(lookup);
-        var item = AddInventoryItem(session, "item_010", "base_sword", new List<string> { "affix_a", "affix_b" });
-        session.Profile.Currencies.Echo = 100;
+        session.Profile.CampaignProgress.SelectedChapterId = RefitTestFixture.ChapterId;
+        session.Profile.CampaignProgress.SelectedSiteId = "site_alpha_gate";
+        var oldAffixes = RefitTestFixture.SelectAtSupportIndex(
+            lookup,
+            RefitTestFixture.WeaponItemId,
+            ItemRarityTierValue.Epic,
+            0);
+        var item = AddInventoryItem(
+            session,
+            "item_010",
+            RefitTestFixture.WeaponItemId,
+            oldAffixes.ToList());
+        item.RolledRarityTier = (int)ItemRarityTierValue.Epic;
+        session.Profile.Currencies.Echo = 10_000;
         var echoBefore = session.Profile.Currencies.Echo;
 
-        var result = session.RefitItem(item.ItemInstanceId, 0);
+        var result = session.RefitItem(item.ItemInstanceId);
 
         Assert.That(result.IsSuccess, Is.True, result.Error);
         Assert.That(session.Profile.Currencies.Echo, Is.LessThan(echoBefore), "Echo가 차감되어야 함");
+        Assert.That(item.RefitLevel, Is.GreaterThan(0));
+        Assert.That(item.AffixIds, Is.Not.EqualTo(oldAffixes));
     }
 
     [Test]
     public void RefitItem_InsufficientEcho_Fails()
     {
-        var session = CreateBoundSession();
-        var item = AddInventoryItem(session, "item_011", "base_sword", new List<string> { "affix_a" });
+        var lookup = RefitTestFixture.CreateLookup();
+        var session = CreateBoundSession(lookup);
+        session.Profile.CampaignProgress.SelectedChapterId = RefitTestFixture.ChapterId;
+        session.Profile.CampaignProgress.SelectedSiteId = "site_alpha_gate";
+        var oldAffixes = RefitTestFixture.SelectAtSupportIndex(
+            lookup,
+            RefitTestFixture.WeaponItemId,
+            ItemRarityTierValue.Epic,
+            0);
+        var item = AddInventoryItem(
+            session,
+            "item_011",
+            RefitTestFixture.WeaponItemId,
+            oldAffixes.ToList());
+        item.RolledRarityTier = (int)ItemRarityTierValue.Epic;
         session.Profile.Currencies.Echo = 0;
 
-        var result = session.RefitItem(item.ItemInstanceId, 0);
+        var result = session.RefitItem(item.ItemInstanceId);
 
         Assert.That(result.IsSuccess, Is.False);
         // 화폐 표시명 한국어 우선 정책으로 사용자向 에러 문구는 "잔향"(코드 id Currencies.Echo는 보존).
         Assert.That(result.Error, Does.Contain("잔향"));
+        Assert.That(item.RefitLevel, Is.Zero);
+        Assert.That(item.AffixIds, Is.EqualTo(oldAffixes));
     }
 
     // ──────────────────────────────────────────────

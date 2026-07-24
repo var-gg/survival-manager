@@ -8,21 +8,18 @@ using UnityEngine;
 namespace SM.Unity.UI.Town.Preview;
 
 /// <summary>
-/// Equipment Refit V1 Presenter — selected item의 affix 5 line + inventory pool → ViewState.
+/// Equipment Refit Presenter — selected item의 quality floor + affix list + inventory pool → ViewState.
 ///
 /// Sprint 3 wire: Profile.Inventory (InventoryItemRecord[]) → pool. selected item의 AffixIds → affix list.
 /// ItemBaseDefinition.WeaponFamilyTag / RarityTier / IdentityKind를 공통 presentation policy로 변환.
 ///
 /// affix group (implicit/prefix/suffix)은 AffixDefinition.Tier에서 read.
 ///
-/// 워크플로우: 사용자가 affix 선택 + Refit → SessionState.RefitItem → BattleTest stat 즉시 반영.
+/// 워크플로우: 사용자가 item 선택 + 다음 effective floor 구매 → SessionState.RefitItem → stat 즉시 반영.
 /// </summary>
 public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
 {
     public delegate Texture2D? SpriteLoader(string spriteKey);
-
-    /// <summary>refit 고정 비용 (item-and-affix-system.md V1).</summary>
-    public const int RefitEchoCost = 15;
 
     // headless conformance(Phase 2 Stage 2): GameSessionRoot(MonoBehaviour) 대신 순수 GameSessionState +
     // ICombatContentLookup, 콘크리트 EquipmentRefitView 대신 IEquipmentRefitView, ContentTextResolver
@@ -37,7 +34,6 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     private readonly SpriteLoader _affixIconSprite;
     private readonly SpriteLoader _currencySprite;
     private readonly SpriteLoader _portraitLoader;
-    private int _selectedAffixIndex = -1;
     private string _selectedItemInstanceId = string.Empty;
 
     public EquipmentRefitPresenter(
@@ -87,29 +83,17 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         _view.Render(BuildState());
     }
 
-    void IEquipmentRefitActions.OnAffixSelected(string affixId)
-    {
-        // selected item의 AffixIds에서 index 찾기 (RefitItem은 affixSlotIndex를 받음).
-        var item = ResolveSelectedItem();
-        if (item != null)
-        {
-            _selectedAffixIndex = item.AffixIds.FindIndex(id => string.Equals(id, affixId, StringComparison.Ordinal));
-        }
-        Refresh();
-    }
-
     void IEquipmentRefitActions.OnPoolItemSelected(string itemInstanceId)
     {
         _selectedItemInstanceId = itemInstanceId;
-        _selectedAffixIndex = -1;
         Refresh();
     }
 
     void IEquipmentRefitActions.OnRefitConfirmed()
     {
-        if (string.IsNullOrEmpty(_selectedItemInstanceId) || _selectedAffixIndex < 0)
+        if (string.IsNullOrEmpty(_selectedItemInstanceId))
             return;
-        _session.RefitItem(_selectedItemInstanceId, _selectedAffixIndex);
+        _session.RefitItem(_selectedItemInstanceId);
         Refresh();
     }
 
@@ -202,8 +186,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                     CategoryKey: category,
                     Name: _affixName(affixId),
                     ValueRange: valueRange,
-                    IconSprite: _affixIconSprite(affixId),
-                    IsSelectedForReroll: i == _selectedAffixIndex));
+                    IconSprite: _affixIconSprite(affixId)));
             }
         }
 
@@ -216,11 +199,15 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         var selectedIdentityKey = "baseline";
         var selectedIdentityLabel = string.Empty;
         var selectedShowsIdentityBadge = false;
-        var selectedCanRefit = true;
+        var selectedCanRefit = false;
+        var refitQuote = selectedItem == null
+            ? SM.Meta.Services.RefitQuote.Unavailable("재정비할 장비를 선택하세요.")
+            : session.GetRefitQuote(selectedItem.ItemInstanceId);
         var equippedHeroLabel = "미장착";
         Texture2D? equippedHeroPortrait = null;
         if (selectedItem != null)
         {
+            selectedCanRefit = refitQuote.CanPurchase;
             selectedItemName = _itemName(selectedItem.ItemBaseId);
             if (lookup.TryGetItemDefinition(selectedItem.ItemBaseId, out var baseDef))
             {
@@ -237,7 +224,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 selectedIdentityKey = presentation.IdentityKey;
                 selectedIdentityLabel = presentation.IdentityLabel;
                 selectedShowsIdentityBadge = presentation.ShowsIdentityBadge;
-                selectedCanRefit = presentation.CanRefit;
+                selectedCanRefit = presentation.CanRefit && refitQuote.CanPurchase;
             }
             if (!string.IsNullOrEmpty(selectedItem.EquippedHeroId))
             {
@@ -271,9 +258,30 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             EquippedHeroLabel: equippedHeroLabel,
             EquippedHeroPortrait: equippedHeroPortrait,
             EchoSprite: _currencySprite("echo"),
-            RefitCost: RefitEchoCost,
+            CurrentQualityPercent: ToPercent(refitQuote.CurrentPercentileQ64),
+            NextFloorPercent: ToPercent(refitQuote.TargetFloorQ64),
+            RefitCost: refitQuote.EchoCost,
+            RefitMaxed: refitQuote.RefitMaxed,
+            RefitStatusMessage: BuildRefitStatus(refitQuote),
             Affixes: affixes,
             Pool: pool);
+    }
+
+    private static double ToPercent(ulong probabilityQ64)
+        => probabilityQ64 / (double)ulong.MaxValue * 100d;
+
+    private static string BuildRefitStatus(SM.Meta.Services.RefitQuote quote)
+    {
+        if (quote.RefitMaxed)
+        {
+            return quote.Reason.Contains("grade", StringComparison.OrdinalIgnoreCase)
+                ? "이 등급은 개선 가능한 품질 구간이 없습니다."
+                : "최대 Refit 품질에 도달했습니다.";
+        }
+
+        return quote.CanPurchase
+            ? $"품질 {ToPercent(quote.CurrentPercentileQ64):0.0}% → 보장 바닥 {ToPercent(quote.TargetFloorQ64):0.0}%"
+            : quote.Reason;
     }
 
     private static string ResolveSlotKey(ItemSlotType slot) => slot switch

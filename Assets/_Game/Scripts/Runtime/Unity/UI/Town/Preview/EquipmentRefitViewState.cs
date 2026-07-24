@@ -5,10 +5,10 @@ namespace SM.Unity.UI.Town.Preview;
 
 /// <summary>
 /// Equipment Refit V1 surface ViewState — runtime 모델 정합 (audit §4.1 P1-2).
-/// 모델: item-centric refit — pool에서 item 선택 → affix 목록 확인 → 1개 affix reroll.
+/// 모델: item-centric refit — pool에서 item 선택 → quality percentile/next floor 확인 → 전체 affix 재선택.
 ///
 /// - ✅ pool = Profile.Inventory · RarityKey = ItemBaseDefinition.RarityTier · SlotKey = ItemBaseDefinition.SlotType ·
-///   refit = RefitItem(itemInstanceId, affixSlotIndex)
+///   refit = RefitItem(itemInstanceId)
 /// - ◐ GroupKey = AffixDefinition.Tier (Implicit/Prefix/Suffix) · Name = AffixDefinition.NameKey resolved
 /// - ❌ affix instance **확정 roll 값 미저장** — InventoryItemRecord.AffixIds는 definition id 리스트뿐 →
 ///   ValueRange는 AffixDefinition.ValueMin~ValueMax **범위** 표기 (가짜 rolled value 아님)
@@ -20,8 +20,7 @@ public sealed record EquipmentRefitAffixRowViewState(
     string CategoryKey,          // offenseflat / utility / ...
     string Name,                 // ← AffixDefinition.NameKey resolved
     string ValueRange,           // ← AffixDefinition.ValueMin~ValueMax (instance roll 미저장 — 범위)
-    Texture2D? IconSprite,
-    bool IsSelectedForReroll
+    Texture2D? IconSprite
 );
 
 public sealed record EquipmentRefitPoolRowViewState(
@@ -55,7 +54,11 @@ public sealed record EquipmentRefitViewState(
     string EquippedHeroLabel,        // "장착: {hero}" 또는 "미장착" ← EquippedHeroId
     Texture2D? EquippedHeroPortrait, // EquippedHeroId의 portrait (미장착이면 null)
     Texture2D? EchoSprite,
-    int RefitCost,                   // 15 Echo (RefitItem 고정 — RefitEchoCost)
+    double CurrentQualityPercent,
+    double NextFloorPercent,
+    int RefitCost,
+    bool RefitMaxed,
+    string RefitStatusMessage,
     IReadOnlyList<EquipmentRefitAffixRowViewState> Affixes,
     IReadOnlyList<EquipmentRefitPoolRowViewState> Pool
 );

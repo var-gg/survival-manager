@@ -176,7 +176,6 @@ internal static class H100RosterIntentTrackInputProjector
         IReadOnlyList<ConceptContract> contracts)
     {
         var choices = new List<IntentTrackChoice> { IntentTrackChoice.NoOp("refit:none") };
-        var builder = new SessionInventoryItemBuilder(lookup, GameSessionState.BuildStableSeed);
         var recordById = session.Profile.Inventory
             .Where(value => value != null && !string.IsNullOrWhiteSpace(value.ItemInstanceId))
             .ToDictionary(value => value.ItemInstanceId, StringComparer.Ordinal);
@@ -186,40 +185,50 @@ internal static class H100RosterIntentTrackInputProjector
                      .ThenBy(value => value.ItemInstanceId, StringComparer.Ordinal))
         {
             if (!recordById.TryGetValue(item.ItemInstanceId, out var record)) continue;
-            foreach (var slot in item.AffixSlots.Where(value => value.CanRefit).OrderBy(value => value.SlotIndex))
-            {
-                var candidates = builder.BuildRefitCandidateAffixIds(record, slot.SlotIndex);
-                var seed = GameSessionState.BuildStableSeed(
-                    item.ItemInstanceId,
-                    slot.SlotIndex + observation.Wallet.Echo);
-                var result = RefitService.Refit(record.AffixIds, slot.SlotIndex, candidates, seed);
-                if (result == null) continue;
-                var affixId = $"affix:{result.NewAffixId}";
-                if (!ContractReferences(contracts, new[] { affixId, result.NewAffixId })) continue;
-                choices.Add(new IntentTrackChoice(
-                    $"refit:{item.ItemInstanceId}:{slot.SlotIndex}:{result.NewAffixId}",
+            var actionAnchor = item.AffixSlots
+                .Where(value => value.CanRefit)
+                .OrderBy(value => value.SlotIndex)
+                .FirstOrDefault();
+            if (actionAnchor == null) continue;
+
+            var result = session.PreviewRefitItem(
+                item.ItemInstanceId,
+                unchecked((ulong)(uint)observation.DecisionSeed));
+            if (!result.Applied) continue;
+            var addedAffixIds = result.AffixIds
+                .Except(record.AffixIds, StringComparer.Ordinal)
+                .OrderBy(value => value, StringComparer.Ordinal)
+                .ToArray();
+            var semanticAffixIds = addedAffixIds.Length > 0
+                ? addedAffixIds
+                : result.AffixIds.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            var affixRefs = semanticAffixIds
+                .Select(value => $"affix:{value}")
+                .ToArray();
+            if (!ContractReferences(contracts, semanticAffixIds.Concat(affixRefs))) continue;
+            choices.Add(new IntentTrackChoice(
+                    $"refit:{item.ItemInstanceId}:{actionAnchor.SlotIndex}:{string.Join(",", semanticAffixIds)}",
                     Array.Empty<string>(),
                     new[] { $"item:{item.ItemId}" },
                     Array.Empty<IntentTrackRosterMember>(),
-                    new[] { affixId },
+                    affixRefs,
                     Array.Empty<string>(),
                     Array.Empty<string>(),
-                    new[] { affixId },
+                    affixRefs,
                     0,
                     0,
                     0,
                     0,
                     0,
-                    result.EchoCost,
+                    result.Quote.EchoCost,
                     Array.Empty<string>(),
                     Array.Empty<IntentTrackTagCount>(),
                     Array.Empty<string>(),
                     Array.Empty<string>(),
                     Array.Empty<string>(),
                     null,
-                    new[] { affixId },
+                    affixRefs,
                     true));
-            }
         }
 
         return choices.Take(1).Concat(choices.Skip(1)

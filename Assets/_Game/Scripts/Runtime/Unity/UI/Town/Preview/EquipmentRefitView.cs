@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace SM.Unity.UI.Town.Preview;
 
 /// <summary>
-/// Equipment Refit V1 surface View — item-centric refit (audit §4.1 P1-2).
+/// Equipment Refit surface View — item-level quality-floor refit.
 /// UXML container: StandeePortrait / SelectedItemName / EquippedHeroLabel / EchoIcon / AffixList /
 /// InventoryPool / RefitCostLabel. affix row는 이름 + 값 범위 (instance 확정 roll 미저장 → 범위 표기).
 /// </summary>
@@ -105,17 +105,16 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
         }
         if (_equippedHeroLabel != null)
             _equippedHeroLabel.text = state.EquippedHeroLabel;
-        _refitButton?.SetEnabled(state.SelectedItemCanRefit);
+        _refitButton?.SetEnabled(state.SelectedItemCanRefit && !state.RefitMaxed);
         if (_refitButton != null)
         {
-            // Refit이 무작위 affix 리롤임을 명시 + 비활성 사유 노출(경고 없이 잔향을 태우던 문제 보완).
-            _refitButton.tooltip = state.SelectedItemCanRefit
-                ? "선택한 장비의 옵션(affix)을 잔향으로 다시 굴립니다 — 결과는 표시된 범위 안에서 무작위입니다."
-                : "재정비할 장비를 먼저 선택하세요.";
+            _refitButton.tooltip = state.RefitStatusMessage;
         }
 
         if (state.EchoSprite != null) _echoIcon.style.backgroundImage = new StyleBackground(state.EchoSprite);
-        _refitCostLabel.text = $"재정비 (-{state.RefitCost} 잔향) · 옵션 무작위 재굴림";
+        _refitCostLabel.text = state.RefitMaxed || !state.SelectedItemCanRefit
+            ? state.RefitStatusMessage
+            : $"{state.RefitStatusMessage} · 재정비 (-{state.RefitCost} 잔향)";
 
         RenderAffixList(state.Affixes);
         RenderPool(state.Pool);
@@ -141,14 +140,6 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
             row.AddToClassList("sm-affix-row");
             row.AddToClassList($"erp-affix-row--{affix.GroupKey}");
             row.AddToClassList($"sm-affix-row--{affix.GroupKey}");
-            if (affix.IsSelectedForReroll)
-            {
-                row.AddToClassList("erp-affix-row--selected");
-                row.AddToClassList("sm-affix-row--selected");
-                row.AddToClassList("sm-affix-row--refit-target");
-                row.AddToClassList("sm-item-state");
-            }
-
             var icon = new VisualElement();
             icon.AddToClassList("erp-affix-row__icon");
             if (affix.IconSprite != null) icon.style.backgroundImage = new StyleBackground(affix.IconSprite);
@@ -165,7 +156,6 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
             row.Add(value);
 
             row.tooltip = $"{affix.AffixId} [{affix.GroupKey}]";
-            row.RegisterCallback<ClickEvent>(_ => _actions?.OnAffixSelected(affix.AffixId));
             _affixList.Add(row);
         }
     }
@@ -243,7 +233,6 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
 
 public interface IEquipmentRefitActions
 {
-    void OnAffixSelected(string affixId);
     void OnPoolItemSelected(string itemInstanceId);
     void OnRefitConfirmed();
 }

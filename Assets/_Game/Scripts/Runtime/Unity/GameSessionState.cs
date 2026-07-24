@@ -47,6 +47,7 @@ public sealed partial class GameSessionState
     private readonly SiteEventSessionController _siteEventFlow;
     private readonly SessionAtlasFlow _atlasFlow;
     private readonly SessionRewardSettlementFlow _rewardSettlementFlow;
+    private readonly SessionItemRefitFlow _itemRefitFlow;
     private readonly LoadoutCompiler _loadoutCompiler = new();
     private readonly List<string> _expeditionSquadHeroIds = new();
     private readonly Dictionary<DeploymentAnchorId, string?> _deploymentAssignments = new();
@@ -171,6 +172,7 @@ public sealed partial class GameSessionState
         _siteEventFlow = new SiteEventSessionController(this);
         _atlasFlow = new SessionAtlasFlow(this);
         _rewardSettlementFlow = new SessionRewardSettlementFlow(this);
+        _itemRefitFlow = new SessionItemRefitFlow(this, combatContentLookup);
         StoryDirector = _narrativeRuntimeBootstrap.CreateStoryDirector(NarrativeProgressRecord.Empty);
     }
 
@@ -575,46 +577,23 @@ public sealed partial class GameSessionState
         return Result.Success();
     }
 
-    public Result RefitItem(string itemInstanceId, int affixSlotIndex) =>
-        _deploymentFlow.RefitItem(itemInstanceId, affixSlotIndex);
+    public Result RefitItem(string itemInstanceId) => _itemRefitFlow.RefitItem(itemInstanceId);
 
-    private Result RefitItemCore(string itemInstanceId, int affixSlotIndex)
+    internal Result RefitItem(string itemInstanceId, ulong stableCommandSeed) =>
+        _itemRefitFlow.RefitItem(itemInstanceId, stableCommandSeed);
+
+    internal RefitQuote GetRefitQuote(string itemInstanceId) =>
+        _itemRefitFlow.GetRefitQuote(itemInstanceId);
+
+    internal RefitExecutionResult PreviewRefitItem(string itemInstanceId, ulong stableCommandSeed) =>
+        _itemRefitFlow.PreviewRefitItem(itemInstanceId, stableCommandSeed);
+
+    internal void SynchronizeRefitEquippedHero(string heroId)
     {
-        if (!IsTownEconomyPhase())
+        if (!string.IsNullOrWhiteSpace(heroId) && TryGetHero(heroId, out var hero))
         {
-            return Result.Fail("Refit은 Town에서만 가능합니다.");
+            SyncHeroBuildState(hero);
         }
-
-        var item = Profile.Inventory.FirstOrDefault(
-            i => string.Equals(i.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
-        if (item == null)
-        {
-            return Result.Fail($"아이템 '{itemInstanceId}'을 찾을 수 없습니다.");
-        }
-
-        var echoCost = MetaBalanceDefaults.RefitEchoCost;
-        if (Profile.Currencies.Echo < echoCost)
-        {
-            return Result.Fail($"잔향이 부족합니다. 재정비에는 {echoCost} 잔향이 필요합니다.");
-        }
-
-        var availableAffixes = BuildRefitCandidateAffixIds(item, affixSlotIndex);
-        var seed = BuildStableSeed(itemInstanceId, affixSlotIndex + Profile.Currencies.Echo);
-        var result = RefitService.Refit(item.AffixIds, affixSlotIndex, availableAffixes, seed);
-        if (result == null)
-        {
-            return Result.Fail("Refit 후보 affix가 없습니다.");
-        }
-
-        Profile.Currencies.Echo -= result.EchoCost;
-        item.AffixIds[affixSlotIndex] = result.NewAffixId;
-
-        if (!string.IsNullOrWhiteSpace(item.EquippedHeroId) && TryGetHero(item.EquippedHeroId, out var equipHero))
-        {
-            SyncHeroBuildState(equipHero);
-        }
-
-        return Result.Success();
     }
 
     public Result UnlockPermanentAugmentCandidate(string augmentId) =>

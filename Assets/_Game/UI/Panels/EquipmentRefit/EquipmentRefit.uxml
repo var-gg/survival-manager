@@ -1,8 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <!--
-      Equipment / Refit modal V1 preview — item-centric refit (audit §4.1 P1-2)
+      Equipment / Refit modal — item-level power-quality floor
       SoT: pindoc://town-ui-ux-시안-갤러리-v1 (2)
-      3-section: 좌측 장착 hero + 3 slot + 선택 item 컨텍스트 / 중앙 affix list (이름+값 범위) + Echo CTA / 우측 inventory pool
+      3-section: 좌측 장착 hero + 선택 item 컨텍스트 / 중앙 affix list + quality/Echo CTA / 우측 inventory pool
     -->
     <Style src="../../Foundation/Styles/ThemeTokens.uss" />
     <Style src="../../Foundation/Styles/RuntimePanelTheme.uss" />
@@ -51,7 +51,7 @@
                             <ui:VisualElement name="EchoIcon" class="erp-echo-cost__icon" picking-mode="Ignore" />
                         </ui:VisualElement>
                         <ui:Button class="erp-refit-cta sm-cta sm-cta--lg sm-cta--primary">
-                            <ui:Label name="RefitCostLabel" class="erp-refit-cta__label" text="REFIT (-15 Echo)" />
+                            <ui:Label name="RefitCostLabel" class="erp-refit-cta__label" text="품질 계산 중…" />
                         </ui:Button>
                     </ui:VisualElement>
                 </ui:VisualElement>

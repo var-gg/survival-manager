@@ -214,37 +214,27 @@ public sealed class HeadlessCampaignDeterminismTests
 
         session.Profile.Currencies.Echo = 10_000;
         var refitItemId = string.Empty;
-        var refitSlotIndex = -1;
         var beforeAffix = string.Empty;
         var afterAffix = string.Empty;
         foreach (var item in mintedItems.OrderBy(item => item.ItemInstanceId, StringComparer.Ordinal))
         {
-            for (var slotIndex = 0; slotIndex < item.AffixIds.Count; slotIndex++)
+            // Refit is an endgame Epic+ mechanic. Promote this determinism witness's saved grade
+            // while retaining its legacy affix list so the migration path is exercised as well.
+            item.RolledRarityTier = (int)SM.Core.Content.ItemRarityTierValue.Epic;
+            beforeAffix = string.Join("|", item.AffixIds);
+            var refit = session.RefitItem(item.ItemInstanceId);
+            if (refit.IsSuccess)
             {
-                var candidateBefore = item.AffixIds[slotIndex];
-                var refit = session.RefitItem(item.ItemInstanceId, slotIndex);
-                if (!refit.IsSuccess)
-                {
-                    continue;
-                }
-
                 refitItemId = item.ItemInstanceId;
-                refitSlotIndex = slotIndex;
-                beforeAffix = candidateBefore;
-                afterAffix = item.AffixIds[slotIndex];
-                break;
-            }
-
-            if (refitSlotIndex >= 0)
-            {
+                afterAffix = string.Join("|", item.AffixIds);
                 break;
             }
         }
 
-        Assert.That(refitSlotIndex, Is.GreaterThanOrEqualTo(0),
-            "minted production item 중 RefitItem이 성공하는 affix가 필요하다.");
+        Assert.That(refitItemId, Is.Not.Empty,
+            "minted production item 중 item-level RefitItem이 성공하는 장비가 필요하다.");
         Assert.That(afterAffix, Is.Not.EqualTo(beforeAffix),
-            "witness는 실제로 refit된 결과 affix를 비교해야 한다.");
+            "witness는 실제 item-level Refit 결과 affix bytes를 비교해야 한다.");
 
         var campaign = new CampaignPlaythroughRunner(
             session,
@@ -257,7 +247,7 @@ public sealed class HeadlessCampaignDeterminismTests
             "\n",
             campaign.SiteObservations.Select(site =>
                 $"{site.ChapterId}|{site.SiteId}|{site.ChosenRewardKind}|{site.ChosenRewardIndex}|{site.RewardLedgerDelta}"));
-        var refitSignature = $"{refitItemId}\n{refitSlotIndex}\n{afterAffix}";
+        var refitSignature = $"{refitItemId}\n{afterAffix}";
         return new InstanceIdWitnessSnapshot(
             new[] { firstMintedHero.HeroId, replacementHero.HeroId },
             mintedItems.Select(item => item.ItemInstanceId).ToArray(),
