@@ -149,9 +149,9 @@ public sealed class EndlessCycleServiceFastTests
     {
         Assert.That(EndlessCycleService.DropLatentMeanShift(0), Is.EqualTo(0d));
         Assert.That(EndlessCycleService.DropLatentMeanShift(-1), Is.EqualTo(0d));
-        Assert.That(EndlessCycleService.DropLatentMeanShift(1), Is.EqualTo(0.12d / 1.15d).Within(0.00000001d));
-        Assert.That(EndlessCycleService.DropLatentMeanShift(5), Is.EqualTo(0.60d / 1.75d).Within(0.00000001d));
-        Assert.That(EndlessCycleService.DropLatentMeanShift(10), Is.EqualTo(1.20d / 2.5d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(1), Is.EqualTo(0.15d / 1.15d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(5), Is.EqualTo(0.75d / 1.75d).Within(0.00000001d));
+        Assert.That(EndlessCycleService.DropLatentMeanShift(10), Is.EqualTo(1.50d / 2.5d).Within(0.00000001d));
     }
 
     [TestCase(0, 0.011d)]

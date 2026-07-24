@@ -10,19 +10,38 @@ public sealed class LootResolutionService
 {
     private readonly CombatContentSnapshot _content;
     private readonly Action<DropGradeRollObservation>? _dropGradeObserver;
+    private readonly double _heatDropLatentMeanNumerator;
+    private readonly double _heatDropJackpotWeightStep;
 
     public LootResolutionService(CombatContentSnapshot content)
     {
         _content = content;
+        _heatDropLatentMeanNumerator = EndlessCycleService.HeatDropLatentMeanNumerator;
+        _heatDropJackpotWeightStep = EndlessCycleService.HeatDropJackpotWeightStep;
     }
 
     internal LootResolutionService(
         CombatContentSnapshot content,
         Action<DropGradeRollObservation> dropGradeObserver)
+        : this(
+            content,
+            dropGradeObserver,
+            EndlessCycleService.HeatDropLatentMeanNumerator,
+            EndlessCycleService.HeatDropJackpotWeightStep)
+    {
+    }
+
+    internal LootResolutionService(
+        CombatContentSnapshot content,
+        Action<DropGradeRollObservation> dropGradeObserver,
+        double heatDropLatentMeanNumerator,
+        double heatDropJackpotWeightStep)
         : this(content)
     {
         _dropGradeObserver = dropGradeObserver
-                             ?? throw new ArgumentNullException(nameof(dropGradeObserver));
+                              ?? throw new ArgumentNullException(nameof(dropGradeObserver));
+        _heatDropLatentMeanNumerator = heatDropLatentMeanNumerator;
+        _heatDropJackpotWeightStep = heatDropJackpotWeightStep;
     }
 
     public bool TryResolveBundle(
@@ -210,7 +229,9 @@ public sealed class LootResolutionService
                 ResolveChapterId(contextTags),
                 entry.RarityBracket,
                 seed,
-                heat);
+                heat,
+                _heatDropLatentMeanNumerator,
+                _heatDropJackpotWeightStep);
             _dropGradeObserver?.Invoke(roll);
             var rolledGrade = roll.Grade;
             grade = rolledGrade < minimumGrade ? minimumGrade : rolledGrade;

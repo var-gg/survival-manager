@@ -4,6 +4,9 @@ Measures endless Heat equipment distribution and fixed/paired endgame clear rate
 
 .EXAMPLE
 pwsh -File tools/endless-heat-sweep.ps1 -Seeds 32 -Horizons 25,100 -PairedHorizon 25
+
+.EXAMPLE
+pwsh -File tools/endless-heat-sweep.ps1 -RewardGrid -Seeds 32 -Horizons 25,100
 #>
 
 param(
@@ -22,6 +25,8 @@ param(
     [string]$Output = 'Temp/HeadlessSweep/endless-heat-sweep.json',
 
     [switch]$DifficultyOnly,
+
+    [switch]$RewardGrid,
 
     [ValidateSet('P20', 'P35', 'P50', 'P65', 'P80')]
     [string]$ValidationBuild = 'P35',
@@ -56,6 +61,9 @@ $taskArguments = @(
 )
 if ($DifficultyOnly) {
     $taskArguments += '--difficulty-only'
+}
+if ($RewardGrid) {
+    $taskArguments += '--reward-grid'
 }
 
 $taskDotnet = Get-Command dotnet -ErrorAction SilentlyContinue

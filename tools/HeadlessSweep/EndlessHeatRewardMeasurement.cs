@@ -35,13 +35,37 @@ internal static class EndlessHeatRewardMeasurement
         string targetSiteId,
         IReadOnlyList<int> horizons,
         int degree)
+        => Measure(
+            prepared,
+            targetSiteId,
+            horizons,
+            Heats,
+            degree,
+            EndlessCycleService.HeatDropLatentMeanNumerator,
+            EndlessCycleService.HeatDropJackpotWeightStep);
+
+    internal static EndlessHeatRewardMeasurementResult Measure(
+        IReadOnlyList<EndlessHeatPreparedScenario> prepared,
+        string targetSiteId,
+        IReadOnlyList<int> horizons,
+        IReadOnlyList<int> heats,
+        int degree,
+        double heatDropLatentMeanNumerator,
+        double heatDropJackpotWeightStep)
     {
+        if (!heats.Contains(0))
+        {
+            throw new ArgumentException(
+                "Reward measurement heats must include H0 for paired deltas.",
+                nameof(heats));
+        }
+
         var scenarios = new List<EndlessHeatRewardScenarioResult>(
-            prepared.Count * horizons.Count * Heats.Length);
+            prepared.Count * horizons.Count * heats.Count);
         int? observedNodesPerMap = null;
         foreach (var horizon in horizons)
         {
-            foreach (var heat in Heats)
+            foreach (var heat in heats)
             {
                 var results = new EndlessHeatRewardScenarioResult[prepared.Count];
                 Parallel.ForEach(
@@ -51,7 +75,11 @@ internal static class EndlessHeatRewardMeasurement
                     {
                         var scenario = prepared[index];
                         var state = scenario.State.CloneWithHeat(heat);
-                        var farm = state.FarmSiteMaps(targetSiteId, horizon);
+                        var farm = state.FarmSiteMaps(
+                            targetSiteId,
+                            horizon,
+                            heatDropLatentMeanNumerator,
+                            heatDropJackpotWeightStep);
                         var loadout = HeadlessCampaignEquipmentPowerPolicy.Apply(state);
                         results[index] = new EndlessHeatRewardScenarioResult(
                             heat,
@@ -85,7 +113,7 @@ internal static class EndlessHeatRewardMeasurement
         foreach (var horizon in horizons)
         {
             var baseline = SelectScenarios(scenarios, heat: 0, horizon);
-            foreach (var heat in Heats)
+            foreach (var heat in heats)
             {
                 var current = SelectScenarios(scenarios, heat, horizon);
                 equipped.Add(BuildEquippedAggregate(current, baseline));

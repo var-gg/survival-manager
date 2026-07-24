@@ -5,6 +5,17 @@ using SM.Meta.Services;
 internal sealed partial class HeadlessCampaignState
 {
     internal HeadlessCampaignFarmResult FarmSiteMaps(string siteId, int mapCount)
+        => FarmSiteMaps(
+            siteId,
+            mapCount,
+            EndlessCycleService.HeatDropLatentMeanNumerator,
+            EndlessCycleService.HeatDropJackpotWeightStep);
+
+    internal HeadlessCampaignFarmResult FarmSiteMaps(
+        string siteId,
+        int mapCount,
+        double heatDropLatentMeanNumerator,
+        double heatDropJackpotWeightStep)
     {
         if (mapCount <= 0)
         {
@@ -27,7 +38,11 @@ internal sealed partial class HeadlessCampaignState
         }
 
         var gradeRolls = new List<DropGradeRollObservation>();
-        var service = new LootResolutionService(Snapshot, gradeRolls.Add);
+        var service = new LootResolutionService(
+            Snapshot,
+            gradeRolls.Add,
+            heatDropLatentMeanNumerator,
+            heatDropJackpotWeightStep);
         var itemDrops = 0;
         for (var mapIndex = 0; mapIndex < mapCount; mapIndex++)
         {

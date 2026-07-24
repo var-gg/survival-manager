@@ -39,6 +39,29 @@ internal static class EndlessHeatSweepRunner
                 cells,
                 options.SeedsPerCell,
                 options.Degree);
+            if (options.RewardGrid)
+            {
+                var gridReport = EndlessHeatRewardGridMeasurement.Measure(
+                    prepared,
+                    TargetSiteId,
+                    options.EquipmentHorizonsMaps,
+                    options.Degree);
+                var gridOutputPath = Resolve(repositoryRoot, options.OutputPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(gridOutputPath)!);
+                File.WriteAllText(
+                    gridOutputPath,
+                    JsonConvert.SerializeObject(
+                        gridReport,
+                        Formatting.Indented,
+                        SerializerSettings()));
+                Console.WriteLine(
+                    $"endless-heat-reward-grid MATCH tunings={gridReport.Grid.Count} "
+                    + $"seeds-per-cell={options.SeedsPerCell} "
+                    + $"hash={gridReport.CanonicalHash}");
+                Console.WriteLine($"endless-heat-reward-grid report={gridOutputPath}");
+                return 0;
+            }
+
             var validationCells = BuildValidationCells(config, options.ValidationBuildId);
             var validationPrepared = PrepareScenarios(
                 lookup,
@@ -507,6 +530,7 @@ internal static class EndlessHeatSweepRunner
         var pairedHorizon = 25;
         var outputPath = DefaultOutputRelativePath;
         var difficultyOnly = false;
+        var rewardGrid = false;
         var validationBuildId = "P35";
         IReadOnlyList<int> measurementHeats = ClearRateHeats;
         for (var index = 0; index < arguments.Count; index++)
@@ -530,6 +554,9 @@ internal static class EndlessHeatSweepRunner
                     break;
                 case "--difficulty-only":
                     difficultyOnly = true;
+                    break;
+                case "--reward-grid":
+                    rewardGrid = true;
                     break;
                 case "--validation-build" when index + 1 < arguments.Count:
                     validationBuildId = arguments[++index];
@@ -569,6 +596,11 @@ internal static class EndlessHeatSweepRunner
             throw new ArgumentException("Custom --heats is supported only with --difficulty-only.");
         }
 
+        if (difficultyOnly && rewardGrid)
+        {
+            throw new ArgumentException("--difficulty-only and --reward-grid are mutually exclusive.");
+        }
+
         return new Options(
             seedsPerCell,
             degree,
@@ -576,6 +608,7 @@ internal static class EndlessHeatSweepRunner
             pairedHorizon,
             outputPath,
             difficultyOnly,
+            rewardGrid,
             validationBuildId,
             measurementHeats);
     }
@@ -630,6 +663,7 @@ internal static class EndlessHeatSweepRunner
         int PairedClearRateHorizonMaps,
         string OutputPath,
         bool DifficultyOnly,
+        bool RewardGrid,
         string ValidationBuildId,
         IReadOnlyList<int> MeasurementHeats);
 

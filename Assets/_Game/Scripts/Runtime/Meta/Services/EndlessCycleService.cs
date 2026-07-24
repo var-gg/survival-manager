@@ -39,8 +39,11 @@ public static class EndlessCycleService
     /// <summary>Heat 1당 잔향(Echo) 보상 증가율.</summary>
     public const float HeatEchoBonusPerHeat = 0.15f;
 
-    /// <summary>Heat 드랍 latent mean 이동식의 분자 계수.</summary>
-    public const double HeatDropLatentMeanNumerator = 0.12d;
+    /// <summary>
+    /// Heat 드랍 latent mean 이동식의 owner-ratifiable 분자 계수.
+    /// 2026-07-25의 32 seed x 3 canonical squad reward grid에서 jackpot step 0.002와 함께 0.15를 선택했다.
+    /// </summary>
+    public const double HeatDropLatentMeanNumerator = 0.15d;
 
     /// <summary>Heat 드랍 latent mean 이동식의 포화 기울기.</summary>
     public const double HeatDropLatentMeanDenominatorSlope = 0.15d;
@@ -146,13 +149,26 @@ public static class EndlessCycleService
     /// 캠페인 드랍 확률 경로를 byte-identical하게 보존한다.
     /// </summary>
     public static double DropLatentMeanShift(int heat)
+        => DropLatentMeanShift(heat, HeatDropLatentMeanNumerator);
+
+    internal static double DropLatentMeanShift(
+        int heat,
+        double meanNumerator)
     {
         if (heat <= 0)
         {
             return 0d;
         }
 
-        return (HeatDropLatentMeanNumerator * heat)
+        if (!double.IsFinite(meanNumerator) || meanNumerator < 0d)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(meanNumerator),
+                meanNumerator,
+                "Heat drop latent mean numerator must be finite and non-negative.");
+        }
+
+        return (meanNumerator * heat)
                / (1d + (HeatDropLatentMeanDenominatorSlope * heat));
     }
 
@@ -161,6 +177,12 @@ public static class EndlessCycleService
     /// heat &lt;= 0이면 입력값을 그대로 반환해 campaign 경로를 보존한다.
     /// </summary>
     public static double DropJackpotWeight(double campaignWeight, int heat)
+        => DropJackpotWeight(campaignWeight, heat, HeatDropJackpotWeightStep);
+
+    internal static double DropJackpotWeight(
+        double campaignWeight,
+        int heat,
+        double jackpotWeightStep)
     {
         if (!double.IsFinite(campaignWeight)
             || campaignWeight < 0d
@@ -177,9 +199,17 @@ public static class EndlessCycleService
             return campaignWeight;
         }
 
+        if (!double.IsFinite(jackpotWeightStep) || jackpotWeightStep < 0d)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(jackpotWeightStep),
+                jackpotWeightStep,
+                "Heat drop jackpot weight step must be finite and non-negative.");
+        }
+
         return Math.Min(
             Math.Min(
-                campaignWeight + (HeatDropJackpotWeightStep * heat),
+                campaignWeight + (jackpotWeightStep * heat),
                 campaignWeight + HeatDropJackpotWeightDeltaCap),
             HeatDropJackpotWeightAbsoluteCap);
     }

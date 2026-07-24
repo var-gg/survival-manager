@@ -42,6 +42,23 @@ public static class DropGradeEconomy
         RarityBracketValue fallbackBracket,
         int seed,
         int heat = 0)
+        => RollGradeObserved(
+            table,
+            chapterId,
+            fallbackBracket,
+            seed,
+            heat,
+            EndlessCycleService.HeatDropLatentMeanNumerator,
+            EndlessCycleService.HeatDropJackpotWeightStep);
+
+    internal static DropGradeRollObservation RollGradeObserved(
+        DropTableTemplate table,
+        string chapterId,
+        RarityBracketValue fallbackBracket,
+        int seed,
+        int heat,
+        double heatDropLatentMeanNumerator,
+        double heatDropJackpotWeightStep)
     {
         var profile = table.GradeProfiles?
             .FirstOrDefault(candidate =>
@@ -69,14 +86,17 @@ public static class DropGradeEconomy
         var ordinaryMean = profile.MeanPreservingLatentMean;
         var jackpotMean = table.GradeJackpotLatentMean;
         var jackpotWeight = table.GradeJackpotWeight;
-        var heatShift = EndlessCycleService.DropLatentMeanShift(heat);
+        var heatShift = EndlessCycleService.DropLatentMeanShift(
+            heat,
+            heatDropLatentMeanNumerator);
         if (heatShift > 0d)
         {
             ordinaryMean += heatShift;
             jackpotMean += heatShift;
             jackpotWeight = EndlessCycleService.DropJackpotWeight(
                 table.GradeJackpotWeight,
-                heat);
+                heat,
+                heatDropJackpotWeightStep);
         }
 
         var probabilities = GradeProbabilities(
