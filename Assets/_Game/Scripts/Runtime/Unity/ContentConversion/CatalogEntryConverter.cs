@@ -102,7 +102,8 @@ internal static class CatalogEntryConverter
             definition.ItemLevelMin,
             definition.ExclusiveGroupId ?? string.Empty,
             definition.ValueMin,
-            definition.ValueMax);
+            definition.ValueMax,
+            BuildTriggeredEffects(definition.Id, definition.TriggeredEffects));
     }
 
     internal static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)
@@ -125,23 +126,25 @@ internal static class CatalogEntryConverter
             ModifierPackageConverter.BuildAugmentPackage(definition),
             BuildRulePackage(definition.Id, ModifierSource.Augment, definition.RuleModifierTags),
             BuildGovernanceSummary(definition.BudgetCard),
-            BuildTriggeredEffects(definition),
+            BuildTriggeredEffects(definition.Id, definition.TriggeredEffects),
             definition.OfferBucket.ToString(),
             definition.RiskRewardClass.ToString(),
             Enumerate(definition.BuildBiasTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList());
     }
 
-    private static IReadOnlyList<CombatTriggeredEffect>? BuildTriggeredEffects(AugmentDefinition definition)
+    private static IReadOnlyList<CombatTriggeredEffect>? BuildTriggeredEffects(
+        string sourceId,
+        IReadOnlyList<TriggeredEffectSpec>? triggeredEffects)
     {
-        if (definition.TriggeredEffects == null || definition.TriggeredEffects.Count == 0)
+        if (triggeredEffects == null || triggeredEffects.Count == 0)
         {
             return null;
         }
 
-        return definition.TriggeredEffects
+        return triggeredEffects
             .Where(spec => spec != null)
             .Select(spec => new CombatTriggeredEffect(
-                definition.Id,
+                sourceId,
                 spec.Trigger,
                 spec.Op,
                 spec.Scope,

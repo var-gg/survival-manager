@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Contracts;
 using SM.Core.Stats;
 
 namespace SM.Editor.Validation;
@@ -24,13 +25,32 @@ internal readonly record struct EquipmentAffixV1Spec(
     string TextTemplateKey,
     float BudgetScore,
     float SpawnWeight,
-    int ItemLevelMin);
+    int ItemLevelMin,
+    IReadOnlyList<EquipmentAffixModifierV1Spec>? AdditionalModifiers = null,
+    IReadOnlyList<EquipmentAffixTriggerV1Spec>? TriggeredEffects = null,
+    EffectCapability Capabilities = EffectCapability.ModifyStats,
+    ContentRarity BudgetRarity = ContentRarity.Common);
+
+internal readonly record struct EquipmentAffixModifierV1Spec(
+    string StatId,
+    ModifierOp Operation,
+    float Value);
+
+internal readonly record struct EquipmentAffixTriggerV1Spec(
+    CombatTriggerKind Trigger,
+    TriggeredEffectOp Op,
+    EffectScope Scope,
+    float Magnitude,
+    float ThresholdRatio = 0f,
+    string StatusId = "",
+    float DurationSeconds = 0f,
+    int MaxStacks = 1);
 
 internal static class EquipmentContentV1Contract
 {
     internal const int ItemCount = 42;
-    internal const int AffixCount = 30;
-    internal const int LiveAffixCount = 30;
+    internal const int AffixCount = 44;
+    internal const int LiveAffixCount = 44;
     internal const int ReservedAffixCount = 0;
     internal const int ReservedAffixItemLevelMin = 999;
     internal const string RefitCurrencyTag = "echo";
@@ -123,6 +143,20 @@ internal static class EquipmentContentV1Contract
         "affix_ravenous",
         "affix_reaching",
         "affix_spined",
+        "affix_reckless_edge",
+        "affix_brittle_focus",
+        "affix_overclocked",
+        "affix_blood_price",
+        "affix_lightfooted_plate",
+        "affix_burdened_reach",
+        "affix_reaper_spark",
+        "affix_last_ward",
+        "affix_executioners_edge",
+        "affix_desperate_focus",
+        "affix_mourning_aegis",
+        "affix_first_light",
+        "affix_war_chorus",
+        "affix_fallen_chorus",
     };
 
     internal static readonly HashSet<string> ReservedAffixIds = new(StringComparer.Ordinal);
@@ -130,26 +164,39 @@ internal static class EquipmentContentV1Contract
     internal static readonly IReadOnlyList<string> LiveAffixOrder = new[]
     {
         "affix_blessed",
+        "affix_blood_price",
         "affix_bracing",
+        "affix_brittle_focus",
+        "affix_burdened_reach",
         "affix_channeling",
         "affix_cleansing",
+        "affix_desperate_focus",
+        "affix_executioners_edge",
+        "affix_fallen_chorus",
         "affix_farshot",
         "affix_fierce",
+        "affix_first_light",
         "affix_focusing",
         "affix_guarded",
         "affix_hallowed",
         "affix_hasty",
         "affix_heavy",
         "affix_ironclad",
+        "affix_last_ward",
+        "affix_lightfooted_plate",
         "affix_lithe",
         "affix_lucid",
         "affix_mender",
+        "affix_mourning_aegis",
+        "affix_overclocked",
         "affix_packborn",
         "affix_piercing",
         "affix_precise",
         "affix_quick",
         "affix_ravenous",
         "affix_reaching",
+        "affix_reaper_spark",
+        "affix_reckless_edge",
         "affix_relentless",
         "affix_resolute",
         "affix_sharp",
@@ -157,6 +204,7 @@ internal static class EquipmentContentV1Contract
         "affix_sturdy",
         "affix_vital",
         "affix_warded",
+        "affix_war_chorus",
         "affix_watchful",
         "affix_wraithbound",
     };
@@ -201,6 +249,26 @@ internal static class EquipmentContentV1Contract
         Live("affix_packborn", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.BuildShaping, AffixCategoryValue.SynergyTagged, "max_health", ModifierOp.Flat, 2f, 4f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("support", "sustain"), Tags(), Tags(), "build.packborn_sustain", "content.affix.template.build", 12f),
         Live("affix_wraithbound", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.BuildShaping, AffixCategoryValue.SynergyTagged, "mag_power", ModifierOp.Flat, 1f, 3f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("magical", "wildcard_risk"), Tags(), Tags(), "build.wraithbound_magic", "content.affix.template.build", 12f),
 
+        // Decision-bearing tradeoffs. The first modifier owns ValueMin/ValueMax; every additional modifier
+        // scales proportionally from the same item-instance roll through AffixMagnitudePackageResolver.
+        Live("affix_reckless_edge", AffixTierValue.Implicit, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.StatModifier, AffixCategoryValue.OffenseFlat, "phys_power", ModifierOp.Flat, 1.5f, 2.5f, Slots(ItemSlotType.Weapon), Tags("physical", "strike"), Tags(), Tags(), "tradeoff.reckless_edge", "content.affix.template.build", 6f, additionalModifiers: ExtraModifiers(ExtraModifier("armor", ModifierOp.Flat, -1f))),
+        Live("affix_brittle_focus", AffixTierValue.Implicit, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.StatModifier, AffixCategoryValue.OffenseFlat, "mag_power", ModifierOp.Flat, 1.5f, 2.5f, Slots(ItemSlotType.Weapon), Tags("magical", "focus"), Tags(), Tags(), "tradeoff.brittle_focus", "content.affix.template.build", 6f, additionalModifiers: ExtraModifiers(ExtraModifier("resist", ModifierOp.Flat, -1f))),
+        Live("affix_overclocked", AffixTierValue.Implicit, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "attack_speed", ModifierOp.Increased, 0.03f, 0.05f, Slots(ItemSlotType.Accessory), Tags("tempo", "wildcard_risk"), Tags(), Tags(), "tradeoff.overclocked", "content.affix.template.build", 6f, additionalModifiers: ExtraModifiers(ExtraModifier("max_health", ModifierOp.Increased, -0.04f))),
+        Live("affix_blood_price", AffixTierValue.Prefix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "lifesteal", ModifierOp.Flat, 0.03f, 0.05f, Slots(ItemSlotType.Weapon), Tags("sustain", "wildcard_risk"), Tags(), Tags(), "tradeoff.blood_price", "content.affix.template.build", 8f, additionalModifiers: ExtraModifiers(ExtraModifier("max_health", ModifierOp.Increased, -0.04f))),
+        Live("affix_lightfooted_plate", AffixTierValue.Prefix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "move_speed", ModifierOp.Increased, 0.03f, 0.05f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("tempo", "guard"), Tags(), Tags(), "tradeoff.lightfooted_plate", "content.affix.template.build", 8f, additionalModifiers: ExtraModifiers(ExtraModifier("armor", ModifierOp.Flat, -1f))),
+        Live("affix_burdened_reach", AffixTierValue.Prefix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.StatModifier, AffixCategoryValue.Utility, "attack_range", ModifierOp.Flat, 0.15f, 0.25f, Slots(ItemSlotType.Weapon), Tags("backline", "tempo"), Tags(), Tags(), "tradeoff.burdened_reach", "content.affix.template.build", 8f, additionalModifiers: ExtraModifiers(ExtraModifier("move_speed", ModifierOp.Increased, -0.03f))),
+
+        // Existing trigger and behavior-tag consumers make these live in actual battle without adding a new
+        // status, slot, grade, trigger kind, or combat-state rule language.
+        Live("affix_reaper_spark", AffixTierValue.Prefix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.Proc, AffixCategoryValue.Utility, string.Empty, ModifierOp.Flat, 8f, 12f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("tempo"), Tags(), Tags(), "trigger.reaper_spark", "content.affix.template.build", 8f, triggeredEffects: TriggerSpecs(Trigger(CombatTriggerKind.OnKill, TriggeredEffectOp.GainEnergy, EffectScope.Self, 10f)), capabilities: EffectCapability.ModifyResource),
+        Live("affix_last_ward", AffixTierValue.Prefix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.Proc, AffixCategoryValue.DefenseScaling, string.Empty, ModifierOp.Flat, 4f, 8f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("guard", "sustain"), Tags(), Tags(), "trigger.last_ward", "content.affix.template.build", 8f, triggeredEffects: TriggerSpecs(Trigger(CombatTriggerKind.OnHpBelow, TriggeredEffectOp.Barrier, EffectScope.Self, 6f, 0.5f)), capabilities: EffectCapability.HealOrBarrier),
+        Live("affix_executioners_edge", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.BuildShaping, AffixCategoryValue.OffenseFlat, "phys_power", ModifierOp.Flat, 1f, 2f, Slots(ItemSlotType.Weapon), Tags("physical", "execute"), Tags(), Tags("execute_low_hp"), "conditional.executioners_edge", "content.affix.template.build", 8f, capabilities: EffectCapability.ModifyStats | EffectCapability.ModifyGlobalCombatRule),
+        Live("affix_desperate_focus", AffixTierValue.Prefix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.Proc, AffixCategoryValue.Utility, string.Empty, ModifierOp.Flat, 15f, 25f, Slots(ItemSlotType.Weapon, ItemSlotType.Accessory), Tags("focus", "tempo"), Tags(), Tags(), "trigger.desperate_focus", "content.affix.template.build", 10f, triggeredEffects: TriggerSpecs(Trigger(CombatTriggerKind.OnHpBelow, TriggeredEffectOp.GainEnergy, EffectScope.Self, 20f, 0.4f)), capabilities: EffectCapability.ModifyResource, budgetRarity: ContentRarity.Epic),
+        Live("affix_mourning_aegis", AffixTierValue.Prefix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.Proc, AffixCategoryValue.DefenseScaling, string.Empty, ModifierOp.Flat, 4f, 8f, Slots(ItemSlotType.Armor, ItemSlotType.Accessory), Tags("guard", "support"), Tags(), Tags(), "trigger.mourning_aegis", "content.affix.template.build", 10f, triggeredEffects: TriggerSpecs(Trigger(CombatTriggerKind.OnAllyDeath, TriggeredEffectOp.Barrier, EffectScope.Self, 6f)), capabilities: EffectCapability.HealOrBarrier),
+        Live("affix_first_light", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.Proc, AffixCategoryValue.DefenseScaling, string.Empty, ModifierOp.Flat, 3f, 5f, Slots(ItemSlotType.Weapon, ItemSlotType.Armor, ItemSlotType.Accessory), Tags("guard", "support"), Tags(), Tags(), "trigger.first_light", "content.affix.template.build", 10f, triggeredEffects: TriggerSpecs(Trigger(CombatTriggerKind.BattleStart, TriggeredEffectOp.Barrier, EffectScope.Self, 4f)), capabilities: EffectCapability.HealOrBarrier),
+        Live("affix_war_chorus", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.Proc, AffixCategoryValue.Utility, string.Empty, ModifierOp.Flat, 2f, 4f, Slots(ItemSlotType.Accessory), Tags("support", "guard"), Tags(), Tags(), "trigger.war_chorus", "content.affix.template.build", 12f, triggeredEffects: TriggerSpecs(Trigger(CombatTriggerKind.BattleStart, TriggeredEffectOp.Barrier, EffectScope.AlliedCombatants, 3f)), capabilities: EffectCapability.HealOrBarrier),
+        Live("affix_fallen_chorus", AffixTierValue.Suffix, AffixFamilyValue.BuildShaping, AffixEffectTypeValue.Proc, AffixCategoryValue.Utility, string.Empty, ModifierOp.Flat, 3f, 7f, Slots(ItemSlotType.Accessory), Tags("support", "sustain"), Tags(), Tags(), "trigger.fallen_chorus", "content.affix.template.build", 12f, triggeredEffects: TriggerSpecs(Trigger(CombatTriggerKind.OnAllyDeath, TriggeredEffectOp.Heal, EffectScope.AlliedCombatants, 5f)), capabilities: EffectCapability.HealOrBarrier),
+
     };
 
     internal static readonly IReadOnlyDictionary<string, EquipmentAffixV1Spec> AffixSpecsById =
@@ -222,7 +290,11 @@ internal static class EquipmentContentV1Contract
         IReadOnlyList<string> ruleTags,
         string exclusiveGroup,
         string templateKey,
-        float budgetScore)
+        float budgetScore,
+        IReadOnlyList<EquipmentAffixModifierV1Spec>? additionalModifiers = null,
+        IReadOnlyList<EquipmentAffixTriggerV1Spec>? triggeredEffects = null,
+        EffectCapability capabilities = EffectCapability.ModifyStats,
+        ContentRarity budgetRarity = ContentRarity.Common)
     {
         return new EquipmentAffixV1Spec(
             id,
@@ -242,12 +314,51 @@ internal static class EquipmentContentV1Contract
             templateKey,
             budgetScore,
             1f,
-            0);
+            0,
+            additionalModifiers,
+            triggeredEffects,
+            capabilities,
+            budgetRarity);
     }
 
     private static IReadOnlyList<ItemSlotType> Slots(params ItemSlotType[] slots) => slots;
 
     private static IReadOnlyList<string> Tags(params string[] tags) => tags;
+
+    private static EquipmentAffixModifierV1Spec ExtraModifier(
+        string statId,
+        ModifierOp operation,
+        float value)
+    {
+        return new EquipmentAffixModifierV1Spec(statId, operation, value);
+    }
+
+    private static IReadOnlyList<EquipmentAffixModifierV1Spec> ExtraModifiers(
+        params EquipmentAffixModifierV1Spec[] modifiers)
+    {
+        return modifiers;
+    }
+
+    private static EquipmentAffixTriggerV1Spec Trigger(
+        CombatTriggerKind trigger,
+        TriggeredEffectOp op,
+        EffectScope scope,
+        float magnitude,
+        float thresholdRatio = 0f)
+    {
+        return new EquipmentAffixTriggerV1Spec(
+            trigger,
+            op,
+            scope,
+            magnitude,
+            thresholdRatio);
+    }
+
+    private static IReadOnlyList<EquipmentAffixTriggerV1Spec> TriggerSpecs(
+        params EquipmentAffixTriggerV1Spec[] effects)
+    {
+        return effects;
+    }
 
     private static IReadOnlyDictionary<string, EquipmentAffixV1Spec> BuildAffixSpecIndex()
     {

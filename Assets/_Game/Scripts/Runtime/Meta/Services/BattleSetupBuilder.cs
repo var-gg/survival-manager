@@ -80,11 +80,11 @@ public static class BattleSetupBuilder
             packages.Add(archetype.ClassStatPackage);
         }
 
-        var appliedAffixTemplates = new List<AffixTemplate>();
+        var appliedAffixes = new List<(AffixTemplate Template, float? Magnitude)>();
         var deferredConditionalAffixes = new List<(AffixTemplate Template, float? Magnitude)>();
         if (!TryAddTraitPackage(participant.PositiveTraitId, content, packages, out error) ||
             !TryAddTraitPackage(participant.NegativeTraitId, content, packages, out error) ||
-            !TryAddItemPackages(participant.EquippedItems, content, packages, appliedAffixTemplates, deferredConditionalAffixes, out error) ||
+            !TryAddItemPackages(participant.EquippedItems, content, packages, appliedAffixes, deferredConditionalAffixes, out error) ||
             !TryAddAugmentPackages(participant.TemporaryAugmentIds, content, packages, out error))
         {
             definition = null!;
@@ -104,7 +104,12 @@ public static class BattleSetupBuilder
         // CompileTags는 컨텍스트에 넣지 않는다(자기충족 순환 차단).
         if (deferredConditionalAffixes.Count > 0)
         {
-            var conditionContext = BuildAffixConditionContext(archetype, resolvedRoleTag, appliedAffixTemplates, participant.EquippedItems, content);
+            var conditionContext = BuildAffixConditionContext(
+                archetype,
+                resolvedRoleTag,
+                appliedAffixes.Select(entry => entry.Template).ToList(),
+                participant.EquippedItems,
+                content);
             foreach (var deferredAffix in deferredConditionalAffixes)
             {
                 var template = deferredAffix.Template;
@@ -121,11 +126,17 @@ public static class BattleSetupBuilder
                         deferredAffix.Magnitude));
                 }
 
-                appliedAffixTemplates.Add(template);
+                appliedAffixes.Add((template, deferredAffix.Magnitude));
             }
         }
 
+        var appliedAffixTemplates = appliedAffixes.Select(entry => entry.Template).ToList();
         var rulePackages = BuildRulePackages(participant, archetype, appliedAffixTemplates);
+        var triggeredEffects = appliedAffixes
+            .SelectMany(entry => AffixMagnitudePackageResolver.ResolveTriggeredEffects(
+                entry.Template.TriggeredEffects,
+                entry.Magnitude))
+            .ToList();
 
         // 유닛 CompileTags 저작(null parity 해소) — LoadoutCompiler와 같은 축(race:/class:/raw/role/
         // 아이템/스킬/affix 태그). 시너지 tier 카운트(CountedTagId=race/class id)의 소재. 조건부 affix는
@@ -176,7 +187,8 @@ public static class BattleSetupBuilder
             archetype.Id,
             string.IsNullOrWhiteSpace(participant.CharacterId) ? archetype.Id : participant.CharacterId,
             roleInstructionId,
-            ResolveDominantHand(participant, content, archetype));
+            ResolveDominantHand(participant, content, archetype),
+            triggeredEffects);
         error = string.Empty;
         return true;
     }
@@ -346,7 +358,7 @@ public static class BattleSetupBuilder
         IReadOnlyList<BattleEquippedItemSpec> equippedItems,
         CombatContentSnapshot content,
         List<CombatModifierPackage> packages,
-        List<AffixTemplate> appliedAffixTemplates,
+        List<(AffixTemplate Template, float? Magnitude)> appliedAffixes,
         List<(AffixTemplate Template, float? Magnitude)> deferredConditionalAffixes,
         out string error)
     {
@@ -390,7 +402,7 @@ public static class BattleSetupBuilder
                     rolledMagnitude));
                 if (template != null)
                 {
-                    appliedAffixTemplates.Add(template);
+                    appliedAffixes.Add((template, rolledMagnitude));
                 }
             }
         }

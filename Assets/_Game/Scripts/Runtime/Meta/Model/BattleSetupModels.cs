@@ -351,7 +351,8 @@ public sealed record AffixTemplate(
     int ItemLevelMin = 0,
     string ExclusiveGroupId = "",
     float ValueMin = 0f,
-    float ValueMax = 0f)
+    float ValueMax = 0f,
+    IReadOnlyList<CombatTriggeredEffect>? TriggeredEffects = null)
 {
     public bool IsConditional => RequiredTags.Count > 0 || ExcludedTags.Count > 0;
 }

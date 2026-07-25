@@ -163,7 +163,7 @@ public sealed class LoadoutCompiler
                             artifacts,
                             hero.Id,
                             "affix");
-                        ApplyAffixTemplate(affixTemplate, artifacts, hero.Id);
+                        ApplyAffixTemplate(affixTemplate, rolledMagnitude, artifacts, hero.Id);
                     }
                 }
             }
@@ -346,7 +346,7 @@ public sealed class LoadoutCompiler
                         artifacts,
                         hero.Id,
                         "affix_conditional");
-                    ApplyAffixTemplate(affixTemplate, artifacts, hero.Id);
+                    ApplyAffixTemplate(affixTemplate, deferredAffix.Magnitude, artifacts, hero.Id);
                 }
             }
 
@@ -678,7 +678,11 @@ public sealed class LoadoutCompiler
             : null;
     }
 
-    private static void ApplyAffixTemplate(AffixTemplate? template, CompiledArtifacts artifacts, string subjectId)
+    private static void ApplyAffixTemplate(
+        AffixTemplate? template,
+        float? rolledMagnitude,
+        CompiledArtifacts artifacts,
+        string subjectId)
     {
         if (template == null)
         {
@@ -691,6 +695,24 @@ public sealed class LoadoutCompiler
         }
 
         AddRulePackage(template.RulePackage, artifacts, subjectId, "affix_rule");
+
+        var triggeredEffects = AffixMagnitudePackageResolver.ResolveTriggeredEffects(
+            template.TriggeredEffects,
+            rolledMagnitude);
+        if (triggeredEffects.Count == 0)
+        {
+            return;
+        }
+
+        artifacts.TriggeredEffects.AddRange(triggeredEffects);
+        artifacts.Provenance.Add(new CompileProvenanceEntry(
+            subjectId,
+            ModifierSource.Item,
+            template.Id,
+            "affix_triggered_effect",
+            triggeredEffects
+                .Select(effect => $"{effect.Trigger}:{effect.Op}:{effect.Magnitude.ToString("R", CultureInfo.InvariantCulture)}")
+                .ToList()));
     }
 
     private static bool IsConditionalAffixSatisfied(AffixTemplate template, HashSet<string> compileTags)

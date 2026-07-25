@@ -98,26 +98,60 @@ public static class EquipmentContentV1Assetizer
             affix.SpawnWeight = spec.SpawnWeight;
             affix.ExclusiveGroupId = spec.ExclusiveGroupId;
             affix.BudgetScore = spec.BudgetScore;
+            var hasDrawback = spec.AdditionalModifiers?.Any(modifier => modifier.Value < 0f) == true;
+            var hasTrigger = spec.TriggeredEffects is { Count: > 0 };
+            var budgetTarget = LoopCContentGovernance.AffixBudgetTargets[spec.BudgetRarity].Target;
             affix.BudgetCard = new BudgetCard
             {
                 Domain = BudgetDomain.Affix,
-                Rarity = ContentRarity.Common,
+                Rarity = spec.BudgetRarity,
                 PowerBand = spec.Family == AffixFamilyValue.BuildShaping ? PowerBand.Major : PowerBand.Minor,
-                Vector = new BudgetVector { Reliability = 6 },
+                Vector = hasDrawback
+                    ? new BudgetVector { Reliability = budgetTarget + 1, DrawbackCredit = 1 }
+                    : new BudgetVector { Reliability = budgetTarget },
+                KeywordCount = hasTrigger || spec.RuleModifierTagIds.Count > 0 ? 2 : 1,
+                ConditionClauseCount = hasTrigger || spec.RuleModifierTagIds.Count > 0 ? 1 : 0,
             };
             affix.TextTemplateKey = spec.TextTemplateKey;
             affix.AuthorityLayer = AuthorityLayer.Affix;
-            affix.Modifiers = new List<SerializableStatModifier>
+            affix.Modifiers = new List<SerializableStatModifier>();
+            if (!string.IsNullOrWhiteSpace(spec.StatId))
             {
-                new() { StatId = spec.StatId, Op = spec.Operation, Value = (spec.ValueMin + spec.ValueMax) * 0.5f }
-            };
+                affix.Modifiers.Add(new SerializableStatModifier
+                {
+                    StatId = spec.StatId,
+                    Op = spec.Operation,
+                    Value = (spec.ValueMin + spec.ValueMax) * 0.5f,
+                });
+            }
+
+            affix.Modifiers.AddRange((spec.AdditionalModifiers ?? Array.Empty<EquipmentAffixModifierV1Spec>())
+                .Select(modifier => new SerializableStatModifier
+                {
+                    StatId = modifier.StatId,
+                    Op = modifier.Operation,
+                    Value = modifier.Value,
+                }));
+            affix.TriggeredEffects = (spec.TriggeredEffects ?? Array.Empty<EquipmentAffixTriggerV1Spec>())
+                .Select(effect => new TriggeredEffectSpec
+                {
+                    Trigger = effect.Trigger,
+                    Op = effect.Op,
+                    Scope = effect.Scope,
+                    Magnitude = effect.Magnitude,
+                    ThresholdRatio = effect.ThresholdRatio,
+                    StatusId = effect.StatusId,
+                    DurationSeconds = effect.DurationSeconds,
+                    MaxStacks = effect.MaxStacks,
+                })
+                .ToList();
             affix.Effects = new List<EffectDescriptor>
             {
                 new()
                 {
                     Layer = AuthorityLayer.Affix,
                     Scope = EffectScope.Self,
-                    Capabilities = EffectCapability.ModifyStats,
+                    Capabilities = spec.Capabilities,
                 }
             };
 

@@ -118,8 +118,8 @@ public sealed class AffixQualityProfilePhase1Tests
         Assert.That(profilesCompiled, Is.EqualTo(210), "shipped matrix remains 42 items x 5 grades");
         Assert.That(
             q70EqualsQ80,
-            Is.EqualTo(126),
-            "all 42 Common/Magic/Rare profiles retain the measured q70=q80 collapse");
+            Is.EqualTo(125),
+            "the expanded shipped affix catalog retains its measured q70=q80 collapse count");
     }
 
     private static void ValidateFixedPointProfile(AffixQualityProfile profile)

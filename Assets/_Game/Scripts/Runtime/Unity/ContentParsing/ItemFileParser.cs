@@ -82,6 +82,7 @@ internal static class ItemFileParser
             definition.AuthorityLayer = (AuthorityLayer)ExtractInt(lines, "AuthorityLayer:");
             definition.Effects = ParseEffectDescriptors(lines, "Effects:");
             definition.Modifiers = ParseModifiers(lines, "Modifiers:");
+            definition.TriggeredEffects = SkillEffectSpecFileParser.ParseTriggeredEffects(lines, "TriggeredEffects:");
             ApplyFallbackIdentity(definition, path);
             ApplyAffixFallbacks(definition);
             return definition;

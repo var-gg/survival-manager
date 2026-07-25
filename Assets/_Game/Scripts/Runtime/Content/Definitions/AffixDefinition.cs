@@ -40,6 +40,7 @@ namespace SM.Content.Definitions
         public AuthorityLayer AuthorityLayer = AuthorityLayer.Affix;
         public List<EffectDescriptor> Effects = new();
         public List<SerializableStatModifier> Modifiers = new();
+        public List<TriggeredEffectSpec> TriggeredEffects = new();
 
         [FormerlySerializedAs("DisplayName")]
         [SerializeField, HideInInspector] private string legacyDisplayName = string.Empty;

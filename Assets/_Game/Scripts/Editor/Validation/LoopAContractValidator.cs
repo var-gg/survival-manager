@@ -134,9 +134,37 @@ internal static class LoopAContractValidator
             allowedCapabilities:
             EffectCapability.ModifyStats |
             EffectCapability.ApplyStatus |
+            EffectCapability.HealOrBarrier |
             EffectCapability.ModifyResource |
             EffectCapability.ModifyCooldown |
-            EffectCapability.GrantPassive);
+            EffectCapability.GrantPassive |
+            EffectCapability.ModifyGlobalCombatRule);
+
+        var declaresHealingOrBarrier = affix.Effects?.Any(effect =>
+            (effect.Capabilities & EffectCapability.HealOrBarrier) != 0) == true;
+        var hasHealingOrBarrierTrigger = affix.TriggeredEffects?.Any(effect =>
+            effect != null
+            && (effect.Op is TriggeredEffectOp.Heal or TriggeredEffectOp.Barrier)) == true;
+        if (declaresHealingOrBarrier != hasHealingOrBarrierTrigger)
+        {
+            AddError(
+                issues,
+                "loop_a.affix.heal_or_barrier_payload",
+                $"Affix '{affix.Id}' must declare HealOrBarrier exactly when it authors a Heal or Barrier trigger.",
+                assetPath);
+        }
+
+        var declaresRuleModifier = affix.Effects?.Any(effect =>
+            (effect.Capabilities & EffectCapability.ModifyGlobalCombatRule) != 0) == true;
+        var hasRuleModifierTag = affix.RuleModifierTags is { Count: > 0 };
+        if (declaresRuleModifier != hasRuleModifierTag)
+        {
+            AddError(
+                issues,
+                "loop_a.affix.rule_modifier_payload",
+                $"Affix '{affix.Id}' must declare ModifyGlobalCombatRule exactly when it authors a rule modifier tag.",
+                assetPath);
+        }
     }
 
     public static void ValidateAugment(AugmentDefinition augment, string assetPath, ICollection<ContentValidationIssue> issues)

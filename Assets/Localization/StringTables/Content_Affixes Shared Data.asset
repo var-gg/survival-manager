@@ -255,6 +255,118 @@ MonoBehaviour:
     m_Key: content.affix.affix_lithe.desc
     m_Metadata:
       m_Items: []
+  - m_Id: 42431347984502784
+    m_Key: content.affix.affix_reckless_edge.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348005474304
+    m_Key: content.affix.affix_reckless_edge.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348399738880
+    m_Key: content.affix.affix_brittle_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348399738881
+    m_Key: content.affix.affix_brittle_focus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348785614848
+    m_Key: content.affix.affix_overclocked.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348785614849
+    m_Key: content.affix.affix_overclocked.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349175685120
+    m_Key: content.affix.affix_blood_price.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349175685121
+    m_Key: content.affix.affix_blood_price.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349561561088
+    m_Key: content.affix.affix_lightfooted_plate.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349561561089
+    m_Key: content.affix.affix_lightfooted_plate.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349951631360
+    m_Key: content.affix.affix_burdened_reach.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349951631361
+    m_Key: content.affix.affix_burdened_reach.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350371061760
+    m_Key: content.affix.affix_reaper_spark.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350371061761
+    m_Key: content.affix.affix_reaper_spark.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350798880768
+    m_Key: content.affix.affix_last_ward.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350798880769
+    m_Key: content.affix.affix_last_ward.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351188951040
+    m_Key: content.affix.affix_executioners_edge.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351188951041
+    m_Key: content.affix.affix_executioners_edge.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351591604224
+    m_Key: content.affix.affix_desperate_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351591604225
+    m_Key: content.affix.affix_desperate_focus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351990063104
+    m_Key: content.affix.affix_mourning_aegis.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351990063105
+    m_Key: content.affix.affix_mourning_aegis.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352388521984
+    m_Key: content.affix.affix_first_light.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352388521985
+    m_Key: content.affix.affix_first_light.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352778592256
+    m_Key: content.affix.affix_war_chorus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352778592257
+    m_Key: content.affix.affix_war_chorus.desc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431353172856832
+    m_Key: content.affix.affix_fallen_chorus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431353172856833
+    m_Key: content.affix.affix_fallen_chorus.desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

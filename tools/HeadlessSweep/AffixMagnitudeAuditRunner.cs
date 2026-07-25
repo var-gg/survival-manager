@@ -102,13 +102,12 @@ internal static class AffixMagnitudeAuditRunner
         var results = new List<AffixDrift>();
         foreach (var template in snapshot.AffixCatalog.Values.OrderBy(value => value.Id, StringComparer.Ordinal))
         {
-            if (!snapshot.AffixPackages.TryGetValue(template.Id, out var package)
-                || package.Modifiers.Count == 0)
+            if (!snapshot.AffixPackages.TryGetValue(template.Id, out var package))
             {
-                throw new InvalidDataException($"Affix '{template.Id}' has no numeric package.");
+                throw new InvalidDataException($"Affix '{template.Id}' has no modifier package.");
             }
 
-            var baseline = package.Modifiers[0].Value;
+            var baseline = ResolveLegacyAppliedValue(template, package);
             var expected = AffixMagnitudeRoller.ExpectedMagnitude(template.ValueMin, template.ValueMax);
             var sampleMean = Enumerable.Range(0, samples)
                 .Average(seed => AffixMagnitudeRoller.Roll(
@@ -162,7 +161,7 @@ internal static class AffixMagnitudeAuditRunner
                         var affixId = affixIds[affixIndex];
                         var template = lookup.Snapshot.AffixCatalog![affixId];
                         var package = lookup.Snapshot.AffixPackages[affixId];
-                        var baseline = package.Modifiers[0].Value;
+                        var baseline = ResolveLegacyAppliedValue(template, package);
                         var rolled = AffixMagnitudeRoller.Roll(
                             seed,
                             affixId,
@@ -198,6 +197,24 @@ internal static class AffixMagnitudeAuditRunner
         }
 
         return results;
+    }
+
+    private static float ResolveLegacyAppliedValue(
+        AffixTemplate template,
+        SM.Combat.Model.CombatModifierPackage package)
+    {
+        if (package.Modifiers.Count > 0)
+        {
+            return package.Modifiers[0].Value;
+        }
+
+        if (template.TriggeredEffects is { Count: > 0 })
+        {
+            return template.TriggeredEffects[0].Magnitude;
+        }
+
+        throw new InvalidDataException(
+            $"Affix '{template.Id}' has neither a numeric modifier nor a triggered-effect magnitude.");
     }
 
     private static string BuildMagnitudeHash(CombatContentSnapshot snapshot, int seeds)

@@ -937,17 +937,21 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
 
         if (liveAffixes.Count != EquipmentContentV1Contract.LiveAffixCount || reservedAffixes.Count != EquipmentContentV1Contract.ReservedAffixCount)
         {
-            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_live_reserved_mix", $"Equipment V1 affix mix must be live/reserved = 30/0. Found {liveAffixes.Count}/{reservedAffixes.Count}.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "equipment_v1.affix_live_reserved_mix",
+                $"Equipment V1 affix mix must be live/reserved = {EquipmentContentV1Contract.LiveAffixCount}/{EquipmentContentV1Contract.ReservedAffixCount}. Found {liveAffixes.Count}/{reservedAffixes.Count}.",
+                ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         var tierMix = liveAffixes
             .GroupBy(affix => affix.Tier)
             .ToDictionary(group => group.Key, group => group.Count());
-        if (GetCount(tierMix, AffixTierValue.Implicit) != 6
-            || GetCount(tierMix, AffixTierValue.Prefix) != 15
-            || GetCount(tierMix, AffixTierValue.Suffix) != 9)
+        if (GetCount(tierMix, AffixTierValue.Implicit) != 9
+            || GetCount(tierMix, AffixTierValue.Prefix) != 22
+            || GetCount(tierMix, AffixTierValue.Suffix) != 13)
         {
-            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_tier_mix", $"Live affix tiers must be Implicit/Prefix/Suffix = 6/15/9.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_tier_mix", $"Live affix tiers must be Implicit/Prefix/Suffix = 9/22/13.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         var familyMix = liveAffixes
@@ -955,9 +959,9 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
             .ToDictionary(group => group.Key, group => group.Count());
         if (GetCount(familyMix, AffixFamilyValue.CoreScalar) != 20
             || GetCount(familyMix, AffixFamilyValue.ConditionalTagged) != 6
-            || GetCount(familyMix, AffixFamilyValue.BuildShaping) != 4)
+            || GetCount(familyMix, AffixFamilyValue.BuildShaping) != 18)
         {
-            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_family_mix", $"Live affix families must be CoreScalar/ConditionalTagged/BuildShaping = 20/6/4.", ContentValidationPolicyCatalog.ReportFolderName);
+            ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_family_mix", $"Live affix families must be CoreScalar/ConditionalTagged/BuildShaping = 20/6/18.", ContentValidationPolicyCatalog.ReportFolderName);
         }
 
         foreach (var spec in EquipmentContentV1Contract.AffixSpecs)
@@ -981,12 +985,15 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
                     ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_live_spawn", $"Live affix '{affix.Id}' must be spawnable in V1.", assetPath);
                 }
 
+                var hasMechanicalPayload = affix.Modifiers is { Count: > 0 }
+                    || affix.TriggeredEffects is { Count: > 0 }
+                    || affix.RuleModifierTags is { Count: > 0 };
                 if (string.IsNullOrWhiteSpace(affix.TextTemplateKey)
                     || string.IsNullOrWhiteSpace(affix.ExclusiveGroupId)
                     || affix.ValueMax <= 0f
-                    || affix.Modifiers.Count == 0)
+                    || !hasMechanicalPayload)
                 {
-                    ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_authoring_payload", $"Live affix '{affix.Id}' must define text template, exclusive group, value range, and numeric modifier.", assetPath);
+                    ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_authoring_payload", $"Live affix '{affix.Id}' must define text template, exclusive group, positive value range, and a mechanical payload (numeric modifier, trigger, or rule tag).", assetPath);
                 }
             }
             else if (affix.SpawnWeight != 0f || affix.ItemLevelMin < EquipmentContentV1Contract.ReservedAffixItemLevelMin)

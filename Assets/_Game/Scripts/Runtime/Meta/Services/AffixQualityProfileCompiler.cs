@@ -168,6 +168,8 @@ public sealed class AffixQualityProfileCompiler
         private readonly IReadOnlyList<string> _gradeStepTiers;
         private readonly int _targetBudgetScoreQ;
         private readonly IReadOnlyDictionary<int, CompiledCandidate> _candidates;
+        private readonly BigInteger[] _futureCandidateMasks;
+        private readonly BigInteger[] _futureExclusiveGroupMasks;
         private readonly Dictionary<CompiledSelectorState, StateResult> _memo = new();
         private long _peakManagedMemoryBytes = GC.GetTotalMemory(false);
 
@@ -181,6 +183,27 @@ public sealed class AffixQualityProfileCompiler
             _gradeStepTiers = GeneratedItemAffixStateGraph.GetGradeStepTiers(grade);
             _targetBudgetScoreQ = targetBudgetScoreQ;
             _candidates = candidates;
+            _futureCandidateMasks = new BigInteger[_gradeStepTiers.Count + 1];
+            _futureExclusiveGroupMasks = new BigInteger[_gradeStepTiers.Count + 1];
+            for (var gradeStepIndex = _gradeStepTiers.Count - 1; gradeStepIndex >= 0; gradeStepIndex--)
+            {
+                var candidateMask = _futureCandidateMasks[gradeStepIndex + 1];
+                var exclusiveGroupMask = _futureExclusiveGroupMasks[gradeStepIndex + 1];
+                var tier = _gradeStepTiers[gradeStepIndex];
+                foreach (var candidate in graph.Candidates)
+                {
+                    if (!string.Equals(candidate.Template.Tier, tier, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    candidateMask |= candidate.IdMask;
+                    exclusiveGroupMask |= candidate.ExclusiveGroupMask;
+                }
+
+                _futureCandidateMasks[gradeStepIndex] = candidateMask;
+                _futureExclusiveGroupMasks[gradeStepIndex] = exclusiveGroupMask;
+            }
         }
 
         internal int MemoizedStateCount => _memo.Count;
@@ -188,6 +211,7 @@ public sealed class AffixQualityProfileCompiler
 
         internal StateResult Compile(CompiledSelectorState state)
         {
+            state = Canonicalize(state);
             if (_memo.TryGetValue(state, out var cached))
             {
                 return cached;
@@ -350,6 +374,7 @@ public sealed class AffixQualityProfileCompiler
                         throw new ArgumentOutOfRangeException(nameof(state));
                 }
 
+                state = Canonicalize(state);
                 if (!_memo.TryGetValue(state, out var completion)
                     || !completion.MassByScoreQ.TryGetValue(exactFinalScoreQ, out var mass)
                     || mass == 0UL)
@@ -408,7 +433,11 @@ public sealed class AffixQualityProfileCompiler
             var effectiveWeights = new List<ExactWeight>();
             foreach (var transition in transitions)
             {
-                if (!_memo[transition.NextState].MassByScoreQ.TryGetValue(
+                var canonicalTransition = transition with
+                {
+                    NextState = Canonicalize(transition.NextState),
+                };
+                if (!_memo[canonicalTransition.NextState].MassByScoreQ.TryGetValue(
                         exactFinalScoreQ,
                         out var completionMass)
                     || completionMass == 0UL)
@@ -416,10 +445,10 @@ public sealed class AffixQualityProfileCompiler
                     continue;
                 }
 
-                viable.Add(transition);
+                viable.Add(canonicalTransition);
                 effectiveWeights.Add(new ExactWeight(
-                    transition.NaturalWeight.Numerator * completionMass,
-                    transition.NaturalWeight.Denominator));
+                    canonicalTransition.NaturalWeight.Numerator * completionMass,
+                    canonicalTransition.NaturalWeight.Denominator));
             }
 
             if (viable.Count == 0)
@@ -575,6 +604,42 @@ public sealed class AffixQualityProfileCompiler
             };
         }
 
+        private CompiledSelectorState Canonicalize(CompiledSelectorState state)
+        {
+            if (state.Phase == CompiledSelectorPhase.BeforeImplicit)
+            {
+                return state;
+            }
+
+            if (state.Phase == CompiledSelectorPhase.Terminal)
+            {
+                return new CompiledSelectorState(
+                    CompiledSelectorPhase.Terminal,
+                    _gradeStepTiers.Count,
+                    0,
+                    0,
+                    state.TotalScoreQ,
+                    BigInteger.Zero,
+                    BigInteger.Zero);
+            }
+
+            var firstRelevantGradeStep = Math.Max(0, state.GradeStepIndex);
+            if (state.Phase == CompiledSelectorPhase.DrawingGradeStep
+                && state.AccumulatedStepProgressQ >= state.StepBudgetQ)
+            {
+                firstRelevantGradeStep++;
+            }
+
+            firstRelevantGradeStep = Math.Min(firstRelevantGradeStep, _gradeStepTiers.Count);
+            return state with
+            {
+                SelectedAffixMask =
+                    state.SelectedAffixMask & _futureCandidateMasks[firstRelevantGradeStep],
+                OccupiedExclusiveGroupMask =
+                    state.OccupiedExclusiveGroupMask & _futureExclusiveGroupMasks[firstRelevantGradeStep],
+            };
+        }
+
         private static StateResult Combine(IReadOnlyList<WeightedChild> children)
         {
             var transitionMasses = AllocateQ64(children.Select(child => child.Weight).ToArray());
@@ -606,7 +671,9 @@ public sealed class AffixQualityProfileCompiler
                     throw new InvalidOperationException("Transition weights must be positive.");
                 }
 
-                commonDenominator *= weight.Denominator;
+                commonDenominator = LeastCommonMultiple(
+                    commonDenominator,
+                    weight.Denominator);
             }
 
             var commonNumerators = new BigInteger[weights.Count];
@@ -643,6 +710,9 @@ public sealed class AffixQualityProfileCompiler
 
             return masses;
         }
+
+        private static BigInteger LeastCommonMultiple(BigInteger left, BigInteger right)
+            => (left / BigInteger.GreatestCommonDivisor(left, right)) * right;
 
         private static IReadOnlyDictionary<int, ulong> NormalizeProducts(
             IReadOnlyDictionary<int, BigInteger> numeratorsByScore)

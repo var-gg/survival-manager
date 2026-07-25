@@ -70,6 +70,7 @@ public static partial class SampleSeedGenerator
         CreateAugments();
         CreateItems();
         CreateAffixes();
+        CreateDecisionAffixes();
         CreateSafeTargetPassiveNodes(stableTags);
         CreateDuelistBuildContent(stableTags);
         PatchGrantedSkillHostNodes();

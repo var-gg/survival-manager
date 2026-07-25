@@ -55,6 +55,39 @@ public static class AffixMagnitudePackageResolver
             sharedPackage.GrantedTeamRuleId);
     }
 
+    public static IReadOnlyList<CombatTriggeredEffect> ResolveTriggeredEffects(
+        IReadOnlyList<CombatTriggeredEffect>? sharedEffects,
+        float? rolledMagnitude)
+    {
+        if (sharedEffects == null || sharedEffects.Count == 0)
+        {
+            return Array.Empty<CombatTriggeredEffect>();
+        }
+
+        if (!rolledMagnitude.HasValue
+            || float.IsNaN(rolledMagnitude.Value)
+            || float.IsInfinity(rolledMagnitude.Value))
+        {
+            return sharedEffects;
+        }
+
+        var magnitude = rolledMagnitude.Value;
+        var baseline = sharedEffects[0].Magnitude;
+        if (baseline != 0f)
+        {
+            var scale = magnitude / baseline;
+            return sharedEffects
+                .Select(effect => effect with { Magnitude = effect.Magnitude * scale })
+                .ToArray();
+        }
+
+        return sharedEffects
+            .Select((effect, index) => index == 0
+                ? effect with { Magnitude = magnitude }
+                : effect)
+            .ToArray();
+    }
+
     public static float? Find(
         IReadOnlyDictionary<string, float>? magnitudes,
         string affixId)

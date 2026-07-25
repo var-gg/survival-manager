@@ -258,6 +258,119 @@ MonoBehaviour:
     m_Localized: Lithe
     m_Metadata:
       m_Items: []
+  - m_Id: 42431347984502784
+    m_Localized: Reckless Edge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348005474304
+    m_Localized: Gain physical power, but lose armor.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348399738880
+    m_Localized: Brittle Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348399738881
+    m_Localized: Gain magical power, but lose resistance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348785614848
+    m_Localized: Overclocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431348785614849
+    m_Localized: Attack faster, but lose maximum health.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349175685120
+    m_Localized: Blood Price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349175685121
+    m_Localized: Gain lifesteal, but lose maximum health.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349561561088
+    m_Localized: Lightfooted Plate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349561561089
+    m_Localized: Move faster, but lose armor.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349951631360
+    m_Localized: Burdened Reach
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431349951631361
+    m_Localized: Gain attack range, but move more slowly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350371061760
+    m_Localized: Reaper Spark
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350371061761
+    m_Localized: Gain energy when this unit kills an enemy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350798880768
+    m_Localized: Last Ward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431350798880769
+    m_Localized: Gain a barrier the first time health falls to 50% or lower.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351188951040
+    m_Localized: Executioner's Edge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351188951041
+    m_Localized: Gain physical power and deal 25% more damage to enemies at 35% health
+      or lower.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351591604224
+    m_Localized: Desperate Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351591604225
+    m_Localized: Gain energy the first time health falls to 40% or lower.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351990063104
+    m_Localized: Mourning Aegis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431351990063105
+    m_Localized: Gain a barrier when another ally falls.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352388521984
+    m_Localized: First Light
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352388521985
+    m_Localized: Gain a barrier at battle start.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352778592256
+    m_Localized: War Chorus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431352778592257
+    m_Localized: Grant a barrier to all allied combatants at battle start.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431353172856832
+    m_Localized: Fallen Chorus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42431353172856833
+    m_Localized: Heal surviving allied combatants when another ally falls.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

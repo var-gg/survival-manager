@@ -25,6 +25,24 @@ public sealed class AffixQualityProfileFastTests
             "test-catalog-v1",
             out _);
 
+        Assert.That(
+            profile.SupportScoreQ,
+            Is.EqualTo(new[] { 5000, 6000, 7000, 8000, 9000, 10000, 11000 }),
+            "Exact state canonicalization must preserve the pre-optimization support.");
+        Assert.That(
+            profile.MassQ64,
+            Is.EqualTo(new ulong[]
+            {
+                432345564227567616UL,
+                2977943840876549064UL,
+                6984568395846285775UL,
+                6154531081118922460UL,
+                1509289647550566683UL,
+                356503126866435384UL,
+                31562417223224633UL,
+            }),
+            "Exact state canonicalization must preserve every pre-optimization Q0.64 mass.");
+
         Assert.That(profile.SupportScoreQ, Is.Ordered.Ascending);
         Assert.That(profile.SupportScoreQ.Distinct().Count(), Is.EqualTo(profile.SupportScoreQ.Count));
         Assert.That(profile.CdfQ64, Is.Ordered.Ascending);

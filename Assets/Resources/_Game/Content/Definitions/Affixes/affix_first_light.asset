@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c8a59f3b4c0be24f9cf2a8a28383cf4, type: 3}
+  m_Name: affix_first_light
+  m_EditorClassIdentifier: SM.Content::SM.Content.Definitions.AffixDefinition
+  Id: affix_first_light
+  NameKey: content.affix.affix_first_light.name
+  DescriptionKey: content.affix.affix_first_light.desc
+  Category: 3
+  Tier: 2
+  AffixFamily: 3
+  EffectType: 5
+  ValueMin: 3
+  ValueMax: 5
+  AllowedSlotTypes: 000000000100000002000000
+  CompileTags:
+  - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  RuleModifierTags: []
+  RequiredTags: []
+  ExcludedTags: []
+  ItemLevelMin: 0
+  SpawnWeight: 1
+  ExclusiveGroupId: trigger.first_light
+  BudgetScore: 10
+  BudgetCard:
+    Domain: 4
+    Rarity: 0
+    PowerBand: 3
+    RoleProfile: -1
+    Vector:
+      SustainedDamage: 0
+      BurstDamage: 0
+      Durability: 0
+      Control: 0
+      Mobility: 0
+      Support: 0
+      CounterCoverage: 0
+      Reliability: 6
+      Economy: 0
+      DrawbackCredit: 0
+    KeywordCount: 2
+    ConditionClauseCount: 1
+    RuleExceptionCount: 0
+    DeclaredThreatPatterns: 
+    DeclaredCounterTools: []
+    DeclaredFeatureFlags: 0
+  TextTemplateKey: content.affix.template.build
+  AuthorityLayer: 2
+  Effects:
+  - Layer: 2
+    Scope: 0
+    Capabilities: 8
+    AllowMirroredOwnedSummonKill: 0
+    AllowsPersistentSummonChain: 0
+    LoadoutTopologyDelta: 0
+  Modifiers: []
+  TriggeredEffects:
+  - Trigger: 0
+    Op: 2
+    Scope: 0
+    Magnitude: 4
+    ThresholdRatio: 0
+    StatusId: 
+    DurationSeconds: 0
+    MaxStacks: 1
+  legacyDisplayName: 
+  legacyDescription: 
