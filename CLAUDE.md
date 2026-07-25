@@ -67,7 +67,7 @@ pwsh -File tools/focus-unity.ps1            # 반드시 먼저 실행
 MCP 서버가 죽어있으면 ("No Session" 또는 MCP 도구 응답 없음) 아래 명령으로 복구한다:
 
 ```powershell
-C:\Users\curioustore\.local\bin\uvx.exe --prerelease explicit --from "mcpforunityserver>=0.0.0a0" mcp-for-unity --transport http --http-url http://127.0.0.1:43157 --project-scoped-tools
+C:\Users\rhkdw\.local\bin\uvx.exe --prerelease explicit --from "mcpforunityserver>=0.0.0a0" mcp-for-unity --transport http --http-url http://127.0.0.1:43157 --project-scoped-tools
 ```
 
 ### unity-bridge.ps1 (기본 경로)
