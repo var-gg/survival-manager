@@ -69,7 +69,7 @@ public sealed class HeadlessCampaignDeterminismTests
     }
 
     [Test]
-    public void TwoFreshColdStartCampaigns_MintByteIdenticalIds_AndRefitAffix()
+    public void TwoFreshColdStartCampaigns_MintByteIdenticalIds_AndRefitRoll()
     {
         var legacyDefault = new SaveProfile();
         Assert.That(legacyDefault.HeroInstanceCounter, Is.Zero,
@@ -93,7 +93,7 @@ public sealed class HeadlessCampaignDeterminismTests
         AssertUtf8Equal(string.Join("\n", first.MintedItemIds), string.Join("\n", second.MintedItemIds),
             "생성된 item-instance id가 두 fresh session 사이에서 byte-identical하지 않다.");
         AssertUtf8Equal(first.RefitSignature, second.RefitSignature,
-            "결정적 item-instance id를 소비한 refit 결과 affix가 byte-identical하지 않다.");
+            "결정적 item-instance id를 소비한 refit 결과 roll이 byte-identical하지 않다.");
         Assert.That(second.HeroCounter, Is.EqualTo(first.HeroCounter));
         Assert.That(second.ItemCounter, Is.EqualTo(first.ItemCounter));
 
@@ -153,6 +153,7 @@ public sealed class HeadlessCampaignDeterminismTests
     private static InstanceIdWitnessSnapshot RunInstanceIdWitnessCampaign()
     {
         var lookup = new RuntimeCombatContentLookup();
+        Assert.That(lookup.TryGetCombatSnapshot(out var snapshot, out var snapshotError), Is.True, snapshotError);
         var session = H100SessionDriver.CreateSession(
             lookup,
             $"headless_instance_id_determinism_s{InstanceIdWitnessSeed}");
@@ -216,25 +217,40 @@ public sealed class HeadlessCampaignDeterminismTests
         var refitItemId = string.Empty;
         var beforeAffix = string.Empty;
         var afterAffix = string.Empty;
-        foreach (var item in mintedItems.OrderBy(item => item.ItemInstanceId, StringComparer.Ordinal))
+        var beforeMagnitude = string.Empty;
+        var afterMagnitude = string.Empty;
+        var refitErrors = new List<string>();
+        foreach (var item in session.Profile.Inventory
+                     .Where(item => item.AffixIds.Count > 0)
+                     .OrderBy(item => item.ItemInstanceId, StringComparer.Ordinal))
         {
-            // Refit is an endgame Epic+ mechanic. Promote this determinism witness's saved grade
-            // while retaining its legacy affix list so the migration path is exercised as well.
-            item.RolledRarityTier = (int)SM.Core.Content.ItemRarityTierValue.Epic;
+            item.AffixMagnitudeRolls = item.AffixIds.Select(affixId =>
+                new InventoryAffixMagnitudeRecord
+                {
+                    AffixId = affixId,
+                    Magnitude = snapshot.AffixCatalog![affixId].ValueMin,
+                }).ToList();
             beforeAffix = string.Join("|", item.AffixIds);
+            beforeMagnitude = MagnitudeSignature(item);
             var refit = session.RefitItem(item.ItemInstanceId);
             if (refit.IsSuccess)
             {
                 refitItemId = item.ItemInstanceId;
                 afterAffix = string.Join("|", item.AffixIds);
+                afterMagnitude = MagnitudeSignature(item);
                 break;
             }
+
+            refitErrors.Add($"{item.ItemInstanceId}:{refit.Error}");
         }
 
         Assert.That(refitItemId, Is.Not.Empty,
-            "minted production item 중 item-level RefitItem이 성공하는 장비가 필요하다.");
-        Assert.That(afterAffix, Is.Not.EqualTo(beforeAffix),
-            "witness는 실제 item-level Refit 결과 affix bytes를 비교해야 한다.");
+            $"production inventory 중 item-level RefitItem이 성공하는 장비가 필요하다. "
+            + $"errors=[{string.Join(" | ", refitErrors)}]");
+        Assert.That(afterAffix, Is.EqualTo(beforeAffix),
+            "roll-quality Refit은 affix identity bytes를 보존해야 한다.");
+        Assert.That(afterMagnitude, Is.Not.EqualTo(beforeMagnitude),
+            "witness는 실제 item-level Refit 결과 magnitude bytes를 비교해야 한다.");
 
         var campaign = new CampaignPlaythroughRunner(
             session,
@@ -247,7 +263,7 @@ public sealed class HeadlessCampaignDeterminismTests
             "\n",
             campaign.SiteObservations.Select(site =>
                 $"{site.ChapterId}|{site.SiteId}|{site.ChosenRewardKind}|{site.ChosenRewardIndex}|{site.RewardLedgerDelta}"));
-        var refitSignature = $"{refitItemId}\n{afterAffix}";
+        var refitSignature = $"{refitItemId}\n{afterAffix}\n{afterMagnitude}";
         return new InstanceIdWitnessSnapshot(
             new[] { firstMintedHero.HeroId, replacementHero.HeroId },
             mintedItems.Select(item => item.ItemInstanceId).ToArray(),
@@ -261,6 +277,14 @@ public sealed class HeadlessCampaignDeterminismTests
     {
         Assert.That(Encoding.UTF8.GetBytes(actual), Is.EqualTo(Encoding.UTF8.GetBytes(expected)), message);
     }
+
+    private static string MagnitudeSignature(InventoryItemRecord item)
+        => string.Join(
+            "|",
+            (item.AffixMagnitudeRolls ?? new List<InventoryAffixMagnitudeRecord>())
+            .OrderBy(roll => roll.AffixId, StringComparer.Ordinal)
+            .Select(roll =>
+                $"{roll.AffixId}:{BitConverter.SingleToInt32Bits(roll.Magnitude)}"));
 
     private static void AssertSafeDecimalSequence(string id, string marker)
     {

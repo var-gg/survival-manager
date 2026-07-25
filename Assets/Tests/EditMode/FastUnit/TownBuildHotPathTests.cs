@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -89,7 +90,7 @@ public sealed class TownBuildHotPathTests
     // ──────────────────────────────────────────────
 
     [Test]
-    public void RefitItem_Success_ChangesWholeItemAndDeductsDynamicEcho()
+    public void RefitItem_Success_PreservesAffixesRerollsMagnitudesAndDeductsDynamicEcho()
     {
         var lookup = RefitTestFixture.CreateLookup();
         var session = CreateBoundSession(lookup);
@@ -106,6 +107,16 @@ public sealed class TownBuildHotPathTests
             RefitTestFixture.WeaponItemId,
             oldAffixes.ToList());
         item.RolledRarityTier = (int)ItemRarityTierValue.Epic;
+        var oldMagnitudes = RefitTestFixture.CreateMagnitudes(lookup, oldAffixes, 0.05d);
+        item.AffixMagnitudeRolls = oldAffixes.Select(affixId =>
+            new InventoryAffixMagnitudeRecord
+            {
+                AffixId = affixId,
+                Magnitude = oldMagnitudes[affixId],
+            }).ToList();
+        var oldMagnitudeBits = item.AffixMagnitudeRolls
+            .Select(value => BitConverter.SingleToInt32Bits(value.Magnitude))
+            .ToArray();
         session.Profile.Currencies.Echo = 10_000;
         var echoBefore = session.Profile.Currencies.Echo;
 
@@ -114,7 +125,10 @@ public sealed class TownBuildHotPathTests
         Assert.That(result.IsSuccess, Is.True, result.Error);
         Assert.That(session.Profile.Currencies.Echo, Is.LessThan(echoBefore), "Echo가 차감되어야 함");
         Assert.That(item.RefitLevel, Is.GreaterThan(0));
-        Assert.That(item.AffixIds, Is.Not.EqualTo(oldAffixes));
+        Assert.That(item.AffixIds, Is.EqualTo(oldAffixes));
+        Assert.That(
+            item.AffixMagnitudeRolls.Select(value => BitConverter.SingleToInt32Bits(value.Magnitude)),
+            Is.Not.EqualTo(oldMagnitudeBits));
     }
 
     [Test]
@@ -135,6 +149,16 @@ public sealed class TownBuildHotPathTests
             RefitTestFixture.WeaponItemId,
             oldAffixes.ToList());
         item.RolledRarityTier = (int)ItemRarityTierValue.Epic;
+        var oldMagnitudes = RefitTestFixture.CreateMagnitudes(lookup, oldAffixes, 0.05d);
+        item.AffixMagnitudeRolls = oldAffixes.Select(affixId =>
+            new InventoryAffixMagnitudeRecord
+            {
+                AffixId = affixId,
+                Magnitude = oldMagnitudes[affixId],
+            }).ToList();
+        var oldMagnitudeBits = item.AffixMagnitudeRolls
+            .Select(value => BitConverter.SingleToInt32Bits(value.Magnitude))
+            .ToArray();
         session.Profile.Currencies.Echo = 0;
 
         var result = session.RefitItem(item.ItemInstanceId);
@@ -144,6 +168,9 @@ public sealed class TownBuildHotPathTests
         Assert.That(result.Error, Does.Contain("잔향"));
         Assert.That(item.RefitLevel, Is.Zero);
         Assert.That(item.AffixIds, Is.EqualTo(oldAffixes));
+        Assert.That(
+            item.AffixMagnitudeRolls.Select(value => BitConverter.SingleToInt32Bits(value.Magnitude)),
+            Is.EqualTo(oldMagnitudeBits));
     }
 
     // ──────────────────────────────────────────────

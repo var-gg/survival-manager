@@ -35,7 +35,6 @@ internal static class RefitFarmSpendingPolicy
             var baselinePower = HeadlessCampaignEffectivePower.Measure(state);
             var candidates = new List<Candidate>();
             foreach (var item in state.Inventory
-                         .Where(value => value.RarityTier >= ItemRarityTierValue.Epic)
                          .OrderBy(value => value.AcquisitionIndex)
                          .ThenBy(value => value.InstanceId, StringComparer.Ordinal))
             {
@@ -62,10 +61,15 @@ internal static class RefitFarmSpendingPolicy
                 }
 
                 var oldAffixes = item.AffixIds;
+                var oldMagnitudes = item.AffixMagnitudes;
                 var oldRefitLevel = item.RefitLevel;
                 try
                 {
                     item.AffixIds = execution.AffixIds.ToArray();
+                    item.AffixMagnitudes = execution.AffixMagnitudes.ToDictionary(
+                        pair => pair.Key,
+                        pair => pair.Value,
+                        StringComparer.Ordinal);
                     item.RefitLevel = quote.TargetRefitLevel;
                     var resultingLoadout = HeadlessCampaignEquipmentPowerPolicy.Apply(state);
                     var resultingPower = HeadlessCampaignEffectivePower.Measure(state);
@@ -75,12 +79,13 @@ internal static class RefitFarmSpendingPolicy
                         + $"{purchaseRound.ToString(CultureInfo.InvariantCulture)}|"
                         + $"{item.InstanceId}|{quote.CurrentRefitLevel.ToString(CultureInfo.InvariantCulture)}"
                         + $"->{quote.TargetRefitLevel.ToString(CultureInfo.InvariantCulture)}";
-                    var budgetScoreIncreased = quote.TargetScoreQ > quote.CurrentScoreQ;
+                    var qualityIncreased =
+                        execution.ResultPercentileQ64 > quote.CurrentPercentileQ64;
                     diagnostics.Add(new RefitFarmPreviewObservation(
                         transitionKey,
                         deltaLogPower,
-                        budgetScoreIncreased,
-                        budgetScoreIncreased && deltaLogPower < -1e-12d));
+                        qualityIncreased,
+                        qualityIncreased && deltaLogPower < -1e-12d));
 
                     var placement = resultingLoadout.Slots
                         .FirstOrDefault(slot => string.Equals(
@@ -96,6 +101,10 @@ internal static class RefitFarmSpendingPolicy
                     candidates.Add(new Candidate(
                         item,
                         execution.AffixIds.ToArray(),
+                        execution.AffixMagnitudes.ToDictionary(
+                            pair => pair.Key,
+                            pair => pair.Value,
+                            StringComparer.Ordinal),
                         quote,
                         deltaLogPower,
                         deltaLogPower / quote.EchoCost,
@@ -106,6 +115,7 @@ internal static class RefitFarmSpendingPolicy
                 finally
                 {
                     item.AffixIds = oldAffixes;
+                    item.AffixMagnitudes = oldMagnitudes;
                     item.RefitLevel = oldRefitLevel;
                 }
             }
@@ -132,6 +142,7 @@ internal static class RefitFarmSpendingPolicy
             }
 
             selected.Item.AffixIds = selected.AffixIds;
+            selected.Item.AffixMagnitudes = selected.AffixMagnitudes;
             selected.Item.RefitLevel = selected.Quote.TargetRefitLevel;
             _ = HeadlessCampaignEquipmentPowerPolicy.Apply(state);
             var powerAfter = HeadlessCampaignEffectivePower.Measure(state);
@@ -147,15 +158,15 @@ internal static class RefitFarmSpendingPolicy
             var postQuote = service.QuoteNextEffective(
                 ToRefitState(selected.Item),
                 economy);
-            var resultPercentile = RefitFloorSchedule.ToDouble(postQuote.CurrentPercentileQ64);
-            var targetFloor = RefitFloorSchedule.ToDouble(selected.Quote.TargetFloorQ64);
+            var resultPercentile = RefitRollQuality.FromQ64(postQuote.CurrentPercentileQ64);
+            var targetFloor = RefitRollQuality.FromQ64(selected.Quote.TargetFloorQ64);
             purchases.Add(new RefitFarmPurchaseObservation(
                 mapIndex,
                 selected.Item.InstanceId,
                 selected.Quote.TargetRefitLevel,
                 selected.Quote.EchoCost,
-                selected.Quote.CurrentScoreQ,
-                selected.Quote.TargetScoreQ,
+                selected.Quote.CurrentPercentileQ64,
+                postQuote.CurrentPercentileQ64,
                 actualDelta,
                 Math.Max(0d, resultPercentile - targetFloor)));
             purchaseRound++;
@@ -170,6 +181,7 @@ internal static class RefitFarmSpendingPolicy
             item.InstanceId,
             item.RarityTier,
             item.AffixIds,
+            item.AffixMagnitudes,
             item.RefitLevel);
 
     private static int IndexOf(IReadOnlyList<string> values, string value)
@@ -225,6 +237,7 @@ internal static class RefitFarmSpendingPolicy
     private sealed record Candidate(
         HeadlessCampaignItem Item,
         IReadOnlyList<string> AffixIds,
+        IReadOnlyDictionary<string, float> AffixMagnitudes,
         RefitQuote Quote,
         double DeltaLogPower,
         double Ratio,

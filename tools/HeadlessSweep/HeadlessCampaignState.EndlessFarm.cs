@@ -148,7 +148,11 @@ internal sealed partial class HeadlessCampaignState
                         item.ItemBaseId,
                         item.AcquisitionIndex,
                         item.RarityTier,
-                        item.AffixIds.ToArray()));
+                        item.AffixIds.ToArray(),
+                        item.AffixMagnitudes.ToDictionary(
+                            pair => pair.Key,
+                            pair => pair.Value,
+                            StringComparer.Ordinal)));
                     itemDrops++;
                 }
             }

@@ -10,6 +10,7 @@ internal static class RefitDeterminismProbe
 {
     private const string SnapshotRelativePath = "Assets/Resources/_Game/Content/content-snapshot.json";
     private const ulong StableCommandSeed = 0xA2C0FFEEUL;
+    private const int StableItemSeed = 1701;
 
     public static int Run(string repositoryRoot)
     {
@@ -31,67 +32,92 @@ internal static class RefitDeterminismProbe
                 throw new InvalidDataException("Content snapshot has no positive GradeStepBudgetScore.");
             }
 
+            var affixCatalog = snapshot.AffixCatalog
+                               ?? throw new InvalidDataException(
+                                   "Content snapshot has no affix catalog.");
             var chapterEconomy = ResolveChapterEconomy(snapshot);
             var lookup = new SnapshotSessionContentLookup(snapshot);
-            var selector = new AffixQualityConditionedSelector();
-            var compiler = new AffixQualityProfileCompiler();
-            var service = new RefitService(lookup, balance, gradeStepBudgetScore);
+            var service = new RefitService(lookup, balance);
 
-            foreach (var itemId in lookup.GetCanonicalItemIds().OrderBy(value => value, StringComparer.Ordinal))
+            foreach (var itemId in lookup.GetCanonicalItemIds()
+                         .OrderBy(value => value, StringComparer.Ordinal))
             {
-                foreach (var grade in new[] { ItemRarityTierValue.Epic, ItemRarityTierValue.Legendary })
+                foreach (var grade in Enum.GetValues<ItemRarityTierValue>())
                 {
-                    AffixQualityProfile profile;
+                    IReadOnlyList<string> affixIds;
                     try
                     {
-                        profile = compiler.Compile(
+                        affixIds = GeneratedItemAffixSelector.Select(
                             lookup,
                             itemId,
+                            StableItemSeed,
                             grade,
-                            gradeStepBudgetScore,
-                            balance.AffixCatalogVersion,
-                            out _);
+                            gradeStepBudgetScore);
                     }
                     catch (Exception)
                     {
                         continue;
                     }
 
-                    if (profile.SupportScoreQ.Count < 2)
+                    if (affixIds.Count == 0)
                     {
                         continue;
                     }
 
-                    var initialAffixes = selector.SelectBudgetWeightedConditioned(
-                        profile,
-                        profile.SupportScoreQ[0],
-                        seed: 1701);
+                    var magnitudes = new Dictionary<string, float>(StringComparer.Ordinal);
+                    for (var index = 0; index < affixIds.Count; index++)
+                    {
+                        var affixId = affixIds[index];
+                        if (!affixCatalog.TryGetValue(affixId, out var affix))
+                        {
+                            throw new InvalidDataException(
+                                $"Generated affix '{affixId}' was missing from the snapshot.");
+                        }
+
+                        magnitudes.Add(
+                            affixId,
+                            AffixMagnitudeRoller.Roll(
+                                StableItemSeed,
+                                affixId,
+                                index,
+                                affix.ValueMin,
+                                affix.ValueMax));
+                    }
+
                     var item = new RefitItemState(
                         itemId,
                         "refit-cross-process-item-0",
                         grade,
-                        initialAffixes,
+                        affixIds,
+                        magnitudes,
                         RefitLevel: 0);
-                    var result = service.RefitNextEffective(item, chapterEconomy, StableCommandSeed);
+                    var result = service.RefitNextEffective(
+                        item,
+                        chapterEconomy,
+                        StableCommandSeed);
                     if (!result.Applied)
                     {
                         continue;
                     }
 
-                    var affixBytes = EncodeAffixIds(result.AffixIds);
                     var output = new RefitDeterminismOutput(
                         itemId,
                         grade.ToString(),
                         result.Quote.TargetRefitLevel,
-                        result.Quote.TargetScoreQ,
-                        Convert.ToHexString(SHA256.HashData(affixBytes)).ToLowerInvariant(),
-                        result.AffixIds.ToArray());
+                        result.Quote.CurrentPercentileQ64,
+                        result.Quote.TargetFloorQ64,
+                        result.ResultPercentileQ64,
+                        affixIds.SequenceEqual(result.AffixIds, StringComparer.Ordinal),
+                        Hash(EncodeAffixIds(result.AffixIds)),
+                        Hash(EncodeMagnitudes(result.AffixIds, result.AffixMagnitudes)),
+                        result.AffixIds.ToArray(),
+                        result.AffixIds.Select(id => result.AffixMagnitudes[id]).ToArray());
                     Console.WriteLine(JsonConvert.SerializeObject(output, Formatting.None));
                     return 0;
                 }
             }
 
-            throw new InvalidOperationException("No shipped item/grade profile could execute a Refit.");
+            throw new InvalidOperationException("No shipped item/grade could execute a roll-quality Refit.");
         }
         catch (Exception exception)
         {
@@ -140,11 +166,35 @@ internal static class RefitDeterminismProbe
         return stream.ToArray();
     }
 
+    private static byte[] EncodeMagnitudes(
+        IReadOnlyList<string> affixIds,
+        IReadOnlyDictionary<string, float> magnitudes)
+    {
+        using var stream = new MemoryStream();
+        using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
+        writer.Write(affixIds.Count);
+        foreach (var affixId in affixIds)
+        {
+            writer.Write(BitConverter.SingleToInt32Bits(magnitudes[affixId]));
+        }
+
+        writer.Flush();
+        return stream.ToArray();
+    }
+
+    private static string Hash(byte[] bytes)
+        => Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
+
     private sealed record RefitDeterminismOutput(
         string ItemId,
         string Grade,
         int TargetLevel,
-        int ScoreQ,
+        ulong CurrentQualityQ64,
+        ulong TargetFloorQ64,
+        ulong ResultQualityQ64,
+        bool AffixIdsPreserved,
         string AffixHash,
-        IReadOnlyList<string> AffixIds);
+        string PostRefitMagnitudeHash,
+        IReadOnlyList<string> AffixIds,
+        IReadOnlyList<float> AffixMagnitudes);
 }

@@ -31,7 +31,7 @@ public sealed class EquipmentRefitPresenterFastTests
     }
 
     [Test]
-    public void OnPoolItemSelected_SwitchesToInertRareItemAndExplainsWhy()
+    public void OnPoolItemSelected_RareItemAlsoOffersRollQualityRefit()
     {
         var lookup = RefitTestFixture.CreateLookup();
         var session = CreateSession(lookup);
@@ -42,10 +42,10 @@ public sealed class EquipmentRefitPresenterFastTests
         Assert.That(view.RenderCount, Is.GreaterThan(0));
         var state = presenter.BuildState();
         Assert.That(state.SelectedItemName, Is.EqualTo(RefitTestFixture.ArmorItemId));
-        Assert.That(state.RefitMaxed, Is.True);
-        Assert.That(state.RefitCost, Is.Zero);
-        Assert.That(state.SelectedItemCanRefit, Is.False);
-        Assert.That(state.RefitStatusMessage, Is.EqualTo("이 등급은 개선 가능한 품질 구간이 없습니다."));
+        Assert.That(state.RefitMaxed, Is.False);
+        Assert.That(state.RefitCost, Is.GreaterThan(0));
+        Assert.That(state.SelectedItemCanRefit, Is.True);
+        Assert.That(state.RefitStatusMessage, Does.Contain("보장 바닥"));
         Assert.That(state.Pool.Single(row => row.ItemInstanceId == "inv-rare").IsSelected, Is.True);
     }
 

@@ -10,6 +10,8 @@ namespace SM.Meta.Services;
 
 /// <summary>
 /// Production generated-affix state graph를 fixed-point로 완전 순회해 exact-support Q0.64 profile을 만든다.
+/// Current magnitude Refit intentionally does not consume this identity-quality machinery.
+/// Retain it for a future affix-identity reroll craft rather than treating it as dead code.
 /// </summary>
 public sealed class AffixQualityProfileCompiler
 {

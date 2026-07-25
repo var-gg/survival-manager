@@ -5,7 +5,8 @@ namespace SM.Meta.Services;
 
 /// <summary>
 /// Natural generated-affix graph를 exact terminal score에 조건부로 순회한다.
-/// A1에서는 production caller가 없으며 A2 item-level Refit이 이 API를 조립한다.
+/// Current magnitude Refit intentionally does not consume this identity-quality machinery.
+/// Retain it for a future affix-identity reroll craft rather than treating it as dead code.
 /// </summary>
 public sealed class AffixQualityConditionedSelector
 {

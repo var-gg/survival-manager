@@ -46,6 +46,13 @@ internal static class RefitFarmPairingVerifier
             foreach (var affixId in item.AffixIds)
             {
                 Append(builder, "item-affix", affixId);
+                Append(
+                    builder,
+                    "item-affix-magnitude-bits",
+                    item.AffixMagnitudes.TryGetValue(affixId, out var magnitude)
+                        ? BitConverter.SingleToInt32Bits(magnitude)
+                            .ToString(CultureInfo.InvariantCulture)
+                        : "missing");
             }
         }
 
@@ -72,7 +79,31 @@ internal static class RefitFarmPairingVerifier
                 || !string.Equals(a.ItemBaseId, b.ItemBaseId, StringComparison.Ordinal)
                 || a.AcquisitionIndex != b.AcquisitionIndex
                 || a.RarityTier != b.RarityTier
-                || !a.AffixIds.SequenceEqual(b.AffixIds, StringComparer.Ordinal))
+                || !a.AffixIds.SequenceEqual(b.AffixIds, StringComparer.Ordinal)
+                || !MagnitudeBytesEqual(a, b))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool MagnitudeBytesEqual(
+        HeadlessCampaignNaturalDrop left,
+        HeadlessCampaignNaturalDrop right)
+    {
+        if (left.AffixMagnitudes.Count != right.AffixMagnitudes.Count)
+        {
+            return false;
+        }
+
+        foreach (var affixId in left.AffixIds)
+        {
+            if (!left.AffixMagnitudes.TryGetValue(affixId, out var leftMagnitude)
+                || !right.AffixMagnitudes.TryGetValue(affixId, out var rightMagnitude)
+                || BitConverter.SingleToInt32Bits(leftMagnitude)
+                != BitConverter.SingleToInt32Bits(rightMagnitude))
             {
                 return false;
             }

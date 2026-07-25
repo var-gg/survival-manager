@@ -31,7 +31,6 @@ internal static class RefitFarmProfileRunner
             var balance = snapshot.RefitBalance
                           ?? throw new InvalidDataException(
                               "Refit farming measurement requires serialized Refit balance data.");
-            var gradeStepBudgetScore = ResolveGradeStepBudgetScore(snapshot);
             var targetSite = snapshot.ExpeditionSites?.GetValueOrDefault(
                                  EndlessHeatSweepRunner.TargetSiteId)
                              ?? throw new InvalidDataException(
@@ -63,7 +62,7 @@ internal static class RefitFarmProfileRunner
             var results = new List<RefitFarmScenarioResult>(
                 prepared.Count * Horizons.Length);
             using var services = new ThreadLocal<RefitService>(
-                () => new RefitService(lookup, balance, gradeStepBudgetScore),
+                () => new RefitService(lookup, balance),
                 trackAllValues: false);
             foreach (var horizon in Horizons)
             {
@@ -123,16 +122,17 @@ internal static class RefitFarmProfileRunner
             }
 
             var report = new RefitFarmProfileReport(
-                SchemaVersion: "refit-farm-profile-v1",
+                SchemaVersion: "refit-farm-profile-v2-roll-quality",
                 SeedsPerCell: options.SeedsPerCell,
                 Squads: cells.Select(cell => cell.Squad.SquadId).ToArray(),
                 Horizons,
                 HeatByHorizon,
                 BootstrapReplicates: options.BootstrapReplicates,
                 SpendingPolicy:
-                "After every map, preview every affordable Epic-or-Legendary item's next effective floor; "
-                + "re-run the deterministic maximum-total-BudgetScore 12-slot equip policy; measure "
-                + "squad effective power as total resolved MaxHealth times total resolved PhysPower+MagPower; "
+                "After every map, preview every affordable item's next effective roll-quality floor while "
+                + "preserving affix identities; re-run the deterministic maximum-total identity-BudgetScore "
+                + "12-slot equip policy; measure squad effective power with instance magnitudes as total "
+                + "resolved MaxHealth times total resolved PhysPower+MagPower; "
                 + "buy the highest positive delta-ln-power/Echo ratio; tie-break by expedition hero index, "
                 + "Weapon/Armor/Accessory order, stable item key, then target Refit level; repeat to exhaustion.",
                 Pairing: BuildPairing(results),
@@ -153,8 +153,10 @@ internal static class RefitFarmProfileRunner
                     + "indexing. A slice is activity-sufficient only with at least 32 purchases and purchases "
                     + "in at least 16 of the 32 seed clusters.",
                     "The role-affinity diagnostic covers every affordable deterministic candidate Refit execution "
-                    + "before the positive-ratio purchase filter. Purchased negative-power operations are also "
+                    + "that raises roll quality before the positive-ratio purchase filter. Purchased negative-power operations are also "
                     + "reported separately and are expected to be zero by policy construction.",
+                    "The BudgetScore-weighted mean of per-affix uniform roll positions is treated directly as "
+                    + "a percentile approximation; it is not mapped through the weighted mean's own distribution.",
                 },
                 CanonicalHash: string.Empty);
             var canonicalHash = HashReport(report);
@@ -219,7 +221,8 @@ internal static class RefitFarmProfileRunner
             HowVerified:
             "For every horizon/composition/seed, both arms were cloned from one already-equipped initial state "
             + "and its canonical save fingerprint and CampaignSeed were compared. After each map the ordered "
-            + "natural drop vector compared instance id, acquisition index, base, grade, and affix bytes, and "
+            + "natural drop vector compared instance id, acquisition index, base, grade, affix identity bytes, "
+            + "and exact float magnitude bits, and "
             + "the earned Echo amount was compared. At horizon end the prepared boss BattleSeed and ordered "
             + "ally-plus-enemy entity-id vectors were composed and compared before any battle run.");
     }
@@ -276,15 +279,15 @@ internal static class RefitFarmProfileRunner
         var overshootByLevel = purchases
             .GroupBy(value => value.TargetRefitLevel)
             .OrderBy(group => group.Key)
-            .Select(group => new RefitFarmCdfOvershootLevel(
+            .Select(group => new RefitFarmFloorOvershootLevel(
                 group.Key,
                 group.Count(),
-                group.Average(value => value.CdfOvershoot),
-                group.Max(value => value.CdfOvershoot)))
+                group.Average(value => value.FloorOvershoot),
+                group.Max(value => value.FloorOvershoot)))
             .ToArray();
         var previews = results
             .SelectMany(value => value.PreviewDiagnostics)
-            .Where(value => value.BudgetScoreIncreased)
+            .Where(value => value.QualityIncreased)
             .ToArray();
         var top20Count = results.Sum(value => value.Top20NaturalItems);
         return new RefitFarmDiagnosticsResult(
@@ -297,10 +300,10 @@ internal static class RefitFarmProfileRunner
             top20Count == 0
                 ? 0d
                 : 100d * results.Sum(value => value.Top20NaturalItemsChanged) / top20Count,
-            new RefitFarmCdfOvershootSummary(
+            new RefitFarmFloorOvershootSummary(
                 purchases.Length,
-                purchases.Length == 0 ? 0d : purchases.Average(value => value.CdfOvershoot),
-                purchases.Length == 0 ? 0d : purchases.Max(value => value.CdfOvershoot),
+                purchases.Length == 0 ? 0d : purchases.Average(value => value.FloorOvershoot),
+                purchases.Length == 0 ? 0d : purchases.Max(value => value.FloorOvershoot),
                 overshootByLevel),
             previews.Length == 0
                 ? 0d
@@ -309,22 +312,6 @@ internal static class RefitFarmProfileRunner
             purchases.Length == 0
                 ? 0d
                 : 100d * purchases.Count(value => value.PowerDeltaLog < -1e-12d) / purchases.Length);
-    }
-
-    private static float ResolveGradeStepBudgetScore(CombatContentSnapshot snapshot)
-    {
-        var values = (snapshot.DropTables?.Values ?? Array.Empty<DropTableTemplate>())
-            .Where(table => table.GradeProfiles is { Count: > 0 })
-            .Select(table => table.GradeStepBudgetScore)
-            .Distinct()
-            .ToArray();
-        if (values.Length != 1 || values[0] <= 0f)
-        {
-            throw new InvalidDataException(
-                $"Refit farming requires one positive grade-step BudgetScore, got [{string.Join(",", values)}].");
-        }
-
-        return values[0];
     }
 
     private static Options Parse(IReadOnlyList<string> arguments)

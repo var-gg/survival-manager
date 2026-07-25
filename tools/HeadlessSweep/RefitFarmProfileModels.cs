@@ -9,15 +9,15 @@ internal sealed record RefitFarmPurchaseObservation(
     string ItemInstanceId,
     int TargetRefitLevel,
     int EchoCost,
-    int ScoreBeforeQ,
-    int ScoreAfterQ,
+    ulong QualityBeforeQ64,
+    ulong QualityAfterQ64,
     double PowerDeltaLog,
-    double CdfOvershoot);
+    double FloorOvershoot);
 
 internal sealed record RefitFarmPreviewObservation(
     string TransitionKey,
     double PowerDeltaLog,
-    bool BudgetScoreIncreased,
+    bool QualityIncreased,
     bool ReducedActualPower);
 
 internal sealed record RefitFarmFinalItemObservation(
@@ -77,17 +77,17 @@ internal sealed record RefitFarmEchoHorizon(
     double MeanEchoSpentPerSeed,
     double MeanEchoSpentPerRefittedItem);
 
-internal sealed record RefitFarmCdfOvershootLevel(
+internal sealed record RefitFarmFloorOvershootLevel(
     int Level,
     int Operations,
     double Mean,
     double Maximum);
 
-internal sealed record RefitFarmCdfOvershootSummary(
+internal sealed record RefitFarmFloorOvershootSummary(
     int Operations,
     double Mean,
     double Maximum,
-    IReadOnlyList<RefitFarmCdfOvershootLevel> ByLevel);
+    IReadOnlyList<RefitFarmFloorOvershootLevel> ByLevel);
 
 internal sealed record RefitFarmDiagnosticsResult(
     IReadOnlyList<RefitFarmLevelDistribution> RefitLevelDistribution,
@@ -95,8 +95,8 @@ internal sealed record RefitFarmDiagnosticsResult(
     IReadOnlyList<RefitFarmEchoHorizon> EchoPerHorizon,
     double PctReaching70thCap,
     double PctTop20NaturalItemsChanged,
-    RefitFarmCdfOvershootSummary CdfOvershoot,
-    double PctRefitsReducingRealPower,
+    RefitFarmFloorOvershootSummary FloorOvershoot,
+    double PctPreviewsRaisingQualityReducingRealPower,
     int DistinctPreviewOperations,
     double PctPurchasedRefitsReducingRealPower);
 

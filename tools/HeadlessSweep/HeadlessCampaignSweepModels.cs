@@ -49,7 +49,7 @@ internal sealed class HeadlessCampaignItem
     internal string InstanceId { get; }
     internal string ItemBaseId { get; }
     internal IReadOnlyList<string> AffixIds { get; set; }
-    internal IReadOnlyDictionary<string, float> AffixMagnitudes { get; }
+    internal IReadOnlyDictionary<string, float> AffixMagnitudes { get; set; }
     internal string EquippedHeroId { get; set; }
     internal int AcquisitionIndex { get; }
     internal ItemRarityTierValue RarityTier { get; }
@@ -61,7 +61,8 @@ internal sealed record HeadlessCampaignNaturalDrop(
     string ItemBaseId,
     int AcquisitionIndex,
     ItemRarityTierValue RarityTier,
-    IReadOnlyList<string> AffixIds);
+    IReadOnlyList<string> AffixIds,
+    IReadOnlyDictionary<string, float> AffixMagnitudes);
 
 internal sealed record HeadlessCampaignFarmResult(
     int Maps,

@@ -22,7 +22,7 @@ internal sealed class SessionItemRefitFlow
         _contentLookup = contentLookup ?? throw new ArgumentNullException(nameof(contentLookup));
     }
 
-    /// <summary>Player-facing item-level action: purchase the next effective power-quality floor.</summary>
+    /// <summary>Player-facing item-level action: purchase the next effective roll-quality floor.</summary>
     internal Result RefitItem(string itemInstanceId)
     {
         if (!TryBuildRefitContext(
@@ -87,7 +87,7 @@ internal sealed class SessionItemRefitFlow
             : RefitExecutionResult.NoChange(
                 RefitQuote.Unavailable(error),
                 Array.Empty<string>(),
-                error);
+                error: error);
     }
 
     private Result ApplyItemRefit(
@@ -102,7 +102,8 @@ internal sealed class SessionItemRefitFlow
             return Result.Fail("Refit은 Town에서만 가능합니다.");
         }
 
-        // Atomic order: resolve target/cost -> affordability -> generate -> invariants -> charge -> mutate.
+        // Atomic order: resolve target/cost -> affordability -> generate -> invariants
+        // -> materialize both identity/value lists -> charge -> commit both lists.
         var quote = service.QuoteNextEffective(itemState, chapterEconomy);
         if (!quote.CanPurchase)
         {
@@ -133,8 +134,35 @@ internal sealed class SessionItemRefitFlow
             return Result.Fail("Refit quote changed before commit; no currency or item state was changed.");
         }
 
+        var committedAffixIds = execution.AffixIds.ToList();
+        var committedMagnitudeRolls = new List<InventoryAffixMagnitudeRecord>(
+            committedAffixIds.Count);
+        foreach (var affixId in committedAffixIds)
+        {
+            if (!execution.AffixMagnitudes.TryGetValue(affixId, out var magnitude))
+            {
+                return Result.Fail(
+                    "Refit magnitude output did not match affix identity; no currency or item state was changed.");
+            }
+
+            committedMagnitudeRolls.Add(new InventoryAffixMagnitudeRecord
+            {
+                AffixId = affixId,
+                Magnitude = magnitude,
+            });
+        }
+
+        if (committedMagnitudeRolls.Count != execution.AffixMagnitudes.Count)
+        {
+            return Result.Fail(
+                "Refit magnitude output contained stale identities; no currency or item state was changed.");
+        }
+
+        // These reference assignments are the single-threaded session transaction. Both
+        // collections were fully materialized and validated before currency or item mutation.
         _owner.Profile.Currencies.Echo -= quote.EchoCost;
-        item.AffixIds = execution.AffixIds.ToList();
+        item.AffixIds = committedAffixIds;
+        item.AffixMagnitudeRolls = committedMagnitudeRolls;
         item.RefitLevel = quote.TargetRefitLevel;
 
         _owner.SynchronizeRefitEquippedHero(item.EquippedHeroId);
@@ -183,11 +211,17 @@ internal sealed class SessionItemRefitFlow
                     && item.RolledRarityTier <= (int)ItemRarityTierValue.Legendary
             ? (ItemRarityTierValue)item.RolledRarityTier
             : itemTemplate.RarityTier;
+        if (!TryBuildAffixMagnitudeLookup(item, out var affixMagnitudes, out error))
+        {
+            return false;
+        }
+
         itemState = new RefitItemState(
             item.ItemBaseId,
             $"{item.ItemBaseId}|{inventoryIndex}",
             grade,
             (IReadOnlyList<string>?)item.AffixIds ?? Array.Empty<string>(),
+            affixMagnitudes,
             item.RefitLevel);
 
         var chapterId = !string.IsNullOrWhiteSpace(_owner.ActiveRun?.Overlay.ChapterId)
@@ -198,22 +232,43 @@ internal sealed class SessionItemRefitFlow
             CampaignRecoveryRewardPolicy.ResolveFirstFarmRunEcho(snapshot, chapterId),
             CampaignRecoveryRewardPolicy.ResolveFirstFarmRunMeanGrade(snapshot, chapterId));
 
-        var gradeStepBudgetScore = snapshot.DropTables?.Values
-            .Where(table => table.GradeStepBudgetScore > 0f)
-            .OrderBy(table => table.Id, StringComparer.Ordinal)
-            .Select(table => table.GradeStepBudgetScore)
-            .FirstOrDefault() ?? 0f;
-        if (gradeStepBudgetScore <= 0f)
-        {
-            error = "GradeStepBudgetScore를 content snapshot에서 파생할 수 없습니다.";
-            return false;
-        }
-
         _itemRefitService ??= new RefitService(
             _contentLookup,
-            snapshot.RefitBalance,
-            gradeStepBudgetScore);
+            snapshot.RefitBalance);
         service = _itemRefitService;
+        return true;
+    }
+
+    private static bool TryBuildAffixMagnitudeLookup(
+        InventoryItemRecord item,
+        out IReadOnlyDictionary<string, float> magnitudes,
+        out string error)
+    {
+        var currentAffixIds = new HashSet<string>(
+            item.AffixIds ?? new List<string>(),
+            StringComparer.Ordinal);
+        var result = new Dictionary<string, float>(StringComparer.Ordinal);
+        foreach (var roll in item.AffixMagnitudeRolls
+                             ?? new List<InventoryAffixMagnitudeRecord>())
+        {
+            // Old identity-reroll saves can contain rolls for the affixes they replaced.
+            // They are not effective values for the current identity set and are ignored.
+            if (roll == null
+                || !currentAffixIds.Contains(roll.AffixId))
+            {
+                continue;
+            }
+
+            if (!result.TryAdd(roll.AffixId, roll.Magnitude))
+            {
+                magnitudes = new Dictionary<string, float>(StringComparer.Ordinal);
+                error = $"Affix '{roll.AffixId}' has duplicate persisted magnitude rolls.";
+                return false;
+            }
+        }
+
+        magnitudes = result;
+        error = string.Empty;
         return true;
     }
 

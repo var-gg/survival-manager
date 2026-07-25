@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Combat.Model;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Stats;
 using SM.Meta.Model;
 using SM.Meta.Services;
 
@@ -33,6 +35,15 @@ public static class RefitTestFixture
     {
         var baseLookup = EditorFreeCombatContentFixture.CreateRunLoopLookup();
         var affixes = CreateAffixes();
+        var affixPackages = baseLookup.Snapshot.AffixPackages.ToDictionary(
+            pair => pair.Key,
+            pair => pair.Value,
+            StringComparer.Ordinal);
+        foreach (var affixId in affixes.Keys)
+        {
+            affixPackages[affixId] = CreateAffixPackage(affixId);
+        }
+
         var itemCatalog = new Dictionary<string, ItemTemplate>(StringComparer.Ordinal)
         {
             [WeaponItemId] = CreateItem(WeaponItemId, "Weapon"),
@@ -46,6 +57,7 @@ public static class RefitTestFixture
         var snapshot = baseLookup.Snapshot with
         {
             AffixCatalog = affixes,
+            AffixPackages = affixPackages,
             ItemCatalog = itemCatalog,
             SessionContentOrder = new SessionContentOrder(
                 Array.Empty<string>(),
@@ -64,7 +76,28 @@ public static class RefitTestFixture
     }
 
     public static RefitService CreateService(FakeCombatContentLookup lookup)
-        => new(lookup, lookup.Snapshot.RefitBalance!, GradeStepBudgetScore);
+        => new(lookup, lookup.Snapshot.RefitBalance!);
+
+    public static IReadOnlyDictionary<string, float> CreateMagnitudes(
+        FakeCombatContentLookup lookup,
+        IReadOnlyList<string> affixIds,
+        double position)
+    {
+        if (!double.IsFinite(position) || position < 0d || position > 1d)
+        {
+            throw new ArgumentOutOfRangeException(nameof(position));
+        }
+
+        return affixIds.ToDictionary(
+            affixId => affixId,
+            affixId =>
+            {
+                var affix = lookup.Snapshot.AffixCatalog![affixId];
+                return (float)(affix.ValueMin
+                               + ((affix.ValueMax - affix.ValueMin) * position));
+            },
+            StringComparer.Ordinal);
+    }
 
     public static AffixQualityProfile CompileProfile(
         FakeCombatContentLookup lookup,
@@ -147,9 +180,25 @@ public static class RefitTestFixture
                 scores[index],
                 SpawnWeight: index + 1,
                 Tier: tier,
-                ExclusiveGroupId: index == 0 ? $"{slotKey}_exclusive_alpha" : string.Empty);
+                ExclusiveGroupId: index == 0 ? $"{slotKey}_exclusive_alpha" : string.Empty,
+                ValueMin: 1f,
+                ValueMax: 3f);
         }
     }
+
+    private static CombatModifierPackage CreateAffixPackage(string affixId)
+        => new(
+            affixId,
+            ModifierSource.Item,
+            new[]
+            {
+                new StatModifier(
+                    StatKey.PhysPower,
+                    ModifierOp.Flat,
+                    2f,
+                    ModifierSource.Item,
+                    affixId),
+            });
 
     private static IReadOnlyDictionary<string, DropTableTemplate> CreateDropTables()
     {

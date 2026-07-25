@@ -13,6 +13,7 @@ public sealed record RefitItemState(
     string StableItemKey,
     ItemRarityTierValue Grade,
     IReadOnlyList<string> AffixIds,
+    IReadOnlyDictionary<string, float>? AffixMagnitudes,
     int RefitLevel);
 
 public sealed record RefitChapterEconomy(
@@ -24,12 +25,10 @@ public sealed record RefitQuote(
     bool CanPurchase,
     bool RefitMaxed,
     string Reason,
-    int CurrentScoreQ,
     ulong CurrentPercentileQ64,
     int CurrentRefitLevel,
     int TargetRefitLevel,
     ulong TargetFloorQ64,
-    int TargetScoreQ,
     int EchoCost)
 {
     public static RefitQuote Unavailable(string reason, int currentRefitLevel = 0)
@@ -37,12 +36,10 @@ public sealed record RefitQuote(
             CanPurchase: false,
             RefitMaxed: false,
             Reason: reason ?? string.Empty,
-            CurrentScoreQ: 0,
             CurrentPercentileQ64: 0UL,
             CurrentRefitLevel: Math.Max(0, currentRefitLevel),
             TargetRefitLevel: Math.Max(0, currentRefitLevel),
             TargetFloorQ64: 0UL,
-            TargetScoreQ: 0,
             EchoCost: 0);
 }
 
@@ -51,72 +48,66 @@ public sealed record RefitExecutionResult(
     bool InvariantFailure,
     string Error,
     RefitQuote Quote,
-    IReadOnlyList<string> AffixIds)
+    ulong ResultPercentileQ64,
+    IReadOnlyList<string> AffixIds,
+    IReadOnlyDictionary<string, float> AffixMagnitudes)
 {
     public static RefitExecutionResult NoChange(
         RefitQuote quote,
         IReadOnlyList<string> affixIds,
+        IReadOnlyDictionary<string, float>? affixMagnitudes = null,
         string error = "")
-        => new(false, false, error ?? string.Empty, quote, affixIds.ToArray());
+        => new(
+            Applied: false,
+            InvariantFailure: false,
+            Error: error ?? string.Empty,
+            Quote: quote,
+            ResultPercentileQ64: quote.CurrentPercentileQ64,
+            AffixIds: affixIds.ToArray(),
+            AffixMagnitudes: (affixMagnitudes
+                              ?? new Dictionary<string, float>(StringComparer.Ordinal))
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal));
 }
 
 /// <summary>
-/// Item-total power-quality Refit. The natural generator is conditioned on one exact attainable score.
-/// This service never mutates persistence or currency and never falls back to the retired slot reroll.
+/// Item roll-quality Refit. It preserves affix identity and rerolls only instance
+/// magnitudes, then validates the complete result before a caller may commit it.
+/// This service never mutates persistence or currency and never falls back to the
+/// retired affix-identity behavior.
 /// </summary>
 public sealed class RefitService
 {
     private readonly ISessionContentLookup _lookup;
     private readonly RefitBalanceTemplate _balance;
-    private readonly float _gradeStepBudgetScore;
-    private readonly AffixQualityProfileCompiler _compiler = new();
-    private readonly AffixQualityConditionedSelector _selector = new();
-    private readonly Dictionary<(string ItemBaseId, ItemRarityTierValue Grade), AffixQualityProfile> _profiles = new();
 
     public RefitService(
         ISessionContentLookup lookup,
-        RefitBalanceTemplate balance,
-        float gradeStepBudgetScore)
+        RefitBalanceTemplate balance)
     {
         _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
         _balance = balance ?? throw new ArgumentNullException(nameof(balance));
-        if (gradeStepBudgetScore <= 0f)
-        {
-            throw new ArgumentOutOfRangeException(nameof(gradeStepBudgetScore));
-        }
-
         if (_balance.FloorScheduleQ64 is not { Count: > 0 })
         {
-            throw new ArgumentException("Refit balance must contain a generated floor schedule.", nameof(balance));
+            throw new ArgumentException(
+                "Refit balance must contain a generated floor schedule.",
+                nameof(balance));
         }
-
-        _gradeStepBudgetScore = gradeStepBudgetScore;
     }
 
     public RefitQuote QuoteNextEffective(
         RefitItemState item,
         RefitChapterEconomy chapterEconomy)
     {
-        if (!TryResolveItem(item, out var profile, out var oldScoreQ, out var error))
+        if (!TryResolveItem(item, out var currentQualityQ64, out var error))
         {
             return RefitQuote.Unavailable(error, item?.RefitLevel ?? 0);
         }
 
-        var currentPercentileQ64 = profile.GetInclusivePercentileQ64(oldScoreQ);
         if (item.RefitLevel < 0)
         {
-            return RefitQuote.Unavailable("Refit level cannot be negative.", item.RefitLevel);
-        }
-
-        // A1 measured no useful power-percentile separation below Epic. Do not sell a
-        // nominal level to a Common/Magic/Rare item that cannot provide a meaningful floor.
-        if (item.Grade < ItemRarityTierValue.Epic)
-        {
-            return Maxed(
-                "This grade has no effective power-quality Refit floor.",
-                item,
-                oldScoreQ,
-                currentPercentileQ64);
+            return RefitQuote.Unavailable(
+                "Refit level cannot be negative.",
+                item.RefitLevel);
         }
 
         if (chapterEconomy == null
@@ -133,26 +124,13 @@ public sealed class RefitService
              scheduleIndex < _balance.FloorScheduleQ64.Count;
              scheduleIndex++)
         {
-            var targetLevel = scheduleIndex + 1;
             var floorQ64 = _balance.FloorScheduleQ64[scheduleIndex];
-            var floorScoreQ = profile.GetQuantileScoreQ(floorQ64);
-            if (floorScoreQ <= oldScoreQ)
+            if (floorQ64 <= currentQualityQ64)
             {
                 continue;
             }
 
-            var targetScoreQ = FindFirstSupportAtLeast(
-                profile.SupportScoreQ,
-                Math.Max(oldScoreQ, floorScoreQ));
-            if (targetScoreQ < 0)
-            {
-                return Maxed(
-                    "No attainable profile score can improve this item.",
-                    item,
-                    oldScoreQ,
-                    currentPercentileQ64);
-            }
-
+            var targetLevel = scheduleIndex + 1;
             int echoCost;
             try
             {
@@ -174,20 +152,17 @@ public sealed class RefitService
                 CanPurchase: true,
                 RefitMaxed: false,
                 Reason: string.Empty,
-                CurrentScoreQ: oldScoreQ,
-                CurrentPercentileQ64: currentPercentileQ64,
+                CurrentPercentileQ64: currentQualityQ64,
                 CurrentRefitLevel: item.RefitLevel,
                 TargetRefitLevel: targetLevel,
                 TargetFloorQ64: floorQ64,
-                TargetScoreQ: targetScoreQ,
                 EchoCost: echoCost);
         }
 
         return Maxed(
             "The item is already at or above every effective Refit floor.",
             item,
-            oldScoreQ,
-            currentPercentileQ64);
+            currentQualityQ64);
     }
 
     public RefitExecutionResult RefitNextEffective(
@@ -198,40 +173,52 @@ public sealed class RefitService
         var quote = QuoteNextEffective(item, chapterEconomy);
         if (!quote.CanPurchase)
         {
-            return RefitExecutionResult.NoChange(quote, item.AffixIds, quote.Reason);
+            return RefitExecutionResult.NoChange(
+                quote,
+                item.AffixIds,
+                item.AffixMagnitudes,
+                quote.Reason);
         }
 
-        var profile = GetProfile(item.ItemBaseId, item.Grade);
-        IReadOnlyList<string> generated;
+        if (_lookup.Snapshot.AffixCatalog is not { } catalog)
+        {
+            return InvariantFailure(
+                item,
+                quote,
+                "Affix catalog is unavailable.");
+        }
+
+        IReadOnlyDictionary<string, float> generatedMagnitudes;
         try
         {
-            generated = _selector.SelectBudgetWeightedConditioned(
-                profile,
-                quote.TargetScoreQ,
+            generatedMagnitudes = RefitRollQuality.RerollToFloor(
+                _lookup.Snapshot,
+                item.AffixIds,
                 RefitSeedDerivation.Derive(
                     stableCommandSeed,
                     item.StableItemKey,
                     quote.TargetRefitLevel,
-                    _balance.RulesVersion));
+                    _balance.RulesVersion),
+                quote.TargetFloorQ64);
         }
         catch (Exception exception)
         {
-            return new RefitExecutionResult(
-                Applied: false,
-                InvariantFailure: true,
-                Error: $"Conditioned Refit generation failed: {exception.Message}",
-                Quote: quote,
-                AffixIds: item.AffixIds.ToArray());
+            return InvariantFailure(
+                item,
+                quote,
+                $"Magnitude Refit generation failed: {exception.Message}");
         }
 
-        if (!ValidatePostconditions(item, profile, quote, generated, out var invariantError))
+        var generatedAffixIds = item.AffixIds.ToArray();
+        if (!ValidatePostconditions(
+                item,
+                quote,
+                generatedAffixIds,
+                generatedMagnitudes,
+                out var resultQualityQ64,
+                out var invariantError))
         {
-            return new RefitExecutionResult(
-                Applied: false,
-                InvariantFailure: true,
-                Error: invariantError,
-                Quote: quote,
-                AffixIds: item.AffixIds.ToArray());
+            return InvariantFailure(item, quote, invariantError);
         }
 
         return new RefitExecutionResult(
@@ -239,17 +226,17 @@ public sealed class RefitService
             InvariantFailure: false,
             Error: string.Empty,
             Quote: quote,
-            AffixIds: generated.ToArray());
+            ResultPercentileQ64: resultQualityQ64,
+            AffixIds: generatedAffixIds,
+            AffixMagnitudes: generatedMagnitudes);
     }
 
     private bool TryResolveItem(
         RefitItemState? item,
-        out AffixQualityProfile profile,
-        out int oldScoreQ,
+        out ulong currentQualityQ64,
         out string error)
     {
-        profile = null!;
-        oldScoreQ = 0;
+        currentQualityQ64 = 0UL;
         error = string.Empty;
         if (item == null
             || string.IsNullOrWhiteSpace(item.ItemBaseId)
@@ -260,88 +247,94 @@ public sealed class RefitService
             return false;
         }
 
-        if (_lookup.Snapshot.ItemCatalog is not { } itemCatalog
-            || !itemCatalog.ContainsKey(item.ItemBaseId))
+        if (!Enum.IsDefined(typeof(ItemRarityTierValue), item.Grade))
         {
-            error = $"Unknown item base '{item.ItemBaseId}'.";
+            error = $"Refit item grade '{item.Grade}' is invalid.";
             return false;
         }
 
-        if (!TryScore(item.AffixIds, out oldScoreQ, out error))
+        if (!ValidateAffixLegality(item, item.AffixIds, out error))
         {
+            return false;
+        }
+
+        if (_lookup.Snapshot.AffixCatalog is not { } catalog)
+        {
+            error = "Affix catalog is unavailable.";
             return false;
         }
 
         try
         {
-            profile = GetProfile(item.ItemBaseId, item.Grade);
+            currentQualityQ64 = RefitRollQuality.ToQ64(
+                RefitRollQuality.Measure(
+                    _lookup.Snapshot,
+                    item.AffixIds,
+                    item.AffixMagnitudes));
             return true;
         }
         catch (Exception exception)
         {
-            error = $"Quality profile resolution failed: {exception.Message}";
+            error = $"Roll quality resolution failed: {exception.Message}";
             return false;
         }
-    }
-
-    private AffixQualityProfile GetProfile(string itemBaseId, ItemRarityTierValue grade)
-    {
-        var key = (itemBaseId, grade);
-        if (_profiles.TryGetValue(key, out var cached))
-        {
-            return cached;
-        }
-
-        var compiled = _compiler.Compile(
-            _lookup,
-            itemBaseId,
-            grade,
-            _gradeStepBudgetScore,
-            _balance.AffixCatalogVersion,
-            out _);
-        _profiles.Add(key, compiled);
-        return compiled;
     }
 
     private bool ValidatePostconditions(
         RefitItemState item,
-        AffixQualityProfile profile,
         RefitQuote quote,
-        IReadOnlyList<string> generated,
+        IReadOnlyList<string> generatedAffixIds,
+        IReadOnlyDictionary<string, float> generatedMagnitudes,
+        out ulong resultQualityQ64,
         out string error)
     {
-        if (!string.Equals(profile.Key.ItemBaseId, item.ItemBaseId, StringComparison.Ordinal)
-            || profile.Key.Grade != item.Grade)
+        resultQualityQ64 = 0UL;
+        if (!generatedAffixIds.SequenceEqual(item.AffixIds, StringComparer.Ordinal))
         {
-            error = "Refit changed the item base or grade profile.";
+            error = "Refit changed affix identity.";
             return false;
         }
 
-        if (!ValidateAffixLegality(profile, item.Grade, generated, out error))
-        {
-            return false;
-        }
-
-        if (!TryScore(generated, out var resultScoreQ, out error))
+        if (!ValidateAffixLegality(item, generatedAffixIds, out error))
         {
             return false;
         }
 
-        if (resultScoreQ < quote.CurrentScoreQ)
+        if (generatedMagnitudes.Count != generatedAffixIds.Count
+            || generatedAffixIds.Any(id => !generatedMagnitudes.ContainsKey(id)))
         {
-            error = $"Refit score regressed from {quote.CurrentScoreQ} to {resultScoreQ}.";
+            error = "Refit magnitude output does not match the affix identity set atomically.";
             return false;
         }
 
-        if (resultScoreQ != quote.TargetScoreQ)
+        try
         {
-            error = $"Refit ended at {resultScoreQ}, expected exact target {quote.TargetScoreQ}.";
+            var catalog = _lookup.Snapshot.AffixCatalog
+                          ?? throw new InvalidOperationException(
+                              "Affix catalog is unavailable.");
+            resultQualityQ64 = RefitRollQuality.ToQ64(
+                RefitRollQuality.Measure(
+                    _lookup.Snapshot,
+                    generatedAffixIds,
+                    generatedMagnitudes));
+        }
+        catch (Exception exception)
+        {
+            error = $"Refit magnitude range validation failed: {exception.Message}";
             return false;
         }
 
-        if (profile.GetInclusivePercentileQ64(resultScoreQ) < quote.TargetFloorQ64)
+        if (resultQualityQ64 < quote.CurrentPercentileQ64)
         {
-            error = "Refit result CDF is below the purchased floor.";
+            error = $"Refit roll quality regressed from "
+                    + $"{RefitRollQuality.FromQ64(quote.CurrentPercentileQ64):R} to "
+                    + $"{RefitRollQuality.FromQ64(resultQualityQ64):R}.";
+            return false;
+        }
+
+        if (resultQualityQ64 < quote.TargetFloorQ64)
+        {
+            error = "Refit result roll quality is below the purchased floor.";
             return false;
         }
 
@@ -350,11 +343,17 @@ public sealed class RefitService
     }
 
     private bool ValidateAffixLegality(
-        AffixQualityProfile profile,
-        ItemRarityTierValue grade,
+        RefitItemState item,
         IReadOnlyList<string> affixIds,
         out string error)
     {
+        if (_lookup.Snapshot.ItemCatalog is not { } itemCatalog
+            || !itemCatalog.TryGetValue(item.ItemBaseId, out var itemTemplate))
+        {
+            error = $"Unknown item base '{item.ItemBaseId}'.";
+            return false;
+        }
+
         if (_lookup.Snapshot.AffixCatalog is not { } catalog)
         {
             error = "Affix catalog is unavailable.";
@@ -370,30 +369,33 @@ public sealed class RefitService
                 || !seenIds.Add(affixId)
                 || !catalog.TryGetValue(affixId, out var affix))
             {
-                error = $"Refit produced an unknown or duplicate affix '{affixId}'.";
+                error = $"Refit found an unknown or duplicate affix '{affixId}'.";
                 return false;
             }
 
             if (affix.AllowedSlotTypes is { Count: > 0 }
-                && !affix.AllowedSlotTypes.Contains(profile.Key.SlotType, StringComparer.Ordinal))
+                && !affix.AllowedSlotTypes.Contains(
+                    itemTemplate.SlotType,
+                    StringComparer.Ordinal))
             {
-                error = $"Affix '{affixId}' is illegal for slot '{profile.Key.SlotType}'.";
+                error = $"Affix '{affixId}' is illegal for slot '{itemTemplate.SlotType}'.";
                 return false;
             }
 
             if (!string.IsNullOrWhiteSpace(affix.ExclusiveGroupId)
                 && !seenExclusiveGroups.Add(affix.ExclusiveGroupId))
             {
-                error = $"Affix '{affixId}' conflicts in exclusive group '{affix.ExclusiveGroupId}'.";
+                error = $"Affix '{affixId}' conflicts in exclusive group "
+                        + $"'{affix.ExclusiveGroupId}'.";
                 return false;
             }
 
             tiers.Add(affix.Tier);
         }
 
-        if (!FollowsTierStepSequence(grade, tiers))
+        if (!FollowsTierStepSequence(item.Grade, tiers))
         {
-            error = "Refit result does not follow the grade's generated tier-step sequence.";
+            error = "Refit item does not follow its grade's generated tier-step sequence.";
             return false;
         }
 
@@ -435,81 +437,33 @@ public sealed class RefitService
         return true;
     }
 
-    private bool TryScore(
-        IReadOnlyList<string> affixIds,
-        out int totalScoreQ,
-        out string error)
-    {
-        totalScoreQ = 0;
-        error = string.Empty;
-        if (_lookup.Snapshot.AffixCatalog is not { } catalog)
-        {
-            error = "Affix catalog is unavailable.";
-            return false;
-        }
-
-        try
-        {
-            foreach (var affixId in affixIds)
-            {
-                if (!catalog.TryGetValue(affixId, out var affix))
-                {
-                    error = $"Unknown legacy affix '{affixId}'.";
-                    return false;
-                }
-
-                totalScoreQ = checked(
-                    totalScoreQ
-                    + AffixQualityProfileCompiler.ToBudgetScoreQ(affix.BudgetScore));
-            }
-        }
-        catch (Exception exception) when (
-            exception is ArgumentException or OverflowException)
-        {
-            error = exception.Message;
-            return false;
-        }
-
-        return true;
-    }
-
-    private static int FindFirstSupportAtLeast(
-        IReadOnlyList<int> support,
-        int minimumScoreQ)
-    {
-        var low = 0;
-        var high = support.Count;
-        while (low < high)
-        {
-            var midpoint = low + ((high - low) / 2);
-            if (support[midpoint] < minimumScoreQ)
-            {
-                low = midpoint + 1;
-            }
-            else
-            {
-                high = midpoint;
-            }
-        }
-
-        return low < support.Count ? support[low] : -1;
-    }
+    private static RefitExecutionResult InvariantFailure(
+        RefitItemState item,
+        RefitQuote quote,
+        string error)
+        => new(
+            Applied: false,
+            InvariantFailure: true,
+            Error: error,
+            Quote: quote,
+            ResultPercentileQ64: quote.CurrentPercentileQ64,
+            AffixIds: item.AffixIds.ToArray(),
+            AffixMagnitudes: (item.AffixMagnitudes
+                              ?? new Dictionary<string, float>(StringComparer.Ordinal))
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal));
 
     private static RefitQuote Maxed(
         string reason,
         RefitItemState item,
-        int oldScoreQ,
-        ulong currentPercentileQ64)
+        ulong currentQualityQ64)
         => new(
             CanPurchase: false,
             RefitMaxed: true,
             Reason: reason,
-            CurrentScoreQ: oldScoreQ,
-            CurrentPercentileQ64: currentPercentileQ64,
+            CurrentPercentileQ64: currentQualityQ64,
             CurrentRefitLevel: item.RefitLevel,
             TargetRefitLevel: item.RefitLevel,
-            TargetFloorQ64: currentPercentileQ64,
-            TargetScoreQ: oldScoreQ,
+            TargetFloorQ64: currentQualityQ64,
             EchoCost: 0);
 }
 

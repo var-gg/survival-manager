@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SM.Core.Content;
+using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
@@ -14,16 +15,6 @@ namespace SM.Tests.EditMode;
 [Category("FastUnit")]
 public sealed class RefitServiceTests
 {
-    private static readonly object[] ProfileCases =
-    {
-        new object[] { RefitTestFixture.WeaponItemId, ItemRarityTierValue.Epic },
-        new object[] { RefitTestFixture.WeaponItemId, ItemRarityTierValue.Legendary },
-        new object[] { RefitTestFixture.ArmorItemId, ItemRarityTierValue.Epic },
-        new object[] { RefitTestFixture.ArmorItemId, ItemRarityTierValue.Legendary },
-        new object[] { RefitTestFixture.AccessoryItemId, ItemRarityTierValue.Epic },
-        new object[] { RefitTestFixture.AccessoryItemId, ItemRarityTierValue.Legendary },
-    };
-
     [Test]
     public void FloorSchedule_UsesAuthoritativeClosedFormValues()
     {
@@ -62,127 +53,161 @@ public sealed class RefitServiceTests
         Assert.That(actual, Is.Not.EqualTo(15), "retired flat-15 pricing must not survive");
     }
 
-    [TestCaseSource(nameof(ProfileCases))]
-    public void Refit_UsesConditionedProfile_AndNeverWorsens(
-        string itemBaseId,
-        ItemRarityTierValue grade)
+    [Test]
+    public void RollQuality_IsBudgetScoreWeightedMeanOfPerAffixPositions()
     {
         var lookup = RefitTestFixture.CreateLookup();
-        var profile = RefitTestFixture.CompileProfile(lookup, itemBaseId, grade);
-        Assert.That(profile.SupportScoreQ.Count, Is.GreaterThan(3));
-        var oldAffixes = RefitTestFixture.SelectAtSupportIndex(lookup, itemBaseId, grade, 0);
-        var item = new RefitItemState(itemBaseId, $"stable:{itemBaseId}", grade, oldAffixes, 0);
-        var service = RefitTestFixture.CreateService(lookup);
+        var affixes = lookup.Snapshot.AffixCatalog!.Values
+            .Where(value => value.AllowedSlotTypes!.Contains("Weapon"))
+            .OrderBy(value => value.BudgetScore)
+            .Take(2)
+            .ToArray();
+        var magnitudes = new Dictionary<string, float>(StringComparer.Ordinal)
+        {
+            [affixes[0].Id] = affixes[0].ValueMin,
+            [affixes[1].Id] = affixes[1].ValueMax,
+        };
 
-        var result = service.RefitNextEffective(
-            item,
-            RefitTestFixture.CreateEconomy(lookup),
-            stableCommandSeed: 0xA2UL);
+        var measured = RefitRollQuality.Measure(
+            lookup.Snapshot,
+            affixes.Select(value => value.Id).ToArray(),
+            magnitudes);
 
-        Assert.That(result.Applied, Is.True, result.Error);
-        Assert.That(result.InvariantFailure, Is.False);
-        var newScore = RefitTestFixture.Score(lookup, result.AffixIds);
-        Assert.That(newScore, Is.EqualTo(result.Quote.TargetScoreQ));
-        Assert.That(newScore, Is.GreaterThanOrEqualTo(result.Quote.CurrentScoreQ));
-        Assert.That(
-            profile.GetInclusivePercentileQ64(newScore),
-            Is.GreaterThanOrEqualTo(result.Quote.TargetFloorQ64));
-        AssertLegal(lookup, itemBaseId, result.AffixIds);
+        var expected = affixes[1].BudgetScore
+                       / (affixes[0].BudgetScore + affixes[1].BudgetScore);
+        Assert.That(measured, Is.EqualTo(expected).Within(1e-12d));
+    }
+
+    [Test]
+    public void RollQuality_DegenerateRangeCountsAsFullySatisfied()
+    {
+        var lookup = RefitTestFixture.CreateLookup();
+        var source = lookup.Snapshot.AffixCatalog!.Values.First();
+        var fixedAffix = source with { ValueMin = 2f, ValueMax = 2f };
+        var catalog = new Dictionary<string, AffixTemplate>(StringComparer.Ordinal)
+        {
+            [fixedAffix.Id] = fixedAffix,
+        };
+
+        var measured = RefitRollQuality.Measure(
+            lookup.Snapshot with { AffixCatalog = catalog },
+            new[] { fixedAffix.Id },
+            new Dictionary<string, float>(StringComparer.Ordinal)
+            {
+                [fixedAffix.Id] = 2f,
+            });
+
+        Assert.That(measured, Is.EqualTo(1d));
+    }
+
+    [Test]
+    public void Reroll_FloatMaterializationNeverFallsBelowPurchasedFloor()
+    {
+        var lookup = RefitTestFixture.CreateLookup();
+        var source = lookup.Snapshot.AffixCatalog!.Values.First();
+        var wideOffsetAffix = source with
+        {
+            ValueMin = 1_000_000f,
+            ValueMax = 1_000_001f,
+        };
+        var snapshot = lookup.Snapshot with
+        {
+            AffixCatalog = new Dictionary<string, AffixTemplate>(StringComparer.Ordinal)
+            {
+                [wideOffsetAffix.Id] = wideOffsetAffix,
+            },
+        };
+        var floorQ64 = RefitTestFixture.CreateBalance().FloorScheduleQ64[0];
+
+        for (var seed = 0; seed < 256; seed++)
+        {
+            var magnitudes = RefitRollQuality.RerollToFloor(
+                snapshot,
+                new[] { wideOffsetAffix.Id },
+                seed,
+                floorQ64);
+            var measuredQ64 = RefitRollQuality.ToQ64(
+                RefitRollQuality.Measure(
+                    snapshot,
+                    new[] { wideOffsetAffix.Id },
+                    magnitudes));
+
+            Assert.That(measuredQ64, Is.GreaterThanOrEqualTo(floorQ64));
+        }
     }
 
     [TestCase(ItemRarityTierValue.Common)]
     [TestCase(ItemRarityTierValue.Magic)]
     [TestCase(ItemRarityTierValue.Rare)]
-    public void BelowEpic_IsInertAndNeverCharges(ItemRarityTierValue grade)
+    [TestCase(ItemRarityTierValue.Epic)]
+    [TestCase(ItemRarityTierValue.Legendary)]
+    public void Refit_AllGradesPreserveIdentityAndLandAtMonotoneFloor(
+        ItemRarityTierValue grade)
     {
         var lookup = RefitTestFixture.CreateLookup();
-        var oldAffixes = RefitTestFixture.SelectAtSupportIndex(
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
             lookup,
             RefitTestFixture.WeaponItemId,
             grade,
             0);
-        var service = RefitTestFixture.CreateService(lookup);
+        var oldMagnitudes = RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.05d);
         var item = new RefitItemState(
             RefitTestFixture.WeaponItemId,
-            "below-epic",
+            $"all-grades:{grade}",
             grade,
-            oldAffixes,
+            affixIds,
+            oldMagnitudes,
             0);
+        var service = RefitTestFixture.CreateService(lookup);
 
-        var quote = service.QuoteNextEffective(item, RefitTestFixture.CreateEconomy(lookup));
         var result = service.RefitNextEffective(
             item,
             RefitTestFixture.CreateEconomy(lookup),
-            stableCommandSeed: 1UL);
+            stableCommandSeed: 0x1234UL);
 
-        Assert.That(quote.CanPurchase, Is.False);
-        Assert.That(quote.RefitMaxed, Is.True);
-        Assert.That(quote.EchoCost, Is.Zero);
-        Assert.That(result.Applied, Is.False);
-        Assert.That(result.AffixIds, Is.EqualTo(oldAffixes));
-    }
-
-    [Test]
-    public void AlreadyAtMaximumSupport_IsRefitMaxedWithNoPaidNoOp()
-    {
-        var lookup = RefitTestFixture.CreateLookup();
-        var profile = RefitTestFixture.CompileProfile(
-            lookup,
-            RefitTestFixture.WeaponItemId,
-            ItemRarityTierValue.Epic);
-        var oldAffixes = RefitTestFixture.SelectAtSupportIndex(
-            lookup,
-            RefitTestFixture.WeaponItemId,
-            ItemRarityTierValue.Epic,
-            profile.SupportScoreQ.Count - 1);
-        var service = RefitTestFixture.CreateService(lookup);
-
-        var quote = service.QuoteNextEffective(
-            new RefitItemState(
-                RefitTestFixture.WeaponItemId,
-                "maximum-support",
-                ItemRarityTierValue.Epic,
-                oldAffixes,
-                0),
-            RefitTestFixture.CreateEconomy(lookup));
-
-        Assert.That(quote.CanPurchase, Is.False);
-        Assert.That(quote.RefitMaxed, Is.True);
-        Assert.That(quote.EchoCost, Is.Zero);
-        Assert.That(quote.TargetScoreQ, Is.EqualTo(quote.CurrentScoreQ));
+        Assert.That(result.Applied, Is.True, result.Error);
+        Assert.That(result.InvariantFailure, Is.False);
+        Assert.That(result.AffixIds, Is.EqualTo(affixIds));
+        Assert.That(result.AffixMagnitudes.Keys, Is.EquivalentTo(affixIds));
+        Assert.That(
+            result.ResultPercentileQ64,
+            Is.GreaterThanOrEqualTo(result.Quote.CurrentPercentileQ64));
+        Assert.That(
+            result.ResultPercentileQ64,
+            Is.GreaterThanOrEqualTo(result.Quote.TargetFloorQ64));
+        foreach (var affixId in affixIds)
+        {
+            var affix = lookup.Snapshot.AffixCatalog![affixId];
+            Assert.That(
+                result.AffixMagnitudes[affixId],
+                Is.InRange(affix.ValueMin, affix.ValueMax));
+        }
     }
 
     [Test]
     public void Quote_SkipsNominalNoOps_AndSumsIndividuallyRoundedLevels()
     {
         var lookup = RefitTestFixture.CreateLookup();
-        var profile = RefitTestFixture.CompileProfile(
-            lookup,
-            RefitTestFixture.WeaponItemId,
-            ItemRarityTierValue.Epic);
-        var oldScore = profile.GetQuantileScoreQ(
-            AffixQualityProfile.ProbabilityFromFraction(40, 100));
-        var oldIndex = profile.SupportScoreQ.ToList().IndexOf(oldScore);
-        var oldAffixes = RefitTestFixture.SelectAtSupportIndex(
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
             lookup,
             RefitTestFixture.WeaponItemId,
             ItemRarityTierValue.Epic,
-            oldIndex);
+            0);
+        var item = new RefitItemState(
+            RefitTestFixture.WeaponItemId,
+            "skip-no-op",
+            ItemRarityTierValue.Epic,
+            affixIds,
+            RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.40d),
+            0);
         var service = RefitTestFixture.CreateService(lookup);
         var economy = RefitTestFixture.CreateEconomy(lookup);
 
-        var quote = service.QuoteNextEffective(
-            new RefitItemState(
-                RefitTestFixture.WeaponItemId,
-                "skip-no-op",
-                ItemRarityTierValue.Epic,
-                oldAffixes,
-                0),
-            economy);
+        var quote = service.QuoteNextEffective(item, economy);
 
         Assert.That(quote.CanPurchase, Is.True, quote.Reason);
-        Assert.That(quote.TargetRefitLevel, Is.GreaterThan(1));
-        Assert.That(quote.TargetScoreQ, Is.GreaterThan(quote.CurrentScoreQ));
+        Assert.That(quote.TargetRefitLevel, Is.EqualTo(2));
+        Assert.That(quote.TargetFloorQ64, Is.GreaterThan(quote.CurrentPercentileQ64));
         Assert.That(quote.EchoCost, Is.EqualTo(RefitCostCurve.GetBundleCost(
             lookup.Snapshot.RefitBalance!,
             economy.FirstFarmRunEcho,
@@ -193,42 +218,65 @@ public sealed class RefitServiceTests
     }
 
     [Test]
-    public void LegacyOffSupportScore_UsesFirstAttainableScoreAtOrAboveFloor()
+    public void AboveMaximumFloor_IsRefitMaxedWithNoPaidNoOp()
     {
         var lookup = RefitTestFixture.CreateLookup();
-        var profile = RefitTestFixture.CompileProfile(
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
             lookup,
             RefitTestFixture.WeaponItemId,
-            ItemRarityTierValue.Epic);
-        var oneLegacyAffix = lookup.Snapshot.AffixCatalog!.Values
-            .Where(affix => affix.AllowedSlotTypes!.Contains("Weapon"))
-            .OrderBy(affix => affix.BudgetScore)
-            .Select(affix => affix.Id)
-            .Take(1)
-            .ToArray();
-        var legacyScore = RefitTestFixture.Score(lookup, oneLegacyAffix);
-        Assert.That(profile.SupportScoreQ.Contains(legacyScore), Is.False);
+            ItemRarityTierValue.Epic,
+            0);
         var service = RefitTestFixture.CreateService(lookup);
 
         var quote = service.QuoteNextEffective(
             new RefitItemState(
                 RefitTestFixture.WeaponItemId,
-                "legacy-off-support",
+                "maximum-roll-quality",
                 ItemRarityTierValue.Epic,
-                oneLegacyAffix,
+                affixIds,
+                RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.80d),
                 0),
             RefitTestFixture.CreateEconomy(lookup));
 
-        Assert.That(quote.CanPurchase, Is.True, quote.Reason);
-        Assert.That(profile.SupportScoreQ.Contains(quote.TargetScoreQ), Is.True);
-        Assert.That(quote.TargetScoreQ, Is.GreaterThan(legacyScore));
+        Assert.That(quote.CanPurchase, Is.False);
+        Assert.That(quote.RefitMaxed, Is.True);
+        Assert.That(quote.EchoCost, Is.Zero);
+        Assert.That(quote.TargetFloorQ64, Is.EqualTo(quote.CurrentPercentileQ64));
+    }
+
+    [Test]
+    public void LegacyMissingMagnitude_UsesSharedPackageBaseline()
+    {
+        var lookup = RefitTestFixture.CreateLookup();
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
+            lookup,
+            RefitTestFixture.AccessoryItemId,
+            ItemRarityTierValue.Legendary,
+            0);
+        var measured = RefitRollQuality.Measure(
+            lookup.Snapshot,
+            affixIds,
+            new Dictionary<string, float>(StringComparer.Ordinal));
+
+        Assert.That(measured, Is.EqualTo(0.5d).Within(1e-12d));
+        var result = RefitTestFixture.CreateService(lookup).RefitNextEffective(
+            new RefitItemState(
+                RefitTestFixture.AccessoryItemId,
+                "legacy-magnitude",
+                ItemRarityTierValue.Legendary,
+                affixIds,
+                new Dictionary<string, float>(StringComparer.Ordinal),
+                0),
+            RefitTestFixture.CreateEconomy(lookup),
+            0xBEEFUL);
+        Assert.That(result.Applied, Is.True, result.Error);
     }
 
     [Test]
     public void Refit_IsStableForSameSaveAndCommandSeed()
     {
         var lookup = RefitTestFixture.CreateLookup();
-        var oldAffixes = RefitTestFixture.SelectAtSupportIndex(
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
             lookup,
             RefitTestFixture.ArmorItemId,
             ItemRarityTierValue.Legendary,
@@ -237,16 +285,15 @@ public sealed class RefitServiceTests
             RefitTestFixture.ArmorItemId,
             "stable-save-item",
             ItemRarityTierValue.Legendary,
-            oldAffixes,
+            affixIds,
+            RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.10d),
             0);
-        var serviceA = RefitTestFixture.CreateService(lookup);
-        var serviceB = RefitTestFixture.CreateService(lookup);
 
-        var first = serviceA.RefitNextEffective(
+        var first = RefitTestFixture.CreateService(lookup).RefitNextEffective(
             item,
             RefitTestFixture.CreateEconomy(lookup),
             0xC0FFEEUL);
-        var second = serviceB.RefitNextEffective(
+        var second = RefitTestFixture.CreateService(lookup).RefitNextEffective(
             item,
             RefitTestFixture.CreateEconomy(lookup),
             0xC0FFEEUL);
@@ -254,30 +301,10 @@ public sealed class RefitServiceTests
         Assert.That(first.Applied, Is.True, first.Error);
         Assert.That(second.Applied, Is.True, second.Error);
         Assert.That(second.AffixIds, Is.EqualTo(first.AffixIds));
-        Assert.That(second.Quote, Is.EqualTo(first.Quote));
-    }
-
-    [Test]
-    public void ConditionedSelection_UsesWeightedNaturalSequences_NotIdRanking()
-    {
-        var lookup = RefitTestFixture.CreateLookup();
-        var profile = RefitTestFixture.CompileProfile(
-            lookup,
-            RefitTestFixture.WeaponItemId,
-            ItemRarityTierValue.Legendary);
-        var selector = new AffixQualityConditionedSelector();
-        var foundMultipleSequencesAtOneExactScore = profile.SupportScoreQ.Any(score =>
-            Enumerable.Range(0, 64)
-                .Select(seed => string.Join("|",
-                    selector.SelectBudgetWeightedConditioned(profile, score, seed)))
-                .Distinct(StringComparer.Ordinal)
-                .Take(2)
-                .Count() > 1);
-
         Assert.That(
-            foundMultipleSequencesAtOneExactScore,
-            Is.True,
-            "an exact score must preserve conditioned natural-sequence weights instead of choosing one ID-ranked row");
+            second.AffixMagnitudes.OrderBy(value => value.Key),
+            Is.EqualTo(first.AffixMagnitudes.OrderBy(value => value.Key)));
+        Assert.That(second.Quote, Is.EqualTo(first.Quote));
     }
 
     [Test]
@@ -291,62 +318,60 @@ public sealed class RefitServiceTests
     }
 
     [Test]
-    public void MonotonicInvariant_RejectsARegressedConditionedResult()
+    public void MonotonicInvariant_RejectsRegressedMagnitudeQuality()
     {
         var lookup = RefitTestFixture.CreateLookup();
-        var service = RefitTestFixture.CreateService(lookup);
-        var profile = RefitTestFixture.CompileProfile(
-            lookup,
-            RefitTestFixture.WeaponItemId,
-            ItemRarityTierValue.Epic);
-        var low = RefitTestFixture.SelectAtSupportIndex(
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
             lookup,
             RefitTestFixture.WeaponItemId,
             ItemRarityTierValue.Epic,
             0);
-        var high = RefitTestFixture.SelectAtSupportIndex(
-            lookup,
-            RefitTestFixture.WeaponItemId,
-            ItemRarityTierValue.Epic,
-            profile.SupportScoreQ.Count - 1);
-        var lowScore = RefitTestFixture.Score(lookup, low);
-        var highScore = RefitTestFixture.Score(lookup, high);
         var item = new RefitItemState(
             RefitTestFixture.WeaponItemId,
             "mutation-guard",
             ItemRarityTierValue.Epic,
-            high,
+            affixIds,
+            RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.90d),
             0);
         var quote = new RefitQuote(
             true,
             false,
             string.Empty,
-            highScore,
-            ulong.MaxValue,
+            RefitRollQuality.ToQ64(0.90d),
             0,
             1,
             0UL,
-            lowScore,
             1);
         var method = typeof(RefitService).GetMethod(
             "ValidatePostconditions",
             BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.That(method, Is.Not.Null);
-        var arguments = new object[] { item, profile, quote, low, string.Empty };
+        var arguments = new object[]
+        {
+            item,
+            quote,
+            affixIds,
+            RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.10d),
+            0UL,
+            string.Empty,
+        };
 
-        var valid = (bool)method!.Invoke(service, arguments)!;
+        var valid = (bool)method!.Invoke(RefitTestFixture.CreateService(lookup), arguments)!;
 
         Assert.That(valid, Is.False);
-        Assert.That((string)arguments[4], Does.Contain("regressed"));
+        Assert.That((string)arguments[5], Does.Contain("regressed"));
     }
 
     [Test]
-    public void SessionTransaction_AppliesAfterValidationAndDeductsQuotedCost()
+    public void SessionTransaction_AtomicallyPreservesIdsUpdatesRollsAndDeductsCost()
     {
         var lookup = RefitTestFixture.CreateLookup();
         var session = CreateSession(lookup, echo: 10_000);
         var item = session.Profile.Inventory.Single();
         var oldAffixes = item.AffixIds.ToArray();
+        var oldRollBits = item.AffixMagnitudeRolls
+            .Select(value => BitConverter.SingleToInt32Bits(value.Magnitude))
+            .ToArray();
         var quote = session.GetRefitQuote(item.ItemInstanceId);
         var echoBefore = session.Profile.Currencies.Echo;
 
@@ -355,19 +380,33 @@ public sealed class RefitServiceTests
         Assert.That(result.IsSuccess, Is.True, result.Error);
         Assert.That(item.RefitLevel, Is.EqualTo(quote.TargetRefitLevel));
         Assert.That(session.Profile.Currencies.Echo, Is.EqualTo(echoBefore - quote.EchoCost));
-        Assert.That(item.AffixIds, Is.Not.EqualTo(oldAffixes));
+        Assert.That(item.AffixIds, Is.EqualTo(oldAffixes));
         Assert.That(
-            RefitTestFixture.Score(lookup, item.AffixIds),
-            Is.GreaterThanOrEqualTo(quote.CurrentScoreQ));
+            item.AffixMagnitudeRolls.Select(value => value.AffixId),
+            Is.EqualTo(oldAffixes));
+        Assert.That(
+            item.AffixMagnitudeRolls.Select(value => BitConverter.SingleToInt32Bits(value.Magnitude)),
+            Is.Not.EqualTo(oldRollBits));
+        var quality = RefitRollQuality.ToQ64(RefitRollQuality.Measure(
+            lookup.Snapshot,
+            item.AffixIds,
+            item.AffixMagnitudeRolls.ToDictionary(
+                value => value.AffixId,
+                value => value.Magnitude,
+                StringComparer.Ordinal)));
+        Assert.That(quality, Is.GreaterThanOrEqualTo(quote.TargetFloorQ64));
     }
 
     [Test]
-    public void SessionTransaction_InsufficientEchoLeavesItemLevelAndCurrencyUntouched()
+    public void SessionTransaction_InsufficientEchoLeavesBothAffixListsLevelAndCurrencyUntouched()
     {
         var lookup = RefitTestFixture.CreateLookup();
         var session = CreateSession(lookup, echo: 0);
         var item = session.Profile.Inventory.Single();
         var oldAffixes = item.AffixIds.ToArray();
+        var oldRolls = item.AffixMagnitudeRolls
+            .Select(value => (value.AffixId, BitConverter.SingleToInt32Bits(value.Magnitude)))
+            .ToArray();
         var oldLevel = item.RefitLevel;
 
         var result = session.RefitItem(item.ItemInstanceId, 0x1234UL);
@@ -377,6 +416,10 @@ public sealed class RefitServiceTests
         Assert.That(session.Profile.Currencies.Echo, Is.Zero);
         Assert.That(item.RefitLevel, Is.EqualTo(oldLevel));
         Assert.That(item.AffixIds, Is.EqualTo(oldAffixes));
+        Assert.That(
+            item.AffixMagnitudeRolls
+                .Select(value => (value.AffixId, BitConverter.SingleToInt32Bits(value.Magnitude))),
+            Is.EqualTo(oldRolls));
     }
 
     private static GameSessionState CreateSession(FakeCombatContentLookup lookup, int echo)
@@ -386,6 +429,7 @@ public sealed class RefitServiceTests
             RefitTestFixture.WeaponItemId,
             ItemRarityTierValue.Epic,
             0);
+        var magnitudes = RefitTestFixture.CreateMagnitudes(lookup, affixes, 0.05d);
         var session = GameSessionTestFactory.Create(lookup);
         session.BindProfile(new SaveProfile
         {
@@ -416,29 +460,16 @@ public sealed class RefitServiceTests
                     ItemBaseId = RefitTestFixture.WeaponItemId,
                     RolledRarityTier = (int)ItemRarityTierValue.Epic,
                     AffixIds = affixes.ToList(),
+                    AffixMagnitudeRolls = affixes.Select(affixId =>
+                        new InventoryAffixMagnitudeRecord
+                        {
+                            AffixId = affixId,
+                            Magnitude = magnitudes[affixId],
+                        }).ToList(),
                 },
             },
         });
         session.SetCurrentScene(SceneNames.Town);
         return session;
-    }
-
-    private static void AssertLegal(
-        FakeCombatContentLookup lookup,
-        string itemBaseId,
-        IReadOnlyList<string> affixIds)
-    {
-        var item = lookup.Snapshot.ItemCatalog![itemBaseId];
-        Assert.That(affixIds, Is.Unique);
-        Assert.That(
-            affixIds.All(id =>
-                lookup.Snapshot.AffixCatalog!.ContainsKey(id)
-                && lookup.Snapshot.AffixCatalog[id].AllowedSlotTypes!.Contains(item.SlotType)),
-            Is.True);
-        var exclusiveGroups = affixIds
-            .Select(id => lookup.Snapshot.AffixCatalog![id].ExclusiveGroupId)
-            .Where(group => !string.IsNullOrWhiteSpace(group))
-            .ToArray();
-        Assert.That(exclusiveGroups, Is.Unique);
     }
 }

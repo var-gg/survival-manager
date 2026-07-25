@@ -132,15 +132,16 @@ internal static class RefitFarmScenarioSimulator
 
             top20NaturalItems++;
             if (!refitItems.TryGetValue(naturalItem.InstanceId, out var refitItem)
-                || !naturalItem.AffixIds.SequenceEqual(refitItem.AffixIds, StringComparer.Ordinal))
+                || !naturalItem.AffixIds.SequenceEqual(
+                    refitItem.AffixIds,
+                    StringComparer.Ordinal)
+                || !MagnitudeBytesEqual(naturalItem, refitItem))
             {
                 top20NaturalItemsChanged++;
             }
         }
 
-        var maximumFloorQ64 = AffixQualityProfile.ProbabilityFromFraction(
-            (ulong)balance.MaximumFloorNumerator,
-            (ulong)balance.MaximumFloorDenominator);
+        var maximumFloorQ64 = balance.FloorScheduleQ64[^1];
         var finalRefittedItems = dropsAndRefit.Inventory
             .Where(item => item.RefitLevel > 0)
             .OrderBy(item => item.AcquisitionIndex)
@@ -165,7 +166,9 @@ internal static class RefitFarmScenarioSimulator
             dropsOnlyPower.EffectivePower,
             dropsAndRefitPower.EffectivePower,
             dropsOnly.Inventory.Count,
-            dropsOnly.Inventory.Count(item => item.RarityTier >= ItemRarityTierValue.Epic),
+            dropsOnly.Inventory.Count(item => service.QuoteNextEffective(
+                RefitFarmSpendingPolicy.ToRefitState(item),
+                economy).CanPurchase),
             top20NaturalItems,
             top20NaturalItemsChanged,
             echoEarned,
@@ -173,5 +176,23 @@ internal static class RefitFarmScenarioSimulator
             previewDiagnostics,
             finalRefittedItems,
             pairingChecks);
+    }
+
+    private static bool MagnitudeBytesEqual(
+        HeadlessCampaignItem left,
+        HeadlessCampaignItem right)
+    {
+        foreach (var affixId in left.AffixIds)
+        {
+            if (!left.AffixMagnitudes.TryGetValue(affixId, out var leftMagnitude)
+                || !right.AffixMagnitudes.TryGetValue(affixId, out var rightMagnitude)
+                || BitConverter.SingleToInt32Bits(leftMagnitude)
+                != BitConverter.SingleToInt32Bits(rightMagnitude))
+            {
+                return false;
+            }
+        }
+
+        return left.AffixMagnitudes.Count == right.AffixMagnitudes.Count;
     }
 }

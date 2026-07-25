@@ -84,7 +84,7 @@ public class JsonPersistenceTests
     }
 
     [Test]
-    public void RefitSaveRoundTrip_PreservesTheSameNextConditionedResult()
+    public void RefitSaveRoundTrip_PreservesTheSameNextMagnitudeResult()
     {
         var lookup = RefitTestFixture.CreateLookup();
         var affixes = RefitTestFixture.SelectAtSupportIndex(
@@ -98,6 +98,13 @@ public class JsonPersistenceTests
             ItemBaseId = RefitTestFixture.AccessoryItemId,
             RolledRarityTier = (int)ItemRarityTierValue.Legendary,
             AffixIds = affixes.ToList(),
+            AffixMagnitudeRolls = RefitTestFixture.CreateMagnitudes(lookup, affixes, 0.10d)
+                .Select(value => new InventoryAffixMagnitudeRecord
+                {
+                    AffixId = value.Key,
+                    Magnitude = value.Value,
+                })
+                .ToList(),
             RefitLevel = 0,
         };
         var root = Path.Combine(Path.GetTempPath(), "sm_refit_output_" + Guid.NewGuid().ToString("N"));
@@ -123,6 +130,9 @@ public class JsonPersistenceTests
             Assert.That(after.Applied, Is.True, after.Error);
             Assert.That(after.Quote, Is.EqualTo(before.Quote));
             Assert.That(after.AffixIds, Is.EqualTo(before.AffixIds));
+            Assert.That(
+                after.AffixMagnitudes.OrderBy(value => value.Key),
+                Is.EqualTo(before.AffixMagnitudes.OrderBy(value => value.Key)));
         }
         finally
         {
@@ -292,6 +302,10 @@ public class JsonPersistenceTests
             $"{item.ItemBaseId}|0",
             (ItemRarityTierValue)item.RolledRarityTier,
             item.AffixIds,
+            item.AffixMagnitudeRolls.ToDictionary(
+                value => value.AffixId,
+                value => value.Magnitude,
+                StringComparer.Ordinal),
             item.RefitLevel);
 
     private static T DeserializeNewtonsoft<T>(string json)
