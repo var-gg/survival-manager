@@ -9,7 +9,8 @@ namespace SM.Meta.Model;
 
 public sealed record BattleEquippedItemSpec(
     string ItemBaseId,
-    IReadOnlyList<string> AffixIds);
+    IReadOnlyList<string> AffixIds,
+    IReadOnlyDictionary<string, float>? AffixMagnitudes = null);
 
 public sealed record BattleParticipantSpec(
     string ParticipantId,
@@ -348,7 +349,9 @@ public sealed record AffixTemplate(
     float SpawnWeight = 0f,
     string Tier = "",
     int ItemLevelMin = 0,
-    string ExclusiveGroupId = "")
+    string ExclusiveGroupId = "",
+    float ValueMin = 0f,
+    float ValueMax = 0f)
 {
     public bool IsConditional => RequiredTags.Count > 0 || ExcludedTags.Count > 0;
 }

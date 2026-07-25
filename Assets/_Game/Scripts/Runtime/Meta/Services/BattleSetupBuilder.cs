@@ -81,7 +81,7 @@ public static class BattleSetupBuilder
         }
 
         var appliedAffixTemplates = new List<AffixTemplate>();
-        var deferredConditionalAffixes = new List<AffixTemplate>();
+        var deferredConditionalAffixes = new List<(AffixTemplate Template, float? Magnitude)>();
         if (!TryAddTraitPackage(participant.PositiveTraitId, content, packages, out error) ||
             !TryAddTraitPackage(participant.NegativeTraitId, content, packages, out error) ||
             !TryAddItemPackages(participant.EquippedItems, content, packages, appliedAffixTemplates, deferredConditionalAffixes, out error) ||
@@ -105,8 +105,9 @@ public static class BattleSetupBuilder
         if (deferredConditionalAffixes.Count > 0)
         {
             var conditionContext = BuildAffixConditionContext(archetype, resolvedRoleTag, appliedAffixTemplates, participant.EquippedItems, content);
-            foreach (var template in deferredConditionalAffixes)
+            foreach (var deferredAffix in deferredConditionalAffixes)
             {
+                var template = deferredAffix.Template;
                 if (!template.RequiredTags.All(conditionContext.Contains)
                     || template.ExcludedTags.Any(conditionContext.Contains))
                 {
@@ -115,7 +116,9 @@ public static class BattleSetupBuilder
 
                 if (content.AffixPackages.TryGetValue(template.Id, out var affixPackage))
                 {
-                    packages.Add(affixPackage);
+                    packages.Add(AffixMagnitudePackageResolver.Resolve(
+                        affixPackage,
+                        deferredAffix.Magnitude));
                 }
 
                 appliedAffixTemplates.Add(template);
@@ -344,7 +347,7 @@ public static class BattleSetupBuilder
         CombatContentSnapshot content,
         List<CombatModifierPackage> packages,
         List<AffixTemplate> appliedAffixTemplates,
-        List<AffixTemplate> deferredConditionalAffixes,
+        List<(AffixTemplate Template, float? Magnitude)> deferredConditionalAffixes,
         out string error)
     {
         foreach (var item in equippedItems)
@@ -372,14 +375,19 @@ public static class BattleSetupBuilder
                 var template = content.AffixCatalog != null && content.AffixCatalog.TryGetValue(affixId, out var resolved)
                     ? resolved
                     : null;
+                var rolledMagnitude = AffixMagnitudePackageResolver.Find(
+                    item.AffixMagnitudes,
+                    affixId);
                 if (template is { IsConditional: true })
                 {
                     // 조건 평가는 role 해상 이후(TryBuildDefinition)에서 일괄 수행한다.
-                    deferredConditionalAffixes.Add(template);
+                    deferredConditionalAffixes.Add((template, rolledMagnitude));
                     continue;
                 }
 
-                packages.Add(affixPackage);
+                packages.Add(AffixMagnitudePackageResolver.Resolve(
+                    affixPackage,
+                    rolledMagnitude));
                 if (template != null)
                 {
                     appliedAffixTemplates.Add(template);

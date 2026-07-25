@@ -63,6 +63,7 @@ internal sealed class SessionInventoryItemBuilder
             ItemBaseId = itemBaseId,
             EquippedHeroId = equippedHeroId,
             AffixIds = affixIds.ToList(),
+            AffixMagnitudeRolls = BuildAffixMagnitudeRolls(seed, affixIds),
             RolledRarityTier = rolledGrade.HasValue ? (int)rolledGrade.Value : -1,
         };
     }
@@ -78,9 +79,13 @@ internal sealed class SessionInventoryItemBuilder
     internal void EnsureAffixPadding(InventoryItemRecord record, string itemBaseId, int targetCount)
     {
         record.AffixIds ??= new List<string>();
+        record.AffixMagnitudeRolls ??= new List<InventoryAffixMagnitudeRecord>();
         if (record.AffixIds.Count >= targetCount) return;
         if (!_lookup.TryGetItemDefinition(itemBaseId, out var itemDefinition)) return;
 
+        var paddingSeed = _buildStableSeed(
+            $"{itemBaseId}|{record.ItemInstanceId}",
+            record.AffixIds.Count);
         var existing = new HashSet<string>(record.AffixIds, StringComparer.Ordinal);
         foreach (var tier in new[] { AffixTierValue.Prefix, AffixTierValue.Suffix, AffixTierValue.Implicit })
         {
@@ -92,10 +97,58 @@ internal sealed class SessionInventoryItemBuilder
             foreach (var candidate in candidates)
             {
                 if (record.AffixIds.Count >= targetCount) break;
+                var affixOrdinal = record.AffixIds.Count;
                 record.AffixIds.Add(candidate);
                 existing.Add(candidate);
+                if (!record.AffixMagnitudeRolls.Any(roll =>
+                        string.Equals(roll.AffixId, candidate, StringComparison.Ordinal))
+                    && TryBuildAffixMagnitudeRoll(paddingSeed, candidate, affixOrdinal, out var roll))
+                {
+                    record.AffixMagnitudeRolls.Add(roll);
+                }
             }
         }
+    }
+
+    private List<InventoryAffixMagnitudeRecord> BuildAffixMagnitudeRolls(
+        int stableItemSeed,
+        IReadOnlyList<string> affixIds)
+    {
+        var rolls = new List<InventoryAffixMagnitudeRecord>(affixIds.Count);
+        for (var index = 0; index < affixIds.Count; index++)
+        {
+            if (TryBuildAffixMagnitudeRoll(stableItemSeed, affixIds[index], index, out var roll))
+            {
+                rolls.Add(roll);
+            }
+        }
+
+        return rolls;
+    }
+
+    private bool TryBuildAffixMagnitudeRoll(
+        int stableItemSeed,
+        string affixId,
+        int affixOrdinal,
+        out InventoryAffixMagnitudeRecord roll)
+    {
+        if (!_lookup.TryGetAffixDefinition(affixId, out var definition))
+        {
+            roll = null!;
+            return false;
+        }
+
+        roll = new InventoryAffixMagnitudeRecord
+        {
+            AffixId = affixId,
+            Magnitude = AffixMagnitudeRoller.Roll(
+                stableItemSeed,
+                affixId,
+                affixOrdinal,
+                definition.ValueMin,
+                definition.ValueMax),
+        };
+        return true;
     }
 
     private bool IsGeneratedAffixCandidate(

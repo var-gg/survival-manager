@@ -100,7 +100,9 @@ internal static class CatalogEntryConverter
             definition.SpawnWeight,
             definition.Tier.ToString(),
             definition.ItemLevelMin,
-            definition.ExclusiveGroupId ?? string.Empty);
+            definition.ExclusiveGroupId ?? string.Empty,
+            definition.ValueMin,
+            definition.ValueMax);
     }
 
     internal static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)

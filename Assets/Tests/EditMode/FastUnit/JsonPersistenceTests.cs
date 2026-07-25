@@ -15,6 +15,45 @@ namespace SM.Tests.EditMode;
 public class JsonPersistenceTests
 {
     [Test]
+    public void InventoryAffixMagnitudes_LegacyJsonFallsBackEmpty_AndRoundTripsExactly()
+    {
+        const string legacyJson =
+            "{\"ItemInstanceId\":\"legacy-item\",\"ItemBaseId\":\"legacy-base\",\"AffixIds\":[\"affix_legacy\"]}";
+        var legacy = DeserializeNewtonsoft<InventoryItemRecord>(legacyJson);
+
+        Assert.That(legacy, Is.Not.Null);
+        Assert.That(legacy!.AffixMagnitudeRolls, Is.Empty);
+
+        var root = Path.Combine(Path.GetTempPath(), "sm_affix_magnitude_" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            legacy.AffixMagnitudeRolls.Add(new InventoryAffixMagnitudeRecord
+            {
+                AffixId = "affix_legacy",
+                Magnitude = 1.2345678f,
+            });
+            var repository = new JsonSaveRepository(root);
+            var profile = new SaveProfile { ProfileId = "affix-magnitude" };
+            profile.Inventory.Add(legacy);
+            repository.Save(profile);
+
+            var loaded = repository.LoadOrCreate("affix-magnitude").Inventory.Single();
+            Assert.That(loaded.AffixMagnitudeRolls, Has.Count.EqualTo(1));
+            Assert.That(loaded.AffixMagnitudeRolls[0].AffixId, Is.EqualTo("affix_legacy"));
+            Assert.That(
+                BitConverter.SingleToInt32Bits(loaded.AffixMagnitudeRolls[0].Magnitude),
+                Is.EqualTo(BitConverter.SingleToInt32Bits(1.2345678f)));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, true);
+            }
+        }
+    }
+
+    [Test]
     public void InventoryItemRefitLevel_LegacyJsonDefaultsToZero_AndRoundTrips()
     {
         const string legacyJson =

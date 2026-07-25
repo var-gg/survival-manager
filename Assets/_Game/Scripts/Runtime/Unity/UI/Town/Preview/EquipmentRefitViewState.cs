@@ -10,8 +10,8 @@ namespace SM.Unity.UI.Town.Preview;
 /// - ✅ pool = Profile.Inventory · RarityKey = ItemBaseDefinition.RarityTier · SlotKey = ItemBaseDefinition.SlotType ·
 ///   refit = RefitItem(itemInstanceId)
 /// - ◐ GroupKey = AffixDefinition.Tier (Implicit/Prefix/Suffix) · Name = AffixDefinition.NameKey resolved
-/// - ❌ affix instance **확정 roll 값 미저장** — InventoryItemRecord.AffixIds는 definition id 리스트뿐 →
-///   ValueRange는 AffixDefinition.ValueMin~ValueMax **범위** 표기 (가짜 rolled value 아님)
+/// - ✅ affix instance magnitude = InventoryItemRecord.AffixMagnitudeRolls. legacy save는 definition modifier 값.
+///   MagnitudeText는 실제 값 + range 내 percentile + min/max context를 함께 표기한다.
 /// - ⚑ hero 컨텍스트 = InventoryItemRecord.EquippedHeroId 파생 (장착된 hero — refit은 item-centric이라 hero 불필요)
 /// </summary>
 public sealed record EquipmentRefitAffixRowViewState(
@@ -19,7 +19,7 @@ public sealed record EquipmentRefitAffixRowViewState(
     string GroupKey,             // implicit / prefix / suffix ← AffixDefinition.Tier
     string CategoryKey,          // offenseflat / utility / ...
     string Name,                 // ← AffixDefinition.NameKey resolved
-    string ValueRange,           // ← AffixDefinition.ValueMin~ValueMax (instance roll 미저장 — 범위)
+    string MagnitudeText,        // ← persisted magnitude + percentile + AffixDefinition.ValueMin~ValueMax
     Texture2D? IconSprite
 );
 

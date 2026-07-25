@@ -8,7 +8,7 @@ namespace SM.Unity.UI.Town.Preview;
 /// <summary>
 /// Equipment Refit surface View — item-level quality-floor refit.
 /// UXML container: StandeePortrait / SelectedItemName / EquippedHeroLabel / EchoIcon / AffixList /
-/// InventoryPool / RefitCostLabel. affix row는 이름 + 값 범위 (instance 확정 roll 미저장 → 범위 표기).
+/// InventoryPool / RefitCostLabel. affix row는 실제 magnitude + percentile + min/max context를 표기한다.
 /// </summary>
 public sealed class EquipmentRefitView : IEquipmentRefitView
 {
@@ -150,8 +150,8 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
             name.AddToClassList("erp-affix-row__name");
             row.Add(name);
 
-            // 값 범위 — AffixDefinition.ValueMin~ValueMax (instance 확정 roll 미저장)
-            var value = new Label(affix.ValueRange);
+            // 실제 instance magnitude + range 내 percentile/min-max context.
+            var value = new Label(affix.MagnitudeText);
             value.AddToClassList("erp-affix-row__value");
             row.Add(value);
 

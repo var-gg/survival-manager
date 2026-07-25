@@ -115,7 +115,7 @@ public sealed class LoadoutCompiler
             AddNumericPackage(content.TraitPackages, hero.PositiveTraitId, artifacts, hero.Id, "trait");
             AddNumericPackage(content.TraitPackages, hero.NegativeTraitId, artifacts, hero.Id, "trait");
 
-            var deferredConditionalAffixes = new List<AffixTemplate>();
+            var deferredConditionalAffixes = new List<(AffixTemplate Template, float? Magnitude)>();
             if (loadout != null)
             {
                 foreach (var itemInstanceId in loadout.EquippedItemInstanceIds)
@@ -145,15 +145,24 @@ public sealed class LoadoutCompiler
                     {
                         artifacts.CompileTags.Add($"affix:{affixId}");
                         var affixTemplate = ResolveAffixTemplate(content, affixId);
+                        var rolledMagnitude = AffixMagnitudePackageResolver.Find(
+                            itemInstance.AffixMagnitudes,
+                            affixId);
                         if (affixTemplate is { IsConditional: true })
                         {
                             // 조건부 affix는 전체 태그 조립이 끝난 뒤 일괄 평가한다(아래).
                             // 자기 CompileTags로 자기 조건을 충족시키는 순환을 여기서 차단한다.
-                            deferredConditionalAffixes.Add(affixTemplate);
+                            deferredConditionalAffixes.Add((affixTemplate, rolledMagnitude));
                             continue;
                         }
 
-                        AddNumericPackage(content.AffixPackages, affixId, artifacts, hero.Id, "affix");
+                        AddAffixNumericPackage(
+                            content.AffixPackages,
+                            affixId,
+                            rolledMagnitude,
+                            artifacts,
+                            hero.Id,
+                            "affix");
                         ApplyAffixTemplate(affixTemplate, artifacts, hero.Id);
                     }
                 }
@@ -316,8 +325,9 @@ public sealed class LoadoutCompiler
             if (deferredConditionalAffixes.Count > 0)
             {
                 var conditionContext = new HashSet<string>(artifacts.CompileTags, StringComparer.Ordinal);
-                foreach (var affixTemplate in deferredConditionalAffixes)
+                foreach (var deferredAffix in deferredConditionalAffixes)
                 {
+                    var affixTemplate = deferredAffix.Template;
                     if (!IsConditionalAffixSatisfied(affixTemplate, conditionContext))
                     {
                         artifacts.Provenance.Add(new CompileProvenanceEntry(
@@ -329,7 +339,13 @@ public sealed class LoadoutCompiler
                         continue;
                     }
 
-                    AddNumericPackage(content.AffixPackages, affixTemplate.Id, artifacts, hero.Id, "affix_conditional");
+                    AddAffixNumericPackage(
+                        content.AffixPackages,
+                        affixTemplate.Id,
+                        deferredAffix.Magnitude,
+                        artifacts,
+                        hero.Id,
+                        "affix_conditional");
                     ApplyAffixTemplate(affixTemplate, artifacts, hero.Id);
                 }
             }
@@ -449,6 +465,29 @@ public sealed class LoadoutCompiler
 
         artifacts.NumericPackages.Add(package);
         artifacts.Provenance.Add(new CompileProvenanceEntry(subjectId, package.Source, package.SourceId, artifactKind, BuildModifierDetails(package.Modifiers)));
+    }
+
+    private static void AddAffixNumericPackage(
+        IReadOnlyDictionary<string, CombatModifierPackage> source,
+        string id,
+        float? rolledMagnitude,
+        CompiledArtifacts artifacts,
+        string subjectId,
+        string artifactKind)
+    {
+        if (string.IsNullOrWhiteSpace(id) || !source.TryGetValue(id, out var sharedPackage))
+        {
+            return;
+        }
+
+        var package = AffixMagnitudePackageResolver.Resolve(sharedPackage, rolledMagnitude);
+        artifacts.NumericPackages.Add(package);
+        artifacts.Provenance.Add(new CompileProvenanceEntry(
+            subjectId,
+            package.Source,
+            package.SourceId,
+            artifactKind,
+            BuildModifierDetails(package.Modifiers)));
     }
 
     /// <summary>

@@ -164,7 +164,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             .ToList();
 
         // Affix list — selected item의 AffixIds. group은 AffixDefinition.Tier에서 read (index 추정 폐기).
-        // 값은 instance 확정 roll 미저장 (AffixIds = definition id) → ValueMin~ValueMax 범위 표기.
+        // magnitude는 instance roll을 우선하고 legacy save는 definition modifier 값으로 fallback한다.
         var affixes = new List<EquipmentRefitAffixRowViewState>();
         if (selectedItem != null)
         {
@@ -173,19 +173,22 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 var affixId = selectedItem.AffixIds[i];
                 var group = "prefix";
                 var category = "utility";
-                var valueRange = "—";
+                var magnitudeText = "—";
                 if (lookup.TryGetAffixDefinition(affixId, out var affixDef))
                 {
                     group = affixDef.Tier.ToString().ToLowerInvariant();
                     category = affixDef.Category.ToString().ToLowerInvariant();
-                    valueRange = $"{affixDef.ValueMin:0.#} ~ {affixDef.ValueMax:0.#}";
+                    magnitudeText = AffixMagnitudePresentation.Format(
+                        AffixMagnitudePresentation.Resolve(selectedItem, affixDef),
+                        affixDef.ValueMin,
+                        affixDef.ValueMax);
                 }
                 affixes.Add(new EquipmentRefitAffixRowViewState(
                     AffixId: affixId,
                     GroupKey: group,
                     CategoryKey: category,
                     Name: _affixName(affixId),
-                    ValueRange: valueRange,
+                    MagnitudeText: magnitudeText,
                     IconSprite: _affixIconSprite(affixId)));
             }
         }

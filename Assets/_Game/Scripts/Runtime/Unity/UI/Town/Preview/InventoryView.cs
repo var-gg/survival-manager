@@ -331,7 +331,7 @@ public sealed class InventoryView : IInventoryView
             nameEl.AddToClassList("inv-detail__affix-name");
             row.Add(nameEl);
 
-            var value = new Label(affix.ValueRange);
+            var value = new Label(affix.MagnitudeText);
             value.AddToClassList("inv-detail__affix-value");
             row.Add(value);
 

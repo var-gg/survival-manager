@@ -168,16 +168,15 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
 
     private InventoryDetailViewState BuildMockDetail()
     {
-        // affix detail — 이름 + 값 범위 (AffixDefinition.NameKey / ValueMin~ValueMax).
-        // instance 확정 roll 미저장이라 범위 표기 (가짜 rolled value 아님 — audit §4.1 P1-3).
+        // affix detail — 실제 magnitude + percentile + ValueMin~ValueMax context preview.
         // implicit 1 + prefix 2 + suffix 2 = 5 line (item-and-affix-system.md V1 floor).
         var affixes = new[]
         {
-            new InventoryAffixRowViewState("implicit", "기본 공격력", "180 ~ 256"),
-            new InventoryAffixRowViewState("prefix",   "치명타 확률", "8 ~ 19"),
-            new InventoryAffixRowViewState("prefix",   "관통",        "0.6 ~ 1.4"),
-            new InventoryAffixRowViewState("suffix",   "공격 속도",   "60 ~ 140"),
-            new InventoryAffixRowViewState("suffix",   "흡혈",        "4 ~ 10"),
+            new InventoryAffixRowViewState("implicit", "기본 공격력", "223 · 57% [180 ~ 256]"),
+            new InventoryAffixRowViewState("prefix",   "치명타 확률", "16 · 73% [8 ~ 19]"),
+            new InventoryAffixRowViewState("prefix",   "관통",        "1.1 · 63% [0.6 ~ 1.4]"),
+            new InventoryAffixRowViewState("suffix",   "공격 속도",   "118 · 73% [60 ~ 140]"),
+            new InventoryAffixRowViewState("suffix",   "흡혈",        "7 · 50% [4 ~ 10]"),
         };
         return new InventoryDetailViewState(
             ItemInstanceId: "mock_item_00",

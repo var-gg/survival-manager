@@ -19,8 +19,8 @@ MonoBehaviour:
   Tier: 1
   AffixFamily: 1
   EffectType: 1
-  ValueMin: 1
-  ValueMax: 3
+  ValueMin: 0
+  ValueMax: 2
   AllowedSlotTypes: 00000000
   CompileTags:
   - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}

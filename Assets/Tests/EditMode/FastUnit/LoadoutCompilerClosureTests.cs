@@ -120,6 +120,29 @@ public sealed class LoadoutCompilerClosureTests
     }
 
     [Test]
+    public void LoadoutCompiler_UsesInstanceAffixMagnitudeWithoutMutatingSharedPackage()
+    {
+        var compiler = new LoadoutCompiler();
+        var content = BuildContentSnapshot();
+        var spec = BuildTriggeredAugmentSpec();
+        var baseline = CompileSquad(compiler, content, spec);
+        var rolled = CompileSquad(
+            compiler,
+            content,
+            spec,
+            affixMagnitudes: new Dictionary<string, float>(StringComparer.Ordinal)
+            {
+                ["affix.attack_alias"] = 1.75f,
+            });
+
+        var package = rolled.Allies.Single().NumericPackages
+            .Single(value => value.SourceId == "affix.attack_alias");
+        Assert.That(package.Modifiers.Single().Value, Is.EqualTo(1.75f));
+        Assert.That(content.AffixPackages["affix.attack_alias"].Modifiers.Single().Value, Is.EqualTo(1f));
+        Assert.That(rolled.CompileHash, Is.Not.EqualTo(baseline.CompileHash));
+    }
+
+    [Test]
     public void LoadoutCompiler_ThrowsWhenCanonicalSkillSlotMissing()
     {
         var compiler = new LoadoutCompiler();
@@ -268,7 +291,8 @@ public sealed class LoadoutCompilerClosureTests
         CombatContentSnapshot content,
         SquadSpec spec,
         IReadOnlyList<CombatModifierPackage>? squadSupportPackages = null,
-        IReadOnlyDictionary<string, string>? heroTargetDirectives = null)
+        IReadOnlyDictionary<string, string>? heroTargetDirectives = null,
+        IReadOnlyDictionary<string, float>? affixMagnitudes = null)
     {
         var heroes = new List<HeroRecord>(spec.Heroes.Count);
         var heroLoadouts = new Dictionary<string, HeroLoadoutState>(StringComparer.Ordinal);
@@ -295,7 +319,12 @@ public sealed class LoadoutCompilerClosureTests
             for (var index = 0; index < heroSpec.ItemIds.Count; index++)
             {
                 var itemInstanceId = $"{heroSpec.HeroId}.item.{index}";
-                itemInstances[itemInstanceId] = new ItemInstanceState(itemInstanceId, heroSpec.ItemIds[index], heroSpec.AffixIds, heroSpec.HeroId);
+                itemInstances[itemInstanceId] = new ItemInstanceState(
+                    itemInstanceId,
+                    heroSpec.ItemIds[index],
+                    heroSpec.AffixIds,
+                    heroSpec.HeroId,
+                    AffixMagnitudes: affixMagnitudes);
                 itemInstanceIds.Add(itemInstanceId);
             }
 

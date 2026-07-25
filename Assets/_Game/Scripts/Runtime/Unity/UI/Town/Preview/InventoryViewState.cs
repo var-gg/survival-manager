@@ -8,8 +8,8 @@ namespace SM.Unity.UI.Town.Preview;
 /// - currency: Gold / Echo — CurrencyRecord 8종 중 V1 활성 경제 2종만 노출
 /// - 4 category (ALL + weapon/armor/accessory) — ItemSlotType 3종 + ALL
 /// - N×M item grid (InventoryItemRecord + ItemBaseDefinition) — rarity / weapon family / equipped
-/// - affix detail: 이름 + 값 범위 (AffixDefinition.NameKey / ValueMin~ValueMax —
-///   instance 확정 roll 미저장이라 범위 표기). sell 액션은 runtime API 부재로 제거.
+/// - affix detail: 이름 + 실제 instance magnitude + range 내 percentile/min-max context.
+///   legacy save는 definition modifier 값으로 표시한다. sell 액션은 runtime API 부재로 제거.
 /// </summary>
 public sealed record InventoryCategoryViewState(
     string Key,                 // all / weapon / armor / accessory
@@ -48,7 +48,7 @@ public sealed record InventoryItemViewState(
 public sealed record InventoryAffixRowViewState(
     string GroupKey,            // implicit / prefix / suffix ← AffixDefinition.Tier
     string Name,                // ← AffixDefinition.NameKey resolved
-    string ValueRange           // ← AffixDefinition.ValueMin~ValueMax (instance 확정 roll 미저장 → 범위)
+    string MagnitudeText        // ← persisted magnitude + percentile + AffixDefinition.ValueMin~ValueMax
 );
 
 public sealed record InventoryDetailViewState(

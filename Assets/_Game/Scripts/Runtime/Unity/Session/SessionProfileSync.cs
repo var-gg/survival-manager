@@ -177,7 +177,8 @@ public sealed partial class GameSessionState
                 item.AffixIds
                     .Where(id => !string.IsNullOrWhiteSpace(id))
                     .Distinct(StringComparer.Ordinal)
-                    .ToList()))
+                    .ToList(),
+                ToAffixMagnitudeMap(item)))
             .ToList();
     }
 
@@ -242,6 +243,7 @@ public sealed partial class GameSessionState
         {
             var item = Profile.Inventory[i];
             item.AffixIds ??= new List<string>();
+            item.AffixMagnitudeRolls ??= new List<InventoryAffixMagnitudeRecord>();
             if (string.IsNullOrWhiteSpace(item.ItemInstanceId))
             {
                 Profile.ItemInstanceCounter = checked(Profile.ItemInstanceCounter + 1L);
@@ -253,6 +255,22 @@ public sealed partial class GameSessionState
                 .Select((affixId, affixIndex) => _sessionContentLookup.NormalizeAffixId(affixId, i + affixIndex))
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
+                .ToList();
+            var liveAffixIds = item.AffixIds.ToHashSet(StringComparer.Ordinal);
+            item.AffixMagnitudeRolls = item.AffixMagnitudeRolls
+                .Where(roll => roll != null
+                               && !string.IsNullOrWhiteSpace(roll.AffixId)
+                               && !float.IsNaN(roll.Magnitude)
+                               && !float.IsInfinity(roll.Magnitude))
+                .Select((roll, rollIndex) => new InventoryAffixMagnitudeRecord
+                {
+                    AffixId = _sessionContentLookup.NormalizeAffixId(roll.AffixId, i + rollIndex),
+                    Magnitude = roll.Magnitude,
+                })
+                .Where(roll => liveAffixIds.Contains(roll.AffixId))
+                .GroupBy(roll => roll.AffixId, StringComparer.Ordinal)
+                .Select(group => group.First())
+                .OrderBy(roll => item.AffixIds.IndexOf(roll.AffixId))
                 .ToList();
         }
     }
@@ -1128,8 +1146,20 @@ public sealed partial class GameSessionState
                 record.EquippedHeroId,
                 record.RolledRarityTier >= 0
                     ? (ItemRarityTierValue)record.RolledRarityTier
-                    : null),
+                    : null,
+                ToAffixMagnitudeMap(record)),
             StringComparer.Ordinal);
+    }
+
+    private static IReadOnlyDictionary<string, float> ToAffixMagnitudeMap(InventoryItemRecord item)
+    {
+        return (item.AffixMagnitudeRolls ?? new List<InventoryAffixMagnitudeRecord>())
+            .Where(roll => roll != null
+                           && !string.IsNullOrWhiteSpace(roll.AffixId)
+                           && !float.IsNaN(roll.Magnitude)
+                           && !float.IsInfinity(roll.Magnitude))
+            .GroupBy(roll => roll.AffixId, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First().Magnitude, StringComparer.Ordinal);
     }
 
     private static IReadOnlyDictionary<string, SkillInstanceState> ToSkillInstanceStates(SaveProfile profile)

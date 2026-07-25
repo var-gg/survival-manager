@@ -15,7 +15,7 @@ namespace SM.Editor.Validation;
 /// </summary>
 internal static class H100SessionStateCanonicalHash
 {
-    public const string SchemaVersion = "H100SessionStateCanonicalHashV1";
+    public const string SchemaVersion = "H100SessionStateCanonicalHashV2";
 
     public static string Compute(GameSessionState session)
     {
@@ -132,6 +132,7 @@ internal static class H100SessionStateCanonicalHash
                 Append(payload, "roster.hero.equipped_item.instance_id", itemInstanceId);
                 Append(payload, "roster.hero.equipped_item.base_id", item?.ItemBaseId);
                 AppendAffixes(payload, "roster.hero.equipped_item.affixes", item?.AffixIds);
+                AppendAffixMagnitudes(payload, "roster.hero.equipped_item.affix_magnitudes", item?.AffixMagnitudeRolls);
             }
         }
     }
@@ -151,6 +152,7 @@ internal static class H100SessionStateCanonicalHash
             Append(payload, "inventory.item.base_id", item.ItemBaseId);
             Append(payload, "inventory.item.equipped_hero_id", item.EquippedHeroId);
             AppendAffixes(payload, "inventory.item.affixes", item.AffixIds);
+            AppendAffixMagnitudes(payload, "inventory.item.affix_magnitudes", item.AffixMagnitudeRolls);
         }
     }
 
@@ -176,6 +178,19 @@ internal static class H100SessionStateCanonicalHash
         var indexed = (affixIds ?? Array.Empty<string>())
             .Select((affixId, index) => $"{index.ToString("D8", CultureInfo.InvariantCulture)}={affixId ?? string.Empty}");
         AppendOrdinalCollection(payload, name, indexed);
+    }
+
+    private static void AppendAffixMagnitudes(
+        Stream payload,
+        string name,
+        IEnumerable<InventoryAffixMagnitudeRecord>? magnitudes)
+    {
+        var canonical = (magnitudes ?? Array.Empty<InventoryAffixMagnitudeRecord>())
+            .Where(value => value != null && !string.IsNullOrWhiteSpace(value.AffixId))
+            .OrderBy(value => value.AffixId, StringComparer.Ordinal)
+            .Select(value =>
+                $"{value.AffixId}={unchecked((uint)BitConverter.SingleToInt32Bits(value.Magnitude)).ToString("X8", CultureInfo.InvariantCulture)}");
+        AppendOrdinalCollection(payload, name, canonical);
     }
 
     private static string JoinOrdinal(IEnumerable<string>? values)

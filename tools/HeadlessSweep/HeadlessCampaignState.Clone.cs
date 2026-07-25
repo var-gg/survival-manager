@@ -64,6 +64,10 @@ internal sealed partial class HeadlessCampaignState
             source.InstanceId,
             source.ItemBaseId,
             source.AffixIds.ToArray(),
+            source.AffixMagnitudes.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value,
+                StringComparer.Ordinal),
             source.EquippedHeroId,
             source.AcquisitionIndex,
             source.RarityTier,

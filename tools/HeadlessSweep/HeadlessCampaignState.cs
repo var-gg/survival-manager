@@ -283,7 +283,8 @@ internal sealed partial class HeadlessCampaignState
                     item.ItemBaseId,
                     item.AffixIds,
                     item.EquippedHeroId,
-                    item.RarityTier),
+                    item.RarityTier,
+                    item.AffixMagnitudes),
                 StringComparer.Ordinal),
             new Dictionary<string, SkillInstanceState>(StringComparer.Ordinal),
             Heroes.Where(hero => hero.SelectedPassiveNodeIds.Count > 0)
@@ -859,15 +860,17 @@ internal sealed partial class HeadlessCampaignState
                     ? template.RarityTier
                     : ItemRarityTierValue.Common);
         _latestItemGrades.Add(grade);
+        var affixIds = GeneratedItemAffixSelector.Select(
+            Lookup,
+            itemBaseId,
+            seed,
+            grade,
+            ResolveGradeStepBudgetScore()).ToArray();
         var item = new HeadlessCampaignItem(
             $"{itemBaseId}-i{_itemInstanceCounter.ToString(CultureInfo.InvariantCulture)}",
             itemBaseId,
-            GeneratedItemAffixSelector.Select(
-                Lookup,
-                itemBaseId,
-                seed,
-                grade,
-                ResolveGradeStepBudgetScore()).ToArray(),
+            affixIds,
+            BuildAffixMagnitudes(Snapshot, seed, affixIds),
             string.Empty,
             acquisitionIndex,
             grade);
@@ -951,18 +954,52 @@ internal sealed partial class HeadlessCampaignState
         {
             var index = items.Count;
             var seed = BuildStableSeed($"{itemBaseId}|{index}", index);
+            var affixIds = GeneratedItemAffixSelector.Select(lookup, itemBaseId, seed).ToArray();
             items.Add(new HeadlessCampaignItem(
                 $"demo-item-{index + 1}",
                 itemBaseId,
-                GeneratedItemAffixSelector.Select(lookup, itemBaseId, seed).ToArray(),
+                affixIds,
+                BuildAffixMagnitudes(lookup.Snapshot, seed, affixIds),
                 string.Empty,
                 index,
-                lookup.Snapshot.ItemCatalog.TryGetValue(itemBaseId, out var template)
+                lookup.Snapshot.ItemCatalog != null
+                && lookup.Snapshot.ItemCatalog.TryGetValue(itemBaseId, out var template)
                     ? template.RarityTier
                     : ItemRarityTierValue.Common));
         }
 
         return items;
+    }
+
+    private static IReadOnlyDictionary<string, float> BuildAffixMagnitudes(
+        CombatContentSnapshot snapshot,
+        int stableItemSeed,
+        IReadOnlyList<string> affixIds)
+    {
+        var magnitudes = new Dictionary<string, float>(StringComparer.Ordinal);
+        var affixCatalog = snapshot.AffixCatalog;
+        if (affixCatalog == null)
+        {
+            return magnitudes;
+        }
+
+        for (var index = 0; index < affixIds.Count; index++)
+        {
+            var affixId = affixIds[index];
+            if (!affixCatalog.TryGetValue(affixId, out var template))
+            {
+                continue;
+            }
+
+            magnitudes[affixId] = AffixMagnitudeRoller.Roll(
+                stableItemSeed,
+                affixId,
+                index,
+                template.ValueMin,
+                template.ValueMax);
+        }
+
+        return magnitudes;
     }
 
     private static int BuildStableSeed(string value, int salt)

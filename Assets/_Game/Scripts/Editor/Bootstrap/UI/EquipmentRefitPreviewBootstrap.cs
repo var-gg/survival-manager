@@ -90,15 +90,14 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
 
     private EquipmentRefitViewState BuildMockViewState()
     {
-        // affix row — AffixDefinition.Tier 기준 group. 값은 instance 확정 roll 미저장 →
-        // AffixDefinition.ValueMin~ValueMax 범위 표기 (가짜 rolled value 아님 — audit §4.1 P1-2).
-        var affixRaw = new (string AffixId, string Group, string Name, string Range, string Icon)[]
+        // affix row — AffixDefinition.Tier 기준 group + 실제 magnitude/percentile/min-max context preview.
+        var affixRaw = new (string AffixId, string Group, string Name, string Magnitude, string Icon)[]
         {
-            ("affix_atk_implicit", "implicit", "기본 공격력",  "8 ~ 15",      "atk"),
-            ("affix_crit_chance",  "prefix",   "치명타 확률",  "4 ~ 9",       "crit"),
-            ("affix_armor_flat",   "prefix",   "방어도",        "12 ~ 30",     "armor"),
-            ("affix_atk_speed",    "suffix",   "공격 속도",     "0.05 ~ 0.15", "speed"),
-            ("affix_resist_phys",  "suffix",   "물리 저항",     "6 ~ 14",      "resist_phys"),
+            ("affix_atk_implicit", "implicit", "기본 공격력",  "12 · 57% [8 ~ 15]",       "atk"),
+            ("affix_crit_chance",  "prefix",   "치명타 확률",  "8 · 80% [4 ~ 9]",         "crit"),
+            ("affix_armor_flat",   "prefix",   "방어도",        "20 · 44% [12 ~ 30]",      "armor"),
+            ("affix_atk_speed",    "suffix",   "공격 속도",     "0.12 · 70% [0.05 ~ 0.15]", "speed"),
+            ("affix_resist_phys",  "suffix",   "물리 저항",     "9 · 38% [6 ~ 14]",        "resist_phys"),
         };
         var affixes = new List<EquipmentRefitAffixRowViewState>(affixRaw.Length);
         foreach (var a in affixRaw)
@@ -108,7 +107,7 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
                 GroupKey: a.Group,
                 CategoryKey: "utility",
                 Name: a.Name,
-                ValueRange: a.Range,
+                MagnitudeText: a.Magnitude,
                 IconSprite: LoadAffixSprite(a.Icon)));
         }
 

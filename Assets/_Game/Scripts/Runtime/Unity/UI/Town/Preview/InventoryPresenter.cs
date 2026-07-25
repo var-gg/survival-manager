@@ -379,17 +379,20 @@ public sealed class InventoryPresenter : IInventoryActions
             .Select(affixId =>
             {
                 var group = "prefix";
-                var valueRange = "—";
+                var magnitudeText = "—";
                 if (_lookup.TryGetAffixDefinition(affixId, out var affixDef))
                 {
                     group = affixDef.Tier.ToString().ToLowerInvariant();
-                    valueRange = $"{affixDef.ValueMin:0.#} ~ {affixDef.ValueMax:0.#}";
+                    magnitudeText = AffixMagnitudePresentation.Format(
+                        AffixMagnitudePresentation.Resolve(item, affixDef),
+                        affixDef.ValueMin,
+                        affixDef.ValueMax);
                 }
 
                 return new InventoryAffixRowViewState(
                     GroupKey: group,
                     Name: _contentText?.GetAffixName(affixId) ?? affixId,
-                    ValueRange: valueRange);
+                    MagnitudeText: magnitudeText);
             })
             .ToList();
 

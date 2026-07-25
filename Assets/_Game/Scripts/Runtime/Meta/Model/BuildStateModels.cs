@@ -25,7 +25,8 @@ public sealed record ItemInstanceState(
     string ItemBaseId,
     IReadOnlyList<string> AffixIds,
     string EquippedHeroId,
-    ItemRarityTierValue? RarityTier = null);
+    ItemRarityTierValue? RarityTier = null,
+    IReadOnlyDictionary<string, float>? AffixMagnitudes = null);
 
 public sealed record SkillInstanceState(
     string SkillInstanceId,

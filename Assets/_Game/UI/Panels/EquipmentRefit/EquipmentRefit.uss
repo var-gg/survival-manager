@@ -120,7 +120,7 @@
     font-size: var(--sm-fs-s);
     -unity-font-style: bold;
 }
-/* 값 범위 — AffixDefinition.ValueMin~ValueMax (instance 확정 roll 미저장 → 범위) */
+/* 실제 instance magnitude + percentile + AffixDefinition.ValueMin~ValueMax context */
 .erp-affix-row__value {
     color: var(--sm-gold-200);
     font-size: var(--sm-fs-eb);

@@ -30,6 +30,7 @@ internal sealed class HeadlessCampaignItem
         string instanceId,
         string itemBaseId,
         IReadOnlyList<string> affixIds,
+        IReadOnlyDictionary<string, float> affixMagnitudes,
         string equippedHeroId,
         int acquisitionIndex,
         ItemRarityTierValue rarityTier,
@@ -38,6 +39,7 @@ internal sealed class HeadlessCampaignItem
         InstanceId = instanceId;
         ItemBaseId = itemBaseId;
         AffixIds = affixIds;
+        AffixMagnitudes = affixMagnitudes;
         EquippedHeroId = equippedHeroId;
         AcquisitionIndex = acquisitionIndex;
         RarityTier = rarityTier;
@@ -47,6 +49,7 @@ internal sealed class HeadlessCampaignItem
     internal string InstanceId { get; }
     internal string ItemBaseId { get; }
     internal IReadOnlyList<string> AffixIds { get; set; }
+    internal IReadOnlyDictionary<string, float> AffixMagnitudes { get; }
     internal string EquippedHeroId { get; set; }
     internal int AcquisitionIndex { get; }
     internal ItemRarityTierValue RarityTier { get; }

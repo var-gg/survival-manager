@@ -30,6 +30,11 @@ if (args.Length == 1 && string.Equals(args[0], "refit-determinism", StringCompar
     return RefitDeterminismProbe.Run(FindRepositoryRoot());
 }
 
+if (args.Length >= 1 && string.Equals(args[0], "affix-magnitude-audit", StringComparison.Ordinal))
+{
+    return AffixMagnitudeAuditRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
+}
+
 if (args.Length >= 1 && string.Equals(args[0], "deck-matchup-diagnostic", StringComparison.Ordinal))
 {
     return DeckMatchupDiagnosticRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
@@ -87,6 +92,7 @@ if (args.Length >= 1 && string.Equals(args[0], "balance-framework", StringCompar
 Console.Error.WriteLine(
     "Usage: HeadlessSweep [snapshot-load | snapshot-freshness-self-check | dive-failure-witness-self-check "
     + "| refit-determinism "
+    + "| affix-magnitude-audit [--profile-samples <n>] [--affix-samples <n>] [--hash-seeds <n>] [--output <path>] "
     + "| deck-matchup-diagnostic [--seeds <n>] [--output <path>] "
     + "| credible-deck-matchup [--seeds <n>] [--output <path>] [--opening-lock-seconds <n>] "
     + "| campaign-battle [--unity <report>] [--output <path>] "
