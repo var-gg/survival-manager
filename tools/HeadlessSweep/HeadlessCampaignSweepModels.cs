@@ -32,7 +32,8 @@ internal sealed class HeadlessCampaignItem
         IReadOnlyList<string> affixIds,
         string equippedHeroId,
         int acquisitionIndex,
-        ItemRarityTierValue rarityTier)
+        ItemRarityTierValue rarityTier,
+        int refitLevel = 0)
     {
         InstanceId = instanceId;
         ItemBaseId = itemBaseId;
@@ -40,21 +41,32 @@ internal sealed class HeadlessCampaignItem
         EquippedHeroId = equippedHeroId;
         AcquisitionIndex = acquisitionIndex;
         RarityTier = rarityTier;
+        RefitLevel = refitLevel;
     }
 
     internal string InstanceId { get; }
     internal string ItemBaseId { get; }
-    internal IReadOnlyList<string> AffixIds { get; }
+    internal IReadOnlyList<string> AffixIds { get; set; }
     internal string EquippedHeroId { get; set; }
     internal int AcquisitionIndex { get; }
     internal ItemRarityTierValue RarityTier { get; }
+    internal int RefitLevel { get; set; }
 }
+
+internal sealed record HeadlessCampaignNaturalDrop(
+    string InstanceId,
+    string ItemBaseId,
+    int AcquisitionIndex,
+    ItemRarityTierValue RarityTier,
+    IReadOnlyList<string> AffixIds);
 
 internal sealed record HeadlessCampaignFarmResult(
     int Maps,
     int BattleRewardNodesPerMap,
     int ItemDrops,
-    IReadOnlyList<DropGradeRollObservation> GradeRolls);
+    IReadOnlyList<DropGradeRollObservation> GradeRolls,
+    int EchoEarned = 0,
+    IReadOnlyList<HeadlessCampaignNaturalDrop>? NaturalDrops = null);
 
 internal sealed record HeadlessCampaignBattleSetup(
     BattleLoadoutSnapshot AllySnapshot,

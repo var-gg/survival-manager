@@ -7,6 +7,25 @@ internal static class HeadlessCampaignEquipmentPowerPolicy
     internal const int ExpectedHeroCount = 4;
     internal const int ExpectedSlotsPerHero = 3;
 
+    internal static bool TryApply(
+        HeadlessCampaignState state,
+        out HeadlessEquippedLoadoutObservation observation)
+    {
+        try
+        {
+            observation = Apply(state);
+            return true;
+        }
+        catch (InvalidDataException exception) when (
+            exception.Message.StartsWith(
+                "No complete best-power assignment exists for slot",
+                StringComparison.Ordinal))
+        {
+            observation = null!;
+            return false;
+        }
+    }
+
     internal static HeadlessEquippedLoadoutObservation Apply(HeadlessCampaignState state)
     {
         var itemCatalog = state.Snapshot.ItemCatalog
@@ -35,6 +54,19 @@ internal static class HeadlessCampaignEquipmentPowerPolicy
                 $"Endless Heat measurement requires {ExpectedSlotsPerHero} item slots, found [{string.Join(",", slotTypes)}].");
         }
 
+        var assignments = slotTypes
+            .Select(slotType => new
+            {
+                SlotType = slotType,
+                Items = ResolveSlotAssignment(
+                state.Inventory,
+                heroes,
+                slotType,
+                itemCatalog,
+                affixCatalog),
+            })
+            .ToArray();
+
         foreach (var hero in state.Heroes)
         {
             hero.EquippedItemIds.Clear();
@@ -47,23 +79,17 @@ internal static class HeadlessCampaignEquipmentPowerPolicy
 
         var equipped = new List<HeadlessEquippedSlotObservation>(
             ExpectedHeroCount * ExpectedSlotsPerHero);
-        foreach (var slotType in slotTypes)
+        foreach (var assignment in assignments)
         {
-            var assignment = ResolveSlotAssignment(
-                state.Inventory,
-                heroes,
-                slotType,
-                itemCatalog,
-                affixCatalog);
             for (var heroIndex = 0; heroIndex < heroes.Length; heroIndex++)
             {
-                var item = assignment[heroIndex];
+                var item = assignment.Items[heroIndex];
                 var hero = heroes[heroIndex];
                 item.EquippedHeroId = hero.Id;
                 hero.EquippedItemIds.Add(item.InstanceId);
                 equipped.Add(new HeadlessEquippedSlotObservation(
                     hero.Id,
-                    slotType,
+                    assignment.SlotType,
                     item.InstanceId,
                     item.ItemBaseId,
                     (int)item.RarityTier,

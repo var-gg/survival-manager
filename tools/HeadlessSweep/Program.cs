@@ -74,6 +74,11 @@ if (args.Length >= 1 && string.Equals(args[0], "endless-heat-sweep", StringCompa
     return EndlessHeatSweepRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
 }
 
+if (args.Length >= 1 && string.Equals(args[0], "refit-farm-profile", StringComparison.Ordinal))
+{
+    return RefitFarmProfileRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
+}
+
 if (args.Length >= 1 && string.Equals(args[0], "balance-framework", StringComparison.Ordinal))
 {
     return BalanceFrameworkGateRunner.Run(FindRepositoryRoot(), args.Skip(1).ToArray());
@@ -89,6 +94,7 @@ Console.Error.WriteLine(
     + "[--heat <n>] [--output <path>] [--verify] "
     + "| endless-heat-sweep [--seeds <n>] [--degree <n>] [--horizons <n,n,...>] "
     + "[--paired-horizon <n>] [--heats <n,n,...>] [--output <path>] [--difficulty-only] [--reward-grid] "
+    + "| refit-farm-profile [--seeds <n>] [--degree <n>] [--bootstrap <n>] [--output <path>] "
     + "| balance-framework [--samples <n>] [--neutral-health-more <n>] "
     + "[--neutral-power-more <n>] [--snapshot <path>] [--neutral-snapshot <path>] "
     + "[--emulate-before] [--neutral-emulate-before] [--precision-power <n>] "

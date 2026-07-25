@@ -16,8 +16,8 @@ internal static class EndlessHeatSweepRunner
 {
     private const string SnapshotRelativePath = "Assets/Resources/_Game/Content/content-snapshot.json";
     private const string DefaultOutputRelativePath = "Temp/HeadlessSweep/endless-heat-sweep.json";
-    private const string TargetSiteId = "site_worldscar_depths";
-    private const string TargetEncounterId = "site_worldscar_depths_boss_1";
+    internal const string TargetSiteId = "site_worldscar_depths";
+    internal const string TargetEncounterId = "site_worldscar_depths_boss_1";
     private static readonly int[] DefaultMeasurementHeats = { 0, 1, 2, 3, 4, 5 };
     private static readonly int[] ScalingProbeHeats = { 1, 3, 5, 10 };
 
@@ -164,7 +164,7 @@ internal static class EndlessHeatSweepRunner
         }
     }
 
-    private static IReadOnlyList<CampaignBalanceGridCell> BuildReferenceCells(
+    internal static IReadOnlyList<CampaignBalanceGridCell> BuildReferenceCells(
         CampaignBalanceSweepConfig config)
     {
         var build = config.BuildPowerQuantiles.Single(value =>
@@ -197,7 +197,7 @@ internal static class EndlessHeatSweepRunner
             .ToArray();
     }
 
-    private static IReadOnlyList<EndlessHeatPreparedScenario> PrepareScenarios(
+    internal static IReadOnlyList<EndlessHeatPreparedScenario> PrepareScenarios(
         SnapshotSessionContentLookup lookup,
         CampaignBalanceSweepConfig config,
         IReadOnlyList<CampaignBalanceGridCell> cells,

@@ -66,7 +66,8 @@ internal sealed partial class HeadlessCampaignState
             source.AffixIds.ToArray(),
             source.EquippedHeroId,
             source.AcquisitionIndex,
-            source.RarityTier);
+            source.RarityTier,
+            source.RefitLevel);
 
     private static ActiveRunState? CloneActiveRun(ActiveRunState? source)
     {

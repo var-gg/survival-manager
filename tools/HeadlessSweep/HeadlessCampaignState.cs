@@ -837,7 +837,18 @@ internal sealed partial class HeadlessCampaignState
         return tags.OrderBy(tag => tag, StringComparer.Ordinal).ToArray();
     }
 
-    private void AddGeneratedItem(string itemBaseId, ItemRarityTierValue? rolledGrade)
+    internal bool TrySpendEcho(int amount)
+    {
+        if (amount <= 0 || Echo < amount)
+        {
+            return false;
+        }
+
+        Echo -= amount;
+        return true;
+    }
+
+    private HeadlessCampaignItem AddGeneratedItem(string itemBaseId, ItemRarityTierValue? rolledGrade)
     {
         _itemInstanceCounter = checked(_itemInstanceCounter + 1);
         var acquisitionIndex = Inventory.Count;
@@ -845,10 +856,10 @@ internal sealed partial class HeadlessCampaignState
         var grade = rolledGrade
                     ?? (Snapshot.ItemCatalog != null
                         && Snapshot.ItemCatalog.TryGetValue(itemBaseId, out var template)
-                            ? template.RarityTier
-                            : ItemRarityTierValue.Common);
+                    ? template.RarityTier
+                    : ItemRarityTierValue.Common);
         _latestItemGrades.Add(grade);
-        Inventory.Add(new HeadlessCampaignItem(
+        var item = new HeadlessCampaignItem(
             $"{itemBaseId}-i{_itemInstanceCounter.ToString(CultureInfo.InvariantCulture)}",
             itemBaseId,
             GeneratedItemAffixSelector.Select(
@@ -859,7 +870,9 @@ internal sealed partial class HeadlessCampaignState
                 ResolveGradeStepBudgetScore()).ToArray(),
             string.Empty,
             acquisitionIndex,
-            grade));
+            grade);
+        Inventory.Add(item);
+        return item;
     }
 
     private float ResolveGradeStepBudgetScore()
