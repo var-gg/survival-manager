@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-06-14
+- 최종수정일: 2026-07-27
 - 소스오브트루스: Pindoc Wiki for product/design planning; `docs/02_design/index.md` for remaining repo contract inventory
 - 관련문서:
   - `docs/index.md`
@@ -80,3 +80,4 @@ repo에 남은 문서를 읽을 때도 "무엇을 만들지"의 창작 기준이
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
 - `ui/town-character-sheet-ui.md`: Town 5-panel character sheet source/view-state contract
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책
+- `ui/mechanic-surface-coverage.md`: runtime mechanic과 player-visible surface의 정적 coverage catalog
