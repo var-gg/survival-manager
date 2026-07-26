@@ -295,6 +295,62 @@ MonoBehaviour:
     m_Key: content.tag.tag_duelist_build_gate.name
     m_Metadata:
       m_Items: []
+  - m_Id: 42683695491256320
+    m_Key: content.tag.pool_accessory.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683695822606336
+    m_Key: content.tag.pool_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683696200093696
+    m_Key: content.tag.pool_blade.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683696569192448
+    m_Key: content.tag.pool_bow.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683696963457024
+    m_Key: content.tag.pool_duelist_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683697328361472
+    m_Key: content.tag.pool_duelist_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683697697460224
+    m_Key: content.tag.pool_focus.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683698062364672
+    m_Key: content.tag.pool_mystic_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683698431463424
+    m_Key: content.tag.pool_mystic_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683698804756480
+    m_Key: content.tag.pool_ranger_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683699169660928
+    m_Key: content.tag.pool_ranger_trinket.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683699526176768
+    m_Key: content.tag.pool_shield.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683699886886912
+    m_Key: content.tag.pool_vanguard_armor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683700247597056
+    m_Key: content.tag.pool_vanguard_trinket.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

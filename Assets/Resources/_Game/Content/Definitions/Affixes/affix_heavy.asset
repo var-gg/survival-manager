@@ -25,6 +25,9 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: fc899898ed68fa04da2ed84a6ccd4ea0, type: 2}
   - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 6a29a2e60910378438f9c89bd8418ea7, type: 2}
+  - {fileID: 11400000, guid: 4891eb73d95a99443a2ce528c353d528, type: 2}
+  - {fileID: 11400000, guid: 008b1d04066eb014c93da4e9949fbcf3, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -67,5 +70,6 @@ MonoBehaviour:
   - StatId: armor
     Op: 0
     Value: 2
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

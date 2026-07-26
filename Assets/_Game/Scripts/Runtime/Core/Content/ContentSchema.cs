@@ -42,6 +42,14 @@ public enum AffixCategoryValue { OffenseFlat = 0, OffenseScaling = 1, DefenseFla
 public enum ItemRarityTierValue { Common = 0, Magic = 1, Rare = 2, Epic = 3, Legendary = 4 }
 public enum ItemIdentityValue { Baseline = 0, Named = 1, Unique = 2 }
 public enum ArchetypeScopeValue { Core = 0, Specialist = 1 }
+public enum CraftOperationKindValue
+{
+    Temper = 0,
+    Reforge = 1,
+    Seal = 2,
+    Imprint = 3,
+    Salvage = 4,
+}
 
 public enum RewardType
 {

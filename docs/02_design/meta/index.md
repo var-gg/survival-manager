@@ -24,7 +24,7 @@ Town/expedition loop, 경제, 모집, 장비, augment, synergy, PVP, 캠페인 �
 - `economy-protection-contract.md`: Gold/Echo split, refit/recovery rail, no-dead-reward, dismiss refund 기준
 - `duplicate-handling-contract.md`: duplicate 판정, Echo conversion, recruit pool exclusion 기준
 - `drop-table-rarity-bracket-and-source-matrix.md`: automatic drop/source bracket, first-clear 5-grade mixture, campaign-total power anchor
-- `item-and-affix-system.md`: 아이템과 affix 구조, Echo refit, advanced crafting 경계
+- `item-and-affix-system.md`: 아이템 family pool, Echo Reforge/Seal, advanced crafting 경계
 - `affix-authoring-schema.md`: affix schema와 authority / budget / line-density 기준
 - `affix-pool-v1.md`: affix catalog와 live subset
 - `equipment-family-and-crafting-depth.md`: weapon family floor와 deep crafting 경계

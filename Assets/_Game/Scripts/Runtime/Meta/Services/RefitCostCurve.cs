@@ -72,4 +72,49 @@ public static class RefitCostCurve
 
         return total;
     }
+
+    public static int GetSealBundleCost(
+        RefitBalanceTemplate balance,
+        int firstFarmRunEcho,
+        int currentRefitLevel,
+        int targetRefitLevel,
+        ItemRarityTierValue grade,
+        double chapterMeanGrade,
+        int lockedAffixCount)
+    {
+        if (lockedAffixCount < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(lockedAffixCount));
+        }
+
+        var refitCost = GetBundleCost(
+            balance,
+            firstFarmRunEcho,
+            currentRefitLevel,
+            targetRefitLevel,
+            grade,
+            chapterMeanGrade);
+        if (lockedAffixCount == 0)
+        {
+            return refitCost;
+        }
+
+        if (!double.IsFinite(balance.SealCostMultiplierPerLockedAffix)
+            || balance.SealCostMultiplierPerLockedAffix <= 0d)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(balance),
+                "Seal cost multiplier must be positive and finite.");
+        }
+
+        var scaledCost = refitCost
+                         * (1d + (balance.SealCostMultiplierPerLockedAffix * lockedAffixCount));
+        if (!double.IsFinite(scaledCost) || scaledCost > int.MaxValue)
+        {
+            throw new OverflowException(
+                $"Seal bundle produced invalid Echo cost {scaledCost:R}.");
+        }
+
+        return checked((int)Math.Ceiling(scaledCost));
+    }
 }

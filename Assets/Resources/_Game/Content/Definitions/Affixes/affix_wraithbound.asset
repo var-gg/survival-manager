@@ -25,6 +25,10 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
   - {fileID: 11400000, guid: c6677ff91fea4d0abfca88fad4dc2a03, type: 2}
+  - {fileID: 11400000, guid: dea042dedf0e96741abb46291c729471, type: 2}
+  - {fileID: 11400000, guid: 97fd31e683a03074286a03668227cf53, type: 2}
+  - {fileID: 11400000, guid: 49079b65ff64a364a9f60366e62cf1e5, type: 2}
+  - {fileID: 11400000, guid: e43b9921ea90f554586efe48ba9d6358, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -67,5 +71,6 @@ MonoBehaviour:
   - StatId: mag_power
     Op: 0
     Value: 2
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

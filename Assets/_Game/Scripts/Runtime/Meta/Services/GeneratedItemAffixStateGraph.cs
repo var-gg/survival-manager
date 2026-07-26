@@ -175,7 +175,9 @@ internal sealed class GeneratedItemAffixStateGraph
                 && candidate.SpawnWeight > 0f
                 && candidate.ItemLevelMin < 999
                 && (candidate.AllowedSlotTypes is not { Count: > 0 }
-                    || candidate.AllowedSlotTypes.Contains(item.SlotType, StringComparer.Ordinal)))
+                    || candidate.AllowedSlotTypes.Contains(item.SlotType, StringComparer.Ordinal))
+                && (string.IsNullOrWhiteSpace(item.AffixPoolTag)
+                    || candidate.CompileTags.Contains(item.AffixPoolTag, StringComparer.Ordinal)))
             .Select(candidateId => affixes[candidateId])
             .OrderBy(candidate => candidate.Id, StringComparer.Ordinal)
             .ToArray();

@@ -25,6 +25,11 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
   - {fileID: 11400000, guid: 754f0c18dd0a18e4781970042cb79b6a, type: 2}
+  - {fileID: 11400000, guid: dea042dedf0e96741abb46291c729471, type: 2}
+  - {fileID: 11400000, guid: 4bf945c4f53397f4f8426f988bc95e07, type: 2}
+  - {fileID: 11400000, guid: 49079b65ff64a364a9f60366e62cf1e5, type: 2}
+  - {fileID: 11400000, guid: e43b9921ea90f554586efe48ba9d6358, type: 2}
+  - {fileID: 11400000, guid: 01271c0625a2c73428bfe320a2db2426, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -67,5 +72,6 @@ MonoBehaviour:
   - StatId: skill_haste
     Op: 1
     Value: 0.06
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

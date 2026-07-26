@@ -2892,6 +2892,9 @@ public static partial class SampleSeedGenerator
             ("dive_assassin_keystone", "Dive Assassin Keystone", "다이브 암살 키스톤"),
             ("tag_duelist_build_gate", "Duelist Build Gate", "결투가 빌드 게이트"),
         };
+        definitions = definitions
+            .Concat(FarmingIdentityStableTagDefinitions)
+            .ToArray();
 
         return definitions.ToDictionary(tuple => tuple.id, tuple => CreateAsset<StableTagDefinition>($"{ResourcesRoot}/StableTags/tag_{tuple.id}.asset", asset =>
         {
@@ -3018,9 +3021,11 @@ public static partial class SampleSeedGenerator
             var craftCurrencyTag = string.IsNullOrWhiteSpace(item.CraftCurrencyTag)
                 ? "echo"
                 : item.CraftCurrencyTag;
-            var allowedCraftOperations = item.AllowedCraftOperations.Count == 0
-                ? new List<CraftOperationKindValue> { CraftOperationKindValue.Reforge }
-                : item.AllowedCraftOperations.ToList();
+            var allowedCraftOperations = new List<CraftOperationKindValue>
+            {
+                CraftOperationKindValue.Reforge,
+                CraftOperationKindValue.Seal,
+            };
 
             item.ItemFamilyTag = itemFamilyTag;
             item.WeaponFamilyTag = weaponFamilyTag;
@@ -3768,9 +3773,11 @@ public static partial class SampleSeedGenerator
             var craftCurrencyTag = string.IsNullOrWhiteSpace(item.CraftCurrencyTag)
                 ? "echo"
                 : item.CraftCurrencyTag;
-            var allowedCraftOperations = item.AllowedCraftOperations.Count == 0
-                ? new List<CraftOperationKindValue> { CraftOperationKindValue.Reforge }
-                : item.AllowedCraftOperations.ToList();
+            var allowedCraftOperations = new List<CraftOperationKindValue>
+            {
+                CraftOperationKindValue.Reforge,
+                CraftOperationKindValue.Seal,
+            };
 
             var compileTags = item.CompileTags.Where(IsValidTagReference).Distinct().ToList();
             if (compileTags.Count == 0 && item.SlotType == ItemSlotType.Weapon)

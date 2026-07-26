@@ -25,6 +25,7 @@ public sealed class AffixQualityProfilePhase1Tests
         Assert.That(balance.MaximumFloorDenominator, Is.EqualTo(100));
         Assert.That(balance.FloorDecayNumerator, Is.EqualTo(55));
         Assert.That(balance.FloorDecayDenominator, Is.EqualTo(100));
+        Assert.That(balance.SealCostMultiplierPerLockedAffix, Is.EqualTo(0.50d));
         Assert.That(RefitFloorSchedule.ToDouble(balance.FloorScheduleQ64[0]), Is.EqualTo(0.315d).Within(1e-12));
         Assert.That(RefitFloorSchedule.ToDouble(balance.FloorScheduleQ64[1]), Is.EqualTo(0.48825d).Within(1e-12));
         Assert.That(RefitFloorSchedule.ToDouble(balance.FloorScheduleQ64[2]), Is.EqualTo(0.5835375d).Within(1e-12));
@@ -118,8 +119,8 @@ public sealed class AffixQualityProfilePhase1Tests
         Assert.That(profilesCompiled, Is.EqualTo(210), "shipped matrix remains 42 items x 5 grades");
         Assert.That(
             q70EqualsQ80,
-            Is.EqualTo(125),
-            "the expanded shipped affix catalog retains its measured q70=q80 collapse count");
+            Is.EqualTo(144),
+            "the family-filtered shipped affix catalog retains its measured q70=q80 collapse count");
     }
 
     private static void ValidateFixedPointProfile(AffixQualityProfile profile)

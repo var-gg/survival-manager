@@ -22,3 +22,4 @@ MonoBehaviour:
   CostBaseFirstFarmEchoMultiplier: 0.6
   CostGrowthPerLevel: 1.7
   GradeCostRatio: 1.25
+  SealCostMultiplierPerLockedAffix: 0.5

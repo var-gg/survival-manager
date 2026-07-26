@@ -193,6 +193,7 @@ public sealed partial class GameSessionState
 
             Profile.Currencies ??= new CurrencyRecord();
             Profile.Inventory ??= new List<InventoryItemRecord>();
+            Profile.ItemCraftOperations ??= new List<ItemCraftOperationRecord>();
             Profile.HeroInstanceCounter = Math.Max(Profile.HeroInstanceCounter, Profile.Heroes.Count);
             Profile.ItemInstanceCounter = Math.Max(Profile.ItemInstanceCounter, Profile.Inventory.Count);
             Profile.UnlockedPermanentAugmentIds ??= new List<string>();
@@ -582,11 +583,38 @@ public sealed partial class GameSessionState
     internal Result RefitItem(string itemInstanceId, ulong stableCommandSeed) =>
         _itemRefitFlow.RefitItem(itemInstanceId, stableCommandSeed);
 
+    internal Result SealItem(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds) =>
+        _itemRefitFlow.SealItem(itemInstanceId, sealedAffixIds);
+
+    internal Result SealItem(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds,
+        int attemptIndex,
+        ulong stableCommandSeed) =>
+        _itemRefitFlow.SealItem(
+            itemInstanceId,
+            sealedAffixIds,
+            attemptIndex,
+            stableCommandSeed);
+
     internal RefitQuote GetRefitQuote(string itemInstanceId) =>
         _itemRefitFlow.GetRefitQuote(itemInstanceId);
 
     internal RefitExecutionResult PreviewRefitItem(string itemInstanceId, ulong stableCommandSeed) =>
         _itemRefitFlow.PreviewRefitItem(itemInstanceId, stableCommandSeed);
+
+    internal RefitExecutionResult PreviewSealItem(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds,
+        int attemptIndex,
+        ulong stableCommandSeed) =>
+        _itemRefitFlow.PreviewSealItem(
+            itemInstanceId,
+            sealedAffixIds,
+            attemptIndex,
+            stableCommandSeed);
 
     internal void SynchronizeRefitEquippedHero(string heroId)
     {

@@ -84,6 +84,57 @@ public class JsonPersistenceTests
     }
 
     [Test]
+    public void ItemCraftOperations_LegacyProfileDefaultsEmpty_AndSealInputRoundTrips()
+    {
+        var legacy = DeserializeNewtonsoft<SaveProfile>(
+            "{\"ProfileId\":\"legacy-craft-operations\"}");
+        Assert.That(legacy, Is.Not.Null);
+        Assert.That(legacy!.ItemCraftOperations, Is.Empty);
+
+        var root = Path.Combine(
+            Path.GetTempPath(),
+            "sm_item_craft_operations_" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            legacy.ItemCraftOperations.Add(new ItemCraftOperationRecord
+            {
+                OperationId = "item-1:Seal:3",
+                ItemInstanceId = "item-1",
+                ItemBaseId = "item_bone_blade",
+                OperationKind = CraftOperationKindValue.Seal,
+                SealedAffixIds = new System.Collections.Generic.List<string>
+                {
+                    "affix_focusing",
+                },
+                AttemptIndex = 3,
+                StableCommandSeed = 0xCAFEUL,
+                TargetRefitLevel = 2,
+                RulesVersion = 1,
+                EchoCost = 72,
+            });
+            var repository = new JsonSaveRepository(root);
+            repository.Save(legacy);
+
+            var operation = repository
+                .LoadOrCreate("legacy-craft-operations")
+                .ItemCraftOperations
+                .Single();
+            Assert.That(operation.OperationKind, Is.EqualTo(CraftOperationKindValue.Seal));
+            Assert.That(operation.SealedAffixIds, Is.EqualTo(new[] { "affix_focusing" }));
+            Assert.That(operation.AttemptIndex, Is.EqualTo(3));
+            Assert.That(operation.StableCommandSeed, Is.EqualTo(0xCAFEUL));
+            Assert.That(operation.EchoCost, Is.EqualTo(72));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, true);
+            }
+        }
+    }
+
+    [Test]
     public void RefitSaveRoundTrip_PreservesTheSameNextMagnitudeResult()
     {
         var lookup = RefitTestFixture.CreateLookup();

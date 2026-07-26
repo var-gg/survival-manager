@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Core.Content;
 
 namespace SM.Meta.Services;
@@ -7,6 +8,20 @@ namespace SM.Meta.Services;
 /// <summary>Snapshot item metadata만으로 신규 아이템의 결정적 affix id를 고른다.</summary>
 public static class GeneratedItemAffixSelector
 {
+    public static IReadOnlyList<string> GetEligibleAffixIds(
+        ISessionContentLookup lookup,
+        string itemBaseId)
+    {
+        if (lookup == null)
+        {
+            throw new ArgumentNullException(nameof(lookup));
+        }
+
+        return GeneratedItemAffixStateGraph.TryCreate(lookup, itemBaseId, out var graph)
+            ? graph.Candidates.Select(candidate => candidate.Template.Id).ToArray()
+            : Array.Empty<string>();
+    }
+
     public static IReadOnlyList<string> Select(ISessionContentLookup lookup, string itemBaseId, int seed)
     {
         if (lookup == null)

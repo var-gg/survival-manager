@@ -22,6 +22,7 @@ public static class EquipmentContentV1Assetizer
 
         changed += ApplyItems(skills, tags);
         changed += ApplyAffixes(tags);
+        changed += ApplyFarmingIdentityRefitBalance();
         changed += ApplyDropTables();
         changed += ApplyFirstPlayableSlice();
 
@@ -32,6 +33,23 @@ public static class EquipmentContentV1Assetizer
         }
 
         Debug.Log($"Equipment content V1 assetization applied. Changed assets={changed}.");
+    }
+
+    [MenuItem("SM/Internal/Content/Apply Farming Identity Seal")]
+    public static void ApplyFarmingIdentity()
+    {
+        var tags = LoadDefinitionsById<StableTagDefinition>("StableTags");
+        var changed = ApplyFarmingIdentityItems();
+        changed += ApplyFarmingIdentityAffixes(tags);
+        changed += ApplyFarmingIdentityRefitBalance();
+
+        if (changed > 0)
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        }
+
+        Debug.Log($"Farming identity and Seal authoring applied. Changed assets={changed}.");
     }
 
     private static int ApplyItems(
@@ -46,7 +64,11 @@ public static class EquipmentContentV1Assetizer
             item.RarityTier = rarity;
             item.IdentityKind = identity;
             item.CraftCurrencyTag = EquipmentContentV1Contract.RefitCurrencyTag;
-            item.AllowedCraftOperations = new List<CraftOperationKindValue> { CraftOperationKindValue.Reforge };
+            item.AllowedCraftOperations = new List<CraftOperationKindValue>
+            {
+                CraftOperationKindValue.Reforge,
+                CraftOperationKindValue.Seal,
+            };
 
             var familyTag = ResolveItemFamily(item);
             item.ItemFamilyTag = familyTag;
@@ -90,7 +112,14 @@ public static class EquipmentContentV1Assetizer
             affix.ValueMin = spec.ValueMin;
             affix.ValueMax = spec.ValueMax;
             affix.AllowedSlotTypes = spec.AllowedSlots.ToList();
-            affix.CompileTags = ResolveTags(tags, spec.CompileTagIds);
+            affix.CompileTags = ResolveTags(
+                tags,
+                spec.CompileTagIds.Concat(
+                    EquipmentContentV1Contract.AffixPoolTagsByAffixId.TryGetValue(
+                        affix.Id,
+                        out var poolTags)
+                        ? poolTags
+                        : Array.Empty<string>()));
             affix.RequiredTags = ResolveTags(tags, spec.RequiredTagIds);
             affix.RuleModifierTags = ResolveTags(tags, spec.RuleModifierTagIds);
             affix.ExcludedTags = affix.ExcludedTags.Where(IsValidTagReference).Distinct().ToList();
@@ -160,6 +189,69 @@ public static class EquipmentContentV1Assetizer
         }
 
         return changed;
+    }
+
+    private static int ApplyFarmingIdentityItems()
+    {
+        var changed = 0;
+        foreach (var item in LoadDefinitions<ItemBaseDefinition>("Items"))
+        {
+            item.AllowedCraftOperations = new List<CraftOperationKindValue>
+            {
+                CraftOperationKindValue.Reforge,
+                CraftOperationKindValue.Seal,
+            };
+            EditorUtility.SetDirty(item);
+            changed++;
+        }
+
+        return changed;
+    }
+
+    private static int ApplyFarmingIdentityAffixes(
+        IReadOnlyDictionary<string, StableTagDefinition> tags)
+    {
+        var changed = 0;
+        var poolTagIds = EquipmentContentV1Contract.AffixPoolTagIds
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (var affix in LoadDefinitions<AffixDefinition>("Affixes"))
+        {
+            if (!EquipmentContentV1Contract.AffixPoolTagsByAffixId.TryGetValue(
+                    affix.Id,
+                    out var authoredPoolTags))
+            {
+                continue;
+            }
+
+            var preservedCompileTagIds = (affix.CompileTags
+                                          ?? new List<StableTagDefinition>())
+                .Where(IsValidTagReference)
+                .Select(tag => tag.Id)
+                .Where(id => !poolTagIds.Contains(id));
+            affix.CompileTags = ResolveTags(
+                tags,
+                preservedCompileTagIds.Concat(authoredPoolTags));
+            EditorUtility.SetDirty(affix);
+            changed++;
+        }
+
+        return changed;
+    }
+
+    private static int ApplyFarmingIdentityRefitBalance()
+    {
+        var balance = LoadDefinitions<RefitBalanceDefinition>("Balance")
+            .FirstOrDefault();
+        if (balance == null)
+        {
+            throw new InvalidOperationException(
+                "Farming identity authoring requires refit_balance.");
+        }
+
+        balance.SealCostMultiplierPerLockedAffix =
+            EquipmentContentV1Contract.SealCostMultiplierPerLockedAffix;
+        EditorUtility.SetDirty(balance);
+        return 1;
     }
 
     private static int ApplyDropTables()

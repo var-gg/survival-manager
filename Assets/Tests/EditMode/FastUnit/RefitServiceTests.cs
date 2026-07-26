@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SM.Core.Content;
+using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
@@ -51,6 +52,32 @@ public sealed class RefitServiceTests
 
         Assert.That(actual, Is.EqualTo(expected));
         Assert.That(actual, Is.Not.EqualTo(15), "retired flat-15 pricing must not survive");
+    }
+
+    [Test]
+    public void SealCost_ScalesFromTheExactRefitBundleByLockedAffixCount()
+    {
+        var balance = RefitTestFixture.CreateBalance();
+        var baseCost = RefitCostCurve.GetBundleCost(
+            balance,
+            40,
+            0,
+            2,
+            ItemRarityTierValue.Epic,
+            2.1d);
+
+        Assert.That(
+            RefitCostCurve.GetSealBundleCost(
+                balance, 40, 0, 2, ItemRarityTierValue.Epic, 2.1d, 0),
+            Is.EqualTo(baseCost));
+        Assert.That(
+            RefitCostCurve.GetSealBundleCost(
+                balance, 40, 0, 2, ItemRarityTierValue.Epic, 2.1d, 1),
+            Is.EqualTo((int)Math.Ceiling(baseCost * 1.5d)));
+        Assert.That(
+            RefitCostCurve.GetSealBundleCost(
+                balance, 40, 0, 2, ItemRarityTierValue.Epic, 2.1d, 2),
+            Is.EqualTo(baseCost * 2));
     }
 
     [Test]
@@ -308,6 +335,203 @@ public sealed class RefitServiceTests
     }
 
     [Test]
+    public void Seal_PreservesLockedMagnitudeBitsAcrossRerollsAndMovesUnlockedAffixes()
+    {
+        var lookup = RefitTestFixture.CreateLookup();
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
+            lookup,
+            RefitTestFixture.WeaponItemId,
+            ItemRarityTierValue.Epic,
+            0);
+        Assert.That(affixIds, Has.Count.GreaterThanOrEqualTo(2));
+        var oldMagnitudes = RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.05d);
+        var item = new RefitItemState(
+            RefitTestFixture.WeaponItemId,
+            "seal-lock-witness",
+            ItemRarityTierValue.Epic,
+            affixIds,
+            oldMagnitudes,
+            0);
+        var lockedId = affixIds[0];
+        var lockedBits = BitConverter.SingleToInt32Bits(oldMagnitudes[lockedId]);
+
+        for (var attempt = 1; attempt <= 32; attempt++)
+        {
+            var result = RefitTestFixture.CreateService(lookup).SealNextEffective(
+                item,
+                RefitTestFixture.CreateEconomy(lookup),
+                new[] { lockedId },
+                attempt,
+                (ulong)(0x5000 + attempt));
+
+            Assert.That(result.Applied, Is.True, result.Error);
+            Assert.That(
+                BitConverter.SingleToInt32Bits(result.AffixMagnitudes[lockedId]),
+                Is.EqualTo(lockedBits));
+            Assert.That(
+                affixIds.Skip(1).Any(id =>
+                    BitConverter.SingleToInt32Bits(result.AffixMagnitudes[id])
+                    != BitConverter.SingleToInt32Bits(oldMagnitudes[id])),
+                Is.True);
+        }
+    }
+
+    [Test]
+    public void EmptySeal_IsBitIdenticalToFrozenReforgePath()
+    {
+        var lookup = RefitTestFixture.CreateLookup();
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
+            lookup,
+            RefitTestFixture.WeaponItemId,
+            ItemRarityTierValue.Epic,
+            0);
+        var item = new RefitItemState(
+            RefitTestFixture.WeaponItemId,
+            "empty-seal-equivalence",
+            ItemRarityTierValue.Epic,
+            affixIds,
+            RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.05d),
+            0);
+        const ulong commandSeed = 0xA2C0FFEEUL;
+        var service = RefitTestFixture.CreateService(lookup);
+
+        var reforge = service.RefitNextEffective(
+            item,
+            RefitTestFixture.CreateEconomy(lookup),
+            commandSeed);
+        var seal = service.SealNextEffective(
+            item,
+            RefitTestFixture.CreateEconomy(lookup),
+            Array.Empty<string>(),
+            attemptIndex: 27,
+            stableCommandSeed: commandSeed);
+
+        Assert.That(seal.Quote, Is.EqualTo(reforge.Quote));
+        Assert.That(seal.ResultPercentileQ64, Is.EqualTo(reforge.ResultPercentileQ64));
+        Assert.That(seal.AffixIds, Is.EqualTo(reforge.AffixIds));
+        Assert.That(
+            seal.AffixIds.Select(id =>
+                BitConverter.SingleToInt32Bits(seal.AffixMagnitudes[id])),
+            Is.EqualTo(reforge.AffixIds.Select(id =>
+                BitConverter.SingleToInt32Bits(reforge.AffixMagnitudes[id]))));
+    }
+
+    [Test]
+    public void Seal_ServiceGateRejectsItemWithoutAllowedOperation()
+    {
+        var source = RefitTestFixture.CreateLookup();
+        var itemCatalog = source.Snapshot.ItemCatalog!.ToDictionary(
+            pair => pair.Key,
+            pair => pair.Value,
+            StringComparer.Ordinal);
+        itemCatalog[RefitTestFixture.WeaponItemId] =
+            itemCatalog[RefitTestFixture.WeaponItemId] with
+            {
+                AllowedCraftOperations = new[] { CraftOperationKindValue.Reforge },
+            };
+        var lookup = new FakeCombatContentLookup(
+            snapshot: source.Snapshot with { ItemCatalog = itemCatalog },
+            firstPlayableSlice: source.GetFirstPlayableSlice());
+        var affixIds = RefitTestFixture.SelectAtSupportIndex(
+            source,
+            RefitTestFixture.WeaponItemId,
+            ItemRarityTierValue.Epic,
+            0);
+        var item = new RefitItemState(
+            RefitTestFixture.WeaponItemId,
+            "seal-gate",
+            ItemRarityTierValue.Epic,
+            affixIds,
+            RefitTestFixture.CreateMagnitudes(source, affixIds, 0.05d),
+            0);
+
+        var result = new RefitService(
+            lookup,
+            lookup.Snapshot.RefitBalance!).SealNextEffective(
+            item,
+            RefitTestFixture.CreateEconomy(source),
+            new[] { affixIds[0] },
+            1,
+            17UL);
+
+        Assert.That(result.Applied, Is.False);
+        Assert.That(result.Error, Does.Contain("does not allow Seal"));
+    }
+
+    [Test]
+    public void ReforgeFrozenWitness_PreservesPreSealMagnitudeBits()
+    {
+        var baseLookup = RefitTestFixture.CreateLookup();
+        const string itemId = "item_bone_blade";
+        const string affixId = "affix_focusing";
+        var itemCatalog = new Dictionary<string, ItemTemplate>(StringComparer.Ordinal)
+        {
+            [itemId] = new ItemTemplate(
+                itemId,
+                Array.Empty<string>(),
+                "focus",
+                "Weapon",
+                Array.Empty<string>(),
+                ItemRarityTierValue.Common,
+                ItemIdentityValue.Baseline,
+                AllowedCraftOperations: new[]
+                {
+                    CraftOperationKindValue.Reforge,
+                    CraftOperationKindValue.Seal,
+                }),
+        };
+        var affixCatalog = new Dictionary<string, AffixTemplate>(StringComparer.Ordinal)
+        {
+            [affixId] = new AffixTemplate(
+                affixId,
+                Array.Empty<string>(),
+                Array.Empty<string>(),
+                Array.Empty<string>(),
+                null,
+                new[] { "Weapon" },
+                BudgetScore: 6f,
+                SpawnWeight: 1f,
+                Tier: "Implicit",
+                ValueMin: 0f,
+                ValueMax: 2f),
+        };
+        var lookup = new FakeCombatContentLookup(
+            snapshot: baseLookup.Snapshot with
+            {
+                ItemCatalog = itemCatalog,
+                AffixCatalog = affixCatalog,
+            },
+            firstPlayableSlice: new FirstPlayableSliceDefinition
+            {
+                AffixIds = new[] { affixId },
+            });
+        var magnitude = AffixMagnitudeRoller.Roll(1701, affixId, 0, 0f, 2f);
+        var result = new RefitService(
+            lookup,
+            lookup.Snapshot.RefitBalance!).RefitNextEffective(
+            new RefitItemState(
+                itemId,
+                "refit-cross-process-item-0",
+                ItemRarityTierValue.Common,
+                new[] { affixId },
+                new Dictionary<string, float>(StringComparer.Ordinal)
+                {
+                    [affixId] = magnitude,
+                },
+                0),
+            RefitTestFixture.CreateEconomy(baseLookup),
+            0xA2C0FFEEUL);
+
+        Assert.That(result.Applied, Is.True, result.Error);
+        Assert.That(result.Quote.TargetRefitLevel, Is.EqualTo(1));
+        Assert.That(result.Quote.TargetFloorQ64, Is.EqualTo(5810724383218508758UL));
+        Assert.That(result.ResultPercentileQ64, Is.EqualTo(11024429257756505132UL));
+        Assert.That(
+            BitConverter.SingleToInt32Bits(result.AffixMagnitudes[affixId]),
+            Is.EqualTo(1066991268));
+    }
+
+    [Test]
     public void SeedDerivation_UsesItemLevelRulesVersionAndRefitDomain()
     {
         var same = RefitSeedDerivation.Derive(17UL, "item-a", 2, 1);
@@ -420,6 +644,40 @@ public sealed class RefitServiceTests
             item.AffixMagnitudeRolls
                 .Select(value => (value.AffixId, BitConverter.SingleToInt32Bits(value.Magnitude))),
             Is.EqualTo(oldRolls));
+    }
+
+    [Test]
+    public void SealSessionTransaction_PersistsInputOutsideItemAndPreservesLockedBits()
+    {
+        var lookup = RefitTestFixture.CreateLookup();
+        var session = CreateSession(lookup, echo: 10_000);
+        var item = session.Profile.Inventory.Single();
+        var lockedId = item.AffixIds[0];
+        var lockedBits = BitConverter.SingleToInt32Bits(
+            item.AffixMagnitudeRolls.Single(roll => roll.AffixId == lockedId).Magnitude);
+        var echoBefore = session.Profile.Currencies.Echo;
+
+        var result = session.SealItem(
+            item.ItemInstanceId,
+            new[] { lockedId },
+            attemptIndex: 3,
+            stableCommandSeed: 0xCAFEUL);
+
+        Assert.That(result.IsSuccess, Is.True, result.Error);
+        Assert.That(
+            BitConverter.SingleToInt32Bits(
+                item.AffixMagnitudeRolls.Single(roll => roll.AffixId == lockedId).Magnitude),
+            Is.EqualTo(lockedBits));
+        var operation = session.Profile.ItemCraftOperations.Single();
+        Assert.That(operation.ItemInstanceId, Is.EqualTo(item.ItemInstanceId));
+        Assert.That(operation.OperationKind, Is.EqualTo(CraftOperationKindValue.Seal));
+        Assert.That(operation.SealedAffixIds, Is.EqualTo(new[] { lockedId }));
+        Assert.That(operation.AttemptIndex, Is.EqualTo(3));
+        Assert.That(operation.StableCommandSeed, Is.EqualTo(0xCAFEUL));
+        Assert.That(item.GetType().GetField("SealedAffixIds"), Is.Null);
+        Assert.That(
+            session.Profile.Currencies.Echo,
+            Is.EqualTo(echoBefore - operation.EchoCost));
     }
 
     private static GameSessionState CreateSession(FakeCombatContentLookup lookup, int echo)

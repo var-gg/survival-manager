@@ -13,6 +13,8 @@ public sealed class SaveProfile
     public long ItemInstanceCounter = 0;
     public List<HeroInstanceRecord> Heroes = new();
     public List<InventoryItemRecord> Inventory = new();
+    // Craft command input belongs to the profile ledger, not the mutable item state.
+    public List<ItemCraftOperationRecord> ItemCraftOperations = new();
     public CurrencyRecord Currencies = new();
     public CampaignProgressRecord CampaignProgress = new();
     public List<string> UnlockedPermanentAugmentIds = new();

@@ -35,7 +35,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: de91eaa0fd7e1934dbf32ec2fefdddbf, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 01000000
+  AllowedCraftOperations: 0100000002000000
   BaseModifiers:
   - StatId: phys_power
     Op: 0

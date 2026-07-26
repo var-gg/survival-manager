@@ -298,6 +298,62 @@ MonoBehaviour:
     m_Localized: Duelist Build Gate
     m_Metadata:
       m_Items: []
+  - m_Id: 42683695491256320
+    m_Localized: Accessory Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683695822606336
+    m_Localized: Armor Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683696200093696
+    m_Localized: Blade Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683696569192448
+    m_Localized: Bow Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683696963457024
+    m_Localized: Duelist Armor Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683697328361472
+    m_Localized: Duelist Trinket Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683697697460224
+    m_Localized: Focus Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683698062364672
+    m_Localized: Mystic Armor Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683698431463424
+    m_Localized: Mystic Trinket Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683698804756480
+    m_Localized: Ranger Armor Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683699169660928
+    m_Localized: Ranger Trinket Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683699526176768
+    m_Localized: Shield Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683699886886912
+    m_Localized: Vanguard Armor Affix Pool
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42683700247597056
+    m_Localized: Vanguard Trinket Affix Pool
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

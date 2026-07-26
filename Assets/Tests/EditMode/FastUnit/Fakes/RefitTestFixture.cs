@@ -29,7 +29,8 @@ public static class RefitTestFixture
             FloorScheduleQ64: RefitFloorSchedule.Generate(70, 100, 55, 100),
             CostBaseFirstFarmEchoMultiplier: 0.60d,
             CostGrowthPerLevel: 1.70d,
-            GradeCostRatio: 1.25d);
+            GradeCostRatio: 1.25d,
+            SealCostMultiplierPerLockedAffix: 0.50d);
 
     public static FakeCombatContentLookup CreateLookup()
     {
@@ -144,7 +145,12 @@ public static class RefitTestFixture
             slotType,
             Array.Empty<string>(),
             ItemRarityTierValue.Epic,
-            ItemIdentityValue.Baseline);
+            ItemIdentityValue.Baseline,
+            AllowedCraftOperations: new[]
+            {
+                CraftOperationKindValue.Reforge,
+                CraftOperationKindValue.Seal,
+            });
 
     private static IReadOnlyDictionary<string, AffixTemplate> CreateAffixes()
     {

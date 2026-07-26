@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SM.Meta.Model;
 
 namespace SM.Meta.Services;
@@ -164,6 +165,161 @@ public static class RefitRollQuality
         return result;
     }
 
+    public static IReadOnlyDictionary<string, float> RerollUnlockedToFloor(
+        CombatContentSnapshot snapshot,
+        IReadOnlyList<string> affixIds,
+        IReadOnlyDictionary<string, float>? rolledMagnitudes,
+        IReadOnlyCollection<string> sealedAffixIds,
+        int stableSeed,
+        ulong floorQ64)
+    {
+        if (sealedAffixIds == null)
+        {
+            throw new ArgumentNullException(nameof(sealedAffixIds));
+        }
+
+        if (sealedAffixIds.Count == 0)
+        {
+            return RerollToFloor(snapshot, affixIds, stableSeed, floorQ64);
+        }
+
+        if (snapshot == null)
+        {
+            throw new ArgumentNullException(nameof(snapshot));
+        }
+
+        var affixCatalog = snapshot.AffixCatalog
+                           ?? throw new InvalidOperationException(
+                               "Magnitude Seal requires an affix catalog.");
+        if (affixIds == null || affixIds.Count == 0)
+        {
+            throw new ArgumentException(
+                "Magnitude Seal requires at least one affix.",
+                nameof(affixIds));
+        }
+
+        var sealedSet = new HashSet<string>(sealedAffixIds, StringComparer.Ordinal);
+        if (sealedSet.Count != sealedAffixIds.Count
+            || sealedSet.Count >= affixIds.Count
+            || sealedSet.Any(id => !affixIds.Contains(id, StringComparer.Ordinal)))
+        {
+            throw new ArgumentException(
+                "Sealed affixes must be a unique proper subset of the item affixes.",
+                nameof(sealedAffixIds));
+        }
+
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var components = new List<SealedRollComponent>(affixIds.Count);
+        var weightedPosition = 0d;
+        var totalWeight = 0d;
+        var availableLiftWeight = 0d;
+        for (var index = 0; index < affixIds.Count; index++)
+        {
+            var affixId = affixIds[index];
+            var affix = ResolveAffix(affixCatalog, affixId, seen);
+            var isSealed = sealedSet.Contains(affixId);
+            var originalMagnitude = isSealed
+                ? ResolveMagnitude(snapshot, affix, rolledMagnitudes)
+                : 0f;
+            var position = isSealed
+                ? ResolvePosition(affix, originalMagnitude)
+                : affix.ValueMin == affix.ValueMax
+                    ? 1d
+                    : AffixMagnitudeRoller.Roll(stableSeed, affixId, index, 0f, 1f);
+            components.Add(new SealedRollComponent(
+                affixId,
+                affix,
+                position,
+                isSealed,
+                originalMagnitude));
+            weightedPosition += affix.BudgetScore * position;
+            totalWeight += affix.BudgetScore;
+            if (!isSealed)
+            {
+                availableLiftWeight += affix.BudgetScore * (1d - position);
+            }
+        }
+
+        if (!double.IsFinite(totalWeight) || totalWeight <= 0d)
+        {
+            throw new InvalidOperationException(
+                "Magnitude Seal requires a positive finite total BudgetScore weight.");
+        }
+
+        var purchasedFloor = FromQ64(floorQ64);
+        var liftTarget = Math.Min(1d, purchasedFloor + FloorRoundingMargin);
+        var requiredLiftWeight = Math.Max(
+            0d,
+            (liftTarget * totalWeight) - weightedPosition);
+        if (requiredLiftWeight > availableLiftWeight + 1e-12d)
+        {
+            throw new InvalidOperationException(
+                "The selected sealed affixes make the purchased floor unreachable.");
+        }
+
+        var lift = requiredLiftWeight <= 0d
+            ? 0d
+            : requiredLiftWeight / availableLiftWeight;
+        if (!double.IsFinite(lift) || lift < 0d || lift > 1d + 1e-12d)
+        {
+            throw new InvalidOperationException(
+                $"Magnitude Seal lift resolved outside [0,1]: {lift:R}.");
+        }
+
+        lift = Math.Clamp(lift, 0d, 1d);
+        var result = new Dictionary<string, float>(affixIds.Count, StringComparer.Ordinal);
+        foreach (var component in components)
+        {
+            if (component.IsSealed)
+            {
+                result.Add(component.AffixId, component.OriginalMagnitude);
+                continue;
+            }
+
+            var affix = component.Affix;
+            var liftedPosition = component.Position + (lift * (1d - component.Position));
+            var magnitude = affix.ValueMin == affix.ValueMax
+                ? affix.ValueMin
+                : (float)(affix.ValueMin
+                          + ((affix.ValueMax - affix.ValueMin) * liftedPosition));
+            result.Add(
+                component.AffixId,
+                Math.Max(affix.ValueMin, Math.Min(affix.ValueMax, magnitude)));
+        }
+
+        var measured = Measure(snapshot, affixIds, result);
+        if (ToQ64(measured) < floorQ64)
+        {
+            foreach (var component in components)
+            {
+                if (component.IsSealed
+                    || component.Affix.ValueMin == component.Affix.ValueMax)
+                {
+                    continue;
+                }
+
+                var current = result[component.AffixId];
+                result[component.AffixId] = Math.Min(
+                    component.Affix.ValueMax,
+                    NextRepresentableUp(current));
+                measured = Measure(snapshot, affixIds, result);
+                if (ToQ64(measured) >= floorQ64)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (ToQ64(measured) < floorQ64)
+        {
+            throw new InvalidOperationException(
+                $"Magnitude Seal landed below its purchased floor: "
+                + $"{measured:R} < {purchasedFloor:R}.");
+        }
+
+        return result;
+    }
+
     public static ulong ToQ64(double quality)
     {
         if (!double.IsFinite(quality) || quality < 0d || quality > 1d)
@@ -295,4 +451,11 @@ public static class RefitRollQuality
         string AffixId,
         AffixTemplate Affix,
         double Position);
+
+    private sealed record SealedRollComponent(
+        string AffixId,
+        AffixTemplate Affix,
+        double Position,
+        bool IsSealed,
+        float OriginalMagnitude);
 }

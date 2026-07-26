@@ -584,13 +584,63 @@ public sealed class ContentValidationWorkflowTests
         Assert.That(items.Count(item => item.IdentityKind == ItemIdentityValue.Named), Is.EqualTo(6));
         Assert.That(items.Count(item => item.IdentityKind == ItemIdentityValue.Unique), Is.EqualTo(2));
         Assert.That(items.All(item => item.CraftCurrencyTag == EquipmentContentV1Contract.RefitCurrencyTag), Is.True);
-        Assert.That(items.All(item => item.AllowedCraftOperations.SequenceEqual(new[] { CraftOperationKindValue.Reforge })), Is.True);
+        Assert.That(items.All(item => item.AllowedCraftOperations.SequenceEqual(new[]
+        {
+            CraftOperationKindValue.Reforge,
+            CraftOperationKindValue.Seal,
+        })), Is.True);
+        Assert.That(
+            items.Select(item => item.AffixPoolTag).ToHashSet(StringComparer.Ordinal),
+            Is.EquivalentTo(EquipmentContentV1Contract.AffixPoolTagIds));
 
         Assert.That(affixes, Has.Count.EqualTo(EquipmentContentV1Contract.AffixCount));
         Assert.That(affixes.Count(affix => EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id)), Is.EqualTo(EquipmentContentV1Contract.LiveAffixCount));
         Assert.That(affixes.Count(affix => EquipmentContentV1Contract.ReservedAffixIds.Contains(affix.Id)), Is.EqualTo(EquipmentContentV1Contract.ReservedAffixCount));
         Assert.That(affixes.Where(affix => EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id)).All(affix => affix.SpawnWeight > 0f && affix.ValueMax > 0f), Is.True);
         Assert.That(affixes.Where(affix => EquipmentContentV1Contract.ReservedAffixIds.Contains(affix.Id)).All(affix => affix.SpawnWeight == 0f && affix.ItemLevelMin >= EquipmentContentV1Contract.ReservedAffixItemLevelMin), Is.True);
+        foreach (var affix in affixes)
+        {
+            var actualPools = affix.CompileTags
+                .Where(tag => tag != null
+                              && EquipmentContentV1Contract.AffixPoolTagIds.Contains(
+                                  tag.Id,
+                                  StringComparer.Ordinal))
+                .Select(tag => tag.Id);
+            Assert.That(
+                actualPools,
+                Is.EquivalentTo(EquipmentContentV1Contract.AffixPoolTagsByAffixId[affix.Id]),
+                affix.Id);
+        }
+
+        foreach (var item in items)
+        {
+            var eligible = affixes.Where(affix =>
+                affix.SpawnWeight > 0f
+                && affix.ItemLevelMin < EquipmentContentV1Contract.ReservedAffixItemLevelMin
+                && (affix.AllowedSlotTypes.Count == 0
+                    || affix.AllowedSlotTypes.Contains(item.SlotType))
+                && affix.CompileTags.Any(tag =>
+                    tag != null && tag.Id == item.AffixPoolTag)).ToList();
+            Assert.That(
+                eligible.Count(affix => affix.Tier == AffixTierValue.Implicit),
+                Is.GreaterThanOrEqualTo(1),
+                item.Id);
+            Assert.That(
+                eligible.Count(affix => affix.Tier == AffixTierValue.Prefix),
+                Is.GreaterThanOrEqualTo(4),
+                item.Id);
+            Assert.That(
+                eligible.Count(affix => affix.Tier == AffixTierValue.Suffix),
+                Is.GreaterThanOrEqualTo(4),
+                item.Id);
+        }
+
+        var refitBalance = LoadAssets<RefitBalanceDefinition>(
+            "Assets/Resources/_Game/Content/Definitions/Balance",
+            "refit_balance.asset").Single();
+        Assert.That(
+            refitBalance.SealCostMultiplierPerLockedAffix,
+            Is.EqualTo(EquipmentContentV1Contract.SealCostMultiplierPerLockedAffix));
 
         foreach (var (tableId, itemIds) in EquipmentContentV1Contract.RequiredItemDropsByTable)
         {

@@ -306,7 +306,8 @@ public sealed record RefitBalanceTemplate(
     IReadOnlyList<ulong> FloorScheduleQ64,
     double CostBaseFirstFarmEchoMultiplier,
     double CostGrowthPerLevel,
-    double GradeCostRatio);
+    double GradeCostRatio,
+    double SealCostMultiplierPerLockedAffix = 0d);
 
 public sealed record LootBundleTemplate(
     string Id,
@@ -330,7 +331,9 @@ public sealed record ItemTemplate(
     string SlotType = "",
     IReadOnlyList<string>? AllowedClassIds = null,
     ItemRarityTierValue RarityTier = ItemRarityTierValue.Common,
-    ItemIdentityValue IdentityKind = ItemIdentityValue.Baseline);
+    ItemIdentityValue IdentityKind = ItemIdentityValue.Baseline,
+    string AffixPoolTag = "",
+    IReadOnlyList<CraftOperationKindValue>? AllowedCraftOperations = null);
 
 /// <summary>
 /// affix의 non-numeric 계약(태그/조건/rule/저작 spawn 메타). 수치는 기존 AffixPackages가 계속 소유하고,

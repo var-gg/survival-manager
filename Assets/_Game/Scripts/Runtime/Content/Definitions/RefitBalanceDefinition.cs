@@ -35,5 +35,9 @@ namespace SM.Content.Definitions
 
         [Min(1.01f)]
         public float GradeCostRatio = 1.25f;
+
+        [Header("Seal cost: Refit bundle * (1 + multiplier * locked affix count)")]
+        [Min(0.01f)]
+        public float SealCostMultiplierPerLockedAffix = 0.50f;
     }
 }

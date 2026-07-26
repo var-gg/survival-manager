@@ -54,6 +54,25 @@ internal static class EquipmentContentV1Contract
     internal const int ReservedAffixCount = 0;
     internal const int ReservedAffixItemLevelMin = 999;
     internal const string RefitCurrencyTag = "echo";
+    internal const float SealCostMultiplierPerLockedAffix = 0.50f;
+
+    internal static readonly IReadOnlyList<string> AffixPoolTagIds = new[]
+    {
+        "pool_accessory",
+        "pool_armor",
+        "pool_blade",
+        "pool_bow",
+        "pool_duelist_armor",
+        "pool_duelist_trinket",
+        "pool_focus",
+        "pool_mystic_armor",
+        "pool_mystic_trinket",
+        "pool_ranger_armor",
+        "pool_ranger_trinket",
+        "pool_shield",
+        "pool_vanguard_armor",
+        "pool_vanguard_trinket",
+    };
 
     internal static readonly HashSet<string> RareItemIds = new(StringComparer.Ordinal)
     {
@@ -209,6 +228,58 @@ internal static class EquipmentContentV1Contract
         "affix_wraithbound",
     };
 
+    // AffixPoolTag is an item-side exact selector key. Affix CompileTags carry the
+    // compatible pool declarations so one affix can belong to multiple family pools
+    // without overloading RequiredTags' battle-time ALL-of semantics.
+    internal static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> AffixPoolTagsByAffixId =
+        new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal)
+        {
+            ["affix_blessed"] = Pools("pool_armor", "pool_mystic_armor", "pool_vanguard_armor", "pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_blood_price"] = Pools("pool_blade", "pool_shield"),
+            ["affix_bracing"] = Pools("pool_armor", "pool_duelist_armor", "pool_mystic_armor", "pool_ranger_armor", "pool_vanguard_armor", "pool_accessory", "pool_vanguard_trinket"),
+            ["affix_brittle_focus"] = Pools("pool_focus"),
+            ["affix_burdened_reach"] = Pools("pool_blade", "pool_bow", "pool_focus", "pool_shield"),
+            ["affix_channeling"] = Pools("pool_focus"),
+            ["affix_cleansing"] = Pools("pool_mystic_armor", "pool_vanguard_armor", "pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_desperate_focus"] = Pools("pool_focus", "pool_accessory", "pool_mystic_trinket"),
+            ["affix_executioners_edge"] = Pools("pool_blade"),
+            ["affix_fallen_chorus"] = Pools("pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_farshot"] = Pools("pool_bow"),
+            ["affix_fierce"] = Pools("pool_blade", "pool_shield"),
+            ["affix_first_light"] = Pools("pool_blade", "pool_bow", "pool_focus", "pool_shield", "pool_armor", "pool_duelist_armor", "pool_mystic_armor", "pool_ranger_armor", "pool_vanguard_armor", "pool_accessory", "pool_duelist_trinket", "pool_mystic_trinket", "pool_ranger_trinket", "pool_vanguard_trinket"),
+            ["affix_focusing"] = Pools("pool_focus", "pool_shield"),
+            ["affix_guarded"] = Pools("pool_mystic_armor", "pool_vanguard_armor", "pool_accessory", "pool_vanguard_trinket"),
+            ["affix_hallowed"] = Pools("pool_blade", "pool_bow", "pool_focus", "pool_shield", "pool_accessory", "pool_mystic_trinket", "pool_ranger_trinket"),
+            ["affix_hasty"] = Pools("pool_armor", "pool_duelist_armor", "pool_ranger_armor", "pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_heavy"] = Pools("pool_armor", "pool_duelist_armor", "pool_vanguard_armor"),
+            ["affix_ironclad"] = Pools("pool_armor", "pool_duelist_armor", "pool_vanguard_armor"),
+            ["affix_last_ward"] = Pools("pool_armor", "pool_duelist_armor", "pool_mystic_armor", "pool_ranger_armor", "pool_vanguard_armor", "pool_accessory", "pool_duelist_trinket", "pool_mystic_trinket", "pool_ranger_trinket", "pool_vanguard_trinket"),
+            ["affix_lightfooted_plate"] = Pools("pool_armor", "pool_duelist_armor", "pool_ranger_armor", "pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_lithe"] = Pools("pool_armor", "pool_duelist_armor", "pool_ranger_armor", "pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_lucid"] = Pools("pool_focus", "pool_bow", "pool_accessory", "pool_mystic_trinket", "pool_ranger_trinket"),
+            ["affix_mender"] = Pools("pool_focus", "pool_shield", "pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_mourning_aegis"] = Pools("pool_mystic_armor", "pool_vanguard_armor", "pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_overclocked"] = Pools("pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_packborn"] = Pools("pool_armor", "pool_duelist_armor", "pool_mystic_armor", "pool_ranger_armor", "pool_vanguard_armor", "pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_piercing"] = Pools("pool_blade", "pool_bow", "pool_shield"),
+            ["affix_precise"] = Pools("pool_blade", "pool_bow", "pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_quick"] = Pools("pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_ravenous"] = Pools("pool_blade", "pool_shield"),
+            ["affix_reaching"] = Pools("pool_blade", "pool_bow", "pool_focus", "pool_shield"),
+            ["affix_reaper_spark"] = Pools("pool_blade", "pool_bow", "pool_focus", "pool_shield", "pool_accessory", "pool_duelist_trinket", "pool_mystic_trinket", "pool_ranger_trinket"),
+            ["affix_reckless_edge"] = Pools("pool_blade", "pool_bow"),
+            ["affix_relentless"] = Pools("pool_blade", "pool_focus", "pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_resolute"] = Pools("pool_armor", "pool_duelist_armor", "pool_mystic_armor", "pool_ranger_armor", "pool_vanguard_armor", "pool_accessory", "pool_duelist_trinket", "pool_vanguard_trinket"),
+            ["affix_sharp"] = Pools("pool_blade", "pool_bow", "pool_shield"),
+            ["affix_spined"] = Pools("pool_blade", "pool_bow", "pool_shield", "pool_armor", "pool_duelist_armor", "pool_ranger_armor"),
+            ["affix_sturdy"] = Pools("pool_armor", "pool_duelist_armor", "pool_ranger_armor", "pool_vanguard_armor", "pool_accessory", "pool_duelist_trinket", "pool_vanguard_trinket"),
+            ["affix_vital"] = Pools("pool_armor", "pool_duelist_armor", "pool_mystic_armor", "pool_ranger_armor", "pool_vanguard_armor", "pool_accessory", "pool_duelist_trinket", "pool_mystic_trinket", "pool_ranger_trinket", "pool_vanguard_trinket"),
+            ["affix_warded"] = Pools("pool_armor", "pool_mystic_armor", "pool_vanguard_armor", "pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_war_chorus"] = Pools("pool_accessory", "pool_mystic_trinket", "pool_vanguard_trinket"),
+            ["affix_watchful"] = Pools("pool_bow", "pool_focus", "pool_accessory", "pool_duelist_trinket", "pool_ranger_trinket"),
+            ["affix_wraithbound"] = Pools("pool_focus", "pool_shield", "pool_accessory", "pool_mystic_trinket"),
+        };
+
     internal static readonly IReadOnlyList<EquipmentAffixV1Spec> AffixSpecs = new[]
     {
         Live("affix_sharp", AffixTierValue.Implicit, AffixFamilyValue.CoreScalar, AffixEffectTypeValue.StatModifier, AffixCategoryValue.OffenseFlat, "phys_power", ModifierOp.Flat, 2f, 4f, Slots(ItemSlotType.Weapon), Tags("physical", "strike"), Tags(), Tags(), "implicit.phys_power", "content.affix.template.scalar", 6f),
@@ -324,6 +395,8 @@ internal static class EquipmentContentV1Contract
     private static IReadOnlyList<ItemSlotType> Slots(params ItemSlotType[] slots) => slots;
 
     private static IReadOnlyList<string> Tags(params string[] tags) => tags;
+
+    private static IReadOnlyList<string> Pools(params string[] poolTags) => poolTags;
 
     private static EquipmentAffixModifierV1Spec ExtraModifier(
         string statId,

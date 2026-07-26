@@ -34,7 +34,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 804545ef4142bc4498fe3f506f13630b, type: 2}
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 01000000
+  AllowedCraftOperations: 0100000002000000
   BaseModifiers:
   - StatId: max_health
     Op: 0

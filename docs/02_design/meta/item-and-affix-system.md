@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-16
+- 최종수정일: 2026-07-26
 - 소스오브트루스: `docs/02_design/meta/item-and-affix-system.md`
 - 관련문서:
   - `docs/02_design/meta/affix-authoring-schema.md`
@@ -24,14 +24,15 @@ affix field schema와 catalog는 별도 문서가 소유하고, 이 문서는 it
 - base item
 - item catalog `42`: `Common 30 / Rare 9 / Epic 3`
 - item identity `42`: `Baseline 34 / Named 6 / Unique 2`
-- affix catalog `30`: live `30`, reserved `0`
-- live affix mix: `Implicit 6 / Prefix 15 / Suffix 9`
-- live family mix: `CoreScalar 20 / ConditionalTagged 6 / BuildShaping 4`
+- affix catalog `44`: live `44`, reserved `0`
+- live affix mix: `Implicit 9 / Prefix 22 / Suffix 13`
+- live family mix: `CoreScalar 20 / ConditionalTagged 6 / BuildShaping 18`
 - `weapon / armor / accessory` 3슬롯
 - `shield / blade / bow / focus` weapon family
 - granted skill
 - Town equip / swap
-- `15 Echo` 고정 single-affix refit
+- floor schedule과 chapter economy로 계산되는 magnitude Reforge
+- 선택한 affix magnitude를 고정하고 나머지만 다시 굴리는 Seal
 
 launch floor에서는 아직 하지 않는다.
 
@@ -75,7 +76,10 @@ shield 전용 별도 슬롯은 열지 않는다.
 ## 재련/리롤 원칙
 
 - item tuning은 `Echo` rail 위의 light correction으로만 둔다.
-- refit은 `15 Echo`, single-affix reroll only다.
+- Reforge는 affix identity를 유지하고 모든 instance magnitude를 다시 굴린다.
+- Seal은 선택한 affix magnitude의 float bit를 보존하고 나머지 magnitude만 다시 굴린다.
+- Seal 비용은 같은 Reforge bundle 비용에 `1 + (저작 multiplier × 잠금 수)`를 곱해 올림한다. multiplier는 `refit_balance.asset`이 소유한다.
+- 빈 Seal 선택은 같은 command seed의 Reforge와 bit-identical이어야 한다.
 - recruit / retrain / refit이 각각 외부 파워 / flex 보정 / 장비 보정 역할을 나눠 가진다.
 - launch floor normal lane에서는 `EmberDust`, `EchoCrystal`, `BossSigil` 같은 material currency를 live sink로 올리지 않는다.
 - crafting 시스템 전체는 later scope로 민다.
@@ -86,17 +90,20 @@ shield 전용 별도 슬롯은 열지 않는다.
 - repo 구현은 `EquipmentContentV1Contract`, `EquipmentContentV1Assetizer`, `EquipmentContentV1CatalogValidator`가 같은 숫자와 ID manifest를 공유한다.
 - `SampleSeedGenerator.Generate()`는 sample content 재생성 후 V1 assetizer를 다시 적용한다.
 - drop table의 item entry는 `RewardType.Item`이어야 하며, item 획득 시 runtime이 affix id를 생성한다.
-- `InventoryItemRecord`에는 source, lock, rolled value를 저장하지 않는다. V1은 definition id 기반 표시와 deterministic refit 후보만 닫는다.
+- `AffixPoolTag`는 item family의 exact selector key다. affix는 기존 `CompileTags`의 stable pool tag로 호환 pool을 선언하며, 생성과 padding은 같은 canonical candidate graph를 사용한다.
+- `AllowedCraftOperations`는 `RefitService`가 Reforge/Seal 실행 전에 검사한다.
+- `InventoryItemRecord`는 현재 affix identity, instance magnitude roll, Refit level만 소유한다. Seal 선택과 attempt/seed/cost 입력은 `SaveProfile.ItemCraftOperations` ledger에 별도로 저장한다.
 
 ## UI 표현 계약
 
 장비 UI는 `pindoc://decision-equipment-presentation-v1-contract`를 따른다.
 
-- Inventory/EquipmentRefit이 노출하는 V1 범주는 `slot`, `weapon family`, `common / rare / epic` 표현 rarity, `baseline / named / unique` identity, `implicit / prefix / suffix` affix tier, `selected / equipped / refit-target`, `15 Echo Refit`까지다.
+- Inventory/EquipmentRefit이 노출하는 현재 범주는 `slot`, `weapon family`, `common / rare / epic` 표현 rarity, `baseline / named / unique` identity, `implicit / prefix / suffix` affix tier, `selected / equipped / refit-target`, Reforge quote까지다.
 - `Magic`과 `Legendary`는 enum 호환값일 수 있지만 V1 live visual tier가 아니다. UI는 fallback 렌더링을 제공하되 별도 frame/rarity class를 만들지 않는다.
 - `Unique`는 rarity가 아니라 identity 또는 signature rule marker다.
-- `InventoryItemRecord`에 source, lock, rolled affix value가 없으므로 provenance badge, locked overlay, 확정 roll 수치는 표시하지 않는다.
-- `Temper / Seal / Imprint / Salvage`, recipe rail, material rail은 crafting service와 persistence가 생기기 전까지 UI에 열지 않는다.
+- `InventoryItemRecord`에 source나 영구 lock 상태가 없으므로 provenance badge와 persistent locked overlay는 표시하지 않는다.
+- Seal은 service와 persistence까지 live지만 현재 presenter에는 affix 선택 UI가 없다. 후속 UX 작업이 selection state, quote, confirmation, locked overlay를 추가하기 전에는 플레이어 UI에서 노출하지 않는다.
+- `Temper / Imprint / Salvage`, recipe rail, material rail은 별도 service와 persistence가 생기기 전까지 UI에 열지 않는다.
 - 아이템 cell과 affix row는 L3/L4 표면이다. L1 modal frame, ornate corner flourish, rarity별 gold frame을 재사용하지 않는다.
 
 ## 장기 규칙

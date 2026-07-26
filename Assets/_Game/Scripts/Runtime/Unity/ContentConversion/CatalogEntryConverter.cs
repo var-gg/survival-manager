@@ -84,7 +84,9 @@ internal static class CatalogEntryConverter
             definition.SlotType.ToString(),
             Enumerate(definition.AllowedClassTags).Where(tag => tag != null && !string.IsNullOrWhiteSpace(tag.Id)).Select(tag => tag.Id).ToList(),
             definition.RarityTier,
-            definition.IdentityKind);
+            definition.IdentityKind,
+            definition.AffixPoolTag ?? string.Empty,
+            definition.AllowedCraftOperations?.ToList() ?? new List<CraftOperationKindValue>());
     }
 
     internal static AffixTemplate BuildAffixTemplate(AffixDefinition definition)

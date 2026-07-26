@@ -25,6 +25,14 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
   - {fileID: 11400000, guid: dc9ba33c5b2f93f499ca130eb1e98058, type: 2}
+  - {fileID: 11400000, guid: 6a29a2e60910378438f9c89bd8418ea7, type: 2}
+  - {fileID: 11400000, guid: 4891eb73d95a99443a2ce528c353d528, type: 2}
+  - {fileID: 11400000, guid: 973d931fe681c2547967a0e61ce2e731, type: 2}
+  - {fileID: 11400000, guid: 34de036c336a53d4489a22bebfb10185, type: 2}
+  - {fileID: 11400000, guid: 008b1d04066eb014c93da4e9949fbcf3, type: 2}
+  - {fileID: 11400000, guid: 49079b65ff64a364a9f60366e62cf1e5, type: 2}
+  - {fileID: 11400000, guid: 5dbffc36fe15c434ab002c536929bb49, type: 2}
+  - {fileID: 11400000, guid: 1b392e8d087e9b240a0b5f21efa8da8d, type: 2}
   RuleModifierTags: []
   RequiredTags:
   - {fileID: 11400000, guid: 0189cb5ec75f8964fbf1f4abef7a1359, type: 2}
@@ -68,5 +76,6 @@ MonoBehaviour:
   - StatId: tenacity
     Op: 1
     Value: 0.06
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

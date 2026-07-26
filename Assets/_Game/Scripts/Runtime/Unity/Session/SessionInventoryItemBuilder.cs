@@ -81,18 +81,23 @@ internal sealed class SessionInventoryItemBuilder
         record.AffixIds ??= new List<string>();
         record.AffixMagnitudeRolls ??= new List<InventoryAffixMagnitudeRecord>();
         if (record.AffixIds.Count >= targetCount) return;
-        if (!_lookup.TryGetItemDefinition(itemBaseId, out var itemDefinition)) return;
+        var eligibleAffixIds = GeneratedItemAffixSelector.GetEligibleAffixIds(
+            _sessionLookup,
+            itemBaseId);
+        if (eligibleAffixIds.Count == 0) return;
 
         var paddingSeed = _buildStableSeed(
             $"{itemBaseId}|{record.ItemInstanceId}",
             record.AffixIds.Count);
         var existing = new HashSet<string>(record.AffixIds, StringComparer.Ordinal);
+        var eligible = new HashSet<string>(eligibleAffixIds, StringComparer.Ordinal);
         foreach (var tier in new[] { AffixTierValue.Prefix, AffixTierValue.Suffix, AffixTierValue.Implicit })
         {
             if (record.AffixIds.Count >= targetCount) break;
             var candidates = _lookup.GetCanonicalAffixIds()
                 .Where(id => !existing.Contains(id))
-                .Where(id => IsGeneratedAffixCandidate(itemDefinition, tier, id, record.AffixIds))
+                .Where(id => eligible.Contains(id))
+                .Where(id => IsGeneratedAffixCandidate(tier, id, record.AffixIds))
                 .ToList();
             foreach (var candidate in candidates)
             {
@@ -152,7 +157,6 @@ internal sealed class SessionInventoryItemBuilder
     }
 
     private bool IsGeneratedAffixCandidate(
-        ItemBaseDefinition itemDefinition,
         AffixTierValue tier,
         string candidateId,
         IReadOnlyList<string> selectedAffixIds)
@@ -161,7 +165,6 @@ internal sealed class SessionInventoryItemBuilder
             || !_lookup.TryGetAffixDefinition(candidateId, out var candidate)
             || candidate.Tier != tier
             || !IsLiveAffix(candidate)
-            || !IsAffixCompatibleWithItem(itemDefinition, candidate)
             || selectedAffixIds.Contains(candidate.Id, StringComparer.Ordinal))
         {
             return false;
@@ -173,11 +176,6 @@ internal sealed class SessionInventoryItemBuilder
     private static bool IsLiveAffix(AffixDefinition affix)
     {
         return affix.SpawnWeight > 0f && affix.ItemLevelMin < 999;
-    }
-
-    private static bool IsAffixCompatibleWithItem(ItemBaseDefinition itemDefinition, AffixDefinition affix)
-    {
-        return affix.AllowedSlotTypes.Count == 0 || affix.AllowedSlotTypes.Contains(itemDefinition.SlotType);
     }
 
     private bool HasExclusiveGroupConflict(AffixDefinition candidate, IReadOnlyList<string> selectedAffixIds)

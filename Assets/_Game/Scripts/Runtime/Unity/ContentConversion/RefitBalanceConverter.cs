@@ -18,7 +18,8 @@ internal static class RefitBalanceConverter
             || string.IsNullOrWhiteSpace(definition.AffixCatalogVersion)
             || definition.CostBaseFirstFarmEchoMultiplier <= 0f
             || definition.CostGrowthPerLevel <= 1f
-            || definition.GradeCostRatio <= 1f)
+            || definition.GradeCostRatio <= 1f
+            || definition.SealCostMultiplierPerLockedAffix <= 0f)
         {
             throw new InvalidOperationException(
                 $"Refit balance '{definition.Id}' contains invalid rules, catalog, or cost knobs.");
@@ -38,6 +39,7 @@ internal static class RefitBalanceConverter
                 definition.FloorDecayDenominator),
             definition.CostBaseFirstFarmEchoMultiplier,
             definition.CostGrowthPerLevel,
-            definition.GradeCostRatio);
+            definition.GradeCostRatio,
+            definition.SealCostMultiplierPerLockedAffix);
     }
 }

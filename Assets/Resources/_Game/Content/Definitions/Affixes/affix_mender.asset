@@ -25,6 +25,11 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: 09ae86406334d7c4bb2acac8f735b066, type: 2}
   - {fileID: 11400000, guid: 8b735708989bbfc4e9c2829f12f22d32, type: 2}
+  - {fileID: 11400000, guid: dea042dedf0e96741abb46291c729471, type: 2}
+  - {fileID: 11400000, guid: 97fd31e683a03074286a03668227cf53, type: 2}
+  - {fileID: 11400000, guid: 49079b65ff64a364a9f60366e62cf1e5, type: 2}
+  - {fileID: 11400000, guid: e43b9921ea90f554586efe48ba9d6358, type: 2}
+  - {fileID: 11400000, guid: 1b392e8d087e9b240a0b5f21efa8da8d, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -67,5 +72,6 @@ MonoBehaviour:
   - StatId: heal_power
     Op: 0
     Value: 2
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

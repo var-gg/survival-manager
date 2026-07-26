@@ -59,6 +59,86 @@ internal sealed class SessionItemRefitFlow
         return ApplyItemRefit(item, itemState, chapterEconomy, service, stableCommandSeed);
     }
 
+    /// <summary>
+    /// Player-facing Seal action. Selection UI is intentionally separate from this
+    /// service-reachable session seam.
+    /// </summary>
+    internal Result SealItem(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds)
+    {
+        if (!TryBuildRefitContext(
+                itemInstanceId,
+                out var item,
+                out var itemState,
+                out var chapterEconomy,
+                out var service,
+                out var error))
+        {
+            return Result.Fail(error);
+        }
+
+        if (!TryCanonicalizeSealSelection(
+                itemState.AffixIds,
+                sealedAffixIds,
+                out var canonicalSealedAffixIds,
+                out error))
+        {
+            return Result.Fail(error);
+        }
+
+        var attemptIndex = ResolveNextSealAttemptIndex(item.ItemInstanceId);
+        var commandSeed = unchecked((ulong)(uint)BuildStableSeed(
+            $"SEAL_COMMAND|{_owner.Profile.ProfileId}|{itemState.StableItemKey}|"
+            + string.Join("|", canonicalSealedAffixIds),
+            attemptIndex));
+        return ApplyItemSeal(
+            item,
+            itemState,
+            chapterEconomy,
+            service,
+            canonicalSealedAffixIds,
+            attemptIndex,
+            commandSeed);
+    }
+
+    /// <summary>Deterministic Seal harness seam with explicit persisted command input.</summary>
+    internal Result SealItem(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds,
+        int attemptIndex,
+        ulong stableCommandSeed)
+    {
+        if (!TryBuildRefitContext(
+                itemInstanceId,
+                out var item,
+                out var itemState,
+                out var chapterEconomy,
+                out var service,
+                out var error))
+        {
+            return Result.Fail(error);
+        }
+
+        if (!TryCanonicalizeSealSelection(
+                itemState.AffixIds,
+                sealedAffixIds,
+                out var canonicalSealedAffixIds,
+                out error))
+        {
+            return Result.Fail(error);
+        }
+
+        return ApplyItemSeal(
+            item,
+            itemState,
+            chapterEconomy,
+            service,
+            canonicalSealedAffixIds,
+            attemptIndex,
+            stableCommandSeed);
+    }
+
     internal RefitQuote GetRefitQuote(string itemInstanceId)
     {
         return TryBuildRefitContext(
@@ -84,6 +164,31 @@ internal sealed class SessionItemRefitFlow
             out var service,
             out var error)
             ? service.RefitNextEffective(itemState, chapterEconomy, stableCommandSeed)
+            : RefitExecutionResult.NoChange(
+                RefitQuote.Unavailable(error),
+                Array.Empty<string>(),
+                error: error);
+    }
+
+    internal RefitExecutionResult PreviewSealItem(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds,
+        int attemptIndex,
+        ulong stableCommandSeed)
+    {
+        return TryBuildRefitContext(
+            itemInstanceId,
+            out _,
+            out var itemState,
+            out var chapterEconomy,
+            out var service,
+            out var error)
+            ? service.SealNextEffective(
+                itemState,
+                chapterEconomy,
+                sealedAffixIds,
+                attemptIndex,
+                stableCommandSeed)
             : RefitExecutionResult.NoChange(
                 RefitQuote.Unavailable(error),
                 Array.Empty<string>(),
@@ -168,6 +273,163 @@ internal sealed class SessionItemRefitFlow
         _owner.SynchronizeRefitEquippedHero(item.EquippedHeroId);
 
         return Result.Success();
+    }
+
+    private Result ApplyItemSeal(
+        InventoryItemRecord item,
+        RefitItemState itemState,
+        RefitChapterEconomy chapterEconomy,
+        RefitService service,
+        IReadOnlyList<string> canonicalSealedAffixIds,
+        int attemptIndex,
+        ulong stableCommandSeed)
+    {
+        if (!string.Equals(_owner.CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
+        {
+            return Result.Fail("Seal은 Town에서만 가능합니다.");
+        }
+
+        var quote = service.QuoteSealNextEffective(
+            itemState,
+            chapterEconomy,
+            canonicalSealedAffixIds);
+        if (!quote.CanPurchase)
+        {
+            return Result.Fail(string.IsNullOrWhiteSpace(quote.Reason)
+                ? "이 장비에는 유효한 Seal 단계가 없습니다."
+                : quote.Reason);
+        }
+
+        if (_owner.Profile.Currencies.Echo < quote.EchoCost)
+        {
+            return Result.Fail($"잔향이 부족합니다. 봉인에는 {quote.EchoCost} 잔향이 필요합니다.");
+        }
+
+        var execution = service.SealNextEffective(
+            itemState,
+            chapterEconomy,
+            canonicalSealedAffixIds,
+            attemptIndex,
+            stableCommandSeed);
+        if (!execution.Applied)
+        {
+            return Result.Fail(string.IsNullOrWhiteSpace(execution.Error)
+                ? "Seal invariant 검증에 실패했습니다."
+                : execution.Error);
+        }
+
+        if (execution.Quote.EchoCost != quote.EchoCost
+            || execution.Quote.TargetRefitLevel != quote.TargetRefitLevel)
+        {
+            return Result.Fail("Seal quote changed before commit; no currency or item state was changed.");
+        }
+
+        var committedAffixIds = execution.AffixIds.ToList();
+        var committedMagnitudeRolls = new List<InventoryAffixMagnitudeRecord>(
+            committedAffixIds.Count);
+        foreach (var affixId in committedAffixIds)
+        {
+            if (!execution.AffixMagnitudes.TryGetValue(affixId, out var magnitude))
+            {
+                return Result.Fail(
+                    "Seal magnitude output did not match affix identity; no state was changed.");
+            }
+
+            committedMagnitudeRolls.Add(new InventoryAffixMagnitudeRecord
+            {
+                AffixId = affixId,
+                Magnitude = magnitude,
+            });
+        }
+
+        if (committedMagnitudeRolls.Count != execution.AffixMagnitudes.Count)
+        {
+            return Result.Fail(
+                "Seal magnitude output contained stale identities; no state was changed.");
+        }
+
+        var operation = new ItemCraftOperationRecord
+        {
+            OperationId = $"{item.ItemInstanceId}:Seal:{attemptIndex}",
+            ItemInstanceId = item.ItemInstanceId,
+            ItemBaseId = item.ItemBaseId,
+            OperationKind = CraftOperationKindValue.Seal,
+            SealedAffixIds = canonicalSealedAffixIds.ToList(),
+            AttemptIndex = attemptIndex,
+            StableCommandSeed = stableCommandSeed,
+            TargetRefitLevel = quote.TargetRefitLevel,
+            RulesVersion = _contentLookup.Snapshot.RefitBalance!.RulesVersion,
+            EchoCost = quote.EchoCost,
+        };
+
+        _owner.Profile.ItemCraftOperations ??= new List<ItemCraftOperationRecord>();
+        _owner.Profile.Currencies.Echo -= quote.EchoCost;
+        item.AffixIds = committedAffixIds;
+        item.AffixMagnitudeRolls = committedMagnitudeRolls;
+        item.RefitLevel = quote.TargetRefitLevel;
+        _owner.Profile.ItemCraftOperations.Add(operation);
+
+        _owner.SynchronizeRefitEquippedHero(item.EquippedHeroId);
+        return Result.Success();
+    }
+
+    private int ResolveNextSealAttemptIndex(string itemInstanceId)
+    {
+        var operations = _owner.Profile.ItemCraftOperations
+                         ?? new List<ItemCraftOperationRecord>();
+        var priorAttempts = operations
+            .Where(operation =>
+                operation != null
+                && operation.OperationKind == CraftOperationKindValue.Seal
+                && string.Equals(
+                    operation.ItemInstanceId,
+                    itemInstanceId,
+                    StringComparison.Ordinal))
+            .Select(operation => operation.AttemptIndex)
+            .DefaultIfEmpty(0)
+            .Max();
+        return checked(priorAttempts + 1);
+    }
+
+    private static bool TryCanonicalizeSealSelection(
+        IReadOnlyList<string> itemAffixIds,
+        IReadOnlyCollection<string>? sealedAffixIds,
+        out IReadOnlyList<string> canonicalSealedAffixIds,
+        out string error)
+    {
+        canonicalSealedAffixIds = Array.Empty<string>();
+        if (sealedAffixIds == null)
+        {
+            error = "Seal affix selection is required.";
+            return false;
+        }
+
+        var sealedSet = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var affixId in sealedAffixIds)
+        {
+            if (string.IsNullOrWhiteSpace(affixId) || !sealedSet.Add(affixId))
+            {
+                error = "Seal affix selection contains a blank or duplicate id.";
+                return false;
+            }
+        }
+
+        if (sealedSet.Count >= itemAffixIds.Count && itemAffixIds.Count > 0)
+        {
+            error = "Seal must leave at least one affix unlocked.";
+            return false;
+        }
+
+        var canonical = itemAffixIds.Where(sealedSet.Contains).ToArray();
+        if (canonical.Length != sealedSet.Count)
+        {
+            error = "Seal affix selection contains an id that is not on the item.";
+            return false;
+        }
+
+        canonicalSealedAffixIds = canonical;
+        error = string.Empty;
+        return true;
     }
 
     private bool TryBuildRefitContext(

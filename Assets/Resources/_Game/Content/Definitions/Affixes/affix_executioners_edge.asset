@@ -25,6 +25,7 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
   - {fileID: 11400000, guid: ce2dcf59f9e9e0545a1ef15f579c8d45, type: 2}
+  - {fileID: 11400000, guid: e27867b0fafd09d42bd0c62f81536609, type: 2}
   RuleModifierTags:
   - {fileID: 11400000, guid: b7ad7f452b01ca3498dc7338e46ccaef, type: 2}
   RequiredTags: []

@@ -97,10 +97,47 @@ public sealed class RefitService
     public RefitQuote QuoteNextEffective(
         RefitItemState item,
         RefitChapterEconomy chapterEconomy)
+        => QuoteNextEffective(
+            item,
+            chapterEconomy,
+            CraftOperationKindValue.Reforge,
+            lockedAffixCount: 0);
+
+    public RefitQuote QuoteSealNextEffective(
+        RefitItemState item,
+        RefitChapterEconomy chapterEconomy,
+        IReadOnlyCollection<string> sealedAffixIds)
+    {
+        if (!TryNormalizeSealedAffixes(
+                item,
+                sealedAffixIds,
+                out var canonicalSealedAffixIds,
+                out var error))
+        {
+            return RefitQuote.Unavailable(error, item?.RefitLevel ?? 0);
+        }
+
+        return QuoteNextEffective(
+            item,
+            chapterEconomy,
+            CraftOperationKindValue.Seal,
+            canonicalSealedAffixIds.Count);
+    }
+
+    private RefitQuote QuoteNextEffective(
+        RefitItemState item,
+        RefitChapterEconomy chapterEconomy,
+        CraftOperationKindValue operation,
+        int lockedAffixCount)
     {
         if (!TryResolveItem(item, out var currentQualityQ64, out var error))
         {
             return RefitQuote.Unavailable(error, item?.RefitLevel ?? 0);
+        }
+
+        if (!TryValidateOperationAllowed(item, operation, out error))
+        {
+            return RefitQuote.Unavailable(error, item.RefitLevel);
         }
 
         if (item.RefitLevel < 0)
@@ -134,13 +171,22 @@ public sealed class RefitService
             int echoCost;
             try
             {
-                echoCost = RefitCostCurve.GetBundleCost(
-                    _balance,
-                    chapterEconomy.FirstFarmRunEcho,
-                    item.RefitLevel,
-                    targetLevel,
-                    item.Grade,
-                    chapterEconomy.MeanGrade);
+                echoCost = operation == CraftOperationKindValue.Seal
+                    ? RefitCostCurve.GetSealBundleCost(
+                        _balance,
+                        chapterEconomy.FirstFarmRunEcho,
+                        item.RefitLevel,
+                        targetLevel,
+                        item.Grade,
+                        chapterEconomy.MeanGrade,
+                        lockedAffixCount)
+                    : RefitCostCurve.GetBundleCost(
+                        _balance,
+                        chapterEconomy.FirstFarmRunEcho,
+                        item.RefitLevel,
+                        targetLevel,
+                        item.Grade,
+                        chapterEconomy.MeanGrade);
             }
             catch (Exception exception) when (
                 exception is ArgumentOutOfRangeException or OverflowException)
@@ -217,6 +263,119 @@ public sealed class RefitService
                 generatedMagnitudes,
                 out var resultQualityQ64,
                 out var invariantError))
+        {
+            return InvariantFailure(item, quote, invariantError);
+        }
+
+        return new RefitExecutionResult(
+            Applied: true,
+            InvariantFailure: false,
+            Error: string.Empty,
+            Quote: quote,
+            ResultPercentileQ64: resultQualityQ64,
+            AffixIds: generatedAffixIds,
+            AffixMagnitudes: generatedMagnitudes);
+    }
+
+    public RefitExecutionResult SealNextEffective(
+        RefitItemState item,
+        RefitChapterEconomy chapterEconomy,
+        IReadOnlyCollection<string> sealedAffixIds,
+        int attemptIndex,
+        ulong stableCommandSeed)
+    {
+        if (attemptIndex < 0)
+        {
+            return RefitExecutionResult.NoChange(
+                RefitQuote.Unavailable(
+                    "Seal attempt index cannot be negative.",
+                    item?.RefitLevel ?? 0),
+                item?.AffixIds ?? Array.Empty<string>(),
+                item?.AffixMagnitudes,
+                "Seal attempt index cannot be negative.");
+        }
+
+        if (!TryNormalizeSealedAffixes(
+                item,
+                sealedAffixIds,
+                out var canonicalSealedAffixIds,
+                out var normalizeError))
+        {
+            return RefitExecutionResult.NoChange(
+                RefitQuote.Unavailable(
+                    normalizeError,
+                    item?.RefitLevel ?? 0),
+                item?.AffixIds ?? Array.Empty<string>(),
+                item?.AffixMagnitudes,
+                normalizeError);
+        }
+
+        var quote = QuoteNextEffective(
+            item,
+            chapterEconomy,
+            CraftOperationKindValue.Seal,
+            canonicalSealedAffixIds.Count);
+        if (!quote.CanPurchase)
+        {
+            return RefitExecutionResult.NoChange(
+                quote,
+                item.AffixIds,
+                item.AffixMagnitudes,
+                quote.Reason);
+        }
+
+        IReadOnlyDictionary<string, float> generatedMagnitudes;
+        try
+        {
+            generatedMagnitudes = canonicalSealedAffixIds.Count == 0
+                ? RefitRollQuality.RerollToFloor(
+                    _lookup.Snapshot,
+                    item.AffixIds,
+                    RefitSeedDerivation.Derive(
+                        stableCommandSeed,
+                        item.StableItemKey,
+                        quote.TargetRefitLevel,
+                        _balance.RulesVersion),
+                    quote.TargetFloorQ64)
+                : RefitRollQuality.RerollUnlockedToFloor(
+                    _lookup.Snapshot,
+                    item.AffixIds,
+                    item.AffixMagnitudes,
+                    canonicalSealedAffixIds,
+                    RefitSeedDerivation.DeriveSeal(
+                        stableCommandSeed,
+                        item.StableItemKey,
+                        quote.TargetRefitLevel,
+                        attemptIndex,
+                        _balance.RulesVersion,
+                        canonicalSealedAffixIds),
+                    quote.TargetFloorQ64);
+        }
+        catch (Exception exception)
+        {
+            return InvariantFailure(
+                item,
+                quote,
+                $"Magnitude Seal generation failed: {exception.Message}");
+        }
+
+        var generatedAffixIds = item.AffixIds.ToArray();
+        if (!ValidatePostconditions(
+                item,
+                quote,
+                generatedAffixIds,
+                generatedMagnitudes,
+                out var resultQualityQ64,
+                out var invariantError))
+        {
+            return InvariantFailure(item, quote, invariantError);
+        }
+
+        if (!ValidateSealedMagnitudes(
+                item,
+                canonicalSealedAffixIds,
+                generatedMagnitudes,
+                out invariantError))
         {
             return InvariantFailure(item, quote, invariantError);
         }
@@ -403,6 +562,107 @@ public sealed class RefitService
         return true;
     }
 
+    private bool TryValidateOperationAllowed(
+        RefitItemState item,
+        CraftOperationKindValue operation,
+        out string error)
+    {
+        if (_lookup.Snapshot.ItemCatalog is not { } itemCatalog
+            || !itemCatalog.TryGetValue(item.ItemBaseId, out var itemTemplate))
+        {
+            error = $"Unknown item base '{item.ItemBaseId}'.";
+            return false;
+        }
+
+        if (itemTemplate.AllowedCraftOperations is not { Count: > 0 }
+            || !itemTemplate.AllowedCraftOperations.Contains(operation))
+        {
+            error = $"Item base '{item.ItemBaseId}' does not allow {operation}.";
+            return false;
+        }
+
+        error = string.Empty;
+        return true;
+    }
+
+    private static bool TryNormalizeSealedAffixes(
+        RefitItemState? item,
+        IReadOnlyCollection<string>? sealedAffixIds,
+        out IReadOnlyList<string> canonicalSealedAffixIds,
+        out string error)
+    {
+        canonicalSealedAffixIds = Array.Empty<string>();
+        if (item == null || item.AffixIds == null)
+        {
+            error = "Seal item state is incomplete.";
+            return false;
+        }
+
+        if (sealedAffixIds == null)
+        {
+            error = "Seal affix selection is required.";
+            return false;
+        }
+
+        var sealedSet = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var sealedAffixId in sealedAffixIds)
+        {
+            if (string.IsNullOrWhiteSpace(sealedAffixId)
+                || !sealedSet.Add(sealedAffixId))
+            {
+                error = "Seal affix selection contains a blank or duplicate id.";
+                return false;
+            }
+        }
+
+        if (sealedSet.Count >= item.AffixIds.Count && item.AffixIds.Count > 0)
+        {
+            error = "Seal must leave at least one affix unlocked.";
+            return false;
+        }
+
+        var canonical = item.AffixIds
+            .Where(sealedSet.Contains)
+            .ToArray();
+        if (canonical.Length != sealedSet.Count)
+        {
+            error = "Seal affix selection contains an id that is not on the item.";
+            return false;
+        }
+
+        canonicalSealedAffixIds = canonical;
+        error = string.Empty;
+        return true;
+    }
+
+    private static bool ValidateSealedMagnitudes(
+        RefitItemState item,
+        IReadOnlyList<string> sealedAffixIds,
+        IReadOnlyDictionary<string, float> generatedMagnitudes,
+        out string error)
+    {
+        foreach (var sealedAffixId in sealedAffixIds)
+        {
+            if (item.AffixMagnitudes == null
+                || !item.AffixMagnitudes.TryGetValue(sealedAffixId, out var original)
+                || !generatedMagnitudes.TryGetValue(sealedAffixId, out var generated))
+            {
+                error = $"Seal requires a persisted magnitude for '{sealedAffixId}'.";
+                return false;
+            }
+
+            if (BitConverter.SingleToInt32Bits(original)
+                != BitConverter.SingleToInt32Bits(generated))
+            {
+                error = $"Seal changed locked affix magnitude '{sealedAffixId}'.";
+                return false;
+            }
+        }
+
+        error = string.Empty;
+        return true;
+    }
+
     private static bool FollowsTierStepSequence(
         ItemRarityTierValue grade,
         IReadOnlyList<string> selectedTiers)
@@ -484,6 +744,29 @@ public static class RefitSeedDerivation
         AppendPart(ref hash, targetRefitLevel.ToString(CultureInfo.InvariantCulture));
         AppendPart(ref hash, rulesVersion.ToString(CultureInfo.InvariantCulture));
         AppendPart(ref hash, "REFIT");
+        return (int)(hash & int.MaxValue);
+    }
+
+    public static int DeriveSeal(
+        ulong stableCommandSeed,
+        string stableItemKey,
+        int targetRefitLevel,
+        int attemptIndex,
+        int rulesVersion,
+        IReadOnlyList<string> canonicalSealedAffixIds)
+    {
+        var hash = OffsetBasis;
+        AppendPart(ref hash, stableCommandSeed.ToString(CultureInfo.InvariantCulture));
+        AppendPart(ref hash, stableItemKey ?? string.Empty);
+        AppendPart(ref hash, targetRefitLevel.ToString(CultureInfo.InvariantCulture));
+        AppendPart(ref hash, attemptIndex.ToString(CultureInfo.InvariantCulture));
+        AppendPart(ref hash, rulesVersion.ToString(CultureInfo.InvariantCulture));
+        foreach (var sealedAffixId in canonicalSealedAffixIds)
+        {
+            AppendPart(ref hash, sealedAffixId ?? string.Empty);
+        }
+
+        AppendPart(ref hash, "SEAL");
         return (int)(hash & int.MaxValue);
     }
 

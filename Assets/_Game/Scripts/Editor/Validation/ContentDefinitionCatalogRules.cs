@@ -761,12 +761,14 @@ internal sealed class ItemCatalogValidator : ICatalogValidationRule
             }
 
             var deferredOperations = operations
-                .Where(operation => operation != CraftOperationKindValue.Reforge)
+                .Where(operation =>
+                    operation != CraftOperationKindValue.Reforge
+                    && operation != CraftOperationKindValue.Seal)
                 .Distinct()
                 .ToList();
             foreach (var operation in deferredOperations)
             {
-                ContentValidationIssueFactory.AddError(issues, "item.deferred_craft_operation", $"Item '{item.Id}' exposes deferred craft operation '{operation}'. V1 only allows Echo Refit/Reforge.", assetPath);
+                ContentValidationIssueFactory.AddError(issues, "item.deferred_craft_operation", $"Item '{item.Id}' exposes deferred craft operation '{operation}'. The live Echo surface only allows Reforge and Seal.", assetPath);
             }
         }
     }
@@ -838,6 +840,7 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
 
         ValidateItemDistribution(context, issues);
         ValidateAffixDistribution(context, issues);
+        ValidateAffixPoolCoverage(context, issues);
         ValidateDropTableItems(context, issues);
     }
 
@@ -880,9 +883,20 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
                 ContentValidationIssueFactory.AddError(issues, "equipment_v1.refit_currency", $"Item '{item.Id}' must use '{EquipmentContentV1Contract.RefitCurrencyTag}' as the V1 refit currency.", assetPath);
             }
 
-            if (item.AllowedCraftOperations.Count != 1 || item.AllowedCraftOperations[0] != CraftOperationKindValue.Reforge)
+            if (!item.AllowedCraftOperations.SequenceEqual(new[]
+                {
+                    CraftOperationKindValue.Reforge,
+                    CraftOperationKindValue.Seal,
+                }))
             {
-                ContentValidationIssueFactory.AddError(issues, "equipment_v1.refit_only", $"Item '{item.Id}' must expose only Reforge for the V1 crafting surface.", assetPath);
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.craft_operations", $"Item '{item.Id}' must expose exactly Reforge then Seal.", assetPath);
+            }
+
+            if (!EquipmentContentV1Contract.AffixPoolTagIds.Contains(
+                    item.AffixPoolTag,
+                    StringComparer.Ordinal))
+            {
+                ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_pool", $"Item '{item.Id}' must select one canonical affix pool tag.", assetPath);
             }
 
             if (EquipmentContentV1Contract.RareItemIds.Contains(item.Id) && item.RarityTier != ItemRarityTierValue.Rare)
@@ -980,6 +994,29 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
 
             if (EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id))
             {
+                var expectedPoolTags =
+                    EquipmentContentV1Contract.AffixPoolTagsByAffixId.TryGetValue(
+                        affix.Id,
+                        out var mappedPoolTags)
+                        ? mappedPoolTags.ToHashSet(StringComparer.Ordinal)
+                        : new HashSet<string>(StringComparer.Ordinal);
+                var actualPoolTags = (affix.CompileTags
+                                      ?? new List<StableTagDefinition>())
+                    .Where(tag => tag != null
+                                  && EquipmentContentV1Contract.AffixPoolTagIds.Contains(
+                                      tag.Id,
+                                      StringComparer.Ordinal))
+                    .Select(tag => tag.Id)
+                    .ToHashSet(StringComparer.Ordinal);
+                if (!actualPoolTags.SetEquals(expectedPoolTags))
+                {
+                    ContentValidationIssueFactory.AddError(
+                        issues,
+                        "equipment_v1.affix_pool_mapping",
+                        $"Live affix '{affix.Id}' pool tags drifted from the family-pool contract.",
+                        assetPath);
+                }
+
                 if (affix.SpawnWeight <= 0f || affix.ItemLevelMin >= EquipmentContentV1Contract.ReservedAffixItemLevelMin)
                 {
                     ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_live_spawn", $"Live affix '{affix.Id}' must be spawnable in V1.", assetPath);
@@ -999,6 +1036,53 @@ internal sealed class EquipmentContentV1CatalogValidator : ICatalogValidationRul
             else if (affix.SpawnWeight != 0f || affix.ItemLevelMin < EquipmentContentV1Contract.ReservedAffixItemLevelMin)
             {
                 ContentValidationIssueFactory.AddError(issues, "equipment_v1.affix_reserved_spawn", $"Reserved affix '{affix.Id}' must be non-spawning in V1.", assetPath);
+            }
+        }
+    }
+
+    private static void ValidateAffixPoolCoverage(
+        CatalogValidationContext context,
+        ICollection<ContentValidationIssue> issues)
+    {
+        var authoredItemPools = context.Items
+            .Select(item => item.AffixPoolTag)
+            .Where(poolTag => !string.IsNullOrWhiteSpace(poolTag))
+            .ToHashSet(StringComparer.Ordinal);
+        if (!authoredItemPools.SetEquals(EquipmentContentV1Contract.AffixPoolTagIds))
+        {
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "equipment_v1.affix_pool_catalog",
+                "The item catalog must exercise every canonical affix family pool exactly through authored pool ids.",
+                ContentValidationPolicyCatalog.ReportFolderName);
+        }
+
+        foreach (var item in context.Items)
+        {
+            var eligible = context.Affixes
+                .Where(affix =>
+                    EquipmentContentV1Contract.LiveAffixIds.Contains(affix.Id)
+                    && affix.SpawnWeight > 0f
+                    && affix.ItemLevelMin < EquipmentContentV1Contract.ReservedAffixItemLevelMin
+                    && (affix.AllowedSlotTypes.Count == 0
+                        || affix.AllowedSlotTypes.Contains(item.SlotType))
+                    && affix.CompileTags.Any(tag =>
+                        tag != null
+                        && string.Equals(
+                            tag.Id,
+                            item.AffixPoolTag,
+                            StringComparison.Ordinal)))
+                .ToList();
+            var implicitCount = eligible.Count(affix => affix.Tier == AffixTierValue.Implicit);
+            var prefixCount = eligible.Count(affix => affix.Tier == AffixTierValue.Prefix);
+            var suffixCount = eligible.Count(affix => affix.Tier == AffixTierValue.Suffix);
+            if (implicitCount < 1 || prefixCount < 4 || suffixCount < 4)
+            {
+                ContentValidationIssueFactory.AddError(
+                    issues,
+                    "equipment_v1.affix_pool_viability",
+                    $"Item '{item.Id}' pool '{item.AffixPoolTag}' must expose at least 1/4/4 implicit/prefix/suffix candidates. Found {implicitCount}/{prefixCount}/{suffixCount}.",
+                    context.GetPath(item));
             }
         }
     }

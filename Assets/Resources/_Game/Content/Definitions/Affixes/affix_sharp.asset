@@ -25,6 +25,9 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: a2bc543086c308c4e89284950edf5990, type: 2}
   - {fileID: 11400000, guid: 3997435dab0b88d4c9fac351b61ae6b1, type: 2}
+  - {fileID: 11400000, guid: e27867b0fafd09d42bd0c62f81536609, type: 2}
+  - {fileID: 11400000, guid: 4bf945c4f53397f4f8426f988bc95e07, type: 2}
+  - {fileID: 11400000, guid: 97fd31e683a03074286a03668227cf53, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -67,5 +70,6 @@ MonoBehaviour:
   - StatId: phys_power
     Op: 0
     Value: 2
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

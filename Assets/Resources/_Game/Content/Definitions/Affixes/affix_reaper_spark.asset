@@ -24,6 +24,14 @@ MonoBehaviour:
   AllowedSlotTypes: 0000000002000000
   CompileTags:
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: e27867b0fafd09d42bd0c62f81536609, type: 2}
+  - {fileID: 11400000, guid: 4bf945c4f53397f4f8426f988bc95e07, type: 2}
+  - {fileID: 11400000, guid: dea042dedf0e96741abb46291c729471, type: 2}
+  - {fileID: 11400000, guid: 97fd31e683a03074286a03668227cf53, type: 2}
+  - {fileID: 11400000, guid: 49079b65ff64a364a9f60366e62cf1e5, type: 2}
+  - {fileID: 11400000, guid: 5dbffc36fe15c434ab002c536929bb49, type: 2}
+  - {fileID: 11400000, guid: e43b9921ea90f554586efe48ba9d6358, type: 2}
+  - {fileID: 11400000, guid: 01271c0625a2c73428bfe320a2db2426, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []

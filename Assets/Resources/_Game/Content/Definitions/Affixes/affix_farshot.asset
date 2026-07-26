@@ -25,6 +25,7 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 4bf945c4f53397f4f8426f988bc95e07, type: 2}
   RuleModifierTags: []
   RequiredTags:
   - {fileID: 11400000, guid: eabcfa158915eff4fa26ccecee436b6a, type: 2}
@@ -68,5 +69,6 @@ MonoBehaviour:
   - StatId: attack_range
     Op: 0
     Value: 0.22500001
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

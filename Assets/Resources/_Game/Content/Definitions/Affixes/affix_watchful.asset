@@ -25,6 +25,11 @@ MonoBehaviour:
   CompileTags:
   - {fileID: 11400000, guid: b3f169cbfb1cd2042af9b8c8c80c8345, type: 2}
   - {fileID: 11400000, guid: 3d57812923cb5ec4ab9c978bcfe31548, type: 2}
+  - {fileID: 11400000, guid: 4bf945c4f53397f4f8426f988bc95e07, type: 2}
+  - {fileID: 11400000, guid: dea042dedf0e96741abb46291c729471, type: 2}
+  - {fileID: 11400000, guid: 49079b65ff64a364a9f60366e62cf1e5, type: 2}
+  - {fileID: 11400000, guid: 5dbffc36fe15c434ab002c536929bb49, type: 2}
+  - {fileID: 11400000, guid: 01271c0625a2c73428bfe320a2db2426, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -67,5 +72,6 @@ MonoBehaviour:
   - StatId: crit_chance
     Op: 1
     Value: 0.044999998
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 

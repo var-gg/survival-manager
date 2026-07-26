@@ -8,15 +8,6 @@ namespace SM.Content.Definitions
 
     public enum ItemSlotType { Weapon = 0, Armor = 1, Accessory = 2 }
 
-    public enum CraftOperationKindValue
-    {
-        Temper = 0,
-        Reforge = 1,
-        Seal = 2,
-        Imprint = 3,
-        Salvage = 4,
-    }
-
     [CreateAssetMenu(menuName = "SM/Definitions/Item Base Definition", fileName = "itembase_")]
     public sealed class ItemBaseDefinition : ScriptableObject
     {

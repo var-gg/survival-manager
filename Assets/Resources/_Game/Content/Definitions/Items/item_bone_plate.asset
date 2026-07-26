@@ -32,7 +32,7 @@ MonoBehaviour:
   AllowedClassTags: []
   AllowedArchetypeTags: []
   UniqueRuleTags: []
-  AllowedCraftOperations: 01000000
+  AllowedCraftOperations: 0100000002000000
   BaseModifiers:
   - StatId: max_health
     Op: 0

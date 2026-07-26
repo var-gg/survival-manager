@@ -24,6 +24,12 @@ MonoBehaviour:
   AllowedSlotTypes: 0200000001000000
   CompileTags:
   - {fileID: 11400000, guid: 6eceb1a2c2f6c6f4ebb25b0d6a11d4bd, type: 2}
+  - {fileID: 11400000, guid: 6a29a2e60910378438f9c89bd8418ea7, type: 2}
+  - {fileID: 11400000, guid: 4891eb73d95a99443a2ce528c353d528, type: 2}
+  - {fileID: 11400000, guid: 34de036c336a53d4489a22bebfb10185, type: 2}
+  - {fileID: 11400000, guid: 49079b65ff64a364a9f60366e62cf1e5, type: 2}
+  - {fileID: 11400000, guid: 5dbffc36fe15c434ab002c536929bb49, type: 2}
+  - {fileID: 11400000, guid: 01271c0625a2c73428bfe320a2db2426, type: 2}
   RuleModifierTags: []
   RequiredTags: []
   ExcludedTags: []
@@ -66,5 +72,6 @@ MonoBehaviour:
   - StatId: move_speed
     Op: 0
     Value: 0.05
+  TriggeredEffects: []
   legacyDisplayName: 
   legacyDescription: 
