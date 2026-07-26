@@ -10,22 +10,21 @@ using SM.HeadlessCensus;
 using SM.HeadlessMetrics;
 using SM.HeadlessPolicies;
 using SM.Meta.Model;
-using SM.Meta.Services;
-using SM.Persistence.Abstractions.Models;
 using SM.Unity;
 using UnityEngine;
 
 namespace SM.Editor.Validation;
 
 /// <summary>
-/// Seal-enabled and plain-Refit concept policies run against the same full campaign,
-/// while a separate no-Seal lane proves the pre-extension intent trace golden.
+/// Runs the frozen 32-seed Seal census and policy-only calibration sweep.
+/// The measurement adapters do not mutate authored content or shipped policy constants.
 /// </summary>
 public static class H100SealPolicyMeasurementRunner
 {
     private const string GateSpecRelativePath =
         "Assets/_Game/Scripts/Runtime/HeadlessMetrics/h100-gates-v1.json";
     private const string DefaultCoverageAnchorId = "anchor_iron_line";
+    private const int PreregisteredSeedCount = 32;
     private static readonly UTF8Encoding Utf8WithoutBom = new(false);
 
     public static void RunFromCli()
@@ -33,28 +32,55 @@ public static class H100SealPolicyMeasurementRunner
         SampleSeedGenerator.RequireCanonicalSampleContentReady(
             nameof(H100SealPolicyMeasurementRunner));
         var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-        var outputRoot = ResolvePath(
+        var outputRoot = ResolveOutputPath(
             projectRoot,
             Environment.GetEnvironmentVariable("SM_H100_SEAL_MEASUREMENT_OUTPUT")
-            ?? "Logs/h100-seal-policy-measurement");
-        var baselineTracePath = ResolvePath(
+            ?? "Logs/20260726-seal-prereg-sample/measurement");
+        var reportPath = Path.Combine(outputRoot, "seal-policy-measurement.json");
+        var sampleStartedPath = Path.Combine(outputRoot, "sample-started.txt");
+        if (File.Exists(reportPath))
+        {
+            throw new InvalidOperationException(
+                $"Preregistered measurement report already exists; retry is forbidden: {reportPath}");
+        }
+
+        if (File.Exists(sampleStartedPath))
+        {
+            throw new InvalidOperationException(
+                $"Preregistered measurement already started; retry is forbidden: {sampleStartedPath}");
+        }
+
+        var baselineTracePath = ResolveExistingPath(
             projectRoot,
             Environment.GetEnvironmentVariable("SM_H100_SEAL_BASELINE_TRACE")
             ?? "Logs/20260726-seal-headless-policy/baseline/coverage/intent_trace.jsonl");
+        var preregistrationPath = ResolveExistingPath(
+            projectRoot,
+            Environment.GetEnvironmentVariable("SM_H100_SEAL_PREREGISTRATION")
+            ?? Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ".orchestrator",
+                "jobs",
+                "20260726-seal-prereg-sample",
+                "preregistration.md"));
         var seedBase = ReadInt("SM_H100_SEAL_SEED_BASE", 1701);
+        var seedCount = ReadPositiveInt(
+            "SM_H100_SEAL_SEED_COUNT",
+            PreregisteredSeedCount);
+        if (seedCount != PreregisteredSeedCount)
+        {
+            throw new InvalidOperationException(
+                $"Frozen preregistration requires exactly {PreregisteredSeedCount} seeds.");
+        }
+
         var siteSafety = ReadPositiveInt("SM_H100_SEAL_SITE_SAFETY", 32);
         var maxBattleSteps = ReadPositiveInt("SM_H100_SEAL_MAX_BATTLE_STEPS", 300);
         var anchorId = Environment.GetEnvironmentVariable("SM_H100_SEAL_COVERAGE_ANCHOR")
                        ?? DefaultCoverageAnchorId;
+        var preregistrationBytes = File.ReadAllBytes(preregistrationPath);
+        var preregistrationSha256 = Sha256(preregistrationBytes);
 
         Directory.CreateDirectory(outputRoot);
-        if (!File.Exists(baselineTracePath))
-        {
-            throw new FileNotFoundException(
-                "The pre-change no-Seal intent trace baseline is required.",
-                baselineTracePath);
-        }
-
         var spec = H100GateSpec.LoadFromFile(Path.Combine(projectRoot, GateSpecRelativePath));
         var lookup = new RuntimeCombatContentLookup(allowEditorRecoveryFallback: true);
         if (!lookup.TryGetCombatSnapshot(out var snapshot, out var contentError))
@@ -64,7 +90,7 @@ public static class H100SealPolicyMeasurementRunner
 
         var settings = new H100MetricsRunSettings(
             BattleCount: 1,
-            CampaignCount: 1,
+            CampaignCount: seedCount,
             ReplayCopies: 2,
             SeedBase: seedBase,
             CampaignSiteSafety: siteSafety,
@@ -75,16 +101,121 @@ public static class H100SealPolicyMeasurementRunner
         var catalog = H100ConceptCatalogRunner.DeriveForSnapshot(snapshot);
         var coverageIntent = H100ConceptIntentProjector.ProjectSingle(catalog, anchorId);
 
-        var goldenDirectory = Path.Combine(outputRoot, "no-seal-golden");
+        var golden = RunGolden(
+            outputRoot,
+            baselineTracePath,
+            lookup,
+            settings with { CampaignCount = 1 },
+            spec.TargetBattleSeconds,
+            coverageIntent);
+        var targetAffixId = SelectMissingAffix(snapshot, lookup, settings);
+        var measurementIntent = AddMissingAffixIntent(coverageIntent, targetAffixId);
+
+        File.WriteAllText(
+            sampleStartedPath,
+            $"preregistration_sha256={preregistrationSha256}\n"
+            + $"seed_base={seedBase.ToString(CultureInfo.InvariantCulture)}\n"
+            + $"seed_count={seedCount.ToString(CultureInfo.InvariantCulture)}\n",
+            Utf8WithoutBom);
+        Debug.Log(
+            $"[H100SealPolicyMeasurement] sample_start seeds={seedCount};"
+            + $"seed_base={seedBase};grid=27;preregistration_sha256={preregistrationSha256}");
+        var noSeal = RunArm(
+            "no-seal",
+            lookup,
+            snapshot,
+            settings,
+            spec.TargetBattleSeconds,
+            measurementIntent,
+            calibration: null,
+            forceNoSeal: true);
+        var census = H100SealPolicyMeasurementAnalysis.BuildCensus(
+            noSeal,
+            seedBase,
+            seedCount);
+        var sweep = new List<H100SealPolicySweepResult>(27);
+        foreach (var calibration in H100SealPolicyMeasurementAnalysis.CalibrationGrid())
+        {
+            var arm = RunArm(
+                calibration.Id,
+                lookup,
+                snapshot,
+                settings,
+                spec.TargetBattleSeconds,
+                measurementIntent,
+                calibration,
+                forceNoSeal: false);
+            var result = H100SealPolicyMeasurementAnalysis.BuildSweepResult(arm, noSeal);
+            sweep.Add(result);
+            Debug.Log(
+                $"[H100SealPolicyMeasurement] setting={calibration.Id};"
+                + $"seals={result.SealCount};campaigns={result.CampaignsWithSeal};"
+                + $"quality_delta={Format(result.RollQualityDelta)};"
+                + $"echo_delta={Format(result.CurrencyDelta)};"
+                + $"outcome_delta={result.OutcomeDelta.ToString("R", CultureInfo.InvariantCulture)}");
+        }
+
+        var h2 = H100SealPolicyMeasurementAnalysis.BuildH2Verdict(census, sweep);
+        var widthProbe = H100SealPolicyMeasurementAnalysis.BuildWidthProbe(
+            noSeal,
+            sweep,
+            h2);
+        var conclusion = H100SealPolicyMeasurementAnalysis.BuildConclusion(
+            census,
+            h2,
+            widthProbe);
+        var surprises = H100SealPolicyMeasurementAnalysis.BuildSurprises(
+            census,
+            h2,
+            widthProbe);
+        var report = new H100SealPolicyMeasurementReport(
+            "h100-seal-policy-measurement-v2",
+            preregistrationSha256,
+            seedBase,
+            seedCount,
+            Enumerable.Range(seedBase, seedCount).ToArray(),
+            anchorId,
+            measurementIntent.IntentId,
+            targetAffixId,
+            golden,
+            census,
+            noSeal,
+            sweep,
+            h2,
+            widthProbe,
+            conclusion,
+            surprises);
+        File.WriteAllText(
+            reportPath,
+            HeadlessMetricJson.Serialize(report) + "\n",
+            Utf8WithoutBom);
+        Debug.Log(
+            $"[H100SealPolicyMeasurement] status=complete;"
+            + $"supported={conclusion.SupportedHypothesis};"
+            + $"windows={census.TotalWindows};"
+            + $"affix_observations={census.CandidateAffixObservationCount};"
+            + $"h2_ruled_out={h2.RuledOut};"
+            + $"width_probe={widthProbe.Ran};"
+            + $"golden={golden.ByteIdentical};output={reportPath}");
+    }
+
+    private static H100SealGoldenComparison RunGolden(
+        string outputRoot,
+        string baselineTracePath,
+        RuntimeCombatContentLookup lookup,
+        H100MetricsRunSettings settings,
+        float targetBattleSeconds,
+        HeadlessConceptIntent coverageIntent)
+    {
         var goldenCorpus = H100CampaignCorpusRunner.Run(
             lookup,
             settings,
-            spec.TargetBattleSeconds,
+            targetBattleSeconds,
             observationHooks: new H100CampaignObservationHooks(
                 RosterObservationTransform: DisableSeal),
             policyFactory: _ => new ConceptCommitPolicy(coverageIntent));
         var candidateTracePath = IntentTraceArtifactWriter.Write(
-            goldenDirectory,
+            Path.Combine(outputRoot, "no-seal-golden"),
             goldenCorpus.IntentTraces);
         var golden = CompareGolden(baselineTracePath, candidateTracePath);
         if (!golden.ByteIdentical)
@@ -94,56 +225,7 @@ public static class H100SealPolicyMeasurementRunner
                 + $"candidate={golden.CandidateSha256}.");
         }
 
-        var targetAffixId = SelectMissingAffix(snapshot, lookup, settings);
-        var measurementIntent = AddMissingAffixIntent(
-            coverageIntent,
-            targetAffixId);
-        var withSeal = RunArm(
-            "with-seal",
-            lookup,
-            snapshot,
-            settings,
-            spec.TargetBattleSeconds,
-            measurementIntent,
-            disableSeal: false);
-        var withoutSeal = RunArm(
-            "without-seal",
-            lookup,
-            snapshot,
-            settings,
-            spec.TargetBattleSeconds,
-            measurementIntent,
-            disableSeal: true);
-        var delta = BuildDelta(withSeal, withoutSeal);
-        var verdict = withSeal.SealCount == 0
-            ? "The policy correctly ignored Seal in this paired full campaign."
-            : delta.CraftingEchoSpent == 0
-              && NullableDelta(withSeal.MeanRollQualityAfter, withoutSeal.MeanRollQualityAfter) == 0d
-              && !delta.CampaignOutcomeChanged
-                ? "The policy exercised Seal, but the paired campaign showed no measurable change."
-                : "The policy exercised Seal and changed at least one measured crafting or campaign outcome.";
-        var report = new H100SealPolicyMeasurementReport(
-            "h100-seal-policy-measurement-v1",
-            anchorId,
-            measurementIntent.IntentId,
-            targetAffixId,
-            golden,
-            withSeal,
-            withoutSeal,
-            delta,
-            verdict);
-        var reportPath = Path.Combine(outputRoot, "seal-policy-measurement.json");
-        File.WriteAllText(
-            reportPath,
-            HeadlessMetricJson.Serialize(report) + "\n",
-            Utf8WithoutBom);
-        Debug.Log(
-            $"[H100SealPolicyMeasurement] seals={withSeal.SealCount};"
-            + $"plain_refits={withSeal.PlainRefitCount};"
-            + $"echo_delta={delta.CraftingEchoSpent};"
-            + $"quality_after_delta={FormatNullable(delta.MeanRollQualityAfter)};"
-            + $"outcome_changed={delta.CampaignOutcomeChanged};"
-            + $"golden={golden.ByteIdentical};output={reportPath}");
+        return golden;
     }
 
     private static H100SealPolicyArmReport RunArm(
@@ -153,18 +235,23 @@ public static class H100SealPolicyMeasurementRunner
         H100MetricsRunSettings settings,
         float targetBattleSeconds,
         HeadlessConceptIntent intent,
-        bool disableSeal)
+        H100SealPolicyCalibration? calibration,
+        bool forceNoSeal)
     {
-        var collector = new SealMeasurementCollector(snapshot);
-        var hooks = collector.CreateHooks(disableSeal ? DisableSeal : null);
+        var collector = new H100SealPolicyMeasurementCollector(
+            snapshot,
+            settings.SeedBase);
         var corpus = H100CampaignCorpusRunner.Run(
             lookup,
             settings,
             targetBattleSeconds,
-            observationHooks: hooks,
-            policyFactory: _ => new ConceptCommitPolicy(intent));
-        var campaign = corpus.Campaigns.Single();
-        return collector.BuildReport(armId, campaign);
+            observationHooks: collector.CreateHooks(
+                forceNoSeal ? DisableSeal : null),
+            policyFactory: _ => new H100SealCalibrationPolicy(
+                intent,
+                calibration,
+                forceNoSeal));
+        return collector.BuildReport(armId, calibration, corpus);
     }
 
     private static HeadlessRosterPolicyObservation DisableSeal(
@@ -200,7 +287,7 @@ public static class H100SealPolicyMeasurementRunner
         RuntimeCombatContentLookup lookup,
         H100MetricsRunSettings settings)
     {
-        var campaignId = "campaign-000000";
+        const string campaignId = "campaign-000000";
         var session = H100SessionDriver.CreateSession(
             lookup,
             settings.PairingProfileId(campaignId));
@@ -221,7 +308,9 @@ public static class H100SealPolicyMeasurementRunner
         => new(
             $"{source.IntentId}-seal-measurement-{targetAffixId}",
             source.SourceLane,
-            source.IdentityPredicates.Concat(new[] { $"owned:affix:{targetAffixId}" }).ToArray(),
+            source.IdentityPredicates
+                .Concat(new[] { $"owned:affix:{targetAffixId}" })
+                .ToArray(),
             source.ProgressMilestones,
             source.PayoffWitnessId,
             source.AllowedSubstitutions,
@@ -246,44 +335,43 @@ public static class H100SealPolicyMeasurementRunner
             baseline.SequenceEqual(candidate));
     }
 
-    private static H100SealPolicyDelta BuildDelta(
-        H100SealPolicyArmReport withSeal,
-        H100SealPolicyArmReport withoutSeal)
+    private static string ResolveOutputPath(string projectRoot, string path)
     {
-        var left = withSeal.Campaign;
-        var right = withoutSeal.Campaign;
-        var outcomeChanged = left.Completed != right.Completed
-                             || left.Truncated != right.Truncated
-                             || !string.Equals(
-                                 left.TerminalReason,
-                                 right.TerminalReason,
-                                 StringComparison.Ordinal)
-                             || left.SiteCount != right.SiteCount
-                             || left.BattleCount != right.BattleCount
-                             || left.WinCount != right.WinCount
-                             || left.LossCount != right.LossCount;
-        return new H100SealPolicyDelta(
-            withSeal.SealCount - withoutSeal.SealCount,
-            withSeal.CraftingEchoSpent - withoutSeal.CraftingEchoSpent,
-            NullableDelta(withSeal.MeanRollQualityAfter, withoutSeal.MeanRollQualityAfter),
-            NullableDelta(withSeal.MeanRollQualityGain, withoutSeal.MeanRollQualityGain),
-            BoolInt(left.Completed) - BoolInt(right.Completed),
-            left.SiteCount - right.SiteCount,
-            left.BattleCount - right.BattleCount,
-            left.WinCount - right.WinCount,
-            left.LossCount - right.LossCount,
-            outcomeChanged);
+        var candidate = Path.GetFullPath(
+            Path.IsPathRooted(path)
+                ? path
+                : Path.Combine(projectRoot, path));
+        var rootWithSeparator =
+            projectRoot.TrimEnd(
+                Path.DirectorySeparatorChar,
+                Path.AltDirectorySeparatorChar)
+            + Path.DirectorySeparatorChar;
+        if (!candidate.StartsWith(
+                rootWithSeparator,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"Seal measurement output must stay inside the project root: {candidate}");
+        }
+
+        return candidate;
     }
 
-    private static double? NullableDelta(double? left, double? right)
-        => left.HasValue && right.HasValue ? left.Value - right.Value : null;
+    private static string ResolveExistingPath(string projectRoot, string path)
+    {
+        var candidate = Path.GetFullPath(
+            Path.IsPathRooted(path)
+                ? path
+                : Path.Combine(projectRoot, path));
+        if (!File.Exists(candidate))
+        {
+            throw new FileNotFoundException(
+                "Required Seal measurement input does not exist.",
+                candidate);
+        }
 
-    private static int BoolInt(bool value) => value ? 1 : 0;
-
-    private static string ResolvePath(string projectRoot, string path)
-        => Path.IsPathRooted(path)
-            ? Path.GetFullPath(path)
-            : Path.GetFullPath(Path.Combine(projectRoot, path));
+        return candidate;
+    }
 
     private static int ReadPositiveInt(string name, int fallback)
     {
@@ -312,166 +400,6 @@ public static class H100SealPolicyMeasurementRunner
                 .Select(value => value.ToString("x2", CultureInfo.InvariantCulture)));
     }
 
-    private static string FormatNullable(double? value)
+    private static string Format(double? value)
         => value?.ToString("R", CultureInfo.InvariantCulture) ?? "null";
-
-    private sealed class SealMeasurementCollector
-    {
-        private readonly CombatContentSnapshot _snapshot;
-        private readonly Dictionary<int, PendingRefit> _pending = new();
-        private readonly List<H100SealCraftingOperationRecord> _operations = new();
-        private int _refitWindowCount;
-        private int _skipCount;
-
-        public SealMeasurementCollector(CombatContentSnapshot snapshot)
-        {
-            _snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
-        }
-
-        public H100CampaignObservationHooks CreateHooks(
-            Func<HeadlessRosterPolicyObservation, HeadlessRosterPolicyObservation>? transform)
-            => new(
-                RosterDecisionOffered: OnRosterDecisionOffered,
-                DecisionApplied: OnDecisionApplied,
-                RosterObservationTransform: transform);
-
-        public H100SealPolicyArmReport BuildReport(
-            string armId,
-            CampaignMetricRecord campaign)
-        {
-            var sealedOperations = _operations
-                .Where(value => string.Equals(value.Operation, "seal", StringComparison.Ordinal))
-                .ToArray();
-            var qualityBefore = AverageOrNull(_operations.Select(value => value.RollQualityBefore));
-            var qualityAfter = AverageOrNull(_operations.Select(value => value.RollQualityAfter));
-            var qualityGain = AverageOrNull(_operations.Select(value => value.RollQualityDelta));
-            return new H100SealPolicyArmReport(
-                armId,
-                _refitWindowCount,
-                sealedOperations.Length,
-                _operations.Count - sealedOperations.Length,
-                _skipCount,
-                _operations.Sum(value => value.EchoSpent),
-                sealedOperations
-                    .Select(value => $"{value.ItemId}:{value.ItemInstanceId}")
-                    .Distinct(StringComparer.Ordinal)
-                    .OrderBy(value => value, StringComparer.Ordinal)
-                    .ToArray(),
-                qualityBefore,
-                qualityAfter,
-                qualityGain,
-                _operations.ToArray(),
-                campaign);
-        }
-
-        private void OnRosterDecisionOffered(H100RosterDecisionOfferedContext context)
-        {
-            if (!string.Equals(context.LeverId, IntentTrackLeverId.Refit, StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            _refitWindowCount++;
-            var items = context.Session.Profile.Inventory
-                .Where(item => item != null && !string.IsNullOrWhiteSpace(item.ItemInstanceId))
-                .ToDictionary(
-                    item => item.ItemInstanceId,
-                    item => new PendingItem(
-                        item.ItemBaseId,
-                        MeasureItem(_snapshot, item)),
-                    StringComparer.Ordinal);
-            _pending.Add(
-                context.DecisionIndex,
-                new PendingRefit(context.Session.Profile.Currencies.Echo, items));
-        }
-
-        private void OnDecisionApplied(H100DecisionAppliedContext context)
-        {
-            if (!string.Equals(context.SeamType, IntentTrackLeverId.Refit, StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            if (!_pending.Remove(context.DecisionIndex, out var pending))
-            {
-                throw new InvalidOperationException(
-                    $"Refit decision {context.DecisionIndex} has no offered observation.");
-            }
-
-            if (string.Equals(context.AppliedActionDescriptor, "skip", StringComparison.Ordinal))
-            {
-                _skipCount++;
-                return;
-            }
-
-            var parts = context.AppliedActionDescriptor.Split(':');
-            if (parts.Length is not (2 or 3)
-                || (parts.Length == 3
-                    && !parts[2].StartsWith("seal=", StringComparison.Ordinal)))
-            {
-                throw new InvalidOperationException(
-                    $"Unexpected refit descriptor '{context.AppliedActionDescriptor}'.");
-            }
-
-            var itemInstanceId = parts[0];
-            if (!pending.Items.TryGetValue(itemInstanceId, out var before))
-            {
-                throw new InvalidOperationException(
-                    $"Applied refit item '{itemInstanceId}' was not in the offered inventory.");
-            }
-
-            var item = context.Session.Profile.Inventory.Single(value =>
-                string.Equals(value.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
-            var echoSpent = pending.EchoBefore - context.Session.Profile.Currencies.Echo;
-            if (echoSpent < 0)
-            {
-                throw new InvalidOperationException(
-                    $"Crafting increased Echo by {-echoSpent}.");
-            }
-
-            var afterQuality = MeasureItem(_snapshot, item);
-            _operations.Add(new H100SealCraftingOperationRecord(
-                context.DecisionIndex,
-                parts.Length == 3 ? "seal" : "refit",
-                before.ItemId,
-                itemInstanceId,
-                echoSpent,
-                before.RollQuality,
-                afterQuality,
-                afterQuality - before.RollQuality));
-        }
-
-        private static double MeasureItem(
-            CombatContentSnapshot snapshot,
-            InventoryItemRecord item)
-        {
-            var affixIds = (item.AffixIds ?? new List<string>())
-                .Where(value => !string.IsNullOrWhiteSpace(value))
-                .ToArray();
-            var affixIdSet = affixIds.ToHashSet(StringComparer.Ordinal);
-            var magnitudes = (item.AffixMagnitudeRolls
-                              ?? new List<InventoryAffixMagnitudeRecord>())
-                .Where(value => value != null && affixIdSet.Contains(value.AffixId))
-                .GroupBy(value => value.AffixId, StringComparer.Ordinal)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.First().Magnitude,
-                    StringComparer.Ordinal);
-            return RefitRollQuality.Measure(snapshot, affixIds, magnitudes);
-        }
-
-        private static double? AverageOrNull(IEnumerable<double> values)
-        {
-            var materialized = values.ToArray();
-            return materialized.Length == 0 ? null : materialized.Average();
-        }
-
-        private sealed record PendingRefit(
-            int EchoBefore,
-            IReadOnlyDictionary<string, PendingItem> Items);
-
-        private sealed record PendingItem(
-            string ItemId,
-            double RollQuality);
-    }
 }

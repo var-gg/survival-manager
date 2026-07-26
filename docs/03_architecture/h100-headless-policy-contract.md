@@ -188,13 +188,17 @@ pwsh -File tools/h100-intent-trace.ps1 -SeedCount 8 -Lanes both -CoverageAnchorI
 
 각 lane의 `intent_trace_summary.json`에서 `missing_trace_count=0`, `hidden_fact_use_count=0`, `campaigns_with_commit=8`을 요구한다. 같은 seed와 intent의 policy decision 및 JSONL은 byte-identical이어야 한다. opt-in coverage campaign은 deployment, reward, recruit, level_node, refit trace를 기록하며 영입·노드·Refit의 실제 gold·node budget·echo 소비를 `ScarceResourceInvested`로 남긴다. 기존 여섯 production 정책은 `IHeadlessRosterPolicy`를 구현하지 않으므로 Town trace와 행동이 생기지 않는다.
 
-Seal policy의 no-Seal golden과 paired full-campaign A/B는 다음 명령으로 함께 검증한다.
+Seal policy의 no-Seal golden과 사전등록 multi-seed 실측은 다음 명령으로 함께 검증한다.
 
 ```powershell
 pwsh -File tools/h100-seal-policy-measurement.ps1
 ```
 
-runner는 canonical coverage intent의 Seal-disabled trace를 pre-change JSONL과 byte 비교한 뒤, 같은 campaign seed와 measurement intent를 Seal 허용/차단 두 arm으로 실행한다. `seal-policy-measurement.json`은 Town Refit window 수, plain Refit·Seal·skip 횟수, Seal한 item, action 직전·직후 `RefitRollQuality`, 즉시 소비된 crafting echo, campaign terminal outcome을 함께 기록한다. Seal이 한 번도 선택되지 않거나 품질·campaign 결과가 움직이지 않는 null 결과도 그대로 보존하며 balance를 조정하지 않는다.
+runner는 canonical coverage intent의 Seal-disabled trace를 pre-change JSONL과 byte 비교한 뒤, 외부 job 폴더에서 먼저 봉인한 preregistration을 SHA-256으로 고정한다. 표본은 logical seed `1701..1732`의 32개 campaign으로 고정하며, sample-start marker가 생긴 뒤에는 최종 report가 없더라도 재실행을 거부한다.
+
+no-Seal substrate에서 production ordering과 affordability를 그대로 적용한 Refit candidate의 Gold/Echo wallet, affix별 `RefitRollQuality`, authored magnitude range, Seal quote, candidate-selection bias를 매 window 원시 행으로 남긴다. primary 분포는 고정 10-bin histogram과 `p0/p10/p25/p50/p75/p90/p100` 선형 보간 quantile이다. 이어 threshold `0.50/0.70/0.85`, minimum net-value floor `0.00/0.01/0.05`, preservation baseline `0.40/0.50/0.60`의 27개 policy-only calibration을 같은 32개 campaign에 paired 실행한다. adapter는 일반 Refit target과 non-Refit 결정을 production `ConceptCommitPolicy`에 위임하고 Seal lock set만 바꾸며, shipped policy constant와 authored content는 수정하지 않는다.
+
+`seal-policy-measurement.json`은 각 설정의 Seal 빈도, terminal Echo/Gold, inventory roll-quality, campaign outcome paired delta와 raw substrate window를 함께 기록한다. H2가 충분한 자료로 기각된 경우에만 authored range를 쓰지 않고 관측 range의 폭을 midpoint 기준 `1.00..8.00` 배로 재구성하는 in-memory probe를 실행한다. 현재 policy 입력이 normalized roll position이므로 폭 변경이 quality와 decision surface를 바꾸지 않는 결과도 그대로 보존한다. Seal이 한 번도 선택되지 않거나 품질·campaign 결과가 움직이지 않는 null 결과를 포함해 preregistered decision rule대로 보고하며 balance를 조정하지 않는다.
 
 BT1-E05는 coverage lane을 E03 owner anchor별로 다시 실행한다. 정책의 coverage intent는 첫 stable variant 하나로 고정하되, campaign 종료 후 oracle은 같은 확정 offer/window stream에 anchor의 모든 E03 variant를 대조해 OR 개방성을 계산한다. `H100CampaignCorpusRunner`의 optional observer가 결정 전 배치·보상과 opt-in Town 세 표면, 전투 후 payoff를 복제하고, campaign 종료 뒤 Editor adapter가 순수 `IntentTrackEvaluator`에 DTO를 전달한다. 정책은 자기 `HeadlessConceptIntent`, 현재 player-visible observation, 누적 `IntentState`만 보며 oracle search result, 다른 선택지의 미래 결과, 이후 offer stream은 읽지 않는다. E07 실측 진입점은 `pwsh -File tools/h100-intent-track.ps1 -Levers deployment,reward,recruit,level_node,refit`이다.
 

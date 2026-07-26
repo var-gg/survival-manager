@@ -24,7 +24,7 @@
 - `assembly-boundaries-and-persistence-ownership.md`: `SM.Meta` content adapter, persistence ownership, asmdef 사전 점검 규칙
 - `h100-headless-metrics-contract.md`: H100 순수 계측 asmdef, RC1 동결 경로, BT1 role/migration/strict 판정, player-visible fact ledger/EvidenceRef, E07 Town agency·희소 자원 trace, E05 anchor OR·lever 조건부 track/realization 집계, E08 option trap·dominant oracle, BT1-E09 placement tactical attribution·formation non-use join, replay hash, Stage 4 진형, Stage 5 sunken solvability와 E06 preview policy acceptance·BT8 부분 공급 산출물
 - `h100-tactical-attribution-contract.md`: BT1-E09 8×3×paired-seed placement corpus, typed 전술·거리·targeting·pathing 귀속, Pro 4조건, Stage 4/E05/E06 formation non-use·trap join, 결정적 report 계약
-- `h100-headless-policy-contract.md`: H100 player-visible observation, 6개 production + Coverage QA와 E06 preview-grounded 정책, opt-in Town 영입·패시브 노드·Refit·Seal 표면, BT1 컨셉 의도 DTO/commit_t/reason trace, coverage·discovery lane, 최소 evidence 매핑, no-cheat guard 계약
+- `h100-headless-policy-contract.md`: H100 player-visible observation, 6개 production + Coverage QA와 E06 preview-grounded 정책, opt-in Town 영입·패시브 노드·Refit·Seal 표면, Seal 32-seed preregistered census·policy-only calibration·조건부 width probe, BT1 컨셉 의도 DTO/commit_t/reason trace, coverage·discovery lane, 최소 evidence 매핑, no-cheat guard 계약
 - `h100-build-space-census-contract.md`: H100 495편성·360배치 pure census, evaluator-only build grammar truth graph와 다섯 lever variant OR intent-track 검색, 명시 술어 coverage, 자동 medoid, BT1 컨셉 카탈로그 파생, Stage 4 placement 재사용, 소규모 screening 계약
 - `validation-and-acceptance-oracles.md`: feature closure, acceptance matrix, evidence 기록 기준
 - `testing-strategy.md`: 저비용 검증 표면 추가 순서만 다루는 보조 draft
@@ -131,7 +131,7 @@
 - `deterministic-sim-and-fixed-point-migration.md`: float→fixed 결정론 마이그레이션 contract와 단계별 계획 (draft, ADR-0029)
 - `h100-headless-metrics-contract.md`: H100 record, RC1 byte 보존, BT1 hard/diagnostic migration, E07 Town agency·희소 자원 trace, E05 anchor OR·lever 조건부 track/realization report, E08 option trap·dominant report, BT1-E09 placement tactical attribution·formation non-use join, replay hash, deterministic JSONL/CSV, Stage 4 진형, Stage 5 sunken solvability와 E06 preview acceptance의 real-content runner 경계
 - `h100-tactical-attribution-contract.md`: BT1-E09 placement-only paired corpus와 전술/거리/targeting/pathing 귀속, anchor 지배, formation non-use/trap 판정, deterministic JSON 계약
-- `h100-headless-policy-contract.md`: H100 6개 production + Coverage QA + E06 preview-grounded 정책, opt-in Town 결정과 Refit/Seal lock 계약, player-visible observation whitelist, BT1 컨셉 의도/commit_t/trace lane, E05 사후 evaluator 비노출 경계, no-cheat guard와 paired direction witness
+- `h100-headless-policy-contract.md`: H100 6개 production + Coverage QA + E06 preview-grounded 정책, opt-in Town 결정과 Refit/Seal lock 계약, Seal 32-seed preregistered census·27-setting calibration·조건부 in-memory width probe, player-visible observation whitelist, BT1 컨셉 의도/commit_t/trace lane, E05 사후 evaluator 비노출 경계, no-cheat guard와 paired direction witness
 - `h100-build-space-census-contract.md`: H100 495편성·360배치 구조지도, build grammar truth graph, role-labelled formation feature, 자동 medoid, BT1 컨셉 카탈로그와 다섯 lever variant OR intent-track oracle, Stage 4 placement leverage
 - `battle-actor-wrapper-and-asset-intake-seam.md`: battle wrapper prefab, socket surface, vendor intake seam
 
