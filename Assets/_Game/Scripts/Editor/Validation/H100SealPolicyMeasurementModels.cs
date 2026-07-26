@@ -9,6 +9,7 @@ internal sealed record H100SealPolicyMeasurementReport(
     string PreregistrationSha256,
     int SeedBase,
     int SeedCount,
+    string MeasurementMode,
     IReadOnlyList<int> LogicalSeeds,
     string CoverageAnchorId,
     string MeasurementIntentId,
@@ -65,6 +66,7 @@ internal sealed record H100SealRefitWindowRecord(
     int WalletGold,
     int WalletEcho,
     int VisibleRefitItemCount,
+    IReadOnlyList<H100SealVisibleInventoryItemRecord> VisibleInventoryItems,
     string CandidateItemId,
     string CandidateItemInstanceId,
     int CandidateSlotIndex,
@@ -80,6 +82,18 @@ internal sealed record H100SealRefitWindowRecord(
     string AppliedAction,
     int? EchoSpent,
     double? CandidateRollQualityAfter);
+
+internal sealed record H100SealVisibleInventoryItemRecord(
+    string ItemId,
+    string ItemInstanceId,
+    int PlainRefitCost,
+    bool PlainRefitAffordable,
+    bool HasLegalRefitSlot,
+    bool AllowsSeal,
+    IReadOnlyList<H100SealCostRecord> SealCosts,
+    int AffixCount,
+    IReadOnlyList<H100SealAffixObservationRecord> Affixes,
+    double? MeanRollQuality);
 
 internal sealed record H100SealAffixObservationRecord(
     string AffixId,
@@ -123,6 +137,7 @@ internal sealed record H100SealRefitWindowCensus(
     int TotalWindows,
     int CandidateAffixObservationCount,
     int DistinctQualityVectorCount,
+    int DistinctVisibleInventoryAffixCount,
     H100SealQuantiles WalletGoldQuantiles,
     H100SealQuantiles WalletEchoQuantiles,
     IReadOnlyList<H100SealCountFrequency> AffixesPerCandidateItem,
@@ -132,6 +147,13 @@ internal sealed record H100SealRefitWindowCensus(
     IReadOnlyList<H100SealHistogramBin> RollQualityHistogram,
     double FractionAtOrAbove070,
     double? MaxObservedRollQuality,
+    H100SealQuantiles VisibleInventoryRollQualityQuantiles,
+    IReadOnlyList<H100SealHistogramBin> VisibleInventoryRollQualityHistogram,
+    double? VisibleInventoryMaxObservedRollQuality,
+    int ZeroCandidateAffixWindowCount,
+    int ZeroCandidateAffixWindowsWithTwoPlusAffixVisibleItem,
+    int ZeroCandidateAffixWindowsWithTwoPlusAffixLegalRefitItem,
+    int ZeroCandidateAffixWindowsWithTwoPlusAffixLegalAndAffordableRefitItem,
     double? MeanCandidateSelectionBias,
     bool DataAdequate,
     IReadOnlyList<string> InadequacyReasons);

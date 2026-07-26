@@ -36,6 +36,27 @@ public sealed class AffixMagnitudeRollTests
     }
 
     [Test]
+    public void UniformRoll_ConsecutiveSeedQuantilesCoverTheAuthoredRange()
+    {
+        const int samples = 100_000;
+        var positions = Enumerable.Range(0, samples)
+            .Select(seed => (double)AffixMagnitudeRoller.Roll(
+                seed,
+                "affix_distribution_witness",
+                0,
+                0f,
+                1f))
+            .OrderBy(value => value)
+            .ToArray();
+
+        Assert.That(Quantile(positions, 0.10d), Is.EqualTo(0.10d).Within(0.01d));
+        Assert.That(Quantile(positions, 0.50d), Is.EqualTo(0.50d).Within(0.01d));
+        Assert.That(Quantile(positions, 0.90d), Is.EqualTo(0.90d).Within(0.01d));
+        Assert.That(positions[0], Is.LessThan(0.001d));
+        Assert.That(positions[^1], Is.GreaterThan(0.999d));
+    }
+
+    [Test]
     public void PackageResolver_MaterializesInstanceValueWithoutMutatingSharedPackage()
     {
         var shared = new CombatModifierPackage(
@@ -84,5 +105,15 @@ public sealed class AffixMagnitudeRollTests
         Assert.That(
             AffixMagnitudePresentation.Format(2.5f, 2f, 4f),
             Is.EqualTo("2.5 · 25% [2 ~ 4]"));
+    }
+
+    private static double Quantile(IReadOnlyList<double> sorted, double probability)
+    {
+        var position = probability * (sorted.Count - 1);
+        var lower = (int)System.Math.Floor(position);
+        var upper = (int)System.Math.Ceiling(position);
+        return lower == upper
+            ? sorted[lower]
+            : sorted[lower] + ((sorted[upper] - sorted[lower]) * (position - lower));
     }
 }

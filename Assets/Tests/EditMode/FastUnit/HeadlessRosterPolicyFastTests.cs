@@ -93,6 +93,69 @@ public sealed class HeadlessRosterPolicyFastTests
     }
 
     [Test]
+    public void RefitDecision_RanksValidSealValueAcrossAllLegalItemsBeforeOrdinalAnchor()
+    {
+        var baseline = IntentPolicyObservationFixture.CreateRecruitBaseline();
+        var observation = AddRefitItem(
+            CreateSealObservation(baseline.Roster),
+            new HeadlessRefitItemObservation(
+                "item-a-decoy",
+                "decoy-instance",
+                string.Empty,
+                Array.Empty<string>(),
+                string.Empty,
+                15,
+                new[]
+                {
+                    new HeadlessRefitSlotObservation(
+                        0,
+                        Affix("affix-decoy"),
+                        true,
+                        0.05d),
+                }));
+        var policy = new ConceptCommitPolicy(RosterIntent());
+        policy.DecideDeployment(baseline);
+
+        var decision = policy.DecideRefit(observation);
+
+        Assert.That(decision.ItemInstanceId, Is.EqualTo("item-instance"));
+        Assert.That(decision.SealedAffixIds, Is.EqualTo(new[] { "affix-best", "affix-mid" }));
+    }
+
+    [Test]
+    public void RefitDecision_WithoutValidSealPrefersMaximumPlainRefitHeadroomThenOrdinal()
+    {
+        var baseline = IntentPolicyObservationFixture.CreateRecruitBaseline();
+        var observation = AddRefitItem(
+            CreateSealObservation(
+                baseline.Roster,
+                firstGoodQuality: 0.60d,
+                secondGoodQuality: 0.65d),
+            new HeadlessRefitItemObservation(
+                "item-a-high-roll",
+                "high-roll-instance",
+                string.Empty,
+                Array.Empty<string>(),
+                string.Empty,
+                15,
+                new[]
+                {
+                    new HeadlessRefitSlotObservation(
+                        0,
+                        Affix("affix-high"),
+                        true,
+                        0.90d),
+                }));
+        var policy = new ConceptCommitPolicy(RosterIntent());
+        policy.DecideDeployment(baseline);
+
+        var decision = policy.DecideRefit(observation);
+
+        Assert.That(decision.ItemInstanceId, Is.EqualTo("item-instance"));
+        Assert.That(decision.SealedAffixIds, Is.Empty);
+    }
+
+    [Test]
     public void RefitGuard_NamesUnknownForeignAllLockedAndOperationExcludedSealFailures()
     {
         var baseline = IntentPolicyObservationFixture.CreateRecruitBaseline();
@@ -433,6 +496,40 @@ public sealed class HeadlessRosterPolicyFastTests
             Array.Empty<string>(),
             Array.Empty<HeadlessStatModifierObservation>(),
             Array.Empty<HeadlessRuleModifierObservation>());
+
+    private static HeadlessRosterPolicyObservation AddRefitItem(
+        HeadlessRosterPolicyObservation source,
+        HeadlessRefitItemObservation item)
+    {
+        var evidence = source.EvidenceFactIdsBySignal
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        foreach (var slot in item.AffixSlots)
+        {
+            evidence[HeadlessRosterPolicyEvidence.RefitSlotSignal(
+                item.ItemInstanceId,
+                slot.SlotIndex)] = $"fact-refit-{item.ItemInstanceId}-{slot.SlotIndex}";
+        }
+
+        if (item.AllowsSeal)
+        {
+            evidence[HeadlessRosterPolicyEvidence.RefitSealSignal(item.ItemInstanceId)] =
+                $"fact-refit-seal-{item.ItemInstanceId}";
+        }
+
+        var observation = new HeadlessRosterPolicyObservation(
+            source.DecisionSeed,
+            source.ChapterId,
+            source.SiteId,
+            source.RosterCapacity,
+            source.Roster,
+            source.Wallet,
+            source.RecruitOffers,
+            source.PassiveHeroes,
+            source.RefitItems.Concat(new[] { item }).ToArray(),
+            evidence);
+        HeadlessRosterPolicyGuard.ValidateObservation(observation);
+        return observation;
+    }
 
     private static HeadlessPassiveNodeObservation Node(
         string nodeId,

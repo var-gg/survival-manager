@@ -153,33 +153,35 @@ internal sealed class H100SealPolicyMeasurementCollector
 
         var windowOrdinal = _windowCountByCampaign.GetValueOrDefault(context.CampaignIndex);
         _windowCountByCampaign[context.CampaignIndex] = windowOrdinal + 1;
-        var candidate = observation.RefitItems
-            .Where(item => observation.Wallet.Echo >= item.EchoCost)
-            .OrderBy(item => item.ItemId, StringComparer.Ordinal)
-            .ThenBy(item => item.ItemInstanceId, StringComparer.Ordinal)
-            .SelectMany(item => item.AffixSlots
-                .OrderBy(slot => slot.SlotIndex)
-                .Where(slot => slot.CanRefit)
-                .Select(slot => new Candidate(item, slot)))
-            .FirstOrDefault();
-        var visibleMean = AverageOrNull(observation.RefitItems
-            .SelectMany(item => item.AffixSlots)
-            .Select(slot => slot.RollQuality));
-        var candidateAffixes = candidate == null
-            ? Array.Empty<H100SealAffixObservationRecord>()
-            : BuildAffixObservations(
-                context.Session,
-                candidate.Item.ItemInstanceId,
-                candidate.Item.AffixSlots);
-        var candidateMean = AverageOrNull(candidateAffixes.Select(value => value.RollQuality));
-        var costs = candidate?.Item.SealCosts
-            .OrderBy(value => value.LockedAffixCount)
-            .Select(value => new H100SealCostRecord(
-                value.LockedAffixCount,
-                value.EchoCost,
-                value.EchoCost <= observation.Wallet.Echo))
-            .ToArray()
-            ?? Array.Empty<H100SealCostRecord>();
+        var visibleInventoryItems = observation.RefitItems
+            .Select(item =>
+            {
+                var affixes = BuildAffixObservations(
+                    context.Session,
+                    item.ItemInstanceId,
+                    item.AffixSlots);
+                return new H100SealVisibleInventoryItemRecord(
+                    item.ItemId,
+                    item.ItemInstanceId,
+                    item.EchoCost,
+                    observation.Wallet.Echo >= item.EchoCost,
+                    item.AffixSlots.Any(slot => slot.CanRefit),
+                    item.AllowsSeal,
+                    item.SealCosts
+                        .OrderBy(value => value.LockedAffixCount)
+                        .Select(value => new H100SealCostRecord(
+                            value.LockedAffixCount,
+                            value.EchoCost,
+                            value.EchoCost <= observation.Wallet.Echo))
+                        .ToArray(),
+                    affixes.Count,
+                    affixes,
+                    AverageOrNull(affixes.Select(value => value.RollQuality)));
+            })
+            .ToArray();
+        var visibleMean = AverageOrNull(visibleInventoryItems
+            .SelectMany(item => item.Affixes)
+            .Select(affix => affix.RollQuality));
         var window = new MutableWindow(
             context.CampaignIndex,
             _seedBase + context.CampaignIndex,
@@ -190,14 +192,7 @@ internal sealed class H100SealPolicyMeasurementCollector
             observation.Wallet.Gold,
             observation.Wallet.Echo,
             observation.RefitItems.Count,
-            candidate?.Item.ItemId ?? string.Empty,
-            candidate?.Item.ItemInstanceId ?? string.Empty,
-            candidate?.Slot.SlotIndex ?? -1,
-            candidate?.Item.EchoCost ?? 0,
-            candidate?.Item.AllowsSeal == true,
-            candidateAffixes,
-            costs,
-            candidateMean,
+            visibleInventoryItems,
             visibleMean);
         _windows.Add(window);
         if (!_pendingBySession.TryGetValue(context.Session, out var pending))
@@ -279,16 +274,17 @@ internal sealed class H100SealPolicyMeasurementCollector
         }
 
         var itemInstanceId = parts[0];
-        if (!string.Equals(
-                itemInstanceId,
-                window.CandidateItemInstanceId,
-                StringComparison.Ordinal))
+        if (!int.TryParse(
+                parts[1],
+                System.Globalization.NumberStyles.None,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var slotIndex))
         {
             throw new InvalidOperationException(
-                $"Applied refit item '{itemInstanceId}' differs from candidate "
-                + $"'{window.CandidateItemInstanceId}'.");
+                $"Unexpected refit slot '{parts[1]}'.");
         }
 
+        window.AssignCandidate(itemInstanceId, slotIndex);
         var item = context.Session.Profile.Inventory.Single(value =>
             string.Equals(value.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
         var echoSpent = window.WalletEcho - context.Session.Profile.Currencies.Echo;
@@ -454,18 +450,17 @@ internal sealed class H100SealPolicyMeasurementCollector
         return materialized.Length == 0 ? null : materialized.Average();
     }
 
-    private sealed record Candidate(
-        HeadlessRefitItemObservation Item,
-        HeadlessRefitSlotObservation Slot);
-
     private sealed record CampaignIdentity(
         int CampaignIndex,
         int DerivedSeed);
 
     private sealed class MutableWindow
     {
-        private readonly IReadOnlyList<H100SealAffixObservationRecord> _candidateAffixes;
-        private readonly IReadOnlyList<H100SealCostRecord> _candidateSealCosts;
+        private IReadOnlyList<H100SealAffixObservationRecord> _candidateAffixes =
+            Array.Empty<H100SealAffixObservationRecord>();
+        private IReadOnlyList<H100SealCostRecord> _candidateSealCosts =
+            Array.Empty<H100SealCostRecord>();
+        private readonly IReadOnlyList<H100SealVisibleInventoryItemRecord> _visibleInventoryItems;
         private readonly double? _visibleInventoryMeanRollQuality;
         private string _appliedAction = string.Empty;
         private int? _echoSpent;
@@ -481,14 +476,7 @@ internal sealed class H100SealPolicyMeasurementCollector
             int walletGold,
             int walletEcho,
             int visibleRefitItemCount,
-            string candidateItemId,
-            string candidateItemInstanceId,
-            int candidateSlotIndex,
-            int candidatePlainRefitCost,
-            bool candidateAllowsSeal,
-            IReadOnlyList<H100SealAffixObservationRecord> candidateAffixes,
-            IReadOnlyList<H100SealCostRecord> candidateSealCosts,
-            double? candidateMeanRollQuality,
+            IReadOnlyList<H100SealVisibleInventoryItemRecord> visibleInventoryItems,
             double? visibleInventoryMeanRollQuality)
         {
             CampaignIndex = campaignIndex;
@@ -500,14 +488,7 @@ internal sealed class H100SealPolicyMeasurementCollector
             WalletGold = walletGold;
             WalletEcho = walletEcho;
             VisibleRefitItemCount = visibleRefitItemCount;
-            CandidateItemId = candidateItemId;
-            CandidateItemInstanceId = candidateItemInstanceId;
-            CandidateSlotIndex = candidateSlotIndex;
-            CandidatePlainRefitCost = candidatePlainRefitCost;
-            CandidateAllowsSeal = candidateAllowsSeal;
-            _candidateAffixes = candidateAffixes;
-            _candidateSealCosts = candidateSealCosts;
-            CandidateMeanRollQuality = candidateMeanRollQuality;
+            _visibleInventoryItems = visibleInventoryItems;
             _visibleInventoryMeanRollQuality = visibleInventoryMeanRollQuality;
         }
 
@@ -520,12 +501,36 @@ internal sealed class H100SealPolicyMeasurementCollector
         public int WalletGold { get; }
         public int WalletEcho { get; }
         public int VisibleRefitItemCount { get; }
-        public string CandidateItemId { get; }
-        public string CandidateItemInstanceId { get; }
-        public int CandidateSlotIndex { get; }
-        public int CandidatePlainRefitCost { get; }
-        public bool CandidateAllowsSeal { get; }
-        public double? CandidateMeanRollQuality { get; }
+        public string CandidateItemId { get; private set; } = string.Empty;
+        public string CandidateItemInstanceId { get; private set; } = string.Empty;
+        public int CandidateSlotIndex { get; private set; } = -1;
+        public int CandidatePlainRefitCost { get; private set; }
+        public bool CandidateAllowsSeal { get; private set; }
+        public double? CandidateMeanRollQuality { get; private set; }
+
+        public void AssignCandidate(string itemInstanceId, int slotIndex)
+        {
+            if (!string.IsNullOrEmpty(CandidateItemInstanceId))
+            {
+                throw new InvalidOperationException(
+                    $"Refit window {DecisionIndex} already has candidate "
+                    + $"'{CandidateItemInstanceId}'.");
+            }
+
+            var item = _visibleInventoryItems.Single(value =>
+                string.Equals(
+                    value.ItemInstanceId,
+                    itemInstanceId,
+                    StringComparison.Ordinal));
+            CandidateItemId = item.ItemId;
+            CandidateItemInstanceId = item.ItemInstanceId;
+            CandidateSlotIndex = slotIndex;
+            CandidatePlainRefitCost = item.PlainRefitCost;
+            CandidateAllowsSeal = item.AllowsSeal;
+            _candidateAffixes = item.Affixes;
+            _candidateSealCosts = item.SealCosts;
+            CandidateMeanRollQuality = item.MeanRollQuality;
+        }
 
         public void ApplySkip()
         {
@@ -551,6 +556,7 @@ internal sealed class H100SealPolicyMeasurementCollector
                 WalletGold,
                 WalletEcho,
                 VisibleRefitItemCount,
+                _visibleInventoryItems,
                 CandidateItemId,
                 CandidateItemInstanceId,
                 CandidateSlotIndex,

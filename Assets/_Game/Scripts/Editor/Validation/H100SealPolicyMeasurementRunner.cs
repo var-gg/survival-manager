@@ -67,6 +67,7 @@ public static class H100SealPolicyMeasurementRunner
         var seedCount = ReadPositiveInt(
             "SM_H100_SEAL_SEED_COUNT",
             PreregisteredSeedCount);
+        var measurementMode = ReadMeasurementMode();
         if (seedCount != PreregisteredSeedCount)
         {
             throw new InvalidOperationException(
@@ -119,7 +120,9 @@ public static class H100SealPolicyMeasurementRunner
             Utf8WithoutBom);
         Debug.Log(
             $"[H100SealPolicyMeasurement] sample_start seeds={seedCount};"
-            + $"seed_base={seedBase};grid=27;preregistration_sha256={preregistrationSha256}");
+            + $"seed_base={seedBase};mode={measurementMode};"
+            + $"grid={CalibrationGridForMode(measurementMode).Count};"
+            + $"preregistration_sha256={preregistrationSha256}");
         var noSeal = RunArm(
             "no-seal",
             lookup,
@@ -133,8 +136,9 @@ public static class H100SealPolicyMeasurementRunner
             noSeal,
             seedBase,
             seedCount);
-        var sweep = new List<H100SealPolicySweepResult>(27);
-        foreach (var calibration in H100SealPolicyMeasurementAnalysis.CalibrationGrid())
+        var calibrations = CalibrationGridForMode(measurementMode);
+        var sweep = new List<H100SealPolicySweepResult>(calibrations.Count);
+        foreach (var calibration in calibrations)
         {
             var arm = RunArm(
                 calibration.Id,
@@ -173,6 +177,7 @@ public static class H100SealPolicyMeasurementRunner
             preregistrationSha256,
             seedBase,
             seedCount,
+            measurementMode,
             Enumerable.Range(seedBase, seedCount).ToArray(),
             anchorId,
             measurementIntent.IntentId,
@@ -383,6 +388,39 @@ public static class H100SealPolicyMeasurementRunner
 
         return value;
     }
+
+    private static string ReadMeasurementMode()
+    {
+        var mode = Environment.GetEnvironmentVariable("SM_H100_SEAL_MEASUREMENT_MODE")
+                   ?? "full";
+        return mode switch
+        {
+            "full" => mode,
+            "census" => mode,
+            "shipped" => mode,
+            _ => throw new InvalidOperationException(
+                "SM_H100_SEAL_MEASUREMENT_MODE must be full, census, or shipped."),
+        };
+    }
+
+    private static IReadOnlyList<H100SealPolicyCalibration> CalibrationGridForMode(
+        string measurementMode)
+        => measurementMode switch
+        {
+            "full" => H100SealPolicyMeasurementAnalysis.CalibrationGrid(),
+            "census" => Array.Empty<H100SealPolicyCalibration>(),
+            "shipped" => new[]
+            {
+                new H100SealPolicyCalibration(
+                    Threshold: 0.70d,
+                    NetValueFloor: 0.01d,
+                    Baseline: 0.50d),
+            },
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(measurementMode),
+                measurementMode,
+                "Unknown Seal measurement mode."),
+        };
 
     private static int ReadInt(string name, int fallback)
     {

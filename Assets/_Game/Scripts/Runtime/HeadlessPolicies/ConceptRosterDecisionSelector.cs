@@ -235,11 +235,33 @@ internal static class ConceptRosterDecisionSelector
             .ToArray();
         var choice = observation.RefitItems
             .Where(item => observation.Wallet.Echo >= item.EchoCost)
-            .OrderBy(item => item.ItemId, StringComparer.Ordinal)
-            .ThenBy(item => item.ItemInstanceId, StringComparer.Ordinal)
             .SelectMany(item => item.AffixSlots.OrderBy(slot => slot.SlotIndex)
                 .Where(slot => slot.CanRefit)
                 .Select(slot => new { Item = item, Slot = slot }))
+            .Select(value =>
+            {
+                var sealedAffixIds = SelectSealLocks(
+                    value.Item,
+                    observation.Wallet.Echo,
+                    out var rerollTarget,
+                    out var sealCost,
+                    out var sealNetValue);
+                return new RefitCandidate(
+                    value.Item,
+                    value.Slot,
+                    sealedAffixIds,
+                    rerollTarget,
+                    sealCost,
+                    sealNetValue,
+                    value.Item.AffixSlots.Average(slot => slot.RollQuality));
+            })
+            .OrderByDescending(value => value.SealedAffixIds.Count != 0)
+            .ThenByDescending(value => value.SealNetValue)
+            .ThenBy(value => value.MeanRollQuality)
+            .ThenByDescending(value => value.Item.AffixSlots.Count)
+            .ThenBy(value => value.Item.ItemId, StringComparer.Ordinal)
+            .ThenBy(value => value.Item.ItemInstanceId, StringComparer.Ordinal)
+            .ThenBy(value => value.Slot.SlotIndex)
             .FirstOrDefault();
         if (missingAffixes.Length == 0 || choice == null)
         {
@@ -251,29 +273,24 @@ internal static class ConceptRosterDecisionSelector
                 HeadlessRosterPolicyEvidence.ForRefit(observation, string.Empty, -1)));
         }
 
-        var sealedAffixIds = SelectSealLocks(
-            choice.Item,
-            observation.Wallet.Echo,
-            out var rerollTarget,
-            out var sealCost,
-            out var sealNetValue);
-        var detail = sealedAffixIds.Count == 0
+        var detail = choice.SealedAffixIds.Count == 0
             ? $"item={choice.Item.ItemId};slot={choice.Slot.SlotIndex};target_unknown_until_roll"
             : $"item={choice.Item.ItemId};slot={choice.Slot.SlotIndex};"
-              + $"reroll_target={rerollTarget.CurrentAffix.AffixId};"
-              + $"target_quality={rerollTarget.RollQuality.ToString("0.###", CultureInfo.InvariantCulture)};"
-              + $"seal={string.Join(",", sealedAffixIds)};seal_cost={sealCost.ToString(CultureInfo.InvariantCulture)}";
+              + $"reroll_target={choice.RerollTarget.CurrentAffix.AffixId};"
+              + $"target_quality={choice.RerollTarget.RollQuality.ToString("0.###", CultureInfo.InvariantCulture)};"
+              + $"seal={string.Join(",", choice.SealedAffixIds)};"
+              + $"seal_cost={choice.SealCost.ToString(CultureInfo.InvariantCulture)}";
         return new RefitSelection(new HeadlessRefitDecision(
             choice.Item.ItemInstanceId,
             choice.Slot.SlotIndex,
             rationale(detail),
-            sealNetValue,
+            choice.SealNetValue,
             HeadlessRosterPolicyEvidence.ForRefit(
                 observation,
                 choice.Item.ItemInstanceId,
                 choice.Slot.SlotIndex,
-                sealedAffixIds),
-            sealedAffixIds));
+                choice.SealedAffixIds),
+            choice.SealedAffixIds));
     }
 
     private static IReadOnlyList<string> SelectSealLocks(
@@ -357,6 +374,35 @@ internal static class ConceptRosterDecisionSelector
         public int EchoCost { get; }
         public double NetValue { get; }
         public string Signature { get; }
+    }
+
+    private sealed class RefitCandidate
+    {
+        public RefitCandidate(
+            HeadlessRefitItemObservation item,
+            HeadlessRefitSlotObservation slot,
+            IReadOnlyList<string> sealedAffixIds,
+            HeadlessRefitSlotObservation rerollTarget,
+            int sealCost,
+            double sealNetValue,
+            double meanRollQuality)
+        {
+            Item = item;
+            Slot = slot;
+            SealedAffixIds = sealedAffixIds;
+            RerollTarget = rerollTarget;
+            SealCost = sealCost;
+            SealNetValue = sealNetValue;
+            MeanRollQuality = meanRollQuality;
+        }
+
+        public HeadlessRefitItemObservation Item { get; }
+        public HeadlessRefitSlotObservation Slot { get; }
+        public IReadOnlyList<string> SealedAffixIds { get; }
+        public HeadlessRefitSlotObservation RerollTarget { get; }
+        public int SealCost { get; }
+        public double SealNetValue { get; }
+        public double MeanRollQuality { get; }
     }
 
     private static IReadOnlyList<string> NewlyCompletedRecruitMilestones(

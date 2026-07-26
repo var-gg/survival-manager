@@ -70,6 +70,27 @@ internal static class H100SealPolicyMeasurementAnalysis
                         CultureInfo.InvariantCulture))))
             .Distinct(StringComparer.Ordinal)
             .Count();
+        var distinctVisibleAffixes = windows
+            .SelectMany(window => window.VisibleInventoryItems.SelectMany(item =>
+                item.Affixes.Select(affix => new
+                {
+                    window.CampaignIndex,
+                    item.ItemInstanceId,
+                    affix.AffixId,
+                    affix.RollQuality,
+                })))
+            .GroupBy(
+                value => new
+                {
+                    value.CampaignIndex,
+                    value.ItemInstanceId,
+                    value.AffixId,
+                })
+            .Select(group => group.First().RollQuality)
+            .ToArray();
+        var zeroCandidateAffixWindows = windows
+            .Where(value => value.CandidateAffixCount == 0)
+            .ToArray();
         var campaignsWithWindows = windows
             .Select(value => value.CampaignIndex)
             .Distinct()
@@ -105,6 +126,7 @@ internal static class H100SealPolicyMeasurementAnalysis
             windows.Count,
             qualities.Length,
             qualityVectors,
+            distinctVisibleAffixes.Length,
             Quantiles(windows.Select(value => (double)value.WalletGold)),
             Quantiles(windows.Select(value => (double)value.WalletEcho)),
             windows.GroupBy(value => value.CandidateAffixCount)
@@ -119,6 +141,20 @@ internal static class H100SealPolicyMeasurementAnalysis
                 ? 0d
                 : (double)qualities.Count(value => value >= 0.70d) / qualities.Length,
             qualities.Length == 0 ? null : qualities.Max(),
+            Quantiles(distinctVisibleAffixes),
+            Histogram(distinctVisibleAffixes),
+            distinctVisibleAffixes.Length == 0 ? null : distinctVisibleAffixes.Max(),
+            zeroCandidateAffixWindows.Length,
+            zeroCandidateAffixWindows.Count(window =>
+                window.VisibleInventoryItems.Any(item => item.AffixCount >= 2)),
+            zeroCandidateAffixWindows.Count(window =>
+                window.VisibleInventoryItems.Any(item =>
+                    item.AffixCount >= 2 && item.HasLegalRefitSlot)),
+            zeroCandidateAffixWindows.Count(window =>
+                window.VisibleInventoryItems.Any(item =>
+                    item.AffixCount >= 2
+                    && item.HasLegalRefitSlot
+                    && item.PlainRefitAffordable)),
             AverageOrNull(windows
                 .Where(value => value.CandidateSelectionBias.HasValue)
                 .Select(value => value.CandidateSelectionBias!.Value)),

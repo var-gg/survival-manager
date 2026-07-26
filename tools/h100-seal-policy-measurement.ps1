@@ -9,6 +9,8 @@ param(
     [string]$CoverageAnchorId = 'anchor_iron_line',
     [string]$BaselineTrace = 'Logs/20260726-seal-headless-policy/baseline/coverage/intent_trace.jsonl',
     [string]$Preregistration = "$HOME/.orchestrator/jobs/20260726-seal-prereg-sample/preregistration.md",
+    [ValidateSet('full', 'census', 'shipped')]
+    [string]$Mode = 'full',
     [string]$OutputDirectory = 'Logs/20260726-seal-prereg-sample/measurement'
 )
 
@@ -25,6 +27,7 @@ $environmentValues = [ordered]@{
     SM_H100_SEAL_SITE_SAFETY = $CampaignSiteSafety.ToString($invariantCulture)
     SM_H100_SEAL_MAX_BATTLE_STEPS = $MaxBattleSteps.ToString($invariantCulture)
     SM_H100_SEAL_COVERAGE_ANCHOR = $CoverageAnchorId
+    SM_H100_SEAL_MEASUREMENT_MODE = $Mode
 }
 $previous = @{}
 
