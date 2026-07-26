@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SM.HeadlessPolicies;
@@ -7,6 +8,10 @@ namespace SM.HeadlessPolicies;
 /// <summary>concept intent를 현재 Town UI의 합법 recruit/node/refit 선택에만 대조한다.</summary>
 internal static class ConceptRosterDecisionSelector
 {
+    private const double SealQualityThreshold = 0.70d;
+    private const double NeutralRerollQuality = 0.50d;
+    private const double MinimumSealNetValue = 0.01d;
+
     internal sealed class RecruitSelection
     {
         public RecruitSelection(
@@ -246,12 +251,112 @@ internal static class ConceptRosterDecisionSelector
                 HeadlessRosterPolicyEvidence.ForRefit(observation, string.Empty, -1)));
         }
 
+        var sealedAffixIds = SelectSealLocks(
+            choice.Item,
+            observation.Wallet.Echo,
+            out var rerollTarget,
+            out var sealCost,
+            out var sealNetValue);
+        var detail = sealedAffixIds.Count == 0
+            ? $"item={choice.Item.ItemId};slot={choice.Slot.SlotIndex};target_unknown_until_roll"
+            : $"item={choice.Item.ItemId};slot={choice.Slot.SlotIndex};"
+              + $"reroll_target={rerollTarget.CurrentAffix.AffixId};"
+              + $"target_quality={rerollTarget.RollQuality.ToString("0.###", CultureInfo.InvariantCulture)};"
+              + $"seal={string.Join(",", sealedAffixIds)};seal_cost={sealCost.ToString(CultureInfo.InvariantCulture)}";
         return new RefitSelection(new HeadlessRefitDecision(
             choice.Item.ItemInstanceId,
             choice.Slot.SlotIndex,
-            rationale($"item={choice.Item.ItemId};slot={choice.Slot.SlotIndex};target_unknown_until_roll"),
-            0d,
-            HeadlessRosterPolicyEvidence.ForRefit(observation, choice.Item.ItemInstanceId, choice.Slot.SlotIndex)));
+            rationale(detail),
+            sealNetValue,
+            HeadlessRosterPolicyEvidence.ForRefit(
+                observation,
+                choice.Item.ItemInstanceId,
+                choice.Slot.SlotIndex,
+                sealedAffixIds),
+            sealedAffixIds));
+    }
+
+    private static IReadOnlyList<string> SelectSealLocks(
+        HeadlessRefitItemObservation item,
+        int visibleEcho,
+        out HeadlessRefitSlotObservation rerollTarget,
+        out int sealCost,
+        out double sealNetValue)
+    {
+        var selectedTarget = item.AffixSlots
+            .OrderBy(value => value.RollQuality)
+            .ThenBy(value => value.SlotIndex)
+            .ThenBy(value => value.CurrentAffix.AffixId, StringComparer.Ordinal)
+            .First();
+        rerollTarget = selectedTarget;
+        sealCost = item.EchoCost;
+        sealNetValue = 0d;
+        if (!item.AllowsSeal || item.AffixSlots.Count < 2)
+        {
+            return Array.Empty<string>();
+        }
+
+        var candidates = item.AffixSlots
+            .Where(value => !ReferenceEquals(value, selectedTarget)
+                            && value.RollQuality >= SealQualityThreshold)
+            .OrderByDescending(value => value.RollQuality)
+            .ThenBy(value => value.CurrentAffix.AffixId, StringComparer.Ordinal)
+            .ThenBy(value => value.SlotIndex)
+            .ToArray();
+        var options = new List<SealLockOption>();
+        for (var count = 1; count <= candidates.Length; count++)
+        {
+            var cost = item.SealCosts.SingleOrDefault(value => value.LockedAffixCount == count);
+            if (cost == null || cost.EchoCost > visibleEcho)
+            {
+                continue;
+            }
+
+            var locked = candidates.Take(count).ToArray();
+            var preservationValue = locked.Sum(value => value.RollQuality - NeutralRerollQuality);
+            var premiumShareOfWallet = Math.Max(0, cost.EchoCost - item.EchoCost)
+                                       / (double)Math.Max(1, visibleEcho);
+            var netValue = preservationValue - premiumShareOfWallet;
+            if (netValue <= MinimumSealNetValue)
+            {
+                continue;
+            }
+
+            var ids = locked.Select(value => value.CurrentAffix.AffixId)
+                .OrderBy(value => value, StringComparer.Ordinal)
+                .ToArray();
+            options.Add(new SealLockOption(ids, cost.EchoCost, netValue));
+        }
+
+        var selected = options
+            .OrderByDescending(value => value.NetValue)
+            .ThenBy(value => value.EchoCost)
+            .ThenBy(value => value.Signature, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (selected == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        sealCost = selected.EchoCost;
+        sealNetValue = selected.NetValue;
+        return selected.AffixIds;
+    }
+
+    private sealed class SealLockOption
+    {
+        public SealLockOption(IReadOnlyList<string> affixIds, int echoCost, double netValue)
+        {
+            AffixIds = affixIds;
+            EchoCost = echoCost;
+            NetValue = netValue;
+            Signature = string.Join("|", affixIds);
+        }
+
+        public IReadOnlyList<string> AffixIds { get; }
+        public int EchoCost { get; }
+        public double NetValue { get; }
+        public string Signature { get; }
     }
 
     private static IReadOnlyList<string> NewlyCompletedRecruitMilestones(

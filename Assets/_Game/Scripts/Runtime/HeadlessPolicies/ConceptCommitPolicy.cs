@@ -271,9 +271,14 @@ public sealed class ConceptCommitPolicy : IHeadlessPolicy, IHeadlessRosterPolicy
             ? ConceptIntentSelector.NoProgressReason(_state)
             : IntentDecisionReason.Advance;
         var decision = selection.Decision.WithRationale(Rationale(reason, selection.Decision.Rationale));
+        var action = decision.IsNoOp
+            ? "refit:none"
+            : decision.SealedAffixIds.Count == 0
+                ? $"refit:{decision.ItemInstanceId}:{decision.AffixSlotIndex}"
+                : $"seal:{decision.ItemInstanceId}:{decision.AffixSlotIndex}:{string.Join(",", decision.SealedAffixIds)}";
         RecordDecision(
             "refit",
-            decision.IsNoOp ? "refit:none" : $"refit:{decision.ItemInstanceId}:{decision.AffixSlotIndex}",
+            action,
             reason,
             milestoneAdvanced: false,
             scarceResourceInvested: !decision.IsNoOp,

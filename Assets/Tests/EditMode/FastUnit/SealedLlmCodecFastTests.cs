@@ -77,6 +77,7 @@ public sealed class SealedLlmCodecFastTests
             typeof(HeadlessPassiveBoardObservation),
             typeof(HeadlessPassiveNodeObservation),
             typeof(HeadlessRefitItemObservation),
+            typeof(HeadlessSealCostObservation),
             typeof(HeadlessRefitSlotObservation),
             typeof(HeadlessOwnedItemObservation),
         };
@@ -174,12 +175,34 @@ public sealed class SealedLlmCodecFastTests
         Assert.DoesNotThrow(() => HeadlessRosterPolicyGuard.ValidatePassiveDecision(rosterObservation, decodedPassive));
 
         var refit = new HeadlessRefitDecision("item-instance-a", 0, "reference", 1d, new[] { "fact" });
+        Assert.That(SealedLlmActionCodec.EncodeRefit(refit), Is.EqualTo("item-instance-a:0"));
         var decodedRefit = SealedLlmActionCodec.DecodeRefit(
             rosterObservation,
             SealedLlmActionCodec.EncodeRefit(refit));
         Assert.That(decodedRefit.ItemInstanceId, Is.EqualTo(refit.ItemInstanceId));
         Assert.That(decodedRefit.AffixSlotIndex, Is.EqualTo(refit.AffixSlotIndex));
         Assert.DoesNotThrow(() => HeadlessRosterPolicyGuard.ValidateRefitDecision(rosterObservation, decodedRefit));
+    }
+
+    [Test]
+    public void SealRefit_EncodeDecodeRoundTripPreservesCanonicalLockSet()
+    {
+        var observation = CreateRosterObservation(allowsSeal: true);
+        var decision = new HeadlessRefitDecision(
+            "item-instance-a",
+            0,
+            "reference",
+            1d,
+            new[] { "fact" },
+            new[] { "affix-current" });
+
+        var encoded = SealedLlmActionCodec.EncodeRefit(decision);
+        var decoded = SealedLlmActionCodec.DecodeRefit(observation, encoded);
+
+        Assert.That(encoded, Is.EqualTo("item-instance-a:0:seal=affix-current"));
+        Assert.That(decoded.SealedAffixIds, Is.EqualTo(new[] { "affix-current" }));
+        Assert.DoesNotThrow(() =>
+            HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, decoded));
     }
 
     [Test]
@@ -366,7 +389,8 @@ public sealed class SealedLlmCodecFastTests
         bool reverseOrderInsensitiveCollections = false,
         int gold = 20,
         int echo = 20,
-        bool canRefit = true)
+        bool canRefit = true,
+        bool allowsSeal = false)
     {
         var policy = CreatePolicyObservation(reverseOrderInsensitiveCollections: reverseOrderInsensitiveCollections);
         var nodes = new[]
@@ -435,13 +459,31 @@ public sealed class SealedLlmCodecFastTests
                     new[] { "weapon", "physical" },
                     "weapon-sword",
                     5,
-                    new[]
-                    {
-                        new HeadlessRefitSlotObservation(
-                            0,
-                            Affix("affix-current", deepNodeMagnitude),
-                            canRefit),
-                    }),
+                    allowsSeal
+                        ? new[]
+                        {
+                            new HeadlessRefitSlotObservation(
+                                0,
+                                Affix("affix-current", deepNodeMagnitude),
+                                canRefit,
+                                0.80d),
+                            new HeadlessRefitSlotObservation(
+                                1,
+                                Affix("affix-other", deepNodeMagnitude),
+                                false,
+                                0.20d),
+                        }
+                        : new[]
+                        {
+                            new HeadlessRefitSlotObservation(
+                                0,
+                                Affix("affix-current", deepNodeMagnitude),
+                                canRefit),
+                        },
+                    allowsSeal,
+                    allowsSeal
+                        ? new[] { new HeadlessSealCostObservation(1, 7) }
+                        : Array.Empty<HeadlessSealCostObservation>()),
             },
             new Dictionary<string, string>(StringComparer.Ordinal)
             {

@@ -16,7 +16,8 @@ internal sealed record H100CampaignObservationHooks(
     Action<H100BattleCompletedContext>? BattleCompleted = null,
     Action<H100RosterDecisionOfferedContext>? RosterDecisionOffered = null,
     Action<H100DecisionAppliedContext>? DecisionApplied = null,
-    Action<H100PrepOfferedContext>? PrepOffered = null);
+    Action<H100PrepOfferedContext>? PrepOffered = null,
+    Func<HeadlessRosterPolicyObservation, HeadlessRosterPolicyObservation>? RosterObservationTransform = null);
 
 internal sealed record H100DecisionAppliedContext(
     int DecisionIndex,

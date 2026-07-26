@@ -369,7 +369,7 @@ public sealed class SealedLlmCaptureCoreFastTests
         => $"{decision.HeroId}:{decision.BoardId}:{decision.NodeId}";
 
     private static string RefitSignature(HeadlessRefitDecision decision)
-        => $"{decision.ItemInstanceId}:{decision.AffixSlotIndex}";
+        => $"{decision.ItemInstanceId}:{decision.AffixSlotIndex}:{string.Join(",", decision.SealedAffixIds)}";
 
     private sealed record CaptureHarness(
         SealedDecisionTraceBuilder Builder,

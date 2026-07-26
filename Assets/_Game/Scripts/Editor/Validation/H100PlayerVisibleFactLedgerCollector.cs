@@ -177,7 +177,11 @@ internal sealed class H100PlayerVisibleFactLedgerCollector
             decisionIndex,
             policyId,
             "refit",
-            decision.IsNoOp ? "refit:none" : $"refit:{decision.ItemInstanceId}:{decision.AffixSlotIndex.ToString(CultureInfo.InvariantCulture)}",
+            decision.IsNoOp
+                ? "refit:none"
+                : decision.SealedAffixIds.Count == 0
+                    ? $"refit:{decision.ItemInstanceId}:{decision.AffixSlotIndex.ToString(CultureInfo.InvariantCulture)}"
+                    : $"seal:{decision.ItemInstanceId}:{decision.AffixSlotIndex.ToString(CultureInfo.InvariantCulture)}:{string.Join(",", decision.SealedAffixIds)}",
             decision.Rationale,
             decision.EstimatedValue,
             decision.EvidenceFactIds);

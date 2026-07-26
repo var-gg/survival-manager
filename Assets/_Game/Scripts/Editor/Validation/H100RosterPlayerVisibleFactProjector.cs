@@ -94,11 +94,26 @@ internal static class H100RosterPlayerVisibleFactProjector
         Add(result, HeadlessRosterPolicyEvidence.RefitSurfaceSignal, PlayerVisibleUiSource.RosterSheetItem,
             "equipment_refit", "shows", $"items={observation.RefitItems.Count}", "current inventory only", string.Empty, "equipment refit", "current items and affix slots");
         foreach (var item in observation.RefitItems.OrderBy(value => value.ItemId, StringComparer.Ordinal).ThenBy(value => value.ItemInstanceId, StringComparer.Ordinal))
+        {
+            var qualityText = string.Join(",", item.AffixSlots
+                .OrderBy(value => value.SlotIndex)
+                .Select(value =>
+                    $"{value.CurrentAffix.AffixId}={value.RollQuality.ToString("R", CultureInfo.InvariantCulture)}"));
+            var sealCostText = string.Join(",", item.SealCosts
+                .OrderBy(value => value.LockedAffixCount)
+                .Select(value => $"{value.LockedAffixCount}={value.EchoCost}"));
+            var sealText = $"item={item.ItemId};instance={item.ItemInstanceId};allows_seal={item.AllowsSeal};"
+                           + $"quality={qualityText};seal_cost_by_lock_count={sealCostText}";
+            Add(result, HeadlessRosterPolicyEvidence.RefitSealSignal(item.ItemInstanceId), PlayerVisibleUiSource.RosterSheetItem,
+                item.ItemInstanceId, "shows_seal_surface", sealText, "current affix rolls only; future roll hidden",
+                sealCostText, "equipment refit", sealText);
+
         foreach (var slot in item.AffixSlots.OrderBy(value => value.SlotIndex))
         {
             var text = $"item={item.ItemId};instance={item.ItemInstanceId};slot={slot.SlotIndex};affix={slot.CurrentAffix.AffixId};can_refit={slot.CanRefit};cost={item.EchoCost}";
             Add(result, HeadlessRosterPolicyEvidence.RefitSlotSignal(item.ItemInstanceId, slot.SlotIndex), PlayerVisibleUiSource.RosterSheetItem,
                 item.ItemInstanceId, "shows_refit_slot", text, "current affix only; future roll hidden", $"echo={item.EchoCost}", "equipment refit", text);
+        }
         }
 
         return result;

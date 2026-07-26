@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 
@@ -40,6 +41,33 @@ internal static class SealedLlmActionGrammar
         }
 
         return string.Concat(itemInstanceId, ":", SealedLlmCanonicalValue.Invariant(slotIndex));
+    }
+
+    public static string RefitSealKey(
+        string itemInstanceId,
+        int slotIndex,
+        IReadOnlyList<string> sealedAffixIds)
+    {
+        RequireToken(itemInstanceId, nameof(itemInstanceId), ':', ',', '=');
+        if (sealedAffixIds == null
+            || sealedAffixIds.Count == 0
+            || sealedAffixIds.Any(string.IsNullOrWhiteSpace)
+            || sealedAffixIds.Distinct(StringComparer.Ordinal).Count() != sealedAffixIds.Count)
+        {
+            throw new InvalidOperationException(
+                "A Seal action requires distinct non-empty affix ids.");
+        }
+
+        var canonical = sealedAffixIds.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+        foreach (var affixId in canonical)
+        {
+            RequireToken(affixId, nameof(sealedAffixIds), ':', ',', '=');
+        }
+
+        return string.Concat(
+            RefitKey(itemInstanceId, slotIndex),
+            ":seal=",
+            string.Join(",", canonical));
     }
 
     public static void RequireToken(string value, string path, params char[] reserved)

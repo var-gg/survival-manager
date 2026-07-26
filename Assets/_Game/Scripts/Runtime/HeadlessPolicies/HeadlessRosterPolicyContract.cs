@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SM.HeadlessPolicies;
 
@@ -191,7 +192,9 @@ public sealed class HeadlessRefitItemObservation
         IReadOnlyList<string> tags,
         string weaponFamilyTag,
         int echoCost,
-        IReadOnlyList<HeadlessRefitSlotObservation> affixSlots)
+        IReadOnlyList<HeadlessRefitSlotObservation> affixSlots,
+        bool allowsSeal = false,
+        IReadOnlyList<HeadlessSealCostObservation> sealCosts = null)
     {
         ItemId = itemId ?? string.Empty;
         ItemInstanceId = itemInstanceId ?? string.Empty;
@@ -200,6 +203,8 @@ public sealed class HeadlessRefitItemObservation
         WeaponFamilyTag = weaponFamilyTag ?? string.Empty;
         EchoCost = echoCost;
         AffixSlots = affixSlots ?? Array.Empty<HeadlessRefitSlotObservation>();
+        AllowsSeal = allowsSeal;
+        SealCosts = sealCosts ?? Array.Empty<HeadlessSealCostObservation>();
     }
 
     public string ItemId { get; }
@@ -209,20 +214,44 @@ public sealed class HeadlessRefitItemObservation
     public string WeaponFamilyTag { get; }
     public int EchoCost { get; }
     public IReadOnlyList<HeadlessRefitSlotObservation> AffixSlots { get; }
+    public bool AllowsSeal { get; }
+    public IReadOnlyList<HeadlessSealCostObservation> SealCosts { get; }
+}
+
+/// <summary>
+/// Town UI가 현재 item에 표시할 수 있는 lock 개수별 exact Seal 비용.
+/// 목록에 없는 lock 개수는 현재 floor/operation 계약에서 사용할 수 없다.
+/// </summary>
+public sealed class HeadlessSealCostObservation
+{
+    public HeadlessSealCostObservation(int lockedAffixCount, int echoCost)
+    {
+        LockedAffixCount = lockedAffixCount;
+        EchoCost = echoCost;
+    }
+
+    public int LockedAffixCount { get; }
+    public int EchoCost { get; }
 }
 
 public sealed class HeadlessRefitSlotObservation
 {
-    public HeadlessRefitSlotObservation(int slotIndex, HeadlessAffixMechanicsObservation currentAffix, bool canRefit)
+    public HeadlessRefitSlotObservation(
+        int slotIndex,
+        HeadlessAffixMechanicsObservation currentAffix,
+        bool canRefit,
+        double rollQuality = 0d)
     {
         SlotIndex = slotIndex;
         CurrentAffix = currentAffix;
         CanRefit = canRefit;
+        RollQuality = rollQuality;
     }
 
     public int SlotIndex { get; }
     public HeadlessAffixMechanicsObservation CurrentAffix { get; }
     public bool CanRefit { get; }
+    public double RollQuality { get; }
 }
 
 public sealed class HeadlessRecruitDecision
@@ -285,13 +314,17 @@ public sealed class HeadlessRefitDecision
         int affixSlotIndex,
         string rationale,
         double estimatedValue,
-        IReadOnlyList<string> evidenceFactIds)
+        IReadOnlyList<string> evidenceFactIds,
+        IReadOnlyList<string> sealedAffixIds = null)
     {
         ItemInstanceId = itemInstanceId ?? string.Empty;
         AffixSlotIndex = affixSlotIndex;
         Rationale = rationale ?? string.Empty;
         EstimatedValue = estimatedValue;
         EvidenceFactIds = evidenceFactIds ?? Array.Empty<string>();
+        SealedAffixIds = (sealedAffixIds ?? Array.Empty<string>())
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
     }
 
     public string ItemInstanceId { get; }
@@ -299,8 +332,15 @@ public sealed class HeadlessRefitDecision
     public string Rationale { get; }
     public double EstimatedValue { get; }
     public IReadOnlyList<string> EvidenceFactIds { get; }
+    public IReadOnlyList<string> SealedAffixIds { get; }
     public bool IsNoOp => string.IsNullOrWhiteSpace(ItemInstanceId) || AffixSlotIndex < 0;
 
     public HeadlessRefitDecision WithRationale(string rationale)
-        => new(ItemInstanceId, AffixSlotIndex, rationale, EstimatedValue, EvidenceFactIds);
+        => new(
+            ItemInstanceId,
+            AffixSlotIndex,
+            rationale,
+            EstimatedValue,
+            EvidenceFactIds,
+            SealedAffixIds);
 }

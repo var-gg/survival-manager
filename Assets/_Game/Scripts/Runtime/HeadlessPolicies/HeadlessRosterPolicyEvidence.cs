@@ -25,6 +25,9 @@ public static class HeadlessRosterPolicyEvidence
     public static string RefitSlotSignal(string itemInstanceId, int slotIndex)
         => $"roster.refit.item.{itemInstanceId}.slot.{slotIndex.ToString(CultureInfo.InvariantCulture)}";
 
+    public static string RefitSealSignal(string itemInstanceId)
+        => $"roster.refit.item.{itemInstanceId}.seal";
+
     internal static IReadOnlyList<string> ForRecruit(
         HeadlessRosterPolicyObservation observation,
         int offerIndex)
@@ -47,12 +50,30 @@ public static class HeadlessRosterPolicyEvidence
     internal static IReadOnlyList<string> ForRefit(
         HeadlessRosterPolicyObservation observation,
         string itemInstanceId,
-        int slotIndex)
-        => Resolve(
-            observation,
-            string.IsNullOrWhiteSpace(itemInstanceId) || slotIndex < 0
-                ? new[] { CampaignContextSignal, WalletSignal, RefitSurfaceSignal }
-                : new[] { CampaignContextSignal, WalletSignal, RefitSurfaceSignal, RefitSlotSignal(itemInstanceId, slotIndex) });
+        int slotIndex,
+        IReadOnlyList<string> sealedAffixIds = null)
+    {
+        if (string.IsNullOrWhiteSpace(itemInstanceId) || slotIndex < 0)
+        {
+            return Resolve(
+                observation,
+                new[] { CampaignContextSignal, WalletSignal, RefitSurfaceSignal });
+        }
+
+        var signals = new List<string>
+        {
+            CampaignContextSignal,
+            WalletSignal,
+            RefitSurfaceSignal,
+            RefitSlotSignal(itemInstanceId, slotIndex),
+        };
+        if (sealedAffixIds is { Count: > 0 })
+        {
+            signals.Add(RefitSealSignal(itemInstanceId));
+        }
+
+        return Resolve(observation, signals);
+    }
 
     private static IReadOnlyList<string> Resolve(
         HeadlessRosterPolicyObservation observation,

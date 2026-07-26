@@ -12,7 +12,8 @@ namespace SM.SealedLlmBridge;
 /// deployment = ordinal anchor-name order의 <c>anchorId=heroId</c> pairs joined by <c>;</c>;
 /// reward = canonical decimal option index; recruit = canonical decimal offer index or <c>skip</c>;
 /// passive = <c>heroId:boardId:nodeId</c> or <c>skip</c>;
-/// refit = <c>itemInstanceId:slotIndex</c> or <c>skip</c>.
+/// refit = <c>itemInstanceId:slotIndex</c>, Seal =
+/// <c>itemInstanceId:slotIndex:seal=affixId[,affixId]</c>, or <c>skip</c>.
 /// Whitespace, aliases, leading zeroes/signs, reordered deployment pairs, and reserved delimiters in IDs are rejected.
 /// </summary>
 public static class SealedLlmActionCodec
@@ -322,7 +323,12 @@ public static class SealedLlmActionCodec
         if (decision == null) throw new ArgumentNullException(nameof(decision));
         return decision.IsNoOp
             ? SealedLlmActionGrammar.Skip
-            : SealedLlmActionGrammar.RefitKey(decision.ItemInstanceId, decision.AffixSlotIndex);
+            : decision.SealedAffixIds.Count == 0
+                ? SealedLlmActionGrammar.RefitKey(decision.ItemInstanceId, decision.AffixSlotIndex)
+                : SealedLlmActionGrammar.RefitSealKey(
+                    decision.ItemInstanceId,
+                    decision.AffixSlotIndex,
+                    decision.SealedAffixIds);
     }
 
     public static HeadlessRefitDecision DecodeRefit(
@@ -332,6 +338,7 @@ public static class SealedLlmActionCodec
         var action = RequireAction(selectedAction);
         string itemInstanceId;
         var slotIndex = -1;
+        IReadOnlyList<string> sealedAffixIds = Array.Empty<string>();
         if (string.Equals(action, SealedLlmActionGrammar.Skip, StringComparison.Ordinal))
         {
             itemInstanceId = string.Empty;
@@ -339,17 +346,49 @@ public static class SealedLlmActionCodec
         else
         {
             var parts = action.Split(new[] { ':' }, StringSplitOptions.None);
-            if (parts.Length != 2)
+            if (parts.Length is not (2 or 3))
             {
                 throw DecodeError(
                     SealedLlmActionDecodeReason.MalformedGrammar,
                     selectedAction,
-                    "Refit action must be itemInstanceId:slotIndex or skip.");
+                    "Refit action must be itemInstanceId:slotIndex, "
+                    + "itemInstanceId:slotIndex:seal=affixId[,affixId], or skip.");
             }
 
             RequireGrammarToken(parts[0], selectedAction, ':');
             itemInstanceId = parts[0];
             slotIndex = ParseCanonicalNonNegativeInteger(parts[1], selectedAction);
+            if (parts.Length == 3)
+            {
+                const string sealPrefix = "seal=";
+                if (!parts[2].StartsWith(sealPrefix, StringComparison.Ordinal)
+                    || parts[2].Length == sealPrefix.Length)
+                {
+                    throw DecodeError(
+                        SealedLlmActionDecodeReason.MalformedGrammar,
+                        selectedAction,
+                        "Seal action must end with seal=affixId[,affixId].");
+                }
+
+                var affixIds = parts[2].Substring(sealPrefix.Length)
+                    .Split(new[] { ',' }, StringSplitOptions.None);
+                string previous = null;
+                foreach (var affixId in affixIds)
+                {
+                    RequireGrammarToken(affixId, selectedAction, ':', ',', '=');
+                    if (previous != null && StringComparer.Ordinal.Compare(previous, affixId) >= 0)
+                    {
+                        throw DecodeError(
+                            SealedLlmActionDecodeReason.NonCanonicalOrder,
+                            selectedAction,
+                            "Seal affix ids must be distinct and strictly ordinal-sorted.");
+                    }
+
+                    previous = affixId;
+                }
+
+                sealedAffixIds = affixIds;
+            }
         }
 
         if (!SealedLlmLegalActionSet.RefitKeys(observation).Contains(action, StringComparer.Ordinal))
@@ -365,7 +404,8 @@ public static class SealedLlmActionCodec
             slotIndex,
             SealedLlmDecisionEnvelope.Rationale,
             0d,
-            SealedLlmDecisionEnvelope.EvidenceFactIds);
+            SealedLlmDecisionEnvelope.EvidenceFactIds,
+            sealedAffixIds);
         ValidateDecoded(selectedAction, () => HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, decision));
         return decision;
     }

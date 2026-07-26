@@ -36,6 +36,11 @@ public static class HeadlessRosterPolicyGuard
         {
             throw new InvalidOperationException("Roster observation contains duplicate visible identities.");
         }
+
+        foreach (var item in observation.RefitItems)
+        {
+            ValidateRefitItemObservation(item);
+        }
     }
 
     public static void ValidateRecruitDecision(
@@ -144,6 +149,11 @@ public static class HeadlessRosterPolicyGuard
 
         if (decision.IsNoOp)
         {
+            if (decision.SealedAffixIds.Count != 0)
+            {
+                throw new InvalidOperationException("A no-op Refit decision cannot carry Seal locks.");
+            }
+
             return;
         }
 
@@ -157,9 +167,71 @@ public static class HeadlessRosterPolicyGuard
             throw new InvalidOperationException("Refit decision references a slot without a visible legal candidate.");
         }
 
-        if (observation.Wallet.Echo < item.EchoCost)
+        if (decision.SealedAffixIds.Count == 0)
         {
-            throw new InvalidOperationException("Refit decision is not affordable from the visible wallet.");
+            if (observation.Wallet.Echo < item.EchoCost)
+            {
+                throw new InvalidOperationException("Refit decision is not affordable from the visible wallet.");
+            }
+
+            return;
+        }
+
+        if (decision.SealedAffixIds.Any(string.IsNullOrWhiteSpace)
+            || decision.SealedAffixIds.Distinct(StringComparer.Ordinal).Count() != decision.SealedAffixIds.Count)
+        {
+            throw new InvalidOperationException("Seal lock selection contains a blank or duplicate affix id.");
+        }
+
+        var knownAffixIds = observation.RefitItems
+            .SelectMany(value => value.AffixSlots)
+            .Where(value => value.CurrentAffix != null)
+            .Select(value => value.CurrentAffix.AffixId)
+            .ToHashSet(StringComparer.Ordinal);
+        var unknown = decision.SealedAffixIds
+            .Where(value => !knownAffixIds.Contains(value))
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (unknown != null)
+        {
+            throw new InvalidOperationException($"Seal lock selection references unknown affix '{unknown}'.");
+        }
+
+        var itemAffixIds = item.AffixSlots
+            .Where(value => value.CurrentAffix != null)
+            .Select(value => value.CurrentAffix.AffixId)
+            .ToHashSet(StringComparer.Ordinal);
+        var notOnItem = decision.SealedAffixIds
+            .Where(value => !itemAffixIds.Contains(value))
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (notOnItem != null)
+        {
+            throw new InvalidOperationException(
+                $"Seal lock selection references affix '{notOnItem}' that is not on the selected item.");
+        }
+
+        if (decision.SealedAffixIds.Count >= itemAffixIds.Count)
+        {
+            throw new InvalidOperationException("Seal lock selection cannot lock all affixes on the selected item.");
+        }
+
+        if (!item.AllowsSeal)
+        {
+            throw new InvalidOperationException("Seal operation is excluded for the selected item.");
+        }
+
+        var sealCost = item.SealCosts.SingleOrDefault(
+            value => value.LockedAffixCount == decision.SealedAffixIds.Count);
+        if (sealCost == null)
+        {
+            throw new InvalidOperationException(
+                "Seal lock count has no visible legal quote for the selected item.");
+        }
+
+        if (observation.Wallet.Echo < sealCost.EchoCost)
+        {
+            throw new InvalidOperationException("Seal decision is not affordable from the visible wallet.");
         }
     }
 
@@ -200,6 +272,62 @@ public static class HeadlessRosterPolicyGuard
         {
             throw new HeadlessPolicyEvidenceException(
                 "Every roster policy decision must cite distinct player-visible fact ids.");
+        }
+    }
+
+    private static void ValidateRefitItemObservation(HeadlessRefitItemObservation item)
+    {
+        if (item == null
+            || string.IsNullOrWhiteSpace(item.ItemInstanceId)
+            || item.AffixSlots == null
+            || item.AffixSlots.Any(value => value == null))
+        {
+            throw new InvalidOperationException("Roster observation contains an invalid Refit item surface.");
+        }
+
+        if (item.AffixSlots.GroupBy(value => value.SlotIndex).Any(group => group.Count() != 1)
+            || item.AffixSlots.Any(value => value.SlotIndex < 0))
+        {
+            throw new InvalidOperationException("Roster observation contains duplicate or invalid affix slots.");
+        }
+
+        if (item.AffixSlots.Any(value =>
+                !double.IsFinite(value.RollQuality)
+                || value.RollQuality < 0d
+                || value.RollQuality > 1d)
+            || item.AffixSlots
+                .Where(value => value.CurrentAffix != null)
+                .GroupBy(value => value.CurrentAffix.AffixId, StringComparer.Ordinal)
+                .Any(group => group.Count() != 1))
+        {
+            throw new InvalidOperationException(
+                "Roster observation contains an invalid affix identity or roll quality.");
+        }
+
+        if (item.SealCosts == null
+            || item.SealCosts.Any(value =>
+                value == null
+                || value.LockedAffixCount <= 0
+                || value.LockedAffixCount >= item.AffixSlots.Count
+                || value.EchoCost < 0)
+            || item.SealCosts.GroupBy(value => value.LockedAffixCount).Any(group => group.Count() != 1))
+        {
+            throw new InvalidOperationException("Roster observation contains an invalid visible Seal cost.");
+        }
+
+        if (!item.AllowsSeal && item.SealCosts.Count != 0)
+        {
+            throw new InvalidOperationException(
+                "Roster observation exposes Seal costs for an item that excludes Seal.");
+        }
+
+        if (item.AllowsSeal
+            && item.AffixSlots.Any(value =>
+                value.CurrentAffix == null
+                || string.IsNullOrWhiteSpace(value.CurrentAffix.AffixId)))
+        {
+            throw new InvalidOperationException(
+                "A Seal-capable item must expose every current affix identity.");
         }
     }
 

@@ -231,7 +231,8 @@ public sealed class SealedLlmBridgePolicy : IHeadlessPolicy, IHeadlessRosterPoli
                 value.AffixSlotIndex,
                 value.Rationale,
                 value.EstimatedValue,
-                evidence),
+                evidence,
+                value.SealedAffixIds),
             _ => throw new InvalidOperationException(
                 $"Unsupported sealed LLM decision type '{typeof(TDecision).FullName}'."),
         };

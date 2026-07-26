@@ -2,7 +2,7 @@
 
 - 상태: proposed
 - 소유자: repository
-- 최종수정일: 2026-07-17
+- 최종수정일: 2026-07-26
 - 소스오브트루스: `docs/03_architecture/h100-headless-policy-contract.md`
 - 관련문서:
   - `docs/03_architecture/h100-headless-metrics-contract.md`
@@ -32,7 +32,8 @@
 - 현재 결정을 위해 runner가 파생한 non-zero seed
 - opt-in Town 결정의 현재 로스터와 영입 오퍼 네 장: archetype/race/class/role, flex active/passive skill id, gold 비용, tier, plan-fit
 - opt-in Town 결정의 현재 passive board/node, 레벨별 active-node 예산, 선행 node, 상호배제와 keystone cap
-- opt-in Town 결정의 현재 inventory item, 확정 affix slot, Refit 가능 여부와 echo 비용
+- opt-in Town 결정의 현재 inventory item, 확정 affix identity와 slot, affix별 현재 roll quality, Refit 가능 여부와 echo 비용
+- item의 `AllowedCraftOperations`에서 확인한 Seal 가능 여부와 lock 개수별 현재 exact Seal echo 비용
 
 허용 여부는 필드 출처가 아니라 플레이어가 현재 화면에서 같은 의미를 읽을 수 있는지로 판단한다. builder는 ID와 mechanics collection을 ordinal 정렬하고, 정책에는 authored definition이나 snapshot을 전달하지 않는다.
 
@@ -71,7 +72,7 @@
 | `qa-formation-coverage-v1` | seed, roster role/class, legal deployment surface, enemy preview | reward surface, deployed roster identity |
 | `concept-preview-grounded-v1` | 컨셉 intent/state, roster와 hero skill, legal deployment surface, 현재 enemy preview의 threat 신호와 연결된 hero skill 신호 | 기존 `ConceptCommitPolicy` reward evidence 계약 유지 |
 
-`concept-commit-v1`과 preview-grounded 모드의 Town 결정은 campaign context와 wallet을 공통으로 인용한다. 영입은 현재 offer surface와 선택 offer를, 노드는 현재 hero budget과 선택 node를, Refit은 현재 item/slot만 인용한다. 미래 offer나 새 affix 결과를 evidence로 만들 수 없다.
+`concept-commit-v1`과 preview-grounded 모드의 Town 결정은 campaign context와 wallet을 공통으로 인용한다. 영입은 현재 offer surface와 선택 offer를, 노드는 현재 hero budget과 선택 node를 인용한다. Refit은 현재 item/slot을 인용하고, Seal을 선택할 때만 같은 item의 Seal 가능 여부를 추가로 인용한다. 미래 offer나 Refit·Seal 결과를 evidence로 만들 수 없다.
 
 `random-legal-v1`의 무작위 선택도 외부 RNG state가 아니라 player-visible observation에 고정된 decision seed fact를 인용한다. 모든 reward option이 없는 결정도 빈 reward surface fact를 근거로 `option=-1`을 반환한다. 정책이 읽지 않은 wallet, item mechanics, synergy catalog 전체를 편의상 모두 인용하지 않는다.
 
@@ -79,7 +80,13 @@
 
 `ConceptCommitPolicy`는 기존 여섯 production 정책 cohort와 `qa-formation-coverage-v1` factory 표면을 바꾸지 않는 별도 BT1 정책이다. `IHeadlessPolicy`의 배치·보상 시그니처를 그대로 구현하고 `IHeadlessRosterPolicy`를 추가 구현한다. 한 campaign 동안 `IntentState`를 policy instance 내부에 보관하고 모든 결정에 `keep`, `advance`, `substitute`, `counter-adapt`, `pivot`, `abandon` 중 하나의 이유를 남긴다. 상태는 static global이 아니며 campaign마다 새 policy instance를 만든다.
 
-Town runner는 보상 정산 뒤 `ReturnToTownAfterReward()`가 완료된 사이트 사이에만 실행한다. 순서는 영입→노드→Refit이며 각 행동 뒤 현재 session에서 observation과 decision seed를 다시 만든다. 영입은 필요한 count tag와 직접 identity/substitution을 lexicographic으로 우선하고, 노드는 관련 target의 합법 선행 chain부터 채우며, Refit은 새 결과를 예측하지 않고 missing-affix intent가 있을 때 현재 합법 slot만 선택한다. 실행은 기존 `Recruit`, `SelectPassiveBoard`/`TogglePassiveNode`, `RefitItem` API를 호출하며 비용·cap·노드 합법성과 roll은 session이 최종 판정한다.
+Town runner는 보상 정산 뒤 `ReturnToTownAfterReward()`가 완료된 사이트 사이에만 실행한다. 순서는 영입→노드→Refit이며 각 행동 뒤 현재 session에서 observation과 decision seed를 다시 만든다. 영입은 필요한 count tag와 직접 identity/substitution을 lexicographic으로 우선하고, 노드는 관련 target의 합법 선행 chain부터 채운다. Refit은 새 결과를 예측하지 않고 missing-affix intent가 있을 때 현재 합법 action anchor를 선택한다.
+
+`HeadlessRefitDecision.AffixSlotIndex`는 plain Refit이 개선할 affix를 뜻하지 않는다. production `RefitService.RefitNextEffective`는 기존 affix identity를 유지한 채 모든 magnitude를 다시 굴리며, observation builder가 `CanRefit=true`로 노출하는 slot 0은 기존 action menu의 합법성 anchor다. 따라서 Seal 정책은 `AffixSlotIndex`를 그대로 유지하고 현재 affix별 roll quality 가운데 가장 낮은 affix를 reroll target으로 삼는다. 다른 affix 중 quality 0.70 이상을 높은 quality 순으로 lock 후보에 넣고, 보존가치 합에서 plain Refit 대비 Seal 추가비용의 현재 wallet 비율을 뺀 값이 0.01보다 클 때만 lock한다. 동률은 비용이 낮은 선택, 그 다음 ordinal lock signature 순으로 깬다.
+
+`HeadlessRefitDecision.SealedAffixIds`는 additive optional lock set이다. 빈 목록은 기존 `RefitItem(item, unchecked((ulong)(uint)decisionSeed))` 호출을 그대로 사용해 seed와 결과를 보존한다. 비어 있지 않으면 기존 `SealItem(item, locks)` session flow로 들어간다. guard는 blank·중복·미지 affix, 선택 item에 없는 affix, 전부 lock해 reroll 대상이 없는 선택, Seal operation이 허용되지 않은 item, exact quote가 없거나 감당할 수 없는 선택을 원인별 메시지로 거부한다. plain trace action `refit:{item}:{slot}`은 보존하고 Seal만 `seal:{item}:{slot}:{ordinal-lock-list}`로 구분한다.
+
+실행은 기존 `Recruit`, `SelectPassiveBoard`/`TogglePassiveNode`, `RefitItem`/`SealItem` API를 호출하며 비용·cap·노드 합법성과 roll은 session이 최종 판정한다.
 
 정책 assembly에는 evaluator 계약 대신 `HeadlessConceptIntent`만 존재한다. 이 DTO는 identity predicate, progress milestone, payoff witness ID, substitution, flex slot, counter affordance, availability tier, pivot condition 같은 정렬된 문자열만 운반한다. `SM.Editor.Validation.H100ConceptIntentProjector`가 E03 `ConceptContract` 하나를 이 DTO로 투영하며 `SM.HeadlessPolicies`는 `SM.HeadlessCensus`를 참조하지 않는다.
 
@@ -180,6 +187,14 @@ pwsh -File tools/h100-intent-trace.ps1 -SeedCount 8 -Lanes both -CoverageAnchorI
 ```
 
 각 lane의 `intent_trace_summary.json`에서 `missing_trace_count=0`, `hidden_fact_use_count=0`, `campaigns_with_commit=8`을 요구한다. 같은 seed와 intent의 policy decision 및 JSONL은 byte-identical이어야 한다. opt-in coverage campaign은 deployment, reward, recruit, level_node, refit trace를 기록하며 영입·노드·Refit의 실제 gold·node budget·echo 소비를 `ScarceResourceInvested`로 남긴다. 기존 여섯 production 정책은 `IHeadlessRosterPolicy`를 구현하지 않으므로 Town trace와 행동이 생기지 않는다.
+
+Seal policy의 no-Seal golden과 paired full-campaign A/B는 다음 명령으로 함께 검증한다.
+
+```powershell
+pwsh -File tools/h100-seal-policy-measurement.ps1
+```
+
+runner는 canonical coverage intent의 Seal-disabled trace를 pre-change JSONL과 byte 비교한 뒤, 같은 campaign seed와 measurement intent를 Seal 허용/차단 두 arm으로 실행한다. `seal-policy-measurement.json`은 Town Refit window 수, plain Refit·Seal·skip 횟수, Seal한 item, action 직전·직후 `RefitRollQuality`, 즉시 소비된 crafting echo, campaign terminal outcome을 함께 기록한다. Seal이 한 번도 선택되지 않거나 품질·campaign 결과가 움직이지 않는 null 결과도 그대로 보존하며 balance를 조정하지 않는다.
 
 BT1-E05는 coverage lane을 E03 owner anchor별로 다시 실행한다. 정책의 coverage intent는 첫 stable variant 하나로 고정하되, campaign 종료 후 oracle은 같은 확정 offer/window stream에 anchor의 모든 E03 variant를 대조해 OR 개방성을 계산한다. `H100CampaignCorpusRunner`의 optional observer가 결정 전 배치·보상과 opt-in Town 세 표면, 전투 후 payoff를 복제하고, campaign 종료 뒤 Editor adapter가 순수 `IntentTrackEvaluator`에 DTO를 전달한다. 정책은 자기 `HeadlessConceptIntent`, 현재 player-visible observation, 누적 `IntentState`만 보며 oracle search result, 다른 선택지의 미래 결과, 이후 offer stream은 읽지 않는다. E07 실측 진입점은 `pwsh -File tools/h100-intent-track.ps1 -Levers deployment,reward,recruit,level_node,refit`이다.
 

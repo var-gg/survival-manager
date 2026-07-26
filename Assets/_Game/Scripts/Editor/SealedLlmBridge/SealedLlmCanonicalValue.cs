@@ -47,6 +47,16 @@ internal static class SealedLlmCanonicalValue
         LengthPrefixedStableHash.AppendPart(destination, value.ToString("R", CultureInfo.InvariantCulture));
     }
 
+    public static void AppendRoundTrip(Stream destination, double value, string path)
+    {
+        if (double.IsNaN(value) || double.IsInfinity(value))
+        {
+            throw new ArgumentException($"{path} must be finite.", path);
+        }
+
+        LengthPrefixedStableHash.AppendPart(destination, value.ToString("R", CultureInfo.InvariantCulture));
+    }
+
     public static void AppendEnum<TEnum>(Stream destination, TEnum value, string path)
         where TEnum : struct, Enum
     {

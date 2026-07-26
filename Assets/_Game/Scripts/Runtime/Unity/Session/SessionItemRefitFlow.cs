@@ -152,6 +152,21 @@ internal sealed class SessionItemRefitFlow
             : RefitQuote.Unavailable(error);
     }
 
+    internal RefitQuote GetSealQuote(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds)
+    {
+        return TryBuildRefitContext(
+            itemInstanceId,
+            out _,
+            out var itemState,
+            out var chapterEconomy,
+            out var service,
+            out var error)
+            ? service.QuoteSealNextEffective(itemState, chapterEconomy, sealedAffixIds)
+            : RefitQuote.Unavailable(error);
+    }
+
     internal RefitExecutionResult PreviewRefitItem(
         string itemInstanceId,
         ulong stableCommandSeed)

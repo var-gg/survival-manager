@@ -220,16 +220,27 @@ internal static class H100SessionDriver
         HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, decision);
         if (!decision.IsNoOp)
         {
-            var result = session.RefitItem(
-                decision.ItemInstanceId,
-                unchecked((ulong)(uint)observation.DecisionSeed));
+            var result = decision.SealedAffixIds.Count == 0
+                ? session.RefitItem(
+                    decision.ItemInstanceId,
+                    unchecked((ulong)(uint)observation.DecisionSeed))
+                : session.SealItem(
+                    decision.ItemInstanceId,
+                    decision.SealedAffixIds);
             if (!result.IsSuccess)
             {
-                throw new InvalidOperationException($"Validated H100 refit could not be applied: {result.Error}");
+                var operation = decision.SealedAffixIds.Count == 0 ? "refit" : "Seal";
+                throw new InvalidOperationException(
+                    $"Validated H100 {operation} could not be applied: {result.Error}");
             }
         }
 
-        decisionLog?.Invoke(FormatRosterDecisionLog("refit", observation, decision.Rationale, decision.EstimatedValue));
+        var decisionKind = decision.SealedAffixIds.Count == 0 ? "refit" : "seal";
+        decisionLog?.Invoke(FormatRosterDecisionLog(
+            decisionKind,
+            observation,
+            decision.Rationale,
+            decision.EstimatedValue));
         return decision;
     }
 

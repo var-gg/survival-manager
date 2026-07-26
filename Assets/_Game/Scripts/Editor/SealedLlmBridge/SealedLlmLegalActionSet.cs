@@ -62,7 +62,7 @@ public static class SealedLlmLegalActionSet
         => Descriptor("SealedLlmPassiveLegalActionSetV1", PassiveKeys(observation));
 
     public static byte[] RefitDescriptor(HeadlessRosterPolicyObservation observation)
-        => Descriptor("SealedLlmRefitLegalActionSetV1", RefitKeys(observation));
+        => Descriptor("SealedLlmRefitLegalActionSetV2", RefitKeys(observation));
 
     public static string DeploymentLegalActionSetHash(HeadlessPolicyObservation observation)
         => LegalActionSetHash(DeploymentDescriptor(observation));
@@ -166,21 +166,47 @@ public static class SealedLlmLegalActionSet
         foreach (var item in observation.RefitItems)
         {
             EnsureDistinctSlotIndices(item);
-            if (item.EchoCost > observation.Wallet.Echo)
-            {
-                continue;
-            }
-
             foreach (var slot in item.AffixSlots.Where(slot => slot.CanRefit))
             {
-                var decision = new HeadlessRefitDecision(
-                    item.ItemInstanceId,
-                    slot.SlotIndex,
-                    SealedLlmDecisionEnvelope.Rationale,
-                    0d,
-                    SealedLlmDecisionEnvelope.EvidenceFactIds);
-                HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, decision);
-                result.Add(SealedLlmActionGrammar.RefitKey(item.ItemInstanceId, slot.SlotIndex));
+                if (item.EchoCost <= observation.Wallet.Echo)
+                {
+                    var decision = new HeadlessRefitDecision(
+                        item.ItemInstanceId,
+                        slot.SlotIndex,
+                        SealedLlmDecisionEnvelope.Rationale,
+                        0d,
+                        SealedLlmDecisionEnvelope.EvidenceFactIds);
+                    HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, decision);
+                    result.Add(SealedLlmActionGrammar.RefitKey(item.ItemInstanceId, slot.SlotIndex));
+                }
+
+                if (!item.AllowsSeal)
+                {
+                    continue;
+                }
+
+                foreach (var sealCost in item.SealCosts
+                             .Where(value => value.EchoCost <= observation.Wallet.Echo)
+                             .OrderBy(value => value.LockedAffixCount))
+                {
+                    foreach (var sealedAffixIds in EnumerateSealSelections(
+                                 item,
+                                 sealCost.LockedAffixCount))
+                    {
+                        var decision = new HeadlessRefitDecision(
+                            item.ItemInstanceId,
+                            slot.SlotIndex,
+                            SealedLlmDecisionEnvelope.Rationale,
+                            0d,
+                            SealedLlmDecisionEnvelope.EvidenceFactIds,
+                            sealedAffixIds);
+                        HeadlessRosterPolicyGuard.ValidateRefitDecision(observation, decision);
+                        result.Add(SealedLlmActionGrammar.RefitSealKey(
+                            item.ItemInstanceId,
+                            slot.SlotIndex,
+                            decision.SealedAffixIds));
+                    }
+                }
             }
         }
 
@@ -227,6 +253,47 @@ public static class SealedLlmLegalActionSet
             .SelectMany(id => nodesById[id].MutualExclusionTagIds)
             .ToHashSet(StringComparer.Ordinal);
         return !node.MutualExclusionTagIds.Any(selectedExclusions.Contains);
+    }
+
+    private static IEnumerable<IReadOnlyList<string>> EnumerateSealSelections(
+        HeadlessRefitItemObservation item,
+        int lockedAffixCount)
+    {
+        var affixIds = item.AffixSlots
+            .Select(value => value.CurrentAffix.AffixId)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
+        var buffer = new string[lockedAffixCount];
+        return EnumerateCombinations(affixIds, lockedAffixCount, start: 0, buffer, depth: 0);
+    }
+
+    private static IEnumerable<IReadOnlyList<string>> EnumerateCombinations(
+        IReadOnlyList<string> values,
+        int count,
+        int start,
+        string[] buffer,
+        int depth)
+    {
+        if (depth == count)
+        {
+            yield return buffer.ToArray();
+            yield break;
+        }
+
+        var remaining = count - depth;
+        for (var index = start; index <= values.Count - remaining; index++)
+        {
+            buffer[depth] = values[index];
+            foreach (var value in EnumerateCombinations(
+                         values,
+                         count,
+                         index + 1,
+                         buffer,
+                         depth + 1))
+            {
+                yield return value;
+            }
+        }
     }
 
     private static void EnsureDistinctNodeIds(HeadlessPassiveBoardObservation board)

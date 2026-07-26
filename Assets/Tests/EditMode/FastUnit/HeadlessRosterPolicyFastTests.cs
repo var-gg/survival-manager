@@ -25,6 +25,9 @@ public sealed class HeadlessRosterPolicyFastTests
         Assert.That(source, Does.Contain("offer.Metadata?.GoldCost"));
         Assert.That(source, Does.Contain("offer.Metadata?.Tier"));
         Assert.That(source, Does.Contain("offer.Metadata?.PlanFit"));
+        Assert.That(source, Does.Contain("RefitRollQuality.Measure("));
+        Assert.That(source, Does.Contain("session.GetSealQuote("));
+        Assert.That(source, Does.Contain("CraftOperationKindValue.Seal"));
         Assert.That(source, Does.Not.Contain("RerollRecruitOffers"));
         Assert.That(source, Does.Not.Contain("PendingScoutDirective"));
     }
@@ -42,6 +45,102 @@ public sealed class HeadlessRosterPolicyFastTests
         Assert.Throws<InvalidOperationException>(() => HeadlessRosterPolicyGuard.ValidateRecruitDecision(unaffordable, recruit));
         Assert.Throws<InvalidOperationException>(() => HeadlessRosterPolicyGuard.ValidateRecruitDecision(capped, recruit));
         Assert.Throws<InvalidOperationException>(() => HeadlessRosterPolicyGuard.ValidatePassiveDecision(observation, passive));
+    }
+
+    [Test]
+    public void RefitDecision_UsesSlotIndexAsActionAnchorAndSealsGoodRollsAroundWeakTarget()
+    {
+        var baseline = IntentPolicyObservationFixture.CreateRecruitBaseline();
+        var observation = CreateSealObservation(baseline.Roster);
+        var first = new ConceptCommitPolicy(RosterIntent());
+        var repeated = new ConceptCommitPolicy(RosterIntent());
+        first.DecideDeployment(baseline);
+        repeated.DecideDeployment(baseline);
+
+        var decision = first.DecideRefit(observation);
+        var repeatedDecision = repeated.DecideRefit(observation);
+
+        Assert.That(decision.AffixSlotIndex, Is.EqualTo(0), "slot 0 remains the legacy action anchor");
+        Assert.That(decision.SealedAffixIds, Is.EqualTo(new[] { "affix-best", "affix-mid" }));
+        Assert.That(decision.SealedAffixIds, Does.Not.Contain("affix-weak"));
+        Assert.That(decision.Rationale, Does.Contain("reroll_target=affix-weak"));
+        Assert.That(decision.EstimatedValue, Is.GreaterThan(0d));
+        Assert.That(repeatedDecision.SealedAffixIds, Is.EqualTo(decision.SealedAffixIds));
+        Assert.That(
+            first.LastIntentDecision.Action,
+            Is.EqualTo("seal:item-instance:0:affix-best,affix-mid"));
+    }
+
+    [Test]
+    public void RefitDecision_DeclinesSealWhenExactPremiumOutweighsPreservation()
+    {
+        var baseline = IntentPolicyObservationFixture.CreateRecruitBaseline();
+        var observation = CreateSealObservation(
+            baseline.Roster,
+            firstGoodQuality: 0.71d,
+            secondGoodQuality: 0.69d,
+            oneLockCost: 30,
+            twoLockCost: 30);
+        var policy = new ConceptCommitPolicy(RosterIntent());
+        policy.DecideDeployment(baseline);
+
+        var decision = policy.DecideRefit(observation);
+
+        Assert.That(decision.SealedAffixIds, Is.Empty);
+        Assert.That(decision.EstimatedValue, Is.Zero);
+        Assert.That(policy.LastIntentDecision.Action, Is.EqualTo("refit:item-instance:0"));
+        Assert.That(decision.Rationale, Does.Contain("target_unknown_until_roll"));
+    }
+
+    [Test]
+    public void RefitGuard_NamesUnknownForeignAllLockedAndOperationExcludedSealFailures()
+    {
+        var baseline = IntentPolicyObservationFixture.CreateRecruitBaseline();
+        var observation = CreateSealObservation(baseline.Roster, includeForeignItem: true);
+        var evidence = new[] { "fact" };
+
+        var unknown = Assert.Throws<InvalidOperationException>(() =>
+            HeadlessRosterPolicyGuard.ValidateRefitDecision(
+                observation,
+                new HeadlessRefitDecision(
+                    "item-instance", 0, "test", 0d, evidence, new[] { "affix-unknown" })));
+        var foreign = Assert.Throws<InvalidOperationException>(() =>
+            HeadlessRosterPolicyGuard.ValidateRefitDecision(
+                observation,
+                new HeadlessRefitDecision(
+                    "item-instance", 0, "test", 0d, evidence, new[] { "affix-foreign" })));
+        var allLocked = Assert.Throws<InvalidOperationException>(() =>
+            HeadlessRosterPolicyGuard.ValidateRefitDecision(
+                observation,
+                new HeadlessRefitDecision(
+                    "item-instance",
+                    0,
+                    "test",
+                    0d,
+                    evidence,
+                    new[] { "affix-best", "affix-mid", "affix-weak" })));
+        var excludedObservation = CreateSealObservation(baseline.Roster, allowsSeal: false);
+        var excluded = Assert.Throws<InvalidOperationException>(() =>
+            HeadlessRosterPolicyGuard.ValidateRefitDecision(
+                excludedObservation,
+                new HeadlessRefitDecision(
+                    "item-instance", 0, "test", 0d, evidence, new[] { "affix-best" })));
+
+        Assert.That(unknown!.Message, Does.Contain("unknown affix"));
+        Assert.That(foreign!.Message, Does.Contain("not on the selected item"));
+        Assert.That(allLocked!.Message, Does.Contain("lock all affixes"));
+        Assert.That(excluded!.Message, Does.Contain("operation is excluded"));
+    }
+
+    [Test]
+    public void EmptySealDecisionPath_PreservesLegacyRefitCallAndDecisionSeed()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            "Assets", "_Game", "Scripts", "Editor", "Validation", "H100SessionDriver.cs"));
+
+        Assert.That(source, Does.Contain("decision.SealedAffixIds.Count == 0"));
+        Assert.That(source, Does.Contain("session.RefitItem("));
+        Assert.That(source, Does.Contain("unchecked((ulong)(uint)observation.DecisionSeed)"));
     }
 
     [Test]
@@ -247,6 +346,93 @@ public sealed class HeadlessRosterPolicyFastTests
         HeadlessRosterPolicyGuard.ValidateObservation(observation);
         return observation;
     }
+
+    private static HeadlessRosterPolicyObservation CreateSealObservation(
+        IReadOnlyList<HeadlessHeroObservation> roster,
+        bool allowsSeal = true,
+        double firstGoodQuality = 0.80d,
+        double secondGoodQuality = 0.90d,
+        int oneLockCost = 16,
+        int twoLockCost = 19,
+        bool includeForeignItem = false)
+    {
+        var baseline = CreateRosterObservation(roster);
+        var sealCosts = allowsSeal
+            ? new[]
+            {
+                new HeadlessSealCostObservation(1, oneLockCost),
+                new HeadlessSealCostObservation(2, twoLockCost),
+            }
+            : Array.Empty<HeadlessSealCostObservation>();
+        var items = new List<HeadlessRefitItemObservation>
+        {
+            new(
+                "item-blade",
+                "item-instance",
+                "hero-1",
+                new[] { "weapon" },
+                "weapon-sword",
+                15,
+                new[]
+                {
+                    new HeadlessRefitSlotObservation(0, Affix("affix-mid"), true, firstGoodQuality),
+                    new HeadlessRefitSlotObservation(1, Affix("affix-weak"), false, 0.10d),
+                    new HeadlessRefitSlotObservation(2, Affix("affix-best"), false, secondGoodQuality),
+                },
+                allowsSeal,
+                sealCosts),
+        };
+        if (includeForeignItem)
+        {
+            items.Add(new HeadlessRefitItemObservation(
+                "item-foreign",
+                "item-foreign-instance",
+                string.Empty,
+                Array.Empty<string>(),
+                string.Empty,
+                15,
+                new[]
+                {
+                    new HeadlessRefitSlotObservation(0, Affix("affix-foreign"), true, 0.50d),
+                }));
+        }
+
+        var evidence = baseline.EvidenceFactIdsBySignal
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        evidence[HeadlessRosterPolicyEvidence.RefitSealSignal("item-instance")] = "fact-refit-seal";
+        evidence[HeadlessRosterPolicyEvidence.RefitSlotSignal("item-instance", 1)] = "fact-refit-slot-1";
+        evidence[HeadlessRosterPolicyEvidence.RefitSlotSignal("item-instance", 2)] = "fact-refit-slot-2";
+        if (includeForeignItem)
+        {
+            evidence[HeadlessRosterPolicyEvidence.RefitSlotSignal("item-foreign-instance", 0)] =
+                "fact-refit-foreign-slot";
+            evidence[HeadlessRosterPolicyEvidence.RefitSealSignal("item-foreign-instance")] =
+                "fact-refit-foreign-seal";
+        }
+
+        var observation = new HeadlessRosterPolicyObservation(
+            baseline.DecisionSeed,
+            baseline.ChapterId,
+            baseline.SiteId,
+            baseline.RosterCapacity,
+            baseline.Roster,
+            baseline.Wallet,
+            baseline.RecruitOffers,
+            baseline.PassiveHeroes,
+            items,
+            evidence);
+        HeadlessRosterPolicyGuard.ValidateObservation(observation);
+        return observation;
+    }
+
+    private static HeadlessAffixMechanicsObservation Affix(string affixId)
+        => new(
+            affixId,
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            Array.Empty<HeadlessStatModifierObservation>(),
+            Array.Empty<HeadlessRuleModifierObservation>());
 
     private static HeadlessPassiveNodeObservation Node(
         string nodeId,

@@ -14,7 +14,7 @@ namespace SM.SealedLlmBridge;
 internal static class SealedLlmObservationCanonicalWriter
 {
     private const string PolicySchema = "SealedLlmPolicyObservationV2";
-    private const string RosterPolicySchema = "SealedLlmRosterPolicyObservationV1";
+    private const string RosterPolicySchema = "SealedLlmRosterPolicyObservationV2";
 
     public static byte[] Write(HeadlessPolicyObservation value)
         => Create(payload =>
@@ -444,13 +444,19 @@ internal static class SealedLlmObservationCanonicalWriter
     private static byte[] RefitItemBytes(HeadlessRefitItemObservation value)
         => Create(payload =>
         {
-            Append(payload, "HeadlessRefitItemObservationV1", nameof(HeadlessRefitItemObservation));
+            Append(payload, "HeadlessRefitItemObservationV2", nameof(HeadlessRefitItemObservation));
             Append(payload, value.ItemId, nameof(value.ItemId));
             Append(payload, value.ItemInstanceId, nameof(value.ItemInstanceId));
             Append(payload, value.EquippedHeroId, nameof(value.EquippedHeroId));
             SealedLlmCanonicalValue.AppendSortedStrings(payload, value.Tags, nameof(value.Tags));
             Append(payload, value.WeaponFamilyTag, nameof(value.WeaponFamilyTag));
             SealedLlmCanonicalValue.AppendInteger(payload, value.EchoCost);
+            SealedLlmCanonicalValue.AppendBoolean(payload, value.AllowsSeal);
+            SealedLlmCanonicalValue.AppendSortedObjects(
+                payload,
+                value.SealCosts,
+                nameof(value.SealCosts),
+                SealCostBytes);
             SealedLlmCanonicalValue.AppendSortedObjects(
                 payload,
                 value.AffixSlots,
@@ -458,10 +464,18 @@ internal static class SealedLlmObservationCanonicalWriter
                 RefitSlotBytes);
         });
 
+    private static byte[] SealCostBytes(HeadlessSealCostObservation value)
+        => Create(payload =>
+        {
+            Append(payload, "HeadlessSealCostObservationV1", nameof(HeadlessSealCostObservation));
+            SealedLlmCanonicalValue.AppendInteger(payload, value.LockedAffixCount);
+            SealedLlmCanonicalValue.AppendInteger(payload, value.EchoCost);
+        });
+
     private static byte[] RefitSlotBytes(HeadlessRefitSlotObservation value)
         => Create(payload =>
         {
-            Append(payload, "HeadlessRefitSlotObservationV1", nameof(HeadlessRefitSlotObservation));
+            Append(payload, "HeadlessRefitSlotObservationV2", nameof(HeadlessRefitSlotObservation));
             SealedLlmCanonicalValue.AppendInteger(payload, value.SlotIndex);
             SealedLlmCanonicalValue.AppendOptional(
                 payload,
@@ -469,6 +483,10 @@ internal static class SealedLlmObservationCanonicalWriter
                 nameof(value.CurrentAffix),
                 AffixBytes);
             SealedLlmCanonicalValue.AppendBoolean(payload, value.CanRefit);
+            SealedLlmCanonicalValue.AppendRoundTrip(
+                payload,
+                value.RollQuality,
+                nameof(value.RollQuality));
         });
 
     private static void AppendAnchors(

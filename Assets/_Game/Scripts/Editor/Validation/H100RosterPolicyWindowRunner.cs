@@ -120,6 +120,9 @@ internal static class H100RosterPolicyWindowRunner
             siteIndex,
             decisionIndex,
             H100RosterPolicyObservationBuilder.Build(session, lookup, decisionSeed));
+        observation = observationHooks?.RosterObservationTransform?.Invoke(observation)
+                      ?? observation;
+        HeadlessRosterPolicyGuard.ValidateObservation(observation);
         observationHooks?.RosterDecisionOffered?.Invoke(new H100RosterDecisionOfferedContext(
             campaignId,
             campaignIndex,

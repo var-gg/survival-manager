@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SM.Core.Content;
 using SM.Core.Stats;
 using SM.HeadlessPolicies;
 using SM.Meta.Model;
@@ -92,11 +93,40 @@ internal static class H100RosterPolicyObservationBuilder
                     item.AffixIds,
                     snapshot);
                 var quote = session.GetRefitQuote(item.ItemInstanceId);
+                var currentAffixIds = (item.AffixIds ?? new List<string>())
+                    .Where(value => !string.IsNullOrWhiteSpace(value))
+                    .ToArray();
+                var currentAffixIdSet = currentAffixIds.ToHashSet(StringComparer.Ordinal);
+                var magnitudes = (item.AffixMagnitudeRolls ?? new List<InventoryAffixMagnitudeRecord>())
+                    .Where(value => value != null && currentAffixIdSet.Contains(value.AffixId))
+                    .ToDictionary(value => value.AffixId, value => value.Magnitude, StringComparer.Ordinal);
                 var slots = mechanics.Affixes.Select((affix, slotIndex) => new HeadlessRefitSlotObservation(
                     slotIndex,
                     affix,
-                    quote.CanPurchase && slotIndex == 0))
+                    quote.CanPurchase && slotIndex == 0,
+                    RefitRollQuality.Measure(
+                        snapshot,
+                        new[] { affix.AffixId },
+                        magnitudes)))
                     .ToArray();
+                var allowsSeal = snapshot.ItemCatalog != null
+                                 && snapshot.ItemCatalog.TryGetValue(item.ItemBaseId, out var itemTemplate)
+                                 && itemTemplate.AllowedCraftOperations is { Count: > 0 }
+                                 && itemTemplate.AllowedCraftOperations.Contains(CraftOperationKindValue.Seal);
+                var sealCosts = allowsSeal && currentAffixIds.Length > 1
+                    ? Enumerable.Range(1, currentAffixIds.Length - 1)
+                        .Select(lockedAffixCount =>
+                        {
+                            var sealQuote = session.GetSealQuote(
+                                item.ItemInstanceId,
+                                currentAffixIds.Take(lockedAffixCount).ToArray());
+                            return sealQuote.CanPurchase
+                                ? new HeadlessSealCostObservation(lockedAffixCount, sealQuote.EchoCost)
+                                : null;
+                        })
+                        .Where(value => value != null)
+                        .ToArray()
+                    : Array.Empty<HeadlessSealCostObservation>();
                 return new HeadlessRefitItemObservation(
                     mechanics.ItemId,
                     mechanics.ItemInstanceId,
@@ -104,7 +134,9 @@ internal static class H100RosterPolicyObservationBuilder
                     mechanics.Tags,
                     mechanics.WeaponFamilyTag,
                     quote.EchoCost,
-                    slots);
+                    slots,
+                    allowsSeal,
+                    sealCosts);
             })
             .ToArray();
         var observation = new HeadlessRosterPolicyObservation(

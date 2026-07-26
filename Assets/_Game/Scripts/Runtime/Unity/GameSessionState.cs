@@ -602,6 +602,11 @@ public sealed partial class GameSessionState
     internal RefitQuote GetRefitQuote(string itemInstanceId) =>
         _itemRefitFlow.GetRefitQuote(itemInstanceId);
 
+    internal RefitQuote GetSealQuote(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds) =>
+        _itemRefitFlow.GetSealQuote(itemInstanceId, sealedAffixIds);
+
     internal RefitExecutionResult PreviewRefitItem(string itemInstanceId, ulong stableCommandSeed) =>
         _itemRefitFlow.PreviewRefitItem(itemInstanceId, stableCommandSeed);
 
