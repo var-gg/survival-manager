@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_mourning_aegis
   NameKey: content.affix.affix_mourning_aegis.name
   DescriptionKey: content.affix.affix_mourning_aegis.desc
+  IconId: affix_mourning_aegis
   Category: 3
   Tier: 1
   AffixFamily: 3

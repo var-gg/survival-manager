@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_resolute
   NameKey: content.affix.affix_resolute.name
   DescriptionKey: content.affix.affix_resolute.desc
+  IconId: affix_resist_phys
   Category: 3
   Tier: 2
   AffixFamily: 2

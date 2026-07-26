@@ -60,7 +60,12 @@ public sealed class RecruitPackController : MonoBehaviour
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
         var iconResolver = new ContentIconResolver(root.CombatContentLookup);
         var view = new RecruitView(document.rootVisualElement);
-        _presenter = new RecruitPresenter(root, view, contentText, iconResolver.ResolveAny, iconResolver.ResolveCharacterPortrait);
+        _presenter = new RecruitPresenter(
+            root,
+            view,
+            contentText,
+            classSprite: null,
+            portraitLoader: iconResolver.ResolveCharacterPortrait);
         _presenter.Initialize();
     }
 }

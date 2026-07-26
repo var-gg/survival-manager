@@ -24,7 +24,8 @@ namespace SM.Unity.UI.Town.Preview;
 public sealed record TacticalWorkshopAnchorViewState(
     string AnchorId,
     string AssignedHeroId,
-    Texture2D? AssignedFigure
+    Texture2D? AssignedFigure,
+    string ClassKey = ""
 );
 
 public sealed record TacticalWorkshopPostureViewState(

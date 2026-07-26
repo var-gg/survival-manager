@@ -119,6 +119,7 @@ public sealed class PassiveBoardView
         classRow.AddToClassList("pbp-header__class-row");
         var classIcon = new VisualElement();
         classIcon.AddToClassList("pbp-header__class-icon");
+        classIcon.AddToClassList($"pbp-header__class-icon--{header.ClassKey}");
         if (header.ClassIconSprite != null)
             classIcon.style.backgroundImage = new StyleBackground(header.ClassIconSprite);
         classRow.Add(classIcon);

@@ -149,6 +149,8 @@ public sealed class TacticalWorkshopView : ITacticalWorkshopView
             {
                 var figure = new VisualElement();
                 figure.AddToClassList("twp-standee__figure");
+                if (!string.IsNullOrEmpty(a.ClassKey))
+                    figure.AddToClassList($"twp-standee__figure--{a.ClassKey}");
                 if (a.AssignedFigure != null) figure.style.backgroundImage = new StyleBackground(a.AssignedFigure);
                 standee.Add(figure);
             }

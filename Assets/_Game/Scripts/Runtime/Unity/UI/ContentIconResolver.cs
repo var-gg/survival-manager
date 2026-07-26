@@ -38,7 +38,9 @@ internal sealed class ContentIconResolver
         ["galma"] = "npc_galma_mercenary_post",
     };
 
-    private static readonly IReadOnlyDictionary<string, string> AffixIconIds = new Dictionary<string, string>(StringComparer.Ordinal)
+    // Migration-only fallback for pre-IconId authored assets and older test fixtures.
+    // Canonical affix assets are required to author IconId and take precedence below.
+    private static readonly IReadOnlyDictionary<string, string> LegacyAffixIconIds = new Dictionary<string, string>(StringComparer.Ordinal)
     {
         ["affix_sharp"] = "affix_atk",
         ["affix_focusing"] = "affix_magic_atk",
@@ -133,11 +135,7 @@ internal sealed class ContentIconResolver
             return null;
         }
 
-        var iconId = AffixIconIds.TryGetValue(affixId, out var mappedIconId)
-            ? mappedIconId
-            : affixId.StartsWith("affix_", StringComparison.Ordinal)
-            ? affixId
-            : $"affix_{affixId}";
+        var iconId = ResolveAffixIconId(affixId);
         return Load($"{AffixPath}/{iconId}");
     }
 
@@ -243,6 +241,23 @@ internal sealed class ContentIconResolver
         return augmentId.StartsWith("augment_", StringComparison.Ordinal)
             ? augmentId
             : $"augment_{augmentId}";
+    }
+
+    private string ResolveAffixIconId(string affixId)
+    {
+        if (_lookup.TryGetAffixDefinition(affixId, out var affix) && !string.IsNullOrWhiteSpace(affix.IconId))
+        {
+            return affix.IconId;
+        }
+
+        if (LegacyAffixIconIds.TryGetValue(affixId, out var legacyIconId))
+        {
+            return legacyIconId;
+        }
+
+        return affixId.StartsWith("affix_", StringComparison.Ordinal)
+            ? affixId
+            : $"affix_{affixId}";
     }
 
     private Texture2D? ResolveItemCategory(string key)

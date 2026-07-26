@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_precise
   NameKey: content.affix.affix_precise.name
   DescriptionKey: content.affix.affix_precise.desc
+  IconId: affix_crit
   Category: 1
   Tier: 1
   AffixFamily: 1

@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_focusing
   NameKey: content.affix.affix_focusing.name
   DescriptionKey: content.affix.affix_focusing.desc
+  IconId: affix_magic_atk
   Category: 0
   Tier: 0
   AffixFamily: 1

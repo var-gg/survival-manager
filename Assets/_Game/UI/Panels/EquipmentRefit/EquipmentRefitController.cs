@@ -71,8 +71,8 @@ public sealed class EquipmentRefitController : MonoBehaviour
             contentText.GetAffixName,
             contentText.GetCharacterName,
             itemIconSprite: iconResolver.ResolveItem,
-            currencySprite: iconResolver.ResolveAny,
-            portraitLoader: iconResolver.ResolveAny,
+            currencySprite: null,
+            portraitLoader: iconResolver.ResolveCharacterPortrait,
             affixIconSprite: iconResolver.ResolveAffix);
         _presenter.Initialize();
     }

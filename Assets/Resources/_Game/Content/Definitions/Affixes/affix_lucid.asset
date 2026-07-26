@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_lucid
   NameKey: content.affix.affix_lucid.name
   DescriptionKey: content.affix.affix_lucid.desc
+  IconId: affix_cooldown
   Category: 4
   Tier: 1
   AffixFamily: 1

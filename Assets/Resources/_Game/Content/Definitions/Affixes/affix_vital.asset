@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_vital
   NameKey: content.affix.affix_vital.name
   DescriptionKey: content.affix.affix_vital.desc
+  IconId: affix_hp
   Category: 3
   Tier: 1
   AffixFamily: 1

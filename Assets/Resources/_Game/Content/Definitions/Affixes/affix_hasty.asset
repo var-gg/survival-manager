@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_hasty
   NameKey: content.affix.affix_hasty.name
   DescriptionKey: content.affix.affix_hasty.desc
+  IconId: affix_speed
   Category: 4
   Tier: 0
   AffixFamily: 1

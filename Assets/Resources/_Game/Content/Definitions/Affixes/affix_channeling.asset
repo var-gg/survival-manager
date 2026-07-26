@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_channeling
   NameKey: content.affix.affix_channeling.name
   DescriptionKey: content.affix.affix_channeling.desc
+  IconId: affix_cast_speed
   Category: 5
   Tier: 1
   AffixFamily: 2

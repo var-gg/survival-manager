@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_guarded
   NameKey: content.affix.affix_guarded.name
   DescriptionKey: content.affix.affix_guarded.desc
+  IconId: affix_block
   Category: 5
   Tier: 1
   AffixFamily: 2

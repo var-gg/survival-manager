@@ -23,6 +23,8 @@
     border-left-color: var(--sm-gold-300); border-right-color: var(--sm-gold-300);
     border-top-color: var(--sm-gold-300); border-bottom-color: var(--sm-gold-300); }
 .inv-currency__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px; }
+.inv-currency__icon--gold { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Currency/currency_gold.png"); }
+.inv-currency__icon--echo { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Currency/currency_echo.png"); }
 .inv-currency__amount { color: var(--sm-gold-100); font-size: var(--sm-fs-m); -unity-font-style: bold; }
 .inv-currency__close { margin-left: auto; width: 32px; height: 32px;
     background-color: rgba(28,34,67,0.78); color: var(--sm-gold-200); }

@@ -20,6 +20,7 @@ param(
        (BattleFactory가 EntityId를 "ally_{index}_{id}" / "enemy_{index}_{id}"로 접두사화하므로 원본 id 직접 비교는
         항상 false — 정산/측정이 조용히 허구를 생산한다. 실제 3회 발생: P0 HP/EXP 미반영, dossier fallenAllyIds,
         WarrantSeparability protect 생존율 0% 오진. EndsWith("_{id}") 또는 접두사 포함 리터럴을 쓸 것)
+    9. authored IconId가 실제 PNG로 해석되지 않고 명시적 known-missing-art 선언도 없으면 실패
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -482,6 +483,22 @@ else {
     & $reachabilityLint -RepoRoot $RepoRoot
     if ($LASTEXITCODE -ne 0) {
         Write-LintError -Check 'Authored-content-reachability' -File 'tools/content-reachability/field-catalog.tsv' -Detail 'Reachability catalog validation failed. Wrong: an authored field or sentinel lacks proven runtime behavior. Runtime actually ignores an unconsumed field or applies the registered fallback. Choose wire it / delete it / mark it, then repair the evidence above.'
+    }
+}
+
+# ────────────────────────────────────────────────
+# Check 9: authored icon identity resolves or is explicitly declared missing
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 9: Authored icon routing ==" -ForegroundColor Cyan
+$iconRoutingLint = Join-Path $RepoRoot 'tools/icon-routing/lint.ps1'
+if (-not (Test-Path -LiteralPath $iconRoutingLint)) {
+    Write-LintError -Check 'Authored-icon-routing' -File 'tools/icon-routing/lint.ps1' -Detail 'Icon routing lint is missing. Authored icon references must resolve or be explicitly declared in tools/icon-routing/known-missing-art.tsv.'
+}
+else {
+    & $iconRoutingLint -RepoRoot $RepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        Write-LintError -Check 'Authored-icon-routing' -File 'tools/icon-routing/known-missing-art.tsv' -Detail 'Authored icon routing validation failed. Repair the exact content id, icon key, and expected path reported above.'
     }
 }
 

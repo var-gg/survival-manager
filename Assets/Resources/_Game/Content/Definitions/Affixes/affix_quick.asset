@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_quick
   NameKey: content.affix.affix_quick.name
   DescriptionKey: content.affix.affix_quick.desc
+  IconId: affix_speed
   Category: 4
   Tier: 1
   AffixFamily: 1

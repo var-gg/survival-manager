@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_warded
   NameKey: content.affix.affix_warded.name
   DescriptionKey: content.affix.affix_warded.desc
+  IconId: affix_resist_magic
   Category: 2
   Tier: 0
   AffixFamily: 1

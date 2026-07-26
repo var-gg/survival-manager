@@ -170,7 +170,8 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
                 return new TacticalWorkshopAnchorViewState(
                     AnchorId: entry.Anchor.ToString(),
                     AssignedHeroId: entry.Hero?.HeroId ?? string.Empty,
-                    AssignedFigure: string.IsNullOrEmpty(classKey) ? null : _classSprite?.Invoke(classKey));
+                    AssignedFigure: string.IsNullOrEmpty(classKey) ? null : _classSprite?.Invoke(classKey),
+                    ClassKey: classKey);
             })
             .ToList();
     }

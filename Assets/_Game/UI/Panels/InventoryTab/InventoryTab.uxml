@@ -20,11 +20,11 @@
                     <ui:Label name="InventorySubtitleLabel" class="inv-title-block__subtitle" text="선택 장비와 대상 영웅의 현재 장비를 비교합니다." />
                 </ui:VisualElement>
                 <ui:VisualElement class="inv-currency">
-                    <ui:VisualElement name="GoldIcon" class="inv-currency__icon" picking-mode="Ignore" />
+                    <ui:VisualElement name="GoldIcon" class="inv-currency__icon inv-currency__icon--gold" picking-mode="Ignore" />
                     <ui:Label class="inv-currency__amount" text="9,876,543" />
                 </ui:VisualElement>
                 <ui:VisualElement class="inv-currency">
-                    <ui:VisualElement name="EchoIcon" class="inv-currency__icon" picking-mode="Ignore" />
+                    <ui:VisualElement name="EchoIcon" class="inv-currency__icon inv-currency__icon--echo" picking-mode="Ignore" />
                     <ui:Label class="inv-currency__amount" text="543,210" />
                 </ui:VisualElement>
                 <ui:Button class="inv-currency__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />

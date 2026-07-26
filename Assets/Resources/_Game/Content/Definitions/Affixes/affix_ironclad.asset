@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_ironclad
   NameKey: content.affix.affix_ironclad.name
   DescriptionKey: content.affix.affix_ironclad.desc
+  IconId: affix_armor
   Category: 2
   Tier: 1
   AffixFamily: 1

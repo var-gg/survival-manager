@@ -131,8 +131,8 @@ public sealed class TownScreenController : MonoBehaviour
                 _root,
                 recruitView,
                 _contentText,
-                _contentIconResolver.ResolveAny,
-                _contentIconResolver.ResolveCharacterPortrait);
+                classSprite: null,
+                portraitLoader: _contentIconResolver.ResolveCharacterPortrait);
             _recruitPresenter.Initialize();
             _recruitPresenter.Close();
             _presenter?.SetNpcOpener("dalmok", _recruitPresenter.Open);
@@ -154,8 +154,8 @@ public sealed class TownScreenController : MonoBehaviour
                 _contentText.GetAffixName,
                 _contentText.GetCharacterName,
                 itemIconSprite: _contentIconResolver.ResolveItem,
-                currencySprite: _contentIconResolver.ResolveAny,
-                portraitLoader: _contentIconResolver.ResolveAny,
+                currencySprite: null,
+                portraitLoader: _contentIconResolver.ResolveCharacterPortrait,
                 affixIconSprite: _contentIconResolver.ResolveAffix);
             _equipmentRefitPresenter.Initialize();
             _equipmentRefitPresenter.Close();
@@ -170,7 +170,12 @@ public sealed class TownScreenController : MonoBehaviour
         try
         {
             var passiveBoardView = new PassiveBoardView(root);
-            _passiveBoardPresenter = new PassiveBoardPresenter(_root, passiveBoardView, _contentText);
+            _passiveBoardPresenter = new PassiveBoardPresenter(
+                _root,
+                passiveBoardView,
+                _contentText,
+                classSprite: null,
+                affixSprite: _contentIconResolver.ResolveAffix);
             _passiveBoardPresenter.Initialize();
             _passiveBoardPresenter.Close();
             _presenter?.SetNpcOpener("galma", _passiveBoardPresenter.Open);
@@ -188,7 +193,7 @@ public sealed class TownScreenController : MonoBehaviour
                 _root.SessionState,
                 _root.CombatContentLookup,
                 inventoryView,
-                currencySprite: _contentIconResolver.ResolveAny,
+                currencySprite: null,
                 itemIconSprite: _contentIconResolver.ResolveItem,
                 contentText: _contentText,
                 affixIconSprite: _contentIconResolver.ResolveAffix);
@@ -272,10 +277,7 @@ public sealed class TownScreenController : MonoBehaviour
                 workshopView,
                 _contentText.GetCharacterName,
                 _contentText.GetRoleName,
-                _contentText.GetSynergyName,
-                postureSprite: _contentIconResolver.ResolveAny,
-                threatSprite: _contentIconResolver.ResolveAny,
-                classSprite: _contentIconResolver.ResolveAny);
+                _contentText.GetSynergyName);
             _tacticalWorkshopPresenter.Initialize();
             _tacticalWorkshopPresenter.Close();
             view.BindTacticalWorkshopOpen(_tacticalWorkshopPresenter.Open);

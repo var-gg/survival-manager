@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_packborn
   NameKey: content.affix.affix_packborn.name
   DescriptionKey: content.affix.affix_packborn.desc
+  IconId: affix_link
   Category: 5
   Tier: 2
   AffixFamily: 3

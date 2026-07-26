@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_cleansing
   NameKey: content.affix.affix_cleansing.name
   DescriptionKey: content.affix.affix_cleansing.desc
+  IconId: affix_cleanse
   Category: 4
   Tier: 1
   AffixFamily: 2

@@ -1047,10 +1047,22 @@
     border-bottom-right-radius: var(--radius-l);
 }
 
-.rcp-class-vanguard { background-color: rgba(104, 137, 183, 0.80); }
-.rcp-class-duelist { background-color: rgba(162, 88, 74, 0.80); }
-.rcp-class-ranger { background-color: rgba(89, 137, 96, 0.80); }
-.rcp-class-mystic { background-color: rgba(115, 92, 166, 0.80); }
+.rcp-class-vanguard {
+    background-color: rgba(104, 137, 183, 0.80);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png");
+}
+.rcp-class-duelist {
+    background-color: rgba(162, 88, 74, 0.80);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png");
+}
+.rcp-class-ranger {
+    background-color: rgba(89, 137, 96, 0.80);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png");
+}
+.rcp-class-mystic {
+    background-color: rgba(115, 92, 166, 0.80);
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png");
+}
 
 .rcp-card__skill-icons,
 .rcp-detail__skill-pips {

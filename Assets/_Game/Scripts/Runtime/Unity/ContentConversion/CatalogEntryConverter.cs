@@ -105,7 +105,8 @@ internal static class CatalogEntryConverter
             definition.ExclusiveGroupId ?? string.Empty,
             definition.ValueMin,
             definition.ValueMax,
-            BuildTriggeredEffects(definition.Id, definition.TriggeredEffects));
+            BuildTriggeredEffects(definition.Id, definition.TriggeredEffects),
+            definition.IconId ?? string.Empty);
     }
 
     internal static AugmentCatalogEntry BuildAugmentCatalogEntry(AugmentDefinition definition)

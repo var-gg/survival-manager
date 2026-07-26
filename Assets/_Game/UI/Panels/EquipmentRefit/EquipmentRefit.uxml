@@ -48,7 +48,7 @@
                         <!-- uxqa1: erp-echo-cost__glyph(50x6 보라 막대)는 와이어프레임 greeking 잔재 제거
                              — 비용 수치는 CTA 라벨이 표기. -->
                         <ui:VisualElement name="EchoCost" class="erp-echo-cost">
-                            <ui:VisualElement name="EchoIcon" class="erp-echo-cost__icon" picking-mode="Ignore" />
+                            <ui:VisualElement name="EchoIcon" class="erp-echo-cost__icon erp-echo-cost__icon--echo" picking-mode="Ignore" />
                         </ui:VisualElement>
                         <ui:Button class="erp-refit-cta sm-cta sm-cta--lg sm-cta--primary">
                             <ui:Label name="RefitCostLabel" class="erp-refit-cta__label" text="품질 계산 중…" />

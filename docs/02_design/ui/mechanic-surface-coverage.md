@@ -3,7 +3,7 @@
 - 상태: active
 - 소유자: repository
 - 최종수정일: 2026-07-27
-- 감사 기준 커밋: `a5b2bb7c21632c8f8715956afed09fcd374ca189`
+- 감사 기준 커밋: `5d876201` + 이 작업 단위의 working tree
 - 카탈로그 버전: `1`
 - 관련문서:
   - `docs/02_design/index.md`
@@ -350,9 +350,29 @@ Passive Board는 gap을 단순히 생략하는 데 그치지 않는다. view-sta
 
 ### 방법과 한계
 
-`Assets` 아래 `ThirdParty` 경로를 제외한 PNG는 4,475개다. missing/broken 판정은 `ContentIconResolver`의 실제 search order인 Skill, Item, Augment, Affix, Character, Direct를 따라 확인했다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:10-15`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:77-90`).
+`Assets` 아래 `ThirdParty` 경로를 제외한 PNG는 4,475개다. missing/broken 판정은 `ContentIconResolver`의 실제 search order인 Skill, Item, Augment, Affix, Character, Direct와 Foundation USS keyspace를 함께 따라 확인했다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:10-14`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:86-91`). authored `IconId`는 `tools/icon-routing/lint.ps1`이 실제 PNG 또는 `known-missing-art.tsv`의 명시적 missing 선언과 대조하며, 이 검사는 `tools/test-harness-lint.ps1` Check 9에 포함된다.
 
-unreferenced 후보는 PNG filename/stem 또는 해당 `.meta` GUID가 C#, UXML, USS, scene/prefab, asset 등 first-party text/serialized file에서 발견되는지 보수적으로 대조했다. PNG 자신의 `.meta`는 reference로 세지 않았다. 이 방식은 dynamic `Resources.Load`, convention-based lookup, package runtime lookup을 완전히 증명하지 못하므로 삭제 목록이 아니라 cleanup 조사 후보 목록이다.
+unreferenced 후보는 20,896개 first-party text/serialized file에서 PNG filename/stem token 445,832개와 non-self `.meta` GUID reference 17,183개를 대조해 다시 계산했다. PNG 자신의 `.meta`는 reference로 세지 않았다. 이 방식은 dynamic `Resources.Load`, convention-based lookup, package runtime lookup을 완전히 증명하지 못하므로 삭제 목록이 아니라 cleanup 조사 후보 목록이다.
+
+### 확정 라우팅 감사
+
+작업 전 silent routing defect는 19개였고, 실제 missing art를 가진 live authored reference는 18개였다. 전자는 모두 기존 Foundation/Resources art로 연결했으며, 후자는 resolver가 추측하지 않고 authored data와 명시적 missing 선언으로 드러나게 했다.
+
+| keyspace | 요청/해석 경로 | content key | 현재 resolve | 판정 |
+| --- | --- | ---: | ---: | --- |
+| Skill | `SkillDefinition.IconId` -> Skill PNG -> normalized fallback | 97 | 93 | art missing 4; 모두 명시 선언 |
+| Item | `ItemBaseDefinition.IconId` -> Item PNG -> category fallback | 42 | 42 | 6개 family icon의 의도적 공유 |
+| Augment | `AugmentDefinition.IconId` -> Augment PNG | 36 | 36 | 12개 family icon의 의도적 공유 |
+| Affix | `AffixDefinition.IconId` -> Affix PNG -> migration-only legacy map -> convention | 44 | 30 | art missing 14; 모두 명시 선언 |
+| Character | character alias -> subject subdirectory -> portrait/standee convention | 16 + Town NPC 4 | 16 + 4 | subject별 convention route |
+| Currency | Inventory/Refit modifier class -> Foundation Currency PNG | 2 | 2 | routing broken 2개 수정 |
+| Class | Recruit/Passive/Tactical modifier class -> Foundation Class PNG | 4 | 4 | routing broken 4개 수정 |
+| Posture | Tactical key class -> Foundation Posture PNG | 5 | 5 | routing broken 5개 수정 |
+| Threat | Tactical key class -> Foundation Threat PNG | 8 | 8 | routing broken 8개 수정; `pierce`의 잘못된 affix 우선 해소 |
+| Status | runtime status family -> 예정된 Battle chip/tooltip key | 13 | 0 | 아직 authored icon contract가 없는 art gap |
+| Craft operation | authored `AllowedCraftOperations` -> 예정된 Refit selector key | 2 live (5 enum) | 0 | 현재 worklist는 Reforge/Seal 2개 |
+| Affix pool | pool id -> 예정된 Refit possible-roll legend key | 14 | 0 | 아직 authored icon contract가 없는 art gap |
+| Passive node | node definition -> Passive Board presenter | 96 | 0 | schema에 `IconId`가 없고 presenter가 `null`을 반환 |
 
 ### Needed but missing
 
@@ -394,18 +414,12 @@ unreferenced 후보는 PNG filename/stem 또는 해당 `.meta` GUID가 C#, UXML,
 | `affix_executioners_edge` | rule-tag affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_fallen_chorus` | triggered affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_first_light` | triggered affix | Inventory/Refit affix row | resolver target PNG 없음. |
-| `affix_hallowed` | scalar affix | Inventory/Refit affix row | resolver target PNG 없음. |
-| `affix_heavy` | scalar affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_last_ward` | triggered affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_lightfooted_plate` | tradeoff affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_mourning_aegis` | triggered affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_overclocked` | tradeoff affix | Inventory/Refit affix row | resolver target PNG 없음. |
-| `affix_quick` | scalar affix | Inventory/Refit affix row | resolver target PNG 없음. |
-| `affix_ravenous` | scalar affix | Inventory/Refit affix row | resolver target PNG 없음. |
-| `affix_reaching` | scalar affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_reaper_spark` | triggered affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_reckless_edge` | tradeoff affix | Inventory/Refit affix row | resolver target PNG 없음. |
-| `affix_spined` | scalar affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `affix_war_chorus` | triggered affix | Inventory/Refit affix row | resolver target PNG 없음. |
 | `skill_icon_last_bastion` | `skill_last_bastion` | Compendium, Character Sheet, Battle skill row | authored `IconId`에 대응하는 PNG 없음. |
 | `skill_icon_sunder_rhythm` | `skill_sunder_rhythm` | Compendium, Character Sheet, Battle skill row | authored `IconId`에 대응하는 PNG 없음. |
@@ -415,27 +429,18 @@ unreferenced 후보는 PNG filename/stem 또는 해당 `.meta` GUID가 C#, UXML,
 
 ### Broken or fallback-resolved references
 
-`ResolveAffix`는 24개 alias만 가지며 나머지는 affix id와 같은 PNG를 찾는다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:41-67`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:129-142`). 그 결과 위 missing affix 20개는 모두 `null`이다. Skill resolver도 authored `IconId`, normalized fallback 순서로 찾지만 아래 4개는 둘 다 없다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:92-102`).
+모든 affix asset 44개에 `IconId`를 저작했다. resolver는 authored field를 우선하고, 기존 24개 동작의 byte-identical 경로를 보존하는 migration-only dictionary를 거친 뒤 convention을 사용한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:131-139`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:246-258`). 기존 24개 외에도 scalar 의미가 정확히 맞는 existing art 6개를 재사용했고, decision-bearing 14개는 misleading한 stat icon을 붙이지 않고 art missing으로 선언했다.
 
-| icon id/key | referenced by | runtime resolution |
-| --- | --- | --- |
-| 위 affix 20개 id | 해당 `AffixDefinition`; Inventory/Refit | `null` |
-| 위 skill icon 4개 id | 해당 `SkillDefinition`; Compendium/Character Sheet/Battle | `null` |
-| `gold` | `InventoryPresenter`, `EquipmentRefitPresenter` | `null`; resolver에 Currency path가 없다. 실제 `currency_gold.png`은 Foundation에 있다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/InventoryPresenter.cs:226`). |
-| `echo` | `InventoryPresenter`, `EquipmentRefitPresenter` | `null`; resolver에 Currency path가 없다. 실제 `currency_echo.png`은 Foundation에 있다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitPresenter.cs:263`). |
-| `vanguard`, `duelist`, `ranger`, `mystic` | Recruit, Passive Board, Tactical Workshop class sprite callback | `null`; Recruit는 CSS color class로 fallback한다. Foundation class PNG 4개는 resolver 밖에 있다. |
-| `hold_line`, `standard_advance`, `protect_carry`, `collapse_weak_side`, `all_in_backline` | Tactical Workshop posture sprite callback | `null`; USS class가 올바른 Foundation posture PNG를 대신 표시한다 (`Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:308-312`). |
-| `burst`, `dive`, `swarm`, `sustain`, `heal`, `control`, `summon` | Tactical Workshop threat sprite callback | `null`; USS class가 올바른 Foundation threat PNG를 대신 표시한다 (`Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:435-441`). |
-| `pierce` | Tactical Workshop ArmorShred threat sprite callback | 잘못된 `Assets/Resources/_Game/Art/Icons/Affix/affix_pierce.png`으로 resolve된다. non-null sprite가 USS의 intended `threat_pierce.png`을 덮을 수 있다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:84-89`, `Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/TacticalWorkshopPresenter.cs:284-289`). |
+Skill의 missing 4개와 affix의 missing 14개는 `tools/icon-routing/known-missing-art.tsv`에 exact content id, icon key, expected path, 사유를 기록했다. 이 18개 외에는 authored icon reference가 silent `null`로 남지 않는다. Currency 2개와 Class 4개는 Foundation USS modifier class로 연결했고, Posture 5개와 Threat 8개는 generic resolver callback을 제거해 이미 존재하던 정확한 Foundation key route가 항상 이기게 했다 (`Assets/_Game/UI/Panels/PassiveBoard/PassiveBoard.uss:271-274`, `Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:312-316`, `Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:438-445`).
 
 ### Unreferenced candidates
 
-- 후보 수: **1,193**
+- 후보 수: **1,191**
 - 해석: first-party token/GUID scan에서 reference가 발견되지 않은 PNG 수다. dynamic lookup 가능성 때문에 삭제 근거로 사용하지 않는다.
+- 이전 1,193 수치는 같은 audit의 초기 근사치였고, 이번 20,896-file 재계산으로 1,191로 교정했다. `affix_lifesteal.png`은 `affix_ravenous`의 authored `IconId`로 새로 live reference가 되었으며 candidate에서 빠졌다. 나머지 차이는 초기 근사 scan과 최종 token/GUID scan의 집계 방법 차이이므로 특정 파일 삭제나 신규 reference로 추정하지 않는다.
 - sample:
   - `Assets/Resources/_Game/Art/Icons/Affix/affix_aura.png`
   - `Assets/Resources/_Game/Art/Icons/Affix/affix_dodge.png`
-  - `Assets/Resources/_Game/Art/Icons/Affix/affix_lifesteal.png`
   - `Assets/Resources/_Game/Art/Icons/Affix/affix_mana.png`
   - `Assets/Resources/_Game/Art/Icons/Affix/affix_revive.png`
   - `Assets/Resources/_Game/Art/Icons/Affix/affix_taunt.png`

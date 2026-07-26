@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_burdened_reach
   NameKey: content.affix.affix_burdened_reach.name
   DescriptionKey: content.affix.affix_burdened_reach.desc
+  IconId: affix_burdened_reach
   Category: 4
   Tier: 1
   AffixFamily: 3

@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_sharp
   NameKey: content.affix.affix_sharp.name
   DescriptionKey: content.affix.affix_sharp.desc
+  IconId: affix_atk
   Category: 0
   Tier: 0
   AffixFamily: 1

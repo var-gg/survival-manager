@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_hallowed
   NameKey: content.affix.affix_hallowed.name
   DescriptionKey: content.affix.affix_hallowed.desc
+  IconId: affix_amplify
   Category: 4
   Tier: 2
   AffixFamily: 1

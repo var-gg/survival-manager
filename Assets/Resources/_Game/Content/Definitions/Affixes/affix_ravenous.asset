@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_ravenous
   NameKey: content.affix.affix_ravenous.name
   DescriptionKey: content.affix.affix_ravenous.desc
+  IconId: affix_lifesteal
   Category: 4
   Tier: 2
   AffixFamily: 1

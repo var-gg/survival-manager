@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_war_chorus
   NameKey: content.affix.affix_war_chorus.name
   DescriptionKey: content.affix.affix_war_chorus.desc
+  IconId: affix_war_chorus
   Category: 4
   Tier: 2
   AffixFamily: 3

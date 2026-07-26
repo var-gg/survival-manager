@@ -225,6 +225,10 @@
     height: 82px;
     -unity-background-scale-mode: scale-to-fit;
 }
+.twp-standee__figure--vanguard { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png"); }
+.twp-standee__figure--duelist { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png"); }
+.twp-standee__figure--ranger { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png"); }
+.twp-standee__figure--mystic { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png"); }
 
 /* --- Right stack (3 sections) --- */
 .twp-right-stack {

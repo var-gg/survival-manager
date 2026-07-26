@@ -99,6 +99,7 @@ public static partial class SampleSeedGenerator
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         EquipmentContentV1Assetizer.Apply();
+        ApplyAffixIconIdentity();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
         var fixedScriptReferences = CanonicalContentScriptReferenceRepair.RepairResourcesRoot();

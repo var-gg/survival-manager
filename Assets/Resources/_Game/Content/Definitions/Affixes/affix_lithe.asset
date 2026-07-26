@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_lithe
   NameKey: content.affix.affix_lithe.name
   DescriptionKey: content.affix.affix_lithe.desc
+  IconId: affix_speed
   Category: 4
   Tier: 1
   AffixFamily: 1

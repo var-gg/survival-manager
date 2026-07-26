@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_heavy
   NameKey: content.affix.affix_heavy.name
   DescriptionKey: content.affix.affix_heavy.desc
+  IconId: affix_armor
   Category: 2
   Tier: 1
   AffixFamily: 1

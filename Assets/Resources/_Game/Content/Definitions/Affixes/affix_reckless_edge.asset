@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_reckless_edge
   NameKey: content.affix.affix_reckless_edge.name
   DescriptionKey: content.affix.affix_reckless_edge.desc
+  IconId: affix_reckless_edge
   Category: 0
   Tier: 0
   AffixFamily: 3

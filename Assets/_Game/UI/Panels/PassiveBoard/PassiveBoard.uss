@@ -251,8 +251,7 @@
     border-bottom-color: var(--sm-gold-300-a42);
 }
 
-.pbp-header__portrait,
-.pbp-header__class-icon {
+.pbp-header__portrait {
     background-image: none;
     background-color: var(--sm-bg-0-a84);
     border-left-width: 1px;
@@ -268,6 +267,11 @@
     border-bottom-left-radius: var(--sm-r-md);
     border-bottom-right-radius: var(--sm-r-md);
 }
+
+.pbp-header__class-icon--vanguard { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_vanguard.png"); }
+.pbp-header__class-icon--duelist { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_duelist.png"); }
+.pbp-header__class-icon--ranger { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_ranger.png"); }
+.pbp-header__class-icon--mystic { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Class/class_mystic.png"); }
 
 .pbp-detail__icon {
     background-image: none;

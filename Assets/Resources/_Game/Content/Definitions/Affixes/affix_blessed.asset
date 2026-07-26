@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_blessed
   NameKey: content.affix.affix_blessed.name
   DescriptionKey: content.affix.affix_blessed.desc
+  IconId: affix_heal
   Category: 4
   Tier: 0
   AffixFamily: 1

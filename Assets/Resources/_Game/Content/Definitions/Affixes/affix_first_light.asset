@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_first_light
   NameKey: content.affix.affix_first_light.name
   DescriptionKey: content.affix.affix_first_light.desc
+  IconId: affix_first_light
   Category: 3
   Tier: 2
   AffixFamily: 3

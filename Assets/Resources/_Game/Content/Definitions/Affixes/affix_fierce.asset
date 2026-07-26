@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_fierce
   NameKey: content.affix.affix_fierce.name
   DescriptionKey: content.affix.affix_fierce.desc
+  IconId: affix_atk
   Category: 0
   Tier: 1
   AffixFamily: 1

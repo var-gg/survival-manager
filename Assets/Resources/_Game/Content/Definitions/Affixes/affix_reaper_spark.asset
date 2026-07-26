@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_reaper_spark
   NameKey: content.affix.affix_reaper_spark.name
   DescriptionKey: content.affix.affix_reaper_spark.desc
+  IconId: affix_reaper_spark
   Category: 4
   Tier: 1
   AffixFamily: 3

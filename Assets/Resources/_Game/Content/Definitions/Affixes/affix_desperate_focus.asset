@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_desperate_focus
   NameKey: content.affix.affix_desperate_focus.name
   DescriptionKey: content.affix.affix_desperate_focus.desc
+  IconId: affix_desperate_focus
   Category: 4
   Tier: 1
   AffixFamily: 3

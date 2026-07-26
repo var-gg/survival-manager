@@ -62,6 +62,7 @@ internal static class ItemFileParser
             definition.DescriptionKey = $"content.affix.{ContentLocalizationTables.NormalizeId(definition.Id)}.desc";
             SetLegacyField(definition, "legacyDisplayName", ExtractValue(lines, "DisplayName:"));
             SetLegacyField(definition, "legacyDescription", ExtractValue(lines, "Description:"));
+            definition.IconId = ExtractValue(lines, "IconId:");
             definition.Category = (AffixCategoryValue)ExtractInt(lines, "Category:");
             definition.Tier = (AffixTierValue)ExtractInt(lines, "Tier:");
             definition.AffixFamily = (AffixFamilyValue)ExtractInt(lines, "AffixFamily:");

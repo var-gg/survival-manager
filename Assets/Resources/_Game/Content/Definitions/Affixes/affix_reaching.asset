@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_reaching
   NameKey: content.affix.affix_reaching.name
   DescriptionKey: content.affix.affix_reaching.desc
+  IconId: affix_pierce
   Category: 4
   Tier: 1
   AffixFamily: 1

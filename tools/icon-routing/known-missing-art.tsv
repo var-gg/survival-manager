@@ -1,0 +1,19 @@
+content_type	content_id	icon_key	expected_path	reason
+affix	affix_blood_price	affix_blood_price	Assets/Resources/_Game/Art/Icons/Affix/affix_blood_price.png	Tradeoff identity combines lifesteal and max-health loss; a plain stat icon would misrepresent it.
+affix	affix_brittle_focus	affix_brittle_focus	Assets/Resources/_Game/Art/Icons/Affix/affix_brittle_focus.png	Tradeoff identity combines magic power and resistance loss; a plain stat icon would misrepresent it.
+affix	affix_burdened_reach	affix_burdened_reach	Assets/Resources/_Game/Art/Icons/Affix/affix_burdened_reach.png	Tradeoff identity combines range and movement loss; a plain stat icon would misrepresent it.
+affix	affix_desperate_focus	affix_desperate_focus	Assets/Resources/_Game/Art/Icons/Affix/affix_desperate_focus.png	One-shot low-health energy trigger needs a distinct trigger icon.
+affix	affix_executioners_edge	affix_executioners_edge	Assets/Resources/_Game/Art/Icons/Affix/affix_executioners_edge.png	Execute-threshold damage identity is not equivalent to a plain attack icon.
+affix	affix_fallen_chorus	affix_fallen_chorus	Assets/Resources/_Game/Art/Icons/Affix/affix_fallen_chorus.png	Ally-death team-heal trigger needs a distinct trigger icon.
+affix	affix_first_light	affix_first_light	Assets/Resources/_Game/Art/Icons/Affix/affix_first_light.png	Battle-start barrier trigger needs a distinct trigger icon.
+affix	affix_last_ward	affix_last_ward	Assets/Resources/_Game/Art/Icons/Affix/affix_last_ward.png	One-shot low-health barrier trigger needs a distinct trigger icon.
+affix	affix_lightfooted_plate	affix_lightfooted_plate	Assets/Resources/_Game/Art/Icons/Affix/affix_lightfooted_plate.png	Tradeoff identity combines movement and armor loss; a plain stat icon would misrepresent it.
+affix	affix_mourning_aegis	affix_mourning_aegis	Assets/Resources/_Game/Art/Icons/Affix/affix_mourning_aegis.png	Ally-death barrier trigger needs a distinct trigger icon.
+affix	affix_overclocked	affix_overclocked	Assets/Resources/_Game/Art/Icons/Affix/affix_overclocked.png	Tradeoff identity combines attack speed and max-health loss; a plain stat icon would misrepresent it.
+affix	affix_reaper_spark	affix_reaper_spark	Assets/Resources/_Game/Art/Icons/Affix/affix_reaper_spark.png	On-kill energy trigger needs a distinct trigger icon.
+affix	affix_reckless_edge	affix_reckless_edge	Assets/Resources/_Game/Art/Icons/Affix/affix_reckless_edge.png	Tradeoff identity combines physical power and armor loss; a plain stat icon would misrepresent it.
+affix	affix_war_chorus	affix_war_chorus	Assets/Resources/_Game/Art/Icons/Affix/affix_war_chorus.png	Battle-start team barrier trigger needs a distinct trigger icon.
+skill	skill_last_bastion	skill_icon_last_bastion	Assets/Resources/_Game/Art/Icons/Skill/skill_icon_last_bastion.png	Authored skill has no generated icon yet.
+skill	skill_sunder_rhythm	skill_icon_sunder_rhythm	Assets/Resources/_Game/Art/Icons/Skill/skill_icon_sunder_rhythm.png	Authored skill has no generated icon yet.
+skill	skill_sunken_anticluster_bombardment	skill_icon_sunken_anticluster_bombardment	Assets/Resources/_Game/Art/Icons/Skill/skill_icon_sunken_anticluster_bombardment.png	Authored skill has no generated icon yet.
+skill	skill_veil_breach	skill_icon_veil_breach	Assets/Resources/_Game/Art/Icons/Skill/skill_icon_veil_breach.png	Authored skill has no generated icon yet.

@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_lightfooted_plate
   NameKey: content.affix.affix_lightfooted_plate.name
   DescriptionKey: content.affix.affix_lightfooted_plate.desc
+  IconId: affix_lightfooted_plate
   Category: 4
   Tier: 1
   AffixFamily: 3

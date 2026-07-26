@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_executioners_edge
   NameKey: content.affix.affix_executioners_edge.name
   DescriptionKey: content.affix.affix_executioners_edge.desc
+  IconId: affix_executioners_edge
   Category: 0
   Tier: 2
   AffixFamily: 3

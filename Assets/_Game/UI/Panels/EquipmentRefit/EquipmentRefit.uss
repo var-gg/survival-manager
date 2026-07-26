@@ -139,6 +139,7 @@
     border-top-color: rgba(140,98,210,0.85); border-bottom-color: rgba(140,98,210,0.85);
 }
 .erp-echo-cost__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: var(--sm-s-2); }
+.erp-echo-cost__icon--echo { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Currency/currency_echo.png"); }
 .erp-echo-cost__glyph { width: 50px; height: 6px; background-color: rgba(180,150,230,0.78); }
 
 /* Refit CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. 15 Echo single-affix reroll.

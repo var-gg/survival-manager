@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_farshot
   NameKey: content.affix.affix_farshot.name
   DescriptionKey: content.affix.affix_farshot.desc
+  IconId: affix_pierce
   Category: 5
   Tier: 1
   AffixFamily: 2

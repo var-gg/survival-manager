@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_piercing
   NameKey: content.affix.affix_piercing.name
   DescriptionKey: content.affix.affix_piercing.desc
+  IconId: affix_pierce
   Category: 0
   Tier: 1
   AffixFamily: 1

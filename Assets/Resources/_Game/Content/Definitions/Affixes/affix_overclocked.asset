@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_overclocked
   NameKey: content.affix.affix_overclocked.name
   DescriptionKey: content.affix.affix_overclocked.desc
+  IconId: affix_overclocked
   Category: 4
   Tier: 0
   AffixFamily: 3

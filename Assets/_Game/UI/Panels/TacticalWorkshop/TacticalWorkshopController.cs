@@ -59,7 +59,6 @@ public sealed class TacticalWorkshopController : MonoBehaviour
 
         var root = GameSessionRoot.EnsureInstance();
         var view = new TacticalWorkshopView(document.rootVisualElement);
-        var iconResolver = new ContentIconResolver(root.CombatContentLookup);
         var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
         _presenter = new TacticalWorkshopPresenter(
             root.SessionState,
@@ -67,10 +66,7 @@ public sealed class TacticalWorkshopController : MonoBehaviour
             view,
             contentText.GetCharacterName,
             contentText.GetRoleName,
-            contentText.GetSynergyName,
-            postureSprite: iconResolver.ResolveAny,
-            threatSprite: iconResolver.ResolveAny,
-            classSprite: iconResolver.ResolveAny);
+            contentText.GetSynergyName);
         _presenter.Initialize();
     }
 }

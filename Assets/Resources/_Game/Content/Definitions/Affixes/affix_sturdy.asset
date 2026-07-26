@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_sturdy
   NameKey: content.affix.affix_sturdy.name
   DescriptionKey: content.affix.affix_sturdy.desc
+  IconId: affix_armor
   Category: 2
   Tier: 0
   AffixFamily: 1

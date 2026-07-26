@@ -67,7 +67,7 @@ public sealed class InventoryTabController : MonoBehaviour
             root.SessionState,
             root.CombatContentLookup,
             view,
-            currencySprite: iconResolver.ResolveAny,
+            currencySprite: null,
             itemIconSprite: iconResolver.ResolveItem,
             contentText: contentText,
             affixIconSprite: iconResolver.ResolveAffix);

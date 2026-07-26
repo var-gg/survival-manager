@@ -20,6 +20,7 @@ namespace SM.Content.Definitions
         public string Id = string.Empty;
         public string NameKey = string.Empty;
         public string DescriptionKey = string.Empty;
+        public string IconId = string.Empty;
         public AffixCategoryValue Category = AffixCategoryValue.Utility;
         public AffixTierValue Tier = AffixTierValue.Prefix;
         public AffixFamilyValue AffixFamily = AffixFamilyValue.LegacyDerived;

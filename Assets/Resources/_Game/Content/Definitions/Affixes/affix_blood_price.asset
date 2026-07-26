@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_blood_price
   NameKey: content.affix.affix_blood_price.name
   DescriptionKey: content.affix.affix_blood_price.desc
+  IconId: affix_blood_price
   Category: 4
   Tier: 1
   AffixFamily: 3

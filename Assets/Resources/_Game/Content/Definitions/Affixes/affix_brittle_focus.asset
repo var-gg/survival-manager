@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_brittle_focus
   NameKey: content.affix.affix_brittle_focus.name
   DescriptionKey: content.affix.affix_brittle_focus.desc
+  IconId: affix_brittle_focus
   Category: 0
   Tier: 0
   AffixFamily: 3

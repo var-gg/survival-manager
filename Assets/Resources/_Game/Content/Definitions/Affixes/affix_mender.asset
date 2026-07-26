@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: affix_mender
   NameKey: content.affix.affix_mender.name
   DescriptionKey: content.affix.affix_mender.desc
+  IconId: affix_heal
   Category: 4
   Tier: 1
   AffixFamily: 1
