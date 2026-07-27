@@ -156,7 +156,13 @@ public sealed class TownScreenController : MonoBehaviour
                 itemIconSprite: _contentIconResolver.ResolveItem,
                 currencySprite: null,
                 portraitLoader: _contentIconResolver.ResolveCharacterPortrait,
-                affixIconSprite: _contentIconResolver.ResolveAffix);
+                affixIconSprite: _contentIconResolver.ResolveAffix,
+                uiText: (table, key, fallback, arguments) =>
+                    _localization.LocalizeOrFallback(
+                        table,
+                        key,
+                        fallback,
+                        arguments));
             _equipmentRefitPresenter.Initialize();
             _equipmentRefitPresenter.Close();
             _presenter?.SetNpcOpener("soemae", _equipmentRefitPresenter.Open);
@@ -412,6 +418,7 @@ public sealed class TownScreenController : MonoBehaviour
     private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
     {
         _presenter?.Refresh();
+        _equipmentRefitPresenter?.Refresh();
         _compendiumPresenter?.Refresh();
         _characterSheetPresenter?.Refresh();
     }

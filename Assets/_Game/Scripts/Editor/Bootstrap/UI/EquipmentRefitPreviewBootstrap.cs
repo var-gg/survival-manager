@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SM.Core.Content;
 using SM.Unity.UI.Town.Preview;
 using UnityEditor;
 using UnityEngine;
@@ -76,7 +77,13 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
                 itemIconSprite: PreviewSessionContext.LoadItemSprite,
                 currencySprite: PreviewSessionContext.LoadCurrencySprite,
                 portraitLoader: PreviewSessionContext.LoadHeroPortrait,
-                affixIconSprite: PreviewSessionContext.LoadAffixSprite);
+                affixIconSprite: PreviewSessionContext.LoadAffixSprite,
+                uiText: (table, key, fallback, arguments) =>
+                    sessionRoot.Localization.LocalizeOrFallback(
+                        table,
+                        key,
+                        fallback,
+                        arguments));
             _presenter.Initialize();
             return true;
         }
@@ -108,7 +115,10 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
                 CategoryKey: "utility",
                 Name: a.Name,
                 MagnitudeText: a.Magnitude,
-                IconSprite: LoadAffixSprite(a.Icon)));
+                IconSprite: LoadAffixSprite(a.Icon),
+                IsLocked: false,
+                LockToggleEnabled: true,
+                LockLabel: "잠그기"));
         }
 
         // 8 inventory pool item — ItemBaseDefinition 이름 / slot / rarity.
@@ -166,7 +176,24 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
             RefitMaxed: false,
             RefitStatusMessage: "품질 41.7% → 보장 바닥 58.4%",
             Affixes: affixes,
-            Pool: pool);
+            Pool: pool,
+            SelectedOperation: CraftOperationKindValue.Reforge,
+            ReforgeOperationSelectable: true,
+            SealOperationSelectable: true,
+            SealOperationReason: string.Empty,
+            SelectedOperationCanPurchase: true,
+            SelectedOperationCost: 24,
+            SelectedOperationCostLabel: "24 잔향",
+            SelectedOperationStatusMessage: "품질 41.7% → 보장 바닥 58.4% · service quote 24 잔향",
+            ConfirmationVisible: false,
+            PanelTitle: "장비 재련",
+            OperationSelectorLabel: "작업 선택",
+            ReforgeOperationLabel: "재련",
+            SealOperationLabel: "봉인",
+            CraftActionLabel: "재련 (-24 잔향)",
+            ConfirmationMessage: "재련에 잔향 24을 사용합니까? 기존 굴림은 되돌릴 수 없습니다.",
+            ConfirmLabel: "확인",
+            CancelLabel: "취소");
     }
 
     private static Texture2D? LoadAffixSprite(string key) =>

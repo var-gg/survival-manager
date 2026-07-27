@@ -3,7 +3,7 @@
 - 상태: active
 - 소유자: repository
 - 최종수정일: 2026-07-27
-- 감사 기준 커밋: `5d876201` + 이 작업 단위의 working tree
+- 감사 기준 커밋: `1f59f5da` + 이 작업 단위의 working tree
 - 카탈로그 버전: `1`
 - 관련문서:
   - `docs/02_design/index.md`
@@ -28,12 +28,12 @@
 | 지표 | 수 |
 | --- | ---: |
 | 전체 mechanic 행 | 110 |
-| `visible` | 16 |
-| `partial` | 66 |
-| `invisible` | 24 |
+| `visible` | 19 |
+| `partial` | 65 |
+| `invisible` | 22 |
 | `n/a` | 4 |
 
-`site-event-choice-outcomes`는 Atlas의 실제 pending route에서 닫혔다. 플레이어는 event별 선택지를 보고, 결과마다 수치 대신 범주와 상대 강도를 비교하고, 선택을 적용해 Reward로 진행할 수 있다. 현재 가장 높은 미해결 gap은 `craft-operation-seal`과 lock 수에 따른 비용 표시다.
+`craft-operation-seal`은 기존 `EquipmentRefit`의 실제 Town route에서 닫혔다. 플레이어는 `Reforge`와 `Seal`을 선택하고, affix별 lock을 지정하며, service가 계산한 lock 수별 정확한 Echo cost와 실행 불가 이유를 확인한 뒤 되돌릴 수 없는 소비를 확인할 수 있다. 현재 가장 높은 미해결 gap은 War Wound의 발생·효과 표시다.
 
 ## Surface inventory
 
@@ -70,7 +70,7 @@ production build에는 `Boot`, `Town`, `Atlas`, `Battle`, `Reward`만 들어간�
 | `Narrative/StoryCard.uxml` | yes | story card를 읽고 닫거나 진행한다. |
 | `Narrative/StoryToastBanner.uxml` | yes | 짧은 story 알림을 확인한다. |
 | `Narrative/TheaterMode.uxml` | no | unreachable Theater scene에서 archive를 탐색한다. runtime story surface 선택은 `Assets/_Game/Scripts/Runtime/Unity/Narrative/StoryPresentationRunner.cs:32-38`에 있다. |
-| `Panels/EquipmentRefit/EquipmentRefit.uxml` | yes | item을 고르고 Refit quote와 결과를 확인한다. |
+| `Panels/EquipmentRefit/EquipmentRefit.uxml` | yes | item과 Reforge/Seal operation을 고르고, affix lock, 정확한 quote, 실행 불가 이유, 확인 단계를 조작한다. |
 | `Panels/InventoryTab/InventoryTab.uxml` | yes | item, rarity, identity, affix와 currency를 확인한다. |
 | `Panels/PassiveBoard/PassiveBoard.uxml` | yes | passive node를 선택하거나 해제한다. |
 | `Panels/PermanentAugment/PermanentAugment.uxml` | yes | permanent augment를 골라 equip한다. |
@@ -122,7 +122,7 @@ USS는 독립 action surface가 아니므로 `player reachable`은 production UX
 | `Narrative/StoryCommon.uss` | yes | narrative surface 공통 typography와 layout을 제공한다. |
 | `Narrative/StoryToastBanner.uss` | yes | story toast의 등장과 내용을 표시한다. |
 | `Narrative/TheaterMode.uss` | no | unreachable Theater archive를 꾸민다. |
-| `Panels/EquipmentRefit/EquipmentRefit.uss` | yes | refit target, cost, quality, action state를 구분한다. |
+| `Panels/EquipmentRefit/EquipmentRefit.uss` | yes | refit target, operation, affix lock, cost, quality, confirmation, action state를 구분한다. |
 | `Panels/InventoryTab/InventoryTab.uss` | yes | item rarity, selection, currency와 affix row를 구분한다. |
 | `Panels/PassiveBoard/PassiveBoard.uss` | yes | passive node의 active·selected·locked visual state를 구분한다. |
 | `Panels/PermanentAugment/PermanentAugment.uss` | yes | augment의 equipped·unlocked·locked state를 구분한다. |
@@ -166,7 +166,7 @@ USS는 독립 action surface가 아니므로 `player reachable`은 production UX
 | `UI/Reward/RewardScreenPresenter.cs` | yes | reward와 settlement를 비교·확정한다. |
 | `UI/TacticalWorkshop/TacticalWorkshopPresenter.cs` | no | legacy sandbox에서 posture를 고른다. |
 | `UI/Town/Preview/CompendiumPresenter.cs` | yes | skill을 검색하고 상세를 읽는다. |
-| `UI/Town/Preview/EquipmentRefitPresenter.cs` | yes | refit item, quality, cost를 비교하고 실행한다. |
+| `UI/Town/Preview/EquipmentRefitPresenter.cs` | yes | refit item, Reforge/Seal, affix lock, service quote, 확인 단계를 비교하고 실행한다. |
 | `UI/Town/Preview/InventoryPresenter.cs` | yes | inventory item, rarity, identity, affix를 비교한다. |
 | `UI/Town/Preview/PassiveBoardPresenter.cs` | yes | passive node를 선택·해제한다. |
 | `UI/Town/Preview/PermanentAugmentPresenter.cs` | yes | permanent augment를 선택·equip한다. |
@@ -189,13 +189,13 @@ USS는 독립 action surface가 아니므로 `player reachable`은 production UX
 | --- | --- | --- | --- | --- | --- |
 | `craft-operation-temper` | `Temper` operation kind를 정의한다. | `Assets/_Game/Scripts/Runtime/Core/Content/ContentSchema.cs:45-52` | `n/a` | none | live item은 `Reforge`와 `Seal`만 허용하고 validation도 그 둘만 받는다 (`Assets/_Game/Scripts/Editor/Validation/ContentDefinitionCatalogRules.cs:886-893`). |
 | `craft-operation-reforge` | item identity와 affix set을 유지하며 magnitude를 다시 굴린다. | `Assets/_Game/Scripts/Runtime/Meta/Services/RefitService.cs:72-77` | `visible` | `EquipmentRefitPresenter`가 target, quote, old/new quality, Echo cost를 표시하고 실행한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitPresenter.cs:96-193`). | - |
-| `craft-operation-seal` | 일부 affix를 lock하고 나머지 magnitude를 deterministic하게 다시 굴린다. | `Assets/_Game/Scripts/Runtime/Meta/Services/RefitRollQuality.cs:214-270`; `Assets/_Game/Scripts/Runtime/Unity/Session/SessionItemRefitFlow.cs:62-68` | `invisible` | none | - |
+| `craft-operation-seal` | 일부 affix를 lock하고 나머지 magnitude를 deterministic하게 다시 굴린다. | `Assets/_Game/Scripts/Runtime/Meta/Services/RefitRollQuality.cs:214-270`; `Assets/_Game/Scripts/Runtime/Unity/Session/SessionItemRefitFlow.cs` | `visible` | `EquipmentRefitPresenter`가 `Seal` operation, affix별 lock, 확인 단계를 노출하고 기존 session command로 실행한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitPresenter.cs`). | - |
 | `craft-operation-imprint` | `Imprint` operation kind를 정의한다. | `Assets/_Game/Scripts/Runtime/Core/Content/ContentSchema.cs:45-52` | `n/a` | none | authored item과 live service가 이 operation을 허용하거나 소비하지 않는다. |
 | `craft-operation-salvage` | `Salvage` operation kind를 정의한다. | `Assets/_Game/Scripts/Runtime/Core/Content/ContentSchema.cs:45-52` | `n/a` | none | authored item과 live service가 이 operation을 허용하거나 소비하지 않는다. |
 | `refit-roll-quality` | rolled affix magnitude를 `BudgetScore` 가중 percentile로 요약한다. | `Assets/_Game/Scripts/Runtime/Meta/Services/RefitRollQuality.cs:10-52` | `visible` | Refit panel이 current/expected quality와 delta를 표시한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitPresenter.cs:228-267`). | - |
 | `affix-instance-magnitude-roll` | 각 item instance가 definition 범위 안의 개별 magnitude를 가진다. | `Assets/_Game/Scripts/Runtime/Meta/Services/AffixMagnitudePackageResolver.cs:15-55` | `partial` | Inventory와 Refit가 roll value 또는 percent/range를 표시한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/InventoryPresenter.cs:378-397`, `Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitPresenter.cs:166-193`). | 어떤 stat, unit, trigger condition에 적용되는 값인지 표시하지 않는다. |
-| `seal-cost-multiplier-per-locked-affix` | lock 수마다 Seal Echo cost를 증가시킨다. | `Assets/_Game/Scripts/Runtime/Meta/Services/RefitCostCurve.cs:83-115`; `Assets/_Game/Scripts/Runtime/Content/Definitions/RefitBalanceDefinition.cs:39-42` | `invisible` | none | - |
-| `allowed-craft-operations` | item별로 허용할 craft action을 gate한다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentPresentationPolicy.cs:142-156` | `partial` | Inventory/Refit가 `Reforge` 허용 여부만 `CanRefit`로 반영한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/InventoryPresenter.cs:350-366`). | `Seal` 허용 여부와 operation 목록을 표시하지 않는다. |
+| `seal-cost-multiplier-per-locked-affix` | lock 수마다 Seal Echo cost를 증가시킨다. | `Assets/_Game/Scripts/Runtime/Meta/Services/RefitCostCurve.cs:83-115`; `Assets/_Game/Scripts/Runtime/Content/Definitions/RefitBalanceDefinition.cs:39-42` | `visible` | lock 변경마다 `GetSealQuote`를 다시 호출해 service가 계산한 정확한 Echo cost를 표시한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitPresenter.cs`). | - |
+| `allowed-craft-operations` | item별로 허용할 craft action을 gate한다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentPresentationPolicy.cs:142-156` | `visible` | `EquipmentRefit`가 `Reforge`와 `Seal` operation을 함께 표시하고, 허용되지 않은 operation은 session preflight와 같은 이유로 비활성화한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/EquipmentRefitPresenter.cs`, `Assets/_Game/Scripts/Runtime/Unity/Session/SessionItemRefitFlow.cs`). | - |
 
 ### Affix 44개
 
@@ -338,15 +338,14 @@ canonical `ui_ux_bible_dialogue_event_choice_v0.png` 대비 구현한 핵심은 
 
 | rank | mechanic | 플레이어가 답할 수 없는 질문 | decision impact | proposed host | 기존/신규 | effort |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | `craft-operation-seal` + `seal-cost-multiplier-per-locked-affix` | "어떤 affix를 잠그고 나머지를 다시 굴릴 수 있으며 비용은 얼마인가?" | 완성된 deterministic crafting option을 사용할 수 없어 item 투자 판단이 왜곡된다. | `EquipmentRefit` panel에 operation mode와 affix lock control | existing | M |
-| 2 | `war-wound` | "누가 전상을 입었고 왜 그 hero의 skill이 약해졌나?" | 전투 성능 저하가 source 없이 발생해 squad/recovery 선택을 설명할 수 없다. | Reward settlement, Town Character Sheet, squad/roster badge | existing surfaces | M |
-| 3 | passive budget와 constraint 4종 | "몇 node를 더 켤 수 있고 왜 이 node 선택이 거부됐나?" | level progression의 핵심 build budget을 보지 못하고 실패 이유도 받지 못한다. | `PassiveBoard` header, node lock reason, footer | existing | M |
-| 4 | affix semantics 44종, 특히 decision-bearing 14종 | "이 affix가 어느 stat을 얼마나 바꾸며 downside나 trigger가 무엇인가?" | item/refit 비교가 이름과 무맥락 roll 숫자에 의존한다. | Inventory/Refit affix row와 기존 `ItemDetailModal` | existing panel plus dormant detail shell | L |
-| 5 | status behavior, magnitude, cleanse, control DR | "왜 행동하지 못하고, 얼마나 더 받거나 덜 받으며, 무엇으로 지울 수 있나?" | battle 결과의 원인을 설명하지 못하고 cleanse tooltip은 현재 misleading하다. | Battle selected-unit status area와 기존 `StatusEffectTooltipPanel` | existing panel plus dormant tooltip shell | L |
-| 6 | affix pool 14종과 `BudgetScore` | "이 item을 다시 굴리면 어떤 affix가 나올 수 있고 어떤 roll이 유리한가?" | crafting 확률과 item family 차이를 비교할 수 없다. | `EquipmentRefit` possible-rolls/odds disclosure | existing | M |
-| 7 | `item-granted-skills` | "이 skill은 어느 item이 주며, item을 빼면 무엇을 잃나?" | loadout change의 skill 손익을 item 화면에서 예측할 수 없다. | Inventory/Refit item detail과 Character Sheet skill source chip | existing | S-M |
-| 8 | endless Heat와 drop-grade exact values | "Heat 3이 적, Echo, rarity chance를 정확히 얼마나 바꾸나?" | endless risk/reward 선택이 vague prose에 의존한다. | Town endless CTA tooltip, Atlas preview, Reward settlement | existing | S-M |
-| 9 | `synergy-tiers` effect | "이 threshold를 넘기면 실제로 무엇이 좋아지나?" | count를 맞출 유인은 보이지만 build payoff는 비교할 수 없다. | Squad Builder, Tactical Workshop, Sortie Confirm chip detail | existing | S |
+| 1 | `war-wound` | "누가 전상을 입었고 왜 그 hero의 skill이 약해졌나?" | 전투 성능 저하가 source 없이 발생해 squad/recovery 선택을 설명할 수 없다. | Reward settlement, Town Character Sheet, squad/roster badge | existing surfaces | M |
+| 2 | passive budget와 constraint 4종 | "몇 node를 더 켤 수 있고 왜 이 node 선택이 거부됐나?" | level progression의 핵심 build budget을 보지 못하고 실패 이유도 받지 못한다. | `PassiveBoard` header, node lock reason, footer | existing | M |
+| 3 | affix semantics 44종, 특히 decision-bearing 14종 | "이 affix가 어느 stat을 얼마나 바꾸며 downside나 trigger가 무엇인가?" | item/refit 비교가 이름과 무맥락 roll 숫자에 의존한다. | Inventory/Refit affix row와 기존 `ItemDetailModal` | existing panel plus dormant detail shell | L |
+| 4 | status behavior, magnitude, cleanse, control DR | "왜 행동하지 못하고, 얼마나 더 받거나 덜 받으며, 무엇으로 지울 수 있나?" | battle 결과의 원인을 설명하지 못하고 cleanse tooltip은 현재 misleading하다. | Battle selected-unit status area와 기존 `StatusEffectTooltipPanel` | existing panel plus dormant tooltip shell | L |
+| 5 | affix pool 14종과 `BudgetScore` | "이 item을 다시 굴리면 어떤 affix가 나올 수 있고 어떤 roll이 유리한가?" | crafting 확률과 item family 차이를 비교할 수 없다. | `EquipmentRefit` possible-rolls/odds disclosure | existing | M |
+| 6 | `item-granted-skills` | "이 skill은 어느 item이 주며, item을 빼면 무엇을 잃나?" | loadout change의 skill 손익을 item 화면에서 예측할 수 없다. | Inventory/Refit item detail과 Character Sheet skill source chip | existing | S-M |
+| 7 | endless Heat와 drop-grade exact values | "Heat 3이 적, Echo, rarity chance를 정확히 얼마나 바꾸나?" | endless risk/reward 선택이 vague prose에 의존한다. | Town endless CTA tooltip, Atlas preview, Reward settlement | existing | S-M |
+| 8 | `synergy-tiers` effect | "이 threshold를 넘기면 실제로 무엇이 좋아지나?" | count를 맞출 유인은 보이지만 build payoff는 비교할 수 없다. | Squad Builder, Tactical Workshop, Sortie Confirm chip detail | existing | S |
 | 10 | target score와 `MarksTarget` | "왜 이 unit이 표시된 적 대신 다른 적을 공격했나?" | tactic/mark 결과를 진단하기 어렵다. | Battle selected-unit targeting detail | existing | M |
 
 ## Image asset audit
@@ -374,7 +373,7 @@ unreferenced 후보는 20,896개 first-party text/serialized file에서 PNG file
 | Threat | Tactical key class -> Foundation Threat PNG | 8 | 8 | routing broken 8개 수정; `pierce`의 잘못된 affix 우선 해소 |
 | Site event choice | `SiteEventChoiceDefinition.IconId` -> SiteEventChoice PNG | 17 | 0 | art missing 17; 모두 선택별 identity와 expected path를 명시 선언 |
 | Status | runtime status family -> 예정된 Battle chip/tooltip key | 13 | 0 | 아직 authored icon contract가 없는 art gap |
-| Craft operation | authored `AllowedCraftOperations` -> 예정된 Refit selector key | 2 live (5 enum) | 0 | 현재 worklist는 Reforge/Seal 2개 |
+| Craft operation | authored `AllowedCraftOperations` -> Refit text selector | 2 live (5 enum) | 0 | Reforge/Seal은 text-only control로 노출하고 dedicated icon은 별도 art gap으로 유지한다. |
 | Affix pool | pool id -> 예정된 Refit possible-roll legend key | 14 | 0 | 아직 authored icon contract가 없는 art gap |
 | Passive node | node definition -> Passive Board presenter | 96 | 0 | schema에 `IconId`가 없고 presenter가 `null`을 반환 |
 
@@ -383,8 +382,8 @@ unreferenced 후보는 20,896개 first-party text/serialized file에서 PNG file
 | needed id | mechanic | 나타날 위치 | 상태 |
 | --- | --- | --- | --- |
 | `site_event_choice_icon_set_v1` | 6개 event의 17개 choice identity | Atlas Site Event Choice card | `SiteEventChoiceDefinition.IconId`와 전용 resolver route는 연결됨. 17개 expected PNG는 `known-missing-art.tsv`에 개별 선언했으며 UI는 localized `Icon pending`을 표시한다. |
-| `craft_operation_reforge` | `craft-operation-reforge` | Equipment Refit operation selector | dedicated icon 없음; 현재 text action은 usable하다. |
-| `craft_operation_seal` | `craft-operation-seal` | Equipment Refit operation selector | dedicated icon 없음. `augment_seal.png`은 다른 mechanic이다. |
+| `craft_operation_reforge` | `craft-operation-reforge` | Equipment Refit operation selector | 의도적으로 text-only control을 사용한다. dedicated icon은 없지만 현재 action은 usable하다. |
+| `craft_operation_seal` | `craft-operation-seal` | Equipment Refit operation selector | 의도적으로 text-only control을 사용한다. dedicated icon은 없으며 `augment_seal.png`은 다른 mechanic이라 대체 사용하지 않는다. |
 | `status_barrier` | barrier on apply | Battle status tooltip/chip | dedicated status icon 없음. |
 | `status_unstoppable` | unstoppable | Battle status tooltip/chip | dedicated status icon 없음. |
 | `status_silence` | blocks active skills | Battle status tooltip/chip | dedicated status icon 없음. |
@@ -464,6 +463,6 @@ Skill의 missing 4개, affix의 missing 14개, site-event choice의 missing 17�
 
 ## 후속 구현 권고
 
-`site-event-choice-outcomes`는 Atlas overlay, pending choice 소진 integration witness, 6개 event rendering coverage로 닫혔다. 다음 구현 unit은 `EquipmentRefit` 안에 `Reforge`와 `Seal` mode, affix lock, exact cost를 함께 노출해야 한다. 그 뒤 War Wound와 Passive Board constraint처럼 player가 현재 결과 원인을 전혀 알 수 없는 gap을 순서대로 닫는 것이 맞다.
+`craft-operation-seal`과 lock 수별 exact cost는 기존 `EquipmentRefit` route의 operation selector, affix lock, service quote, 실행 불가 이유, 확인 단계와 production UXML binding witness로 닫혔다. 다음 구현 unit은 War Wound와 Passive Board constraint처럼 player가 현재 결과 원인을 전혀 알 수 없는 gap을 순서대로 닫는 것이 맞다.
 
 향후 lint는 이 문서의 110개 `id`를 unique key로 읽고, `classification`이 허용 enum인지 검사한 뒤 `invisible` 또는 `partial` 행에 runtime evidence와 gap text가 남아 있는지 확인할 수 있다. 새 mechanic을 추가할 때는 runtime field catalog와 이 catalog를 같은 change에서 갱신한다.

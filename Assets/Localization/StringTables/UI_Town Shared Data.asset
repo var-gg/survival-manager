@@ -1399,6 +1399,102 @@ MonoBehaviour:
     m_Key: ui.town.tooltip.expedition_endless
     m_Metadata:
       m_Items: []
+  - m_Id: 43063980179394560
+    m_Key: ui.town.refit.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337600
+    m_Key: ui.town.refit.operation.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337601
+    m_Key: ui.town.refit.operation.reforge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337602
+    m_Key: ui.town.refit.operation.seal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337603
+    m_Key: ui.town.refit.operation.seal_unavailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337604
+    m_Key: ui.town.refit.lock.open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337605
+    m_Key: ui.town.refit.lock.locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337606
+    m_Key: ui.town.refit.quote.cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337607
+    m_Key: ui.town.refit.action.reforge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337608
+    m_Key: ui.town.refit.action.seal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337609
+    m_Key: ui.town.refit.confirmation.body
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337610
+    m_Key: ui.town.refit.status.reforge_quote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337611
+    m_Key: ui.town.refit.status.seal_quote
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337612
+    m_Key: ui.town.refit.status.unequipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337613
+    m_Key: ui.town.refit.status.equipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337614
+    m_Key: ui.town.refit.reason.select_item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337615
+    m_Key: ui.town.refit.reason.seal_not_allowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337616
+    m_Key: ui.town.refit.reason.reforge_not_allowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337617
+    m_Key: ui.town.refit.reason.all_affixes_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337618
+    m_Key: ui.town.refit.reason.seal_unaffordable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337619
+    m_Key: ui.town.refit.reason.reforge_unaffordable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337620
+    m_Key: ui.town.refit.reason.town_only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337621
+    m_Key: ui.town.refit.reason.grade_maxed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337622
+    m_Key: ui.town.refit.reason.quality_maxed
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

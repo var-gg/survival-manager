@@ -20,6 +20,11 @@ namespace SM.Unity.UI.Town.Preview;
 public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
 {
     public delegate Texture2D? SpriteLoader(string spriteKey);
+    public delegate string TextResolver(
+        string tableCollection,
+        string entryKey,
+        string fallback,
+        params object[] arguments);
 
     // headless conformance(Phase 2 Stage 2): GameSessionRoot(MonoBehaviour) 대신 순수 GameSessionState +
     // ICombatContentLookup, 콘크리트 EquipmentRefitView 대신 IEquipmentRefitView, ContentTextResolver
@@ -34,7 +39,12 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     private readonly SpriteLoader _affixIconSprite;
     private readonly SpriteLoader _currencySprite;
     private readonly SpriteLoader _portraitLoader;
+    private readonly EquipmentRefitText _text;
+    private readonly HashSet<string> _sealedAffixIds = new(StringComparer.Ordinal);
     private string _selectedItemInstanceId = string.Empty;
+    private CraftOperationKindValue _selectedOperation = CraftOperationKindValue.Reforge;
+    private bool _confirmationVisible;
+    private string _operationError = string.Empty;
 
     public EquipmentRefitPresenter(
         GameSessionState session,
@@ -46,7 +56,8 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         SpriteLoader? itemIconSprite = null,
         SpriteLoader? currencySprite = null,
         SpriteLoader? portraitLoader = null,
-        SpriteLoader? affixIconSprite = null)
+        SpriteLoader? affixIconSprite = null,
+        TextResolver? uiText = null)
     {
         _session = session ?? throw new ArgumentNullException(nameof(session));
         _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
@@ -58,6 +69,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         _affixIconSprite = affixIconSprite ?? itemIconSprite ?? (_ => null);
         _currencySprite = currencySprite ?? (_ => null);
         _portraitLoader = portraitLoader ?? (_ => null);
+        _text = new EquipmentRefitText(uiText);
     }
 
     public void Initialize()
@@ -86,14 +98,94 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     void IEquipmentRefitActions.OnPoolItemSelected(string itemInstanceId)
     {
         _selectedItemInstanceId = itemInstanceId;
+        _selectedOperation = CraftOperationKindValue.Reforge;
+        _sealedAffixIds.Clear();
+        _confirmationVisible = false;
+        _operationError = string.Empty;
         Refresh();
     }
 
-    void IEquipmentRefitActions.OnRefitConfirmed()
+    void IEquipmentRefitActions.OnOperationSelected(CraftOperationKindValue operation)
     {
-        if (string.IsNullOrEmpty(_selectedItemInstanceId))
+        if (operation is not (CraftOperationKindValue.Reforge or CraftOperationKindValue.Seal))
+        {
             return;
-        _session.RefitItem(_selectedItemInstanceId);
+        }
+
+        var state = BuildState();
+        if ((operation == CraftOperationKindValue.Reforge && !state.ReforgeOperationSelectable)
+            || (operation == CraftOperationKindValue.Seal && !state.SealOperationSelectable))
+        {
+            return;
+        }
+
+        _selectedOperation = operation;
+        _confirmationVisible = false;
+        _operationError = string.Empty;
+        Refresh();
+    }
+
+    void IEquipmentRefitActions.OnAffixLockToggled(string affixId)
+    {
+        var selectedItem = ResolveSelectedItem();
+        if (_selectedOperation != CraftOperationKindValue.Seal
+            || selectedItem == null
+            || !selectedItem.AffixIds.Contains(affixId, StringComparer.Ordinal))
+        {
+            return;
+        }
+
+        if (!_sealedAffixIds.Add(affixId))
+        {
+            _sealedAffixIds.Remove(affixId);
+        }
+
+        _confirmationVisible = false;
+        _operationError = string.Empty;
+        Refresh();
+    }
+
+    void IEquipmentRefitActions.OnCraftRequested()
+    {
+        var state = BuildState();
+        if (!state.SelectedOperationCanPurchase)
+        {
+            return;
+        }
+
+        _confirmationVisible = true;
+        _operationError = string.Empty;
+        Refresh();
+    }
+
+    void IEquipmentRefitActions.OnCraftCancelled()
+    {
+        _confirmationVisible = false;
+        Refresh();
+    }
+
+    void IEquipmentRefitActions.OnCraftConfirmed()
+    {
+        var state = BuildState();
+        var selectedItem = ResolveSelectedItem();
+        if (!_confirmationVisible
+            || !state.SelectedOperationCanPurchase
+            || selectedItem == null)
+        {
+            _confirmationVisible = false;
+            Refresh();
+            return;
+        }
+
+        var sealedAffixIds = selectedItem.AffixIds
+            .Where(_sealedAffixIds.Contains)
+            .ToArray();
+        var result = _selectedOperation == CraftOperationKindValue.Seal
+            ? _session.SealItem(selectedItem.ItemInstanceId, sealedAffixIds)
+            : _session.RefitItem(selectedItem.ItemInstanceId);
+
+        _confirmationVisible = false;
+        _operationError = result.IsSuccess ? string.Empty : result.Error;
         Refresh();
     }
 
@@ -123,6 +215,54 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         {
             _selectedItemInstanceId = selectedItem.ItemInstanceId;
         }
+
+        var noItemQuote = SM.Meta.Services.RefitQuote.Unavailable(
+            _text.SelectItemReason);
+        var refitQuote = selectedItem == null
+            ? noItemQuote
+            : session.GetRefitQuote(selectedItem.ItemInstanceId);
+        var canonicalSealedAffixIds = selectedItem?.AffixIds
+            .Where(_sealedAffixIds.Contains)
+            .ToArray()
+            ?? Array.Empty<string>();
+        var sealOperationQuote = selectedItem == null
+            ? noItemQuote
+            : session.GetSealQuote(selectedItem.ItemInstanceId, Array.Empty<string>());
+        var sealQuote = selectedItem == null
+            ? noItemQuote
+            : session.GetSealQuote(selectedItem.ItemInstanceId, canonicalSealedAffixIds);
+        var reforgeOperationSelectable = refitQuote.CanPurchase;
+        var sealOperationSelectable = sealOperationQuote.CanPurchase;
+        if (_selectedOperation == CraftOperationKindValue.Reforge
+            && !reforgeOperationSelectable
+            && sealOperationSelectable)
+        {
+            _selectedOperation = CraftOperationKindValue.Seal;
+        }
+        else if (_selectedOperation == CraftOperationKindValue.Seal
+                 && !sealOperationSelectable
+                 && reforgeOperationSelectable)
+        {
+            _selectedOperation = CraftOperationKindValue.Reforge;
+        }
+
+        var refitPurchaseBlockReason = selectedItem == null
+            ? noItemQuote.Reason
+            : session.GetRefitPurchaseBlockReason(selectedItem.ItemInstanceId);
+        var sealPurchaseBlockReason = selectedItem == null
+            ? noItemQuote.Reason
+            : session.GetSealPurchaseBlockReason(
+                selectedItem.ItemInstanceId,
+                canonicalSealedAffixIds);
+        var selectedQuote = _selectedOperation == CraftOperationKindValue.Seal
+            ? sealQuote
+            : refitQuote;
+        var selectedPurchaseBlockReason = _selectedOperation == CraftOperationKindValue.Seal
+            ? sealPurchaseBlockReason
+            : refitPurchaseBlockReason;
+        var selectedOperationCanPurchase = selectedQuote.CanPurchase
+                                           && string.IsNullOrWhiteSpace(
+                                               selectedPurchaseBlockReason);
 
         // Pool — Profile.Inventory 전체. ItemBaseDefinition으로 이름 / slot / rarity 보강.
         var pool = inventory
@@ -189,7 +329,11 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                     CategoryKey: category,
                     Name: _affixName(affixId),
                     MagnitudeText: magnitudeText,
-                    IconSprite: _affixIconSprite(affixId)));
+                    IconSprite: _affixIconSprite(affixId),
+                    IsLocked: _sealedAffixIds.Contains(affixId),
+                    LockToggleEnabled: _selectedOperation == CraftOperationKindValue.Seal
+                                       && sealOperationSelectable,
+                    LockLabel: _text.LockLabel(_sealedAffixIds.Contains(affixId))));
             }
         }
 
@@ -203,10 +347,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         var selectedIdentityLabel = string.Empty;
         var selectedShowsIdentityBadge = false;
         var selectedCanRefit = false;
-        var refitQuote = selectedItem == null
-            ? SM.Meta.Services.RefitQuote.Unavailable("재정비할 장비를 선택하세요.")
-            : session.GetRefitQuote(selectedItem.ItemInstanceId);
-        var equippedHeroLabel = "미장착";
+        var equippedHeroLabel = _text.UnequippedLabel;
         Texture2D? equippedHeroPortrait = null;
         if (selectedItem != null)
         {
@@ -238,7 +379,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 var heroName = hero != null
                     ? _characterName(hero.CharacterId, hero.ArchetypeId)
                     : selectedItem.EquippedHeroId;
-                equippedHeroLabel = $"장착: {heroName}";
+                equippedHeroLabel = _text.Equipped(heroName);
                 // uxqa1: EquippedHeroId는 save instance id(hero-1/GUID)라 포트레잇 해석 불가 —
                 // 스탠디가 영구 빈 박스로 렌더되던 결함. 이름과 같은 CharacterId→ArchetypeId 키 사용.
                 var portraitKey = !string.IsNullOrWhiteSpace(hero?.CharacterId) ? hero!.CharacterId
@@ -265,27 +406,55 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             NextFloorPercent: ToPercent(refitQuote.TargetFloorQ64),
             RefitCost: refitQuote.EchoCost,
             RefitMaxed: refitQuote.RefitMaxed,
-            RefitStatusMessage: BuildRefitStatus(refitQuote),
+            RefitStatusMessage: _text.BuildOperationStatus(
+                refitQuote,
+                CraftOperationKindValue.Reforge,
+                lockedAffixCount: 0,
+                totalAffixCount: selectedItem?.AffixIds.Count ?? 0,
+                purchaseBlockReason: refitPurchaseBlockReason),
             Affixes: affixes,
-            Pool: pool);
+            Pool: pool,
+            SelectedOperation: _selectedOperation,
+            ReforgeOperationSelectable: reforgeOperationSelectable,
+            SealOperationSelectable: sealOperationSelectable,
+            SealOperationReason: sealOperationSelectable
+                ? string.Empty
+                : _text.SealUnavailable(
+                    _text.LocalizePurchaseBlockReason(
+                        sealOperationQuote.Reason,
+                        CraftOperationKindValue.Seal,
+                        sealOperationQuote)),
+            SelectedOperationCanPurchase: selectedOperationCanPurchase,
+            SelectedOperationCost: selectedQuote.EchoCost,
+            SelectedOperationCostLabel: _text.CostLabel(selectedQuote.EchoCost),
+            SelectedOperationStatusMessage: !string.IsNullOrWhiteSpace(_operationError)
+                ? _text.LocalizePurchaseBlockReason(
+                    _operationError,
+                    _selectedOperation,
+                    selectedQuote)
+                : _text.BuildOperationStatus(
+                    selectedQuote,
+                    _selectedOperation,
+                    canonicalSealedAffixIds.Length,
+                    selectedItem?.AffixIds.Count ?? 0,
+                    selectedPurchaseBlockReason),
+            ConfirmationVisible: _confirmationVisible && selectedOperationCanPurchase,
+            PanelTitle: _text.PanelTitle,
+            OperationSelectorLabel: _text.OperationSelectorLabel,
+            ReforgeOperationLabel: _text.ReforgeOperationLabel,
+            SealOperationLabel: _text.SealOperationLabel,
+            CraftActionLabel: _text.BuildCraftActionLabel(
+                _selectedOperation,
+                selectedQuote.EchoCost),
+            ConfirmationMessage: _text.Confirmation(
+                selectedQuote.EchoCost,
+                _selectedOperation),
+            ConfirmLabel: _text.ConfirmLabel,
+            CancelLabel: _text.CancelLabel);
     }
 
     private static double ToPercent(ulong probabilityQ64)
         => probabilityQ64 / (double)ulong.MaxValue * 100d;
-
-    private static string BuildRefitStatus(SM.Meta.Services.RefitQuote quote)
-    {
-        if (quote.RefitMaxed)
-        {
-            return quote.Reason.Contains("grade", StringComparison.OrdinalIgnoreCase)
-                ? "이 등급은 개선 가능한 품질 구간이 없습니다."
-                : "최대 Refit 품질에 도달했습니다.";
-        }
-
-        return quote.CanPurchase
-            ? $"품질 {ToPercent(quote.CurrentPercentileQ64):0.0}% → 보장 바닥 {ToPercent(quote.TargetFloorQ64):0.0}%"
-            : quote.Reason;
-    }
 
     private static string ResolveSlotKey(ItemSlotType slot) => slot switch
     {

@@ -1447,6 +1447,114 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 162163771961769987
+  - m_Id: 43063980179394560
+    m_Localized: EQUIPMENT REFIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337600
+    m_Localized: Choose operation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337601
+    m_Localized: Reforge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337602
+    m_Localized: Seal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337603
+    m_Localized: 'Seal unavailable: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337604
+    m_Localized: Lock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337605
+    m_Localized: Locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337606
+    m_Localized: '{0} Echo'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337607
+    m_Localized: Reforge (-{0} Echo)
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337608
+    m_Localized: Seal (-{0} Echo)
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337609
+    m_Localized: Spend {0} Echo on {1}? The previous roll cannot be restored.
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337610
+    m_Localized: "Quality {0:0.0}% \u2192 guaranteed floor {1:0.0}% \xB7 service
+      quote {2} Echo"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337611
+    m_Localized: "{0}/{1} affixes locked \xB7 quality {2:0.0}% \u2192 guaranteed
+      floor {3:0.0}% \xB7 service quote {4} Echo"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337612
+    m_Localized: Unequipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337613
+    m_Localized: 'Equipped: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337614
+    m_Localized: Select an item to refit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337615
+    m_Localized: This item does not allow Seal.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337616
+    m_Localized: This item does not allow Reforge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337617
+    m_Localized: Seal must leave at least one affix unlocked.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337618
+    m_Localized: Not enough Echo. Seal requires {0} Echo.
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337619
+    m_Localized: Not enough Echo. Reforge requires {0} Echo.
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43063980221337620
+    m_Localized: Crafting is available only in Town.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337621
+    m_Localized: This grade has no higher quality floor.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43063980221337622
+    m_Localized: The item is already at the maximum Refit quality.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -1495,3 +1603,13 @@ MonoBehaviour:
         - id: 17841341873852419
         - id: 27687845509795840
         - id: 35325321342685184
+        - id: 43063980221337603
+        - id: 43063980221337606
+        - id: 43063980221337607
+        - id: 43063980221337608
+        - id: 43063980221337609
+        - id: 43063980221337610
+        - id: 43063980221337611
+        - id: 43063980221337613
+        - id: 43063980221337618
+        - id: 43063980221337619

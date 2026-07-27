@@ -167,6 +167,20 @@ internal sealed class SessionItemRefitFlow
             : RefitQuote.Unavailable(error);
     }
 
+    internal string GetRefitPurchaseBlockReason(string itemInstanceId)
+    {
+        var quote = GetRefitQuote(itemInstanceId);
+        return ResolvePurchaseBlockReason(quote, CraftOperationKindValue.Reforge);
+    }
+
+    internal string GetSealPurchaseBlockReason(
+        string itemInstanceId,
+        IReadOnlyCollection<string> sealedAffixIds)
+    {
+        var quote = GetSealQuote(itemInstanceId, sealedAffixIds);
+        return ResolvePurchaseBlockReason(quote, CraftOperationKindValue.Seal);
+    }
+
     internal RefitExecutionResult PreviewRefitItem(
         string itemInstanceId,
         ulong stableCommandSeed)
@@ -217,24 +231,15 @@ internal sealed class SessionItemRefitFlow
         RefitService service,
         ulong stableCommandSeed)
     {
-        if (!string.Equals(_owner.CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
-        {
-            return Result.Fail("Refit은 Town에서만 가능합니다.");
-        }
-
         // Atomic order: resolve target/cost -> affordability -> generate -> invariants
         // -> materialize both identity/value lists -> charge -> commit both lists.
         var quote = service.QuoteNextEffective(itemState, chapterEconomy);
-        if (!quote.CanPurchase)
+        var purchaseBlockReason = ResolvePurchaseBlockReason(
+            quote,
+            CraftOperationKindValue.Reforge);
+        if (!string.IsNullOrWhiteSpace(purchaseBlockReason))
         {
-            return Result.Fail(string.IsNullOrWhiteSpace(quote.Reason)
-                ? "이 장비에는 유효한 Refit 단계가 없습니다."
-                : quote.Reason);
-        }
-
-        if (_owner.Profile.Currencies.Echo < quote.EchoCost)
-        {
-            return Result.Fail($"잔향이 부족합니다. 재정비에는 {quote.EchoCost} 잔향이 필요합니다.");
+            return Result.Fail(purchaseBlockReason);
         }
 
         var execution = service.RefitNextEffective(
@@ -299,25 +304,16 @@ internal sealed class SessionItemRefitFlow
         int attemptIndex,
         ulong stableCommandSeed)
     {
-        if (!string.Equals(_owner.CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
-        {
-            return Result.Fail("Seal은 Town에서만 가능합니다.");
-        }
-
         var quote = service.QuoteSealNextEffective(
             itemState,
             chapterEconomy,
             canonicalSealedAffixIds);
-        if (!quote.CanPurchase)
+        var purchaseBlockReason = ResolvePurchaseBlockReason(
+            quote,
+            CraftOperationKindValue.Seal);
+        if (!string.IsNullOrWhiteSpace(purchaseBlockReason))
         {
-            return Result.Fail(string.IsNullOrWhiteSpace(quote.Reason)
-                ? "이 장비에는 유효한 Seal 단계가 없습니다."
-                : quote.Reason);
-        }
-
-        if (_owner.Profile.Currencies.Echo < quote.EchoCost)
-        {
-            return Result.Fail($"잔향이 부족합니다. 봉인에는 {quote.EchoCost} 잔향이 필요합니다.");
+            return Result.Fail(purchaseBlockReason);
         }
 
         var execution = service.SealNextEffective(
@@ -386,6 +382,39 @@ internal sealed class SessionItemRefitFlow
 
         _owner.SynchronizeRefitEquippedHero(item.EquippedHeroId);
         return Result.Success();
+    }
+
+    private string ResolvePurchaseBlockReason(
+        RefitQuote quote,
+        CraftOperationKindValue operation)
+    {
+        if (!string.Equals(_owner.CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
+        {
+            return operation == CraftOperationKindValue.Seal
+                ? "Seal은 Town에서만 가능합니다."
+                : "Refit은 Town에서만 가능합니다.";
+        }
+
+        if (!quote.CanPurchase)
+        {
+            if (!string.IsNullOrWhiteSpace(quote.Reason))
+            {
+                return quote.Reason;
+            }
+
+            return operation == CraftOperationKindValue.Seal
+                ? "이 장비에는 유효한 Seal 단계가 없습니다."
+                : "이 장비에는 유효한 Refit 단계가 없습니다.";
+        }
+
+        if (_owner.Profile.Currencies.Echo < quote.EchoCost)
+        {
+            return operation == CraftOperationKindValue.Seal
+                ? $"잔향이 부족합니다. 봉인에는 {quote.EchoCost} 잔향이 필요합니다."
+                : $"잔향이 부족합니다. 재정비에는 {quote.EchoCost} 잔향이 필요합니다.";
+        }
+
+        return string.Empty;
     }
 
     private int ResolveNextSealAttemptIndex(string itemInstanceId)

@@ -81,6 +81,51 @@
 /* Affix list column — item-and-affix-system.md V1: implicit 1 + prefix 2 + suffix 2 = 5 line */
 .erp-affix-list { flex-grow: 1; flex-direction: column; }
 
+/* Craft operation selector — text-only until dedicated operation art exists. */
+.erp-operation-selector {
+    flex-direction: column;
+    margin-bottom: var(--sm-s-3);
+    padding: var(--sm-s-3);
+    background-color: var(--sm-bg-2);
+    border-left-width: var(--sm-frame-trim-w-small);
+    border-left-color: var(--sm-gold-300-a42);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+.erp-operation-selector__label {
+    color: var(--sm-ink-2);
+    font-size: var(--sm-fs-eb);
+    -unity-font-style: bold;
+}
+.erp-operation-selector__buttons {
+    flex-direction: row;
+    margin-top: var(--sm-s-2);
+}
+.erp-operation-selector__button {
+    flex-grow: 1;
+    color: var(--sm-gold-200);
+    font-size: var(--sm-fs-s);
+}
+.erp-operation-selector__button--seal {
+    margin-left: var(--sm-s-2);
+}
+.erp-operation-selector__button--selected {
+    color: var(--sm-cta-primary-text);
+    background-color: var(--sm-cta-primary-bg);
+    border-left-color: var(--sm-cta-primary-border);
+    border-right-color: var(--sm-cta-primary-border);
+    border-top-color: var(--sm-cta-primary-border);
+    border-bottom-color: var(--sm-cta-primary-border);
+}
+.erp-operation-selector__reason {
+    margin-top: var(--sm-s-2);
+    color: var(--sm-state-warn);
+    font-size: var(--sm-fs-eb);
+    white-space: normal;
+}
+
 /* Group header (IMPLICIT / PREFIX / SUFFIX) */
 .erp-affix-group {
     font-size: 10px; letter-spacing: 3px; -unity-font-style: bold;
@@ -128,8 +173,42 @@
     -unity-text-align: middle-right;
     margin-left: var(--sm-s-2);
 }
+.erp-affix-row__lock {
+    margin-left: var(--sm-s-3);
+    padding-left: var(--sm-s-2);
+    padding-right: var(--sm-s-2);
+    color: var(--sm-ink-2);
+    background-color: var(--sm-bg-1);
+    border-left-width: var(--sm-frame-trim-w-small);
+    border-right-width: var(--sm-frame-trim-w-small);
+    border-top-width: var(--sm-frame-trim-w-small);
+    border-bottom-width: var(--sm-frame-trim-w-small);
+    border-left-color: var(--sm-line-2);
+    border-right-color: var(--sm-line-2);
+    border-top-color: var(--sm-line-2);
+    border-bottom-color: var(--sm-line-2);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+    font-size: var(--sm-fs-eb);
+}
+.erp-affix-row__lock--locked {
+    color: var(--sm-bg-0);
+    background-color: var(--sm-state-safe);
+    border-left-color: var(--sm-state-safe);
+    border-right-color: var(--sm-state-safe);
+    border-top-color: var(--sm-state-safe);
+    border-bottom-color: var(--sm-state-safe);
+}
 
 /* CTA block */
+.erp-craft-status {
+    margin-top: var(--sm-s-2);
+    color: var(--sm-ink-2);
+    font-size: var(--sm-fs-s);
+    white-space: normal;
+}
 .erp-cta-block { flex-direction: row; align-items: center; justify-content: flex-end; margin-top: var(--sm-s-3); }
 .erp-echo-cost { flex-direction: row; align-items: center; margin-right: var(--sm-s-4);
     padding-top: var(--sm-s-2); padding-bottom: var(--sm-s-2); padding-left: var(--sm-s-3); padding-right: var(--sm-s-3);
@@ -140,6 +219,11 @@
 }
 .erp-echo-cost__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: var(--sm-s-2); }
 .erp-echo-cost__icon--echo { background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Currency/currency_echo.png"); }
+.erp-echo-cost__label {
+    color: var(--sm-gold-100);
+    font-size: var(--sm-fs-s);
+    -unity-font-style: bold;
+}
 .erp-echo-cost__glyph { width: 50px; height: 6px; background-color: rgba(180,150,230,0.78); }
 
 /* Refit CTA: visual은 sm-cta sm-cta--lg sm-cta--primary. 15 Echo single-affix reroll.
@@ -151,6 +235,32 @@
     font-size: 13px;
     -unity-font-style: bold;
     letter-spacing: 2px;
+}
+.erp-confirmation {
+    display: none;
+    flex-direction: column;
+    margin-top: var(--sm-s-3);
+    padding: var(--sm-s-3);
+    background-color: var(--sm-bg-2);
+    border-left-width: var(--sm-frame-trim-w-small);
+    border-left-color: var(--sm-state-warn);
+    border-top-left-radius: var(--sm-r-md);
+    border-top-right-radius: var(--sm-r-md);
+    border-bottom-left-radius: var(--sm-r-md);
+    border-bottom-right-radius: var(--sm-r-md);
+}
+.erp-confirmation__message {
+    color: var(--sm-ink-1);
+    font-size: var(--sm-fs-s);
+    white-space: normal;
+}
+.erp-confirmation__actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: var(--sm-s-2);
+}
+.erp-confirmation__button--cancel {
+    margin-left: var(--sm-s-2);
 }
 
 /* Pool column */

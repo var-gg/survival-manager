@@ -607,6 +607,11 @@ public sealed partial class GameSessionState
         IReadOnlyCollection<string> sealedAffixIds) =>
         _itemRefitFlow.GetSealQuote(itemInstanceId, sealedAffixIds);
 
+    internal string GetRefitPurchaseBlockReason(string itemInstanceId) => _itemRefitFlow.GetRefitPurchaseBlockReason(itemInstanceId);
+
+    internal string GetSealPurchaseBlockReason(string itemInstanceId, IReadOnlyCollection<string> sealedAffixIds) =>
+        _itemRefitFlow.GetSealPurchaseBlockReason(itemInstanceId, sealedAffixIds);
+
     internal RefitExecutionResult PreviewRefitItem(string itemInstanceId, ulong stableCommandSeed) =>
         _itemRefitFlow.PreviewRefitItem(itemInstanceId, stableCommandSeed);
 

@@ -21,7 +21,7 @@
             <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="erp-header">
-                <ui:Label class="erp-header__title" text="장비 — REFIT" />
+                <ui:Label name="RefitPanelTitle" class="erp-header__title" />
                 <ui:Button class="erp-header__close sm-cta sm-cta--inline sm-cta--secondary" text="X" />
             </ui:VisualElement>
 
@@ -43,16 +43,33 @@
 
                 <!-- Middle: 5 affix list + Echo CTA -->
                 <ui:VisualElement class="erp-col erp-col--affix">
+                    <ui:VisualElement class="erp-operation-selector">
+                        <ui:Label name="OperationSelectorLabel" class="erp-operation-selector__label" />
+                        <ui:VisualElement class="erp-operation-selector__buttons">
+                            <ui:Button name="RefitOperationReforgeButton" class="erp-operation-selector__button sm-cta sm-cta--inline sm-cta--secondary" />
+                            <ui:Button name="RefitOperationSealButton" class="erp-operation-selector__button erp-operation-selector__button--seal sm-cta sm-cta--inline sm-cta--secondary" />
+                        </ui:VisualElement>
+                        <ui:Label name="SealUnavailableReason" class="erp-operation-selector__reason" />
+                    </ui:VisualElement>
                     <ui:VisualElement name="AffixList" class="erp-affix-list" />
+                    <ui:Label name="CraftStatusLabel" class="erp-craft-status" />
                     <ui:VisualElement class="erp-cta-block">
                         <!-- uxqa1: erp-echo-cost__glyph(50x6 보라 막대)는 와이어프레임 greeking 잔재 제거
                              — 비용 수치는 CTA 라벨이 표기. -->
                         <ui:VisualElement name="EchoCost" class="erp-echo-cost">
                             <ui:VisualElement name="EchoIcon" class="erp-echo-cost__icon erp-echo-cost__icon--echo" picking-mode="Ignore" />
+                            <ui:Label name="QuoteCostLabel" class="erp-echo-cost__label" />
                         </ui:VisualElement>
-                        <ui:Button class="erp-refit-cta sm-cta sm-cta--lg sm-cta--primary">
-                            <ui:Label name="RefitCostLabel" class="erp-refit-cta__label" text="품질 계산 중…" />
+                        <ui:Button name="CraftRequestButton" class="erp-refit-cta sm-cta sm-cta--lg sm-cta--primary">
+                            <ui:Label name="RefitCostLabel" class="erp-refit-cta__label" />
                         </ui:Button>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="CraftConfirmation" class="erp-confirmation">
+                        <ui:Label name="CraftConfirmationMessage" class="erp-confirmation__message" />
+                        <ui:VisualElement class="erp-confirmation__actions">
+                            <ui:Button name="CraftConfirmButton" class="erp-confirmation__button sm-cta sm-cta--inline sm-cta--primary" />
+                            <ui:Button name="CraftCancelButton" class="erp-confirmation__button erp-confirmation__button--cancel sm-cta sm-cta--inline sm-cta--secondary" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
 

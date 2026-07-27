@@ -80,4 +80,4 @@ repo에 남은 문서를 읽을 때도 "무엇을 만들지"의 창작 기준이
 - `ui/battle-observer-ui.md`: 전투 관전자 UI 기준
 - `ui/town-character-sheet-ui.md`: Town 5-panel character sheet source/view-state contract
 - `ui/localization-policy.md`: 플레이어 노출 텍스트와 localization table 정책
-- `ui/mechanic-surface-coverage.md`: runtime mechanic과 player-visible surface의 coverage catalog, 실제 Atlas site-event choice closure, icon keyspace routing 감사와 missing-art worklist
+- `ui/mechanic-surface-coverage.md`: runtime mechanic과 player-visible surface의 coverage catalog, Atlas site-event choice와 EquipmentRefit Seal closure, icon keyspace routing 감사와 missing-art worklist

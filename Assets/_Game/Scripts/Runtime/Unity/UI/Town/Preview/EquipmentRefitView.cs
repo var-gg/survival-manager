@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SM.Core.Content;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,6 +20,17 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
     private readonly VisualElement _affixList;
     private readonly VisualElement _inventoryPool;
     private readonly Label _refitCostLabel;
+    private readonly Label _panelTitle;
+    private readonly Label _operationSelectorLabel;
+    private readonly Button _reforgeOperationButton;
+    private readonly Button _sealOperationButton;
+    private readonly Label _sealOperationReason;
+    private readonly Label _craftStatusLabel;
+    private readonly Label _quoteCostLabel;
+    private readonly VisualElement _confirmation;
+    private readonly Label _confirmationMessage;
+    private readonly Button _confirmButton;
+    private readonly Button _cancelButton;
     private readonly VisualElement? _modalRoot;
     private readonly Button? _closeButton;
     private readonly Button? _refitButton;
@@ -71,6 +83,28 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
             ?? throw new ArgumentException("InventoryPool 못 찾음");
         _refitCostLabel = root.Q<Label>("RefitCostLabel")
             ?? throw new ArgumentException("RefitCostLabel 못 찾음");
+        _panelTitle = root.Q<Label>("RefitPanelTitle")
+            ?? throw new ArgumentException("RefitPanelTitle 못 찾음");
+        _operationSelectorLabel = root.Q<Label>("OperationSelectorLabel")
+            ?? throw new ArgumentException("OperationSelectorLabel 못 찾음");
+        _reforgeOperationButton = root.Q<Button>("RefitOperationReforgeButton")
+            ?? throw new ArgumentException("RefitOperationReforgeButton 못 찾음");
+        _sealOperationButton = root.Q<Button>("RefitOperationSealButton")
+            ?? throw new ArgumentException("RefitOperationSealButton 못 찾음");
+        _sealOperationReason = root.Q<Label>("SealUnavailableReason")
+            ?? throw new ArgumentException("SealUnavailableReason 못 찾음");
+        _craftStatusLabel = root.Q<Label>("CraftStatusLabel")
+            ?? throw new ArgumentException("CraftStatusLabel 못 찾음");
+        _quoteCostLabel = root.Q<Label>("QuoteCostLabel")
+            ?? throw new ArgumentException("QuoteCostLabel 못 찾음");
+        _confirmation = root.Q<VisualElement>("CraftConfirmation")
+            ?? throw new ArgumentException("CraftConfirmation 못 찾음");
+        _confirmationMessage = root.Q<Label>("CraftConfirmationMessage")
+            ?? throw new ArgumentException("CraftConfirmationMessage 못 찾음");
+        _confirmButton = root.Q<Button>("CraftConfirmButton")
+            ?? throw new ArgumentException("CraftConfirmButton 못 찾음");
+        _cancelButton = root.Q<Button>("CraftCancelButton")
+            ?? throw new ArgumentException("CraftCancelButton 못 찾음");
         // item 컨텍스트 라벨 — 없어도 preview가 깨지지 않게 nullable
         _selectedItemName = root.Q<Label>("SelectedItemName");
         _equippedHeroLabel = root.Q<Label>("EquippedHeroLabel");
@@ -81,9 +115,17 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
         _actions = actions;
         if (_refitButton != null)
         {
-            _refitButton.clicked -= HandleRefitClicked;
-            _refitButton.clicked += HandleRefitClicked;
+            _refitButton.clicked -= HandleCraftRequested;
+            _refitButton.clicked += HandleCraftRequested;
         }
+        _reforgeOperationButton.clicked -= HandleReforgeSelected;
+        _reforgeOperationButton.clicked += HandleReforgeSelected;
+        _sealOperationButton.clicked -= HandleSealSelected;
+        _sealOperationButton.clicked += HandleSealSelected;
+        _confirmButton.clicked -= HandleCraftConfirmed;
+        _confirmButton.clicked += HandleCraftConfirmed;
+        _cancelButton.clicked -= HandleCraftCancelled;
+        _cancelButton.clicked += HandleCraftCancelled;
     }
 
     public void Render(EquipmentRefitViewState state)
@@ -105,16 +147,45 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
         }
         if (_equippedHeroLabel != null)
             _equippedHeroLabel.text = state.EquippedHeroLabel;
-        _refitButton?.SetEnabled(state.SelectedItemCanRefit && !state.RefitMaxed);
+        _panelTitle.text = state.PanelTitle;
+        _operationSelectorLabel.text = state.OperationSelectorLabel;
+        _reforgeOperationButton.text = state.ReforgeOperationLabel;
+        _sealOperationButton.text = state.SealOperationLabel;
+        _reforgeOperationButton.SetEnabled(state.ReforgeOperationSelectable);
+        _sealOperationButton.SetEnabled(state.SealOperationSelectable);
+        _reforgeOperationButton.EnableInClassList(
+            "erp-operation-selector__button--selected",
+            state.SelectedOperation == CraftOperationKindValue.Reforge);
+        _sealOperationButton.EnableInClassList(
+            "erp-operation-selector__button--selected",
+            state.SelectedOperation == CraftOperationKindValue.Seal);
+        _sealOperationReason.text = state.SealOperationReason;
+        _sealOperationReason.style.display = string.IsNullOrWhiteSpace(
+            state.SealOperationReason)
+            ? DisplayStyle.None
+            : DisplayStyle.Flex;
+
+        _craftStatusLabel.text = state.SelectedOperationStatusMessage;
+        _quoteCostLabel.text = state.SelectedOperationCostLabel;
+        _refitButton?.SetEnabled(state.SelectedOperationCanPurchase);
         if (_refitButton != null)
         {
-            _refitButton.tooltip = state.RefitStatusMessage;
+            _refitButton.tooltip = state.SelectedOperationStatusMessage;
+            _refitButton.style.display = state.ConfirmationVisible
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
         }
+        _confirmation.style.display = state.ConfirmationVisible
+            ? DisplayStyle.Flex
+            : DisplayStyle.None;
+        _confirmationMessage.text = state.ConfirmationMessage;
+        _confirmButton.text = state.ConfirmLabel;
+        _cancelButton.text = state.CancelLabel;
+        _confirmButton.SetEnabled(
+            state.ConfirmationVisible && state.SelectedOperationCanPurchase);
 
         if (state.EchoSprite != null) _echoIcon.style.backgroundImage = new StyleBackground(state.EchoSprite);
-        _refitCostLabel.text = state.RefitMaxed || !state.SelectedItemCanRefit
-            ? state.RefitStatusMessage
-            : $"{state.RefitStatusMessage} · 재정비 (-{state.RefitCost} 잔향)";
+        _refitCostLabel.text = state.CraftActionLabel;
 
         RenderAffixList(state.Affixes);
         RenderPool(state.Pool);
@@ -154,6 +225,20 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
             var value = new Label(affix.MagnitudeText);
             value.AddToClassList("erp-affix-row__value");
             row.Add(value);
+
+            var lockButton = new Button
+            {
+                name = $"AffixLock_{affix.AffixId}",
+                text = affix.LockLabel,
+            };
+            lockButton.AddToClassList("erp-affix-row__lock");
+            lockButton.EnableInClassList(
+                "erp-affix-row__lock--locked",
+                affix.IsLocked);
+            lockButton.SetEnabled(affix.LockToggleEnabled);
+            lockButton.clicked += () =>
+                _actions?.OnAffixLockToggled(affix.AffixId);
+            row.Add(lockButton);
 
             row.tooltip = $"{affix.AffixId} [{affix.GroupKey}]";
             _affixList.Add(row);
@@ -225,16 +310,27 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
         }
     }
 
-    private void HandleRefitClicked()
-    {
-        _actions?.OnRefitConfirmed();
-    }
+    private void HandleReforgeSelected() =>
+        _actions?.OnOperationSelected(CraftOperationKindValue.Reforge);
+
+    private void HandleSealSelected() =>
+        _actions?.OnOperationSelected(CraftOperationKindValue.Seal);
+
+    private void HandleCraftRequested() => _actions?.OnCraftRequested();
+
+    private void HandleCraftConfirmed() => _actions?.OnCraftConfirmed();
+
+    private void HandleCraftCancelled() => _actions?.OnCraftCancelled();
 }
 
 public interface IEquipmentRefitActions
 {
     void OnPoolItemSelected(string itemInstanceId);
-    void OnRefitConfirmed();
+    void OnOperationSelected(CraftOperationKindValue operation);
+    void OnAffixLockToggled(string affixId);
+    void OnCraftRequested();
+    void OnCraftConfirmed();
+    void OnCraftCancelled();
 }
 
 /// <summary>

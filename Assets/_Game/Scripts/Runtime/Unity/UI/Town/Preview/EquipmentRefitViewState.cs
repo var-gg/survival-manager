@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SM.Core.Content;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -20,7 +21,10 @@ public sealed record EquipmentRefitAffixRowViewState(
     string CategoryKey,          // offenseflat / utility / ...
     string Name,                 // ← AffixDefinition.NameKey resolved
     string MagnitudeText,        // ← persisted magnitude + percentile + AffixDefinition.ValueMin~ValueMax
-    Texture2D? IconSprite
+    Texture2D? IconSprite,
+    bool IsLocked = false,
+    bool LockToggleEnabled = false,
+    string LockLabel = ""
 );
 
 public sealed record EquipmentRefitPoolRowViewState(
@@ -60,5 +64,22 @@ public sealed record EquipmentRefitViewState(
     bool RefitMaxed,
     string RefitStatusMessage,
     IReadOnlyList<EquipmentRefitAffixRowViewState> Affixes,
-    IReadOnlyList<EquipmentRefitPoolRowViewState> Pool
+    IReadOnlyList<EquipmentRefitPoolRowViewState> Pool,
+    CraftOperationKindValue SelectedOperation = CraftOperationKindValue.Reforge,
+    bool ReforgeOperationSelectable = false,
+    bool SealOperationSelectable = false,
+    string SealOperationReason = "",
+    bool SelectedOperationCanPurchase = false,
+    int SelectedOperationCost = 0,
+    string SelectedOperationCostLabel = "",
+    string SelectedOperationStatusMessage = "",
+    bool ConfirmationVisible = false,
+    string PanelTitle = "",
+    string OperationSelectorLabel = "",
+    string ReforgeOperationLabel = "",
+    string SealOperationLabel = "",
+    string CraftActionLabel = "",
+    string ConfirmationMessage = "",
+    string ConfirmLabel = "",
+    string CancelLabel = ""
 );

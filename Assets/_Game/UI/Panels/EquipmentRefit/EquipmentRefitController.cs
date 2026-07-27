@@ -12,6 +12,7 @@ public sealed class EquipmentRefitController : MonoBehaviour
     [SerializeField] private bool openOnStart = true;
 
     private EquipmentRefitPresenter? _presenter;
+    private GameLocalizationController? _localization;
 
     private void Reset()
     {
@@ -44,6 +45,14 @@ public sealed class EquipmentRefitController : MonoBehaviour
         _presenter?.Refresh();
     }
 
+    private void OnDestroy()
+    {
+        if (_localization != null)
+        {
+            _localization.LocaleChanged -= HandleLocaleChanged;
+        }
+    }
+
     private void EnsureReady()
     {
         if (_presenter != null)
@@ -57,6 +66,9 @@ public sealed class EquipmentRefitController : MonoBehaviour
         }
 
         var root = GameSessionRoot.EnsureInstance();
+        _localization = root.Localization;
+        _localization.LocaleChanged -= HandleLocaleChanged;
+        _localization.LocaleChanged += HandleLocaleChanged;
         // SeedDemoProfile은 4 hero에만 item을 주므로 dev/preview 진입 시 inventory가 비어있어 panel이
         // 텅 빈 상태가 보이는 케이스가 있다. 모든 hero에 baseline item을 채워 visual surface를 확보한다.
         root.SessionState.SeedDevDemoInventoryIfEmpty();
@@ -73,7 +85,18 @@ public sealed class EquipmentRefitController : MonoBehaviour
             itemIconSprite: iconResolver.ResolveItem,
             currencySprite: null,
             portraitLoader: iconResolver.ResolveCharacterPortrait,
-            affixIconSprite: iconResolver.ResolveAffix);
+            affixIconSprite: iconResolver.ResolveAffix,
+            uiText: (table, key, fallback, arguments) =>
+                root.Localization.LocalizeOrFallback(
+                    table,
+                    key,
+                    fallback,
+                    arguments));
         _presenter.Initialize();
+    }
+
+    private void HandleLocaleChanged(UnityEngine.Localization.Locale _)
+    {
+        _presenter?.Refresh();
     }
 }
