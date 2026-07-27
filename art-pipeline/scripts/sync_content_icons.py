@@ -20,6 +20,7 @@ TARGET_DIRS = {
     "item": "Item",
     "augment": "Augment",
     "affix": "Affix",
+    "site_event_choice": "SiteEventChoice",
 }
 CHROMA = (255, 0, 255)
 
@@ -77,7 +78,22 @@ def ensure_unity_meta(target: Path) -> bool:
 
     template = next((path for path in sorted(target.parent.glob("*.png.meta")) if path != meta), None)
     if template is None:
-        raise FileNotFoundError(f"no .png.meta template found in {target.parent}")
+        # A brand-new icon kind starts with an empty directory. Every icon directory
+        # shares the same Unity import settings, so borrow a sibling kind's template
+        # rather than forcing the first icon of a new kind to be seeded by hand.
+        template = next(
+            (
+                path
+                for path in sorted(target.parent.parent.glob("*/*.png.meta"))
+                if path != meta
+            ),
+            None,
+        )
+    if template is None:
+        raise FileNotFoundError(
+            f"no .png.meta template found in {target.parent} or any sibling icon "
+            f"directory under {target.parent.parent}"
+        )
 
     text = template.read_text(encoding="utf-8")
     updated = re.sub(
@@ -101,7 +117,12 @@ def iter_icons(catalog: dict[str, Any]) -> list[tuple[str, str, Path]]:
     result: list[tuple[str, str, Path]] = []
     for kind, entries in icons.items():
         if kind not in TARGET_DIRS:
-            continue
+            raise ValueError(
+                f"icons.{kind}: unknown icon kind. Every catalog kind must have a "
+                f"TARGET_DIRS entry naming its Resources subdirectory, otherwise its "
+                f"icons are silently never synced. Known kinds: "
+                f"{', '.join(sorted(TARGET_DIRS))}."
+            )
         if not isinstance(entries, list):
             raise ValueError(f"icons.{kind}: expected list")
         for entry in entries:

@@ -26,10 +26,22 @@ policy:
     until fresh render replaces them.
 icons:
   skill:
+  - id: skill_icon_aegis_intercept
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_intercept.png
+  - id: skill_icon_aegis_linebreaker
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_linebreaker.png
+  - id: skill_icon_aegis_sentinel_oath
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_sentinel_oath.png
+  - id: skill_icon_ash_step
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_ash_step.png
+  - id: skill_icon_bloodless_form
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_bloodless_form.png
   - id: skill_icon_bulwark_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_bulwark_core.png
   - id: skill_icon_bulwark_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_bulwark_utility.png
+  - id: skill_icon_cinder_overrun
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_cinder_overrun.png
   - id: skill_icon_duelist_passive_1
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_duelist_passive_1.png
   - id: skill_icon_duelist_passive_2
@@ -38,22 +50,52 @@ icons:
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_duelist_support_1.png
   - id: skill_icon_duelist_support_2
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_duelist_support_2.png
+  - id: skill_icon_echo_archive
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_echo_archive.png
+  - id: skill_icon_echo_resonance
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_echo_resonance.png
+  - id: skill_icon_edge_of_sentence
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_edge_of_sentence.png
+  - id: skill_icon_ember_arrow
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_ember_arrow.png
+  - id: skill_icon_fracture_step
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_fracture_step.png
+  - id: skill_icon_glass_pathfinder
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_glass_pathfinder.png
   - id: skill_icon_guardian_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_guardian_core.png
   - id: skill_icon_guardian_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_guardian_utility.png
+  - id: skill_icon_heat_haze
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_heat_haze.png
   - id: skill_icon_hexer_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_hexer_core.png
   - id: skill_icon_hexer_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_hexer_utility.png
   - id: skill_icon_hunter_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_hunter_utility.png
+  - id: skill_icon_iron_hide_memory
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_hide_memory.png
+  - id: skill_icon_iron_pelt_maul
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_pelt_maul.png
+  - id: skill_icon_iron_pelt_roar
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_pelt_roar.png
+  - id: skill_icon_last_bastion
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_last_bastion.png
+  - id: skill_icon_lattice_bastion
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_lattice_bastion.png
+  - id: skill_icon_lattice_listener
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_lattice_listener.png
   - id: skill_icon_marksman_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_marksman_core.png
   - id: skill_icon_marksman_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_marksman_utility.png
+  - id: skill_icon_memory_tuning
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_memory_tuning.png
   - id: skill_icon_minor_heal
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_minor_heal.png
+  - id: skill_icon_mirror_cut
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_mirror_cut.png
   - id: skill_icon_mystic_passive_1
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_mystic_passive_1.png
   - id: skill_icon_mystic_passive_2
@@ -62,12 +104,22 @@ icons:
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_mystic_support_1.png
   - id: skill_icon_mystic_support_2
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_mystic_support_2.png
+  - id: skill_icon_pelt_last_stand
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_pelt_last_stand.png
+  - id: skill_icon_phase_tether
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_phase_tether.png
   - id: skill_icon_power_strike
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_power_strike.png
   - id: skill_icon_precision_shot
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_precision_shot.png
   - id: skill_icon_priest_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_priest_core.png
+  - id: skill_icon_prism_lance
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_prism_lance.png
+  - id: skill_icon_prism_sight
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_prism_sight.png
+  - id: skill_icon_quick_kindling
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_quick_kindling.png
   - id: skill_icon_raider_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_raider_core.png
   - id: skill_icon_raider_utility
@@ -84,18 +136,40 @@ icons:
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_reaver_core.png
   - id: skill_icon_reaver_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_reaver_utility.png
+  - id: skill_icon_refracting_snare
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_refracting_snare.png
+  - id: skill_icon_riposte_angle
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_riposte_angle.png
+  - id: skill_icon_rusthide_charge
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_rusthide_charge.png
+  - id: skill_icon_savant_last_word
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_savant_last_word.png
   - id: skill_icon_scout_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_scout_core.png
   - id: skill_icon_scout_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_scout_utility.png
+  - id: skill_icon_sentinel_oath
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_sentinel_oath.png
   - id: skill_icon_shaman_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_shaman_core.png
   - id: skill_icon_shaman_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_shaman_utility.png
+  - id: skill_icon_shard_memory
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_shard_memory.png
+  - id: skill_icon_shardblade_sever
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_shardblade_sever.png
+  - id: skill_icon_signal_flare
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_signal_flare.png
   - id: skill_icon_slayer_core
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_slayer_core.png
   - id: skill_icon_slayer_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_slayer_utility.png
+  - id: skill_icon_square_wall
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_square_wall.png
+  - id: skill_icon_sunder_rhythm
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_sunder_rhythm.png
+  - id: skill_icon_sunken_anticluster_bombardment
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_sunken_anticluster_bombardment.png
   - id: skill_icon_support_anchored
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_anchored.png
   - id: skill_icon_support_brutal
@@ -108,6 +182,8 @@ icons:
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_guarded.png
   - id: skill_icon_support_hunter_mark
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_hunter_mark.png
+  - id: skill_icon_support_line_anchor
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_support_line_anchor.png
   - id: skill_icon_support_lingering
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_lingering.png
   - id: skill_icon_support_longshot
@@ -116,6 +192,8 @@ icons:
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_piercing.png
   - id: skill_icon_support_purifying
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_purifying.png
+  - id: skill_icon_support_resonance_cleanse
+    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_support_resonance_cleanse.png
   - id: skill_icon_support_siphon
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_support_siphon.png
   - id: skill_icon_support_swift
@@ -128,80 +206,10 @@ icons:
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_vanguard_support_1.png
   - id: skill_icon_vanguard_support_2
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_vanguard_support_2.png
+  - id: skill_icon_veil_breach
+    source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_veil_breach.png
   - id: skill_icon_warden_utility
     source: art-pipeline/output/icons/skill/catalog_v2/skill_icon_warden_utility.png
-  - id: skill_icon_aegis_sentinel_oath
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_sentinel_oath.png
-  - id: skill_icon_aegis_linebreaker
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_linebreaker.png
-  - id: skill_icon_square_wall
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_square_wall.png
-  - id: skill_icon_aegis_intercept
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_aegis_intercept.png
-  - id: skill_icon_sentinel_oath
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_sentinel_oath.png
-  - id: skill_icon_lattice_bastion
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_lattice_bastion.png
-  - id: skill_icon_support_line_anchor
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_support_line_anchor.png
-  - id: skill_icon_iron_pelt_maul
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_pelt_maul.png
-  - id: skill_icon_rusthide_charge
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_rusthide_charge.png
-  - id: skill_icon_iron_pelt_roar
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_pelt_roar.png
-  - id: skill_icon_iron_hide_memory
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_iron_hide_memory.png
-  - id: skill_icon_pelt_last_stand
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_pelt_last_stand.png
-  - id: skill_icon_prism_lance
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_prism_lance.png
-  - id: skill_icon_ember_arrow
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_ember_arrow.png
-  - id: skill_icon_cinder_overrun
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_cinder_overrun.png
-  - id: skill_icon_refracting_snare
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_refracting_snare.png
-  - id: skill_icon_signal_flare
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_signal_flare.png
-  - id: skill_icon_ash_step
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_ash_step.png
-  - id: skill_icon_prism_sight
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_prism_sight.png
-  - id: skill_icon_heat_haze
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_heat_haze.png
-  - id: skill_icon_quick_kindling
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_quick_kindling.png
-  - id: skill_icon_glass_pathfinder
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_glass_pathfinder.png
-  - id: skill_icon_shardblade_sever
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_shardblade_sever.png
-  - id: skill_icon_mirror_cut
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_mirror_cut.png
-  - id: skill_icon_fracture_step
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_fracture_step.png
-  - id: skill_icon_riposte_angle
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_riposte_angle.png
-  - id: skill_icon_shard_memory
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_shard_memory.png
-  - id: skill_icon_edge_of_sentence
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_edge_of_sentence.png
-  - id: skill_icon_bloodless_form
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_bloodless_form.png
-  - id: skill_icon_echo_resonance
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_echo_resonance.png
-  - id: skill_icon_memory_tuning
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_memory_tuning.png
-  - id: skill_icon_phase_tether
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_phase_tether.png
-  - id: skill_icon_echo_archive
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_echo_archive.png
-  - id: skill_icon_lattice_listener
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_lattice_listener.png
-  - id: skill_icon_savant_last_word
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_savant_last_word.png
-  - id: skill_icon_support_resonance_cleanse
-    source: art-pipeline/selected/icons/skill/expansion_v1/skill_icon_support_resonance_cleanse.png
   item:
   - id: item_icon_armor
     source: art-pipeline/output/icons/affix/affix_armor.png
@@ -251,6 +259,12 @@ icons:
     source: art-pipeline/output/icons/affix/affix_aura.png
   - id: affix_block
     source: art-pipeline/output/icons/affix/affix_block.png
+  - id: affix_blood_price
+    source: art-pipeline/output/icons/affix/affix_blood_price.png
+  - id: affix_brittle_focus
+    source: art-pipeline/output/icons/affix/affix_brittle_focus.png
+  - id: affix_burdened_reach
+    source: art-pipeline/output/icons/affix/affix_burdened_reach.png
   - id: affix_cast_speed
     source: art-pipeline/output/icons/affix/affix_cast_speed.png
   - id: affix_charge
@@ -261,22 +275,42 @@ icons:
     source: art-pipeline/output/icons/affix/affix_cooldown.png
   - id: affix_crit
     source: art-pipeline/output/icons/affix/affix_crit.png
+  - id: affix_desperate_focus
+    source: art-pipeline/output/icons/affix/affix_desperate_focus.png
   - id: affix_dodge
     source: art-pipeline/output/icons/affix/affix_dodge.png
+  - id: affix_executioners_edge
+    source: art-pipeline/output/icons/affix/affix_executioners_edge.png
+  - id: affix_fallen_chorus
+    source: art-pipeline/output/icons/affix/affix_fallen_chorus.png
+  - id: affix_first_light
+    source: art-pipeline/output/icons/affix/affix_first_light.png
   - id: affix_heal
     source: art-pipeline/output/icons/affix/affix_heal.png
   - id: affix_hp
     source: art-pipeline/output/icons/affix/affix_hp.png
+  - id: affix_last_ward
+    source: art-pipeline/output/icons/affix/affix_last_ward.png
   - id: affix_lifesteal
     source: art-pipeline/output/icons/affix/affix_lifesteal.png
+  - id: affix_lightfooted_plate
+    source: art-pipeline/output/icons/affix/affix_lightfooted_plate.png
   - id: affix_link
     source: art-pipeline/output/icons/affix/affix_link.png
   - id: affix_magic_atk
     source: art-pipeline/output/icons/affix/affix_magic_atk.png
   - id: affix_mana
     source: art-pipeline/output/icons/affix/affix_mana.png
+  - id: affix_mourning_aegis
+    source: art-pipeline/output/icons/affix/affix_mourning_aegis.png
+  - id: affix_overclocked
+    source: art-pipeline/output/icons/affix/affix_overclocked.png
   - id: affix_pierce
     source: art-pipeline/output/icons/affix/affix_pierce.png
+  - id: affix_reaper_spark
+    source: art-pipeline/output/icons/affix/affix_reaper_spark.png
+  - id: affix_reckless_edge
+    source: art-pipeline/output/icons/affix/affix_reckless_edge.png
   - id: affix_resist_magic
     source: art-pipeline/output/icons/affix/affix_resist_magic.png
   - id: affix_resist_phys
@@ -289,3 +323,40 @@ icons:
     source: art-pipeline/output/icons/affix/affix_taunt.png
   - id: affix_thorn
     source: art-pipeline/output/icons/affix/affix_thorn.png
+  - id: affix_war_chorus
+    source: art-pipeline/output/icons/affix/affix_war_chorus.png
+  site_event_choice:
+  - id: site_event_choice_assault
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_assault.png
+  - id: site_event_choice_break_seal
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_break_seal.png
+  - id: site_event_choice_burn_it
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_burn_it.png
+  - id: site_event_choice_claim_bounty
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_claim_bounty.png
+  - id: site_event_choice_ignore
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_ignore.png
+  - id: site_event_choice_lay_to_rest
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_lay_to_rest.png
+  - id: site_event_choice_leave
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_leave.png
+  - id: site_event_choice_move_on
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_move_on.png
+  - id: site_event_choice_offer_echo
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_offer_echo.png
+  - id: site_event_choice_ransom
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_ransom.png
+  - id: site_event_choice_recover_scout
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_recover_scout.png
+  - id: site_event_choice_rescue
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_rescue.png
+  - id: site_event_choice_salvage
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_salvage.png
+  - id: site_event_choice_seize
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_seize.png
+  - id: site_event_choice_study_names
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_study_names.png
+  - id: site_event_choice_take_supplies
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_take_supplies.png
+  - id: site_event_choice_trade
+    source: art-pipeline/output/icons/site_event_choice/site_event_choice_trade.png
