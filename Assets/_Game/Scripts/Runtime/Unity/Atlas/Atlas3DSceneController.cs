@@ -3,7 +3,8 @@ using SM.Unity.UI.Atlas;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SM.Unity.Atlas;
+namespace SM.Unity.Atlas
+{
 
 [DisallowMultipleComponent]
 public sealed class Atlas3DSceneController : MonoBehaviour
@@ -127,4 +128,5 @@ public sealed class Atlas3DSceneController : MonoBehaviour
         screenPosition = default;
         return false;
     }
+}
 }

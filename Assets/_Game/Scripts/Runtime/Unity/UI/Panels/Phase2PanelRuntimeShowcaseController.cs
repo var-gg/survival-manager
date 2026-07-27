@@ -12,7 +12,8 @@ using SM.Unity.UI.Panels.TownSquadBuilder;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace SM.Unity.UI.Panels;
+namespace SM.Unity.UI.Panels
+{
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(UIDocument))]
@@ -155,4 +156,5 @@ public sealed class Phase2PanelRuntimeShowcaseController : MonoBehaviour
         PassiveBoard,
         SettingsGlobal,
     }
+}
 }

@@ -5,7 +5,8 @@ using SM.Atlas.Model;
 using SM.Atlas.Services;
 using UnityEngine;
 
-namespace SM.Unity.Atlas;
+namespace SM.Unity.Atlas
+{
 
 [DisallowMultipleComponent]
 public sealed class AtlasCharacterStandeePresenter : MonoBehaviour
@@ -221,4 +222,5 @@ public sealed class AtlasCharacterStandeePresenter : MonoBehaviour
             }
         }
     }
+}
 }

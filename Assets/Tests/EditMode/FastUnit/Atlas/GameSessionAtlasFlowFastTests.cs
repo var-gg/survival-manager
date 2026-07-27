@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
+using SM.Core.Content;
+using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
@@ -300,9 +303,83 @@ public sealed class GameSessionAtlasFlowFastTests
         Assert.That(session.ActiveRun?.Overlay.EncounterId, Is.EqualTo(selectedEncounterId));
     }
 
-    private static GameSessionState CreateBoundSession()
+    [Test]
+    public void AtlasSelectionHandoff_BranchingBriefingEntry_SelectsDirectMappedEdge()
     {
-        var session = GameSessionTestFactory.Create(EditorFreeCombatContentFixture.CreateRunLoopLookup());
+        var session = CreateBoundSession(CreateCanonicalIndexBranchGraph());
+        session.BeginNewExpedition();
+        var region = AtlasGrayboxDataFactory.CreateRegion();
+
+        Assert.That(session.CurrentExpeditionNodeIndex, Is.EqualTo(5));
+        Assert.That(session.GetCurrentExpeditionNode()?.NodeKind, Is.EqualTo(SiteNodeKindValue.Briefing));
+        Assert.That(session.EnsureAtlasSession(region).SiteSpineIndex, Is.EqualTo(0));
+
+        session.SelectAtlasNode(region, "hex_m2_1");
+        var result = session.ApplyAtlasSelectionToExpedition(region);
+
+        Assert.That(result.Succeeded, Is.True, result.Diagnostic);
+        Assert.That(result.Failure, Is.EqualTo(GameSessionState.AtlasExpeditionHandoffFailure.None));
+        Assert.That(session.SelectedExpeditionNodeIndex, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void AtlasSelectionHandoff_DiagnosisDistinguishesCandidateMappingAndGraphRefusal()
+    {
+        var baseline = AtlasGrayboxDataFactory.CreateRegion();
+        var stageZeroHexes = baseline.StageCandidates
+            .Where(candidate => candidate.SiteStageIndex == 1)
+            .Select(candidate => candidate.HexId)
+            .ToHashSet();
+
+        var candidateUnavailable = ApplyFailure(baseline with
+        {
+            StageCandidates = Array.Empty<AtlasStageCandidate>(),
+        });
+        var regionNodeMissing = ApplyFailure(baseline with
+        {
+            Nodes = baseline.Nodes.Where(node => !stageZeroHexes.Contains(node.NodeId)).ToArray(),
+        });
+        var regionNodeUnmapped = ApplyFailure(baseline with
+        {
+            Nodes = baseline.Nodes
+                .Select(node => stageZeroHexes.Contains(node.NodeId) ? node with { SiteNodeIndex = -1 } : node)
+                .ToArray(),
+        });
+        var selectionRefused = ApplyFailure(baseline with
+        {
+            Nodes = baseline.Nodes
+                .Select(node => stageZeroHexes.Contains(node.NodeId) ? node with { SiteNodeIndex = 3 } : node)
+                .ToArray(),
+        });
+
+        Assert.That(
+            candidateUnavailable.Failure,
+            Is.EqualTo(GameSessionState.AtlasExpeditionHandoffFailure.CandidateUnavailable));
+        Assert.That(
+            regionNodeMissing.Failure,
+            Is.EqualTo(GameSessionState.AtlasExpeditionHandoffFailure.RegionNodeMissing));
+        Assert.That(
+            regionNodeUnmapped.Failure,
+            Is.EqualTo(GameSessionState.AtlasExpeditionHandoffFailure.RegionNodeUnmapped));
+        Assert.That(
+            selectionRefused.Failure,
+            Is.EqualTo(GameSessionState.AtlasExpeditionHandoffFailure.ExpeditionSelectionRefused));
+        Assert.That(candidateUnavailable.Diagnostic, Does.Contain("action="));
+        Assert.That(regionNodeMissing.Diagnostic, Does.Contain("candidateHexId="));
+        Assert.That(regionNodeUnmapped.Diagnostic, Does.Contain("candidateSiteNodeIndex=-1"));
+        Assert.That(selectionRefused.Diagnostic, Does.Contain("currentNext="));
+    }
+
+    private static GameSessionState.AtlasExpeditionHandoffResult ApplyFailure(AtlasRegionDefinition region)
+    {
+        var session = CreateBoundSession();
+        session.BeginNewExpedition();
+        return session.ApplyAtlasSelectionToExpedition(region);
+    }
+
+    private static GameSessionState CreateBoundSession(SiteGraphTemplate? graph = null)
+    {
+        var session = GameSessionTestFactory.Create(EditorFreeCombatContentFixture.CreateRunLoopLookup(graph));
         session.BindProfile(new SaveProfile
         {
             Heroes = new List<HeroInstanceRecord>
@@ -315,6 +392,46 @@ public sealed class GameSessionAtlasFlowFastTests
         });
         session.SetCurrentScene(SceneNames.Town);
         return session;
+    }
+
+    private static SiteGraphTemplate CreateCanonicalIndexBranchGraph()
+    {
+        return new SiteGraphTemplate(
+            "site_graph_alpha_gate_atlas_test",
+            "site_alpha_gate",
+            new[]
+            {
+                GraphNode("safe_1", 1, SiteNodeKindValue.Skirmish, "site_alpha_gate:skirmish_a", next: new[] { "safe_2" }),
+                GraphNode("safe_2", 2, SiteNodeKindValue.Skirmish, "site_alpha_gate:skirmish_b", next: new[] { "event" }),
+                GraphNode("elite", 4, SiteNodeKindValue.Elite, "site_alpha_gate:elite", next: new[] { "boss" }),
+                GraphNode("boss", 6, SiteNodeKindValue.Boss, "site_alpha_gate:boss", next: new[] { "extract" }),
+                GraphNode("extract", 7, SiteNodeKindValue.Extract, rewardSourceId: "reward_source_extract"),
+                GraphNode("entry", 0, SiteNodeKindValue.Briefing, next: new[] { "safe_1", "risk" }),
+                GraphNode("risk", 1, SiteNodeKindValue.Skirmish, "site_alpha_gate:skirmish_b", "risk", new[] { "safe_2" }),
+                GraphNode("event", 3, SiteNodeKindValue.Event, eventId: "site_event_test", next: new[] { "elite" }),
+            });
+    }
+
+    private static SiteGraphNodeTemplate GraphNode(
+        string nodeId,
+        int rank,
+        SiteNodeKindValue kind,
+        string encounterId = "",
+        string laneTag = "safe",
+        IReadOnlyList<string>? next = null,
+        string eventId = "",
+        string rewardSourceId = "")
+    {
+        return new SiteGraphNodeTemplate(
+            nodeId,
+            rank,
+            kind,
+            laneTag,
+            encounterId,
+            eventId,
+            next ?? Array.Empty<string>(),
+            0,
+            rewardSourceId);
     }
 
     private static HeroInstanceRecord CreateHero(string heroId, string name, string classId)

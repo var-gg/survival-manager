@@ -13,7 +13,8 @@ using SM.Unity.UI.SiteEvents;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace SM.Unity.UI.Atlas;
+namespace SM.Unity.UI.Atlas
+{
 
 public sealed class AtlasScreenController : MonoBehaviour
 {
@@ -380,12 +381,15 @@ public sealed class AtlasScreenController : MonoBehaviour
         var session = _root.SessionState;
         var selectedBeforeAtlasHandoff = session.GetSelectedExpeditionNode();
         var isAuthoredEventHandoff = selectedBeforeAtlasHandoff?.NodeKind == SiteNodeKindValue.Event;
-        if (!isAuthoredEventHandoff
-            && _region != null
-            && !session.TryApplyAtlasSelectionToExpedition(_region))
+        if (!isAuthoredEventHandoff && _region != null)
         {
-            _root.SetBlockingError("Atlas 선택을 Expedition 경로로 넘길 수 없습니다.");
-            return;
+            var handoff = session.ApplyAtlasSelectionToExpedition(_region);
+            if (!handoff.Succeeded)
+            {
+                Debug.LogError($"[AtlasExpeditionHandoff] {handoff.Diagnostic}");
+                _root.SetBlockingError("Atlas 선택을 Expedition 경로로 넘길 수 없습니다.");
+                return;
+            }
         }
 
         var townExitCheckpoint = _root.SaveProfile(SessionCheckpointKind.TownExit);
@@ -767,4 +771,5 @@ public sealed class AtlasScreenController : MonoBehaviour
 
         _presenter.SetSession(_root.SessionState.EnsureAtlasSession(_region));
     }
+}
 }

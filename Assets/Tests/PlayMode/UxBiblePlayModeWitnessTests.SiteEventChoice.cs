@@ -65,7 +65,11 @@ public sealed partial class UxBiblePlayModeWitnessTests
             Assert.That(title.text, Is.Not.Empty, $"{choice.Id} title");
             Assert.That(title.text, Does.Not.StartWith("content."), $"{choice.Id} title");
             Assert.That(title.text, Does.Not.StartWith("ui."), $"{choice.Id} title");
-            Assert.That(Require<VisualElement>(overlay, $"SiteEventChoiceIcon_{choice.Id}"), Is.Not.Null);
+            var icon = Require<VisualElement>(overlay, $"SiteEventChoiceIcon_{choice.Id}");
+            Assert.That(
+                icon.style.backgroundImage.value.texture,
+                Is.Not.Null,
+                $"{choice.Id} must render its authored site-event choice icon.");
             Assert.That(
                 Require<VisualElement>(overlay, $"SiteEventOutcomePreviews_{choice.Id}").childCount,
                 Is.EqualTo(choice.OutcomePreviews.Count),
@@ -74,8 +78,8 @@ public sealed partial class UxBiblePlayModeWitnessTests
 
         Assert.That(
             overlay.Query<Label>(className: "site-event-choice__icon-missing-label").ToList().Count,
-            Is.EqualTo(3),
-            "Every declared-missing icon must show the honest localized fallback.");
+            Is.Zero,
+            "Generated site-event choice art must replace the old declared-missing fallback.");
         Assert.That(
             overlay.Query<Button>(className: "site-event-choice__card").ToList()
                 .Any(card => card.ClassListContains("site-event-choice__card--selected")),

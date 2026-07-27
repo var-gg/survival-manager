@@ -520,6 +520,22 @@ else {
 }
 
 # ────────────────────────────────────────────────
+# Check 11: serialized MonoBehaviours declare a block namespace
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 11: Serialized MonoBehaviour namespace form ==" -ForegroundColor Cyan
+$serializedNamespaceLint = Join-Path $RepoRoot 'tools/serialized-monobehaviour-namespace/lint.ps1'
+if (-not (Test-Path -LiteralPath $serializedNamespaceLint)) {
+    Write-LintError -Check 'Serialized-monobehaviour-namespace' -File 'tools/serialized-monobehaviour-namespace/lint.ps1' -Detail 'Namespace-form lint is missing. A MonoBehaviour serialized into a scene or prefab must use a block namespace or Unity silently drops its script binding.'
+}
+else {
+    & $serializedNamespaceLint -RepoRoot $RepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        Write-LintError -Check 'Serialized-monobehaviour-namespace' -File 'Assets/_Game/Scripts' -Detail 'A scene- or prefab-serialized MonoBehaviour uses a file-scoped namespace. Convert the exact file reported above to a block namespace; Unity 6000.4.7f1 leaves its MonoScript class-null and the component loads with a missing script.'
+    }
+}
+
+# ────────────────────────────────────────────────
 # Summary
 # ────────────────────────────────────────────────
 
