@@ -264,7 +264,8 @@ public sealed class TownScreenController : MonoBehaviour
                 _contentText.GetRaceName,
                 _contentText.GetSynergyName,
                 _contentText.GetRoleName,
-                _contentText.GetArchetypeName);
+                _contentText.GetArchetypeName,
+                _contentText.GetCharacterName);
             _squadBuilderPresenter.Initialize();
             view.BindTacticalSetupOpen(_squadBuilderPresenter.Open);
             return true;
@@ -283,7 +284,8 @@ public sealed class TownScreenController : MonoBehaviour
                 workshopView,
                 _contentText.GetCharacterName,
                 _contentText.GetRoleName,
-                _contentText.GetSynergyName);
+                _contentText.GetSynergyName,
+                archetypeName: _contentText.GetArchetypeName);
             _tacticalWorkshopPresenter.Initialize();
             _tacticalWorkshopPresenter.Close();
             view.BindTacticalWorkshopOpen(_tacticalWorkshopPresenter.Open);
@@ -354,7 +356,8 @@ public sealed class TownScreenController : MonoBehaviour
                 {
                     _inventoryPresenter?.SetTargetHero(heroId);
                     _characterSheetPresenter?.Open(heroId);
-                });
+                },
+                archetypeName: _contentText.GetArchetypeName);
             _rosterGridPresenter.Initialize();
             _rosterModalView.BindClose(_rosterModalView.Close);
             _rosterModalView.Close();

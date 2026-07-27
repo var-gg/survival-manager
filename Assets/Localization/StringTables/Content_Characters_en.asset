@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 1702100001000
-    m_Localized: Warden
+    m_Localized: Iron Warden
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001001
@@ -27,7 +27,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001002
-    m_Localized: Guardian
+    m_Localized: Crypt Guardian
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001003
@@ -35,7 +35,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001004
-    m_Localized: Bulwark
+    m_Localized: Fang Bulwark
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001005
@@ -43,7 +43,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001006
-    m_Localized: Slayer
+    m_Localized: Oath Slayer
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001007
@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001008
-    m_Localized: Raider
+    m_Localized: Pack Raider
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001009
@@ -59,7 +59,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001010
-    m_Localized: Reaver
+    m_Localized: Grave Reaver
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001011
@@ -67,7 +67,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001012
-    m_Localized: Hunter
+    m_Localized: Longshot Hunter
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001013
@@ -75,7 +75,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001014
-    m_Localized: Scout
+    m_Localized: Trail Scout
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001015
@@ -83,7 +83,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001016
-    m_Localized: Marksman
+    m_Localized: Dread Marksman
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001017
@@ -91,7 +91,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001018
-    m_Localized: Priest
+    m_Localized: Dawn Priest
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001019
@@ -99,7 +99,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001020
-    m_Localized: Hexer
+    m_Localized: Grave Hexer
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001021
@@ -107,7 +107,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001022
-    m_Localized: Shaman
+    m_Localized: Storm Shaman
     m_Metadata:
       m_Items: []
   - m_Id: 1702100001023

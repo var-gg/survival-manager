@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
+using SM.Unity.UI;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -62,6 +63,10 @@ public sealed class DeploymentSetupPanelView
     public void Refresh(GameSessionState session)
     {
         var localization = GameSessionRoot.Instance?.Localization;
+        var root = GameSessionRoot.Instance;
+        var contentText = root != null
+            ? new ContentTextResolver(root.Localization, root.CombatContentLookup)
+            : null;
         foreach (var anchor in session.DeploymentAnchors)
         {
             if (!_anchorLabels.TryGetValue(anchor, out var label))
@@ -70,8 +75,13 @@ public sealed class DeploymentSetupPanelView
             }
 
             var heroId = session.GetAssignedHeroId(anchor);
-            var heroName = session.Profile.Heroes.FirstOrDefault(hero => hero.HeroId == heroId)?.Name
-                ?? Localize(localization, GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
+            var hero = session.Profile.Heroes.FirstOrDefault(candidate => candidate.HeroId == heroId);
+            var heroName = hero != null
+                ? HeroDisplayLabelFormatter.ResolvePersonAndJob(
+                    hero,
+                    contentText != null ? contentText.GetCharacterName : null,
+                    contentText != null ? contentText.GetArchetypeName : null)
+                : Localize(localization, GameLocalizationTables.UICommon, "ui.common.empty", "Empty");
             label.text = $"{LocalizeAnchor(localization, anchor)}\n{heroName}";
         }
 

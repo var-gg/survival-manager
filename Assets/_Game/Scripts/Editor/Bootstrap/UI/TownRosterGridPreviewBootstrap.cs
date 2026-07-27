@@ -77,7 +77,8 @@ public sealed class TownRosterGridPreviewBootstrap : EditorWindow
                     sessionRoot.BeginTransientTownSmoke();
                     sessionRoot.SessionState.PrepareTownQuickBattleSmoke();
                     sessionRoot.SceneFlow.GoToBattle();
-                });
+                },
+                archetypeName: contentText.GetArchetypeName);
             _presenter.Initialize();
             return true;
         }

@@ -50,8 +50,8 @@ public sealed class InventoryPresenterFastTests
         Assert.That(view.RenderCount, Is.GreaterThan(0), "대상 영웅 설정이 view render를 구동(headless).");
         var state = presenter.BuildState();
         Assert.That(state.Compare!.TargetHeroId, Is.EqualTo("hero-1"));
-        Assert.That(state.Compare!.TargetHeroLabel, Is.EqualTo("hero-1"),
-            "contentText 미주입 시 HeroId fallback으로 대상 영웅이 비교 레인에 표시된다.");
+        Assert.That(state.Compare!.TargetHeroLabel, Is.EqualTo("—"),
+            "contentText 미주입 상태에서도 save instance id는 player-facing 이름으로 노출하지 않는다.");
     }
 
     [Test]

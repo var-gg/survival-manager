@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Meta;
 using SM.Meta.Model;
+using SM.Persistence.Abstractions.Models;
 using SM.Unity.UI;
 using SM.Unity.UI.Bark;
 using UnityEngine;
@@ -206,7 +207,7 @@ public sealed class TownScreenPresenter
             return;
         }
 
-        Refresh($"동료 시트 — {heroId} (CharacterSheet opener 미연결)");
+        Refresh("동료 시트 opener 미연결");
     }
 
     public void SetNpcOpener(string npcId, Action open) => _npcOpeners[npcId] = open;
@@ -231,7 +232,7 @@ public sealed class TownScreenPresenter
             ?? string.Empty;
         var welcomeHero = session.Profile.Heroes
             .FirstOrDefault(h => string.Equals(h.HeroId, welcomeHeroId, StringComparison.Ordinal));
-        var welcomeName = ResolveHeroDisplayName(welcomeHeroId, welcomeHero?.Name, welcomeHero?.CharacterId, welcomeHero?.ArchetypeId);
+        var welcomeName = ResolveHeroDisplayName(welcomeHero);
         var welcomeGreeting = string.IsNullOrEmpty(welcomeHeroId)
             ? Localize(GameLocalizationTables.UITown, "ui.town.welcome.empty", "잿골은 늘 그대로일세. 한 사람도 함께가 아닌가.")
             : Localize(GameLocalizationTables.UITown, "ui.town.welcome.greeting_default", "잿골은 늘 그대로일세. 잠시 숨을 돌리시지요.");
@@ -250,7 +251,7 @@ public sealed class TownScreenPresenter
         foreach (var hid in deployHeroIds)
         {
             var hero = session.Profile.Heroes.FirstOrDefault(h => string.Equals(h.HeroId, hid, StringComparison.Ordinal));
-            var displayName = ResolveHeroDisplayName(hid, hero?.Name, hero?.CharacterId, hero?.ArchetypeId);
+            var displayName = ResolveHeroCardName(hero);
             var badge = string.Equals(hid, welcomeHeroId, StringComparison.Ordinal) ? "captain" : "none";
             deployCards.Add(new TownHeroCardViewState(hid, displayName, "neutral", badge, IsDeploy: true,
                 CharacterId: ResolvePortraitKey(hero?.CharacterId, hero?.ArchetypeId)));
@@ -262,7 +263,7 @@ public sealed class TownScreenPresenter
             .Where(h => !deployIdSet.Contains(h.HeroId))
             .Select(h => new TownHeroCardViewState(
                 HeroId: h.HeroId,
-                DisplayName: ResolveHeroDisplayName(h.HeroId, h.Name, h.CharacterId, h.ArchetypeId),
+                DisplayName: ResolveHeroCardName(h),
                 EmotionKey: "neutral",
                 BadgeKey: "none",
                 IsDeploy: false,
@@ -319,7 +320,7 @@ public sealed class TownScreenPresenter
             string.Equals(hero.HeroId, selectedHeroId, StringComparison.Ordinal));
         var heroLabel = selectedHero == null
             ? "동료 선택 없음"
-            : $"{ResolveHeroDisplayName(selectedHero.HeroId, selectedHero.Name, selectedHero.CharacterId, selectedHero.ArchetypeId)} · {_contentText.GetClassName(selectedHero.ClassId)}";
+            : ResolveHeroDisplayName(selectedHero);
         var deployCount = session.ExpeditionSquadHeroIds.Count;
         var panelTotal = _corePanelTotalCount > 0 ? _corePanelTotalCount : 10;
         var panelReady = _corePanelReadyCount > 0 ? _corePanelReadyCount : _npcOpeners.Count + (_heroOpener != null ? 1 : 0);
@@ -344,27 +345,16 @@ public sealed class TownScreenPresenter
         return string.IsNullOrWhiteSpace(archetypeId) ? string.Empty : archetypeId!;
     }
 
-    private string ResolveHeroDisplayName(string heroId, string? heroName, string? characterId, string? archetypeId)
-    {
-        if (string.IsNullOrEmpty(heroId)) return "—";
+    private string ResolveHeroDisplayName(HeroInstanceRecord? hero)
+        => HeroDisplayLabelFormatter.ResolvePersonAndJob(
+            hero,
+            _contentText.GetCharacterName,
+            _contentText.GetArchetypeName);
 
-        // heroName이 raw localization key ("content.archetype.warden.name") 또는 archetypeId 같은
-        // un-localized fallback이면 ContentTextResolver path로 진입해서 한국어 resolve. 정상 한국어
-        // 또는 영문 사용자 입력 이름만 그대로 통과.
-        var hasLocalizedName = !string.IsNullOrEmpty(heroName)
-            && !heroName!.StartsWith("content.", StringComparison.Ordinal)
-            && !string.Equals(heroName, heroId, StringComparison.Ordinal);
-        if (hasLocalizedName) return heroName!;
-
-        // heroId는 save instance id(hero-1, hero-{guid})라 콘텐츠 키가 아니다. 포트레잇과 같은
-        // CharacterId → ArchetypeId 키 순서로 조회해야 한국어 표시명이 나온다.
-        // (이전엔 GetCharacterName(heroId, heroId)로 instance id를 조회해 'hero-1' raw id가
-        //  허브 동료 카드 9장 + 캡틴 카드에 그대로 노출되던 결함 — uxqa1)
-        var contentKey = !string.IsNullOrWhiteSpace(characterId) ? characterId!
-            : !string.IsNullOrWhiteSpace(archetypeId) ? archetypeId!
-            : heroId;
-        return _contentText.GetCharacterName(contentKey, archetypeId ?? string.Empty);
-    }
+    // 흉상 카드는 person·job을 담지 못해 전부 말줄임으로 끝났다(8장 전부 "..."). 잘린 직군보다
+    // 이름만 온전한 쪽이 읽힌다 — 직군과 한자 병기는 자리가 있는 표면(캐릭터 시트·정산·출격 확인)에 남는다.
+    private string ResolveHeroCardName(HeroInstanceRecord? hero)
+        => HeroDisplayLabelFormatter.ResolvePersonNameCompact(hero, _contentText.GetCharacterName);
 
     private string BuildLocaleStatus()
     {

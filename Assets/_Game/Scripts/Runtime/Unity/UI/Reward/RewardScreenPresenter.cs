@@ -5,6 +5,7 @@ using System.Text;
 using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
+using SM.Unity.UI;
 
 namespace SM.Unity.UI.Reward;
 
@@ -211,10 +212,12 @@ public sealed class RewardScreenPresenter
             }
 
             var glyph = ResolveSurvivorGlyph(hero.ClassId);
-            // raw localization key fallback — "content.archetype..." 같은 미해결 key면 HeroId로.
-            var displayName = (string.IsNullOrEmpty(hero.DisplayName) || hero.DisplayName.StartsWith("content.", StringComparison.Ordinal))
-                ? hero.HeroId
-                : hero.DisplayName;
+            var identity = session.Profile.Heroes.FirstOrDefault(record =>
+                string.Equals(record.HeroId, hero.HeroId, StringComparison.Ordinal));
+            var displayName = HeroDisplayLabelFormatter.ResolvePersonAndJob(
+                identity,
+                _contentText.GetCharacterName,
+                _contentText.GetArchetypeName);
 
             // HP: 데이터 있으면 "62 / 80" + 실제 ratio, 없으면 victory/retreat fallback 텍스트.
             string hpText;

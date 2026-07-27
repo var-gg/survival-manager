@@ -6,6 +6,7 @@ using SM.Content.Definitions;
 using SM.Core.Contracts;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity.UI;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town;
@@ -41,6 +42,7 @@ public sealed class SquadBuilderPresenter : ISquadBuilderActions
     private readonly Func<string, string> _synergyName;
     private readonly Func<string, string, string> _roleName;   // (roleInstructionId, fallbackRoleTag)
     private readonly Func<string, string> _archetypeName;
+    private readonly Func<string, string, string>? _characterName;
 
     private DeploymentAnchorId _selectedAnchor = DeploymentAnchorId.FrontCenter;
     private string _statusText = "편성 상태를 확인하세요.";
@@ -76,7 +78,8 @@ public sealed class SquadBuilderPresenter : ISquadBuilderActions
         Func<string, string> raceName,
         Func<string, string> synergyName,
         Func<string, string, string> roleName,
-        Func<string, string> archetypeName)
+        Func<string, string> archetypeName,
+        Func<string, string, string>? characterName = null)
     {
         _session = session ?? throw new ArgumentNullException(nameof(session));
         _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
@@ -88,6 +91,7 @@ public sealed class SquadBuilderPresenter : ISquadBuilderActions
         _synergyName = synergyName ?? throw new ArgumentNullException(nameof(synergyName));
         _roleName = roleName ?? throw new ArgumentNullException(nameof(roleName));
         _archetypeName = archetypeName ?? throw new ArgumentNullException(nameof(archetypeName));
+        _characterName = characterName;
     }
 
     public void Initialize()
@@ -592,31 +596,7 @@ public sealed class SquadBuilderPresenter : ISquadBuilderActions
     }
 
     private string ResolveHeroDisplayName(HeroInstanceRecord hero)
-    {
-        return !LooksLikeRawLocalizationKey(hero.Name)
-            ? hero.Name
-            : ResolveHeroArchetypeName(hero);
-    }
-
-    private string ResolveHeroArchetypeName(HeroInstanceRecord hero)
-    {
-        return !string.IsNullOrWhiteSpace(hero.ArchetypeId)
-            ? _archetypeName(hero.ArchetypeId)
-            : hero.HeroId;
-    }
-
-    private static bool LooksLikeRawLocalizationKey(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return true;
-        }
-
-        var trimmed = value.Trim();
-        return trimmed.StartsWith("content.", StringComparison.Ordinal)
-               || trimmed.StartsWith("ui.", StringComparison.Ordinal)
-               || trimmed.StartsWith("No translation found", StringComparison.OrdinalIgnoreCase);
-    }
+        => HeroDisplayLabelFormatter.ResolvePersonAndJob(hero, _characterName, _archetypeName);
 
     // 전술 어휘 표시명은 TacticsLexicon 단일 소스 — 전술 공방(TacticalWorkshop)과 라벨 드리프트 방지.
     private static string LocalizeAnchor(DeploymentAnchorId anchor) => TacticsLexicon.Anchor(anchor);

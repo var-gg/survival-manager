@@ -4,6 +4,7 @@ using System.Linq;
 using SM.Combat.Model;
 using SM.Meta.Model;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity.UI;
 
 namespace SM.Unity.UI.Atlas;
 
@@ -22,6 +23,7 @@ public sealed class SortieConfirmPresenter
     private readonly Func<string, string> _archetypeName;
     private readonly Func<string, string> _synergyName;
     private readonly Func<DeploymentAnchorId, string> _anchorName;
+    private readonly Func<string, string, string>? _characterName;
     // 흉상 resolve — FastUnit 경량화를 위해 optional(default null). 런타임은 ResolveCharacterPortrait 주입.
     private readonly Func<string, UnityEngine.Texture2D?>? _portraitSprite;
 
@@ -31,7 +33,8 @@ public sealed class SortieConfirmPresenter
         Func<string, string> archetypeName,
         Func<string, string> synergyName,
         Func<DeploymentAnchorId, string> anchorName,
-        Func<string, UnityEngine.Texture2D?>? portraitSprite = null)
+        Func<string, UnityEngine.Texture2D?>? portraitSprite = null,
+        Func<string, string, string>? characterName = null)
     {
         _session = session ?? throw new ArgumentNullException(nameof(session));
         _baselineCatalog = baselineCatalog ?? throw new ArgumentNullException(nameof(baselineCatalog));
@@ -39,6 +42,7 @@ public sealed class SortieConfirmPresenter
         _synergyName = synergyName ?? throw new ArgumentNullException(nameof(synergyName));
         _anchorName = anchorName ?? throw new ArgumentNullException(nameof(anchorName));
         _portraitSprite = portraitSprite;
+        _characterName = characterName;
     }
 
     public SortieConfirmViewState BuildState()
@@ -58,7 +62,7 @@ public sealed class SortieConfirmPresenter
                 slots.Add(new SortieDeploySlotViewState(
                     anchor,
                     _anchorName(anchor),
-                    string.IsNullOrWhiteSpace(hero.Name) ? hero.HeroId : hero.Name,
+                    HeroDisplayLabelFormatter.ResolvePersonName(hero, _characterName),
                     _archetypeName(hero.ArchetypeId),
                     IsEmpty: false,
                     PortraitSprite: string.IsNullOrWhiteSpace(portraitKey) ? null : _portraitSprite?.Invoke(portraitKey)));

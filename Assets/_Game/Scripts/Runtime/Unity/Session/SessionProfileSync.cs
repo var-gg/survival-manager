@@ -140,7 +140,8 @@ public sealed partial class GameSessionState
             Profile.Heroes.Add(new HeroInstanceRecord
             {
                 HeroId = heroId,
-                Name = archetype != null ? ResolveArchetypeDisplayName(archetype) : $"Hero {i + 1}",
+                Name = ResolveCharacterNameKey(archetypeId),
+                CharacterId = archetypeId,
                 ArchetypeId = archetypeId,
                 RaceId = archetype?.RaceId ?? string.Empty,
                 ClassId = archetype?.ClassId ?? string.Empty,
@@ -217,6 +218,7 @@ public sealed partial class GameSessionState
             if (_sessionContentLookup.Snapshot.Characters is { } characters
                 && characters.TryGetValue(hero.CharacterId, out var character))
             {
+                hero.Name = ResolveCharacterNameKey(hero.CharacterId);
                 if (!string.IsNullOrWhiteSpace(character.RaceId))
                 {
                     hero.RaceId = character.RaceId;
@@ -322,25 +324,15 @@ public sealed partial class GameSessionState
         return _sessionContentLookup.NormalizeItemBaseId(string.Empty, index);
     }
 
-    private static string ResolveArchetypeDisplayName(CombatArchetypeTemplate archetype)
+    private string ResolveCharacterNameKey(string characterId)
     {
-        if (!string.IsNullOrWhiteSpace(archetype.DisplayName))
+        if (_combatContentLookup.TryGetCharacterDefinition(characterId, out var character)
+            && !string.IsNullOrWhiteSpace(character.NameKey))
         {
-            return archetype.DisplayName;
+            return character.NameKey;
         }
 
-        // archetype.NameKey는 "content.archetype.warden.name" 같은 raw localization key.
-        // 이걸 Name으로 박으면 UI가 그대로 raw key를 표시한다 (ContentTextResolver를 거치지 않음).
-        // archetype.Id ("warden")로 fallback — UI Presenter가 ContentTextResolver.GetCharacterName으로
-        // localized 표시로 변환한다.
-        return archetype.Id;
-    }
-
-    private static string ResolveArchetypeDisplayName(UnitArchetypeDefinition archetype)
-    {
-        return !string.IsNullOrWhiteSpace(archetype.LegacyDisplayName)
-            ? archetype.LegacyDisplayName
-            : archetype.Id;
+        return ContentLocalizationTables.BuildCharacterNameKey(characterId);
     }
 
     private const int DynamicOfferPoolSize = 6;

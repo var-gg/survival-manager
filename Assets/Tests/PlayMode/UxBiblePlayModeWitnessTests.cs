@@ -78,14 +78,27 @@ public sealed partial class UxBiblePlayModeWitnessTests
         yield return WaitFrames(2);
 
         var townHost = RequirePanelHost("TownRuntimePanelHost");
-        VerifyTownHub(townHost.Root);
-        yield return Capture("town_hub");
-
         var heroId = root.SessionState.ExpeditionSquadHeroIds.FirstOrDefault()
                      ?? root.SessionState.Profile.Heroes.First().HeroId;
+        var heroIdentity = ResolveHeroIdentity(root, heroId);
+        VerifyTownHub(townHost.Root);
+        var townHeroNames = townHost.Root.Query<Label>(className: "sm-face-card__name")
+            .ToList()
+            .Select(label => label.text)
+            .ToArray();
+        Assert.That(townHeroNames, Does.Contain(heroIdentity.Combined),
+            "Town hero cards must render the authored person name with the job as context.");
+        _packet?.RecordPass($"Town authored hero identity visible: {heroIdentity.Combined}");
+        yield return Capture("town_hub");
+
         ClickButton(townHost.Root, $"FaceCard_{heroId}");
         yield return WaitForVisible(townHost.Root, "TownCharacterSheetRoot");
         VerifyCharacterSheet(townHost.Root);
+        Assert.That(Require<Label>(townHost.Root, "TcsHeroNameLabel").text, Is.EqualTo(heroIdentity.Person),
+            "Character Sheet must render the authored person name.");
+        Assert.That(Require<Label>(townHost.Root, "TcsHeroMetaLabel").text, Does.Contain(heroIdentity.Job),
+            "Character Sheet must keep the job title reachable as context.");
+        _packet?.RecordPass($"Character Sheet authored hero identity visible: {heroIdentity.Person} / {heroIdentity.Job}");
         AssertSurfaceGeometry(townHost.Root, "TownCharacterSheetRoot", 700f, 420f);
         AssertNoRedText(Require<VisualElement>(townHost.Root, "TownCharacterSheetRoot"), "Character Sheet");
         yield return Capture("character_sheet");
@@ -284,6 +297,18 @@ public sealed partial class UxBiblePlayModeWitnessTests
         var reward = RequireAny<RewardScreenController>("Reward controller should exist for authored route.");
         var rewardHost = RequirePanelHost("RewardRuntimePanelHost");
         VerifyReward(rewardHost.Root);
+        var deployedHero = root.SessionState.BattleDeployHeroIds
+            .Select(id => root.SessionState.Profile.Heroes.FirstOrDefault(hero =>
+                string.Equals(hero.HeroId, id, StringComparison.Ordinal)))
+            .First(hero => hero != null)!;
+        var rewardIdentity = ResolveHeroIdentity(root, deployedHero.HeroId);
+        var rewardHeroNames = rewardHost.Root.Query<Label>(className: "reward-survivor-row__name")
+            .ToList()
+            .Select(label => label.text)
+            .ToArray();
+        Assert.That(rewardHeroNames, Does.Contain(rewardIdentity.Combined),
+            "Reward survivor rows must render an authored person name, never the save instance id.");
+        _packet?.RecordPass($"Reward authored hero identity visible: {rewardIdentity.Combined}");
         AssertNoRedText(rewardHost.Root, "Reward Result");
         yield return Capture("reward_result");
 
@@ -442,6 +467,24 @@ public sealed partial class UxBiblePlayModeWitnessTests
         AssertNonEmptyText<Label>(root, "ChoiceCard1TitleLabel");
         Assert.That(Require<Button>(root, "ChoiceCard1Button").enabledSelf, Is.True);
         Assert.That(Require<Button>(root, "ReturnTownButton"), Is.Not.Null);
+    }
+
+    private static (string Person, string Job, string Combined) ResolveHeroIdentity(
+        GameSessionRoot root,
+        string heroId)
+    {
+        var hero = root.SessionState.Profile.Heroes.First(candidate =>
+            string.Equals(candidate.HeroId, heroId, StringComparison.Ordinal));
+        var contentText = new ContentTextResolver(root.Localization, root.CombatContentLookup);
+        var person = contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
+        var job = contentText.GetArchetypeName(hero.ArchetypeId);
+        var combined = string.Equals(person, job, StringComparison.Ordinal)
+            ? person
+            : $"{person} · {job}";
+        Assert.That(person, Does.Not.StartWith("content."));
+        Assert.That(person, Is.Not.EqualTo(hero.HeroId));
+        Assert.That(job, Does.Not.StartWith("content."));
+        return (person, job, combined);
     }
 
     private IEnumerator Capture(string name)

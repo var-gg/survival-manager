@@ -78,7 +78,8 @@ public sealed class TacticalWorkshopPreviewBootstrap : EditorWindow
                 contentText.GetSynergyName,
                 postureSprite: PreviewSessionContext.LoadPostureSprite,
                 threatSprite: PreviewSessionContext.LoadThreatSprite,
-                classSprite: PreviewSessionContext.LoadClassSprite);
+                classSprite: PreviewSessionContext.LoadClassSprite,
+                archetypeName: contentText.GetArchetypeName);
             _presenter.Initialize();
             return true;
         }

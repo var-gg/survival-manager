@@ -155,7 +155,7 @@ public sealed class TacticalWorkshopView : ITacticalWorkshopView
                 standee.Add(figure);
             }
 
-            standee.tooltip = isEmpty ? $"{a.AnchorId} · empty" : $"{a.AnchorId} · {a.AssignedHeroId}";
+            standee.tooltip = isEmpty ? $"{a.AnchorId} · empty" : $"{a.AnchorId} · 배치됨";
             // anchor pad는 read-only reference — anchor 편집은 SquadBuilder 책임 (audit §2.2)
             _anchorPad.Add(standee);
         }

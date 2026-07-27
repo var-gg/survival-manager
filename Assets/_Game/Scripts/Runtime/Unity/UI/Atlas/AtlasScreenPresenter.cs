@@ -5,6 +5,8 @@ using System.Linq;
 using SM.Atlas.Model;
 using SM.Atlas.Services;
 using SM.Meta.Services;
+using SM.Persistence.Abstractions.Models;
+using SM.Unity.UI;
 
 namespace SM.Unity.UI.Atlas;
 
@@ -15,9 +17,11 @@ public sealed class AtlasScreenPresenter
     private AtlasSessionState _session;
     // wave-25 presenter (GPT Pro P0): optional hero source for scout candidate selection.
     // null이면 placeholder text fallback (EditMode test 시나리오 등). Runtime caller가 inject.
-    private Func<IReadOnlyList<SM.Persistence.Abstractions.Models.HeroInstanceRecord>>? _heroSource;
+    private Func<IReadOnlyList<HeroInstanceRecord>>? _heroSource;
     private Func<IReadOnlyList<string>>? _expeditionSquadSource;
     private Func<IReadOnlyList<string>>? _deploySquadSource;
+    private Func<string, string, string>? _characterName;
+    private Func<string, string>? _archetypeName;
 
     public AtlasScreenPresenter(AtlasRegionDefinition region, AtlasTraversalMode traversalMode = AtlasTraversalMode.StoryFirstClear)
     {
@@ -39,13 +43,17 @@ public sealed class AtlasScreenPresenter
     /// Runtime caller가 GameSessionRoot/GameSessionState에서 lambda로 공급.
     /// 미주입 시 BuildScoutHint는 placeholder text 반환.
     public void SetHeroSource(
-        Func<IReadOnlyList<SM.Persistence.Abstractions.Models.HeroInstanceRecord>> heroSource,
+        Func<IReadOnlyList<HeroInstanceRecord>> heroSource,
         Func<IReadOnlyList<string>> expeditionSquadSource,
-        Func<IReadOnlyList<string>> deploySquadSource)
+        Func<IReadOnlyList<string>> deploySquadSource,
+        Func<string, string, string>? characterName = null,
+        Func<string, string>? archetypeName = null)
     {
         _heroSource = heroSource;
         _expeditionSquadSource = expeditionSquadSource;
         _deploySquadSource = deploySquadSource;
+        _characterName = characterName;
+        _archetypeName = archetypeName;
     }
 
     public int SiteSpineIndex => _session.SiteSpineIndex;
@@ -118,7 +126,7 @@ public sealed class AtlasScreenPresenter
         {
             return "정찰원 미설정 — 가용 인원 없음";
         }
-        var displayName = string.IsNullOrEmpty(candidate.Name) ? candidate.HeroId : candidate.Name;
+        var displayName = HeroDisplayLabelFormatter.ResolvePersonAndJob(candidate, _characterName, _archetypeName);
         return $"정찰 후보: {displayName} (preview 깊이·보상 가산)";
     }
 

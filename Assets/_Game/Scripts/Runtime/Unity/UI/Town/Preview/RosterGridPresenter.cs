@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Core.Content;
 using SM.Meta.Model;
+using SM.Unity.UI;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -27,6 +28,7 @@ public sealed class RosterGridPresenter : IRosterGridActions
     private readonly Func<string, string> _className;
     private readonly Func<string, string> _raceName;
     private readonly Func<string, string, string> _characterName;
+    private readonly Func<string, string>? _archetypeName;
     private readonly Action? _quickBattle;
     private readonly Action<string>? _heroSelected;
     private string _selectedFilterKey = "all";
@@ -39,7 +41,8 @@ public sealed class RosterGridPresenter : IRosterGridActions
         Func<string, string> raceName,
         Func<string, string, string> characterName,
         Action? quickBattle = null,
-        Action<string>? heroSelected = null)
+        Action<string>? heroSelected = null,
+        Func<string, string>? archetypeName = null)
     {
         _session = session ?? throw new ArgumentNullException(nameof(session));
         _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
@@ -47,6 +50,7 @@ public sealed class RosterGridPresenter : IRosterGridActions
         _className = className ?? throw new ArgumentNullException(nameof(className));
         _raceName = raceName ?? throw new ArgumentNullException(nameof(raceName));
         _characterName = characterName ?? throw new ArgumentNullException(nameof(characterName));
+        _archetypeName = archetypeName;
         _quickBattle = quickBattle;
         _heroSelected = heroSelected;
     }
@@ -101,7 +105,7 @@ public sealed class RosterGridPresenter : IRosterGridActions
                 var classId = archetype?.Class.Id ?? h.ClassId ?? "vanguard";
                 var className = _className(classId);
                 var raceName = _raceName(raceId);
-                var displayName = _characterName(h.CharacterId, h.ArchetypeId);
+                var displayName = HeroDisplayLabelFormatter.ResolvePersonAndJob(h, _characterName, _archetypeName);
 
                 var progression = session.Profile.HeroProgressions
                     .FirstOrDefault(p => string.Equals(p.HeroId, h.HeroId, StringComparison.Ordinal));

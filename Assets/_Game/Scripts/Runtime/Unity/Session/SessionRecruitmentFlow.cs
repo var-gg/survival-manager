@@ -359,7 +359,8 @@ public sealed partial class GameSessionState
         Profile.Heroes.Add(new HeroInstanceRecord
         {
             HeroId = heroId,
-            Name = ResolveArchetypeDisplayName(archetype),
+            Name = ResolveCharacterNameKey(preview.UnitBlueprintId),
+            CharacterId = preview.UnitBlueprintId,
             ArchetypeId = preview.UnitBlueprintId,
             RaceId = archetype.Race.Id,
             ClassId = archetype.Class.Id,

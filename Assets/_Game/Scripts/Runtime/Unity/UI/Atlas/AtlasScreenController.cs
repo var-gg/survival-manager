@@ -86,10 +86,13 @@ public sealed class AtlasScreenController : MonoBehaviour
             // wave-25 presenter: scout candidate selection을 위한 hero source inject.
             if (_root != null)
             {
+                var contentText = new ContentTextResolver(_root.Localization, _root.CombatContentLookup);
                 _presenter.SetHeroSource(
                     () => _root.SessionState.Profile.Heroes,
                     () => _root.SessionState.ExpeditionSquadHeroIds ?? Array.Empty<string>(),
-                    () => _root.SessionState.BattleDeployHeroIds ?? Array.Empty<string>());
+                    () => _root.SessionState.BattleDeployHeroIds ?? Array.Empty<string>(),
+                    contentText.GetCharacterName,
+                    contentText.GetArchetypeName);
             }
         }
         if (_view != null && _viewRootBuildCount == panelHost.RootBuildCount)
@@ -573,7 +576,8 @@ public sealed class AtlasScreenController : MonoBehaviour
             contentText.GetArchetypeName,
             contentText.GetSynergyName,
             SortieAnchorLabel,
-            iconResolver.ResolveCharacterPortrait);
+            iconResolver.ResolveCharacterPortrait,
+            contentText.GetCharacterName);
 
         void CloseOverlay()
         {

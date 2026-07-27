@@ -5,6 +5,7 @@ using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Results;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity.UI;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -592,13 +593,15 @@ public sealed class InventoryPresenter : IInventoryActions
 
         var owner = _session.Profile.Heroes.FirstOrDefault(hero =>
             string.Equals(hero.HeroId, item.EquippedHeroId, StringComparison.Ordinal));
-        return owner != null ? ResolveHeroName(owner) : item.EquippedHeroId;
+        return owner != null ? ResolveHeroName(owner) : "알 수 없는 동료";
     }
 
     private string ResolveHeroName(HeroInstanceRecord hero)
     {
-        var name = _contentText?.GetCharacterName(hero.CharacterId, hero.ArchetypeId);
-        return string.IsNullOrWhiteSpace(name) ? hero.HeroId : name;
+        return HeroDisplayLabelFormatter.ResolvePersonAndJob(
+            hero,
+            _contentText == null ? null : _contentText.GetCharacterName,
+            _contentText == null ? null : _contentText.GetArchetypeName);
     }
 
     private static string CompareTone(string selectedValue, string equippedValue)

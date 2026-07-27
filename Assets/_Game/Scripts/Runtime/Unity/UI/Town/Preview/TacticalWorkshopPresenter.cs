@@ -6,6 +6,7 @@ using SM.Content.Definitions;
 using SM.Core.Contracts;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using SM.Unity.UI;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -34,6 +35,7 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
     private readonly Func<string, string, string> _characterName;   // (characterId, fallbackArchetypeId)
     private readonly Func<string, string, string> _roleName;        // (roleInstructionId, fallbackRoleTag)
     private readonly Func<string, string> _synergyName;
+    private readonly Func<string, string>? _archetypeName;
     private readonly SpriteLoader? _postureSprite;
     private readonly SpriteLoader? _threatSprite;
     private readonly SpriteLoader? _classSprite;
@@ -47,7 +49,8 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
         Func<string, string> synergyName,
         SpriteLoader? postureSprite = null,
         SpriteLoader? threatSprite = null,
-        SpriteLoader? classSprite = null)
+        SpriteLoader? classSprite = null,
+        Func<string, string>? archetypeName = null)
     {
         _session = session ?? throw new ArgumentNullException(nameof(session));
         _contentLookup = contentLookup ?? throw new ArgumentNullException(nameof(contentLookup));
@@ -55,6 +58,7 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
         _characterName = characterName ?? throw new ArgumentNullException(nameof(characterName));
         _roleName = roleName ?? throw new ArgumentNullException(nameof(roleName));
         _synergyName = synergyName ?? throw new ArgumentNullException(nameof(synergyName));
+        _archetypeName = archetypeName;
         _postureSprite = postureSprite;
         _threatSprite = threatSprite;
         _classSprite = classSprite;
@@ -340,18 +344,7 @@ public sealed class TacticalWorkshopPresenter : ITacticalWorkshopActions
     }
 
     private string ResolveHeroDisplayName(HeroInstanceRecord hero)
-    {
-        // hero.Name은 SessionProfileSync가 archetype.Id ("warden") 같은 raw id를 박아두므로
-        // 직접 사용하면 UI에 raw id가 노출된다. Character → archetype fallback chain을 가진
-        // characterName resolver로 일관 처리한다 (CharacterId가 비면 NormalizeCharacterId가
-        // ArchetypeId로 채워두므로 결과가 자연스럽다).
-        if (!string.IsNullOrWhiteSpace(hero.CharacterId) || !string.IsNullOrWhiteSpace(hero.ArchetypeId))
-        {
-            return _characterName(hero.CharacterId, hero.ArchetypeId);
-        }
-
-        return string.IsNullOrWhiteSpace(hero.Name) ? hero.HeroId : hero.Name;
-    }
+        => HeroDisplayLabelFormatter.ResolvePersonAndJob(hero, _characterName, _archetypeName);
 
     private string ResolveRoleInstructionId(HeroInstanceRecord hero, DeploymentAnchorId anchor, SquadBlueprintRecord? activeBlueprint)
     {

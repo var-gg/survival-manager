@@ -6136,7 +6136,26 @@ public static partial class SampleSeedGenerator
 
     private static string ResolveCharacterKoName(string id)
     {
-        return ResolveArchetypeKoName(id);
+        return id switch
+        {
+            "warden" => "철위 (鐵衛)",
+            "guardian" => "묘직 (墓直)",
+            "slayer" => "서검 (誓劍)",
+            "raider" => "이빨바람",
+            "hunter" => "원시 (遠矢)",
+            "scout" => "숲살이",
+            "priest" => "단린 (丹麟)",
+            "hexer" => "묵향 (墨香)",
+            "bulwark" => "송곳벽",
+            "reaver" => "묵괴 (墨壞)",
+            "marksman" => "냉시 (冷矢)",
+            "shaman" => "풍의 (風儀)",
+            "bastion_penitent" => "참회벽",
+            "pale_executor" => "백집행 (白執行)",
+            "rift_stalker" => "틈사냥꾼",
+            "mirror_cantor" => "명음 (明音)",
+            _ => id
+        };
     }
 
     private static string ResolveCharacterKoDescription(string id)
@@ -6147,11 +6166,11 @@ public static partial class SampleSeedGenerator
             "bastion_penitent" => "무너진 방벽 교리를 원정대의 전열로 되돌리는 특화 영웅",
             "pale_executor" => "표식이 남긴 틈을 끝까지 추적해 처형하는 특화 영웅",
             "mirror_cantor" => "제어와 정화를 한 박자로 묶어 대열을 보정하는 특화 영웅",
-            _ => $"{ResolveCharacterKoName(id)} 기본 캐릭터"
+            _ => $"{ResolveArchetypeKoName(id)} 기본 캐릭터"
         };
     }
 
-    private static string ResolveCharacterEnName(string id)
+    private static string ResolveArchetypeEnName(string id)
     {
         return id switch
         {
@@ -6175,6 +6194,30 @@ public static partial class SampleSeedGenerator
         };
     }
 
+    private static string ResolveCharacterEnName(string id)
+    {
+        return id switch
+        {
+            "warden" => "Iron Warden",
+            "guardian" => "Crypt Guardian",
+            "slayer" => "Oath Slayer",
+            "raider" => "Pack Raider",
+            "hunter" => "Longshot Hunter",
+            "scout" => "Trail Scout",
+            "priest" => "Dawn Priest",
+            "hexer" => "Grave Hexer",
+            "bulwark" => "Fang Bulwark",
+            "reaver" => "Grave Reaver",
+            "marksman" => "Dread Marksman",
+            "shaman" => "Storm Shaman",
+            "rift_stalker" => "Rift Stalker",
+            "bastion_penitent" => "Bastion Penitent",
+            "pale_executor" => "Pale Executor",
+            "mirror_cantor" => "Mirror Cantor",
+            _ => id
+        };
+    }
+
     private static string ResolveCharacterEnDescription(string id)
     {
         return id switch
@@ -6183,7 +6226,7 @@ public static partial class SampleSeedGenerator
             "bastion_penitent" => "Specialist bulwark that turns broken doctrine into a stable front",
             "pale_executor" => "Specialist finisher that follows marked openings to execution",
             "mirror_cantor" => "Specialist cantor that pairs control cleanup with formation support",
-            _ => $"{ResolveCharacterEnName(id)} character identity"
+            _ => $"{ResolveArchetypeEnName(id)} character identity"
         };
     }
 }

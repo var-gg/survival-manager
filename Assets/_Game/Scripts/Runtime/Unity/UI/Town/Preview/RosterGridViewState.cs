@@ -11,7 +11,7 @@ namespace SM.Unity.UI.Town.Preview;
 /// </summary>
 public sealed record RosterGridHeroCardViewState(
     string HeroId,                  // HeroInstanceRecord.HeroId
-    string DisplayName,             // HeroInstanceRecord.Name (단일 필드)
+    string DisplayName,             // CharacterId person + ArchetypeId job resolved label
     string ArchetypeLabel,          // "전위 / 솔라룸" — class / race resolved
     string FamilyKey,               // class — HeroPortraitCard atom modifier
     string RarityKey,               // common / rare / epic ← HeroInstanceRecord.RecruitTier

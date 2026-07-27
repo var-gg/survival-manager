@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Unity.UI;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -115,11 +116,12 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
             heroLoadout?.SelectedPassiveNodeIds ?? Enumerable.Empty<string>(),
             StringComparer.Ordinal);
 
-        // hero.Name은 SessionProfileSync가 archetype.Id ("warden") 같은 raw id를 박아둔다.
-        // ContentTextResolver.GetCharacterName으로 character → archetype 한국어 표시명 fallback chain 사용.
         var heroDisplayName = hero != null
-            ? _contentText.GetCharacterName(hero.CharacterId, hero.ArchetypeId)
-            : heroId;
+            ? HeroDisplayLabelFormatter.ResolvePersonAndJob(
+                hero,
+                _contentText.GetCharacterName,
+                _contentText.GetArchetypeName)
+            : "—";
         var header = new PassiveBoardHeaderViewState(
             HeroId: heroId,
             HeroDisplayName: heroDisplayName,
