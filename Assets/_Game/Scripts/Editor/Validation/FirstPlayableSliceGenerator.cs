@@ -34,28 +34,34 @@ public static class FirstPlayableSliceGenerator
             throw new InvalidOperationException(error);
         }
 
-        var slice = snapshot.FirstPlayableSlice ?? new FirstPlayableSliceDefinition();
-        var asset = LoadOrCreateAsset();
-        CopySlice(slice, asset);
+        var generatedSlice = snapshot.FirstPlayableSlice ?? new FirstPlayableSliceDefinition();
+        var asset = LoadOrCreateAsset(out var created);
+        if (created)
+        {
+            CopySlice(generatedSlice, asset);
+        }
+
         EnsureDefaultCoverageQuotas(asset);
         EnsureDefaultSliceContracts(asset);
         EditorUtility.SetDirty(asset);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+        var definitiveSlice = asset.ToRuntime();
 
         var reportDirectory = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ArtifactFolderName));
         Directory.CreateDirectory(reportDirectory);
         var markdownPath = Path.Combine(reportDirectory, SliceMarkdownFileName);
-        File.WriteAllText(markdownPath, BuildMarkdown(slice), Encoding.UTF8);
+        File.WriteAllText(markdownPath, BuildMarkdown(definitiveSlice), Encoding.UTF8);
 
-        return new FirstPlayableSliceGenerationResult(asset, slice, markdownPath);
+        return new FirstPlayableSliceGenerationResult(asset, definitiveSlice, markdownPath);
     }
 
-    private static FirstPlayableSliceDefinitionAsset LoadOrCreateAsset()
+    private static FirstPlayableSliceDefinitionAsset LoadOrCreateAsset(out bool created)
     {
         var asset = AssetDatabase.LoadAssetAtPath<FirstPlayableSliceDefinitionAsset>(AssetPath);
         if (asset != null && !HasMissingScript(asset))
         {
+            created = false;
             return asset;
         }
 
@@ -70,6 +76,7 @@ public static class FirstPlayableSliceGenerator
 
         asset = ScriptableObject.CreateInstance<FirstPlayableSliceDefinitionAsset>();
         AssetDatabase.CreateAsset(asset, AssetPath);
+        created = true;
         return asset;
     }
 
@@ -186,6 +193,8 @@ public static class FirstPlayableSliceGenerator
         asset.SignaturePassiveCap = FirstPlayableAuthoringContract.LiveSignaturePassiveCap;
         asset.FlexActiveCap = FirstPlayableAuthoringContract.LiveFlexActiveCap;
         asset.FlexPassiveCap = FirstPlayableAuthoringContract.LiveFlexPassiveCap;
+        asset.AffixCap = FirstPlayableAuthoringContract.LiveAffixCap;
+        asset.AffixIds = EquipmentContentV1Contract.LiveAffixOrder.ToList();
         if (asset.SignaturePassiveIds.Count > FirstPlayableAuthoringContract.LiveSignaturePassiveCap)
         {
             asset.SignaturePassiveIds = asset.SignaturePassiveIds

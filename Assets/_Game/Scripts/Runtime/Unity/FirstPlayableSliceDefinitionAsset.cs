@@ -14,7 +14,9 @@ namespace SM.Unity
         // 에디터 contract(LiveFlexActiveCap)와 수동 동기 — 신규 asset 기본값이 live cap에 못 미치지 않게 한다.
         public int FlexActiveCap = 15;
         public int FlexPassiveCap = 20;
-        public int AffixCap = 24;
+        // 에디터 contract(EquipmentContentV1Contract.LiveAffixCount)와 수동 동기 — 신규 asset 기본값도
+        // ratified live affix pool 전체를 담는다.
+        public int AffixCap = 44;
         public int SynergyFamilyCap = 7;
         public int TemporaryAugmentCap = 24;
         public int PermanentAugmentCap = 1;

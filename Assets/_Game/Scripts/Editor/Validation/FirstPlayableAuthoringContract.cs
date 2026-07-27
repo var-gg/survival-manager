@@ -25,6 +25,7 @@ internal static class FirstPlayableAuthoringContract
     // live flex active로 올리면서 12 → 15. 의도적 scope 확장 — 갭 감사 로드맵 P3-3의 마무리.
     internal const int LiveFlexActiveCap = 15;
     internal const int LiveFlexPassiveCap = 20;
+    internal const int LiveAffixCap = EquipmentContentV1Contract.LiveAffixCount;
     internal const int ExpectedEncounterCount = 40;
 
     internal static readonly IReadOnlyList<string> RequiredPassiveBoardIds = new[]

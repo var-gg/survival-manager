@@ -49,6 +49,35 @@ internal sealed class FirstPlayableSliceCatalogValidator : ICatalogValidationRul
             slice.FlexPassiveCap,
             slice.FlexPassiveIds.Count,
             FirstPlayableAuthoringContract.LiveFlexPassiveCap);
+        ValidateExactLiveCount(
+            issues,
+            assetPath,
+            "affix",
+            "Affix",
+            nameof(FirstPlayableSliceDefinitionAsset.AffixCap),
+            nameof(FirstPlayableSliceDefinitionAsset.AffixIds),
+            slice.AffixCap,
+            slice.AffixIds.Count,
+            FirstPlayableAuthoringContract.LiveAffixCap);
+
+        var liveAffixIds = slice.AffixIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.Ordinal);
+        if (!liveAffixIds.SetEquals(EquipmentContentV1Contract.LiveAffixIds))
+        {
+            var missing = EquipmentContentV1Contract.LiveAffixIds
+                .Where(id => !liveAffixIds.Contains(id))
+                .OrderBy(id => id, StringComparer.Ordinal);
+            var unexpected = liveAffixIds
+                .Where(id => !EquipmentContentV1Contract.LiveAffixIds.Contains(id))
+                .OrderBy(id => id, StringComparer.Ordinal);
+            ContentValidationIssueFactory.AddError(
+                issues,
+                "first_playable.affix_set",
+                $"AffixIds must match the ratified equipment V1 live set. Missing=[{string.Join(", ", missing)}], unexpected=[{string.Join(", ", unexpected)}].",
+                assetPath,
+                nameof(FirstPlayableSliceDefinitionAsset.AffixIds));
+        }
 
         var boardIds = slice.PassiveBoardIds
             .Where(id => !string.IsNullOrWhiteSpace(id))

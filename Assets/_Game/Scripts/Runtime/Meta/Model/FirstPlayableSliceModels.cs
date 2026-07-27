@@ -15,7 +15,9 @@ public sealed class FirstPlayableSliceDefinition
     // fallback 경로에서 승격 콘텐츠가 잘리지 않도록 기본값도 live cap을 따른다.
     public int FlexActiveCap = 15;
     public int FlexPassiveCap = 20;
-    public int AffixCap = 24;
+    // 에디터 contract(EquipmentContentV1Contract.LiveAffixCount)와 수동 동기 — authored asset이 없는
+    // fallback 경로에서도 ratified live affix pool 전체를 유지한다.
+    public int AffixCap = 44;
     public int SynergyFamilyCap = 7;
     public int TemporaryAugmentCap = 24;
     public int PermanentAugmentCap = 1;

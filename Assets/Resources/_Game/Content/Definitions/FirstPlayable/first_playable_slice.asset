@@ -17,7 +17,7 @@ MonoBehaviour:
   SignaturePassiveCap: 8
   FlexActiveCap: 15
   FlexPassiveCap: 20
-  AffixCap: 30
+  AffixCap: 44
   SynergyFamilyCap: 7
   TemporaryAugmentCap: 24
   PermanentAugmentCap: 1
@@ -119,26 +119,39 @@ MonoBehaviour:
   - support_siphon
   AffixIds:
   - affix_blessed
+  - affix_blood_price
   - affix_bracing
+  - affix_brittle_focus
+  - affix_burdened_reach
   - affix_channeling
   - affix_cleansing
+  - affix_desperate_focus
+  - affix_executioners_edge
+  - affix_fallen_chorus
   - affix_farshot
   - affix_fierce
+  - affix_first_light
   - affix_focusing
   - affix_guarded
   - affix_hallowed
   - affix_hasty
   - affix_heavy
   - affix_ironclad
+  - affix_last_ward
+  - affix_lightfooted_plate
   - affix_lithe
   - affix_lucid
   - affix_mender
+  - affix_mourning_aegis
+  - affix_overclocked
   - affix_packborn
   - affix_piercing
   - affix_precise
   - affix_quick
   - affix_ravenous
   - affix_reaching
+  - affix_reaper_spark
+  - affix_reckless_edge
   - affix_relentless
   - affix_resolute
   - affix_sharp
@@ -146,6 +159,7 @@ MonoBehaviour:
   - affix_sturdy
   - affix_vital
   - affix_warded
+  - affix_war_chorus
   - affix_watchful
   - affix_wraithbound
   SynergyFamilyIds:
@@ -201,13 +215,25 @@ MonoBehaviour:
   - augment_perm_legacy_signal
   - augment_perm_legacy_spur
   - bastion_penitent
+  - bastion_penitent_tithe_boss
+  - hexer_attrition_boss
   - mirror_cantor
+  - mirror_cantor_sustain_boss
   - pale_executor
+  - pale_executor_nondiving_boss
+  - pale_executor_tithe_boss
+  - priest_sustain_boss
   - rift_stalker
+  - shaman_burn_boss
   - skill_aegis_intercept
   - skill_aegis_sentinel_oath
   - skill_ash_step
   - skill_bloodless_form
+  - skill_boss_low_hp_execution_shot
+  - skill_boss_orchard_burn_pulse
+  - skill_boss_ruined_attrition_hex
+  - skill_boss_sustain_mend
+  - skill_boss_tithe_mark_sentence
   - skill_echo_archive
   - skill_echo_resonance
   - skill_edge_of_sentence
@@ -218,6 +244,7 @@ MonoBehaviour:
   - skill_iron_hide_memory
   - skill_iron_pelt_maul
   - skill_iron_pelt_roar
+  - skill_last_bastion
   - skill_lattice_bastion
   - skill_lattice_listener
   - skill_memory_tuning
@@ -235,6 +262,7 @@ MonoBehaviour:
   - skill_shardblade_sever
   - skill_signal_flare
   - skill_square_wall
+  - skill_sunder_rhythm
   - skill_sunken_anticluster_bombardment
   - skill_veil_breach
   - sunken_adjudicator_boss

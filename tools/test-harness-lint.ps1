@@ -7,7 +7,7 @@ param(
     테스트 하네스 preflight lint — CI 또는 로컬에서 커밋 전 검증.
 
 .DESCRIPTION
-    아래 세 가지를 검사한다:
+    아래 항목을 검사한다:
     1. Runtime asmdef가 UnityEditor / AssetDatabase를 #if 가드 없이 참조하면 실패
     2. [Category("BatchOnly")]가 아닌 테스트 코드에서 직접 resource/content/session production bootstrap을 호출하면 실패
     3. [Category("FastUnit")] 테스트 코드에서 authored Unity object fixture를 사용하면 실패
@@ -21,6 +21,7 @@ param(
         항상 false — 정산/측정이 조용히 허구를 생산한다. 실제 3회 발생: P0 HP/EXP 미반영, dossier fallenAllyIds,
         WarrantSeparability protect 생존율 0% 오진. EndsWith("_{id}") 또는 접두사 포함 리터럴을 쓸 것)
     9. authored IconId가 실제 PNG로 해석되지 않고 명시적 known-missing-art 선언도 없으면 실패
+    10. first playable capped content가 live/parking scope contract에서 누락되거나 중복되면 실패
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -499,6 +500,22 @@ else {
     & $iconRoutingLint -RepoRoot $RepoRoot
     if ($LASTEXITCODE -ne 0) {
         Write-LintError -Check 'Authored-icon-routing' -File 'tools/icon-routing/known-missing-art.tsv' -Detail 'Authored icon routing validation failed. Repair the exact content id, icon key, and expected path reported above.'
+    }
+}
+
+# ────────────────────────────────────────────────
+# Check 10: first playable capped content is explicitly live or parked
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 10: First playable scope contract ==" -ForegroundColor Cyan
+$firstPlayableScopeLint = Join-Path $RepoRoot 'tools/first-playable-scope/lint.ps1'
+if (-not (Test-Path -LiteralPath $firstPlayableScopeLint)) {
+    Write-LintError -Check 'First-playable-scope' -File 'tools/first-playable-scope/lint.ps1' -Detail 'Scope lint is missing. Every capped authored content id must be explicitly live or parked.'
+}
+else {
+    & $firstPlayableScopeLint -RepoRoot $RepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        Write-LintError -Check 'First-playable-scope' -File 'Assets/Resources/_Game/Content/Definitions/FirstPlayable/first_playable_slice.asset' -Detail 'First playable scope validation failed. Repair the exact axis and id reported above, then commit the cap/list/parking decision together.'
     }
 }
 
