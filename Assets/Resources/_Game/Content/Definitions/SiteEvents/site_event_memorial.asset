@@ -18,6 +18,7 @@ MonoBehaviour:
   Choices:
   - Id: offer_echo
     LabelKey: content.site_event.site_event_memorial.choice.offer_echo
+    IconId: site_event_choice_offer_echo
     Outcomes:
     - Kind: 1
       PayloadId: 
@@ -26,6 +27,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: study_names
     LabelKey: content.site_event.site_event_memorial.choice.study_names
+    IconId: site_event_choice_study_names
     Outcomes:
     - Kind: 2
       PayloadId: 
@@ -34,6 +36,7 @@ MonoBehaviour:
       TargetRule: 1
   - Id: lay_to_rest
     LabelKey: content.site_event.site_event_memorial.choice.lay_to_rest
+    IconId: site_event_choice_lay_to_rest
     Outcomes:
     - Kind: 3
       PayloadId: 

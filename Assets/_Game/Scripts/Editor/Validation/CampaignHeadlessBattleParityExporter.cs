@@ -398,6 +398,7 @@ internal sealed class SessionBattlePathLookupGuard : ICombatContentLookup
     public bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter) => Reject(nameof(TryGetCampaignChapterDefinition), out chapter);
     public bool TryGetExpeditionSiteDefinition(string siteId, out ExpeditionSiteDefinition site) => Reject(nameof(TryGetExpeditionSiteDefinition), out site);
     public bool TryGetEncounterDefinition(string encounterId, out EncounterDefinition encounter) => Reject(nameof(TryGetEncounterDefinition), out encounter);
+    public bool TryGetSiteEventChoiceIconId(string eventId, string choiceId, out string iconId) => Reject(nameof(TryGetSiteEventChoiceIconId), out iconId);
     public bool TryGetTraitEntry(string archetypeId, string traitId, out TraitEntry trait) => Reject(nameof(TryGetTraitEntry), out trait);
     public IReadOnlyList<CampaignChapterDefinition> GetOrderedCampaignChapters() =>
         Reject<IReadOnlyList<CampaignChapterDefinition>>(nameof(GetOrderedCampaignChapters));

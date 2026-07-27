@@ -1,4 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="../../Panels/SiteEventChoice/SiteEventChoice.uss" />
+    <ui:Template name="SiteEventChoiceTemplate" src="../../Panels/SiteEventChoice/SiteEventChoice.uxml" />
     <ui:VisualElement name="atlas-root" class="atlas-root">
         <ui:VisualElement class="atlas-topbar">
             <ui:Label name="atlas-region-title" class="atlas-title" />
@@ -96,6 +98,10 @@
         <ui:VisualElement name="atlas-footer" class="atlas-footer" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 12px 24px; margin-top: 4px;">
             <ui:Button name="atlas-return-town-button" text="◀ 마을 복귀" class="ui-button sm-cta sm-cta--md sm-cta--secondary" />
             <ui:Label name="atlas-progress-label" class="atlas-progress-label" style="color: rgb(216, 199, 153); font-size: 12px; -unity-font-style: bold; letter-spacing: 1px;" text="원정 진행도 —" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="SiteEventChoiceOverlay" class="site-event-choice-overlay" picking-mode="Ignore" style="display: none;">
+            <ui:Instance template="SiteEventChoiceTemplate" class="site-event-choice__instance" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

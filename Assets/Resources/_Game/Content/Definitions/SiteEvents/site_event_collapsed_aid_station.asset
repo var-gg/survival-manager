@@ -18,6 +18,7 @@ MonoBehaviour:
   Choices:
   - Id: rescue
     LabelKey: content.site_event.site_event_collapsed_aid_station.choice.rescue
+    IconId: site_event_choice_rescue
     Outcomes:
     - Kind: 6
       PayloadId: priest
@@ -26,6 +27,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: take_supplies
     LabelKey: content.site_event.site_event_collapsed_aid_station.choice.take_supplies
+    IconId: site_event_choice_take_supplies
     Outcomes:
     - Kind: 7
       PayloadId: consumable_field_dressing
@@ -39,6 +41,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: burn_it
     LabelKey: content.site_event.site_event_collapsed_aid_station.choice.burn_it
+    IconId: site_event_choice_burn_it
     Outcomes:
     - Kind: 1
       PayloadId: 

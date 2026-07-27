@@ -18,6 +18,7 @@ MonoBehaviour:
   Choices:
   - Id: recover_scout
     LabelKey: content.site_event.site_event_road_of_corpses.choice.recover_scout
+    IconId: site_event_choice_recover_scout
     Outcomes:
     - Kind: 0
       PayloadId: item_hunter_bow
@@ -31,6 +32,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: move_on
     LabelKey: content.site_event.site_event_road_of_corpses.choice.move_on
+    IconId: site_event_choice_move_on
     Outcomes:
     - Kind: 5
       PayloadId: node_wolfpine_standard

@@ -104,6 +104,11 @@ public sealed class SiteEventSystemFastTests
             new Dictionary<string, SiteEventTemplate>(StringComparer.Ordinal)
             {
                 [eventTemplate.Id] = eventTemplate,
+            },
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["site_event_fixture/safe"] = "site_event_choice_safe",
+                ["site_event_fixture/risk"] = "site_event_choice_risk",
             });
         var session = CreateSession(lookup);
 
@@ -112,6 +117,12 @@ public sealed class SiteEventSystemFastTests
         Assert.That(session.ResolveSelectedNodeToRewardSettlement(), Is.True);
         Assert.That(session.PendingSiteEvent, Is.Not.Null);
         Assert.That(session.PendingSiteEvent!.Choices.Count, Is.EqualTo(2));
+        Assert.That(
+            session.PendingSiteEvent.Choices.Select(choice => choice.IconId),
+            Is.EqualTo(new[] { "site_event_choice_safe", "site_event_choice_risk" }));
+        Assert.That(
+            session.PendingSiteEvent.Choices.All(choice => choice.OutcomePreviews.Count > 0),
+            Is.True);
         Assert.That(session.SiteEvents.GetLegalActions().Select(action => action.ChoiceId), Is.EquivalentTo(new[] { "safe", "risk" }));
 
         Assert.That(session.SiteEvents.ApplyChoice(choiceId), Is.True);
@@ -127,6 +138,41 @@ public sealed class SiteEventSystemFastTests
             Assert.That(session.PendingSiteRecruitOffers.Count, Is.EqualTo(1));
             Assert.That(session.SiteConsumableIds, Is.EqualTo(new[] { "consumable_field_dressing" }));
         }
+    }
+
+    [Test]
+    public void OutcomePreview_PreservesEveryAuthoredConsequence_WithoutExactAmountOrBestCaseCollapse()
+    {
+        var outcomes = new[]
+        {
+            Outcome(OutcomeKind.GrantEcho, amount: -10),
+            Outcome(OutcomeKind.RouteToNode, "risk"),
+            Outcome(OutcomeKind.GrantExp, amount: 25, targetRule: OutcomeTargetRule.LowestDeployIndex),
+        };
+
+        var previews = SiteEventOutcomePreviewBuilder.Build(outcomes);
+
+        Assert.That(previews.Count, Is.EqualTo(outcomes.Length));
+        Assert.That(
+            previews.Select(preview => preview.Category),
+            Is.EqualTo(new[]
+            {
+                SiteEventOutcomePreviewCategory.Echo,
+                SiteEventOutcomePreviewCategory.Route,
+                SiteEventOutcomePreviewCategory.Experience,
+            }));
+        Assert.That(previews[0].IsCost, Is.True);
+        Assert.That(previews[0].IntensityPips, Is.InRange(1, 5));
+        Assert.That(previews[2].Certainty, Is.EqualTo(SiteEventOutcomePreviewCertainty.TargetVaries));
+        Assert.That(
+            typeof(SiteEventOutcomePreviewViewModel).GetProperty("Amount"),
+            Is.Null,
+            "The qualitative preview must not expose the exact authored amount.");
+
+        var noChange = SiteEventOutcomePreviewBuilder.Build(Array.Empty<SiteEventOutcomeTemplate>());
+        Assert.That(noChange.Count, Is.EqualTo(1));
+        Assert.That(noChange[0].Category, Is.EqualTo(SiteEventOutcomePreviewCategory.NoChange));
+        Assert.That(noChange[0].IntensityPips, Is.Zero);
     }
 
     private static SiteEventResolutionState CreateResolutionState(IReadOnlyList<string>? activeWounds = null)

@@ -12,7 +12,8 @@ public static class EditorFreeCombatContentFixture
 {
     public static FakeCombatContentLookup CreateRunLoopLookup(
         SiteGraphTemplate? siteAlphaGateGraph = null,
-        IReadOnlyDictionary<string, SiteEventTemplate>? siteEvents = null)
+        IReadOnlyDictionary<string, SiteEventTemplate>? siteEvents = null,
+        IReadOnlyDictionary<string, string>? siteEventChoiceIconIds = null)
     {
         var augmentCatalog = CreateRunLoopAugmentCatalog();
         var firstPlayableSlice = new FirstPlayableSliceDefinition
@@ -67,7 +68,10 @@ public static class EditorFreeCombatContentFixture
             siteEvents: siteEvents,
             warWound: siteEvents == null ? null : new WarWoundSpec(0.25f, 0.9f, 1, 3, 1, true));
 
-        return new FakeCombatContentLookup(snapshot: snapshot, firstPlayableSlice: firstPlayableSlice);
+        return new FakeCombatContentLookup(
+            snapshot: snapshot,
+            firstPlayableSlice: firstPlayableSlice,
+            siteEventChoiceIconIds: siteEventChoiceIconIds);
     }
 
     public static FakeCombatContentLookup CreateTownBuildLookup()

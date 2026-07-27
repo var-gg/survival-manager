@@ -18,6 +18,7 @@ MonoBehaviour:
   Choices:
   - Id: assault
     LabelKey: content.site_event.site_event_hostage_standoff.choice.assault
+    IconId: site_event_choice_assault
     Outcomes:
     - Kind: 5
       PayloadId: node_hostage_bonus_fight
@@ -26,6 +27,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: ransom
     LabelKey: content.site_event.site_event_hostage_standoff.choice.ransom
+    IconId: site_event_choice_ransom
     Outcomes:
     - Kind: 1
       PayloadId: 
@@ -39,4 +41,5 @@ MonoBehaviour:
       TargetRule: 0
   - Id: ignore
     LabelKey: content.site_event.site_event_hostage_standoff.choice.ignore
+    IconId: site_event_choice_ignore
     Outcomes: []

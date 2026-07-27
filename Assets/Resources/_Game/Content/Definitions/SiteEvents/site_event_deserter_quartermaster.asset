@@ -18,6 +18,7 @@ MonoBehaviour:
   Choices:
   - Id: trade
     LabelKey: content.site_event.site_event_deserter_quartermaster.choice.trade
+    IconId: site_event_choice_trade
     Outcomes:
     - Kind: 0
       PayloadId: item_lucky_charm
@@ -36,6 +37,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: claim_bounty
     LabelKey: content.site_event.site_event_deserter_quartermaster.choice.claim_bounty
+    IconId: site_event_choice_claim_bounty
     Outcomes:
     - Kind: 1
       PayloadId: 
@@ -44,6 +46,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: seize
     LabelKey: content.site_event.site_event_deserter_quartermaster.choice.seize
+    IconId: site_event_choice_seize
     Outcomes:
     - Kind: 0
       PayloadId: item_iron_sword

@@ -34,6 +34,7 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     private readonly Dictionary<string, CampaignChapterDefinition> _campaignChapters = new(StringComparer.Ordinal);
     private readonly Dictionary<string, ExpeditionSiteDefinition> _expeditionSites = new(StringComparer.Ordinal);
     private readonly Dictionary<string, EncounterDefinition> _encounters = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string> _siteEventChoiceIconIds = new(StringComparer.Ordinal);
     private readonly List<CampaignChapterDefinition> _orderedCampaignChapters = new();
 
     public FakeCombatContentLookup(
@@ -55,7 +56,8 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
         IReadOnlyDictionary<string, CampaignChapterDefinition>? campaignChapters = null,
         IReadOnlyDictionary<string, ExpeditionSiteDefinition>? expeditionSites = null,
         IReadOnlyDictionary<string, EncounterDefinition>? encounters = null,
-        IReadOnlyList<CampaignChapterDefinition>? orderedCampaignChapters = null)
+        IReadOnlyList<CampaignChapterDefinition>? orderedCampaignChapters = null,
+        IReadOnlyDictionary<string, string>? siteEventChoiceIconIds = null)
     {
         _snapshot = snapshot ?? CreateEmptySnapshot();
         _firstPlayableSlice = firstPlayableSlice;
@@ -184,6 +186,14 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
             foreach (var (id, encounter) in encounters)
             {
                 _encounters[id] = encounter;
+            }
+        }
+
+        if (siteEventChoiceIconIds != null)
+        {
+            foreach (var (identity, iconId) in siteEventChoiceIconIds)
+            {
+                _siteEventChoiceIconIds[identity] = iconId;
             }
         }
 
@@ -317,6 +327,11 @@ public sealed class FakeCombatContentLookup : ICombatContentLookup
     public bool TryGetEncounterDefinition(string encounterId, out EncounterDefinition encounter)
     {
         return _encounters.TryGetValue(encounterId, out encounter!);
+    }
+
+    public bool TryGetSiteEventChoiceIconId(string eventId, string choiceId, out string iconId)
+    {
+        return _siteEventChoiceIconIds.TryGetValue($"{eventId}/{choiceId}", out iconId!);
     }
 
     // ── Trait ──

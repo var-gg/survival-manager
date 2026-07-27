@@ -5,9 +5,11 @@ using SM.Atlas.Model;
 using SM.Atlas.Services;
 using SM.Combat.Model;
 using SM.Core;
+using SM.Core.Content;
 using SM.Meta;
 using SM.Unity.Narrative;
 using SM.Unity.UI.Expedition;
+using SM.Unity.UI.SiteEvents;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -26,6 +28,8 @@ public sealed class AtlasScreenController : MonoBehaviour
     private GameSessionRoot? _root;
     private AtlasRegionDefinition? _region;
     private int _viewRootBuildCount = -1;
+    private SiteEventChoicePanelController? _siteEventChoicePanel;
+    private int _siteEventChoicePanelBuildCount = -1;
 
     public event System.Action<AtlasScreenViewState>? ViewStateRendered;
 
@@ -113,6 +117,7 @@ public sealed class AtlasScreenController : MonoBehaviour
         _view.ContinueSelected += ContinueToExpedition;
         // wave-59 mockup-align: 마을 복귀 cross-flow. (정찰은 service 미연결이라 View에서 잠금 처리)
         _view.ReturnTownSelected += OnReturnTownClicked;
+        EnsureSiteEventChoicePanel();
         SyncPresenterFromSession();
     }
 
@@ -372,7 +377,12 @@ public sealed class AtlasScreenController : MonoBehaviour
             return;
         }
 
-        if (_region != null && !_root.SessionState.TryApplyAtlasSelectionToExpedition(_region))
+        var session = _root.SessionState;
+        var selectedBeforeAtlasHandoff = session.GetSelectedExpeditionNode();
+        var isAuthoredEventHandoff = selectedBeforeAtlasHandoff?.NodeKind == SiteNodeKindValue.Event;
+        if (!isAuthoredEventHandoff
+            && _region != null
+            && !session.TryApplyAtlasSelectionToExpedition(_region))
         {
             _root.SetBlockingError("Atlas 선택을 Expedition 경로로 넘길 수 없습니다.");
             return;
@@ -391,7 +401,6 @@ public sealed class AtlasScreenController : MonoBehaviour
         _storyBridge?.PresentPending();
 
         // ExpeditionScreenPresenter.NextBattleOrAdvance 분기를 in-Atlas inline.
-        var session = _root.SessionState;
         var selectedNode = session.GetSelectedExpeditionNode();
         if (selectedNode == null)
         {
@@ -445,6 +454,17 @@ public sealed class AtlasScreenController : MonoBehaviour
 
         if (session.ResolveSelectedNodeToRewardSettlement())
         {
+            if (session.PendingSiteEvent != null)
+            {
+                if (!TryShowPendingSiteEvent())
+                {
+                    _root.SetBlockingError(LocalizeSiteEventUi(
+                        "ui.expedition.site_event.error.surface_missing",
+                        "사건 선택 화면을 열 수 없습니다."));
+                }
+                return;
+            }
+
             var manualCheckpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
             if (!manualCheckpoint.IsSuccessful)
             {
@@ -612,7 +632,84 @@ public sealed class AtlasScreenController : MonoBehaviour
 
     private void OnDestroy()
     {
+        _siteEventChoicePanel?.Dispose();
         _storyBridge?.ClearPending();
+    }
+
+    private void EnsureSiteEventChoicePanel()
+    {
+        if (_root == null
+            || (_siteEventChoicePanel != null
+                && _siteEventChoicePanelBuildCount == panelHost.RootBuildCount))
+        {
+            return;
+        }
+
+        _siteEventChoicePanel?.Dispose();
+        _siteEventChoicePanel = null;
+        _siteEventChoicePanelBuildCount = panelHost.RootBuildCount;
+        try
+        {
+            _siteEventChoicePanel = new SiteEventChoicePanelController(
+                panelHost.Root,
+                _root.Localization,
+                new ContentIconResolver(_root.CombatContentLookup),
+                OnSiteEventChoiceSelected);
+            if (_root.SessionState.PendingSiteEvent != null)
+            {
+                TryShowPendingSiteEvent();
+            }
+        }
+        catch (InvalidOperationException exception)
+        {
+            Debug.LogError(exception.Message);
+        }
+    }
+
+    private bool TryShowPendingSiteEvent()
+    {
+        EnsureSiteEventChoicePanel();
+        var presentation = _root?.SessionState.PendingSiteEvent;
+        if (_siteEventChoicePanel == null || presentation == null || _root == null)
+        {
+            return false;
+        }
+
+        var legalChoiceIds = _root.SessionState.SiteEvents.GetLegalActions()
+            .Select(action => action.ChoiceId);
+        _siteEventChoicePanel.Show(presentation, legalChoiceIds);
+        return true;
+    }
+
+    private void OnSiteEventChoiceSelected(string choiceId)
+    {
+        if (_root == null || !_root.SessionState.SiteEvents.ApplyChoice(choiceId))
+        {
+            _root?.SetBlockingError(LocalizeSiteEventUi(
+                "ui.expedition.site_event.error.choice_failed",
+                "사건 선택 결과를 적용할 수 없습니다."));
+            TryShowPendingSiteEvent();
+            return;
+        }
+
+        _siteEventChoicePanel?.Hide();
+        var checkpoint = _root.SaveProfile(SessionCheckpointKind.ManualSave);
+        if (!checkpoint.IsSuccessful)
+        {
+            _root.SetBlockingError(checkpoint.Message);
+            return;
+        }
+
+        _root.SceneFlow.GoToReward();
+    }
+
+    private string LocalizeSiteEventUi(string key, string fallback)
+    {
+        return _root?.Localization.LocalizeOrFallback(
+                   GameLocalizationTables.UIExpedition,
+                   key,
+                   fallback)
+               ?? fallback;
     }
 
     private void EnsureSessionReady()

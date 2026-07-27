@@ -207,6 +207,26 @@ public sealed class RuntimeCombatContentLookup : ICombatContentLookup
         return _registry.EncounterDefinitions.TryGetValue(encounterId, out encounter!);
     }
 
+    public bool TryGetSiteEventChoiceIconId(string eventId, string choiceId, out string iconId)
+    {
+        EnsureLoaded();
+        iconId = string.Empty;
+        if (!_registry.SiteEventDefinitions.TryGetValue(eventId, out var definition))
+        {
+            return false;
+        }
+
+        var choice = definition.Choices.FirstOrDefault(candidate =>
+            candidate != null && string.Equals(candidate.Id, choiceId, StringComparison.Ordinal));
+        if (choice == null || string.IsNullOrWhiteSpace(choice.IconId))
+        {
+            return false;
+        }
+
+        iconId = choice.IconId;
+        return true;
+    }
+
     public IReadOnlyList<CampaignChapterDefinition> GetOrderedCampaignChapters()
     {
         EnsureLoaded();

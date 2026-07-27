@@ -167,6 +167,74 @@ foreach ($keySpace in $keySpaces) {
     }
 }
 
+$siteEventDefinitionFolder = Join-Path $definitionsRoot "SiteEvents"
+foreach ($asset in @(Get-ChildItem -LiteralPath $siteEventDefinitionFolder -Filter "*.asset" -File | Sort-Object Name)) {
+    $lines = @(Get-Content -LiteralPath $asset.FullName)
+    $eventId = Read-Scalar -Lines $lines -Field "Id"
+    if ([string]::IsNullOrWhiteSpace($eventId)) {
+        $failures.Add("ICON ROUTING FAIL content_id='<empty>' icon_key='<unknown>' expected_path='$($asset.FullName)': site event definition has no Id.")
+        continue
+    }
+
+    for ($lineIndex = 0; $lineIndex -lt $lines.Count; $lineIndex++) {
+        if ($lines[$lineIndex] -notmatch '^  - Id:\s*(?<choiceId>\S.*)$') {
+            continue
+        }
+
+        $choiceId = $Matches.choiceId.Trim()
+        $iconId = ""
+        for ($choiceLineIndex = $lineIndex + 1; $choiceLineIndex -lt $lines.Count; $choiceLineIndex++) {
+            if ($lines[$choiceLineIndex] -match '^  - Id:') {
+                break
+            }
+
+            if ($lines[$choiceLineIndex] -match '^    IconId:\s*(?<iconId>.*)$') {
+                $iconId = $Matches.iconId.Trim()
+                break
+            }
+        }
+
+        $contentId = "$eventId/$choiceId"
+        if ([string]::IsNullOrWhiteSpace($iconId)) {
+            $expectedDirectory = "Assets/Resources/_Game/Art/Icons/SiteEventChoice"
+            $failures.Add("ICON ROUTING FAIL content_id='$contentId' icon_key='<empty>' expected_path='$expectedDirectory/<IconId>.png': SiteEventChoiceDefinition.IconId must be authored.")
+            continue
+        }
+
+        $relativeExpectedPath = "Assets/Resources/_Game/Art/Icons/SiteEventChoice/$iconId.png"
+        $absoluteExpectedPath = Join-Path $RepoRoot $relativeExpectedPath
+        $referenceKey = "site_event_choice|$contentId|$iconId"
+        $references[$referenceKey] = [pscustomobject]@{
+            ContentType = "site_event_choice"
+            ContentId = $contentId
+            IconId = $iconId
+            ExpectedPath = $relativeExpectedPath
+        }
+
+        if (Test-Path -LiteralPath $absoluteExpectedPath -PathType Leaf) {
+            $resolvedCount++
+            if ($declaredByKey.ContainsKey($referenceKey)) {
+                $failures.Add("Stale known-missing-art declaration for '$referenceKey': asset now exists at '$relativeExpectedPath'; remove the declaration.")
+            }
+            continue
+        }
+
+        $declaredRow = $null
+        if ($declaredByKey.TryGetValue($referenceKey, [ref]$declaredRow)) {
+            if ($declaredRow.expected_path -ne $relativeExpectedPath) {
+                $failures.Add("Known-missing-art path mismatch for '$referenceKey': declared='$($declaredRow.expected_path)' actual='$relativeExpectedPath'.")
+                continue
+            }
+
+            $declaredMissingCount++
+            $warnings.Add("ICON ROUTING DECLARED MISSING content_id='$contentId' icon_key='$iconId' expected_path='$relativeExpectedPath' reason='$($declaredRow.reason)'")
+            continue
+        }
+
+        $failures.Add("ICON ROUTING FAIL content_id='$contentId' icon_key='$iconId' expected_path='$relativeExpectedPath': authored icon does not resolve. Add the asset or explicitly declare it in tools/icon-routing/known-missing-art.tsv.")
+    }
+}
+
 foreach ($entry in $declaredByKey.GetEnumerator()) {
     if (-not $references.ContainsKey($entry.Key)) {
         $failures.Add("Unknown known-missing-art declaration '$($entry.Key)': no authored content reference matches it.")

@@ -160,6 +160,7 @@ public sealed class ContentParsingParityWitnessTests
                 var actualChoice = actual.Choices[choiceIndex];
                 Assert.That(actualChoice.Id, Is.EqualTo(expectedChoice.Id), $"{expected.Id}.Choices[{choiceIndex}].Id");
                 Assert.That(actualChoice.LabelKey, Is.EqualTo(expectedChoice.LabelKey), $"{expected.Id}.Choices[{choiceIndex}].LabelKey");
+                Assert.That(actualChoice.IconId, Is.EqualTo(expectedChoice.IconId), $"{expected.Id}.Choices[{choiceIndex}].IconId");
                 Assert.That(actualChoice.Outcomes, Has.Count.EqualTo(expectedChoice.Outcomes.Count), $"{expected.Id}.Choices[{choiceIndex}].Outcomes");
                 for (var outcomeIndex = 0; outcomeIndex < expectedChoice.Outcomes.Count; outcomeIndex++)
                 {

@@ -18,6 +18,7 @@ MonoBehaviour:
   Choices:
   - Id: salvage
     LabelKey: content.site_event.site_event_reliquary_cart.choice.salvage
+    IconId: site_event_choice_salvage
     Outcomes:
     - Kind: 8
       PayloadId: 
@@ -31,6 +32,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: leave
     LabelKey: content.site_event.site_event_reliquary_cart.choice.leave
+    IconId: site_event_choice_leave
     Outcomes:
     - Kind: 5
       PayloadId: node_sunken_boss_standard
@@ -39,6 +41,7 @@ MonoBehaviour:
       TargetRule: 0
   - Id: break_seal
     LabelKey: content.site_event.site_event_reliquary_cart.choice.break_seal
+    IconId: site_event_choice_break_seal
     Outcomes:
     - Kind: 0
       PayloadId: item_cantor_focus

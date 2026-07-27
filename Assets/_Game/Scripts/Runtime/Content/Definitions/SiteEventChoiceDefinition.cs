@@ -8,5 +8,6 @@ public sealed class SiteEventChoiceDefinition
 {
     public string Id = string.Empty;
     public string LabelKey = string.Empty;
+    public string IconId = string.Empty;
     public List<SiteEventOutcomeDefinition> Outcomes = new();
 }

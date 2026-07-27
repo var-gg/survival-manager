@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="SiteEventChoiceRoot" class="site-event-choice">
+        <ui:VisualElement class="site-event-choice__backdrop" picking-mode="Ignore" />
+
+        <ui:VisualElement class="site-event-choice__hud" picking-mode="Ignore">
+            <ui:VisualElement class="site-event-choice__hud-mark" />
+            <ui:Label name="SiteEventHudLabel" class="site-event-choice__hud-label" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="site-event-choice__choice-rail">
+            <ui:VisualElement name="SiteEventChoiceList" class="site-event-choice__choice-list" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="site-event-choice__dialogue">
+            <ui:Label name="SiteEventDialogueEyebrowLabel" class="site-event-choice__dialogue-eyebrow" />
+            <ui:Label name="SiteEventDialogueBodyLabel" class="site-event-choice__dialogue-body" />
+            <ui:Label class="site-event-choice__dialogue-chevron" text="›" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

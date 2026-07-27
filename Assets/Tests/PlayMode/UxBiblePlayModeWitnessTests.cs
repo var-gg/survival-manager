@@ -20,13 +20,20 @@ using Object = UnityEngine.Object;
 
 namespace SM.Tests.PlayMode;
 
-public sealed class UxBiblePlayModeWitnessTests
+public sealed partial class UxBiblePlayModeWitnessTests
 {
+    private const string SelectedLocalePreferenceKey = "selected-locale";
+
     private UxBibleWitnessPacket? _packet;
+    private bool _hadSelectedLocalePreference;
+    private string _selectedLocalePreference = string.Empty;
 
     [UnitySetUp]
     public IEnumerator ResetRoot()
     {
+        _hadSelectedLocalePreference = PlayerPrefs.HasKey(SelectedLocalePreferenceKey);
+        _selectedLocalePreference = PlayerPrefs.GetString(SelectedLocalePreferenceKey, string.Empty);
+
         if (GameSessionRoot.Instance != null)
         {
             Object.Destroy(GameSessionRoot.Instance.gameObject);
@@ -47,6 +54,16 @@ public sealed class UxBiblePlayModeWitnessTests
         _packet?.Finish();
         _packet?.Dispose();
         _packet = null;
+        if (_hadSelectedLocalePreference)
+        {
+            PlayerPrefs.SetString(SelectedLocalePreferenceKey, _selectedLocalePreference);
+        }
+        else
+        {
+            PlayerPrefs.DeleteKey(SelectedLocalePreferenceKey);
+        }
+
+        PlayerPrefs.Save();
         yield return null;
     }
 
@@ -151,10 +168,10 @@ public sealed class UxBiblePlayModeWitnessTests
 
         yield return RunQuickBattleSmokeWitness(root, town);
         yield return RunNormalRouteWitness(root);
+        yield return RunSiteEventChoiceWitness(root);
 
         _packet?.RecordBacklog("Settings.Global", "not produced in this witness wave");
         _packet?.RecordBacklog("Theater / story replay", "not produced in this witness wave");
-        _packet?.RecordBacklog("Dialogue / Event Choice", "not produced in this witness wave");
         _packet?.RecordBacklog("Battle HUD redesign", "current shell visibility witnessed only");
     }
 
@@ -1068,6 +1085,10 @@ public sealed class UxBiblePlayModeWitnessTests
                     "Reward Result",
                     "Screenshots/mockups/ui_ux_bible_reward_result_v0.png",
                     "reward_result.png"),
+                new ReferencePair(
+                    "Site Event Choice",
+                    "Screenshots/mockups/ui_ux_bible_dialogue_event_choice_v0.png",
+                    "site_event_choice.png"),
             };
         }
 

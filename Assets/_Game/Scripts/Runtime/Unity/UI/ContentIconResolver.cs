@@ -11,6 +11,7 @@ internal sealed class ContentIconResolver
     private const string ItemPath = "_Game/Art/Icons/Item";
     private const string AugmentPath = "_Game/Art/Icons/Augment";
     private const string AffixPath = "_Game/Art/Icons/Affix";
+    private const string SiteEventChoicePath = "_Game/Art/Icons/SiteEventChoice";
     private const string CharacterPath = "_Game/Art/Characters";
 
     private static readonly IReadOnlyDictionary<string, string> CharacterArtAliases = new Dictionary<string, string>(StringComparer.Ordinal)
@@ -137,6 +138,13 @@ internal sealed class ContentIconResolver
 
         var iconId = ResolveAffixIconId(affixId);
         return Load($"{AffixPath}/{iconId}");
+    }
+
+    public Texture2D? ResolveSiteEventChoice(string iconId)
+    {
+        return string.IsNullOrWhiteSpace(iconId)
+            ? null
+            : Load($"{SiteEventChoicePath}/{iconId}");
     }
 
     public Texture2D? ResolveCharacter(string characterId)

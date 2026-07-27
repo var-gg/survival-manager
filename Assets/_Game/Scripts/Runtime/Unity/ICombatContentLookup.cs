@@ -35,6 +35,7 @@ public interface ICombatContentLookup : ISessionContentLookup
     bool TryGetCampaignChapterDefinition(string chapterId, out CampaignChapterDefinition chapter);
     bool TryGetExpeditionSiteDefinition(string siteId, out ExpeditionSiteDefinition site);
     bool TryGetEncounterDefinition(string encounterId, out EncounterDefinition encounter);
+    bool TryGetSiteEventChoiceIconId(string eventId, string choiceId, out string iconId);
 
     // ── Trait ──
 

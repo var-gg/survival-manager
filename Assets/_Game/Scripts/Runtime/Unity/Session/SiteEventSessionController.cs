@@ -13,15 +13,17 @@ namespace SM.Unity;
 public sealed class SiteEventSessionController
 {
     private readonly GameSessionState _session;
+    private readonly ICombatContentLookup _contentLookup;
     private readonly List<SiteEventRecruitOffer> _pendingRecruitOffers = new();
     private readonly List<string> _consumableIds = new();
     private int _recruitOffersGrantedAtSite;
     private string _recruitOfferSiteId = string.Empty;
     private int _pendingExtractBonusEcho;
 
-    internal SiteEventSessionController(GameSessionState session)
+    internal SiteEventSessionController(GameSessionState session, ICombatContentLookup contentLookup)
     {
         _session = session;
+        _contentLookup = contentLookup;
     }
 
     public SiteEventPresentationViewModel? PendingPresentation { get; private set; }
@@ -65,7 +67,13 @@ public sealed class SiteEventSessionController
             template.Id,
             setupKey,
             template.Choices
-                .Select(choice => new SiteEventChoiceViewModel(choice.Id, choice.LabelKey))
+                .Select(choice => new SiteEventChoiceViewModel(
+                    choice.Id,
+                    choice.LabelKey,
+                    _contentLookup.TryGetSiteEventChoiceIconId(template.Id, choice.Id, out var iconId)
+                        ? iconId
+                        : string.Empty,
+                    SiteEventOutcomePreviewBuilder.Build(choice.Outcomes)))
                 .ToArray());
         return true;
     }

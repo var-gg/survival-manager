@@ -28,12 +28,12 @@
 | 지표 | 수 |
 | --- | ---: |
 | 전체 mechanic 행 | 110 |
-| `visible` | 15 |
+| `visible` | 16 |
 | `partial` | 66 |
-| `invisible` | 25 |
+| `invisible` | 24 |
 | `n/a` | 4 |
 
-가장 큰 gap은 `site-event-choice-outcomes`다. `SiteEventSessionController`가 `rescue`, `take_supplies`, `burn_it` 선택지를 live pending state로 만들고 서로 다른 결과를 적용하지만, Atlas는 이 state를 표시하지 않은 채 Reward로 이동한다. 플레이어는 선택할 수도, 선택 결과를 비교할 수도 없고 진행 state가 pending인 이유도 알 수 없다.
+`site-event-choice-outcomes`는 Atlas의 실제 pending route에서 닫혔다. 플레이어는 event별 선택지를 보고, 결과마다 수치 대신 범주와 상대 강도를 비교하고, 선택을 적용해 Reward로 진행할 수 있다. 현재 가장 높은 미해결 gap은 `craft-operation-seal`과 lock 수에 따른 비용 표시다.
 
 ## Surface inventory
 
@@ -316,7 +316,7 @@ USS는 독립 action surface가 아니므로 `player reachable`은 production UX
 | `drop-grade-economy` | rarity weight, latent mean, jackpot weight, Heat shift로 drop grade를 결정한다. | `Assets/_Game/Scripts/Runtime/Meta/Services/DropGradeEconomy.cs:26-140`; `Assets/_Game/Scripts/Runtime/Meta/Services/EndlessCycleService.cs:43-58` | `partial` | 획득 뒤 item rarity는 Inventory와 Reward에서 보인다. | 선택 전 grade distribution, jackpot, Heat shift |
 | `currency-gold` | recruit와 service cost에 쓰이고 reward로 획득한다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs:866-874` | `visible` | Inventory, Recruit, Reward가 balance, cost, gain을 숫자로 표시한다. | - |
 | `currency-echo` | refit, scout, retrain, recovery에 쓰이고 reward로 획득한다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs:866-884` | `visible` | Inventory, Refit, Character Sheet, Reward가 balance, cost, gain을 숫자로 표시한다. | - |
-| `site-event-choice-outcomes` | event node가 선택지별 recruit, consumable/item, Gold 결과를 pending state로 만들고 적용한다. | `Assets/_Game/Scripts/Runtime/Unity/Session/SiteEventSessionController.cs:42-105`; `Assets/Resources/_Game/Content/Definitions/SiteEvents/site_event_collapsed_aid_station.asset:18-47` | `invisible` | none | - |
+| `site-event-choice-outcomes` | event node가 선택지별 recruit, consumable/item, Gold 결과를 pending state로 만들고 적용한다. | `Assets/_Game/Scripts/Runtime/Unity/Session/SiteEventSessionController.cs:42-105`; `Assets/Resources/_Game/Content/Definitions/SiteEvents/site_event_collapsed_aid_station.asset:18-50` | `visible` | Atlas가 pending state를 `SiteEventChoice` panel로 열고, 선택마다 저작 icon identity, 결과 범주, 상대 강도 pip, 비용 여부, 대상 변동성을 표시한 뒤 실제 `ApplyChoice` 경로로 적용한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenController.cs:664-695`, `Assets/_Game/UI/Panels/SiteEventChoice/SiteEventChoicePanelController.cs:53-224`). | - |
 | `war-wound` | low-HP deployed hero에게 run-scoped wound를 부여하고 active skill power와 status duration을 낮춘다. | `Assets/_Game/Scripts/Runtime/Meta/Services/WarWoundResolutionService.cs:14-75`; `Assets/_Game/Scripts/Runtime/Meta/Services/LoadoutCompiler.cs:629-668` | `invisible` | none | - |
 | `reward-choice-amount-and-type` | reward choice의 type과 Gold/Echo/item/augment payload를 적용한다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs:751-763` | `visible` | Reward cards가 type, amount, build impact를 표시한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs:866-887`). | - |
 | `skill-readout` | skill damage, type, delivery, target, range, cooldown과 effect를 설명한다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/CompendiumPresenter.cs:241-257` | `visible` | Skill Compendium과 Character Sheet가 skill detail을 표시한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/CompendiumPresenter.cs:399-405`, `Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownCharacterSheetFormatter.cs:603-606`). | - |
@@ -326,7 +326,11 @@ USS는 독립 action surface가 아니므로 `player reachable`은 production UX
 | `progression-level-and-experience` | hero level/experience가 passive budget과 성장 상태를 바꾼다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Town/TownCharacterSheetFormatter.cs:330-365` | `visible` | Character Sheet와 Reward settlement가 level과 experience progression을 표시한다. | - |
 | `temporary-augment-choice` | reward로 temporary augment를 고르고 current run build에 적용한다. | `Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs:751-763` | `visible` | Reward cards가 augment name, effect/build impact, selection state를 표시한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs:998-1045`). | - |
 
-Passive Board는 gap을 단순히 생략하는 데 그치지 않는다. view-state 주석이 point budget이 없다고 적고, presenter action도 validator 실패 결과를 player에게 전달하지 않는다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/PassiveBoardViewState.cs:7-10`, `Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/PassiveBoardPresenter.cs:81-88`). Site event도 `PendingSiteEvent`를 공개하지만 UI consumer가 없고, Atlas는 node resolution 뒤 Reward로 이동한다 (`Assets/_Game/Scripts/Runtime/Unity/GameSessionState.cs:120`, `Assets/_Game/Scripts/Runtime/Unity/UI/Atlas/AtlasScreenController.cs:446-456`).
+Passive Board는 gap을 단순히 생략하는 데 그치지 않는다. view-state 주석이 point budget이 없다고 적고, presenter action도 validator 실패 결과를 player에게 전달하지 않는다 (`Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/PassiveBoardViewState.cs:7-10`, `Assets/_Game/Scripts/Runtime/Unity/UI/Town/Preview/PassiveBoardPresenter.cs:81-88`).
+
+Site event closure는 6개 authored event의 17개 선택을 모두 검사한다. `SiteEventOutcomePreviewBuilder`는 여러 outcome을 합치지 않고 순서대로 보존하며, 정확한 수치를 노출하지 않는 범주와 0~5단계 강도, 비용 여부, `TargetVaries` 또는 `Unknown` 불확실성을 만든다 (`Assets/_Game/Scripts/Runtime/Unity/SiteEventOutcomePreviewBuilder.cs:13-81`). BatchOnly witness는 6개 event가 한국어와 영어에서 raw key, 비어 있는 제목, 비어 있는 preview 없이 production UXML/controller로 렌더되는지 확인한다. PlayMode witness는 실제 Atlas pending route에서 panel을 보고 `burn_it`을 클릭한 뒤 `SiteEventOutcomeApplier`를 거쳐 pending state가 사라지고 Reward로 이동하는지 확인한다 (`Assets/Tests/EditMode/BatchOnly/SiteEventChoiceSurfaceWitnessTests.cs`, `Assets/Tests/PlayMode/UxBiblePlayModeWitnessTests.SiteEventChoice.cs`).
+
+canonical `ui_ux_bible_dialogue_event_choice_v0.png` 대비 구현한 핵심은 우측 세로 choice card, 번호 diamond, authored choice icon slot, 선택 gold state와 chevron, 정성적 outcome badge와 pip, 좌하단 dialogue block이다. portrait/frame/crest/nameplate는 대응하는 event portrait·speaker 저작 계약이 없어서 넣지 않았고, transport history/play/fast-forward/dots도 실제 transport state와 동작이 없어 넣지 않았다. 17개 choice icon은 identity와 전용 resolver 경로까지만 저작했으며, 최종 PNG가 없는 사실을 localized placeholder와 `known-missing-art.tsv`로 정직하게 드러낸다.
 
 ## Ranked gaps
 
@@ -334,29 +338,28 @@ Passive Board는 gap을 단순히 생략하는 데 그치지 않는다. view-sta
 
 | rank | mechanic | 플레이어가 답할 수 없는 질문 | decision impact | proposed host | 기존/신규 | effort |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | `site-event-choice-outcomes` | "이 사건에서 누구를 구할지, 보급품을 챙길지, 태워서 Gold를 얻을지 어디서 선택하지?" | live pending choice를 전혀 소비하지 않아 선택과 진행이 모두 막힐 수 있다. | Atlas의 기존 overlay host에 event-choice modal | existing host, new modal state | M |
-| 2 | `craft-operation-seal` + `seal-cost-multiplier-per-locked-affix` | "어떤 affix를 잠그고 나머지를 다시 굴릴 수 있으며 비용은 얼마인가?" | 완성된 deterministic crafting option을 사용할 수 없어 item 투자 판단이 왜곡된다. | `EquipmentRefit` panel에 operation mode와 affix lock control | existing | M |
-| 3 | `war-wound` | "누가 전상을 입었고 왜 그 hero의 skill이 약해졌나?" | 전투 성능 저하가 source 없이 발생해 squad/recovery 선택을 설명할 수 없다. | Reward settlement, Town Character Sheet, squad/roster badge | existing surfaces | M |
-| 4 | passive budget와 constraint 4종 | "몇 node를 더 켤 수 있고 왜 이 node 선택이 거부됐나?" | level progression의 핵심 build budget을 보지 못하고 실패 이유도 받지 못한다. | `PassiveBoard` header, node lock reason, footer | existing | M |
-| 5 | affix semantics 44종, 특히 decision-bearing 14종 | "이 affix가 어느 stat을 얼마나 바꾸며 downside나 trigger가 무엇인가?" | item/refit 비교가 이름과 무맥락 roll 숫자에 의존한다. | Inventory/Refit affix row와 기존 `ItemDetailModal` | existing panel plus dormant detail shell | L |
-| 6 | status behavior, magnitude, cleanse, control DR | "왜 행동하지 못하고, 얼마나 더 받거나 덜 받으며, 무엇으로 지울 수 있나?" | battle 결과의 원인을 설명하지 못하고 cleanse tooltip은 현재 misleading하다. | Battle selected-unit status area와 기존 `StatusEffectTooltipPanel` | existing panel plus dormant tooltip shell | L |
-| 7 | affix pool 14종과 `BudgetScore` | "이 item을 다시 굴리면 어떤 affix가 나올 수 있고 어떤 roll이 유리한가?" | crafting 확률과 item family 차이를 비교할 수 없다. | `EquipmentRefit` possible-rolls/odds disclosure | existing | M |
-| 8 | `item-granted-skills` | "이 skill은 어느 item이 주며, item을 빼면 무엇을 잃나?" | loadout change의 skill 손익을 item 화면에서 예측할 수 없다. | Inventory/Refit item detail과 Character Sheet skill source chip | existing | S-M |
-| 9 | endless Heat와 drop-grade exact values | "Heat 3이 적, Echo, rarity chance를 정확히 얼마나 바꾸나?" | endless risk/reward 선택이 vague prose에 의존한다. | Town endless CTA tooltip, Atlas preview, Reward settlement | existing | S-M |
-| 10 | `synergy-tiers` effect | "이 threshold를 넘기면 실제로 무엇이 좋아지나?" | count를 맞출 유인은 보이지만 build payoff는 비교할 수 없다. | Squad Builder, Tactical Workshop, Sortie Confirm chip detail | existing | S |
-| 11 | target score와 `MarksTarget` | "왜 이 unit이 표시된 적 대신 다른 적을 공격했나?" | tactic/mark 결과를 진단하기 어렵다. | Battle selected-unit targeting detail | existing | M |
+| 1 | `craft-operation-seal` + `seal-cost-multiplier-per-locked-affix` | "어떤 affix를 잠그고 나머지를 다시 굴릴 수 있으며 비용은 얼마인가?" | 완성된 deterministic crafting option을 사용할 수 없어 item 투자 판단이 왜곡된다. | `EquipmentRefit` panel에 operation mode와 affix lock control | existing | M |
+| 2 | `war-wound` | "누가 전상을 입었고 왜 그 hero의 skill이 약해졌나?" | 전투 성능 저하가 source 없이 발생해 squad/recovery 선택을 설명할 수 없다. | Reward settlement, Town Character Sheet, squad/roster badge | existing surfaces | M |
+| 3 | passive budget와 constraint 4종 | "몇 node를 더 켤 수 있고 왜 이 node 선택이 거부됐나?" | level progression의 핵심 build budget을 보지 못하고 실패 이유도 받지 못한다. | `PassiveBoard` header, node lock reason, footer | existing | M |
+| 4 | affix semantics 44종, 특히 decision-bearing 14종 | "이 affix가 어느 stat을 얼마나 바꾸며 downside나 trigger가 무엇인가?" | item/refit 비교가 이름과 무맥락 roll 숫자에 의존한다. | Inventory/Refit affix row와 기존 `ItemDetailModal` | existing panel plus dormant detail shell | L |
+| 5 | status behavior, magnitude, cleanse, control DR | "왜 행동하지 못하고, 얼마나 더 받거나 덜 받으며, 무엇으로 지울 수 있나?" | battle 결과의 원인을 설명하지 못하고 cleanse tooltip은 현재 misleading하다. | Battle selected-unit status area와 기존 `StatusEffectTooltipPanel` | existing panel plus dormant tooltip shell | L |
+| 6 | affix pool 14종과 `BudgetScore` | "이 item을 다시 굴리면 어떤 affix가 나올 수 있고 어떤 roll이 유리한가?" | crafting 확률과 item family 차이를 비교할 수 없다. | `EquipmentRefit` possible-rolls/odds disclosure | existing | M |
+| 7 | `item-granted-skills` | "이 skill은 어느 item이 주며, item을 빼면 무엇을 잃나?" | loadout change의 skill 손익을 item 화면에서 예측할 수 없다. | Inventory/Refit item detail과 Character Sheet skill source chip | existing | S-M |
+| 8 | endless Heat와 drop-grade exact values | "Heat 3이 적, Echo, rarity chance를 정확히 얼마나 바꾸나?" | endless risk/reward 선택이 vague prose에 의존한다. | Town endless CTA tooltip, Atlas preview, Reward settlement | existing | S-M |
+| 9 | `synergy-tiers` effect | "이 threshold를 넘기면 실제로 무엇이 좋아지나?" | count를 맞출 유인은 보이지만 build payoff는 비교할 수 없다. | Squad Builder, Tactical Workshop, Sortie Confirm chip detail | existing | S |
+| 10 | target score와 `MarksTarget` | "왜 이 unit이 표시된 적 대신 다른 적을 공격했나?" | tactic/mark 결과를 진단하기 어렵다. | Battle selected-unit targeting detail | existing | M |
 
 ## Image asset audit
 
 ### 방법과 한계
 
-`Assets` 아래 `ThirdParty` 경로를 제외한 PNG는 4,475개다. missing/broken 판정은 `ContentIconResolver`의 실제 search order인 Skill, Item, Augment, Affix, Character, Direct와 Foundation USS keyspace를 함께 따라 확인했다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:10-14`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:86-91`). authored `IconId`는 `tools/icon-routing/lint.ps1`이 실제 PNG 또는 `known-missing-art.tsv`의 명시적 missing 선언과 대조하며, 이 검사는 `tools/test-harness-lint.ps1` Check 9에 포함된다.
+`Assets` 아래 `ThirdParty` 경로를 제외한 PNG는 4,475개다. missing/broken 판정은 `ContentIconResolver`의 실제 search order인 Skill, Item, Augment, Affix, Character, SiteEventChoice, Direct와 Foundation USS keyspace를 함께 따라 확인했다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:10-14`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:86-91`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:143-148`). authored `IconId`는 `tools/icon-routing/lint.ps1`이 실제 PNG 또는 `known-missing-art.tsv`의 명시적 missing 선언과 대조하며, 이 검사는 `tools/test-harness-lint.ps1` Check 9에 포함된다.
 
 unreferenced 후보는 20,896개 first-party text/serialized file에서 PNG filename/stem token 445,832개와 non-self `.meta` GUID reference 17,183개를 대조해 다시 계산했다. PNG 자신의 `.meta`는 reference로 세지 않았다. 이 방식은 dynamic `Resources.Load`, convention-based lookup, package runtime lookup을 완전히 증명하지 못하므로 삭제 목록이 아니라 cleanup 조사 후보 목록이다.
 
 ### 확정 라우팅 감사
 
-작업 전 silent routing defect는 19개였고, 실제 missing art를 가진 live authored reference는 18개였다. 전자는 모두 기존 Foundation/Resources art로 연결했으며, 후자는 resolver가 추측하지 않고 authored data와 명시적 missing 선언으로 드러나게 했다.
+최초 감사의 silent routing defect 19개는 모두 기존 Foundation/Resources art로 연결했다. 당시 live authored reference의 missing art 18개와 이번 site-event choice icon 17개는 resolver가 추측하지 않고 authored data와 명시적 missing 선언으로 드러나며, 현재 lint 집계는 resolved 201개, declared missing 35개, authored reference 236개다.
 
 | keyspace | 요청/해석 경로 | content key | 현재 resolve | 판정 |
 | --- | --- | ---: | ---: | --- |
@@ -369,6 +372,7 @@ unreferenced 후보는 20,896개 first-party text/serialized file에서 PNG file
 | Class | Recruit/Passive/Tactical modifier class -> Foundation Class PNG | 4 | 4 | routing broken 4개 수정 |
 | Posture | Tactical key class -> Foundation Posture PNG | 5 | 5 | routing broken 5개 수정 |
 | Threat | Tactical key class -> Foundation Threat PNG | 8 | 8 | routing broken 8개 수정; `pierce`의 잘못된 affix 우선 해소 |
+| Site event choice | `SiteEventChoiceDefinition.IconId` -> SiteEventChoice PNG | 17 | 0 | art missing 17; 모두 선택별 identity와 expected path를 명시 선언 |
 | Status | runtime status family -> 예정된 Battle chip/tooltip key | 13 | 0 | 아직 authored icon contract가 없는 art gap |
 | Craft operation | authored `AllowedCraftOperations` -> 예정된 Refit selector key | 2 live (5 enum) | 0 | 현재 worklist는 Reforge/Seal 2개 |
 | Affix pool | pool id -> 예정된 Refit possible-roll legend key | 14 | 0 | 아직 authored icon contract가 없는 art gap |
@@ -378,6 +382,7 @@ unreferenced 후보는 20,896개 first-party text/serialized file에서 PNG file
 
 | needed id | mechanic | 나타날 위치 | 상태 |
 | --- | --- | --- | --- |
+| `site_event_choice_icon_set_v1` | 6개 event의 17개 choice identity | Atlas Site Event Choice card | `SiteEventChoiceDefinition.IconId`와 전용 resolver route는 연결됨. 17개 expected PNG는 `known-missing-art.tsv`에 개별 선언했으며 UI는 localized `Icon pending`을 표시한다. |
 | `craft_operation_reforge` | `craft-operation-reforge` | Equipment Refit operation selector | dedicated icon 없음; 현재 text action은 usable하다. |
 | `craft_operation_seal` | `craft-operation-seal` | Equipment Refit operation selector | dedicated icon 없음. `augment_seal.png`은 다른 mechanic이다. |
 | `status_barrier` | barrier on apply | Battle status tooltip/chip | dedicated status icon 없음. |
@@ -431,7 +436,7 @@ unreferenced 후보는 20,896개 first-party text/serialized file에서 PNG file
 
 모든 affix asset 44개에 `IconId`를 저작했다. resolver는 authored field를 우선하고, 기존 24개 동작의 byte-identical 경로를 보존하는 migration-only dictionary를 거친 뒤 convention을 사용한다 (`Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:131-139`, `Assets/_Game/Scripts/Runtime/Unity/UI/ContentIconResolver.cs:246-258`). 기존 24개 외에도 scalar 의미가 정확히 맞는 existing art 6개를 재사용했고, decision-bearing 14개는 misleading한 stat icon을 붙이지 않고 art missing으로 선언했다.
 
-Skill의 missing 4개와 affix의 missing 14개는 `tools/icon-routing/known-missing-art.tsv`에 exact content id, icon key, expected path, 사유를 기록했다. 이 18개 외에는 authored icon reference가 silent `null`로 남지 않는다. Currency 2개와 Class 4개는 Foundation USS modifier class로 연결했고, Posture 5개와 Threat 8개는 generic resolver callback을 제거해 이미 존재하던 정확한 Foundation key route가 항상 이기게 했다 (`Assets/_Game/UI/Panels/PassiveBoard/PassiveBoard.uss:271-274`, `Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:312-316`, `Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:438-445`).
+Skill의 missing 4개, affix의 missing 14개, site-event choice의 missing 17개는 `tools/icon-routing/known-missing-art.tsv`에 exact content id, icon key, expected path, 사유를 기록했다. 이 35개 외에는 authored icon reference가 silent `null`로 남지 않는다. Currency 2개와 Class 4개는 Foundation USS modifier class로 연결했고, Posture 5개와 Threat 8개는 generic resolver callback을 제거해 이미 존재하던 정확한 Foundation key route가 항상 이기게 했다 (`Assets/_Game/UI/Panels/PassiveBoard/PassiveBoard.uss:271-274`, `Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:312-316`, `Assets/_Game/UI/Panels/TacticalWorkshop/TacticalWorkshop.uss:438-445`).
 
 ### Unreferenced candidates
 
@@ -459,6 +464,6 @@ Skill의 missing 4개와 affix의 missing 14개는 `tools/icon-routing/known-mis
 
 ## 후속 구현 권고
 
-첫 구현 unit은 `site-event-choice-outcomes`를 Atlas overlay에 연결하고 pending choice가 실제로 소진되는 integration test를 추가해야 한다. 다음 unit은 `EquipmentRefit` 안에 `Reforge`와 `Seal` mode, affix lock, exact cost를 함께 노출해야 한다. 그 뒤 War Wound와 Passive Board constraint처럼 player가 현재 결과 원인을 전혀 알 수 없는 gap을 순서대로 닫는 것이 맞다.
+`site-event-choice-outcomes`는 Atlas overlay, pending choice 소진 integration witness, 6개 event rendering coverage로 닫혔다. 다음 구현 unit은 `EquipmentRefit` 안에 `Reforge`와 `Seal` mode, affix lock, exact cost를 함께 노출해야 한다. 그 뒤 War Wound와 Passive Board constraint처럼 player가 현재 결과 원인을 전혀 알 수 없는 gap을 순서대로 닫는 것이 맞다.
 
 향후 lint는 이 문서의 110개 `id`를 unique key로 읽고, `classification`이 허용 enum인지 검사한 뒤 `invisible` 또는 `partial` 행에 runtime evidence와 gap text가 남아 있는지 확인할 수 있다. 새 mechanic을 추가할 때는 runtime field catalog와 이 catalog를 같은 change에서 갱신한다.

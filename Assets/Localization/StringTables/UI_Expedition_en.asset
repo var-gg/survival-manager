@@ -423,6 +423,124 @@ MonoBehaviour:
     m_Localized: Skirmish
     m_Metadata:
       m_Items: []
+  - m_Id: 42997485281808384
+    m_Localized: SITE EVENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751424
+    m_Localized: FIELD REPORT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751425
+    m_Localized: No immediate change
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751426
+    m_Localized: One consequence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751427
+    m_Localized: '{0} consequences'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 42997485323751428
+    m_Localized: Icon pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751429
+    m_Localized: Unavailable now
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751430
+    m_Localized: No change
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751431
+    m_Localized: Item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751432
+    m_Localized: Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751433
+    m_Localized: Experience
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751434
+    m_Localized: Wound recovery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751435
+    m_Localized: Wound risk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751436
+    m_Localized: Route change
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751437
+    m_Localized: Recruit offer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751438
+    m_Localized: Consumable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751439
+    m_Localized: Extract bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751440
+    m_Localized: Unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751441
+    m_Localized: Target varies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751442
+    m_Localized: Outcome unclear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751443
+    m_Localized: None
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751444
+    m_Localized: Slight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751445
+    m_Localized: Modest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751446
+    m_Localized: Strong
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751447
+    m_Localized: Major
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751448
+    m_Localized: Extreme
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751449
+    m_Localized: "{0} \xB7 {1} intensity"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
+  - m_Id: 42997485323751450
+    m_Localized: The site event choice surface could not be opened.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751451
+    m_Localized: The selected site event outcome could not be applied.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -464,3 +582,5 @@ MonoBehaviour:
         - id: 17539471758397444
         - id: 17539471758397445
         - id: 17539471758397446
+        - id: 42997485323751427
+        - id: 42997485323751449

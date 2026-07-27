@@ -54,6 +54,40 @@ public static class LocalizationFoundationBootstrap
         ContentLocalizationTables.Story,
     };
 
+    private static readonly IReadOnlyDictionary<string, (string ko, string en, bool smart)> SiteEventChoiceSurfaceEntries =
+        new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)
+        {
+            ["ui.expedition.site_event.hud"] = ("현장 사건", "SITE EVENT", false),
+            ["ui.expedition.site_event.dialogue.eyebrow"] = ("현장 보고", "FIELD REPORT", false),
+            ["ui.expedition.site_event.choice.none"] = ("즉시 변화 없음", "No immediate change", false),
+            ["ui.expedition.site_event.choice.single"] = ("결과 1개", "One consequence", false),
+            ["ui.expedition.site_event.choice.multiple"] = ("결과 {0}개", "{0} consequences", true),
+            ["ui.expedition.site_event.icon.pending"] = ("아이콘 준비 중", "Icon pending", false),
+            ["ui.expedition.site_event.availability.unavailable"] = ("현재 선택 불가", "Unavailable now", false),
+            ["ui.expedition.site_event.category.no_change"] = ("변화 없음", "No change", false),
+            ["ui.expedition.site_event.category.item"] = ("장비", "Item", false),
+            ["ui.expedition.site_event.category.echo"] = ("메아리", "Echo", false),
+            ["ui.expedition.site_event.category.experience"] = ("경험치", "Experience", false),
+            ["ui.expedition.site_event.category.wound_recovery"] = ("전상 치료", "Wound recovery", false),
+            ["ui.expedition.site_event.category.wound_risk"] = ("전상 위험", "Wound risk", false),
+            ["ui.expedition.site_event.category.route"] = ("경로 변경", "Route change", false),
+            ["ui.expedition.site_event.category.recruit"] = ("영입 후보", "Recruit offer", false),
+            ["ui.expedition.site_event.category.consumable"] = ("소모품", "Consumable", false),
+            ["ui.expedition.site_event.category.extract_bonus"] = ("철수 보너스", "Extract bonus", false),
+            ["ui.expedition.site_event.category.unknown"] = ("불명확", "Unknown", false),
+            ["ui.expedition.site_event.certainty.target_varies"] = ("대상 변동", "Target varies", false),
+            ["ui.expedition.site_event.certainty.unknown"] = ("결과 불명확", "Outcome unclear", false),
+            ["ui.expedition.site_event.intensity.0"] = ("없음", "None", false),
+            ["ui.expedition.site_event.intensity.1"] = ("미미", "Slight", false),
+            ["ui.expedition.site_event.intensity.2"] = ("낮음", "Modest", false),
+            ["ui.expedition.site_event.intensity.3"] = ("중간", "Strong", false),
+            ["ui.expedition.site_event.intensity.4"] = ("높음", "Major", false),
+            ["ui.expedition.site_event.intensity.5"] = ("매우 높음", "Extreme", false),
+            ["ui.expedition.site_event.preview.summary"] = ("{0} · 강도 {1}", "{0} · {1} intensity", true),
+            ["ui.expedition.site_event.error.surface_missing"] = ("사건 선택 화면을 열 수 없습니다.", "The site event choice surface could not be opened.", false),
+            ["ui.expedition.site_event.error.choice_failed"] = ("사건 선택 결과를 적용할 수 없습니다.", "The selected site event outcome could not be applied.", false),
+        };
+
     private static readonly Dictionary<string, (string ko, string en, bool smart)> SharedEntries = new(StringComparer.Ordinal)
     {
         ["ui.common.language"] = ("언어", "Language", false),
@@ -337,8 +371,29 @@ public static class LocalizationFoundationBootstrap
         AssetDatabase.Refresh();
     }
 
+    public static void SyncSiteEventChoiceSurfaceEntries()
+    {
+        AddOrUpdateEntries(SiteEventChoiceSurfaceEntries);
+        var collection = LocalizationEditorSettings.GetStringTableCollection(GameLocalizationTables.UIExpedition)
+                         ?? throw new InvalidOperationException(
+                             $"String table collection '{GameLocalizationTables.UIExpedition}' is missing.");
+        foreach (var localeCode in new[] { "ko", "en" })
+        {
+            if (collection.GetTable(new LocaleIdentifier(localeCode)) is not StringTable table)
+            {
+                throw new InvalidOperationException(
+                    $"String table '{GameLocalizationTables.UIExpedition}/{localeCode}' is missing.");
+            }
+
+            SyncSharedEntries(GameLocalizationTables.UIExpedition, localeCode, table);
+            EditorUtility.SetDirty(table);
+            EditorUtility.SetDirty(table.SharedData);
+        }
+    }
+
     private static void EnsureClosureEntries()
     {
+        AddOrUpdateEntries(SiteEventChoiceSurfaceEntries);
         AddOrUpdateEntries(new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)
         {
             ["ui.common.help"] = ("도움말", "Help", false),

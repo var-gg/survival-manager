@@ -169,7 +169,7 @@ public sealed partial class GameSessionState
         _recruitmentFlow = new SessionRecruitmentFlow(this);
         _campaignRecoveryFlow = new SessionCampaignRecoveryFlow(this);
         _expeditionFlow = new SessionExpeditionFlow(this);
-        _siteEventFlow = new SiteEventSessionController(this);
+        _siteEventFlow = new SiteEventSessionController(this, combatContentLookup);
         _atlasFlow = new SessionAtlasFlow(this);
         _rewardSettlementFlow = new SessionRewardSettlementFlow(this);
         _itemRefitFlow = new SessionItemRefitFlow(this, combatContentLookup);

@@ -66,6 +66,10 @@ internal static class SiteEventFileParser
                 {
                     choice.LabelKey = trimmed["LabelKey:".Length..].Trim();
                 }
+                else if (trimmed.StartsWith("IconId:", StringComparison.Ordinal))
+                {
+                    choice.IconId = trimmed["IconId:".Length..].Trim();
+                }
                 else if (string.Equals(trimmed, "Outcomes: []", StringComparison.Ordinal))
                 {
                     choice.Outcomes = new List<SiteEventOutcomeDefinition>();

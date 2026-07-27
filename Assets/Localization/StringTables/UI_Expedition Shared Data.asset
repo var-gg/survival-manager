@@ -383,6 +383,122 @@ MonoBehaviour:
     m_Key: ui.expedition.encounter.kind.skirmish
     m_Metadata:
       m_Items: []
+  - m_Id: 42997485281808384
+    m_Key: ui.expedition.site_event.hud
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751424
+    m_Key: ui.expedition.site_event.dialogue.eyebrow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751425
+    m_Key: ui.expedition.site_event.choice.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751426
+    m_Key: ui.expedition.site_event.choice.single
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751427
+    m_Key: ui.expedition.site_event.choice.multiple
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751428
+    m_Key: ui.expedition.site_event.icon.pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751429
+    m_Key: ui.expedition.site_event.availability.unavailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751430
+    m_Key: ui.expedition.site_event.category.no_change
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751431
+    m_Key: ui.expedition.site_event.category.item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751432
+    m_Key: ui.expedition.site_event.category.echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751433
+    m_Key: ui.expedition.site_event.category.experience
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751434
+    m_Key: ui.expedition.site_event.category.wound_recovery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751435
+    m_Key: ui.expedition.site_event.category.wound_risk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751436
+    m_Key: ui.expedition.site_event.category.route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751437
+    m_Key: ui.expedition.site_event.category.recruit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751438
+    m_Key: ui.expedition.site_event.category.consumable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751439
+    m_Key: ui.expedition.site_event.category.extract_bonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751440
+    m_Key: ui.expedition.site_event.category.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751441
+    m_Key: ui.expedition.site_event.certainty.target_varies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751442
+    m_Key: ui.expedition.site_event.certainty.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751443
+    m_Key: ui.expedition.site_event.intensity.0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751444
+    m_Key: ui.expedition.site_event.intensity.1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751445
+    m_Key: ui.expedition.site_event.intensity.2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751446
+    m_Key: ui.expedition.site_event.intensity.3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751447
+    m_Key: ui.expedition.site_event.intensity.4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751448
+    m_Key: ui.expedition.site_event.intensity.5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751449
+    m_Key: ui.expedition.site_event.preview.summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751450
+    m_Key: ui.expedition.site_event.error.surface_missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42997485323751451
+    m_Key: ui.expedition.site_event.error.choice_failed
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
