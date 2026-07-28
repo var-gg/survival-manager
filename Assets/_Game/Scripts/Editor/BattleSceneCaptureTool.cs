@@ -91,7 +91,9 @@ public static class BattleSceneCaptureTool
             File.WriteAllBytes(latestPath, bytes);
             File.WriteAllText(Path.Combine(CaptureDirectory, MarkerFileName), stamp);
 
-            Debug.Log($"[BattleSceneCaptureTool] LIVE captured {CaptureWidth}x{CaptureHeight} → {latestPath}");
+            LastCaptureLuminance = MeanLuminance(tex);
+            Debug.Log($"[BattleSceneCaptureTool] LIVE captured {CaptureWidth}x{CaptureHeight} " +
+                      $"(mean luminance {LastCaptureLuminance:0.000}) → {latestPath}");
         }
         finally
         {
@@ -134,6 +136,41 @@ public static class BattleSceneCaptureTool
     private const string PlayAutoFrameKey = "SM.BattleCapture.PlayAutoFrame";
     private const int PlayAutoFramesToWait = 360;
 
+    /// <summary>내용이 안 보이면 이 프레임 수만큼 더 기다리며 다시 찍는다.</summary>
+    private const int PlayAutoMaxExtraFrames = 1800;
+
+    /// <summary>PlayMode 백버퍼 캡쳐 산출물. 화면에 나간 프레임 그대로이므로 이쪽이 정본이다.</summary>
+    private const string PlayModeScreenshotPath = "Captures/battle_playmode.png";
+
+    private const string ScreenshotRequestedKey = "SM.BattleCapture.ScreenshotRequested";
+
+    /// <summary>이 값 아래면 사실상 검은 화면이다. 순검정 PNG 를 "성공"으로 보고하지 않기 위한 바닥.</summary>
+    private const float MinUsefulCaptureLuminance = 0.012f;
+
+    /// <summary>마지막 캡쳐의 평균 휘도. 캡쳐가 내용을 담았는지 판정하는 유일한 근거다.</summary>
+    public static float LastCaptureLuminance { get; private set; }
+
+    private static float MeanLuminance(Texture2D texture)
+    {
+        var pixels = texture.GetPixels32();
+        if (pixels.Length == 0)
+        {
+            return 0f;
+        }
+
+        double total = 0d;
+        const int stride = 97; // 소수 간격으로 성글게 — 2560x1080 전수는 필요 없다.
+        var samples = 0;
+        for (var i = 0; i < pixels.Length; i += stride)
+        {
+            var p = pixels[i];
+            total += (0.299d * p.r + 0.587d * p.g + 0.114d * p.b) / 255d;
+            samples++;
+        }
+
+        return samples == 0 ? 0f : (float)(total / samples);
+    }
+
     [InitializeOnLoadMethod]
     private static void RegisterPlayAutoHooks()
     {
@@ -161,17 +198,47 @@ public static class BattleSceneCaptureTool
             return;
         }
 
+        // 프레임 수만 세고 찍으면 인트로 페이드가 남아 있을 때 순검정 PNG 가 저장된다 —
+        // 툴은 "captured" 라고 보고하므로 조용한 실패다. 실제로 그렇게 한 장 나왔다.
+        // 내용이 보일 때까지 다시 찍고, 끝내 안 보이면 실패로 명확히 남긴다.
+        // 화면에 실제로 나간 프레임을 그대로 가져온다. camera.Render() 로 오프스크린 RT 에 그리는 건
+        // <b>플레이어가 보는 프레임과 같은 경로가 아니다</b> — 최종 blit 후처리 적용 여부가 달라질 수 있고,
+        // 이 프로젝트는 Linear 컬러 스페이스라 HDR RT 를 RGB24 로 ReadPixels 하면 sRGB 변환이 빠져
+        // 저장본이 계통적으로 어두워진다. 그래서 PlayMode 에서는 백버퍼 캡쳐를 정본으로 삼는다.
+        // (같은 기법을 TownPreviewCaptureUtility 가 이미 쓰고 있다.)
+        if (!SessionState.GetBool(ScreenshotRequestedKey, false))
+        {
+            ScreenCapture.CaptureScreenshot(PlayModeScreenshotPath);
+            SessionState.SetBool(ScreenshotRequestedKey, true);
+            return;
+        }
+
+        if (!File.Exists(PlayModeScreenshotPath)
+            && frame < PlayAutoFramesToWait + PlayAutoMaxExtraFrames)
+        {
+            return;
+        }
+
+        // 비교용으로 기존 오프스크린 경로도 한 장 남긴다. 두 장이 다르면 그 차이가 곧 진단이다.
+        CaptureBattleLive();
+        if (LastCaptureLuminance < MinUsefulCaptureLuminance
+            && frame < PlayAutoFramesToWait + PlayAutoMaxExtraFrames)
+        {
+            return;
+        }
+
         SessionState.EraseBool(PlayAutoPendingKey);
         SessionState.EraseInt(PlayAutoFrameKey);
+        SessionState.EraseBool(ScreenshotRequestedKey);
 
-        try
+        if (LastCaptureLuminance < MinUsefulCaptureLuminance)
         {
-            CaptureBattleLive();
+            Debug.LogError(
+                $"[BattleSceneCaptureTool] 캡쳐가 거의 검다(평균 휘도 {LastCaptureLuminance:0.000}). " +
+                "인트로 페이드나 전환 중일 수 있다. PlayAutoFramesToWait 를 늘리거나 컷씬 스킵을 확인하라.");
         }
-        finally
-        {
-            EditorApplication.ExitPlaymode();
-        }
+
+        EditorApplication.ExitPlaymode();
     }
 
     public static string Capture(bool addPreviewSunIfMissing)
