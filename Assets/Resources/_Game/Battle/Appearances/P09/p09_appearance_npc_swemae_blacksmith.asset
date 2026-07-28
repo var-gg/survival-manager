@@ -25,7 +25,7 @@ MonoBehaviour:
   sexId: 1
   faceTypeId: 1
   hairStyleId: 2
-  hairColorId: 1
+  hairColorId: 5
   skinId: 3
   eyeColorId: 3
   facialHairId: 6
