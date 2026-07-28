@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
+using SM.Core.Results;
+using SM.Meta.Model;
 using SM.Unity.UI;
 using UnityEngine;
 
@@ -21,24 +23,44 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
 {
     public delegate Texture2D? SpriteLoader(string spriteKey);
 
-    private readonly GameSessionRoot _root;
-    private readonly PassiveBoardView _view;
-    private readonly ContentTextResolver _contentText;
+    private readonly GameSessionState _session;
+    private readonly ICombatContentLookup _lookup;
+    private readonly IPassiveBoardView _view;
+    private readonly ContentTextResolver? _contentText;
     private readonly SpriteLoader _classSprite;
     private readonly SpriteLoader _affixSprite;
     private string _selectedNodeId = string.Empty;
     private string _selectedHeroId = string.Empty;
+    private OperationFailure? _toggleFailure;
 
     public PassiveBoardPresenter(
         GameSessionRoot root,
-        PassiveBoardView view,
+        IPassiveBoardView view,
         ContentTextResolver contentText,
         SpriteLoader? classSprite = null,
         SpriteLoader? affixSprite = null)
+        : this(
+            (root ?? throw new ArgumentNullException(nameof(root))).SessionState,
+            root.CombatContentLookup,
+            view,
+            contentText,
+            classSprite,
+            affixSprite)
     {
-        _root = root ?? throw new ArgumentNullException(nameof(root));
+    }
+
+    public PassiveBoardPresenter(
+        GameSessionState session,
+        ICombatContentLookup lookup,
+        IPassiveBoardView view,
+        ContentTextResolver? contentText = null,
+        SpriteLoader? classSprite = null,
+        SpriteLoader? affixSprite = null)
+    {
+        _session = session ?? throw new ArgumentNullException(nameof(session));
+        _lookup = lookup ?? throw new ArgumentNullException(nameof(lookup));
         _view = view ?? throw new ArgumentNullException(nameof(view));
-        _contentText = contentText ?? throw new ArgumentNullException(nameof(contentText));
+        _contentText = contentText;
         _classSprite = classSprite ?? (_ => null);
         _affixSprite = affixSprite ?? (_ => null);
     }
@@ -47,6 +69,7 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
     public void SetSelectedHero(string heroId)
     {
         _selectedHeroId = heroId ?? string.Empty;
+        _toggleFailure = null;
         Refresh();
     }
 
@@ -76,6 +99,7 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
     void IPassiveBoardActions.OnNodeSelected(string nodeId)
     {
         _selectedNodeId = nodeId;
+        _toggleFailure = null;
         Refresh();
     }
 
@@ -84,7 +108,8 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
         var heroId = ResolveSelectedHeroId();
         if (!string.IsNullOrEmpty(heroId) && !string.IsNullOrEmpty(_selectedNodeId))
         {
-            _root.SessionState.TogglePassiveNode(heroId, _selectedNodeId);
+            var result = _session.TogglePassiveNode(heroId, _selectedNodeId);
+            _toggleFailure = result.IsSuccess ? null : result.Failure;
         }
         Refresh();
     }
@@ -92,13 +117,13 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
     private string ResolveSelectedHeroId()
     {
         if (!string.IsNullOrEmpty(_selectedHeroId)) return _selectedHeroId;
-        var heroes = _root.SessionState.Profile.Heroes;
+        var heroes = _session.Profile.Heroes;
         return heroes.Count > 0 ? heroes[0].HeroId : string.Empty;
     }
 
     private PassiveBoardViewState BuildState()
     {
-        var session = _root.SessionState;
+        var session = _session;
         var heroId = ResolveSelectedHeroId();
         var hero = session.Profile.Heroes
             .FirstOrDefault(h => string.Equals(h.HeroId, heroId, StringComparison.Ordinal));
@@ -119,14 +144,14 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
         var heroDisplayName = hero != null
             ? HeroDisplayLabelFormatter.ResolvePersonAndJob(
                 hero,
-                _contentText.GetCharacterName,
-                _contentText.GetArchetypeName)
+                GetCharacterName,
+                GetArchetypeName)
             : "—";
         var header = new PassiveBoardHeaderViewState(
             HeroId: heroId,
             HeroDisplayName: heroDisplayName,
             ClassKey: classKey,
-            ClassLabel: _contentText.GetPassiveBoardName(boardId),
+            ClassLabel: GetPassiveBoardName(boardId),
             BoardId: boardId,
             HeroPortrait: null,   // runtime portrait wiring은 별도 (HeroPortraitCard 경로)
             ClassIconSprite: _classSprite(classKey));
@@ -140,7 +165,7 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
 
     private IReadOnlyList<PassiveBoardNodeViewState> BuildNodes(string boardId, HashSet<string> activeNodeIds)
     {
-        if (!_root.CombatContentLookup.TryGetPassiveBoardDefinition(boardId, out var board) || board?.Nodes == null)
+        if (!_lookup.TryGetPassiveBoardDefinition(boardId, out var board) || board?.Nodes == null)
         {
             return Array.Empty<PassiveBoardNodeViewState>();
         }
@@ -169,7 +194,7 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
                     Top: top,
                     IconKey: string.Empty,  // TODO: node icon mapping (CompileTags 기반)
                     IconSprite: null,       // sprite는 Bootstrap mock에서만 — runtime은 affix 매핑 후
-                    RuleSummary: _contentText.GetPassiveNodeDescription(node.Id),
+                    RuleSummary: GetPassiveNodeDescription(node.Id),
                     Tags: string.Join(" · ", node.CompileTags.Select(t => t?.ToString() ?? string.Empty).Where(s => s.Length > 0)),
                     IsActive: activeNodeIds.Contains(node.Id)));
             }
@@ -196,6 +221,7 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
 
     private PassiveBoardDetailViewState BuildDetail(IReadOnlyList<PassiveBoardNodeViewState> nodes)
     {
+        var toggleFailureLabel = LocalizeToggleFailure(_toggleFailure);
         var selected = nodes.FirstOrDefault(n => string.Equals(n.NodeId, _selectedNodeId, StringComparison.Ordinal));
         if (selected == null)
         {
@@ -205,7 +231,7 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
                 TitleText: "노드를 선택하세요",
                 RuleSummary: "보드의 노드를 클릭하면 효과와 태그가 표시됩니다.",
                 Tags: string.Empty,
-                AvailableLabel: "—",
+                AvailableLabel: string.IsNullOrEmpty(toggleFailureLabel) ? "—" : toggleFailureLabel,
                 // uxqa1: 미선택 상태의 ACTIVATE는 눌러도 no-op인 죽은 버튼 — 빈 라벨로 내려
                 // View가 버튼을 숨기게 한다 (노드 선택 시에만 CTA 노출).
                 ButtonLabel: string.Empty,
@@ -215,10 +241,12 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
         return new PassiveBoardDetailViewState(
             SelectedNodeId: selected.NodeId,
             KindLabel: selected.KindKey.ToUpperInvariant(),
-            TitleText: _contentText.GetPassiveNodeName(selected.NodeId),
+            TitleText: GetPassiveNodeName(selected.NodeId),
             RuleSummary: selected.RuleSummary,
             Tags: selected.Tags,
-            AvailableLabel: selected.IsActive ? "ACTIVE" : "INACTIVE",
+            AvailableLabel: string.IsNullOrEmpty(toggleFailureLabel)
+                ? (selected.IsActive ? "ACTIVE" : "INACTIVE")
+                : toggleFailureLabel,
             ButtonLabel: selected.IsActive ? "DEACTIVATE" : "ACTIVATE",
             IconSprite: null);
     }
@@ -235,10 +263,81 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
                 case "keystone": tKeystone++; if (n.IsActive) aKeystone++; break;
             }
         }
-        var boardName = _contentText.GetPassiveBoardName(boardId).ToUpperInvariant();
+        var boardName = GetPassiveBoardName(boardId).ToUpperInvariant();
         return new PassiveBoardFooterViewState(
             $"{boardName} · SMALL {aSmall}/{tSmall} · NOTABLE {aNotable}/{tNotable} · KEYSTONE {aKeystone}/{tKeystone}");
     }
+
+    private string LocalizeToggleFailure(OperationFailure? failure)
+    {
+        if (failure == null)
+        {
+            return string.Empty;
+        }
+
+        if (failure.IsInvariantViolation)
+        {
+            return Ui(
+                "ui.town.passive.toggle.failed",
+                "The passive node could not be changed. Please try again.");
+        }
+
+        return failure.Code switch
+        {
+            SessionOperationFailureCodes.PassiveTownOnly => Ui(
+                "ui.town.passive.toggle.town_only",
+                "Passive nodes can be changed only in Town."),
+            SessionOperationFailureCodes.HeroNotFound => Ui(
+                "ui.town.passive.toggle.hero_missing",
+                "The selected hero is no longer available."),
+            SessionOperationFailureCodes.PassiveLoadoutMissing => Ui(
+                "ui.town.passive.toggle.loadout_missing",
+                "The selected hero has no passive board."),
+            MetaOperationFailureCodes.PassivePrerequisiteRequired => Ui(
+                "ui.town.passive.toggle.prerequisite_required",
+                "Activate the prerequisite node first."),
+            MetaOperationFailureCodes.PassiveActiveNodeLimitReached => Ui(
+                "ui.town.passive.toggle.active_node_limit",
+                "You can activate up to {0} passive nodes.",
+                FailureArgument(failure, 0, "0")),
+            MetaOperationFailureCodes.PassiveKeystoneLimitReached => Ui(
+                "ui.town.passive.toggle.keystone_limit",
+                "You can activate up to {0} keystone nodes.",
+                FailureArgument(failure, 0, "1")),
+            MetaOperationFailureCodes.PassiveMutualExclusion => Ui(
+                "ui.town.passive.toggle.mutual_exclusion",
+                "A conflicting passive node is already active."),
+            _ => Ui(
+                "ui.town.passive.toggle.failed",
+                "The passive node could not be changed. Please try again."),
+        };
+    }
+
+    private string GetCharacterName(string id, string fallbackArchetypeId)
+        => _contentText?.GetCharacterName(id, fallbackArchetypeId) ?? "—";
+
+    private string GetArchetypeName(string id) => _contentText?.GetArchetypeName(id) ?? "—";
+
+    private string GetPassiveBoardName(string id) => _contentText?.GetPassiveBoardName(id) ?? "—";
+
+    private string GetPassiveNodeName(string id) => _contentText?.GetPassiveNodeName(id) ?? "—";
+
+    private string GetPassiveNodeDescription(string id) => _contentText?.GetPassiveNodeDescription(id) ?? "—";
+
+    private string Ui(string key, string fallback, params object[] arguments)
+        => _contentText?.LocalizeUi(
+               GameLocalizationTables.UITown,
+               key,
+               fallback,
+               arguments)
+           ?? (arguments.Length == 0
+               ? fallback
+               : string.Format(fallback, arguments));
+
+    private static string FailureArgument(OperationFailure failure, int index, string fallback)
+        => failure.Arguments.Count > index && !string.IsNullOrWhiteSpace(failure.Arguments[index])
+            ? failure.Arguments[index]
+            : fallback;
 
     private readonly record struct BoardCatalogEntry(string BoardId, string ClassKey, string Label);
 

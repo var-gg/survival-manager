@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using SM.Core.Content;
 using SM.Persistence.Abstractions.Models;
 using SM.Tests.EditMode.Fakes;
 using SM.Unity;
@@ -66,6 +67,62 @@ public sealed class InventoryPresenterFastTests
         Assert.That(view.LastState, Is.Not.Null);
         Assert.That(view.LastState!.Compare!.EquipCta.StatusText, Does.Contain("hero"),
             "대상 영웅 없이 장착하면 영웅 선택을 안내한다.");
+    }
+
+    [Test]
+    public void BuildState_SameBaseInstancesExposeDifferentTrustworthyTileFacts()
+    {
+        var session = CreateSession();
+        session.Profile.Inventory = new List<InventoryItemRecord>
+        {
+            new()
+            {
+                ItemInstanceId = "inv-plain",
+                ItemBaseId = "demo_blade",
+                AffixIds = new List<string> { "affix-a" },
+                RefitLevel = 0,
+            },
+            new()
+            {
+                ItemInstanceId = "inv-crafted",
+                ItemBaseId = "demo_blade",
+                AffixIds = new List<string> { "affix-a", "affix-b", "affix-c" },
+                RefitLevel = 2,
+            },
+        };
+        session.Profile.ItemCraftOperations = new List<ItemCraftOperationRecord>
+        {
+            new()
+            {
+                OperationId = "craft-1",
+                ItemInstanceId = "inv-crafted",
+                ItemBaseId = "demo_blade",
+                OperationKind = CraftOperationKindValue.Reforge,
+                TargetRefitLevel = 1,
+            },
+            new()
+            {
+                OperationId = "craft-2",
+                ItemInstanceId = "inv-crafted",
+                ItemBaseId = "demo_blade",
+                OperationKind = CraftOperationKindValue.Seal,
+                TargetRefitLevel = 2,
+                SealedAffixIds = new List<string> { "affix-a" },
+            },
+        };
+        var presenter = CreatePresenter(session, out _);
+
+        var state = presenter.BuildState();
+        var plain = state.Items.Single(item => item.ItemInstanceId == "inv-plain");
+        var crafted = state.Items.Single(item => item.ItemInstanceId == "inv-crafted");
+
+        Assert.That(plain.Name, Is.EqualTo(crafted.Name), "동일 base item의 표시명은 같아야 한다.");
+        Assert.That(plain.MetaLabel, Is.EqualTo("A1 · R0 · C0/S0"));
+        Assert.That(crafted.MetaLabel, Is.EqualTo("A3 · R2 · C2/S1"));
+        Assert.That(crafted.MetaLabel, Is.Not.EqualTo(plain.MetaLabel));
+        Assert.That(crafted.MetaTooltip, Does.Contain("Affixes: 3"));
+        Assert.That(crafted.MetaTooltip, Does.Contain("Refit level: 2"));
+        Assert.That(crafted.MetaTooltip, Does.Contain("Crafts: 2 (Seals: 1)"));
     }
 
     // UXML/USS 자산 구조 계약 — view가 Q<>로 찾는 named element가 .uxml에 존재하는지 검증한다.

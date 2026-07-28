@@ -224,6 +224,7 @@ public sealed class InventoryView : IInventoryView
             copy.Add(name);
             var meta = new Label(item.MetaLabel);
             meta.AddToClassList("inv-grid__cell-meta");
+            meta.tooltip = item.MetaTooltip;
             copy.Add(meta);
             cell.Add(copy);
 

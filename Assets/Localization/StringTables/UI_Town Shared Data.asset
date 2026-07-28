@@ -1647,6 +1647,46 @@ MonoBehaviour:
     m_Key: ui.town.sheet.refit.unavailable
     m_Metadata:
       m_Items: []
+  - m_Id: 43548476687323136
+    m_Key: ui.town.inventory.tile.instance_facts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071872
+    m_Key: ui.town.inventory.tile.instance_facts_tooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071873
+    m_Key: ui.town.passive.toggle.active_node_limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071874
+    m_Key: ui.town.passive.toggle.failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071875
+    m_Key: ui.town.passive.toggle.hero_missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071876
+    m_Key: ui.town.passive.toggle.keystone_limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071877
+    m_Key: ui.town.passive.toggle.loadout_missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071878
+    m_Key: ui.town.passive.toggle.mutual_exclusion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071879
+    m_Key: ui.town.passive.toggle.prerequisite_required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071880
+    m_Key: ui.town.passive.toggle.town_only
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

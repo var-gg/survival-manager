@@ -1707,6 +1707,50 @@ MonoBehaviour:
     m_Localized: Refit unavailable
     m_Metadata:
       m_Items: []
+  - m_Id: 43548476687323136
+    m_Localized: "A{0} \xB7 R{1} \xB7 C{2}/S{3}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071872
+    m_Localized: "Affixes: {0} \xB7 Refit level: {1} \xB7 Crafts: {2} (Seals: {3})"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071873
+    m_Localized: You can activate up to {0} passive nodes.
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071874
+    m_Localized: The passive node could not be changed. Please try again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071875
+    m_Localized: The selected hero is no longer available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071876
+    m_Localized: You can activate up to {0} keystone nodes.
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071877
+    m_Localized: The selected hero has no passive board.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071878
+    m_Localized: A conflicting passive node is already active.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071879
+    m_Localized: Activate the prerequisite node first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071880
+    m_Localized: Passive nodes can be changed only in Town.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -1765,3 +1809,7 @@ MonoBehaviour:
         - id: 43063980221337613
         - id: 43063980221337618
         - id: 43063980221337619
+        - id: 43548476687323136
+        - id: 43548476725071872
+        - id: 43548476725071873
+        - id: 43548476725071876

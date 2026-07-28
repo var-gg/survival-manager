@@ -133,6 +133,9 @@ public sealed class InventoryPresenter : IInventoryActions
             session.Profile.Heroes.SelectMany(h => h.EquippedItemIds ?? Enumerable.Empty<string>())
                                   .Where(id => !string.IsNullOrEmpty(id)),
             StringComparer.Ordinal);
+        var craftOperationsByItem = (session.Profile.ItemCraftOperations ?? new List<ItemCraftOperationRecord>())
+            .Where(operation => operation != null && !string.IsNullOrWhiteSpace(operation.ItemInstanceId))
+            .ToLookup(operation => operation.ItemInstanceId, StringComparer.Ordinal);
         var lookup = _lookup;
 
         var entries = session.Profile.Inventory
@@ -165,13 +168,22 @@ public sealed class InventoryPresenter : IInventoryActions
                 var isEquippedByTarget = !string.IsNullOrEmpty(_targetHeroId)
                     && string.Equals(item.EquippedHeroId, _targetHeroId, StringComparison.Ordinal);
                 var isEquippedByOther = !string.IsNullOrEmpty(item.EquippedHeroId) && !isEquippedByTarget;
+                var craftHistory = craftOperationsByItem[item.ItemInstanceId];
+                var craftCount = craftHistory.Count();
+                var sealCount = craftHistory.Count(operation =>
+                    operation.OperationKind == CraftOperationKindValue.Seal);
+                var affixCount = item.AffixIds?.Count ?? 0;
 
                 var itemState = new InventoryItemViewState(
                     ItemInstanceId: item.ItemInstanceId,
                     Name: itemName,
-                    MetaLabel: string.IsNullOrWhiteSpace(presentation.FamilyLabel)
-                        ? $"{presentation.SlotLabel} / {FormatRarityLabel(presentation.RarityKey)}"
-                        : $"{presentation.SlotLabel} / {FormatRarityLabel(presentation.RarityKey)} / {presentation.FamilyLabel}",
+                    MetaLabel: Ui(
+                        "ui.town.inventory.tile.instance_facts",
+                        "A{0} · R{1} · C{2}/S{3}",
+                        affixCount,
+                        item.RefitLevel,
+                        craftCount,
+                        sealCount),
                     IconKey: iconKey,
                     RarityKey: presentation.RarityKey,
                     RawRarityKey: presentation.RawRarityKey,
@@ -189,7 +201,14 @@ public sealed class InventoryPresenter : IInventoryActions
                     IconSprite: _itemIconSprite(iconKey) ?? _itemIconSprite(item.ItemBaseId) ?? _affixIconSprite(iconKey),
                     IsLocked: isEquippedByOther,
                     IsProtected: isEquippedByTarget,
-                    IsIncompatible: false);
+                    IsIncompatible: false,
+                    MetaTooltip: Ui(
+                        "ui.town.inventory.tile.instance_facts_tooltip",
+                        "Affixes: {0} · Refit level: {1} · Crafts: {2} (Seals: {3})",
+                        affixCount,
+                        item.RefitLevel,
+                        craftCount,
+                        sealCount));
                 return new InventoryItemPresentation(item, slotKey, iconKey, itemState);
             })
             .ToList();

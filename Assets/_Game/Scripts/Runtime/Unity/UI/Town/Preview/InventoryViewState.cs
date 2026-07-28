@@ -42,7 +42,8 @@ public sealed record InventoryItemViewState(
     // IsLocked = 다른 hero에 장착됨(분해/이동 제약), IsProtected = 현재 선택 hero에 장착됨, IsIncompatible = slot 호환 안 됨.
     bool IsLocked = false,
     bool IsProtected = false,
-    bool IsIncompatible = false
+    bool IsIncompatible = false,
+    string MetaTooltip = ""
 );
 
 public sealed record InventoryAffixRowViewState(

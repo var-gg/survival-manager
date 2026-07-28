@@ -9,7 +9,7 @@ namespace SM.Unity.UI.Town.Preview;
 /// Passive Board V1 surface View. UXML container: BoardHeader / BoardCanvas / DetailIcon / FooterBreakdown.
 /// per-hero 컨텍스트 — 보드는 hero 클래스로 고정 (자유 탭 전환 폐기). Render 시 각 container clear + 재구축.
 /// </summary>
-public sealed class PassiveBoardView
+public sealed class PassiveBoardView : IPassiveBoardView
 {
     private readonly VisualElement _boardHeader;
     private readonly VisualElement _boardCanvas;
@@ -186,4 +186,17 @@ public interface IPassiveBoardActions
 {
     void OnNodeSelected(string nodeId);
     void OnToggleActivateClicked();
+}
+
+/// <summary>
+/// Passive Board View 계약 — presenter가 VisualElement 없이도 command 결과를 view state로 전달할 수 있게
+/// bind/modal/render 표면만 노출한다.
+/// </summary>
+public interface IPassiveBoardView
+{
+    void Bind(IPassiveBoardActions actions);
+    void BindClose(Action close);
+    void Open();
+    void Close();
+    void Render(PassiveBoardViewState state);
 }
