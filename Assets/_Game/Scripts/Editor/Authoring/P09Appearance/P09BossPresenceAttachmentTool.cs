@@ -4,6 +4,7 @@ using System.IO;
 using SM.Unity;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SM.Editor.Authoring.P09Appearance
 {
@@ -80,6 +81,28 @@ public static class P09BossPresenceAttachmentTool
         Debug.Log($"[P09BossPresence] game-shader renders written to {OutputFolder}.");
     }
 
+    /// <summary>
+    /// 게임과 <b>같은 렌더 환경</b>으로 찍는다. 조명·톤매핑·포스트프로세싱 값을 손으로 베끼지 않고
+    /// 전투 씬이 실제로 쓰는 <see cref="BattleRenderEnvironmentAuthoring"/>의 <c>Apply()</c>를 그대로 부른다.
+    /// 값을 베끼면 베낀 시점에 고정돼 나중에 환경이 바뀌어도 이 렌더만 옛날 그림을 보여준다 —
+    /// 그러면 판단 렌더가 다시 거짓말을 시작한다.
+    ///
+    /// <c>Apply()</c>는 <c>Camera.main</c>을 잡고 씬의 모든 렌더러를 훑으며 전역 <c>RenderSettings</c>를
+    /// 바꾼다. 열려 있는 씬에서 돌리면 그 씬이 오염되므로 <b>임시 씬을 additive로 열어</b> 거기서 끝내고
+    /// 저장 없이 닫는다.
+    /// </summary>
+    /// <summary>
+    /// 게임과 <b>같은 렌더 환경</b>으로 찍는다. 조명·톤매핑·포스트프로세싱 값을 손으로 베끼지 않고
+    /// 전투 씬이 실제로 쓰는 <see cref="BattleRenderEnvironmentAuthoring"/>의 <c>Apply()</c>를 그대로 부른다.
+    /// 값을 베끼면 베낀 시점에 고정돼, 나중에 환경이 바뀌어도 이 렌더만 옛날 그림을 보여준다 —
+    /// 그러면 판단 렌더가 다시 거짓말을 시작한다.
+    ///
+    /// <para>임시 씬을 쓰려 했으나 <c>NewScene(Additive)</c>는 열려 있는 무제 씬이 더티면 거부한다
+    /// ("Cannot create a new scene additively with an untitled scene unsaved") — 에디터를 새로 켜면
+    /// 늘 그 상태다. 그래서 현재 씬에서 돌리되 <c>Apply()</c>가 건드리는 전역 상태를 스냅샷 후 되돌린다.
+    /// 씬에 다른 내용물이 있으면 경고만 남기고 진행한다 — 이 도구는 내부 판단용이고, 씬을 저장하지 않는 한
+    /// 남는 변경은 없다.</para>
+    /// </summary>
     private static void RenderThroughGamePipeline(string characterId, bool withAttachments, string fileName)
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(VisualPrefabPath);
@@ -88,20 +111,30 @@ public static class P09BossPresenceAttachmentTool
             throw new FileNotFoundException($"Missing P09 visual prefab: {VisualPrefabPath}");
         }
 
+        var activeScene = SceneManager.GetActiveScene();
+        if (activeScene.rootCount > 0)
+        {
+            Debug.LogWarning(
+                $"[P09BossPresence] 활성 씬 '{activeScene.name}'에 이미 {activeScene.rootCount}개의 루트가 있다. " +
+                "렌더 환경이 임시로 적용된다 — 씬을 저장하지 말 것.");
+        }
+
         var preset = FindPreset(characterId);
         var generated = new List<Material>();
+        var previousActiveRt = RenderTexture.active;
+        var snapshot = RenderSettingsSnapshot.Capture();
+
+        var suspendedCameras = new List<GameObject>();
         GameObject? instance = null;
-        GameObject? rig = null;
+        GameObject? camGo = null;
+        GameObject? envGo = null;
         RenderTexture? target = null;
         Texture2D? readback = null;
-        var previousActive = RenderTexture.active;
-        System.Action? restoreAmbient = null;
         try
         {
             instance = Object.Instantiate(prefab);
             instance.transform.position = Vector3.zero;
             instance.transform.rotation = Quaternion.identity;
-            instance.hideFlags = HideFlags.DontSave;
             if (preset != null)
             {
                 preset.ApplyTo(instance.transform, generated);
@@ -109,60 +142,46 @@ public static class P09BossPresenceAttachmentTool
 
             P09PreviewPoseUtility.TryApplyDefaultIdlePose(instance, preset != null ? preset.SexId : 1);
 
-            // 여기서는 머티리얼을 <b>갈아끼우지 않는다.</b> 그게 이 렌더의 전부다.
+            // 머티리얼을 갈아끼우지 않는다. lilToon 그대로 그리는 게 이 렌더의 전부다.
             if (withAttachments)
             {
                 BuildAdjudicatorPresence(instance);
             }
 
-            rig = new GameObject("__SM_P09GameShaderRig") { hideFlags = HideFlags.DontSave };
-
-            // 조명을 지어내지 않는다. 전투 씬이 실제로 쓰는 BattleRenderEnvironmentAuthoring 의
-            // 기본값을 그대로 옮긴다 — 각도·색·환경광까지. 임의 조명으로 찍으면 그건 게임도
-            // 프리뷰도 아닌 세 번째 그림이 되고, 색감 판단의 근거가 되지 못한다.
-            var previousAmbientMode = RenderSettings.ambientMode;
-            var previousSky = RenderSettings.ambientSkyColor;
-            var previousEquator = RenderSettings.ambientEquatorColor;
-            var previousGround = RenderSettings.ambientGroundColor;
-            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.125f, 0.155f, 0.190f, 1f);
-            RenderSettings.ambientEquatorColor = new Color(0.105f, 0.112f, 0.100f, 1f);
-            RenderSettings.ambientGroundColor = new Color(0.040f, 0.045f, 0.036f, 1f);
-            restoreAmbient = () =>
+            // Apply()가 Camera.main을 찾으므로 태그를 붙여 둬야 한다. 안 붙이면 카메라 설정
+            // (HDR·포스트프로세싱)이 조용히 건너뛰어지고 톤매핑 없는 그림이 나온다.
+            // Camera.main 은 "MainCamera 태그가 붙은 <b>첫 번째 활성</b> 카메라"다. 씬에 이미
+            // "Main Camera" 가 있으면 Apply() 가 그쪽을 설정하고 내 카메라는 손도 안 댄 채 남는다 —
+            // 실제로 그렇게 나왔고, 그 바람에 톤매핑·포스트프로세싱이 전부 빠진 그림을 게임 렌더라고
+            // 착각할 뻔했다. 렌더 동안만 기존 카메라를 비활성화해서 내 카메라가 Camera.main 이 되게 한다.
+            foreach (var other in Object.FindObjectsByType<Camera>(FindObjectsSortMode.None))
             {
-                RenderSettings.ambientMode = previousAmbientMode;
-                RenderSettings.ambientSkyColor = previousSky;
-                RenderSettings.ambientEquatorColor = previousEquator;
-                RenderSettings.ambientGroundColor = previousGround;
-            };
+                if (other == null || !other.gameObject.activeSelf)
+                {
+                    continue;
+                }
 
-            var keyGo = new GameObject("Key") { hideFlags = HideFlags.DontSave };
-            keyGo.transform.SetParent(rig.transform, false);
-            var key = keyGo.AddComponent<Light>();
-            key.type = LightType.Directional;
-            key.intensity = 1.35f;
-            key.color = new Color(1f, 0.97f, 0.91f);
-            keyGo.transform.rotation = Quaternion.Euler(44f, -50f, 0f);
+                suspendedCameras.Add(other.gameObject);
+                other.gameObject.SetActive(false);
+            }
 
-            var fillGo = new GameObject("Fill") { hideFlags = HideFlags.DontSave };
-            fillGo.transform.SetParent(rig.transform, false);
-            var fill = fillGo.AddComponent<Light>();
-            fill.type = LightType.Directional;
-            fill.intensity = 0.35f;
-            fill.color = new Color(0.78f, 0.84f, 1f);
-            fillGo.transform.rotation = Quaternion.Euler(35f, 135f, 0f);
-
-            var camGo = new GameObject("Cam") { hideFlags = HideFlags.DontSave };
-            camGo.transform.SetParent(rig.transform, false);
+            camGo = new GameObject("__SM_JudgingCamera") { tag = "MainCamera" };
             var camera = camGo.AddComponent<Camera>();
-            camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = Background;
             camera.allowMSAA = true;
             camera.cullingMask = ~0;
             camera.fieldOfView = 30f;
             FrameCamera(camera, instance.transform);
 
-            target = new RenderTexture(RenderWidth, RenderHeight, 24, RenderTextureFormat.Default,
+            envGo = new GameObject("__SM_JudgingRenderEnvironment");
+            envGo.AddComponent<BattleRenderEnvironmentAuthoring>().Apply();
+
+            if (Camera.main != camera)
+            {
+                Debug.LogWarning("[P09BossPresence] Camera.main 이 판단 카메라가 아니다 — " +
+                                 "렌더 환경이 다른 카메라에 적용됐을 수 있다.");
+            }
+
+            target = new RenderTexture(RenderWidth, RenderHeight, 24, RenderTextureFormat.DefaultHDR,
                 RenderTextureReadWrite.sRGB) { antiAliasing = 4 };
             camera.targetTexture = target;
             camera.Render();
@@ -175,8 +194,7 @@ public static class P09BossPresenceAttachmentTool
         }
         finally
         {
-            RenderTexture.active = previousActive;
-            restoreAmbient?.Invoke();
+            RenderTexture.active = previousActiveRt;
             if (target != null)
             {
                 target.Release();
@@ -188,9 +206,14 @@ public static class P09BossPresenceAttachmentTool
                 Object.DestroyImmediate(readback);
             }
 
-            if (rig != null)
+            if (envGo != null)
             {
-                Object.DestroyImmediate(rig);
+                Object.DestroyImmediate(envGo);
+            }
+
+            if (camGo != null)
+            {
+                Object.DestroyImmediate(camGo);
             }
 
             if (instance != null)
@@ -205,6 +228,74 @@ public static class P09BossPresenceAttachmentTool
                     Object.DestroyImmediate(material);
                 }
             }
+
+            foreach (var suspended in suspendedCameras)
+            {
+                if (suspended != null)
+                {
+                    suspended.SetActive(true);
+                }
+            }
+
+            snapshot.Restore();
+        }
+    }
+
+    /// <summary>
+    /// <c>Apply()</c>가 바꾸는 전역 렌더 상태를 담아 두고 되돌린다. 이걸 빼먹으면 판단 렌더 한 번이
+    /// 에디터의 환경광·안개·스카이박스를 조용히 바꿔 놓고, 이후 모든 씬 뷰가 다른 톤으로 보인다.
+    /// </summary>
+    private readonly struct RenderSettingsSnapshot
+    {
+        private readonly UnityEngine.Rendering.AmbientMode _ambientMode;
+        private readonly Color _sky;
+        private readonly Color _equator;
+        private readonly Color _ground;
+        private readonly float _ambientIntensity;
+        private readonly Material _skybox;
+        private readonly bool _fog;
+        private readonly FogMode _fogMode;
+        private readonly Color _fogColor;
+        private readonly float _fogStart;
+        private readonly float _fogEnd;
+        private readonly float _fogDensity;
+
+        private RenderSettingsSnapshot(bool _)
+        {
+            _ambientMode = RenderSettings.ambientMode;
+            _sky = RenderSettings.ambientSkyColor;
+            _equator = RenderSettings.ambientEquatorColor;
+            _ground = RenderSettings.ambientGroundColor;
+            _ambientIntensity = RenderSettings.ambientIntensity;
+            _skybox = RenderSettings.skybox;
+            _fog = RenderSettings.fog;
+            _fogMode = RenderSettings.fogMode;
+            _fogColor = RenderSettings.fogColor;
+            _fogStart = RenderSettings.fogStartDistance;
+            _fogEnd = RenderSettings.fogEndDistance;
+            _fogDensity = RenderSettings.fogDensity;
+        }
+
+        public static RenderSettingsSnapshot Capture()
+        {
+            return new RenderSettingsSnapshot(true);
+        }
+
+        public void Restore()
+        {
+            RenderSettings.ambientMode = _ambientMode;
+            RenderSettings.ambientSkyColor = _sky;
+            RenderSettings.ambientEquatorColor = _equator;
+            RenderSettings.ambientGroundColor = _ground;
+            RenderSettings.ambientIntensity = _ambientIntensity;
+            RenderSettings.skybox = _skybox;
+            RenderSettings.fog = _fog;
+            RenderSettings.fogMode = _fogMode;
+            RenderSettings.fogColor = _fogColor;
+            RenderSettings.fogStartDistance = _fogStart;
+            RenderSettings.fogEndDistance = _fogEnd;
+            RenderSettings.fogDensity = _fogDensity;
+            DynamicGI.UpdateEnvironment();
         }
     }
 
