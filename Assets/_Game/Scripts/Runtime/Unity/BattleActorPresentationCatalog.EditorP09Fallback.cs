@@ -26,6 +26,32 @@ public sealed partial class BattleActorPresentationCatalog
         "chr_0008",
     };
 
+    /// <summary>
+    /// 보스 아키타입은 전부 기존 인간 아키타입의 <b>보스 변형</b>이고, 자기 P09 프리셋을 따로 갖지 않는다.
+    /// 매핑이 없으면 archetype override가 비어 팀 기본 프리미티브 래퍼로 떨어진다 —
+    /// 실제로 보스 8종 중 <b>7종이 그 상태</b>였고, 하나만 매핑돼 있어서 그 보스만 사람으로 보였다.
+    /// 기반 캐릭터의 래퍼를 그대로 재사용한다(이미 pale_executor 하나가 그 패턴을 쓰고 있었다).
+    ///
+    /// 보스 고유 존재감(크기·부착물)은 여기서 다루지 않는다. 이 표는 "보이는가"만 책임진다.
+    /// 표가 콘텐츠와 어긋나면 <c>BattleActorPresentationCatalogP09FallbackTests
+    /// .EditorP09Fallback_EveryBossArchetype_HasVisualBaseWithPreset</c>가 잡는다(BatchOnly 레인).
+    /// </summary>
+    private static readonly (string BossArchetypeId, string BaseCharacterId)[] EditorP09BossArchetypeBases =
+    {
+        ("pale_executor_tithe_boss", "pale_executor"),
+        ("pale_executor_nondiving_boss", "pale_executor"),
+        ("bastion_penitent_tithe_boss", "bastion_penitent"),
+        ("mirror_cantor_sustain_boss", "mirror_cantor"),
+        ("shaman_burn_boss", "shaman"),
+        ("hexer_attrition_boss", "hexer"),
+        ("priest_sustain_boss", "priest"),
+        ("sunken_adjudicator_boss", "extra_sunken_bastion_adjudicator"),
+    };
+
+    /// <summary>테스트가 표를 읽어 콘텐츠와 대조할 수 있게 노출한다.</summary>
+    internal static IReadOnlyList<(string BossArchetypeId, string BaseCharacterId)> EditorP09BossArchetypeBaseMap
+        => EditorP09BossArchetypeBases;
+
     private static readonly string[] EditorP09HeroSmokeIds =
     {
         "hero-1",
@@ -114,9 +140,13 @@ public sealed partial class BattleActorPresentationCatalog
             catalog.SetArchetypeOverride(characterId, wrapper);
         }
 
-        if (wrappers.TryGetValue("pale_executor", out var paleExecutorWrapper))
+        // TryGetValue가 아니라 ResolveWrapper를 쓴다. 기반 캐릭터가 위 루프에서 아직 해석되지
+        // 않았을 수 있고(등록 필터에 걸리는 extra 캐릭터가 특히 그렇다), 그 경우 조용히
+        // 매핑이 빠져 다시 프리미티브로 떨어진다 — 방금 고친 그 증상이다.
+        for (var i = 0; i < EditorP09BossArchetypeBases.Length; i++)
         {
-            catalog.SetArchetypeOverride("pale_executor_tithe_boss", paleExecutorWrapper);
+            var boss = EditorP09BossArchetypeBases[i];
+            catalog.SetArchetypeOverride(boss.BossArchetypeId, ResolveWrapper(boss.BaseCharacterId, i));
         }
 
         for (var i = 0; i < EditorP09HeroSmokeIds.Length; i++)
