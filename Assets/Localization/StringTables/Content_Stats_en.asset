@@ -282,6 +282,14 @@ MonoBehaviour:
     m_Localized: Collision Radius
     m_Metadata:
       m_Items: []
+  - m_Id: 680903835451392
+    m_Localized: Skill Haste
+    m_Metadata:
+      m_Items: []
+  - m_Id: 680903835451393
+    m_Localized: Status Potency
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

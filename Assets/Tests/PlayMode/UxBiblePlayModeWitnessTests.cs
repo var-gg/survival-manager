@@ -141,6 +141,7 @@ public sealed partial class UxBiblePlayModeWitnessTests
 
         ClickButton(townHost.Root, "FaceCard_solgil");
         yield return WaitForVisible(townHost.Root, "InvRoot");
+        yield return WaitFrames(2);
         VerifyInventoryCompare(townHost.Root);
         yield return Capture("inventory_compare");
         ClickFirstButtonWithClass(townHost.Root, "inv-currency__close");
@@ -169,6 +170,8 @@ public sealed partial class UxBiblePlayModeWitnessTests
 
         ClickButton(townHost.Root, "FaceCard_soemae");
         yield return WaitForVisible(townHost.Root, "ErpRoot");
+        yield return WaitFrames(2);
+        AssertEquipmentRefitContainment(townHost.Root);
         yield return Capture("equipment_refit");
         ClickFirstButtonWithClass(townHost.Root, "erp-header__close");
         yield return WaitForHidden(townHost.Root, "ErpRoot");
@@ -421,6 +424,7 @@ public sealed partial class UxBiblePlayModeWitnessTests
         AssertNonEmptyText<Label>(root, "CompareSelectedItemMetaLabel");
         AssertNonEmptyText<Label>(root, "CompareEquipStatusLabel");
         Assert.That(Require<VisualElement>(root, "CompareRows").childCount, Is.GreaterThan(0));
+        AssertInventoryContainment(root);
     }
 
     private static void VerifyRecruit(VisualElement root)

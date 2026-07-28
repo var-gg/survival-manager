@@ -142,6 +142,49 @@ public sealed partial class UxBiblePlayModeWitnessTests
         AssertVisibleTextContained(victoryBanner, "Reward result banner");
     }
 
+    private static void AssertEquipmentRefitContainment(VisualElement root)
+    {
+        var affixList = Require<VisualElement>(root, "AffixList");
+        var rows = affixList.Query<VisualElement>(className: "erp-affix-row").ToList();
+        Assert.That(rows, Is.Not.Empty, "Equipment Refit should render affix rows.");
+
+        foreach (var row in rows)
+        {
+            var header = RequireClass(row, "erp-affix-row__header");
+            var name = RequireClass(row, "erp-affix-row__name");
+            var rollContext = RequireClass(row, "erp-affix-row__roll-context");
+            var effects = row.Query<VisualElement>(className: "erp-affix-row__effect").ToList();
+            Assert.That(effects, Is.Not.Empty, "Equipment Refit affix rows should render at least one effect line.");
+
+            AssertContainedWithinPadding(row, header, "Equipment Refit affix header");
+            AssertContainedWithinPadding(row, rollContext, "Equipment Refit affix roll context");
+            foreach (var effect in effects)
+            {
+                AssertContainedWithinPadding(row, effect, "Equipment Refit affix effect");
+            }
+
+            AssertVisibleTextContained(row, "Equipment Refit affix row");
+            AssertNoOverlap(name, rollContext, "Equipment Refit affix name and roll context");
+        }
+
+        AssertVerticalSequence(rows, "Equipment Refit affix rows");
+    }
+
+    private static void AssertInventoryContainment(VisualElement root)
+    {
+        var cells = root.Query<VisualElement>(className: "inv-grid__cell").ToList();
+        Assert.That(cells, Is.Not.Empty, "Inventory should render grid cells.");
+
+        foreach (var cell in cells)
+        {
+            var name = RequireClass(cell, "inv-grid__cell-name");
+            var meta = RequireClass(cell, "inv-grid__cell-meta");
+            AssertContained(cell, name, "Inventory grid cell name");
+            AssertContained(cell, meta, "Inventory grid cell meta");
+            AssertVisibleTextContained(cell, "Inventory grid cell");
+        }
+    }
+
     private static VisualElement RequireClass(VisualElement root, string className)
     {
         var element = root.Query<VisualElement>(className: className).First();
@@ -169,6 +212,32 @@ public sealed partial class UxBiblePlayModeWitnessTests
             $"{context}: child escaped the owner's top edge.");
         Assert.That(childBounds.yMax, Is.LessThanOrEqualTo(ownerBounds.yMax + tolerance),
             $"{context}: child escaped the owner's bottom edge.");
+    }
+
+    private static void AssertContainedWithinPadding(
+        VisualElement owner,
+        VisualElement child,
+        string context,
+        float tolerance = GeometryTolerance)
+    {
+        AssertContained(owner, child, context, tolerance);
+
+        var ownerBounds = owner.worldBound;
+        var style = owner.resolvedStyle;
+        var contentBounds = Rect.MinMaxRect(
+            ownerBounds.xMin + style.borderLeftWidth + style.paddingLeft,
+            ownerBounds.yMin + style.borderTopWidth + style.paddingTop,
+            ownerBounds.xMax - style.borderRightWidth - style.paddingRight,
+            ownerBounds.yMax - style.borderBottomWidth - style.paddingBottom);
+        var childBounds = child.worldBound;
+        Assert.That(childBounds.xMin, Is.GreaterThanOrEqualTo(contentBounds.xMin - tolerance),
+            $"{context}: child intruded into the owner's left padding.");
+        Assert.That(childBounds.xMax, Is.LessThanOrEqualTo(contentBounds.xMax + tolerance),
+            $"{context}: child intruded into the owner's right padding.");
+        Assert.That(childBounds.yMin, Is.GreaterThanOrEqualTo(contentBounds.yMin - tolerance),
+            $"{context}: child intruded into the owner's top padding.");
+        Assert.That(childBounds.yMax, Is.LessThanOrEqualTo(contentBounds.yMax + tolerance),
+            $"{context}: child intruded into the owner's bottom padding.");
     }
 
     private static void AssertVisibleTextContained(VisualElement owner, string context)
