@@ -291,7 +291,12 @@ public static class P09DetailPreservingPaletteTool
         return bounds;
     }
 
-    private static void ApplyPreviewReadableMaterials(Transform modelRoot, ICollection<Material> generatedMaterials)
+    /// <summary>
+    /// P09 머티리얼은 PreviewRenderUtility 컨텍스트에서 셰이더가 해석되지 않아 전부 마젠타로 렌더된다.
+    /// 이 변환 없이 프리뷰를 찍으면 실루엣만 남는다. 같은 Editor 어셈블리의 옷장 레퍼런스 도구가
+    /// 동일한 변환을 필요로 해 internal로 열었다 — 복제하면 두 도구의 프리뷰가 조용히 갈라진다.
+    /// </summary>
+    internal static void ApplyPreviewReadableMaterials(Transform modelRoot, ICollection<Material> generatedMaterials)
     {
         var previewShader = Shader.Find(PreviewReadableShaderName)
                             ?? Shader.Find("Sprites/Default")
