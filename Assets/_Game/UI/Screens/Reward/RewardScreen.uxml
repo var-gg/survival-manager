@@ -22,7 +22,7 @@
         </ui:VisualElement>
 
         <ui:VisualElement class="screen__body reward-bible__board">
-            <ui:VisualElement class="screen__column reward-bible__left-rail">
+            <ui:ScrollView name="RewardLeftRail" class="screen__column reward-bible__left-rail" mode="Vertical">
                 <ui:VisualElement name="SettlementSummaryPanel" class="panel panel--dense reward-settlement-summary">
                     <ui:Label name="SettlementSummaryTitleLabel" class="panel__title reward-settlement-summary__title" />
                     <ui:VisualElement class="reward-settlement-summary__rows">
@@ -50,21 +50,21 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <!-- wave-28-survivor GPT Pro patch: squad 4 survivor list (portrait + HP/EXP). -->
-                <ui:VisualElement class="panel reward-survivor-panel">
+                <ui:VisualElement name="RewardSurvivorPanel" class="panel reward-survivor-panel">
                     <ui:Label name="RewardSurvivorSectionTitleLabel" class="panel__title" text="전투 생존자" />
                     <ui:VisualElement name="RewardSurvivorRows" class="reward-survivor-rows" />
                 </ui:VisualElement>
-                <ui:VisualElement class="panel reward-progression-panel">
+                <ui:VisualElement name="RewardProgressionPanel" class="panel reward-progression-panel">
                     <ui:Label name="ProgressionTitleLabel" class="panel__title" />
                     <ui:VisualElement name="RewardProgressionRows" class="reward-progression-rows" />
                 </ui:VisualElement>
-            </ui:VisualElement>
+            </ui:ScrollView>
 
             <ui:VisualElement class="screen__column reward-bible__center-stage">
-                <ui:VisualElement class="panel reward-choice-panel">
+                <ui:VisualElement name="RewardChoicePanel" class="panel reward-choice-panel">
                     <ui:Label name="ChoicesHeaderLabel" class="panel__title" />
                     <!-- wave-39 chrome cleanup: victory medallion + runes 제거 (선택 결정 surface, mood ornament 불필요) -->
-                    <ui:VisualElement class="reward-bible__victory-banner reward-bible__victory-banner--flat">
+                    <ui:VisualElement name="RewardVictoryBanner" class="reward-bible__victory-banner reward-bible__victory-banner--flat">
                         <ui:Label name="RewardVictoryBannerResultLabel" class="reward-bible__victory-banner-text" text="RESULT" />
                         <ui:Label name="RewardVictoryBannerStatusLabel" class="reward-bible__victory-banner-text reward-bible__victory-banner-text--ko" text="정산 완료" />
                     </ui:VisualElement>
@@ -118,12 +118,12 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement class="panel reward-timeline-panel">
+        <ui:VisualElement name="RewardTimelinePanel" class="panel reward-timeline-panel">
             <ui:Label name="TimelineTitleLabel" class="panel__title" />
             <ui:VisualElement name="RewardTimelineTicks" class="reward-timeline-ticks" />
         </ui:VisualElement>
 
-        <ui:VisualElement class="panel panel--dense status-bar reward-bible__status-band">
+        <ui:VisualElement name="RewardStatusBand" class="panel panel--dense status-bar reward-bible__status-band">
             <ui:VisualElement class="action-group">
                 <ui:VisualElement class="action-row">
                     <ui:Button name="ReturnTownButton" class="ui-button" />

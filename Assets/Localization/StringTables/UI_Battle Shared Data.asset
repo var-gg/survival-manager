@@ -743,6 +743,10 @@ MonoBehaviour:
     m_Key: ui.battle.panel.tactical_readout
     m_Metadata:
       m_Items: []
+  - m_Id: 17538112183144505
+    m_Key: ui.battle.panel.force_distribution
+    m_Metadata:
+      m_Items: []
   - m_Id: 17538112183144501
     m_Key: ui.battle.readout.progress
     m_Metadata:

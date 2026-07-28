@@ -75,12 +75,12 @@
                     <ui:VisualElement class="sm-bs-stage-line" />
                     <ui:VisualElement class="sm-bs-floor-halo sm-bs-floor-halo--enemy" />
                 </ui:VisualElement>
-
-                <ui:VisualElement name="CompactLog" class="panel sm-bs-event-feed sm-vellum-card">
-                    <ui:Label name="LogTitleLabel" class="panel__title sm-bs-section-title" />
-                    <ui:Label name="LogLabel" class="panel__text sm-bs-log-text" />
-                </ui:VisualElement>
             </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="CompactLog" class="panel sm-bs-event-feed sm-vellum-card">
+            <ui:Label name="LogTitleLabel" class="panel__title sm-bs-section-title" />
+            <ui:Label name="LogLabel" class="panel__text sm-bs-log-text" />
         </ui:VisualElement>
 
         <ui:VisualElement name="SelectedUnitPanel" class="sm-bs-unit-detail-backdrop sm-cd-modal sm-cd-bottom-sheet">

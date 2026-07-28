@@ -879,7 +879,7 @@
 /* UX Bible 80 pass — denser class-detail read with stronger portrait/stat/skill hierarchy. */
 .tcs-frame {
     width: 1840px;
-    height: 956px;
+    height: 1080px;
     padding-left: 34px;
     padding-right: 34px;
     padding-top: 30px;
@@ -887,8 +887,8 @@
 }
 
 .tcs-header {
-    height: 78px;
-    min-height: 78px;
+    height: 112px;
+    min-height: 112px;
     margin-bottom: 10px;
 }
 
@@ -927,7 +927,9 @@
 }
 
 .tcs-hero-rail__entry {
-    height: 92px;
+    height: 130px;
+    min-height: 130px;
+    flex-shrink: 0;
     margin-bottom: 9px;
 }
 
@@ -974,6 +976,11 @@
     border-left-color: var(--sm-gold-300-a42);
 }
 
+.tcs-panel--overview {
+    min-height: 310px;
+    flex-shrink: 0;
+}
+
 .tcs-panel__title {
     font-size: 16px;
     color: var(--sm-gold-100);
@@ -982,11 +989,14 @@
 .tcs-stat-grid {
     margin-top: 10px;
     margin-bottom: 10px;
+    flex-shrink: 0;
 }
 
 .tcs-stat {
     width: 118px;
-    height: 54px;
+    height: 96px;
+    min-height: 96px;
+    flex-shrink: 0;
     margin-right: var(--sm-s-2);
     margin-bottom: var(--sm-s-2);
     background-color: rgba(28, 22, 12, 0.94);
@@ -995,6 +1005,15 @@
 
 .tcs-stat__value {
     font-size: var(--sm-fs-l);
+}
+
+.tcs-panel--overview .tcs-row {
+    height: 20px;
+    min-height: 20px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .tcs-progression-track {

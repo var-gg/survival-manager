@@ -1683,6 +1683,30 @@ MonoBehaviour:
     m_Localized: Skills
     m_Metadata:
       m_Items: []
+  - m_Id: 43477008225996800
+    m_Localized: Implicit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745536
+    m_Localized: Prefix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745537
+    m_Localized: Suffix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745538
+    m_Localized: Other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745539
+    m_Localized: Refit maxed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745540
+    m_Localized: Refit unavailable
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

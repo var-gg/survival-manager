@@ -492,12 +492,12 @@ public sealed class TownCharacterSheetFormatter
         var quote = session.GetRefitQuote(selectedItem.ItemInstanceId);
         if (quote.RefitMaxed)
         {
-            return $"{FormatItem(selectedItem)} / Refit maxed";
+            return $"{FormatItem(selectedItem)} / {LocalizeTown("ui.town.sheet.refit.maxed", "Refit maxed")}";
         }
 
         if (!quote.CanPurchase)
         {
-            return $"{FormatItem(selectedItem)} / Refit unavailable";
+            return $"{FormatItem(selectedItem)} / {LocalizeTown("ui.town.sheet.refit.unavailable", "Refit unavailable")}";
         }
 
         var current = quote.CurrentPercentileQ64 / (double)ulong.MaxValue * 100d;

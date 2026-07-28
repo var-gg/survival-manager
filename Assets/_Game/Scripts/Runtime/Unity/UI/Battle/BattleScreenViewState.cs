@@ -115,6 +115,7 @@ public sealed record BattleShellViewState(
     bool ShowProgressTrack,
     bool ShowTeamSummary,
     bool CanContinue,
+    string BattleIntelTitle,
     string TacticalReadoutTitle,
     IReadOnlyList<BattleTacticalReadoutRowViewState>? TacticalReadoutRows,
     IReadOnlyList<BattleCombatantTokenViewState>? CombatantTokens,

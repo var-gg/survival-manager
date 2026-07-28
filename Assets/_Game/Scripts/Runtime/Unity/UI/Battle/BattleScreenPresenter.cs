@@ -233,6 +233,7 @@ public sealed class BattleScreenPresenter
             true,
             _options.ShowTeamHpSummary,
             !isDirect && isBattleFinished,
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.force_distribution", "전력 분포"),
             Localize(GameLocalizationTables.UIBattle, "ui.battle.panel.tactical_readout", "전황 판단"),
             tacticalReadoutRows,
             combatantTokens,

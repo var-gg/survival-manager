@@ -1132,8 +1132,8 @@
 .battle-screen .sm-bs-topbar {
     top: 14px;
     left: 24px;
-    right: auto;
-    width: 680px;
+    right: 520px;
+    width: auto;
     height: 76px;
     padding-left: 18px;
     padding-right: 20px;
@@ -1161,8 +1161,9 @@
 
 .battle-screen .sm-bs-status-text {
     color: var(--sm-vellum);
-    max-width: 230px;
-    flex-shrink: 1;
+    min-width: 240px;
+    max-width: 360px;
+    flex-shrink: 0;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -1173,8 +1174,8 @@
 }
 
 .battle-screen .sm-bs-speed {
-    width: 92px;
-    min-width: 0;
+    width: 140px;
+    min-width: 140px;
     flex-shrink: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1186,7 +1187,7 @@
 }
 
 .battle-screen .sm-bs-threat-strip {
-    top: 108px;
+    top: 152px;
     left: 324px;
     right: 520px;
     height: 94px;
@@ -1249,9 +1250,11 @@
 }
 
 .battle-screen .sm-bs-event-feed {
-    left: 1160px;
-    right: 28px;
-    bottom: 212px;
+    left: 50%;
+    right: auto;
+    bottom: 134px;
+    width: 440px;
+    margin-left: -220px;
     min-height: 72px;
     max-height: 82px;
     overflow: hidden;
@@ -1277,7 +1280,8 @@
     position: absolute;
     top: 96px;
     left: 24px;
-    width: 680px;
+    right: 520px;
+    width: auto;
     height: 48px;
     display: flex;
     flex-direction: row;
@@ -1298,7 +1302,8 @@
 .battle-screen .sm-bs-combatant-token {
     position: relative;
     width: 112px;
-    height: 34px;
+    height: 48px;
+    min-height: 48px;
     min-width: 88px;
     margin-right: 7px;
     flex-direction: row;
@@ -1610,9 +1615,9 @@
        smush 해소 + dead gap 채움 (원래 의도인 화면 중앙 배치 복원). */
     left: 1010px;
     bottom: 28px;
-    width: 468px;
+    width: 448px;
     min-width: 420px;
-    height: 88px;
+    height: 94px;
     padding-left: 14px;
     padding-right: 14px;
     padding-top: var(--sm-s-3);

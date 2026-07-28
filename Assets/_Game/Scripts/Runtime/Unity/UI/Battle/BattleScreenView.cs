@@ -724,7 +724,7 @@ public sealed class BattleScreenView
         }
 
         _battleIntelPanel.style.display = DisplayStyle.Flex;
-        _battleIntelTitleLabel.text = state.TacticalReadoutTitle;
+        _battleIntelTitleLabel.text = state.BattleIntelTitle;
         _battleIntelBoard.Clear();
         _battleIntelLegend.Clear();
 

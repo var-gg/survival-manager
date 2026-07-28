@@ -158,7 +158,14 @@
 .reward-screen .reward-bible__left-rail {
     width: 29%;
     min-width: 360px;
+    min-height: 0;
+    flex-shrink: 0;
     margin-right: 14px;
+}
+
+.reward-screen .reward-bible__left-rail .unity-scroll-view__content-container {
+    flex-direction: column;
+    padding-right: 4px;
 }
 
 .reward-screen .reward-bible__center-stage {
@@ -291,7 +298,8 @@
 }
 
 .reward-screen .reward-progression-panel {
-    flex-grow: 1;
+    flex-grow: 0;
+    flex-shrink: 0;
     min-height: 0;
     padding-top: 14px;
     padding-bottom: var(--sm-s-3);
@@ -387,6 +395,7 @@
 
 /* wave-28-survivor GPT Pro patch: squad survivor row — portrait glyph + name + HP bar + EXP + status chip. */
 .reward-screen .reward-survivor-panel {
+    flex-shrink: 0;
     margin-bottom: var(--sm-s-3);
     padding-left: 14px;
     padding-right: 14px;
@@ -908,10 +917,13 @@
 
 /* UX Bible visual QA pass 2: compact ceremony title inside the real result selector panel. */
 .reward-screen .reward-bible__victory-banner {
-    position: absolute;
-    left: 34px;
-    right: 34px;
-    top: 12px;
+    position: relative;
+    left: 0;
+    right: 0;
+    top: 0;
+    min-height: 18px;
+    margin-top: 8px;
+    margin-bottom: 2px;
     flex-direction: row;
     justify-content: space-between;
     border-bottom-width: 1px;

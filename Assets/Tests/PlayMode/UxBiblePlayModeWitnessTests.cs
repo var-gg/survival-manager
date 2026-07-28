@@ -370,6 +370,7 @@ public sealed partial class UxBiblePlayModeWitnessTests
         Assert.That(Require<VisualElement>(root, "TcsProgressionTrack").childCount, Is.GreaterThan(0));
         Assert.That(Require<VisualElement>(root, "TcsSkillList").childCount, Is.GreaterThan(0));
         Assert.That(Require<VisualElement>(root, "TcsEquipmentRow").childCount, Is.GreaterThan(0));
+        AssertCharacterSheetContainment(root);
     }
 
     private static void VerifyTacticalSetup(VisualElement root)
@@ -456,6 +457,7 @@ public sealed partial class UxBiblePlayModeWitnessTests
         Assert.That(Require<VisualElement>(root, "BattleDebugFoldout").style.display.value, Is.EqualTo(DisplayStyle.None));
         Assert.That(Require<VisualElement>(root, "PlaybackActionsGroup").style.display.value, Is.EqualTo(DisplayStyle.None));
         Assert.That(Require<VisualElement>(root, "SmokeActionsGroup").style.display.value, Is.EqualTo(DisplayStyle.None));
+        AssertBattleHudContainment(root);
     }
 
     private static void VerifyReward(VisualElement root)
@@ -467,6 +469,7 @@ public sealed partial class UxBiblePlayModeWitnessTests
         AssertNonEmptyText<Label>(root, "ChoiceCard1TitleLabel");
         Assert.That(Require<Button>(root, "ChoiceCard1Button").enabledSelf, Is.True);
         Assert.That(Require<Button>(root, "ReturnTownButton"), Is.Not.Null);
+        AssertRewardContainment(root);
     }
 
     private static (string Person, string Job, string Combined) ResolveHeroIdentity(

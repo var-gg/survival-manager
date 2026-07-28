@@ -88,13 +88,14 @@ MonoBehaviour:
       m_Items:
       - rid: 162163771961769985
   - m_Id: 10
-    m_Localized: "{0} / {1} steps / {2} events\n\uACBD\uB85C: {3}"
+    m_Localized: "{0} / {1} \uC2A4\uD15D / \uC774\uBCA4\uD2B8 {2}\uAC1C\n\uACBD\uB85C:
+      {3}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769985
   - m_Id: 11
-    m_Localized: "{0} / {1} steps / {2} events\n\uACBD\uB85C: {3}\n\uB178\uB4DC \uD6A8\uACFC:
-      {4}"
+    m_Localized: "{0} / {1} \uC2A4\uD15D / \uC774\uBCA4\uD2B8 {2}\uAC1C\n\uACBD\uB85C:
+      {3}\n\uB178\uB4DC \uD6A8\uACFC: {4}"
     m_Metadata:
       m_Items:
       - rid: 162163771961769985

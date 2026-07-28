@@ -239,8 +239,10 @@ public static partial class LocalizationFoundationBootstrap
         ["ui.reward.summary.inventory"] = ("인벤토리: {0}", "Inventory: {0}", true),
         ["ui.reward.summary.temp_augments"] = ("임시 증강: {0}", "Temp Augments: {0}", true),
         ["ui.reward.battle_summary.base"] = ("{0} / {1} 스텝 / 이벤트 {2}개", "{0} / {1} steps / {2} events", true),
-        ["ui.reward.battle_summary.route"] = ("{0} / {1} steps / {2} events\n경로: {3}", "{0} / {1} steps / {2} events\nRoute: {3}", true),
-        ["ui.reward.battle_summary.route_effect"] = ("{0} / {1} steps / {2} events\n경로: {3}\n노드 효과: {4}", "{0} / {1} steps / {2} events\nRoute: {3}\nNode Effect: {4}", true),
+        // base는 한국어로 옮겨졌는데 route 변형 둘만 영어가 남아 있었다. ko와 en이 다르므로
+        // "영문 복사" 검사는 통과하고, 화면에는 "100 steps / 0 events"가 그대로 나갔다.
+        ["ui.reward.battle_summary.route"] = ("{0} / {1} 스텝 / 이벤트 {2}개\n경로: {3}", "{0} / {1} steps / {2} events\nRoute: {3}", true),
+        ["ui.reward.battle_summary.route_effect"] = ("{0} / {1} 스텝 / 이벤트 {2}개\n경로: {3}\n노드 효과: {4}", "{0} / {1} steps / {2} events\nRoute: {3}\nNode Effect: {4}", true),
         ["ui.reward.result.victory"] = ("승리", "Victory", false),
         ["ui.reward.result.defeat"] = ("패배", "Defeat", false),
         ["ui.reward.choices.header"] = ("보상 카드 한 장 선택", "Choose one reward card", false),
@@ -665,6 +667,9 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.town.sheet.retrain_costs"] = ("재훈련 비용", "Retrain Costs", false),
             ["ui.town.sheet.dismiss_refund"] = ("해산 환급", "Dismiss Refund", false),
             ["ui.town.sheet.refit_preview"] = ("개조 미리보기", "Refit Preview", false),
+            // 이 둘은 로컬라이즈를 거치지 않는 생 리터럴이었다 — Localize 호출을 보는 검사로는 잡히지 않는다.
+            ["ui.town.sheet.refit.maxed"] = ("개조 한계 도달", "Refit maxed", false),
+            ["ui.town.sheet.refit.unavailable"] = ("개조 불가", "Refit unavailable", false),
             ["ui.town.sheet.blueprint_permanent"] = ("청사진 영구 증강", "Blueprint Permanent", false),
             ["ui.town.sheet.affix_count"] = ("접사 {0}개", "{0} affixes", true),
             ["ui.town.sheet.rarity.common"] = ("일반", "Common", false),
@@ -760,6 +765,7 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.battle.panel.summary"] = ("요약", "Summary", false),
             ["ui.battle.panel.allies"] = ("아군", "Allies", false),
             ["ui.battle.panel.enemies"] = ("적군", "Enemies", false),
+            ["ui.battle.panel.force_distribution"] = ("전력 분포", "Force Distribution", false),
             ["ui.battle.panel.tactical_readout"] = ("전황 판단", "Tactical Readout", false),
             ["ui.battle.panel.log"] = ("로그", "Log", false),
             ["ui.battle.group.playback"] = ("재생", "Playback", false),

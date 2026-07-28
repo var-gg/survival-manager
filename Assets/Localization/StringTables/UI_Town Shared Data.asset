@@ -1623,6 +1623,30 @@ MonoBehaviour:
     m_Key: ui.town.sheet.skills
     m_Metadata:
       m_Items: []
+  - m_Id: 43477008225996800
+    m_Key: ui.town.refit.affix_group.implicit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745536
+    m_Key: ui.town.refit.affix_group.prefix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745537
+    m_Key: ui.town.refit.affix_group.suffix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745538
+    m_Key: ui.town.refit.affix_group.other
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745539
+    m_Key: ui.town.sheet.refit.maxed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43477008263745540
+    m_Key: ui.town.sheet.refit.unavailable
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
