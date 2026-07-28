@@ -97,14 +97,14 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
 
     private EquipmentRefitViewState BuildMockViewState()
     {
-        // affix row — AffixDefinition.Tier 기준 group + 실제 magnitude/percentile/min-max context preview.
-        var affixRaw = new (string AffixId, string Group, string Name, string Magnitude, string Icon)[]
+        // affix row — modifier별 effect + labelled roll quality preview.
+        var affixRaw = new (string AffixId, string Group, string Name, string[] Effects, string RollContext, string Icon)[]
         {
-            ("affix_atk_implicit", "implicit", "기본 공격력",  "12 · 57% [8 ~ 15]",       "atk"),
-            ("affix_crit_chance",  "prefix",   "치명타 확률",  "8 · 80% [4 ~ 9]",         "crit"),
-            ("affix_armor_flat",   "prefix",   "방어도",        "20 · 44% [12 ~ 30]",      "armor"),
-            ("affix_atk_speed",    "suffix",   "공격 속도",     "0.12 · 70% [0.05 ~ 0.15]", "speed"),
-            ("affix_resist_phys",  "suffix",   "물리 저항",     "9 · 38% [6 ~ 14]",        "resist_phys"),
+            ("affix_atk_implicit", "implicit", "기본 공격력", new[] { "공격력 +12" }, "굴림 품질 57%", "atk"),
+            ("affix_crit_chance", "prefix", "치명타 확률", new[] { "치명타 확률 +8%" }, "굴림 품질 80%", "crit"),
+            ("affix_armor_flat", "prefix", "방어도", new[] { "방어력 +20" }, "굴림 품질 44%", "armor"),
+            ("affix_atk_speed", "suffix", "공격 속도", new[] { "공격 속도 +12%" }, "굴림 품질 70%", "speed"),
+            ("affix_resist_phys", "suffix", "물리 저항", new[] { "물리 저항 +9" }, "굴림 품질 38%", "resist_phys"),
         };
         var affixes = new List<EquipmentRefitAffixRowViewState>(affixRaw.Length);
         foreach (var a in affixRaw)
@@ -120,7 +120,8 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
                 },
                 CategoryKey: "utility",
                 Name: a.Name,
-                MagnitudeText: a.Magnitude,
+                EffectLines: a.Effects,
+                RollContextText: a.RollContext,
                 IconSprite: LoadAffixSprite(a.Icon),
                 IsLocked: false,
                 LockToggleEnabled: true,

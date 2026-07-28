@@ -138,7 +138,8 @@
 .erp-affix-group--suffix   { color: var(--sm-state-safe-a92); }
 
 .erp-affix-row {
-    height: 38px; flex-direction: row; align-items: center; margin-bottom: var(--sm-s-1);
+    min-height: 56px; flex-direction: row; align-items: center; margin-bottom: var(--sm-s-1);
+    padding-top: var(--sm-s-2); padding-bottom: var(--sm-s-2);
     padding-left: var(--sm-s-3); padding-right: var(--sm-s-4);
     background-color: rgba(28,34,67,0.72);
     border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;
@@ -157,7 +158,12 @@
     border-bottom-color: var(--sm-gold-200);
     border-right-width: 2px; border-top-width: 2px; border-bottom-width: 2px;
 }
-.erp-affix-row__icon { width: 28px; height: 28px; -unity-background-scale-mode: scale-to-fit; margin-right: 10px; }
+.erp-affix-row__icon {
+    width: 28px; height: 28px; flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit; margin-right: 10px;
+}
+.erp-affix-row__content { min-width: 0; flex-grow: 1; flex-direction: column; }
+.erp-affix-row__header { flex-direction: row; align-items: center; }
 /* affix 이름 — AffixDefinition.NameKey resolved */
 .erp-affix-row__name {
     flex-grow: 1;
@@ -165,15 +171,22 @@
     font-size: var(--sm-fs-s);
     -unity-font-style: bold;
 }
-/* 실제 instance magnitude + percentile + AffixDefinition.ValueMin~ValueMax context */
-.erp-affix-row__value {
+/* persisted roll quality 또는 legacy baseline — effect 값과 분리해 오독을 막는다. */
+.erp-affix-row__roll-context {
     color: var(--sm-gold-200);
     font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     -unity-text-align: middle-right;
     margin-left: var(--sm-s-2);
 }
+.erp-affix-row__effects { flex-direction: column; margin-top: 2px; }
+.erp-affix-row__effect {
+    color: var(--sm-ink-1);
+    font-size: var(--sm-fs-eb);
+    white-space: normal;
+}
 .erp-affix-row__lock {
+    flex-shrink: 0;
     margin-left: var(--sm-s-3);
     padding-left: var(--sm-s-2);
     padding-right: var(--sm-s-2);

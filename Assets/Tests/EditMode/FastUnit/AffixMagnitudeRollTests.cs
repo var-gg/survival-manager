@@ -100,11 +100,11 @@ public sealed class AffixMagnitudeRollTests
     }
 
     [Test]
-    public void Presentation_ShowsActualMagnitudePercentileAndRange()
+    public void Presentation_ResolvesRollPositionFromActualMagnitude()
     {
         Assert.That(
-            AffixMagnitudePresentation.Format(2.5f, 2f, 4f),
-            Is.EqualTo("2.5 · 25% [2 ~ 4]"));
+            AffixMagnitudePresentation.ResolveRollPosition(2.5f, 2f, 4f),
+            Is.EqualTo(0.25d));
     }
 
     private static double Quantile(IReadOnlyList<double> sorted, double probability)

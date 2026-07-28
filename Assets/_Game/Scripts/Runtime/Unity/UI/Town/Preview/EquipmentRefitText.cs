@@ -1,4 +1,5 @@
 using System;
+using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Results;
 using SM.Meta.Model;
@@ -58,6 +59,15 @@ internal sealed class EquipmentRefitText
         "suffix" => Town("ui.town.refit.affix_group.suffix", "접미"),
         _ => Town("ui.town.refit.affix_group.other", "기타"),
     };
+
+    internal string FormatAffixEffect(AffixMagnitudeEffectReadout effect) =>
+        AffixMagnitudePresentation.FormatEffect(
+            effect,
+            ResolveAffixStatName,
+            Affix);
+
+    internal string FormatAffixRollContext(AffixMagnitudeReadout readout) =>
+        AffixMagnitudePresentation.FormatRollContext(readout, Affix);
 
     internal string LockLabel(bool isLocked) =>
         isLocked
@@ -289,6 +299,27 @@ internal sealed class EquipmentRefitText
 
     private string Common(string key, string fallback, params object[] arguments) =>
         _resolve(GameLocalizationTables.UICommon, key, fallback, arguments);
+
+    private string Affix(string key, string fallback, params object[] arguments) =>
+        Town(key, fallback, arguments);
+
+    private string ResolveAffixStatName(string statId)
+    {
+        var fallback = Town(
+            "ui.town.refit.affix.unknown_stat",
+            "Unknown stat");
+        var key = ContentLocalizationTables.BuildStatNameKey(statId);
+        var localized = _resolve(
+            ContentLocalizationTables.Stats,
+            key,
+            fallback,
+            Array.Empty<object>());
+        return string.IsNullOrWhiteSpace(localized)
+               || string.Equals(localized, key, StringComparison.Ordinal)
+               || localized.StartsWith("content.stat.", StringComparison.Ordinal)
+            ? fallback
+            : localized;
+    }
 
     private static double ToPercent(ulong probabilityQ64) =>
         probabilityQ64 / (double)ulong.MaxValue * 100d;

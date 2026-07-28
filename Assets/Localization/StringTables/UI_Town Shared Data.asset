@@ -1687,6 +1687,34 @@ MonoBehaviour:
     m_Key: ui.town.passive.toggle.town_only
     m_Metadata:
       m_Items: []
+  - m_Id: 43548476725071881
+    m_Key: ui.town.refit.affix.roll_quality
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071882
+    m_Key: ui.town.refit.affix.legacy_baseline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071883
+    m_Key: ui.town.refit.affix.effect.flat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071884
+    m_Key: ui.town.refit.affix.effect.percent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071885
+    m_Key: ui.town.refit.affix.effect.clamp_min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071886
+    m_Key: ui.town.refit.affix.effect.clamp_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071887
+    m_Key: ui.town.refit.affix.unknown_stat
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

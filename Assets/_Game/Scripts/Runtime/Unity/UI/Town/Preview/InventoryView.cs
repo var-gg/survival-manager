@@ -328,13 +328,30 @@ public sealed class InventoryView : IInventoryView
             row.AddToClassList($"inv-detail__affix-row--{affix.GroupKey}");
             row.AddToClassList($"sm-affix-row--{affix.GroupKey}");
 
+            var content = new VisualElement();
+            content.AddToClassList("inv-detail__affix-content");
+            var headerRow = new VisualElement();
+            headerRow.AddToClassList("inv-detail__affix-header");
+
             var nameEl = new Label(affix.Name);
             nameEl.AddToClassList("inv-detail__affix-name");
-            row.Add(nameEl);
+            headerRow.Add(nameEl);
 
-            var value = new Label(affix.MagnitudeText);
-            value.AddToClassList("inv-detail__affix-value");
-            row.Add(value);
+            var rollContext = new Label(affix.RollContextText);
+            rollContext.AddToClassList("inv-detail__affix-roll-context");
+            headerRow.Add(rollContext);
+            content.Add(headerRow);
+
+            var effects = new VisualElement();
+            effects.AddToClassList("inv-detail__affix-effects");
+            foreach (var effectText in affix.EffectLines)
+            {
+                var effect = new Label(effectText);
+                effect.AddToClassList("inv-detail__affix-effect");
+                effects.Add(effect);
+            }
+            content.Add(effects);
+            row.Add(content);
 
             _detailAffixes.Add(row);
         }

@@ -1751,6 +1751,39 @@ MonoBehaviour:
     m_Localized: Passive nodes can be changed only in Town.
     m_Metadata:
       m_Items: []
+  - m_Id: 43548476725071881
+    m_Localized: Roll quality {0:0}%
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071882
+    m_Localized: Legacy baseline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071883
+    m_Localized: '{0} {1:+0.###;-0.###;0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071884
+    m_Localized: '{0} {1:+0.###;-0.###;0}%'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071885
+    m_Localized: '{0} min {1:+0.###;-0.###;0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071886
+    m_Localized: '{0} max {1:+0.###;-0.###;0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769987
+  - m_Id: 43548476725071887
+    m_Localized: Unknown stat
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -1813,3 +1846,8 @@ MonoBehaviour:
         - id: 43548476725071872
         - id: 43548476725071873
         - id: 43548476725071876
+        - id: 43548476725071881
+        - id: 43548476725071883
+        - id: 43548476725071884
+        - id: 43548476725071885
+        - id: 43548476725071886

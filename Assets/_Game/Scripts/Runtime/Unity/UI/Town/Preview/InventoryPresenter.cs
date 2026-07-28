@@ -393,20 +393,25 @@ public sealed class InventoryPresenter : IInventoryActions
             .Select(affixId =>
             {
                 var group = "prefix";
-                var magnitudeText = "—";
+                IReadOnlyList<string> effectLines = Array.Empty<string>();
+                var rollContextText = "—";
                 if (_lookup.TryGetAffixDefinition(affixId, out var affixDef))
                 {
                     group = affixDef.Tier.ToString().ToLowerInvariant();
-                    magnitudeText = AffixMagnitudePresentation.Format(
-                        AffixMagnitudePresentation.Resolve(item, affixDef),
-                        affixDef.ValueMin,
-                        affixDef.ValueMax);
+                    var readout = AffixMagnitudePresentation.Build(item, affixDef);
+                    effectLines = readout.Effects
+                        .Select(FormatInventoryAffixEffect)
+                        .ToArray();
+                    rollContextText = AffixMagnitudePresentation.FormatRollContext(
+                        readout,
+                        LocalizeInventoryAffix);
                 }
 
                 return new InventoryAffixRowViewState(
                     GroupKey: group,
                     Name: _contentText?.GetAffixName(affixId) ?? "Unknown affix",
-                    MagnitudeText: magnitudeText);
+                    EffectLines: effectLines,
+                    RollContextText: rollContextText);
             })
             .ToList();
 
@@ -761,4 +766,35 @@ public sealed class InventoryPresenter : IInventoryActions
            ?? (arguments.Length == 0
                ? fallback
                : string.Format(fallback, arguments));
+
+    private string FormatInventoryAffixEffect(
+        AffixMagnitudeEffectReadout effect) =>
+        AffixMagnitudePresentation.FormatEffect(
+            effect,
+            ResolveInventoryAffixStatName,
+            LocalizeInventoryAffix);
+
+    private string LocalizeInventoryAffix(
+        string key,
+        string fallback,
+        params object[] arguments) =>
+        Ui(key, fallback, arguments);
+
+    private string ResolveInventoryAffixStatName(string statId)
+    {
+        var fallback = Ui(
+            "ui.town.refit.affix.unknown_stat",
+            "Unknown stat");
+        var key = ContentLocalizationTables.BuildStatNameKey(statId);
+        var localized = _contentText?.LocalizeUi(
+            ContentLocalizationTables.Stats,
+            key,
+            fallback)
+            ?? fallback;
+        return string.IsNullOrWhiteSpace(localized)
+               || string.Equals(localized, key, StringComparison.Ordinal)
+               || localized.StartsWith("content.stat.", StringComparison.Ordinal)
+            ? fallback
+            : localized;
+    }
 }

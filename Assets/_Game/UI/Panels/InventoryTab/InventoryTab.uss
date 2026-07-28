@@ -281,12 +281,30 @@
     font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
 }
-/* 실제 instance magnitude + percentile + AffixDefinition.ValueMin~ValueMax context */
+/* profile row value */
 .inv-detail__affix-value {
     color: var(--sm-gold-200);
     font-size: var(--sm-fs-eb);
     -unity-font-style: bold;
     margin-left: var(--sm-s-2);
+}
+.inv-detail__affix-content {
+    min-width: 0;
+    flex-grow: 1;
+    flex-direction: column;
+}
+.inv-detail__affix-header { flex-direction: row; align-items: center; }
+.inv-detail__affix-roll-context {
+    color: var(--sm-gold-200);
+    font-size: var(--sm-fs-eb);
+    -unity-font-style: bold;
+    margin-left: var(--sm-s-2);
+}
+.inv-detail__affix-effects { flex-direction: column; margin-top: 2px; }
+.inv-detail__affix-effect {
+    color: var(--sm-ink-1);
+    font-size: var(--sm-fs-eb);
+    white-space: normal;
 }
 .inv-detail__owner { flex-direction: row; align-items: center; margin-top: var(--sm-s-3); padding: 6px 0; }
 .inv-detail__owner-icon { width: 24px; height: 24px; -unity-background-scale-mode: scale-to-fit; margin-right: var(--sm-s-2);

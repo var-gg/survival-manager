@@ -306,7 +306,8 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             .ToList();
 
         // Affix list — selected item의 AffixIds. group은 AffixDefinition.Tier에서 read (index 추정 폐기).
-        // magnitude는 instance roll을 우선하고 legacy save는 definition modifier 값으로 fallback한다.
+        // persisted roll이면 runtime과 같은 package scaling을 표시한다.
+        // legacy save fallback은 definition package를 표시하되 roll quality로 가장하지 않는다.
         var affixes = new List<EquipmentRefitAffixRowViewState>();
         if (selectedItem != null)
         {
@@ -315,15 +316,19 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 var affixId = selectedItem.AffixIds[i];
                 var group = "prefix";
                 var category = "utility";
-                var magnitudeText = "—";
+                IReadOnlyList<string> effectLines = Array.Empty<string>();
+                var rollContextText = "—";
                 if (lookup.TryGetAffixDefinition(affixId, out var affixDef))
                 {
                     group = affixDef.Tier.ToString().ToLowerInvariant();
                     category = affixDef.Category.ToString().ToLowerInvariant();
-                    magnitudeText = AffixMagnitudePresentation.Format(
-                        AffixMagnitudePresentation.Resolve(selectedItem, affixDef),
-                        affixDef.ValueMin,
-                        affixDef.ValueMax);
+                    var readout = AffixMagnitudePresentation.Build(
+                        selectedItem,
+                        affixDef);
+                    effectLines = readout.Effects
+                        .Select(_text.FormatAffixEffect)
+                        .ToArray();
+                    rollContextText = _text.FormatAffixRollContext(readout);
                 }
                 affixes.Add(new EquipmentRefitAffixRowViewState(
                     AffixId: affixId,
@@ -331,7 +336,8 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                     GroupLabel: _text.AffixGroupHeader(group),
                     CategoryKey: category,
                     Name: _affixName(affixId),
-                    MagnitudeText: magnitudeText,
+                    EffectLines: effectLines,
+                    RollContextText: rollContextText,
                     IconSprite: _affixIconSprite(affixId),
                     IsLocked: _sealedAffixIds.Contains(affixId),
                     LockToggleEnabled: _selectedOperation == CraftOperationKindValue.Seal

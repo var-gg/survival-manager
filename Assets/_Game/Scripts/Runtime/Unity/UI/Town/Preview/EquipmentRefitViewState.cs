@@ -11,8 +11,9 @@ namespace SM.Unity.UI.Town.Preview;
 /// - ✅ pool = Profile.Inventory · RarityKey = ItemBaseDefinition.RarityTier · SlotKey = ItemBaseDefinition.SlotType ·
 ///   refit = RefitItem(itemInstanceId)
 /// - ◐ GroupKey = AffixDefinition.Tier (Implicit/Prefix/Suffix) · Name = AffixDefinition.NameKey resolved
-/// - ✅ affix instance magnitude = InventoryItemRecord.AffixMagnitudeRolls. legacy save는 definition modifier 값.
-///   MagnitudeText는 실제 값 + range 내 percentile + min/max context를 함께 표기한다.
+/// - ✅ affix instance magnitude = InventoryItemRecord.AffixMagnitudeRolls. legacy save는 definition modifier package 값.
+///   EffectLines는 instance roll로 scaling된 모든 modifier를 op 단위에 맞춰 표기하고,
+///   RollContextText는 persisted roll quality와 legacy baseline fallback을 구분한다.
 /// - ⚑ hero 컨텍스트 = InventoryItemRecord.EquippedHeroId 파생 (장착된 hero — refit은 item-centric이라 hero 불필요)
 /// </summary>
 public sealed record EquipmentRefitAffixRowViewState(
@@ -21,7 +22,8 @@ public sealed record EquipmentRefitAffixRowViewState(
     string GroupLabel,           // 화면에 나가는 계층 머리글 ← EquipmentRefitText.AffixGroupHeader
     string CategoryKey,          // offenseflat / utility / ...
     string Name,                 // ← AffixDefinition.NameKey resolved
-    string MagnitudeText,        // ← persisted magnitude + percentile + AffixDefinition.ValueMin~ValueMax
+    IReadOnlyList<string> EffectLines, // ← scaled modifier별 localized stat + signed value
+    string RollContextText,      // ← labelled roll quality, 또는 legacy baseline
     Texture2D? IconSprite,
     bool IsLocked = false,
     bool LockToggleEnabled = false,

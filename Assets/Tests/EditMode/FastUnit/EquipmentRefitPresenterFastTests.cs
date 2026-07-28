@@ -31,6 +31,13 @@ public sealed class EquipmentRefitPresenterFastTests
             "ui.town.refit.reason.seal_not_allowed",
             "ui.town.refit.reason.all_affixes_locked",
             "ui.town.refit.reason.seal_unaffordable",
+            "ui.town.refit.affix.roll_quality",
+            "ui.town.refit.affix.legacy_baseline",
+            "ui.town.refit.affix.effect.flat",
+            "ui.town.refit.affix.effect.percent",
+            "ui.town.refit.affix.effect.clamp_min",
+            "ui.town.refit.affix.effect.clamp_max",
+            "ui.town.refit.affix.unknown_stat",
         };
 
         foreach (var key in requiredKeys)

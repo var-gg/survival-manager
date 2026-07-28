@@ -199,10 +199,10 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
         {
             if (previousGroup != affix.GroupKey)
             {
-                var header = new Label(affix.GroupLabel);
-                header.AddToClassList("erp-affix-group");
-                header.AddToClassList($"erp-affix-group--{affix.GroupKey}");
-                _affixList.Add(header);
+                var groupHeader = new Label(affix.GroupLabel);
+                groupHeader.AddToClassList("erp-affix-group");
+                groupHeader.AddToClassList($"erp-affix-group--{affix.GroupKey}");
+                _affixList.Add(groupHeader);
                 previousGroup = affix.GroupKey;
             }
 
@@ -216,15 +216,33 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
             if (affix.IconSprite != null) icon.style.backgroundImage = new StyleBackground(affix.IconSprite);
             row.Add(icon);
 
+            var content = new VisualElement();
+            content.AddToClassList("erp-affix-row__content");
+            var header = new VisualElement();
+            header.AddToClassList("erp-affix-row__header");
+
             // affix 이름 — AffixDefinition.NameKey resolved
             var name = new Label(affix.Name);
             name.AddToClassList("erp-affix-row__name");
-            row.Add(name);
+            header.Add(name);
 
-            // 실제 instance magnitude + range 내 percentile/min-max context.
-            var value = new Label(affix.MagnitudeText);
-            value.AddToClassList("erp-affix-row__value");
-            row.Add(value);
+            // Persisted roll quality와 legacy baseline fallback을 명시적으로 구분한다.
+            var rollContext = new Label(affix.RollContextText);
+            rollContext.AddToClassList("erp-affix-row__roll-context");
+            header.Add(rollContext);
+            content.Add(header);
+
+            // modifier별 독립 line이라 tradeoff의 downside도 생략되거나 한 줄에 뭉개지지 않는다.
+            var effects = new VisualElement();
+            effects.AddToClassList("erp-affix-row__effects");
+            foreach (var effectText in affix.EffectLines)
+            {
+                var effect = new Label(effectText);
+                effect.AddToClassList("erp-affix-row__effect");
+                effects.Add(effect);
+            }
+            content.Add(effects);
+            row.Add(content);
 
             var lockButton = new Button
             {

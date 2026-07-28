@@ -1816,6 +1816,39 @@ MonoBehaviour:
       \uBCC0\uACBD\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
+  - m_Id: 43548476725071881
+    m_Localized: "\uAD74\uB9BC \uD488\uC9C8 {0:0}%"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769991
+  - m_Id: 43548476725071882
+    m_Localized: "\uAE30\uC874 \uAE30\uC900\uAC12"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43548476725071883
+    m_Localized: '{0} {1:+0.###;-0.###;0}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769991
+  - m_Id: 43548476725071884
+    m_Localized: '{0} {1:+0.###;-0.###;0}%'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769991
+  - m_Id: 43548476725071885
+    m_Localized: "{0} \uCD5C\uC19F\uAC12 {1:+0.###;-0.###;0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769991
+  - m_Id: 43548476725071886
+    m_Localized: "{0} \uCD5C\uB313\uAC12 {1:+0.###;-0.###;0}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769991
+  - m_Id: 43548476725071887
+    m_Localized: "\uC54C \uC218 \uC5C6\uB294 \uB2A5\uB825\uCE58"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -1878,3 +1911,8 @@ MonoBehaviour:
         - id: 43548476725071872
         - id: 43548476725071873
         - id: 43548476725071876
+        - id: 43548476725071881
+        - id: 43548476725071883
+        - id: 43548476725071884
+        - id: 43548476725071885
+        - id: 43548476725071886

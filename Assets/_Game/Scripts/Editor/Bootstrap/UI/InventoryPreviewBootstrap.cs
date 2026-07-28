@@ -170,15 +170,15 @@ public sealed class InventoryPreviewBootstrap : EditorWindow
 
     private InventoryDetailViewState BuildMockDetail()
     {
-        // affix detail — 실제 magnitude + percentile + ValueMin~ValueMax context preview.
+        // affix detail — modifier별 effect + labelled roll quality preview.
         // implicit 1 + prefix 2 + suffix 2 = 5 line (item-and-affix-system.md V1 floor).
         var affixes = new[]
         {
-            new InventoryAffixRowViewState("implicit", "기본 공격력", "223 · 57% [180 ~ 256]"),
-            new InventoryAffixRowViewState("prefix",   "치명타 확률", "16 · 73% [8 ~ 19]"),
-            new InventoryAffixRowViewState("prefix",   "관통",        "1.1 · 63% [0.6 ~ 1.4]"),
-            new InventoryAffixRowViewState("suffix",   "공격 속도",   "118 · 73% [60 ~ 140]"),
-            new InventoryAffixRowViewState("suffix",   "흡혈",        "7 · 50% [4 ~ 10]"),
+            new InventoryAffixRowViewState("implicit", "기본 공격력", new[] { "공격력 +223" }, "굴림 품질 57%"),
+            new InventoryAffixRowViewState("prefix", "치명타 확률", new[] { "치명타 확률 +16%" }, "굴림 품질 73%"),
+            new InventoryAffixRowViewState("prefix", "관통", new[] { "물리 관통 +1.1" }, "굴림 품질 63%"),
+            new InventoryAffixRowViewState("suffix", "공격 속도", new[] { "공격 속도 +118%" }, "굴림 품질 73%"),
+            new InventoryAffixRowViewState("suffix", "흡혈", new[] { "생명력 흡수 +7%" }, "굴림 품질 50%"),
         };
         return new InventoryDetailViewState(
             ItemInstanceId: "mock_item_00",
