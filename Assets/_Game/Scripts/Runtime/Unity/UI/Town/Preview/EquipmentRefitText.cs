@@ -1,12 +1,14 @@
 using System;
 using SM.Core.Content;
+using SM.Core.Results;
+using SM.Meta.Model;
 using SM.Meta.Services;
 
 namespace SM.Unity.UI.Town.Preview;
 
 /// <summary>
 /// Equipment Refit player-facing copy. The presenter supplies semantic state and
-/// service reasons; this formatter owns localization keys and fallback formatting.
+/// structured failure causes; this formatter owns localization keys and fallback formatting.
 /// </summary>
 internal sealed class EquipmentRefitText
 {
@@ -45,6 +47,18 @@ internal sealed class EquipmentRefitText
     internal string Equipped(string heroName) =>
         Town("ui.town.refit.status.equipped", "Equipped: {0}", heroName);
 
+    /// <summary>
+    /// 접사 계층 머리글. GroupKey는 AffixTierValue enum 이름이라 스타일 후크로만 쓰고, 화면에 나가는
+    /// 문구는 여기서 소유한다 (enum ToString이 대문자로 렌더돼 IMPLICIT/PREFIX가 노출되던 결함).
+    /// </summary>
+    internal string AffixGroupHeader(string groupKey) => groupKey switch
+    {
+        "implicit" => Town("ui.town.refit.affix_group.implicit", "고유"),
+        "prefix" => Town("ui.town.refit.affix_group.prefix", "접두"),
+        "suffix" => Town("ui.town.refit.affix_group.suffix", "접미"),
+        _ => Town("ui.town.refit.affix_group.other", "기타"),
+    };
+
     internal string LockLabel(bool isLocked) =>
         isLocked
             ? Town("ui.town.refit.lock.locked", "Locked")
@@ -75,30 +89,23 @@ internal sealed class EquipmentRefitText
         CraftOperationKindValue operation,
         int lockedAffixCount,
         int totalAffixCount,
-        string purchaseBlockReason)
+        OperationFailure? purchaseBlockFailure)
     {
         if (quote.RefitMaxed)
         {
-            return quote.Reason.Contains("grade", StringComparison.OrdinalIgnoreCase)
-                ? Town(
-                    "ui.town.refit.reason.grade_maxed",
-                    "This grade has no higher quality floor.")
-                : Town(
-                    "ui.town.refit.reason.quality_maxed",
-                    "The item is already at the maximum Refit quality.");
+            return Town(
+                "ui.town.refit.reason.quality_maxed",
+                "The item is already at the maximum Refit quality.");
         }
 
-        if (!string.IsNullOrWhiteSpace(purchaseBlockReason))
+        if (purchaseBlockFailure != null)
         {
-            return LocalizePurchaseBlockReason(
-                purchaseBlockReason,
-                operation,
-                quote);
+            return LocalizeFailure(purchaseBlockFailure, operation, quote);
         }
 
         if (!quote.CanPurchase)
         {
-            return LocalizePurchaseBlockReason(quote.Reason, operation, quote);
+            return LocalizeFailure(quote.Failure, operation, quote);
         }
 
         return operation == CraftOperationKindValue.Seal
@@ -118,33 +125,48 @@ internal sealed class EquipmentRefitText
                 quote.EchoCost);
     }
 
-    internal string LocalizePurchaseBlockReason(
-        string reason,
+    internal string LocalizeFailure(
+        OperationFailure? failure,
         CraftOperationKindValue operation,
         RefitQuote quote)
     {
-        if (string.IsNullOrWhiteSpace(reason))
+        if (failure == null)
         {
             return string.Empty;
         }
 
-        if (reason.Contains("does not allow Seal", StringComparison.Ordinal))
+        if (failure.IsInvariantViolation)
         {
             return Town(
-                "ui.town.refit.reason.seal_not_allowed",
-                "This item does not allow Seal.");
-        }
-
-        if (reason.Contains("does not allow Reforge", StringComparison.Ordinal))
-        {
-            return Town(
-                "ui.town.refit.reason.reforge_not_allowed",
-                "This item does not allow Reforge.");
+                "ui.town.refit.reason.operation_failed",
+                "The operation could not be completed. Please try again.");
         }
 
         if (string.Equals(
-                reason,
-                "Seal must leave at least one affix unlocked.",
+                failure.Code,
+                SessionOperationFailureCodes.RefitItemSelectionRequired,
+                StringComparison.Ordinal))
+        {
+            return SelectItemReason;
+        }
+
+        if (string.Equals(
+                failure.Code,
+                MetaOperationFailureCodes.RefitOperationNotAllowed,
+                StringComparison.Ordinal))
+        {
+            return operation == CraftOperationKindValue.Seal
+                ? Town(
+                    "ui.town.refit.reason.seal_not_allowed",
+                    "This item does not allow Seal.")
+                : Town(
+                    "ui.town.refit.reason.reforge_not_allowed",
+                    "This item does not allow Reforge.");
+        }
+
+        if (string.Equals(
+                failure.Code,
+                MetaOperationFailureCodes.RefitSealAllAffixesLocked,
                 StringComparison.Ordinal))
         {
             return Town(
@@ -152,7 +174,60 @@ internal sealed class EquipmentRefitText
                 "Seal must leave at least one affix unlocked.");
         }
 
-        if (reason.StartsWith("잔향이 부족합니다.", StringComparison.Ordinal))
+        if (string.Equals(
+                failure.Code,
+                MetaOperationFailureCodes.RefitSealSelectionRequired,
+                StringComparison.Ordinal))
+        {
+            return Town(
+                "ui.town.refit.reason.seal_selection_required",
+                "Select the affixes to lock before sealing.");
+        }
+
+        if (string.Equals(
+                failure.Code,
+                MetaOperationFailureCodes.RefitSealSelectionInvalid,
+                StringComparison.Ordinal))
+        {
+            return Town(
+                "ui.town.refit.reason.seal_selection_invalid",
+                "The selected affix locks are no longer valid.");
+        }
+
+        if (string.Equals(
+                failure.Code,
+                MetaOperationFailureCodes.RefitAffixIllegalForSlot,
+                StringComparison.Ordinal))
+        {
+            return Town(
+                "ui.town.refit.reason.affix_illegal_for_slot",
+                "This item's affixes are not valid for its equipment slot.");
+        }
+
+        if (string.Equals(
+                failure.Code,
+                MetaOperationFailureCodes.RefitAffixExclusiveConflict,
+                StringComparison.Ordinal))
+        {
+            return Town(
+                "ui.town.refit.reason.affix_conflict",
+                "This item has mutually exclusive affixes.");
+        }
+
+        if (string.Equals(
+                failure.Code,
+                MetaOperationFailureCodes.RefitQualityMaxed,
+                StringComparison.Ordinal))
+        {
+            return Town(
+                "ui.town.refit.reason.quality_maxed",
+                "The item is already at the maximum Refit quality.");
+        }
+
+        if (string.Equals(
+                failure.Code,
+                SessionOperationFailureCodes.RefitUnaffordable,
+                StringComparison.Ordinal))
         {
             return operation == CraftOperationKindValue.Seal
                 ? Town(
@@ -165,14 +240,29 @@ internal sealed class EquipmentRefitText
                     quote.EchoCost);
         }
 
-        if (reason.Contains("Town에서만 가능합니다.", StringComparison.Ordinal))
+        if (string.Equals(
+                failure.Code,
+                SessionOperationFailureCodes.RefitTownOnly,
+                StringComparison.Ordinal))
         {
             return Town(
                 "ui.town.refit.reason.town_only",
                 "Crafting is available only in Town.");
         }
 
-        return reason;
+        if (string.Equals(
+                failure.Code,
+                SessionOperationFailureCodes.ItemNotFound,
+                StringComparison.Ordinal))
+        {
+            return Town(
+                "ui.town.refit.reason.item_missing",
+                "The selected item is no longer available.");
+        }
+
+        return Town(
+            "ui.town.refit.reason.unavailable",
+            "This operation is currently unavailable.");
     }
 
     internal string BuildCraftActionLabel(

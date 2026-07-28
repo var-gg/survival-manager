@@ -581,7 +581,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011013
-    m_Localized: No notable personal events yet.
+    m_Localized: No records
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011014
@@ -633,7 +633,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011026
-    m_Localized: Pending equipment schema
+    m_Localized: Equipment pending
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011027
@@ -641,43 +641,43 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011028
-    m_Localized: '{0:0.0}s | {1} hit {2} for {3:0}'
+    m_Localized: Basic Attack
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011029
-    m_Localized: '{0:0.0}s | {1} went down'
+    m_Localized: Down
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011030
-    m_Localized: Watching for key moments...
+    m_Localized: No battle events yet
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011031
-    m_Localized: '{0:0.0}s | {1} {2}'
+    m_Localized: Battle Action
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011032
-    m_Localized: '{0:0.0}s | {1} held guard'
+    m_Localized: Guard
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011033
-    m_Localized: '{0:0.0}s | {1} restored {2} for {3:0}'
+    m_Localized: Heal
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011034
-    m_Localized: '{0:0.0}s | {1} used a skill on {2} for {3:0}'
+    m_Localized: Skill
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011035
-    m_Localized: Battle Log
+    m_Localized: Battle Feed
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011036
-    m_Localized: Acted
+    m_Localized: Actor
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011037
-    m_Localized: Received
+    m_Localized: Target
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011038
@@ -685,7 +685,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011039
-    m_Localized: Flex
+    m_Localized: Flex Active
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011040
@@ -693,7 +693,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011041
-    m_Localized: Signature
+    m_Localized: Signature Active
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011042
@@ -803,6 +803,314 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 27237344234246144
     m_Localized: x0.5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945645039616
+    m_Localized: The battle could not be prepared.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399744
+    m_Localized: Dive backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399745
+    m_Localized: Left flank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399746
+    m_Localized: Right flank
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399747
+    m_Localized: Hold frontline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399748
+    m_Localized: Maintain range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399749
+    m_Localized: Waiting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399750
+    m_Localized: Unknown positioning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399751
+    m_Localized: Periodic review
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399752
+    m_Localized: Mobility ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399753
+    m_Localized: No change
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399754
+    m_Localized: Range broken
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399755
+    m_Localized: Skill ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399756
+    m_Localized: Engagement slot lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399757
+    m_Localized: Target lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399758
+    m_Localized: Target moved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399759
+    m_Localized: Responding to hit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399760
+    m_Localized: Unknown reason
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399761
+    m_Localized: Healing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399762
+    m_Localized: Magical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399763
+    m_Localized: Physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399764
+    m_Localized: True
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399765
+    m_Localized: Unknown damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399766
+    m_Localized: Aura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399767
+    m_Localized: Melee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399768
+    m_Localized: Nova
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399769
+    m_Localized: Projectile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399770
+    m_Localized: Ranged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399771
+    m_Localized: Trap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399772
+    m_Localized: Unknown delivery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399773
+    m_Localized: Zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399774
+    m_Localized: Buff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399775
+    m_Localized: Debuff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399776
+    m_Localized: Heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399777
+    m_Localized: Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399778
+    m_Localized: Strike
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399779
+    m_Localized: Unknown type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399780
+    m_Localized: Utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399781
+    m_Localized: Flat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399782
+    m_Localized: Healing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399783
+    m_Localized: Health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399784
+    m_Localized: Magical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399785
+    m_Localized: Physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399786
+    m_Localized: Power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399787
+    m_Localized: Lowest HP Ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399788
+    m_Localized: Lowest HP Enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399789
+    m_Localized: Marked Target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399790
+    m_Localized: Most Exposed Enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399791
+    m_Localized: Nearest Enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399792
+    m_Localized: Protected Ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399793
+    m_Localized: Self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399794
+    m_Localized: Unknown target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399795
+    m_Localized: Cleanse information pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399796
+    m_Localized: Unknown status
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399797
+    m_Localized: Abort action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399798
+    m_Localized: Keep current if valid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399799
+    m_Localized: Lowest current HP enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399800
+    m_Localized: Nearest reachable enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399801
+    m_Localized: Self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399802
+    m_Localized: Unknown fallback
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399803
+    m_Localized: Exposed backline enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399804
+    m_Localized: Current target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399805
+    m_Localized: Open point near self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399806
+    m_Localized: Open point near target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399807
+    m_Localized: Largest enemy cluster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399808
+    m_Localized: Lowest current HP ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399809
+    m_Localized: Lowest current HP enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399810
+    m_Localized: Lowest effective HP ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399811
+    m_Localized: Lowest effective HP enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399812
+    m_Localized: Lowest HP percent ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399813
+    m_Localized: Lowest HP percent enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399814
+    m_Localized: Marked enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399815
+    m_Localized: Nearest frontline enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399816
+    m_Localized: Nearest injured ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399817
+    m_Localized: Nearest reachable enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399818
+    m_Localized: Self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399819
+    m_Localized: Unknown target rule
     m_Metadata:
       m_Items: []
   references:

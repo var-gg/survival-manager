@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Core.Content;
+using SM.Core.Results;
 using SM.Meta.Model;
 
 namespace SM.Meta.Services;
@@ -48,10 +49,10 @@ public sealed class LootResolutionService
         string sourceId,
         int seed,
         out LootBundleResult bundle,
-        out string error,
+        out OperationFailure? failure,
         int heat = 0)
     {
-        return TryResolveBundle(sourceId, seed, Array.Empty<string>(), out bundle, out error, heat);
+        return TryResolveBundle(sourceId, seed, Array.Empty<string>(), out bundle, out failure, heat);
     }
 
     public bool TryResolveBundle(
@@ -59,15 +60,17 @@ public sealed class LootResolutionService
         int seed,
         IReadOnlyList<string> contextTags,
         out LootBundleResult bundle,
-        out string error,
+        out OperationFailure? failure,
         int heat = 0)
     {
         bundle = null!;
-        error = string.Empty;
+        failure = null;
 
         if (_content.RewardSources is not { } rewardSources || !_content.RewardSources.TryGetValue(sourceId, out var source))
         {
-            error = $"Reward source '{sourceId}' not found.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.LootRewardSourceMissing,
+                $"Reward source '{sourceId}' was not found.");
             return false;
         }
 
@@ -133,14 +136,14 @@ public sealed class LootResolutionService
         int seed,
         IReadOnlyList<string> contextTags,
         out LootEntry entry,
-        out string error)
+        out OperationFailure? failure)
         => TryResolveItemRoll(
             sourceId,
             seed,
             contextTags,
             ItemRarityTierValue.Common,
             out entry,
-            out error);
+            out failure);
 
     public bool TryResolveItemRoll(
         string sourceId,
@@ -148,22 +151,26 @@ public sealed class LootResolutionService
         IReadOnlyList<string> contextTags,
         ItemRarityTierValue minimumGrade,
         out LootEntry entry,
-        out string error)
+        out OperationFailure? failure)
     {
         entry = null!;
-        error = string.Empty;
+        failure = null;
 
         if (_content.RewardSources is not { } rewardSources
             || !rewardSources.TryGetValue(sourceId, out var source))
         {
-            error = $"Reward source '{sourceId}' not found.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.LootRewardSourceMissing,
+                $"Reward source '{sourceId}' was not found.");
             return false;
         }
 
         if (_content.DropTables is not { } dropTables
             || !dropTables.TryGetValue(source.DropTableId, out var dropTable))
         {
-            error = $"Drop table '{source.DropTableId}' not found.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.LootDropTableMissing,
+                $"Drop table '{source.DropTableId}' was not found for reward source '{sourceId}'.");
             return false;
         }
 
@@ -175,22 +182,14 @@ public sealed class LootResolutionService
         var selected = SelectWeightedEntry(itemEntries, seed);
         if (selected == null)
         {
-            error = $"Reward source '{sourceId}' has no eligible weighted item entries.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.LootWeightedItemMissing,
+                $"Reward source '{sourceId}' has no eligible weighted item entries.");
             return false;
         }
 
         entry = BuildDropTableEntry(dropTable, selected, seed, contextTags, minimumGrade);
         return true;
-    }
-
-    public static string FormatSummary(LootBundleResult bundle)
-    {
-        if (bundle.Entries.Count == 0)
-        {
-            return "No automatic loot.";
-        }
-
-        return string.Join(", ", bundle.Entries.Select(entry => $"{entry.Id} x{entry.Amount}"));
     }
 
     private static bool MatchesContext(LootBundleEntryTemplate entry, IReadOnlyList<string> contextTags)

@@ -145,9 +145,8 @@ public sealed class CharacterAxisLocalizationTests
             var resolver = new ContentTextResolver(localization, lookup);
 
             Assert.That(resolver.GetSkillName(skill.Id), Is.EqualTo("Legacy Skill Name"));
-            // 테이블 미정의 시 raw id가 아니라 인간화된 fallback(SelectSafeFallback→HumanizeIdentifier)이
-            // 노출된다 — raw id가 UI로 새지 않는다는 현행 계약.
-            Assert.That(resolver.GetSkillDescription(skill.Id), Is.EqualTo("Skill Test Localized"));
+            // 테이블과 authored description이 모두 없으면 raw id를 인간화하지 않고 honest placeholder를 쓴다.
+            Assert.That(resolver.GetSkillDescription(skill.Id), Is.EqualTo("Description unavailable"));
         }
         finally
         {

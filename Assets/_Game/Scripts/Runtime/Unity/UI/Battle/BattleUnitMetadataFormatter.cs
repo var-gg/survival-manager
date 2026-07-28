@@ -246,7 +246,12 @@ public sealed class BattleUnitMetadataFormatter
             Line("ui.battle.axis.slot", "교전 슬롯", "Engage Slot", $"{unit.EngagementSlotCount} @ {unit.EngagementSlotRadius:0.0}m", BattleStatLineCategory.Targeting),
             Line("ui.battle.axis.guard_radius", "가드 반경", "Guard Radius", $"{unit.FrontlineGuardRadius:0.0}m", BattleStatLineCategory.Defense),
             Line("ui.battle.axis.cluster_radius", "클러스터 반경", "Cluster Radius", $"{unit.ClusterRadius:0.0}m", BattleStatLineCategory.Targeting),
-            Line("ui.battle.axis.positioning", "포지션 의도", "Positioning", $"{unit.PositioningIntent} / {unit.PositioningReplanReason} #{unit.PositioningIntentRevision}", BattleStatLineCategory.Movement),
+            Line(
+                "ui.battle.axis.positioning",
+                "포지션 의도",
+                "Positioning",
+                $"{FormatPositioningIntent(unit.PositioningIntent)} / {FormatReevaluationReason(unit.PositioningReplanReason)}",
+                BattleStatLineCategory.Movement),
         };
     }
 
@@ -385,7 +390,7 @@ public sealed class BattleUnitMetadataFormatter
                 ResolveStatusDescription(statusId),
                 AxisLabel("ui.battle.detail.status.battle_scoped", "전투 효과", "Battle Scoped"),
                 AxisLabel("ui.battle.detail.status.battle_scoped", "전투 효과", "Battle Scoped"),
-                "Cleanse profile pending"));
+                AxisLabel("ui.battle.status.cleanse.pending", "정화 정보 준비 중", "Cleanse information pending")));
         }
 
         if (!unit.IsAlive || unit.CurrentHealth <= 0f)
@@ -479,9 +484,9 @@ public sealed class BattleUnitMetadataFormatter
             string.Empty,
             maxDurationSeconds > 0.01f
                 ? $"{remainingSeconds:0.#}s / {maxDurationSeconds:0.#}s"
-                : "Battle Scoped",
-            "Battle Scoped",
-            "Cleanse profile pending");
+                : AxisLabel("ui.battle.detail.status.battle_scoped", "전투 효과", "Battle Scoped"),
+            AxisLabel("ui.battle.detail.status.battle_scoped", "전투 효과", "Battle Scoped"),
+            AxisLabel("ui.battle.status.cleanse.pending", "정화 정보 준비 중", "Cleanse information pending"));
     }
 
     private BattleTacticSummary BuildTacticSummary(BattleUnitReadModel unit, TeamTacticProfile? teamTactic)
@@ -502,23 +507,19 @@ public sealed class BattleUnitMetadataFormatter
             Dial("ui.battle.tactic.dial.flank_bias", "측면 성향", "Flank Bias", profile.FlankBias, -1f, 1f),
             Dial("ui.battle.tactic.dial.role_range", "역할 사거리", "Role Range", unit.PreferredRangeMax, 0f, 6f),
         };
-        var presetName = string.IsNullOrWhiteSpace(profile.DisplayName)
-            ? profile.Id
-            : profile.DisplayName;
-        var priorityRules = unit.TacticRuleSummaries is { Count: > 0 }
-            ? unit.TacticRuleSummaries
-            : new[]
-            {
-                $"{AxisLabel("ui.battle.axis.targeting", "타게팅", "Targeting")}: {FormatSelector(unit.CurrentSelector)}",
-                $"{AxisLabel("ui.battle.axis.fallback", "대체 규칙", "Fallback")}: {FormatFallback(unit.CurrentFallback)}",
-                $"{AxisLabel("ui.battle.axis.range", "선호 사거리", "Preferred Range")}: {FormatRange(unit)}",
-            };
+        var presetName = TeamPostureText.Resolve(_localization, profile.Posture);
+        var priorityRules = new[]
+        {
+            $"{AxisLabel("ui.battle.axis.targeting", "타게팅", "Targeting")}: {FormatSelector(unit.CurrentSelector)}",
+            $"{AxisLabel("ui.battle.axis.fallback", "대체 규칙", "Fallback")}: {FormatFallback(unit.CurrentFallback)}",
+            $"{AxisLabel("ui.battle.axis.range", "선호 사거리", "Preferred Range")}: {FormatRange(unit)}",
+        };
 
         return new BattleTacticSummary(
             presetName,
             dials,
             _contentText.GetRoleName(unit.RoleInstructionId, unit.RoleTag),
-            BattleReadabilityFormatter.HumanizeToken(unit.ArchetypeId, unit.ArchetypeId),
+            _contentText.GetArchetypeName(unit.ArchetypeId),
             priorityRules);
     }
 
@@ -714,17 +715,17 @@ public sealed class BattleUnitMetadataFormatter
 
         var parts = new List<string>
         {
-            $"Power {skill.Power:0.##}"
+            $"{AxisLabel("ui.battle.skill.scaling.power", "위력", "Power")} {skill.Power:0.##}"
         };
         if (Math.Abs(skill.PowerFlat) > 0.001f)
         {
-            parts.Add($"Flat {skill.PowerFlat:0.##}");
+            parts.Add($"{AxisLabel("ui.battle.skill.scaling.flat", "고정값", "Flat")} {skill.PowerFlat:0.##}");
         }
 
-        AddCoeff(parts, "Phys", skill.PhysCoeff);
-        AddCoeff(parts, "Mag", skill.MagCoeff);
-        AddCoeff(parts, "Heal", skill.HealCoeff);
-        AddCoeff(parts, "HP", skill.HealthCoeff);
+        AddCoeff(parts, AxisLabel("ui.battle.skill.scaling.physical", "물리 계수", "Physical"), skill.PhysCoeff);
+        AddCoeff(parts, AxisLabel("ui.battle.skill.scaling.magical", "마법 계수", "Magical"), skill.MagCoeff);
+        AddCoeff(parts, AxisLabel("ui.battle.skill.scaling.healing", "회복 계수", "Healing"), skill.HealCoeff);
+        AddCoeff(parts, AxisLabel("ui.battle.skill.scaling.health", "생명력 계수", "Health"), skill.HealthCoeff);
         return string.Join(" / ", parts);
     }
 
@@ -738,18 +739,7 @@ public sealed class BattleUnitMetadataFormatter
 
     private static IReadOnlyList<string> BuildSkillTags(BattleSkillSpec? skill)
     {
-        if (skill == null)
-        {
-            return Array.Empty<string>();
-        }
-
-        return (skill.CompileTags ?? Array.Empty<string>())
-            .Concat(skill.RuleModifierTags ?? Array.Empty<string>())
-            .Concat(skill.RequiredClassTags ?? Array.Empty<string>())
-            .Where(tag => !string.IsNullOrWhiteSpace(tag))
-            .Distinct(StringComparer.Ordinal)
-            .Take(6)
-            .ToArray();
+        return Array.Empty<string>();
     }
 
     private static string ResolvePresentationStyle(BattleSkillSpec? skill)
@@ -774,15 +764,15 @@ public sealed class BattleUnitMetadataFormatter
 
     private string FormatSkillKind(SkillKind kind)
     {
-        var ko = string.Equals(_localization.CurrentLocale?.Identifier.Code, "ko", StringComparison.OrdinalIgnoreCase);
         return kind switch
         {
-            SkillKind.Heal => ko ? "회복" : "Heal",
-            SkillKind.Shield => ko ? "보호막" : "Shield",
-            SkillKind.Buff => "Buff",
-            SkillKind.Debuff => "Debuff",
-            SkillKind.Utility => "Utility",
-            _ => "Strike",
+            SkillKind.Strike => AxisLabel("ui.battle.skill.kind.strike", "공격", "Strike"),
+            SkillKind.Heal => AxisLabel("ui.battle.skill.kind.heal", "회복", "Heal"),
+            SkillKind.Shield => AxisLabel("ui.battle.skill.kind.shield", "보호막", "Shield"),
+            SkillKind.Buff => AxisLabel("ui.battle.skill.kind.buff", "강화", "Buff"),
+            SkillKind.Debuff => AxisLabel("ui.battle.skill.kind.debuff", "약화", "Debuff"),
+            SkillKind.Utility => AxisLabel("ui.battle.skill.kind.utility", "지원", "Utility"),
+            _ => AxisLabel("ui.battle.skill.kind.unknown", "알 수 없는 유형", "Unknown type"),
         };
     }
 
@@ -790,11 +780,11 @@ public sealed class BattleUnitMetadataFormatter
     {
         return damage switch
         {
-            DamageType.Physical => "Physical",
-            DamageType.Magical => "Magical",
-            DamageType.Healing => "Healing",
-            DamageType.True => "True",
-            _ => damage.ToString(),
+            DamageType.Physical => AxisLabel("ui.battle.skill.damage.physical", "물리", "Physical"),
+            DamageType.Magical => AxisLabel("ui.battle.skill.damage.magical", "마법", "Magical"),
+            DamageType.Healing => AxisLabel("ui.battle.skill.damage.healing", "회복", "Healing"),
+            DamageType.True => AxisLabel("ui.battle.skill.damage.true", "고정", "True"),
+            _ => AxisLabel("ui.battle.skill.damage.unknown", "알 수 없는 피해", "Unknown damage"),
         };
     }
 
@@ -802,14 +792,14 @@ public sealed class BattleUnitMetadataFormatter
     {
         return delivery switch
         {
-            SkillDelivery.Melee => "Melee",
-            SkillDelivery.Ranged => "Ranged",
-            SkillDelivery.Projectile => "Projectile",
-            SkillDelivery.Nova => "Nova",
-            SkillDelivery.Aura => "Aura",
-            SkillDelivery.Trap => "Trap",
-            SkillDelivery.Zone => "Zone",
-            _ => delivery.ToString(),
+            SkillDelivery.Melee => AxisLabel("ui.battle.skill.delivery.melee", "근접", "Melee"),
+            SkillDelivery.Ranged => AxisLabel("ui.battle.skill.delivery.ranged", "원거리", "Ranged"),
+            SkillDelivery.Projectile => AxisLabel("ui.battle.skill.delivery.projectile", "투사체", "Projectile"),
+            SkillDelivery.Nova => AxisLabel("ui.battle.skill.delivery.nova", "주변 폭발", "Nova"),
+            SkillDelivery.Aura => AxisLabel("ui.battle.skill.delivery.aura", "오라", "Aura"),
+            SkillDelivery.Trap => AxisLabel("ui.battle.skill.delivery.trap", "함정", "Trap"),
+            SkillDelivery.Zone => AxisLabel("ui.battle.skill.delivery.zone", "영역", "Zone"),
+            _ => AxisLabel("ui.battle.skill.delivery.unknown", "알 수 없는 전달 방식", "Unknown delivery"),
         };
     }
 
@@ -817,14 +807,14 @@ public sealed class BattleUnitMetadataFormatter
     {
         return target switch
         {
-            SkillTargetRule.NearestEnemy => "Nearest Enemy",
-            SkillTargetRule.LowestHpEnemy => "Lowest HP Enemy",
-            SkillTargetRule.MostExposedEnemy => "Most Exposed Enemy",
-            SkillTargetRule.LowestHpAlly => "Lowest HP Ally",
-            SkillTargetRule.ProtectedAlly => "Protected Ally",
-            SkillTargetRule.Self => "Self",
-            SkillTargetRule.MarkedTarget => "Marked Target",
-            _ => target.ToString(),
+            SkillTargetRule.NearestEnemy => AxisLabel("ui.battle.skill.target.nearest_enemy", "가장 가까운 적", "Nearest Enemy"),
+            SkillTargetRule.LowestHpEnemy => AxisLabel("ui.battle.skill.target.lowest_hp_enemy", "생명력이 가장 낮은 적", "Lowest HP Enemy"),
+            SkillTargetRule.MostExposedEnemy => AxisLabel("ui.battle.skill.target.most_exposed_enemy", "가장 노출된 적", "Most Exposed Enemy"),
+            SkillTargetRule.LowestHpAlly => AxisLabel("ui.battle.skill.target.lowest_hp_ally", "생명력이 가장 낮은 아군", "Lowest HP Ally"),
+            SkillTargetRule.ProtectedAlly => AxisLabel("ui.battle.skill.target.protected_ally", "보호 대상 아군", "Protected Ally"),
+            SkillTargetRule.Self => AxisLabel("ui.battle.skill.target.self", "자신", "Self"),
+            SkillTargetRule.MarkedTarget => AxisLabel("ui.battle.skill.target.marked_target", "표식 대상", "Marked Target"),
+            _ => AxisLabel("ui.battle.skill.target.unknown", "알 수 없는 대상", "Unknown target"),
         };
     }
 
@@ -832,7 +822,7 @@ public sealed class BattleUnitMetadataFormatter
     {
         var label = _contentText.GetStatusName(statusId);
         return string.IsNullOrWhiteSpace(label) || string.Equals(label, statusId, StringComparison.Ordinal)
-            ? BattleReadabilityFormatter.HumanizeToken(statusId, statusId)
+            ? AxisLabel("ui.battle.status.unknown", "알 수 없는 상태 효과", "Unknown status")
             : label;
     }
 
@@ -859,7 +849,7 @@ public sealed class BattleUnitMetadataFormatter
         var localized = _contentText.GetSkillName(skillId);
         return IsResolvedSkillDisplayName(localized, skillId)
             ? localized
-            : BuildReadableSkillFallback(skillId);
+            : Localize(GameLocalizationTables.UICommon, "ui.common.unknown_skill", "Unknown skill");
     }
 
     private static bool IsResolvedSkillDisplayName(string value, string skillId)
@@ -875,27 +865,6 @@ public sealed class BattleUnitMetadataFormatter
         }
 
         return !value.StartsWith("content.skill.", StringComparison.Ordinal);
-    }
-
-    private static string BuildReadableSkillFallback(string skillId)
-    {
-        var token = skillId.Trim();
-        if (token.StartsWith("skill_", StringComparison.Ordinal))
-        {
-            token = token["skill_".Length..];
-        }
-        else if (token.StartsWith("support_", StringComparison.Ordinal))
-        {
-            token = token["support_".Length..];
-        }
-
-        var words = BattleReadabilityFormatter.HumanizeToken(token, skillId).Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        for (var i = 0; i < words.Length; i++)
-        {
-            words[i] = char.ToUpperInvariant(words[i][0]) + words[i][1..];
-        }
-
-        return string.Join(" ", words);
     }
 
     private string ResolveTarget(BattleUnitReadModel unit)
@@ -932,12 +901,70 @@ public sealed class BattleUnitMetadataFormatter
 
     private string FormatSelector(string selector)
     {
-        return BattleReadabilityFormatter.HumanizeToken(selector, Localize(GameLocalizationTables.UIBattle, "ui.battle.targeting.current", "Current target"));
+        return selector switch
+        {
+            nameof(TargetSelector.CurrentTarget) => AxisLabel("ui.battle.targeting.selector.current", "현재 대상", "Current target"),
+            nameof(TargetSelector.NearestReachableEnemy) => AxisLabel("ui.battle.targeting.selector.nearest_reachable_enemy", "도달 가능한 가장 가까운 적", "Nearest reachable enemy"),
+            nameof(TargetSelector.NearestFrontlineEnemy) => AxisLabel("ui.battle.targeting.selector.nearest_frontline_enemy", "가장 가까운 전열 적", "Nearest frontline enemy"),
+            nameof(TargetSelector.LowestCurrentHpEnemy) => AxisLabel("ui.battle.targeting.selector.lowest_current_hp_enemy", "현재 생명력이 가장 낮은 적", "Lowest current HP enemy"),
+            nameof(TargetSelector.LowestHpPercentEnemy) => AxisLabel("ui.battle.targeting.selector.lowest_hp_percent_enemy", "생명력 비율이 가장 낮은 적", "Lowest HP percent enemy"),
+            nameof(TargetSelector.LowestEhpEnemy) => AxisLabel("ui.battle.targeting.selector.lowest_ehp_enemy", "유효 생명력이 가장 낮은 적", "Lowest effective HP enemy"),
+            nameof(TargetSelector.MarkedEnemy) => AxisLabel("ui.battle.targeting.selector.marked_enemy", "표식이 있는 적", "Marked enemy"),
+            nameof(TargetSelector.LargestEnemyCluster) => AxisLabel("ui.battle.targeting.selector.largest_enemy_cluster", "가장 큰 적 무리", "Largest enemy cluster"),
+            nameof(TargetSelector.BacklineExposedEnemy) => AxisLabel("ui.battle.targeting.selector.backline_exposed_enemy", "노출된 후열 적", "Exposed backline enemy"),
+            nameof(TargetSelector.Self) => AxisLabel("ui.battle.targeting.selector.self", "자신", "Self"),
+            nameof(TargetSelector.LowestCurrentHpAlly) => AxisLabel("ui.battle.targeting.selector.lowest_current_hp_ally", "현재 생명력이 가장 낮은 아군", "Lowest current HP ally"),
+            nameof(TargetSelector.LowestHpPercentAlly) => AxisLabel("ui.battle.targeting.selector.lowest_hp_percent_ally", "생명력 비율이 가장 낮은 아군", "Lowest HP percent ally"),
+            nameof(TargetSelector.LowestEhpAlly) => AxisLabel("ui.battle.targeting.selector.lowest_ehp_ally", "유효 생명력이 가장 낮은 아군", "Lowest effective HP ally"),
+            nameof(TargetSelector.NearestInjuredAlly) => AxisLabel("ui.battle.targeting.selector.nearest_injured_ally", "가장 가까운 부상 아군", "Nearest injured ally"),
+            nameof(TargetSelector.EmptyPointNearSelf) => AxisLabel("ui.battle.targeting.selector.empty_point_near_self", "자신 주변 빈 위치", "Open point near self"),
+            nameof(TargetSelector.EmptyPointNearTarget) => AxisLabel("ui.battle.targeting.selector.empty_point_near_target", "대상 주변 빈 위치", "Open point near target"),
+            _ => AxisLabel("ui.battle.targeting.selector.unknown", "알 수 없는 대상 규칙", "Unknown target rule"),
+        };
     }
 
     private string FormatFallback(string fallback)
     {
-        return BattleReadabilityFormatter.HumanizeToken(fallback, Localize(GameLocalizationTables.UIBattle, "ui.battle.targeting.keep_current", "Keep current"));
+        return fallback switch
+        {
+            nameof(TargetFallbackPolicy.Abort) => AxisLabel("ui.battle.targeting.fallback.abort", "행동 중단", "Abort action"),
+            nameof(TargetFallbackPolicy.KeepCurrentIfStillValid) => AxisLabel("ui.battle.targeting.fallback.keep_current", "유효하면 현재 대상 유지", "Keep current if valid"),
+            nameof(TargetFallbackPolicy.NearestReachableEnemy) => AxisLabel("ui.battle.targeting.fallback.nearest_reachable_enemy", "도달 가능한 가장 가까운 적", "Nearest reachable enemy"),
+            nameof(TargetFallbackPolicy.LowestCurrentHpEnemy) => AxisLabel("ui.battle.targeting.fallback.lowest_current_hp_enemy", "현재 생명력이 가장 낮은 적", "Lowest current HP enemy"),
+            nameof(TargetFallbackPolicy.Self) => AxisLabel("ui.battle.targeting.fallback.self", "자신", "Self"),
+            _ => AxisLabel("ui.battle.targeting.fallback.unknown", "알 수 없는 대체 규칙", "Unknown fallback"),
+        };
+    }
+
+    private string FormatPositioningIntent(PositioningIntentKind intent)
+    {
+        return intent switch
+        {
+            PositioningIntentKind.None => AxisLabel("ui.battle.positioning.intent.none", "대기", "Waiting"),
+            PositioningIntentKind.Frontline => AxisLabel("ui.battle.positioning.intent.frontline", "전열 유지", "Hold frontline"),
+            PositioningIntentKind.FlankLeft => AxisLabel("ui.battle.positioning.intent.flank_left", "왼쪽 측면", "Left flank"),
+            PositioningIntentKind.FlankRight => AxisLabel("ui.battle.positioning.intent.flank_right", "오른쪽 측면", "Right flank"),
+            PositioningIntentKind.BacklineDive => AxisLabel("ui.battle.positioning.intent.backline_dive", "후열 돌파", "Dive backline"),
+            PositioningIntentKind.MaintainRange => AxisLabel("ui.battle.positioning.intent.maintain_range", "거리 유지", "Maintain range"),
+            _ => AxisLabel("ui.battle.positioning.intent.unknown", "알 수 없는 포지션", "Unknown positioning"),
+        };
+    }
+
+    private string FormatReevaluationReason(ReevaluationReason reason)
+    {
+        return reason switch
+        {
+            ReevaluationReason.None => AxisLabel("ui.battle.positioning.reason.none", "변경 없음", "No change"),
+            ReevaluationReason.Cadence => AxisLabel("ui.battle.positioning.reason.cadence", "주기 판단", "Periodic review"),
+            ReevaluationReason.TargetLost => AxisLabel("ui.battle.positioning.reason.target_lost", "대상 상실", "Target lost"),
+            ReevaluationReason.SlotLost => AxisLabel("ui.battle.positioning.reason.slot_lost", "교전 위치 상실", "Engagement slot lost"),
+            ReevaluationReason.TookHit => AxisLabel("ui.battle.positioning.reason.took_hit", "피격 대응", "Responding to hit"),
+            ReevaluationReason.SkillReady => AxisLabel("ui.battle.positioning.reason.skill_ready", "스킬 준비", "Skill ready"),
+            ReevaluationReason.MobilityReady => AxisLabel("ui.battle.positioning.reason.mobility_ready", "이동기 준비", "Mobility ready"),
+            ReevaluationReason.RangeBreak => AxisLabel("ui.battle.positioning.reason.range_break", "사거리 이탈", "Range broken"),
+            ReevaluationReason.TargetMoved => AxisLabel("ui.battle.positioning.reason.target_moved", "대상 이동", "Target moved"),
+            _ => AxisLabel("ui.battle.positioning.reason.unknown", "알 수 없는 판단", "Unknown reason"),
+        };
     }
 
     private string LocalizeAnchor(DeploymentAnchorId anchor)

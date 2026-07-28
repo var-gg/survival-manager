@@ -112,6 +112,12 @@ public sealed class EquipmentRefitPreviewBootstrap : EditorWindow
             affixes.Add(new EquipmentRefitAffixRowViewState(
                 AffixId: a.AffixId,
                 GroupKey: a.Group,
+                GroupLabel: a.Group switch
+                {
+                    "implicit" => "고유",
+                    "suffix" => "접미",
+                    _ => "접두",
+                },
                 CategoryKey: "utility",
                 Name: a.Name,
                 MagnitudeText: a.Magnitude,

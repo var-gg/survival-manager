@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using SM.Core.Content;
+using SM.Core.Results;
 using SM.Meta.Model;
 
 namespace SM.Meta.Services;
@@ -24,18 +25,20 @@ public sealed record RefitChapterEconomy(
 public sealed record RefitQuote(
     bool CanPurchase,
     bool RefitMaxed,
-    string Reason,
+    OperationFailure? Failure,
     ulong CurrentPercentileQ64,
     int CurrentRefitLevel,
     int TargetRefitLevel,
     ulong TargetFloorQ64,
     int EchoCost)
 {
-    public static RefitQuote Unavailable(string reason, int currentRefitLevel = 0)
+    public string Reason => Failure?.Diagnostic ?? string.Empty;
+
+    public static RefitQuote Unavailable(OperationFailure failure, int currentRefitLevel = 0)
         => new(
             CanPurchase: false,
             RefitMaxed: false,
-            Reason: reason ?? string.Empty,
+            Failure: failure,
             CurrentPercentileQ64: 0UL,
             CurrentRefitLevel: Math.Max(0, currentRefitLevel),
             TargetRefitLevel: Math.Max(0, currentRefitLevel),
@@ -45,22 +48,23 @@ public sealed record RefitQuote(
 
 public sealed record RefitExecutionResult(
     bool Applied,
-    bool InvariantFailure,
-    string Error,
+    OperationFailure? Failure,
     RefitQuote Quote,
     ulong ResultPercentileQ64,
     IReadOnlyList<string> AffixIds,
     IReadOnlyDictionary<string, float> AffixMagnitudes)
 {
+    public bool InvariantFailure => Failure?.IsInvariantViolation == true;
+    public string Error => Failure?.Diagnostic ?? string.Empty;
+
     public static RefitExecutionResult NoChange(
         RefitQuote quote,
         IReadOnlyList<string> affixIds,
         IReadOnlyDictionary<string, float>? affixMagnitudes = null,
-        string error = "")
+        OperationFailure? failure = null)
         => new(
             Applied: false,
-            InvariantFailure: false,
-            Error: error ?? string.Empty,
+            Failure: failure ?? quote.Failure,
             Quote: quote,
             ResultPercentileQ64: quote.CurrentPercentileQ64,
             AffixIds: affixIds.ToArray(),
@@ -112,9 +116,9 @@ public sealed class RefitService
                 item,
                 sealedAffixIds,
                 out var canonicalSealedAffixIds,
-                out var error))
+                out var failure))
         {
-            return RefitQuote.Unavailable(error, item?.RefitLevel ?? 0);
+            return RefitQuote.Unavailable(failure!, item?.RefitLevel ?? 0);
         }
 
         return QuoteNextEffective(
@@ -130,20 +134,22 @@ public sealed class RefitService
         CraftOperationKindValue operation,
         int lockedAffixCount)
     {
-        if (!TryResolveItem(item, out var currentQualityQ64, out var error))
+        if (!TryResolveItem(item, out var currentQualityQ64, out var failure))
         {
-            return RefitQuote.Unavailable(error, item?.RefitLevel ?? 0);
+            return RefitQuote.Unavailable(failure!, item?.RefitLevel ?? 0);
         }
 
-        if (!TryValidateOperationAllowed(item, operation, out error))
+        if (!TryValidateOperationAllowed(item, operation, out failure))
         {
-            return RefitQuote.Unavailable(error, item.RefitLevel);
+            return RefitQuote.Unavailable(failure!, item.RefitLevel);
         }
 
         if (item.RefitLevel < 0)
         {
             return RefitQuote.Unavailable(
-                "Refit level cannot be negative.",
+                OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitLevelInvalid,
+                    $"Refit level '{item.RefitLevel}' cannot be negative for item '{item.StableItemKey}'."),
                 item.RefitLevel);
         }
 
@@ -153,7 +159,9 @@ public sealed class RefitService
             || !double.IsFinite(chapterEconomy.MeanGrade))
         {
             return RefitQuote.Unavailable(
-                "The chapter first-farm Echo or mean grade could not be derived.",
+                OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitChapterEconomyUnavailable,
+                    $"Chapter economy was unavailable or invalid for chapter '{chapterEconomy?.ChapterId ?? "<null>"}'."),
                 item.RefitLevel);
         }
 
@@ -191,13 +199,17 @@ public sealed class RefitService
             catch (Exception exception) when (
                 exception is ArgumentOutOfRangeException or OverflowException)
             {
-                return RefitQuote.Unavailable(exception.Message, item.RefitLevel);
+                return RefitQuote.Unavailable(
+                    OperationFailure.Invariant(
+                        MetaOperationFailureCodes.RefitCostResolutionFailed,
+                        $"Refit cost resolution failed for item '{item.StableItemKey}', operation '{operation}', target level '{targetLevel}': {exception}"),
+                    item.RefitLevel);
             }
 
             return new RefitQuote(
                 CanPurchase: true,
                 RefitMaxed: false,
-                Reason: string.Empty,
+                Failure: null,
                 CurrentPercentileQ64: currentQualityQ64,
                 CurrentRefitLevel: item.RefitLevel,
                 TargetRefitLevel: targetLevel,
@@ -206,7 +218,6 @@ public sealed class RefitService
         }
 
         return Maxed(
-            "The item is already at or above every effective Refit floor.",
             item,
             currentQualityQ64);
     }
@@ -221,9 +232,8 @@ public sealed class RefitService
         {
             return RefitExecutionResult.NoChange(
                 quote,
-                item.AffixIds,
-                item.AffixMagnitudes,
-                quote.Reason);
+                item?.AffixIds ?? Array.Empty<string>(),
+                item?.AffixMagnitudes);
         }
 
         if (_lookup.Snapshot.AffixCatalog is not { } catalog)
@@ -231,7 +241,9 @@ public sealed class RefitService
             return InvariantFailure(
                 item,
                 quote,
-                "Affix catalog is unavailable.");
+                OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitAffixCatalogUnavailable,
+                    $"Affix catalog was unavailable while executing Refit for item '{item.StableItemKey}'."));
         }
 
         IReadOnlyDictionary<string, float> generatedMagnitudes;
@@ -252,7 +264,9 @@ public sealed class RefitService
             return InvariantFailure(
                 item,
                 quote,
-                $"Magnitude Refit generation failed: {exception.Message}");
+                OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitGenerationFailed,
+                    $"Magnitude Refit generation failed for item '{item.StableItemKey}': {exception}"));
         }
 
         var generatedAffixIds = item.AffixIds.ToArray();
@@ -262,15 +276,14 @@ public sealed class RefitService
                 generatedAffixIds,
                 generatedMagnitudes,
                 out var resultQualityQ64,
-                out var invariantError))
+                out var invariantFailure))
         {
-            return InvariantFailure(item, quote, invariantError);
+            return InvariantFailure(item, quote, invariantFailure!);
         }
 
         return new RefitExecutionResult(
             Applied: true,
-            InvariantFailure: false,
-            Error: string.Empty,
+            Failure: null,
             Quote: quote,
             ResultPercentileQ64: resultQualityQ64,
             AffixIds: generatedAffixIds,
@@ -288,26 +301,26 @@ public sealed class RefitService
         {
             return RefitExecutionResult.NoChange(
                 RefitQuote.Unavailable(
-                    "Seal attempt index cannot be negative.",
+                    OperationFailure.Invariant(
+                        MetaOperationFailureCodes.RefitSealAttemptInvalid,
+                        $"Seal attempt index '{attemptIndex}' cannot be negative for item '{item?.StableItemKey ?? "<null>"}'."),
                     item?.RefitLevel ?? 0),
                 item?.AffixIds ?? Array.Empty<string>(),
-                item?.AffixMagnitudes,
-                "Seal attempt index cannot be negative.");
+                item?.AffixMagnitudes);
         }
 
         if (!TryNormalizeSealedAffixes(
                 item,
                 sealedAffixIds,
                 out var canonicalSealedAffixIds,
-                out var normalizeError))
+                out var normalizeFailure))
         {
             return RefitExecutionResult.NoChange(
                 RefitQuote.Unavailable(
-                    normalizeError,
+                    normalizeFailure!,
                     item?.RefitLevel ?? 0),
                 item?.AffixIds ?? Array.Empty<string>(),
-                item?.AffixMagnitudes,
-                normalizeError);
+                item?.AffixMagnitudes);
         }
 
         var quote = QuoteNextEffective(
@@ -320,8 +333,7 @@ public sealed class RefitService
             return RefitExecutionResult.NoChange(
                 quote,
                 item.AffixIds,
-                item.AffixMagnitudes,
-                quote.Reason);
+                item.AffixMagnitudes);
         }
 
         IReadOnlyDictionary<string, float> generatedMagnitudes;
@@ -356,7 +368,9 @@ public sealed class RefitService
             return InvariantFailure(
                 item,
                 quote,
-                $"Magnitude Seal generation failed: {exception.Message}");
+                OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitGenerationFailed,
+                    $"Magnitude Seal generation failed for item '{item.StableItemKey}': {exception}"));
         }
 
         var generatedAffixIds = item.AffixIds.ToArray();
@@ -366,24 +380,23 @@ public sealed class RefitService
                 generatedAffixIds,
                 generatedMagnitudes,
                 out var resultQualityQ64,
-                out var invariantError))
+                out var invariantFailure))
         {
-            return InvariantFailure(item, quote, invariantError);
+            return InvariantFailure(item, quote, invariantFailure!);
         }
 
         if (!ValidateSealedMagnitudes(
                 item,
                 canonicalSealedAffixIds,
                 generatedMagnitudes,
-                out invariantError))
+                out invariantFailure))
         {
-            return InvariantFailure(item, quote, invariantError);
+            return InvariantFailure(item, quote, invariantFailure!);
         }
 
         return new RefitExecutionResult(
             Applied: true,
-            InvariantFailure: false,
-            Error: string.Empty,
+            Failure: null,
             Quote: quote,
             ResultPercentileQ64: resultQualityQ64,
             AffixIds: generatedAffixIds,
@@ -393,33 +406,39 @@ public sealed class RefitService
     private bool TryResolveItem(
         RefitItemState? item,
         out ulong currentQualityQ64,
-        out string error)
+        out OperationFailure? failure)
     {
         currentQualityQ64 = 0UL;
-        error = string.Empty;
+        failure = null;
         if (item == null
             || string.IsNullOrWhiteSpace(item.ItemBaseId)
             || string.IsNullOrWhiteSpace(item.StableItemKey)
             || item.AffixIds == null)
         {
-            error = "Refit item state is incomplete.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitItemStateIncomplete,
+                "Refit item state is incomplete.");
             return false;
         }
 
         if (!Enum.IsDefined(typeof(ItemRarityTierValue), item.Grade))
         {
-            error = $"Refit item grade '{item.Grade}' is invalid.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitInvalidGrade,
+                $"Refit item grade '{item.Grade}' is invalid for item '{item.StableItemKey}'.");
             return false;
         }
 
-        if (!ValidateAffixLegality(item, item.AffixIds, out error))
+        if (!ValidateAffixLegality(item, item.AffixIds, out failure))
         {
             return false;
         }
 
         if (_lookup.Snapshot.AffixCatalog is not { } catalog)
         {
-            error = "Affix catalog is unavailable.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitAffixCatalogUnavailable,
+                $"Affix catalog was unavailable while measuring item '{item.StableItemKey}'.");
             return false;
         }
 
@@ -434,7 +453,9 @@ public sealed class RefitService
         }
         catch (Exception exception)
         {
-            error = $"Roll quality resolution failed: {exception.Message}";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitQualityResolutionFailed,
+                $"Roll quality resolution failed for item '{item.StableItemKey}': {exception}");
             return false;
         }
     }
@@ -445,16 +466,19 @@ public sealed class RefitService
         IReadOnlyList<string> generatedAffixIds,
         IReadOnlyDictionary<string, float> generatedMagnitudes,
         out ulong resultQualityQ64,
-        out string error)
+        out OperationFailure? failure)
     {
         resultQualityQ64 = 0UL;
+        failure = null;
         if (!generatedAffixIds.SequenceEqual(item.AffixIds, StringComparer.Ordinal))
         {
-            error = "Refit changed affix identity.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitPostconditionFailed,
+                $"Refit changed affix identity for item '{item.StableItemKey}'.");
             return false;
         }
 
-        if (!ValidateAffixLegality(item, generatedAffixIds, out error))
+        if (!ValidateAffixLegality(item, generatedAffixIds, out failure))
         {
             return false;
         }
@@ -462,7 +486,9 @@ public sealed class RefitService
         if (generatedMagnitudes.Count != generatedAffixIds.Count
             || generatedAffixIds.Any(id => !generatedMagnitudes.ContainsKey(id)))
         {
-            error = "Refit magnitude output does not match the affix identity set atomically.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitPostconditionFailed,
+                $"Refit magnitude output did not match the affix identity set atomically for item '{item.StableItemKey}'.");
             return false;
         }
 
@@ -479,43 +505,53 @@ public sealed class RefitService
         }
         catch (Exception exception)
         {
-            error = $"Refit magnitude range validation failed: {exception.Message}";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitPostconditionFailed,
+                $"Refit magnitude range validation failed for item '{item.StableItemKey}': {exception}");
             return false;
         }
 
         if (resultQualityQ64 < quote.CurrentPercentileQ64)
         {
-            error = $"Refit roll quality regressed from "
-                    + $"{RefitRollQuality.FromQ64(quote.CurrentPercentileQ64):R} to "
-                    + $"{RefitRollQuality.FromQ64(resultQualityQ64):R}.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitPostconditionFailed,
+                $"Refit roll quality regressed from "
+                + $"{RefitRollQuality.FromQ64(quote.CurrentPercentileQ64):R} to "
+                + $"{RefitRollQuality.FromQ64(resultQualityQ64):R} for item '{item.StableItemKey}'.");
             return false;
         }
 
         if (resultQualityQ64 < quote.TargetFloorQ64)
         {
-            error = "Refit result roll quality is below the purchased floor.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitPostconditionFailed,
+                $"Refit result roll quality is below the purchased floor for item '{item.StableItemKey}'.");
             return false;
         }
 
-        error = string.Empty;
         return true;
     }
 
     private bool ValidateAffixLegality(
         RefitItemState item,
         IReadOnlyList<string> affixIds,
-        out string error)
+        out OperationFailure? failure)
     {
+        failure = null;
         if (_lookup.Snapshot.ItemCatalog is not { } itemCatalog
             || !itemCatalog.TryGetValue(item.ItemBaseId, out var itemTemplate))
         {
-            error = $"Unknown item base '{item.ItemBaseId}'.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitItemBaseUnknown,
+                $"Unknown item base '{item.ItemBaseId}' for item '{item.StableItemKey}'.");
             return false;
         }
 
         if (_lookup.Snapshot.AffixCatalog is not { } catalog)
         {
-            error = "Affix catalog is unavailable.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitAffixCatalogUnavailable,
+                $"Affix catalog was unavailable while validating item '{item.StableItemKey}'.");
             return false;
         }
 
@@ -528,7 +564,9 @@ public sealed class RefitService
                 || !seenIds.Add(affixId)
                 || !catalog.TryGetValue(affixId, out var affix))
             {
-                error = $"Refit found an unknown or duplicate affix '{affixId}'.";
+                failure = OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitAffixSetInvalid,
+                    $"Refit found an unknown or duplicate affix '{affixId}' on item '{item.StableItemKey}'.");
                 return false;
             }
 
@@ -537,15 +575,19 @@ public sealed class RefitService
                     itemTemplate.SlotType,
                     StringComparer.Ordinal))
             {
-                error = $"Affix '{affixId}' is illegal for slot '{itemTemplate.SlotType}'.";
+                failure = OperationFailure.Refusal(
+                    MetaOperationFailureCodes.RefitAffixIllegalForSlot,
+                    $"Affix '{affixId}' is illegal for slot '{itemTemplate.SlotType}' on item '{item.StableItemKey}'.");
                 return false;
             }
 
             if (!string.IsNullOrWhiteSpace(affix.ExclusiveGroupId)
                 && !seenExclusiveGroups.Add(affix.ExclusiveGroupId))
             {
-                error = $"Affix '{affixId}' conflicts in exclusive group "
-                        + $"'{affix.ExclusiveGroupId}'.";
+                failure = OperationFailure.Refusal(
+                    MetaOperationFailureCodes.RefitAffixExclusiveConflict,
+                    $"Affix '{affixId}' conflicts in exclusive group "
+                    + $"'{affix.ExclusiveGroupId}' on item '{item.StableItemKey}'.");
                 return false;
             }
 
@@ -554,34 +596,40 @@ public sealed class RefitService
 
         if (!FollowsTierStepSequence(item.Grade, tiers))
         {
-            error = "Refit item does not follow its grade's generated tier-step sequence.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitTierSequenceInvalid,
+                $"Refit item '{item.StableItemKey}' does not follow grade '{item.Grade}' tier-step sequence.");
             return false;
         }
 
-        error = string.Empty;
         return true;
     }
 
     private bool TryValidateOperationAllowed(
         RefitItemState item,
         CraftOperationKindValue operation,
-        out string error)
+        out OperationFailure? failure)
     {
+        failure = null;
         if (_lookup.Snapshot.ItemCatalog is not { } itemCatalog
             || !itemCatalog.TryGetValue(item.ItemBaseId, out var itemTemplate))
         {
-            error = $"Unknown item base '{item.ItemBaseId}'.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitItemBaseUnknown,
+                $"Unknown item base '{item.ItemBaseId}' for item '{item.StableItemKey}'.");
             return false;
         }
 
         if (itemTemplate.AllowedCraftOperations is not { Count: > 0 }
             || !itemTemplate.AllowedCraftOperations.Contains(operation))
         {
-            error = $"Item base '{item.ItemBaseId}' does not allow {operation}.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitOperationNotAllowed,
+                $"Item base '{item.ItemBaseId}' does not allow operation '{operation}'.",
+                operation.ToString());
             return false;
         }
 
-        error = string.Empty;
         return true;
     }
 
@@ -589,18 +637,23 @@ public sealed class RefitService
         RefitItemState? item,
         IReadOnlyCollection<string>? sealedAffixIds,
         out IReadOnlyList<string> canonicalSealedAffixIds,
-        out string error)
+        out OperationFailure? failure)
     {
         canonicalSealedAffixIds = Array.Empty<string>();
+        failure = null;
         if (item == null || item.AffixIds == null)
         {
-            error = "Seal item state is incomplete.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.RefitItemStateIncomplete,
+                "Seal item state is incomplete.");
             return false;
         }
 
         if (sealedAffixIds == null)
         {
-            error = "Seal affix selection is required.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitSealSelectionRequired,
+                $"Seal affix selection is required for item '{item.StableItemKey}'.");
             return false;
         }
 
@@ -610,14 +663,18 @@ public sealed class RefitService
             if (string.IsNullOrWhiteSpace(sealedAffixId)
                 || !sealedSet.Add(sealedAffixId))
             {
-                error = "Seal affix selection contains a blank or duplicate id.";
+                failure = OperationFailure.Refusal(
+                    MetaOperationFailureCodes.RefitSealSelectionInvalid,
+                    $"Seal affix selection contains a blank or duplicate id for item '{item.StableItemKey}'.");
                 return false;
             }
         }
 
         if (sealedSet.Count >= item.AffixIds.Count && item.AffixIds.Count > 0)
         {
-            error = "Seal must leave at least one affix unlocked.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitSealAllAffixesLocked,
+                $"Seal selection must leave at least one affix unlocked for item '{item.StableItemKey}'.");
             return false;
         }
 
@@ -626,12 +683,13 @@ public sealed class RefitService
             .ToArray();
         if (canonical.Length != sealedSet.Count)
         {
-            error = "Seal affix selection contains an id that is not on the item.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitSealSelectionInvalid,
+                $"Seal affix selection contains an id that is not on item '{item.StableItemKey}'.");
             return false;
         }
 
         canonicalSealedAffixIds = canonical;
-        error = string.Empty;
         return true;
     }
 
@@ -639,27 +697,31 @@ public sealed class RefitService
         RefitItemState item,
         IReadOnlyList<string> sealedAffixIds,
         IReadOnlyDictionary<string, float> generatedMagnitudes,
-        out string error)
+        out OperationFailure? failure)
     {
+        failure = null;
         foreach (var sealedAffixId in sealedAffixIds)
         {
             if (item.AffixMagnitudes == null
                 || !item.AffixMagnitudes.TryGetValue(sealedAffixId, out var original)
                 || !generatedMagnitudes.TryGetValue(sealedAffixId, out var generated))
             {
-                error = $"Seal requires a persisted magnitude for '{sealedAffixId}'.";
+                failure = OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitSealMagnitudeMissing,
+                    $"Seal requires a persisted magnitude for '{sealedAffixId}' on item '{item.StableItemKey}'.");
                 return false;
             }
 
             if (BitConverter.SingleToInt32Bits(original)
                 != BitConverter.SingleToInt32Bits(generated))
             {
-                error = $"Seal changed locked affix magnitude '{sealedAffixId}'.";
+                failure = OperationFailure.Invariant(
+                    MetaOperationFailureCodes.RefitSealMagnitudeChanged,
+                    $"Seal changed locked affix magnitude '{sealedAffixId}' on item '{item.StableItemKey}'.");
                 return false;
             }
         }
 
-        error = string.Empty;
         return true;
     }
 
@@ -700,11 +762,10 @@ public sealed class RefitService
     private static RefitExecutionResult InvariantFailure(
         RefitItemState item,
         RefitQuote quote,
-        string error)
+        OperationFailure failure)
         => new(
             Applied: false,
-            InvariantFailure: true,
-            Error: error,
+            Failure: failure,
             Quote: quote,
             ResultPercentileQ64: quote.CurrentPercentileQ64,
             AffixIds: item.AffixIds.ToArray(),
@@ -713,13 +774,14 @@ public sealed class RefitService
                 .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal));
 
     private static RefitQuote Maxed(
-        string reason,
         RefitItemState item,
         ulong currentQualityQ64)
         => new(
             CanPurchase: false,
             RefitMaxed: true,
-            Reason: reason,
+            Failure: OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitQualityMaxed,
+                $"Item '{item.StableItemKey}' is already at or above every effective Refit floor."),
             CurrentPercentileQ64: currentQualityQ64,
             CurrentRefitLevel: item.RefitLevel,
             TargetRefitLevel: item.RefitLevel,

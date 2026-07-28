@@ -17,7 +17,8 @@ namespace SM.Unity.UI.Town.Preview;
 /// </summary>
 public sealed record EquipmentRefitAffixRowViewState(
     string AffixId,              // click identity ← AffixDefinition.Id
-    string GroupKey,             // implicit / prefix / suffix ← AffixDefinition.Tier
+    string GroupKey,             // implicit / prefix / suffix ← AffixDefinition.Tier (스타일 후크 전용)
+    string GroupLabel,           // 화면에 나가는 계층 머리글 ← EquipmentRefitText.AffixGroupHeader
     string CategoryKey,          // offenseflat / utility / ...
     string Name,                 // ← AffixDefinition.NameKey resolved
     string MagnitudeText,        // ← persisted magnitude + percentile + AffixDefinition.ValueMin~ValueMax

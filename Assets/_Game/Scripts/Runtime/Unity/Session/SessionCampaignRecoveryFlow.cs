@@ -197,7 +197,7 @@ internal sealed class SessionCampaignRecoveryFlow
                     contextTags,
                     CampaignRecoveryRewardPolicy.GetMinimumItemGrade(revisitIndex),
                     out var item,
-                    out _))
+                    out var lootFailure))
             {
                 var targetItemBaseId = ResolveRepeatTargetItemBaseId(
                     snapshot,
@@ -206,6 +206,12 @@ internal sealed class SessionCampaignRecoveryFlow
                 entries.Add(string.IsNullOrWhiteSpace(targetItemBaseId)
                     ? item
                     : item with { Id = targetItemBaseId });
+            }
+            else if (lootFailure != null)
+            {
+                UnityEngine.Debug.LogError(
+                    $"[SessionCampaignRecoveryFlow] repeat-item loot resolution failed: "
+                    + $"cause='{lootFailure.Code}' diagnostic='{lootFailure.Diagnostic}'");
             }
 
             // A roll is consumed even when an authored table has no eligible item entry.

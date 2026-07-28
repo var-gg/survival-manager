@@ -24,7 +24,7 @@ public sealed class InventoryPresenter : IInventoryActions
 
     // headless conformance(Phase 2 Stage 2): GameSessionRoot(MonoBehaviour) 대신 순수 GameSessionState +
     // ICombatContentLookup, 콘크리트 InventoryView 대신 IInventoryView를 받아 씬·엔진 없이 BuildState 구동.
-    // ContentTextResolver는 이미 nullable(없으면 item id fallback)이라 그대로 둔다.
+    // ContentTextResolver는 headless conformance에서만 nullable이며, 이 경우에도 raw content id는 표시하지 않는다.
     private readonly GameSessionState _session;
     private readonly ICombatContentLookup _lookup;
     private readonly IInventoryView _view;
@@ -101,15 +101,17 @@ public sealed class InventoryPresenter : IInventoryActions
     {
         if (string.IsNullOrWhiteSpace(_targetHeroId))
         {
-            _lastEquipStatus = "영웅을 먼저 선택하면 장착할 수 있습니다.";
+            _lastEquipStatus = Ui(
+                "ui.town.inventory.equip.select_hero",
+                "Select a hero before equipping an item.");
             Refresh();
             return;
         }
 
         var result = _session.EquipItem(_targetHeroId, itemInstanceId);
         _lastEquipStatus = result.IsSuccess
-            ? "장착 완료"
-            : result.Error ?? "장착 실패";
+            ? Ui("ui.town.inventory.equip.success", "Item equipped.")
+            : LocalizeEquipFailure(result.Failure);
         Refresh();
     }
 
@@ -137,18 +139,14 @@ public sealed class InventoryPresenter : IInventoryActions
             .Select(item =>
             {
                 var iconKey = item.ItemBaseId;
-                var itemName = item.ItemBaseId;
+                var itemName = ResolveItemName(item.ItemBaseId);
                 var weaponFamilyKey = "item";
                 var slotKey = "item";
                 var presentation = EquipmentPresentationPolicy.Build(slotKey, weaponFamilyKey, "Common", "Baseline", Array.Empty<string>());
                 if (lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
                 {
                     iconKey = string.IsNullOrWhiteSpace(itemDef.IconId) ? item.ItemBaseId : itemDef.IconId;
-                    itemName = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
-                    if (string.IsNullOrWhiteSpace(itemName))
-                    {
-                        itemName = itemDef.Id;
-                    }
+                    itemName = ResolveItemName(item.ItemBaseId, itemDef.LegacyDisplayName);
 
                     weaponFamilyKey = ResolveFamilyKey(itemDef);
                     slotKey = ResolveSlotKey(itemDef.SlotType);
@@ -324,7 +322,7 @@ public sealed class InventoryPresenter : IInventoryActions
 
     private InventoryDetailViewState BuildDetail(InventoryItemRecord item, string iconKey)
     {
-        var name = item.ItemBaseId;
+        var name = ResolveItemName(item.ItemBaseId);
         var slotLabel = "장비";
         var slotKey = "item";
         var rarityKey = "common";
@@ -340,11 +338,7 @@ public sealed class InventoryPresenter : IInventoryActions
         var crossLinks = new List<string>();
         if (_lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
         {
-            name = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                name = itemDef.Id;
-            }
+            name = ResolveItemName(item.ItemBaseId, itemDef.LegacyDisplayName);
 
             slotKey = ResolveSlotKey(itemDef.SlotType);
             var familyKey = ResolveFamilyKey(itemDef);
@@ -392,7 +386,7 @@ public sealed class InventoryPresenter : IInventoryActions
 
                 return new InventoryAffixRowViewState(
                     GroupKey: group,
-                    Name: _contentText?.GetAffixName(affixId) ?? affixId,
+                    Name: _contentText?.GetAffixName(affixId) ?? "Unknown affix",
                     MagnitudeText: magnitudeText);
             })
             .ToList();
@@ -529,7 +523,7 @@ public sealed class InventoryPresenter : IInventoryActions
                 IconSprite: null);
         }
 
-        var name = item.ItemBaseId;
+        var name = ResolveItemName(item.ItemBaseId);
         var iconKey = item.ItemBaseId;
         var slotKey = "item";
         var slotLabel = "장비";
@@ -542,11 +536,7 @@ public sealed class InventoryPresenter : IInventoryActions
         var refitKey = "refit";
         if (_lookup.TryGetItemDefinition(item.ItemBaseId, out var itemDef))
         {
-            name = _contentText?.GetItemName(item.ItemBaseId) ?? itemDef.LegacyDisplayName;
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                name = itemDef.Id;
-            }
+            name = ResolveItemName(item.ItemBaseId, itemDef.LegacyDisplayName);
 
             iconKey = string.IsNullOrWhiteSpace(itemDef.IconId) ? item.ItemBaseId : itemDef.IconId;
             slotKey = ResolveSlotKey(itemDef.SlotType);
@@ -602,6 +592,19 @@ public sealed class InventoryPresenter : IInventoryActions
             hero,
             _contentText == null ? null : _contentText.GetCharacterName,
             _contentText == null ? null : _contentText.GetArchetypeName);
+    }
+
+    private string ResolveItemName(string itemBaseId, string authoredFallback = "")
+    {
+        var localized = _contentText?.GetItemName(itemBaseId);
+        if (!string.IsNullOrWhiteSpace(localized))
+        {
+            return localized;
+        }
+
+        return string.IsNullOrWhiteSpace(authoredFallback)
+            ? "Unknown item"
+            : authoredFallback;
     }
 
     private static string CompareTone(string selectedValue, string equippedValue)
@@ -700,4 +703,43 @@ public sealed class InventoryPresenter : IInventoryActions
 
         return token.Replace('_', ' ').Trim();
     }
+
+    private string LocalizeEquipFailure(OperationFailure? failure)
+    {
+        if (failure?.IsInvariantViolation == true)
+        {
+            return Ui(
+                "ui.town.inventory.equip.failed",
+                "The item could not be equipped. Please try again.");
+        }
+
+        return failure?.Code switch
+        {
+            SessionOperationFailureCodes.InventoryTownOnly => Ui(
+                "ui.town.inventory.equip.town_only",
+                "Items can be equipped only in Town."),
+            SessionOperationFailureCodes.HeroNotFound => Ui(
+                "ui.town.inventory.equip.hero_missing",
+                "The selected hero is no longer available."),
+            SessionOperationFailureCodes.ItemNotFound => Ui(
+                "ui.town.inventory.equip.item_missing",
+                "The selected item is no longer available."),
+            SessionOperationFailureCodes.InventoryAlreadyEquipped => Ui(
+                "ui.town.inventory.equip.already_equipped",
+                "That item is already equipped by another hero."),
+            _ => Ui(
+                "ui.town.inventory.equip.failed",
+                "The item could not be equipped. Please try again."),
+        };
+    }
+
+    private string Ui(string key, string fallback, params object[] arguments)
+        => _contentText?.LocalizeUi(
+               GameLocalizationTables.UITown,
+               key,
+               fallback,
+               arguments)
+           ?? (arguments.Length == 0
+               ? fallback
+               : string.Format(fallback, arguments));
 }

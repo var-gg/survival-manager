@@ -6,6 +6,7 @@ using System.Text;
 using SM.Combat.Model;
 using SM.Core.Content;
 using SM.Core.Contracts;
+using SM.Core.Results;
 using SM.Core.Stats;
 using SM.Meta.Model;
 
@@ -360,26 +361,35 @@ public sealed class EncounterResolutionService
             string.Empty);
     }
 
-    public bool TryResolveEncounter(BattleContextState context, out ResolvedEncounterContext resolved, out string error)
+    public bool TryResolveEncounter(
+        BattleContextState context,
+        out ResolvedEncounterContext resolved,
+        out OperationFailure? failure)
     {
         resolved = null!;
-        error = string.Empty;
+        failure = null;
 
         if (!HasAuthoredCatalog)
         {
-            error = "Authored encounter catalog is unavailable.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.EncounterCatalogUnavailable,
+                "Authored encounter catalog is unavailable.");
             return false;
         }
 
         if (!_content.Encounters!.TryGetValue(context.EncounterId, out var encounter))
         {
-            error = $"Encounter '{context.EncounterId}' not found.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.EncounterDefinitionMissing,
+                $"Encounter '{context.EncounterId}' was not found.");
             return false;
         }
 
         if (!_content.EnemySquads!.TryGetValue(encounter.EnemySquadTemplateId, out var squad))
         {
-            error = $"Enemy squad '{encounter.EnemySquadTemplateId}' not found.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.EncounterEnemySquadMissing,
+                $"Enemy squad '{encounter.EnemySquadTemplateId}' was not found for encounter '{context.EncounterId}'.");
             return false;
         }
 
@@ -387,7 +397,9 @@ public sealed class EncounterResolutionService
             member.EquipmentBudget > 0 && string.IsNullOrWhiteSpace(member.EquipmentItemBaseId));
         if (invalidEquipmentMember != null)
         {
-            error = $"Enemy squad member '{invalidEquipmentMember.Id}' has equipment budget without an authored item.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.EncounterEnemyEquipmentMissing,
+                $"Enemy squad member '{invalidEquipmentMember.Id}' has equipment budget without an authored item.");
             return false;
         }
 
@@ -411,7 +423,10 @@ public sealed class EncounterResolutionService
         var buildResult = BattleSetupBuilder.Build(Array.Empty<BattleParticipantSpec>(), new BattleEncounterPlan(enemyParticipants, squad.EnemyPosture), _content);
         if (!buildResult.IsSuccess)
         {
-            error = buildResult.Error ?? $"Failed to resolve encounter '{context.EncounterId}'.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.EncounterBattleSetupFailed,
+                $"Failed to build encounter '{context.EncounterId}': "
+                + (buildResult.Failure?.Diagnostic ?? "Battle setup returned no failure."));
             return false;
         }
 

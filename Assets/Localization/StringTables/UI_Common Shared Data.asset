@@ -179,6 +179,66 @@ MonoBehaviour:
     m_Key: ui.common.close
     m_Metadata:
       m_Items: []
+  - m_Id: 43406952460783616
+    m_Key: ui.common.posture.all_in_backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920960
+    m_Key: ui.common.posture.collapse_weak_side
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920961
+    m_Key: ui.common.posture.hold_line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920962
+    m_Key: ui.common.posture.protect_carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920963
+    m_Key: ui.common.posture.standard_advance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920964
+    m_Key: ui.common.posture.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920965
+    m_Key: ui.common.unknown_encounter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920966
+    m_Key: ui.common.unknown_event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920967
+    m_Key: ui.common.unknown_item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920968
+    m_Key: ui.common.unknown_reward_source
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920969
+    m_Key: ui.common.unknown_route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920970
+    m_Key: ui.common.unknown_site
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920971
+    m_Key: ui.common.unknown_skill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43409835394666496
+    m_Key: ui.common.unknown_content
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43409835432415232
+    m_Key: ui.common.description_unavailable
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

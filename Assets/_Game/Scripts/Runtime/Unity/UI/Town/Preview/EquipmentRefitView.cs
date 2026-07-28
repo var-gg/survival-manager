@@ -199,7 +199,7 @@ public sealed class EquipmentRefitView : IEquipmentRefitView
         {
             if (previousGroup != affix.GroupKey)
             {
-                var header = new Label(affix.GroupKey.ToUpperInvariant());
+                var header = new Label(affix.GroupLabel);
                 header.AddToClassList("erp-affix-group");
                 header.AddToClassList($"erp-affix-group--{affix.GroupKey}");
                 _affixList.Add(header);

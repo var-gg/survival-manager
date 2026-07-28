@@ -113,7 +113,7 @@ internal static class BossDeckBattleHashCorpus
                 encounter.BossOverlayId);
             if (!resolver.TryResolveEncounter(context, out var resolved, out var resolveError))
             {
-                throw new InvalidOperationException(resolveError);
+                throw new InvalidOperationException(resolveError?.Diagnostic);
             }
 
             if (!SessionBattleStateComposer.TryCompose(lookup, allies, resolved, out var state, out var composeError))

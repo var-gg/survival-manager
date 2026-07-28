@@ -85,7 +85,9 @@ public sealed class DeploymentSetupPanelView
             label.text = $"{LocalizeAnchor(localization, anchor)}\n{heroName}";
         }
 
-        _postureLabel.text = $"{Localize(localization, GameLocalizationTables.UICommon, "ui.common.posture", "Posture")}\n{session.SelectedTeamPosture}";
+        _postureLabel.text =
+            $"{Localize(localization, GameLocalizationTables.UICommon, "ui.common.posture", "Posture")}\n"
+            + TeamPostureText.Resolve(localization, session.SelectedTeamPosture);
         _summaryLabel.text = Localize(localization, GameLocalizationTables.UICommon, "ui.common.deploy_summary", "Deploy {0}/4", session.BattleDeployHeroIds.Count);
     }
 

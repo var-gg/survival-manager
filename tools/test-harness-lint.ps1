@@ -22,6 +22,8 @@ param(
         WarrantSeparability protect 생존율 0% 오진. EndsWith("_{id}") 또는 접두사 포함 리터럴을 쓸 것)
     9. authored IconId가 실제 PNG로 해석되지 않고 명시적 known-missing-art 선언도 없으면 실패
     10. first playable capped content가 live/parking scope contract에서 누락되거나 중복되면 실패
+    11. scene/prefab에 직렬화된 MonoBehaviour가 file-scoped namespace를 사용하면 실패
+    12. player-facing UI key의 Korean seed 누락/영문 복사, raw content id/enum/diagnostic 렌더링 패턴이면 실패
 #>
 
 $ErrorActionPreference = 'Continue'
@@ -532,6 +534,22 @@ else {
     & $serializedNamespaceLint -RepoRoot $RepoRoot
     if ($LASTEXITCODE -ne 0) {
         Write-LintError -Check 'Serialized-monobehaviour-namespace' -File 'Assets/_Game/Scripts' -Detail 'A scene- or prefab-serialized MonoBehaviour uses a file-scoped namespace. Convert the exact file reported above to a block namespace; Unity 6000.4.7f1 leaves its MonoScript class-null and the component loads with a missing script.'
+    }
+}
+
+# ────────────────────────────────────────────────
+# Check 12: player-facing wording stays localized and semantic
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 12: Player-facing localization and semantic text ==" -ForegroundColor Cyan
+$playerFacingTextLint = Join-Path $RepoRoot 'tools/player-facing-text/lint.ps1'
+if (-not (Test-Path -LiteralPath $playerFacingTextLint)) {
+    Write-LintError -Check 'Player-facing-text' -File 'tools/player-facing-text/lint.ps1' -Detail 'Player-facing text lint is missing. UI localization keys, raw content ids, enum names, and structured failure boundaries must remain guarded.'
+}
+else {
+    & $playerFacingTextLint -RepoRoot $RepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        Write-LintError -Check 'Player-facing-text' -File 'tools/player-facing-text/lint.ps1' -Detail 'Player-facing text validation failed. Repair the exact surface, string, and action reported above.'
     }
 }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Combat.Model;
 using SM.Core.Contracts;
+using SM.Core.Results;
 using SM.Core.Stats;
 using SM.Meta.Model;
 
@@ -18,9 +19,9 @@ public static class BattleSetupBuilder
         var allyDefinitions = new List<BattleUnitLoadout>(allies.Count);
         foreach (var ally in allies)
         {
-            if (!TryBuildDefinition(ally, content, out var definition, out var error))
+            if (!TryBuildDefinition(ally, content, out var definition, out var failure))
             {
-                return BattleSetupBuildResult.Fail(error);
+                return BattleSetupBuildResult.Fail(failure!);
             }
 
             allyDefinitions.Add(definition);
@@ -29,9 +30,9 @@ public static class BattleSetupBuilder
         var enemyDefinitions = new List<BattleUnitLoadout>(encounter.EnemyParticipants.Count);
         foreach (var enemy in encounter.EnemyParticipants)
         {
-            if (!TryBuildDefinition(enemy, content, out var definition, out var error))
+            if (!TryBuildDefinition(enemy, content, out var definition, out var failure))
             {
-                return BattleSetupBuildResult.Fail(error);
+                return BattleSetupBuildResult.Fail(failure!);
             }
 
             enemyDefinitions.Add(definition);
@@ -65,12 +66,15 @@ public static class BattleSetupBuilder
         BattleParticipantSpec participant,
         CombatContentSnapshot content,
         out BattleUnitLoadout definition,
-        out string error)
+        out OperationFailure? failure)
     {
+        failure = null;
         if (!content.Archetypes.TryGetValue(participant.ArchetypeId, out var archetype))
         {
             definition = null!;
-            error = $"Combat archetype '{participant.ArchetypeId}'를 찾을 수 없습니다.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.BattleSetupArchetypeMissing,
+                $"Combat archetype '{participant.ArchetypeId}' was not found for participant '{participant.ParticipantId}'.");
             return false;
         }
 
@@ -82,10 +86,10 @@ public static class BattleSetupBuilder
 
         var appliedAffixes = new List<(AffixTemplate Template, float? Magnitude)>();
         var deferredConditionalAffixes = new List<(AffixTemplate Template, float? Magnitude)>();
-        if (!TryAddTraitPackage(participant.PositiveTraitId, content, packages, out error) ||
-            !TryAddTraitPackage(participant.NegativeTraitId, content, packages, out error) ||
-            !TryAddItemPackages(participant.EquippedItems, content, packages, appliedAffixes, deferredConditionalAffixes, out error) ||
-            !TryAddAugmentPackages(participant.TemporaryAugmentIds, content, packages, out error))
+        if (!TryAddTraitPackage(participant.PositiveTraitId, content, packages, out failure) ||
+            !TryAddTraitPackage(participant.NegativeTraitId, content, packages, out failure) ||
+            !TryAddItemPackages(participant.EquippedItems, content, packages, appliedAffixes, deferredConditionalAffixes, out failure) ||
+            !TryAddAugmentPackages(participant.TemporaryAugmentIds, content, packages, out failure))
         {
             definition = null!;
             return false;
@@ -189,7 +193,6 @@ public static class BattleSetupBuilder
             roleInstructionId,
             ResolveDominantHand(participant, content, archetype),
             triggeredEffects);
-        error = string.Empty;
         return true;
     }
 
@@ -336,9 +339,9 @@ public static class BattleSetupBuilder
         string traitId,
         CombatContentSnapshot content,
         List<CombatModifierPackage> packages,
-        out string error)
+        out OperationFailure? failure)
     {
-        error = string.Empty;
+        failure = null;
         if (string.IsNullOrWhiteSpace(traitId))
         {
             return true;
@@ -346,7 +349,9 @@ public static class BattleSetupBuilder
 
         if (!content.TraitPackages.TryGetValue(traitId, out var package))
         {
-            error = $"Trait '{traitId}'를 찾을 수 없습니다.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.BattleSetupTraitMissing,
+                $"Trait package '{traitId}' was not found while building a battle setup.");
             return false;
         }
 
@@ -360,8 +365,9 @@ public static class BattleSetupBuilder
         List<CombatModifierPackage> packages,
         List<(AffixTemplate Template, float? Magnitude)> appliedAffixes,
         List<(AffixTemplate Template, float? Magnitude)> deferredConditionalAffixes,
-        out string error)
+        out OperationFailure? failure)
     {
+        failure = null;
         foreach (var item in equippedItems)
         {
             if (string.IsNullOrWhiteSpace(item.ItemBaseId))
@@ -371,7 +377,9 @@ public static class BattleSetupBuilder
 
             if (!content.ItemPackages.TryGetValue(item.ItemBaseId, out var itemPackage))
             {
-                error = $"Item '{item.ItemBaseId}'를 찾을 수 없습니다.";
+                failure = OperationFailure.Invariant(
+                    MetaOperationFailureCodes.BattleSetupItemMissing,
+                    $"Item package '{item.ItemBaseId}' was not found while building a battle setup.");
                 return false;
             }
 
@@ -380,7 +388,9 @@ public static class BattleSetupBuilder
             {
                 if (!content.AffixPackages.TryGetValue(affixId, out var affixPackage))
                 {
-                    error = $"Affix '{affixId}'를 찾을 수 없습니다.";
+                    failure = OperationFailure.Invariant(
+                        MetaOperationFailureCodes.BattleSetupAffixMissing,
+                        $"Affix package '{affixId}' was not found while building a battle setup.");
                     return false;
                 }
 
@@ -407,7 +417,6 @@ public static class BattleSetupBuilder
             }
         }
 
-        error = string.Empty;
         return true;
     }
 
@@ -415,8 +424,9 @@ public static class BattleSetupBuilder
         IReadOnlyList<string> augmentIds,
         CombatContentSnapshot content,
         List<CombatModifierPackage> packages,
-        out string error)
+        out OperationFailure? failure)
     {
+        failure = null;
         foreach (var augmentId in augmentIds.Distinct())
         {
             if (string.IsNullOrWhiteSpace(augmentId))
@@ -426,14 +436,15 @@ public static class BattleSetupBuilder
 
             if (!content.AugmentPackages.TryGetValue(augmentId, out var package))
             {
-                error = $"Augment '{augmentId}'를 찾을 수 없습니다.";
+                failure = OperationFailure.Invariant(
+                    MetaOperationFailureCodes.BattleSetupAugmentMissing,
+                    $"Augment package '{augmentId}' was not found while building a battle setup.");
                 return false;
             }
 
             packages.Add(package);
         }
 
-        error = string.Empty;
         return true;
     }
 }

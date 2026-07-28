@@ -1495,6 +1495,134 @@ MonoBehaviour:
     m_Key: ui.town.refit.reason.quality_maxed
     m_Metadata:
       m_Items: []
+  - m_Id: 43406947691859968
+    m_Key: ui.town.compendium.damage.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220096
+    m_Key: ui.town.compendium.delivery.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220097
+    m_Key: ui.town.compendium.kind.buff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220098
+    m_Key: ui.town.compendium.kind.debuff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220099
+    m_Key: ui.town.compendium.kind.heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220100
+    m_Key: ui.town.compendium.kind.shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220101
+    m_Key: ui.town.compendium.kind.strike
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220102
+    m_Key: ui.town.compendium.kind.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220103
+    m_Key: ui.town.compendium.kind.utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220104
+    m_Key: ui.town.compendium.target.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220105
+    m_Key: ui.town.inventory.equip.already_equipped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220106
+    m_Key: ui.town.inventory.equip.failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220107
+    m_Key: ui.town.inventory.equip.hero_missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220108
+    m_Key: ui.town.inventory.equip.item_missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220109
+    m_Key: ui.town.inventory.equip.select_hero
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220110
+    m_Key: ui.town.inventory.equip.success
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220111
+    m_Key: ui.town.inventory.equip.town_only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220112
+    m_Key: ui.town.refit.reason.affix_conflict
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220113
+    m_Key: ui.town.refit.reason.affix_illegal_for_slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220114
+    m_Key: ui.town.refit.reason.item_missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220115
+    m_Key: ui.town.refit.reason.operation_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220116
+    m_Key: ui.town.refit.reason.seal_selection_invalid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220117
+    m_Key: ui.town.refit.reason.seal_selection_required
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220118
+    m_Key: ui.town.refit.reason.unavailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220119
+    m_Key: ui.town.sheet.hero.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220120
+    m_Key: ui.town.sheet.skill.always
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220121
+    m_Key: ui.town.sheet.skill.flex_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220122
+    m_Key: ui.town.sheet.skill.flex_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220123
+    m_Key: ui.town.sheet.skill.signature_active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220124
+    m_Key: ui.town.sheet.skill.signature_passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220125
+    m_Key: ui.town.sheet.skill.unassigned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220126
+    m_Key: ui.town.sheet.skills
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

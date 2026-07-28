@@ -601,7 +601,7 @@ public static class BalanceSweepScenarioFactory
         var resolver = new EncounterResolutionService(content);
         if (!resolver.TryResolveEncounter(context, out var resolved, out var error))
         {
-            throw new InvalidOperationException(error);
+            throw new InvalidOperationException(error?.Diagnostic);
         }
 
         return resolved.Enemies;

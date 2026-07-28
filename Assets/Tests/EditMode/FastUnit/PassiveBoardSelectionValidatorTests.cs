@@ -24,7 +24,7 @@ public sealed class PassiveBoardSelectionValidatorTests
         var result = PassiveBoardSelectionValidator.Toggle("board_alpha", new[] { "node_a" }, "node_b", nodesById, PassiveBoardSelectionValidator.BaseActiveNodeCount);
 
         Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Error, Does.Contain("보드"));
+        Assert.That(result.Failure?.Code, Is.EqualTo(MetaOperationFailureCodes.PassiveNodeWrongBoard));
         Assert.That(result.NormalizedNodeIds, Is.EqualTo(new[] { "node_a" }));
     }
 
@@ -40,7 +40,7 @@ public sealed class PassiveBoardSelectionValidatorTests
         var result = PassiveBoardSelectionValidator.Toggle("board_alpha", System.Array.Empty<string>(), "locked", nodesById, PassiveBoardSelectionValidator.BaseActiveNodeCount);
 
         Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Error, Does.Contain("선행"));
+        Assert.That(result.Failure?.Code, Is.EqualTo(MetaOperationFailureCodes.PassivePrerequisiteRequired));
     }
 
     [Test]
@@ -56,7 +56,7 @@ public sealed class PassiveBoardSelectionValidatorTests
         var result = PassiveBoardSelectionValidator.Toggle("board_alpha", new[] { "left" }, "right", nodesById, PassiveBoardSelectionValidator.BaseActiveNodeCount);
 
         Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Error, Does.Contain("배타"));
+        Assert.That(result.Failure?.Code, Is.EqualTo(MetaOperationFailureCodes.PassiveMutualExclusion));
     }
 
     [Test]
@@ -71,7 +71,7 @@ public sealed class PassiveBoardSelectionValidatorTests
         var result = PassiveBoardSelectionValidator.Toggle("board_alpha", new[] { "keystone_a" }, "keystone_b", nodesById, PassiveBoardSelectionValidator.BaseActiveNodeCount);
 
         Assert.That(result.IsValid, Is.False);
-        Assert.That(result.Error, Does.Contain("Keystone"));
+        Assert.That(result.Failure?.Code, Is.EqualTo(MetaOperationFailureCodes.PassiveKeystoneLimitReached));
     }
 
     [Test]

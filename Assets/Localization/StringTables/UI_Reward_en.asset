@@ -559,21 +559,24 @@ MonoBehaviour:
   - m_Id: 118
     m_Localized: Reward Bias +{0}%
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 162163771961769992
   - m_Id: 119
     m_Localized: Threat Pressure +{0}%
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 162163771961769992
   - m_Id: 120
     m_Localized: Affinity Boost +{0}%
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 162163771961769992
   - m_Id: 121
     m_Localized: Progression
     m_Metadata:
       m_Items: []
   - m_Id: 122
-    m_Localized: Event Timeline
+    m_Localized: Timeline
     m_Metadata:
       m_Items: []
   - m_Id: 123
@@ -617,6 +620,64 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 27674493656043520
     m_Localized: "{0} \xB7 permanent candidate locks on return"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 43406944869093376
+    m_Localized: Boss Sigil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453504
+    m_Localized: Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453505
+    m_Localized: Echo Crystal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453506
+    m_Localized: Ember Dust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453507
+    m_Localized: '{0} x{1}'
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769992
+  - m_Id: 43406944898453508
+    m_Localized: Gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453509
+    m_Localized: No automatic loot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453510
+    m_Localized: Skill Manual
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453511
+    m_Localized: Skill Shard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453512
+    m_Localized: Trait Lock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453513
+    m_Localized: Trait Purge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453514
+    m_Localized: Unknown loot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453515
+    m_Localized: 'Settlement complete
+
+      Route: {0}
+
+      Reward Source: {1}'
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
@@ -667,3 +728,8 @@ MonoBehaviour:
         - id: 27266949859053568
         - id: 27674493656043520
         - id: 99
+        - id: 43406944898453507
+        - id: 120
+        - id: 118
+        - id: 119
+        - id: 43406944898453515

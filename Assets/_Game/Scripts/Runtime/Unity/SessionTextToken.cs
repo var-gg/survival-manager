@@ -10,7 +10,10 @@ public enum SessionTextArgKind
     ItemName = 2,
     AugmentName = 3,
     LocalizedKey = 4,
-    Token = 5
+    Token = 5,
+    EncounterName = 6,
+    RewardSourceName = 7,
+    ExpeditionSiteName = 8
 }
 
 public sealed record SessionTextArg(
@@ -31,6 +34,12 @@ public sealed record SessionTextArg(
 
     public static SessionTextArg AugmentName(string augmentId) => new(SessionTextArgKind.AugmentName, augmentId ?? string.Empty, 0, string.Empty, string.Empty, string.Empty);
 
+    public static SessionTextArg EncounterName(string encounterId) => new(SessionTextArgKind.EncounterName, encounterId ?? string.Empty, 0, string.Empty, string.Empty, string.Empty);
+
+    public static SessionTextArg RewardSourceName(string rewardSourceId) => new(SessionTextArgKind.RewardSourceName, rewardSourceId ?? string.Empty, 0, string.Empty, string.Empty, string.Empty);
+
+    public static SessionTextArg ExpeditionSiteName(string siteId) => new(SessionTextArgKind.ExpeditionSiteName, siteId ?? string.Empty, 0, string.Empty, string.Empty, string.Empty);
+
     public static SessionTextArg Localized(string table, string key, string fallback) => new(SessionTextArgKind.LocalizedKey, string.Empty, 0, table ?? string.Empty, key ?? string.Empty, fallback ?? string.Empty);
 
     public static SessionTextArg Token(SessionTextToken token) => new(SessionTextArgKind.Token, string.Empty, 0, string.Empty, string.Empty, string.Empty)
@@ -45,6 +54,9 @@ public sealed record SessionTextArg(
             SessionTextArgKind.Number => NumberValue,
             SessionTextArgKind.ItemName => contentText?.GetItemName(TextValue) ?? TextValue,
             SessionTextArgKind.AugmentName => contentText?.GetAugmentName(TextValue) ?? TextValue,
+            SessionTextArgKind.EncounterName => contentText?.GetEncounterName(TextValue) ?? string.Empty,
+            SessionTextArgKind.RewardSourceName => contentText?.GetRewardSourceName(TextValue) ?? string.Empty,
+            SessionTextArgKind.ExpeditionSiteName => contentText?.GetExpeditionSiteName(TextValue) ?? string.Empty,
             SessionTextArgKind.LocalizedKey => localization != null
                 ? localization.LocalizeOrFallback(Table, Key, Fallback)
                 : Fallback,

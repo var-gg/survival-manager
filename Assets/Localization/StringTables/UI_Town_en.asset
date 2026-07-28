@@ -1035,7 +1035,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021697
-    m_Localized: "\u2756  Tactical Setup"
+    m_Localized: Tactical Setup
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021698
@@ -1344,23 +1344,23 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852473
-    m_Localized: Nearest enemy
+    m_Localized: Nearest Enemy
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852474
-    m_Localized: Lowest HP enemy
+    m_Localized: Lowest HP Enemy
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852475
-    m_Localized: Exposed enemy
+    m_Localized: Exposed Enemy
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852476
-    m_Localized: Lowest HP ally
+    m_Localized: Lowest HP Ally
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852477
-    m_Localized: Protected ally
+    m_Localized: Protected Ally
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852478
@@ -1368,7 +1368,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852479
-    m_Localized: Marked target
+    m_Localized: Marked Target
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852480
@@ -1392,11 +1392,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852485
-    m_Localized: Caster
+    m_Localized: Caster VFX
     m_Metadata:
       m_Items: []
   - m_Id: 17841341873852486
-    m_Localized: Target
+    m_Localized: Target VFX
     m_Metadata:
       m_Items: []
   - m_Id: 19993520462172160
@@ -1553,6 +1553,134 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 43063980221337622
     m_Localized: The item is already at the maximum Refit quality.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947691859968
+    m_Localized: Unknown damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220096
+    m_Localized: Unknown delivery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220097
+    m_Localized: Buff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220098
+    m_Localized: Debuff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220099
+    m_Localized: Heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220100
+    m_Localized: Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220101
+    m_Localized: Strike
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220102
+    m_Localized: Unknown type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220103
+    m_Localized: Utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220104
+    m_Localized: Unknown target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220105
+    m_Localized: That item is already equipped by another hero.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220106
+    m_Localized: The item could not be equipped. Please try again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220107
+    m_Localized: The selected hero is no longer available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220108
+    m_Localized: The selected item is no longer available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220109
+    m_Localized: Select a hero before equipping an item.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220110
+    m_Localized: Item equipped.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220111
+    m_Localized: Items can be equipped only in Town.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220112
+    m_Localized: This item has mutually exclusive affixes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220113
+    m_Localized: This item's affixes are not valid for its equipment slot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220114
+    m_Localized: The selected item is no longer available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220115
+    m_Localized: The operation could not be completed. Please try again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220116
+    m_Localized: The selected affix locks are no longer valid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220117
+    m_Localized: Select the affixes to lock before sealing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220118
+    m_Localized: This operation is currently unavailable.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220119
+    m_Localized: No hero selected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220120
+    m_Localized: Always
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220121
+    m_Localized: Flex Active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220122
+    m_Localized: Flex Passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220123
+    m_Localized: Signature Active
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220124
+    m_Localized: Signature Passive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220125
+    m_Localized: No skill assigned.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406947721220126
+    m_Localized: Skills
     m_Metadata:
       m_Items: []
   references:

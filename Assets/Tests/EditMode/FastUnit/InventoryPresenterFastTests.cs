@@ -15,7 +15,7 @@ namespace SM.Tests.EditMode;
 /// 가짜통과였다(presenter를 인스턴스화하지도, BuildState를 부르지도 않음). 이제 profile.Inventory에 아이템을
 /// 직접 시드하고 presenter를 실제로 돌려 화면 데이터·command를 단언한다.
 ///
-/// item definition lookup이 비어 있어도 BuildState가 id 기반 fallback으로 graceful degrade하므로
+/// item definition lookup이 비어 있어도 BuildState가 honest placeholder로 graceful degrade하므로
 /// (run-loop fixture는 ItemDefinition 0) 콘텐츠 확장 없이 화면 conformance를 검증할 수 있다.
 /// </summary>
 [Category("FastUnit")]
@@ -30,8 +30,8 @@ public sealed class InventoryPresenterFastTests
         var state = presenter.BuildState();
 
         Assert.That(state.Items, Has.Count.GreaterThanOrEqualTo(2), "시드한 아이템이 그리드에 보인다.");
-        Assert.That(state.Items.Any(item => item.Name == "demo_blade"), Is.True,
-            "item def가 없어도 ItemBaseId 기반 fallback 이름으로 노출(graceful degrade).");
+        Assert.That(state.Items.All(item => item.Name == "Unknown item"), Is.True,
+            "item def가 없어도 raw ItemBaseId 대신 honest placeholder로 노출(graceful degrade).");
         Assert.That(state.Categories.Any(category => category.Key == "all"), Is.True, "카테고리 사이드바가 채워진다.");
         Assert.That(state.Detail, Is.Not.Null, "선택 아이템 상세가 채워진다.");
         Assert.That(state.Compare, Is.Not.Null);
@@ -64,7 +64,7 @@ public sealed class InventoryPresenterFastTests
 
         Assert.That(view.RenderCount, Is.GreaterThan(0), "장착 시도가 view render를 구동(command headless).");
         Assert.That(view.LastState, Is.Not.Null);
-        Assert.That(view.LastState!.Compare!.EquipCta.StatusText, Does.Contain("영웅"),
+        Assert.That(view.LastState!.Compare!.EquipCta.StatusText, Does.Contain("hero"),
             "대상 영웅 없이 장착하면 영웅 선택을 안내한다.");
     }
 

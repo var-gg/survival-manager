@@ -7,6 +7,7 @@ using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using UnityEngine;
 
 namespace SM.Unity;
 
@@ -31,9 +32,9 @@ internal sealed class SessionItemRefitFlow
                 out var itemState,
                 out var chapterEconomy,
                 out var service,
-                out var error))
+                out var failure))
         {
-            return Result.Fail(error);
+            return FailAtPlayerBoundary(failure!, "refit", itemInstanceId);
         }
 
         var commandSeed = unchecked((ulong)(uint)BuildStableSeed(
@@ -51,9 +52,9 @@ internal sealed class SessionItemRefitFlow
                 out var itemState,
                 out var chapterEconomy,
                 out var service,
-                out var error))
+                out var failure))
         {
-            return Result.Fail(error);
+            return FailAtPlayerBoundary(failure!, "refit", itemInstanceId);
         }
 
         return ApplyItemRefit(item, itemState, chapterEconomy, service, stableCommandSeed);
@@ -73,18 +74,18 @@ internal sealed class SessionItemRefitFlow
                 out var itemState,
                 out var chapterEconomy,
                 out var service,
-                out var error))
+                out var failure))
         {
-            return Result.Fail(error);
+            return FailAtPlayerBoundary(failure!, "seal", itemInstanceId);
         }
 
         if (!TryCanonicalizeSealSelection(
                 itemState.AffixIds,
                 sealedAffixIds,
                 out var canonicalSealedAffixIds,
-                out error))
+                out failure))
         {
-            return Result.Fail(error);
+            return FailAtPlayerBoundary(failure!, "seal", itemInstanceId);
         }
 
         var attemptIndex = ResolveNextSealAttemptIndex(item.ItemInstanceId);
@@ -115,18 +116,18 @@ internal sealed class SessionItemRefitFlow
                 out var itemState,
                 out var chapterEconomy,
                 out var service,
-                out var error))
+                out var failure))
         {
-            return Result.Fail(error);
+            return FailAtPlayerBoundary(failure!, "seal", itemInstanceId);
         }
 
         if (!TryCanonicalizeSealSelection(
                 itemState.AffixIds,
                 sealedAffixIds,
                 out var canonicalSealedAffixIds,
-                out error))
+                out failure))
         {
-            return Result.Fail(error);
+            return FailAtPlayerBoundary(failure!, "seal", itemInstanceId);
         }
 
         return ApplyItemSeal(
@@ -147,9 +148,15 @@ internal sealed class SessionItemRefitFlow
             out var itemState,
             out var chapterEconomy,
             out var service,
-            out var error)
-            ? service.QuoteNextEffective(itemState, chapterEconomy)
-            : RefitQuote.Unavailable(error);
+            out var failure)
+            ? PrepareQuoteForPlayer(
+                service.QuoteNextEffective(itemState, chapterEconomy),
+                "refit",
+                itemInstanceId)
+            : PrepareQuoteForPlayer(
+                RefitQuote.Unavailable(failure!),
+                "refit",
+                itemInstanceId);
     }
 
     internal RefitQuote GetSealQuote(
@@ -162,23 +169,31 @@ internal sealed class SessionItemRefitFlow
             out var itemState,
             out var chapterEconomy,
             out var service,
-            out var error)
-            ? service.QuoteSealNextEffective(itemState, chapterEconomy, sealedAffixIds)
-            : RefitQuote.Unavailable(error);
+            out var failure)
+            ? PrepareQuoteForPlayer(
+                service.QuoteSealNextEffective(itemState, chapterEconomy, sealedAffixIds),
+                "seal",
+                itemInstanceId)
+            : PrepareQuoteForPlayer(
+                RefitQuote.Unavailable(failure!),
+                "seal",
+                itemInstanceId);
     }
 
-    internal string GetRefitPurchaseBlockReason(string itemInstanceId)
+    internal OperationFailure? GetRefitPurchaseBlockFailure(string itemInstanceId)
     {
         var quote = GetRefitQuote(itemInstanceId);
-        return ResolvePurchaseBlockReason(quote, CraftOperationKindValue.Reforge);
+        var failure = ResolvePurchaseBlockFailure(quote, CraftOperationKindValue.Reforge);
+        return failure == null ? null : PlayerSafe(failure);
     }
 
-    internal string GetSealPurchaseBlockReason(
+    internal OperationFailure? GetSealPurchaseBlockFailure(
         string itemInstanceId,
         IReadOnlyCollection<string> sealedAffixIds)
     {
         var quote = GetSealQuote(itemInstanceId, sealedAffixIds);
-        return ResolvePurchaseBlockReason(quote, CraftOperationKindValue.Seal);
+        var failure = ResolvePurchaseBlockFailure(quote, CraftOperationKindValue.Seal);
+        return failure == null ? null : PlayerSafe(failure);
     }
 
     internal RefitExecutionResult PreviewRefitItem(
@@ -191,12 +206,11 @@ internal sealed class SessionItemRefitFlow
             out var itemState,
             out var chapterEconomy,
             out var service,
-            out var error)
+            out var failure)
             ? service.RefitNextEffective(itemState, chapterEconomy, stableCommandSeed)
             : RefitExecutionResult.NoChange(
-                RefitQuote.Unavailable(error),
-                Array.Empty<string>(),
-                error: error);
+                RefitQuote.Unavailable(failure!),
+                Array.Empty<string>());
     }
 
     internal RefitExecutionResult PreviewSealItem(
@@ -211,7 +225,7 @@ internal sealed class SessionItemRefitFlow
             out var itemState,
             out var chapterEconomy,
             out var service,
-            out var error)
+            out var failure)
             ? service.SealNextEffective(
                 itemState,
                 chapterEconomy,
@@ -219,9 +233,8 @@ internal sealed class SessionItemRefitFlow
                 attemptIndex,
                 stableCommandSeed)
             : RefitExecutionResult.NoChange(
-                RefitQuote.Unavailable(error),
-                Array.Empty<string>(),
-                error: error);
+                RefitQuote.Unavailable(failure!),
+                Array.Empty<string>());
     }
 
     private Result ApplyItemRefit(
@@ -234,12 +247,15 @@ internal sealed class SessionItemRefitFlow
         // Atomic order: resolve target/cost -> affordability -> generate -> invariants
         // -> materialize both identity/value lists -> charge -> commit both lists.
         var quote = service.QuoteNextEffective(itemState, chapterEconomy);
-        var purchaseBlockReason = ResolvePurchaseBlockReason(
+        var purchaseBlockFailure = ResolvePurchaseBlockFailure(
             quote,
             CraftOperationKindValue.Reforge);
-        if (!string.IsNullOrWhiteSpace(purchaseBlockReason))
+        if (purchaseBlockFailure != null)
         {
-            return Result.Fail(purchaseBlockReason);
+            return FailAtPlayerBoundary(
+                purchaseBlockFailure,
+                "refit",
+                item.ItemInstanceId);
         }
 
         var execution = service.RefitNextEffective(
@@ -248,15 +264,24 @@ internal sealed class SessionItemRefitFlow
             stableCommandSeed);
         if (!execution.Applied)
         {
-            return Result.Fail(string.IsNullOrWhiteSpace(execution.Error)
-                ? "Refit invariant 검증에 실패했습니다."
-                : execution.Error);
+            var failure = execution.Failure
+                          ?? OperationFailure.Invariant(
+                              SessionOperationFailureCodes.GenericOperationFailed,
+                              $"Refit execution returned no result and no failure for item '{item.ItemInstanceId}'.");
+            return FailAtPlayerBoundary(failure, "refit", item.ItemInstanceId);
         }
 
         if (execution.Quote.EchoCost != quote.EchoCost
             || execution.Quote.TargetRefitLevel != quote.TargetRefitLevel)
         {
-            return Result.Fail("Refit quote changed before commit; no currency or item state was changed.");
+            return FailAtPlayerBoundary(
+                OperationFailure.Invariant(
+                    SessionOperationFailureCodes.RefitQuoteChanged,
+                    $"Refit quote changed before commit for item '{item.ItemInstanceId}': "
+                    + $"preview cost/level={quote.EchoCost}/{quote.TargetRefitLevel}, "
+                    + $"execution cost/level={execution.Quote.EchoCost}/{execution.Quote.TargetRefitLevel}."),
+                "refit",
+                item.ItemInstanceId);
         }
 
         var committedAffixIds = execution.AffixIds.ToList();
@@ -266,8 +291,12 @@ internal sealed class SessionItemRefitFlow
         {
             if (!execution.AffixMagnitudes.TryGetValue(affixId, out var magnitude))
             {
-                return Result.Fail(
-                    "Refit magnitude output did not match affix identity; no currency or item state was changed.");
+                return FailAtPlayerBoundary(
+                    OperationFailure.Invariant(
+                        SessionOperationFailureCodes.RefitCommitMismatch,
+                        $"Refit magnitude output was missing affix '{affixId}' for item '{item.ItemInstanceId}'."),
+                    "refit",
+                    item.ItemInstanceId);
             }
 
             committedMagnitudeRolls.Add(new InventoryAffixMagnitudeRecord
@@ -279,8 +308,13 @@ internal sealed class SessionItemRefitFlow
 
         if (committedMagnitudeRolls.Count != execution.AffixMagnitudes.Count)
         {
-            return Result.Fail(
-                "Refit magnitude output contained stale identities; no currency or item state was changed.");
+            return FailAtPlayerBoundary(
+                OperationFailure.Invariant(
+                    SessionOperationFailureCodes.RefitCommitMismatch,
+                    $"Refit magnitude output contained stale identities for item '{item.ItemInstanceId}': "
+                    + $"affixes={committedMagnitudeRolls.Count}, magnitudes={execution.AffixMagnitudes.Count}."),
+                "refit",
+                item.ItemInstanceId);
         }
 
         // These reference assignments are the single-threaded session transaction. Both
@@ -308,12 +342,15 @@ internal sealed class SessionItemRefitFlow
             itemState,
             chapterEconomy,
             canonicalSealedAffixIds);
-        var purchaseBlockReason = ResolvePurchaseBlockReason(
+        var purchaseBlockFailure = ResolvePurchaseBlockFailure(
             quote,
             CraftOperationKindValue.Seal);
-        if (!string.IsNullOrWhiteSpace(purchaseBlockReason))
+        if (purchaseBlockFailure != null)
         {
-            return Result.Fail(purchaseBlockReason);
+            return FailAtPlayerBoundary(
+                purchaseBlockFailure,
+                "seal",
+                item.ItemInstanceId);
         }
 
         var execution = service.SealNextEffective(
@@ -324,15 +361,24 @@ internal sealed class SessionItemRefitFlow
             stableCommandSeed);
         if (!execution.Applied)
         {
-            return Result.Fail(string.IsNullOrWhiteSpace(execution.Error)
-                ? "Seal invariant 검증에 실패했습니다."
-                : execution.Error);
+            var failure = execution.Failure
+                          ?? OperationFailure.Invariant(
+                              SessionOperationFailureCodes.GenericOperationFailed,
+                              $"Seal execution returned no result and no failure for item '{item.ItemInstanceId}'.");
+            return FailAtPlayerBoundary(failure, "seal", item.ItemInstanceId);
         }
 
         if (execution.Quote.EchoCost != quote.EchoCost
             || execution.Quote.TargetRefitLevel != quote.TargetRefitLevel)
         {
-            return Result.Fail("Seal quote changed before commit; no currency or item state was changed.");
+            return FailAtPlayerBoundary(
+                OperationFailure.Invariant(
+                    SessionOperationFailureCodes.RefitQuoteChanged,
+                    $"Seal quote changed before commit for item '{item.ItemInstanceId}': "
+                    + $"preview cost/level={quote.EchoCost}/{quote.TargetRefitLevel}, "
+                    + $"execution cost/level={execution.Quote.EchoCost}/{execution.Quote.TargetRefitLevel}."),
+                "seal",
+                item.ItemInstanceId);
         }
 
         var committedAffixIds = execution.AffixIds.ToList();
@@ -342,8 +388,12 @@ internal sealed class SessionItemRefitFlow
         {
             if (!execution.AffixMagnitudes.TryGetValue(affixId, out var magnitude))
             {
-                return Result.Fail(
-                    "Seal magnitude output did not match affix identity; no state was changed.");
+                return FailAtPlayerBoundary(
+                    OperationFailure.Invariant(
+                        SessionOperationFailureCodes.RefitCommitMismatch,
+                        $"Seal magnitude output was missing affix '{affixId}' for item '{item.ItemInstanceId}'."),
+                    "seal",
+                    item.ItemInstanceId);
             }
 
             committedMagnitudeRolls.Add(new InventoryAffixMagnitudeRecord
@@ -355,8 +405,13 @@ internal sealed class SessionItemRefitFlow
 
         if (committedMagnitudeRolls.Count != execution.AffixMagnitudes.Count)
         {
-            return Result.Fail(
-                "Seal magnitude output contained stale identities; no state was changed.");
+            return FailAtPlayerBoundary(
+                OperationFailure.Invariant(
+                    SessionOperationFailureCodes.RefitCommitMismatch,
+                    $"Seal magnitude output contained stale identities for item '{item.ItemInstanceId}': "
+                    + $"affixes={committedMagnitudeRolls.Count}, magnitudes={execution.AffixMagnitudes.Count}."),
+                "seal",
+                item.ItemInstanceId);
         }
 
         var operation = new ItemCraftOperationRecord
@@ -384,37 +439,40 @@ internal sealed class SessionItemRefitFlow
         return Result.Success();
     }
 
-    private string ResolvePurchaseBlockReason(
+    private OperationFailure? ResolvePurchaseBlockFailure(
         RefitQuote quote,
         CraftOperationKindValue operation)
     {
         if (!string.Equals(_owner.CurrentSceneName, SceneNames.Town, StringComparison.Ordinal))
         {
-            return operation == CraftOperationKindValue.Seal
-                ? "Seal은 Town에서만 가능합니다."
-                : "Refit은 Town에서만 가능합니다.";
+            return OperationFailure.Refusal(
+                SessionOperationFailureCodes.RefitTownOnly,
+                $"Operation '{operation}' is available only in Town.",
+                operation.ToString());
         }
 
         if (!quote.CanPurchase)
         {
-            if (!string.IsNullOrWhiteSpace(quote.Reason))
+            if (quote.Failure != null)
             {
-                return quote.Reason;
+                return quote.Failure;
             }
 
-            return operation == CraftOperationKindValue.Seal
-                ? "이 장비에는 유효한 Seal 단계가 없습니다."
-                : "이 장비에는 유효한 Refit 단계가 없습니다.";
+            return OperationFailure.Invariant(
+                SessionOperationFailureCodes.RefitNoEffectiveStep,
+                $"Operation '{operation}' has no purchasable step and returned no failure.");
         }
 
         if (_owner.Profile.Currencies.Echo < quote.EchoCost)
         {
-            return operation == CraftOperationKindValue.Seal
-                ? $"잔향이 부족합니다. 봉인에는 {quote.EchoCost} 잔향이 필요합니다."
-                : $"잔향이 부족합니다. 재정비에는 {quote.EchoCost} 잔향이 필요합니다.";
+            return OperationFailure.Refusal(
+                SessionOperationFailureCodes.RefitUnaffordable,
+                $"Operation '{operation}' costs {quote.EchoCost} Echo but wallet has {_owner.Profile.Currencies.Echo}.",
+                operation.ToString(),
+                quote.EchoCost.ToString(System.Globalization.CultureInfo.InvariantCulture));
         }
 
-        return string.Empty;
+        return null;
     }
 
     private int ResolveNextSealAttemptIndex(string itemInstanceId)
@@ -439,12 +497,15 @@ internal sealed class SessionItemRefitFlow
         IReadOnlyList<string> itemAffixIds,
         IReadOnlyCollection<string>? sealedAffixIds,
         out IReadOnlyList<string> canonicalSealedAffixIds,
-        out string error)
+        out OperationFailure? failure)
     {
         canonicalSealedAffixIds = Array.Empty<string>();
+        failure = null;
         if (sealedAffixIds == null)
         {
-            error = "Seal affix selection is required.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitSealSelectionRequired,
+                "Seal affix selection is required.");
             return false;
         }
 
@@ -453,26 +514,31 @@ internal sealed class SessionItemRefitFlow
         {
             if (string.IsNullOrWhiteSpace(affixId) || !sealedSet.Add(affixId))
             {
-                error = "Seal affix selection contains a blank or duplicate id.";
+                failure = OperationFailure.Refusal(
+                    MetaOperationFailureCodes.RefitSealSelectionInvalid,
+                    "Seal affix selection contains a blank or duplicate id.");
                 return false;
             }
         }
 
         if (sealedSet.Count >= itemAffixIds.Count && itemAffixIds.Count > 0)
         {
-            error = "Seal must leave at least one affix unlocked.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitSealAllAffixesLocked,
+                "Seal must leave at least one affix unlocked.");
             return false;
         }
 
         var canonical = itemAffixIds.Where(sealedSet.Contains).ToArray();
         if (canonical.Length != sealedSet.Count)
         {
-            error = "Seal affix selection contains an id that is not on the item.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.RefitSealSelectionInvalid,
+                "Seal affix selection contains an id that is not on the item.");
             return false;
         }
 
         canonicalSealedAffixIds = canonical;
-        error = string.Empty;
         return true;
     }
 
@@ -482,19 +548,21 @@ internal sealed class SessionItemRefitFlow
         out RefitItemState itemState,
         out RefitChapterEconomy chapterEconomy,
         out RefitService service,
-        out string error)
+        out OperationFailure? failure)
     {
         item = null!;
         itemState = null!;
         chapterEconomy = null!;
         service = null!;
-        error = string.Empty;
+        failure = null;
 
         var inventoryIndex = _owner.Profile.Inventory.FindIndex(candidate =>
             string.Equals(candidate.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
         if (inventoryIndex < 0)
         {
-            error = $"아이템 '{itemInstanceId}'을 찾을 수 없습니다.";
+            failure = OperationFailure.Refusal(
+                SessionOperationFailureCodes.ItemNotFound,
+                $"Inventory item '{itemInstanceId}' was not found.");
             return false;
         }
 
@@ -502,14 +570,18 @@ internal sealed class SessionItemRefitFlow
         var snapshot = _contentLookup.Snapshot;
         if (snapshot.RefitBalance == null)
         {
-            error = "Refit balance data가 content snapshot에 없습니다.";
+            failure = OperationFailure.Invariant(
+                SessionOperationFailureCodes.RefitBalanceMissing,
+                "Refit balance data is absent from the content snapshot.");
             return false;
         }
 
         if (snapshot.ItemCatalog is not { } items
             || !items.TryGetValue(item.ItemBaseId, out var itemTemplate))
         {
-            error = $"Refit item base '{item.ItemBaseId}'을 content snapshot에서 찾을 수 없습니다.";
+            failure = OperationFailure.Invariant(
+                SessionOperationFailureCodes.RefitItemBaseMissing,
+                $"Refit item base '{item.ItemBaseId}' was not found in the content snapshot for item '{itemInstanceId}'.");
             return false;
         }
 
@@ -517,7 +589,7 @@ internal sealed class SessionItemRefitFlow
                     && item.RolledRarityTier <= (int)ItemRarityTierValue.Legendary
             ? (ItemRarityTierValue)item.RolledRarityTier
             : itemTemplate.RarityTier;
-        if (!TryBuildAffixMagnitudeLookup(item, out var affixMagnitudes, out error))
+        if (!TryBuildAffixMagnitudeLookup(item, out var affixMagnitudes, out failure))
         {
             return false;
         }
@@ -548,8 +620,9 @@ internal sealed class SessionItemRefitFlow
     private static bool TryBuildAffixMagnitudeLookup(
         InventoryItemRecord item,
         out IReadOnlyDictionary<string, float> magnitudes,
-        out string error)
+        out OperationFailure? failure)
     {
+        failure = null;
         var currentAffixIds = new HashSet<string>(
             item.AffixIds ?? new List<string>(),
             StringComparer.Ordinal);
@@ -568,14 +641,63 @@ internal sealed class SessionItemRefitFlow
             if (!result.TryAdd(roll.AffixId, roll.Magnitude))
             {
                 magnitudes = new Dictionary<string, float>(StringComparer.Ordinal);
-                error = $"Affix '{roll.AffixId}' has duplicate persisted magnitude rolls.";
+                failure = OperationFailure.Invariant(
+                    SessionOperationFailureCodes.RefitMagnitudeStateInvalid,
+                    $"Affix '{roll.AffixId}' has duplicate persisted magnitude rolls on item '{item.ItemInstanceId}'.");
                 return false;
             }
         }
 
         magnitudes = result;
-        error = string.Empty;
         return true;
+    }
+
+    private Result FailAtPlayerBoundary(
+        OperationFailure failure,
+        string operation,
+        string itemInstanceId)
+    {
+        if (failure.IsInvariantViolation)
+        {
+            LogInvariant(failure, operation, itemInstanceId);
+        }
+
+        return Result.Fail(PlayerSafe(failure));
+    }
+
+    private RefitQuote PrepareQuoteForPlayer(
+        RefitQuote quote,
+        string operation,
+        string itemInstanceId)
+    {
+        if (quote.Failure == null)
+        {
+            return quote;
+        }
+
+        if (quote.Failure.IsInvariantViolation)
+        {
+            LogInvariant(quote.Failure, operation, itemInstanceId);
+        }
+
+        return quote with { Failure = PlayerSafe(quote.Failure) };
+    }
+
+    private static OperationFailure PlayerSafe(OperationFailure failure)
+        => new(
+            failure.Code,
+            failure.Kind,
+            string.Empty,
+            failure.Arguments);
+
+    private static void LogInvariant(
+        OperationFailure failure,
+        string operation,
+        string itemInstanceId)
+    {
+        Debug.LogWarning(
+            $"[SessionItemRefitFlow] operation='{operation}' item='{itemInstanceId}' "
+            + $"cause='{failure.Code}' diagnostic='{failure.Diagnostic}'");
     }
 
     private static int BuildStableSeed(string value, int salt)

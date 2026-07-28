@@ -419,14 +419,16 @@ public sealed record CombatContentSnapshot(
 
 public sealed record BattleSetupBuildResult(
     bool IsSuccess,
-    string? Error,
+    SM.Core.Results.OperationFailure? Failure,
     IReadOnlyList<BattleUnitLoadout> Allies,
     IReadOnlyList<BattleUnitLoadout> Enemies,
     CombatStatusRules? StatusRules = null)
 {
+    public string? Error => Failure?.Diagnostic;
+
     public static BattleSetupBuildResult Success(IReadOnlyList<BattleUnitLoadout> allies, IReadOnlyList<BattleUnitLoadout> enemies, CombatStatusRules? statusRules = null)
         => new(true, null, allies, enemies, statusRules);
 
-    public static BattleSetupBuildResult Fail(string error)
-        => new(false, error, Array.Empty<BattleUnitLoadout>(), Array.Empty<BattleUnitLoadout>(), CombatStatusRules.Default);
+    public static BattleSetupBuildResult Fail(SM.Core.Results.OperationFailure failure)
+        => new(false, failure, Array.Empty<BattleUnitLoadout>(), Array.Empty<BattleUnitLoadout>(), CombatStatusRules.Default);
 }

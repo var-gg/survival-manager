@@ -13,6 +13,7 @@ using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
+using static SM.Unity.SessionOperationFailureBoundary;
 using SM.Unity.Sandbox;
 using Unity.Profiling;
 
@@ -50,13 +51,13 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("Refresh는 Town에서만 사용할 수 있습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitTownOnly, "Recruit refresh is available only in Town.");
         }
 
         var refreshCost = RefreshCostService.GetRefreshCost(_recruitPhaseState);
         if (refreshCost > 0 && Profile.Currencies.Gold < refreshCost)
         {
-            return Result.Fail($"Gold가 부족합니다. refresh에는 {refreshCost} Gold가 필요합니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitGoldInsufficient, $"Recruit refresh costs {refreshCost} Gold but wallet has {Profile.Currencies.Gold}.", refreshCost.ToString(CultureInfo.InvariantCulture));
         }
 
         Profile.Currencies.Gold -= refreshCost;
@@ -76,28 +77,31 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("Recruit는 Town에서만 사용할 수 있습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitTownOnly, "Recruiting is available only in Town.");
         }
 
         if (offerIndex < 0 || offerIndex >= _recruitOffers.Count)
         {
-            return Result.Fail("유효하지 않은 영입 후보입니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitOfferInvalid, $"Recruit offer index '{offerIndex}' is outside the current offer range '{_recruitOffers.Count}'.");
         }
 
         var offer = _recruitOffers[offerIndex];
         if (Profile.Currencies.Gold < offer.Metadata.GoldCost)
         {
-            return Result.Fail($"Gold가 부족합니다. 영입에는 {offer.Metadata.GoldCost} Gold가 필요합니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitGoldInsufficient, $"Recruit offer costs {offer.Metadata.GoldCost} Gold but wallet has {Profile.Currencies.Gold}.", offer.Metadata.GoldCost.ToString(CultureInfo.InvariantCulture));
         }
 
         if (Profile.Heroes.Count >= MetaBalanceDefaults.TownRosterCap)
         {
-            return Result.Fail($"Town roster cap {MetaBalanceDefaults.TownRosterCap}에 도달했습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitRosterFull, $"Town roster count '{Profile.Heroes.Count}' reached cap '{MetaBalanceDefaults.TownRosterCap}'.", MetaBalanceDefaults.TownRosterCap.ToString(CultureInfo.InvariantCulture));
         }
 
-        if (!TryGrantRecruitPreview(offer, RecruitOfferSource.RecruitPhase, out _, out var error))
+        if (!TryGrantRecruitPreview(offer, RecruitOfferSource.RecruitPhase, out _, out var failure))
         {
-            return Result.Fail(error);
+            return ForwardSessionFailure(
+                "SessionRecruitmentFlow",
+                failure,
+                $"Recruit offer '{offerIndex}' failed without a structured cause.");
         }
 
         Profile.Currencies.Gold -= offer.Metadata.GoldCost;
@@ -114,23 +118,23 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("Scout는 Town에서만 사용할 수 있습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitTownOnly, "Recruit scouting is available only in Town.");
         }
 
         directive ??= new ScoutDirective();
         if (directive.IsNone)
         {
-            return Result.Fail("Scout directive가 필요합니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitScoutDirectiveRequired, "Recruit scouting requires a non-empty directive.");
         }
 
         if (_recruitPhaseState.ScoutUsedThisPhase)
         {
-            return Result.Fail("이번 recruit phase에서는 이미 scout를 사용했습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitScoutAlreadyUsed, "Recruit scouting has already been used in this phase.");
         }
 
         if (Profile.Currencies.Echo < RecruitmentBalanceCatalog.ScoutEchoCost)
         {
-            return Result.Fail($"잔향이 부족합니다. 정찰에는 {RecruitmentBalanceCatalog.ScoutEchoCost} 잔향이 필요합니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitEchoInsufficient, $"Recruit scouting costs {RecruitmentBalanceCatalog.ScoutEchoCost} Echo but wallet has {Profile.Currencies.Echo}.", RecruitmentBalanceCatalog.ScoutEchoCost.ToString(CultureInfo.InvariantCulture));
         }
 
         Profile.Currencies.Echo -= RecruitmentBalanceCatalog.ScoutEchoCost;
@@ -148,17 +152,20 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("Retrain은 Town에서만 사용할 수 있습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitTownOnly, "Retraining is available only in Town.");
         }
 
         if (!TryGetHero(heroId, out var hero))
         {
-            return Result.Fail("유닛을 찾을 수 없습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.HeroNotFound, $"Hero '{heroId}' was not found.");
         }
 
         if (!_sessionContentLookup.Snapshot.Archetypes.TryGetValue(hero.ArchetypeId, out var archetype))
         {
-            return Result.Fail($"Archetype '{hero.ArchetypeId}'를 찾을 수 없습니다.");
+            return FailSessionInvariant(
+                "SessionRecruitmentFlow",
+                SessionOperationFailureCodes.ArchetypeNotFound,
+                $"Archetype '{hero.ArchetypeId}' was not found while retraining hero '{heroId}'.");
         }
 
         var currentFlexActiveId = ResolveHeroFlexActiveId(hero, archetype);
@@ -167,7 +174,7 @@ public sealed partial class GameSessionState
         var cost = RecruitmentBalanceCatalog.DefaultRetrainCosts.GetTotalCost(operation, retrainState);
         if (Profile.Currencies.Echo < cost)
         {
-            return Result.Fail($"잔향이 부족합니다. 재훈련에는 {cost} 잔향이 필요합니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitEchoInsufficient, $"Retraining costs {cost} Echo but wallet has {Profile.Currencies.Echo}.", cost.ToString(CultureInfo.InvariantCulture));
         }
 
         var result = RetrainService.Retrain(
@@ -202,17 +209,17 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("Dismiss는 Town에서만 사용할 수 있습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitTownOnly, "Dismissing a hero is available only in Town.");
         }
 
         if (Profile.Heroes.Count <= 1)
         {
-            return Result.Fail("마지막 roster unit은 dismiss할 수 없습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.RecruitLastHeroProtected, "The final roster hero cannot be dismissed.");
         }
 
         if (!TryGetHero(heroId, out var hero))
         {
-            return Result.Fail("유닛을 찾을 수 없습니다.");
+            return RefuseSessionOperation(SessionOperationFailureCodes.HeroNotFound, $"Hero '{heroId}' was not found.");
         }
 
         var refund = DismissService.CalculateRefund(hero.EconomyFootprint ?? new UnitEconomyFootprint());
@@ -232,7 +239,10 @@ public sealed partial class GameSessionState
     {
         if (!_sessionContentLookup.Snapshot.Archetypes.TryGetValue(archetypeId, out var template))
         {
-            return Result.Fail($"Archetype '{archetypeId}'를 찾을 수 없습니다.");
+            return FailSessionInvariant(
+                "SessionRecruitmentFlow",
+                SessionOperationFailureCodes.ArchetypeNotFound,
+                $"Archetype '{archetypeId}' was not found during direct grant.");
         }
 
         var preview = RecruitPreviewBuilder.Roll(
@@ -255,9 +265,12 @@ public sealed partial class GameSessionState
             }
         };
 
-        return TryGrantRecruitPreview(directPreview, source, out _, out var error)
+        return TryGrantRecruitPreview(directPreview, source, out _, out var failure)
             ? Result.Success()
-            : Result.Fail(error);
+            : ForwardSessionFailure(
+                "SessionRecruitmentFlow",
+                failure,
+                $"Direct grant for archetype '{archetypeId}' failed without a structured cause.");
     }
 
     private void EnsureRecruitOffers()
@@ -327,13 +340,15 @@ public sealed partial class GameSessionState
         RecruitUnitPreview preview,
         RecruitOfferSource source,
         out DuplicateConversionResult? duplicateResult,
-        out string error)
+        out OperationFailure? failure)
     {
         duplicateResult = null;
-        error = string.Empty;
+        failure = null;
         if (!_combatContentLookup.TryGetArchetype(preview.UnitBlueprintId, out var archetype))
         {
-            error = $"Archetype '{preview.UnitBlueprintId}'를 찾을 수 없습니다.";
+            failure = OperationFailure.Invariant(
+                SessionOperationFailureCodes.ArchetypeNotFound,
+                $"Archetype '{preview.UnitBlueprintId}' was not found while granting a recruit preview.");
             return false;
         }
 

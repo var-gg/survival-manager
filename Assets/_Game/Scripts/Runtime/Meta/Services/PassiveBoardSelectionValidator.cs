@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SM.Core.Content;
+using SM.Core.Results;
 using SM.Meta.Model;
 
 namespace SM.Meta.Services;
@@ -9,13 +10,17 @@ namespace SM.Meta.Services;
 public sealed record PassiveBoardSelectionValidationResult(
     bool IsValid,
     IReadOnlyList<string> NormalizedNodeIds,
-    string Error)
+    OperationFailure? Failure)
 {
-    public static PassiveBoardSelectionValidationResult Success(IReadOnlyList<string> normalizedNodeIds)
-        => new(true, normalizedNodeIds, string.Empty);
+    public string Error => Failure?.Diagnostic ?? string.Empty;
 
-    public static PassiveBoardSelectionValidationResult Fail(string error, IReadOnlyList<string> normalizedNodeIds)
-        => new(false, normalizedNodeIds, error);
+    public static PassiveBoardSelectionValidationResult Success(IReadOnlyList<string> normalizedNodeIds)
+        => new(true, normalizedNodeIds, null);
+
+    public static PassiveBoardSelectionValidationResult Fail(
+        OperationFailure failure,
+        IReadOnlyList<string> normalizedNodeIds)
+        => new(false, normalizedNodeIds, failure);
 }
 
 public static class PassiveBoardSelectionValidator
@@ -69,7 +74,7 @@ public static class PassiveBoardSelectionValidator
         var accepted = new List<string>(maxActiveNodeCount);
         foreach (var candidate in orderedCandidates)
         {
-            if (TryGetSelectionError(boardId, accepted, candidate.NodeId, nodesById, maxActiveNodeCount, out _))
+            if (TryGetSelectionFailure(boardId, accepted, candidate.NodeId, nodesById, maxActiveNodeCount, out _))
             {
                 continue;
             }
@@ -94,33 +99,43 @@ public static class PassiveBoardSelectionValidator
             return Normalize(boardId, normalizedCurrent, nodesById, maxActiveNodeCount);
         }
 
-        if (TryGetSelectionError(boardId, normalizedCurrent, nodeId, nodesById, maxActiveNodeCount, out var error))
+        if (TryGetSelectionFailure(
+                boardId,
+                normalizedCurrent,
+                nodeId,
+                nodesById,
+                maxActiveNodeCount,
+                out var failure))
         {
-            return PassiveBoardSelectionValidationResult.Fail(error, normalizedCurrent);
+            return PassiveBoardSelectionValidationResult.Fail(failure!, normalizedCurrent);
         }
 
         normalizedCurrent.Add(nodeId);
         return Normalize(boardId, normalizedCurrent, nodesById, maxActiveNodeCount);
     }
 
-    private static bool TryGetSelectionError(
+    private static bool TryGetSelectionFailure(
         string boardId,
         IReadOnlyCollection<string> selectedNodeIds,
         string candidateNodeId,
         IReadOnlyDictionary<string, PassiveNodeTemplate> nodesById,
         int maxActiveNodeCount,
-        out string error)
+        out OperationFailure? failure)
     {
-        error = string.Empty;
+        failure = null;
         if (!nodesById.TryGetValue(candidateNodeId, out var candidate))
         {
-            error = "패시브 노드를 찾을 수 없습니다.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.PassiveNodeMissing,
+                $"Passive node '{candidateNodeId}' was not present while toggling board '{boardId}'.");
             return true;
         }
 
         if (!string.Equals(candidate.BoardId, boardId, StringComparison.Ordinal))
         {
-            error = "선택한 노드는 현재 보드 소속이 아닙니다.";
+            failure = OperationFailure.Invariant(
+                MetaOperationFailureCodes.PassiveNodeWrongBoard,
+                $"Passive node '{candidateNodeId}' belongs to board '{candidate.BoardId}', not active board '{boardId}'.");
             return true;
         }
 
@@ -128,14 +143,19 @@ public static class PassiveBoardSelectionValidator
         {
             if (!selectedNodeIds.Contains(prerequisiteNodeId, StringComparer.Ordinal))
             {
-                error = "선행 노드가 필요합니다.";
+                failure = OperationFailure.Refusal(
+                    MetaOperationFailureCodes.PassivePrerequisiteRequired,
+                    $"Passive node '{candidateNodeId}' requires prerequisite '{prerequisiteNodeId}'.");
                 return true;
             }
         }
 
         if (selectedNodeIds.Count >= maxActiveNodeCount)
         {
-            error = $"패시브 노드는 최대 {maxActiveNodeCount}개까지 활성화할 수 있습니다.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.PassiveActiveNodeLimitReached,
+                $"Passive board '{boardId}' already has {selectedNodeIds.Count} active nodes; limit is {maxActiveNodeCount}.",
+                maxActiveNodeCount.ToString(System.Globalization.CultureInfo.InvariantCulture));
             return true;
         }
 
@@ -146,7 +166,10 @@ public static class PassiveBoardSelectionValidator
                 .Count(existingNodeId => nodesById[existingNodeId].NodeKind == PassiveNodeKindValue.Keystone);
             if (keystoneCount >= MaxKeystoneCount)
             {
-                error = "Keystone은 하나만 활성화할 수 있습니다.";
+                failure = OperationFailure.Refusal(
+                    MetaOperationFailureCodes.PassiveKeystoneLimitReached,
+                    $"Passive board '{boardId}' already has {keystoneCount} active keystone nodes; limit is {MaxKeystoneCount}.",
+                    MaxKeystoneCount.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 return true;
             }
         }
@@ -157,7 +180,9 @@ public static class PassiveBoardSelectionValidator
             .ToHashSet(StringComparer.Ordinal);
         if (GetTagIds(candidate).Any(tagId => selectedExclusionTags.Contains(tagId)))
         {
-            error = "상호 배타적인 패시브 노드입니다.";
+            failure = OperationFailure.Refusal(
+                MetaOperationFailureCodes.PassiveMutualExclusion,
+                $"Passive node '{candidateNodeId}' conflicts with an active node on board '{boardId}'.");
             return true;
         }
 

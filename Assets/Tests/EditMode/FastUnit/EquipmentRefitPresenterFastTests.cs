@@ -209,10 +209,10 @@ public sealed class EquipmentRefitPresenterFastTests
         Assert.That(state.SelectedOperationCanPurchase, Is.False);
         Assert.That(state.SelectedOperationStatusMessage, Does.Contain("Not enough Echo"));
         Assert.That(
-            session.GetSealPurchaseBlockReason(
+            session.GetSealPurchaseBlockFailure(
                 item.ItemInstanceId,
-                new[] { lockedAffixId }),
-            Does.Contain("잔향이 부족합니다."));
+                new[] { lockedAffixId })?.Code,
+            Is.EqualTo(SessionOperationFailureCodes.RefitUnaffordable));
     }
 
     [Test]

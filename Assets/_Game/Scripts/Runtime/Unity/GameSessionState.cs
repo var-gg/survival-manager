@@ -519,25 +519,25 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("장비 장착은 Town에서만 가능합니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.InventoryTownOnly, "Equipping items is available only in Town.");
         }
 
         if (!TryGetHero(heroId, out var hero))
         {
-            return Result.Fail("유닛을 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.HeroNotFound, $"Hero '{heroId}' was not found.");
         }
 
         var item = Profile.Inventory.FirstOrDefault(
             i => string.Equals(i.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
         if (item == null)
         {
-            return Result.Fail($"아이템 '{itemInstanceId}'을 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.ItemNotFound, $"Inventory item '{itemInstanceId}' was not found.");
         }
 
         if (!string.IsNullOrWhiteSpace(item.EquippedHeroId)
             && !string.Equals(item.EquippedHeroId, heroId, StringComparison.Ordinal))
         {
-            return Result.Fail("이미 다른 유닛에 장착된 아이템입니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.InventoryAlreadyEquipped, $"Inventory item '{itemInstanceId}' is equipped by another hero.");
         }
 
         item.EquippedHeroId = heroId;
@@ -557,19 +557,19 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("장비 해제는 Town에서만 가능합니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.InventoryTownOnly, "Unequipping items is available only in Town.");
         }
 
         if (!TryGetHero(heroId, out var hero))
         {
-            return Result.Fail("유닛을 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.HeroNotFound, $"Hero '{heroId}' was not found.");
         }
 
         var item = Profile.Inventory.FirstOrDefault(
             i => string.Equals(i.ItemInstanceId, itemInstanceId, StringComparison.Ordinal));
         if (item == null)
         {
-            return Result.Fail($"아이템 '{itemInstanceId}'을 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.ItemNotFound, $"Inventory item '{itemInstanceId}' was not found.");
         }
 
         item.EquippedHeroId = string.Empty;
@@ -607,10 +607,10 @@ public sealed partial class GameSessionState
         IReadOnlyCollection<string> sealedAffixIds) =>
         _itemRefitFlow.GetSealQuote(itemInstanceId, sealedAffixIds);
 
-    internal string GetRefitPurchaseBlockReason(string itemInstanceId) => _itemRefitFlow.GetRefitPurchaseBlockReason(itemInstanceId);
+    internal OperationFailure? GetRefitPurchaseBlockFailure(string itemInstanceId) => _itemRefitFlow.GetRefitPurchaseBlockFailure(itemInstanceId);
 
-    internal string GetSealPurchaseBlockReason(string itemInstanceId, IReadOnlyCollection<string> sealedAffixIds) =>
-        _itemRefitFlow.GetSealPurchaseBlockReason(itemInstanceId, sealedAffixIds);
+    internal OperationFailure? GetSealPurchaseBlockFailure(string itemInstanceId, IReadOnlyCollection<string> sealedAffixIds) =>
+        _itemRefitFlow.GetSealPurchaseBlockFailure(itemInstanceId, sealedAffixIds);
 
     internal RefitExecutionResult PreviewRefitItem(string itemInstanceId, ulong stableCommandSeed) =>
         _itemRefitFlow.PreviewRefitItem(itemInstanceId, stableCommandSeed);
@@ -747,17 +747,17 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("패시브 보드 선택은 Town에서만 가능합니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.PassiveTownOnly, "Passive board selection is available only in Town.");
         }
 
         if (!TryGetHero(heroId, out _))
         {
-            return Result.Fail("유닛을 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.HeroNotFound, $"Hero '{heroId}' was not found.");
         }
 
         if (!HasPassiveBoardContent(boardId))
         {
-            return Result.Fail("패시브 보드를 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.PassiveBoardMissing, $"Passive board '{boardId}' was not found.");
         }
 
         var loadout = Profile.HeroLoadouts.FirstOrDefault(
@@ -791,25 +791,25 @@ public sealed partial class GameSessionState
     {
         if (!IsTownEconomyPhase())
         {
-            return Result.Fail("패시브 노드 선택은 Town에서만 가능합니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.PassiveTownOnly, "Passive node selection is available only in Town.");
         }
 
         if (!TryGetHero(heroId, out _))
         {
-            return Result.Fail("유닛을 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.HeroNotFound, $"Hero '{heroId}' was not found.");
         }
 
         var loadout = Profile.HeroLoadouts.FirstOrDefault(
             r => string.Equals(r.HeroId, heroId, StringComparison.Ordinal));
         if (loadout == null || string.IsNullOrWhiteSpace(loadout.PassiveBoardId))
         {
-            return Result.Fail("유닛의 로드아웃이 없습니다. 먼저 패시브 보드를 선택하세요.");
+            return SessionOperationFailureBoundary.RefuseSessionOperation(SessionOperationFailureCodes.PassiveLoadoutMissing, $"Hero '{heroId}' has no selected passive board.");
         }
 
         var nodesById = BuildPassiveBoardNodeDictionary(loadout.PassiveBoardId);
         if (nodesById.Count == 0)
         {
-            return Result.Fail("현재 패시브 보드의 노드 정의를 찾을 수 없습니다.");
+            return SessionOperationFailureBoundary.FailSessionInvariant("GameSessionState.PassiveBoard", SessionOperationFailureCodes.PassiveNodeCatalogMissing, $"Passive board '{loadout.PassiveBoardId}' has no runtime node definitions.");
         }
 
         // 노드 예산은 영웅 레벨 계단(오너 게이트③) — 미기록 progression은 Lv1(=기본 5).
@@ -823,7 +823,7 @@ public sealed partial class GameSessionState
             PassiveBoardSelectionValidator.ResolveMaxActiveNodeCount(progression?.Level ?? 1));
         if (!result.IsValid)
         {
-            return Result.Fail(result.Error);
+            return SessionOperationFailureBoundary.ForwardSessionFailure("GameSessionState.PassiveBoard", result.Failure, $"Passive board validator rejected node '{nodeId}' without a failure.");
         }
 
         loadout.SelectedPassiveNodeIds = result.NormalizedNodeIds.ToList();
@@ -1358,7 +1358,7 @@ public sealed partial class GameSessionState
         var encounterResolver = new EncounterResolutionService(snapshot);
         if (TryBuildBattleContext(snapshot, run, out var battleContext, out _))
         {
-            if (encounterResolver.TryResolveEncounter(battleContext, out context, out error))
+            if (encounterResolver.TryResolveEncounter(battleContext, out context, out var resolutionFailure))
             {
                 // ADR-0028 slice 3 — 거스른 세력 적대가 누적되면 적이 경계 상태로 출현(EnemyAlertness 통로).
                 // 정치 충돌이 다음 전장에 닿는 지점. 적 package는 EnemySnapshotHash가 포착(live 결정적).
@@ -1380,7 +1380,7 @@ public sealed partial class GameSessionState
             // (!HasAuthoredCatalog)도 동일하게 디버그 스모크 허용.
             if (encounterResolver.HasAuthoredCatalog && !IsQuickBattleSmokeActive)
             {
-                error = string.IsNullOrWhiteSpace(error) ? "Authored encounter resolution failed." : error;
+                error = resolutionFailure?.Diagnostic ?? "Authored encounter resolution failed.";
                 UnityEngine.Debug.LogError($"[Encounter] authored 인카운터 해석 실패 — 디버그 스모크 강등 거부: {error}");
                 return false;
             }

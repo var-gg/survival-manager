@@ -567,6 +567,58 @@ MonoBehaviour:
     m_Key: ui.reward.progression.permanent_unlock_pending
     m_Metadata:
       m_Items: []
+  - m_Id: 43406944869093376
+    m_Key: ui.reward.loot.boss_sigil
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453504
+    m_Key: ui.reward.loot.echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453505
+    m_Key: ui.reward.loot.echo_crystal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453506
+    m_Key: ui.reward.loot.ember_dust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453507
+    m_Key: ui.reward.loot.entry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453508
+    m_Key: ui.reward.loot.gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453509
+    m_Key: ui.reward.loot.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453510
+    m_Key: ui.reward.loot.skill_manual
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453511
+    m_Key: ui.reward.loot.skill_shard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453512
+    m_Key: ui.reward.loot.trait_lock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453513
+    m_Key: ui.reward.loot.trait_purge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453514
+    m_Key: ui.reward.loot.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406944898453515
+    m_Key: ui.reward.summary.extract_settlement
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

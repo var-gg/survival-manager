@@ -184,6 +184,66 @@ MonoBehaviour:
     m_Localized: Close
     m_Metadata:
       m_Items: []
+  - m_Id: 43406952460783616
+    m_Localized: All In Backline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920960
+    m_Localized: Collapse Weak Side
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920961
+    m_Localized: Hold Line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920962
+    m_Localized: Protect Carry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920963
+    m_Localized: Standard Advance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920964
+    m_Localized: Unknown posture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920965
+    m_Localized: Unknown encounter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920966
+    m_Localized: Unknown event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920967
+    m_Localized: Unknown item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920968
+    m_Localized: Unknown reward source
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920969
+    m_Localized: Unknown route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920970
+    m_Localized: Unknown site
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406952506920971
+    m_Localized: Unknown skill
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43409835394666496
+    m_Localized: Unknown content
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43409835432415232
+    m_Localized: Description unavailable
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

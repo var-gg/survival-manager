@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SM.Content.Definitions;
+using SM.Core.Content;
 using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
@@ -272,7 +274,8 @@ public sealed class RewardScreenPresenter
             profile,
             token => token.HasValue ? SanitizePlayerFacingSummary(ResolveTokenForProgression(token)) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
             BuildContinuationText,
-            SanitizePlayerFacingSummary)
+            SanitizePlayerFacingSummary,
+            BuildLootSummary)
             .Select(LocalizeProgressionRow)
             .ToList();
 
@@ -438,15 +441,17 @@ public sealed class RewardScreenPresenter
         ProfileView profile,
         Func<SessionTextToken, string> resolveToken,
         Func<GameSessionState, string> resolveContinuation,
-        Func<string, string>? sanitizeText = null)
+        Func<string, string>? sanitizeText = null,
+        Func<LootBundleResult, string>? resolveLoot = null)
     {
         sanitizeText ??= value => value;
+        resolveLoot ??= _ => "Automatic loot recorded";
         var battleValue = session.LastBattleSummary.HasValue
             ? sanitizeText(resolveToken(session.LastBattleSummary))
             : session.LastBattleVictory ? "Victory" : "Defeat";
         var lootValue = session.LastAutomaticLootBundle == null
             ? "None"
-            : sanitizeText(LootResolutionService.FormatSummary(session.LastAutomaticLootBundle));
+            : sanitizeText(resolveLoot(session.LastAutomaticLootBundle));
         var choiceValue = session.LastRewardApplicationSummary.HasValue
             ? sanitizeText(resolveToken(session.LastRewardApplicationSummary))
             : session.PendingRewardChoices.Count == 0 ? "Applied" : "Awaiting choice";
@@ -595,40 +600,7 @@ public sealed class RewardScreenPresenter
 
     private string ResolveTokenForProgression(SessionTextToken token)
     {
-        if (!token.HasValue)
-        {
-            return string.Empty;
-        }
-
-        var args = token.Arguments.Select(ResolveTokenArgumentForProgression).ToArray();
-        if (args.Length == 0)
-        {
-            return token.Fallback;
-        }
-
-        try
-        {
-            return string.Format(System.Globalization.CultureInfo.InvariantCulture, token.Fallback, args);
-        }
-        catch (FormatException)
-        {
-            return token.Fallback;
-        }
-    }
-
-    private object ResolveTokenArgumentForProgression(SessionTextArg arg)
-    {
-        return arg.Kind switch
-        {
-            SessionTextArgKind.Number => arg.NumberValue,
-            SessionTextArgKind.ItemName => _contentText.GetItemName(arg.TextValue),
-            SessionTextArgKind.AugmentName => _contentText.GetAugmentName(arg.TextValue),
-            SessionTextArgKind.LocalizedKey => string.IsNullOrWhiteSpace(arg.Fallback)
-                ? HumanizeIdentifier(arg.Key)
-                : arg.Fallback,
-            SessionTextArgKind.Token when arg.TokenValue != null => ResolveTokenForProgression(arg.TokenValue),
-            _ => arg.TextValue,
-        };
+        return token.Resolve(_localization, _contentText);
     }
 
     private static RewardSettlementSummaryViewState BuildSettlementSummaryStateCore(
@@ -774,7 +746,7 @@ public sealed class RewardScreenPresenter
     {
         var lootSummary = session.LastAutomaticLootBundle == null
             ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
-            : SanitizePlayerFacingSummary(LootResolutionService.FormatSummary(session.LastAutomaticLootBundle));
+            : SanitizePlayerFacingSummary(BuildLootSummary(session.LastAutomaticLootBundle));
         var continuation = session.PendingRewardChoices.Count == 0
             ? BuildContinuationText(session)
             : Localize(GameLocalizationTables.UIReward, "ui.reward.summary.awaiting_choice", "Choose one reward before returning.");
@@ -809,6 +781,75 @@ public sealed class RewardScreenPresenter
         return string.Join("\n", lines);
     }
 
+    private string BuildLootSummary(LootBundleResult bundle)
+    {
+        if (bundle.Entries.Count == 0)
+        {
+            return Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.none",
+                "No automatic loot");
+        }
+
+        return string.Join(
+            ", ",
+            bundle.Entries.Select(entry => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.entry",
+                "{0} x{1}",
+                ResolveLootEntryName(entry),
+                entry.Amount)));
+    }
+
+    private string ResolveLootEntryName(LootEntry entry)
+    {
+        return entry.RewardType switch
+        {
+            RewardType.Item => _contentText.GetItemName(entry.Id),
+            RewardType.TemporaryAugment => _contentText.GetAugmentName(entry.Id),
+            RewardType.Gold => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.gold",
+                "Gold"),
+            RewardType.Echo => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.echo",
+                "Echo"),
+            RewardType.EmberDust => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.ember_dust",
+                "Ember Dust"),
+            RewardType.EchoCrystal => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.echo_crystal",
+                "Echo Crystal"),
+            RewardType.BossSigil => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.boss_sigil",
+                "Boss Sigil"),
+            RewardType.TraitLockToken => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.trait_lock",
+                "Trait Lock Token"),
+            RewardType.TraitPurgeToken => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.trait_purge",
+                "Trait Purge Token"),
+            RewardType.SkillManual => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.skill_manual",
+                "Skill Manual"),
+            RewardType.SkillShard => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.skill_shard",
+                "Skill Shard"),
+            _ => Localize(
+                GameLocalizationTables.UIReward,
+                "ui.reward.loot.unknown",
+                "Unknown reward"),
+        };
+    }
+
     private string BuildBuildContextText(GameSessionState session)
     {
         var equippedPermanentId = GetEquippedPermanentAugmentId(session);
@@ -819,7 +860,11 @@ public sealed class RewardScreenPresenter
             .Distinct(StringComparer.Ordinal)
             .ToList();
         var builder = new StringBuilder();
-        builder.AppendLine(ClampPanelLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.posture", "Posture: {0}", session.SelectedTeamPosture), 82));
+        builder.AppendLine(ClampPanelLine(Localize(
+            GameLocalizationTables.UIReward,
+            "ui.reward.build.posture",
+            "Posture: {0}",
+            TeamPostureText.Resolve(_localization, session.SelectedTeamPosture)), 82));
         builder.AppendLine(ClampPanelLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.equipped_permanent", "Equipped Permanent: {0}", FormatAugmentName(equippedPermanentId)), 82));
         return builder.ToString().TrimEnd();
     }
@@ -970,8 +1015,67 @@ public sealed class RewardScreenPresenter
             GameLocalizationTables.UIReward,
             "ui.reward.summary.route_only",
             "Route: {0} / {1}",
-            Localize(GameLocalizationTables.UIExpedition, currentNode.LabelKey, currentNode.Id),
-            Localize(GameLocalizationTables.UIExpedition, currentNode.PlannedRewardKey, currentNode.Id));
+            ResolveExpeditionNodeName(currentNode),
+            ResolveNodeRewardName(currentNode));
+    }
+
+    private string ResolveExpeditionNodeName(ExpeditionNodeViewModel node)
+    {
+        if (node.RequiresBattle)
+        {
+            return _contentText.GetEncounterName(node.Id);
+        }
+
+        if (node.LabelKey.StartsWith("content.site_event.", StringComparison.Ordinal))
+        {
+            return Localize(
+                ContentLocalizationTables.Campaign,
+                node.LabelKey,
+                Localize(
+                    GameLocalizationTables.UICommon,
+                    "ui.common.unknown_event",
+                    "Unknown event"));
+        }
+
+        if (node.LabelKey.StartsWith("ui.", StringComparison.Ordinal))
+        {
+            return Localize(
+                GameLocalizationTables.UIExpedition,
+                node.LabelKey,
+                Localize(
+                    GameLocalizationTables.UICommon,
+                    "ui.common.unknown_route",
+                    "Unknown route"));
+        }
+
+        return Localize(
+            GameLocalizationTables.UICommon,
+            "ui.common.unknown_route",
+            "Unknown route");
+    }
+
+    private string ResolveNodeRewardName(ExpeditionNodeViewModel node)
+    {
+        if (!string.IsNullOrWhiteSpace(node.RewardSourceId))
+        {
+            return _contentText.GetRewardSourceName(node.RewardSourceId);
+        }
+
+        if (node.PlannedRewardKey.StartsWith("ui.", StringComparison.Ordinal))
+        {
+            return Localize(
+                GameLocalizationTables.UIExpedition,
+                node.PlannedRewardKey,
+                Localize(
+                    GameLocalizationTables.UICommon,
+                    "ui.common.unknown_reward_source",
+                    "Unknown reward source"));
+        }
+
+        return Localize(
+            GameLocalizationTables.UICommon,
+            "ui.common.unknown_reward_source",
+            "Unknown reward source");
     }
 
     private static bool IsFinalExtractSettlement(GameSessionState session)
@@ -1040,7 +1144,10 @@ public sealed class RewardScreenPresenter
 
     private string BuildThesisLine(GameSessionState session, string equippedPermanentId)
     {
-        var thesisParts = new List<string> { session.SelectedTeamPosture.ToString() };
+        var thesisParts = new List<string>
+        {
+            TeamPostureText.Resolve(_localization, session.SelectedTeamPosture)
+        };
         if (!string.IsNullOrWhiteSpace(equippedPermanentId)
             && _root.CombatContentLookup.TryGetAugmentDefinition(equippedPermanentId, out var augment))
         {

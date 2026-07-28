@@ -482,7 +482,7 @@ public sealed class DropGradeEconomyFastTests
                 out var error,
                 heat),
             Is.True,
-            error);
+            error?.Diagnostic);
         return (int)bundle.Entries.Single().ItemGrade!.Value;
     }
 

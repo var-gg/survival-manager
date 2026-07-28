@@ -13,6 +13,7 @@ using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity.Sandbox;
+using static SM.Unity.SessionPlayerTextArgs;
 using Unity.Profiling;
 
 namespace SM.Unity;
@@ -174,7 +175,7 @@ public sealed partial class GameSessionState
                             victory ? "Victory" : "Defeat"),
                         SessionTextArg.Number(stepCount),
                         SessionTextArg.Number(eventCount),
-                        SessionTextArg.Localized(GameLocalizationTables.UIExpedition, resolvedNode.LabelKey, resolvedNode.Id),
+                        BuildExpeditionNodeNameArg(resolvedNode),
                         SessionTextArg.Token(_session.LastExpeditionEffectMessage))
                     : new SessionTextToken(
                         GameLocalizationTables.UIReward,
@@ -186,7 +187,7 @@ public sealed partial class GameSessionState
                             victory ? "Victory" : "Defeat"),
                         SessionTextArg.Number(stepCount),
                         SessionTextArg.Number(eventCount),
-                        SessionTextArg.Localized(GameLocalizationTables.UIExpedition, resolvedNode.LabelKey, resolvedNode.Id));
+                        BuildExpeditionNodeNameArg(resolvedNode));
                 _session.RestoreResolvedProgressMarkers(includeCurrentNode: true);
             }
             else

@@ -18,6 +18,7 @@ public sealed class TownCharacterSheetFormatter
     private readonly ContentTextResolver _contentText;
     private readonly ICombatContentLookup _lookup;
     private readonly LaunchCoreRosterBaselineCatalog _baselineCatalog;
+    private readonly Preview.CompendiumSkillReadoutFormatter _skillReadoutFormatter;
 
     public TownCharacterSheetFormatter(
         GameLocalizationController localization,
@@ -28,6 +29,8 @@ public sealed class TownCharacterSheetFormatter
         _contentText = contentText;
         _lookup = lookup;
         _baselineCatalog = new LaunchCoreRosterBaselineCatalog(lookup);
+        _skillReadoutFormatter = new Preview.CompendiumSkillReadoutFormatter(
+            (key, fallback) => LocalizeTown(key, fallback));
     }
 
     public TownCharacterSheetViewState Build(
@@ -52,7 +55,7 @@ public sealed class TownCharacterSheetFormatter
             };
             return new TownCharacterSheetViewState(
                 HeroId: string.Empty,
-                DisplayName: "No hero selected",
+                DisplayName: LocalizeTown("ui.town.sheet.hero.none", "No hero selected"),
                 ArchetypeLabel: string.Empty,
                 RoleLabel: string.Empty,
                 FamilyKey: string.Empty,
@@ -110,7 +113,7 @@ public sealed class TownCharacterSheetFormatter
         return (
             LocalizeTown("ui.town.sheet.overview", "Overview"),
             LocalizeTown("ui.town.sheet.loadout", "Loadout"),
-            "스킬",
+            LocalizeTown("ui.town.sheet.skills", "Skills"),
             LocalizeTown("ui.town.sheet.synergy", "Synergy"),
             LocalizeTown("ui.town.sheet.progression", "Progression"));
     }
@@ -198,10 +201,22 @@ public sealed class TownCharacterSheetFormatter
     {
         return new[]
             {
-                BuildSkillCard("SIG A", baseline?.SignatureActiveId ?? string.Empty, isSignature: true),
-                BuildSkillCard("SIG P", baseline?.SignaturePassiveId ?? string.Empty, isSignature: true),
-                BuildSkillCard("FLX A", FirstNonEmpty(hero.FlexActiveId, baseline?.FlexActiveId), isSignature: false),
-                BuildSkillCard("FLX P", FirstNonEmpty(hero.FlexPassiveId, baseline?.FlexPassiveId), isSignature: false),
+                BuildSkillCard(
+                    LocalizeTown("ui.town.sheet.skill.signature_active", "Signature Active"),
+                    baseline?.SignatureActiveId ?? string.Empty,
+                    isSignature: true),
+                BuildSkillCard(
+                    LocalizeTown("ui.town.sheet.skill.signature_passive", "Signature Passive"),
+                    baseline?.SignaturePassiveId ?? string.Empty,
+                    isSignature: true),
+                BuildSkillCard(
+                    LocalizeTown("ui.town.sheet.skill.flex_active", "Flex Active"),
+                    FirstNonEmpty(hero.FlexActiveId, baseline?.FlexActiveId),
+                    isSignature: false),
+                BuildSkillCard(
+                    LocalizeTown("ui.town.sheet.skill.flex_passive", "Flex Passive"),
+                    FirstNonEmpty(hero.FlexPassiveId, baseline?.FlexPassiveId),
+                    isSignature: false),
             }
             .ToList();
     }
@@ -266,7 +281,7 @@ public sealed class TownCharacterSheetFormatter
                 SkillId: string.Empty,
                 Name: CommonNone(),
                 MetaLabel: slotLabel,
-                Description: "No skill assigned.",
+                Description: LocalizeTown("ui.town.sheet.skill.unassigned", "No skill assigned."),
                 IconKey: string.Empty,
                 IconSprite: null,
                 IsSignature: isSignature);
@@ -602,8 +617,8 @@ public sealed class TownCharacterSheetFormatter
 
         var cooldown = skill.BaseCooldownSeconds > 0.01f
             ? $"{skill.BaseCooldownSeconds:0.#}s"
-            : "Always";
-        return $"{slotLabel} / {skill.Kind} / {skill.TargetRule} / {cooldown}";
+            : LocalizeTown("ui.town.sheet.skill.always", "Always");
+        return $"{slotLabel} / {_skillReadoutFormatter.FormatKind(skill.Kind)} / {_skillReadoutFormatter.FormatTarget(skill.TargetRule)} / {cooldown}";
     }
 
     private string FormatItemBySlot(IEnumerable<InventoryItemRecord> items, ItemSlotType slotType)

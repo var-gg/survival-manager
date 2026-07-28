@@ -596,7 +596,7 @@ public sealed class BattleScreenController : MonoBehaviour
         // bootstrap·status rule fallback이 빠지는 2nd battle-truth가 된다(2026-07 준비도 감사로 차단).
         if (!_root.SessionState.TryComposeBattleState(_compiledSnapshot, encounter, out var newState, out var composeError))
         {
-            RenderErrorState(composeError);
+            RenderBattleSetupFailure(composeError);
             return;
         }
 
@@ -907,6 +907,15 @@ public sealed class BattleScreenController : MonoBehaviour
         }
     }
 
+    private void RenderBattleSetupFailure(string diagnostic)
+    {
+        Debug.LogError($"[BattleScreenController] Battle setup failed. {diagnostic}");
+        RenderErrorState(Localize(
+            GameLocalizationTables.UIBattle,
+            "ui.battle.error.setup_failed",
+            "The battle could not be prepared."));
+    }
+
     private void HandlePointerSelection(BattleSimulationStep currentStep)
     {
         if (Mouse.current?.leftButton.wasPressedThisFrame != true || _view?.IsPointerOverBlockingUi != false)
@@ -1079,13 +1088,17 @@ public sealed class BattleScreenController : MonoBehaviour
         {
             if (!_root.SessionState.TryBuildSelectedBattleState(out simulationState, out encounter, out allySnapshot, out buildError))
             {
-                RenderErrorState(buildError);
+                RenderBattleSetupFailure(buildError);
                 return;
             }
         }
         catch (Exception ex)
         {
-            RenderErrorState(ex.Message);
+            Debug.LogError($"[BattleScreenController] Battle setup threw an exception. {ex}");
+            RenderErrorState(Localize(
+                GameLocalizationTables.UIBattle,
+                "ui.battle.error.setup_failed",
+                "The battle could not be prepared."));
             return;
         }
 

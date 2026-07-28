@@ -139,6 +139,7 @@ public sealed class EquipmentRefitSealSurfaceWitnessTests
                 new EquipmentRefitAffixRowViewState(
                     "affix_a",
                     "prefix",
+                    "접두",
                     "utility",
                     "Affix A",
                     "1.0",
@@ -146,6 +147,7 @@ public sealed class EquipmentRefitSealSurfaceWitnessTests
                 new EquipmentRefitAffixRowViewState(
                     "affix_b",
                     "suffix",
+                    "접미",
                     "utility",
                     "Affix B",
                     "1.0",

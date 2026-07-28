@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SM.Core.Content;
+using SM.Core.Results;
 using SM.Meta;
 using SM.Meta.Model;
 using SM.Meta.Services;
@@ -455,7 +456,7 @@ public sealed class RefitServiceTests
             17UL);
 
         Assert.That(result.Applied, Is.False);
-        Assert.That(result.Error, Does.Contain("does not allow Seal"));
+        Assert.That(result.Failure?.Code, Is.EqualTo(MetaOperationFailureCodes.RefitOperationNotAllowed));
     }
 
     [Test]
@@ -560,7 +561,7 @@ public sealed class RefitServiceTests
         var quote = new RefitQuote(
             true,
             false,
-            string.Empty,
+            null,
             RefitRollQuality.ToQ64(0.90d),
             0,
             1,
@@ -577,13 +578,13 @@ public sealed class RefitServiceTests
             affixIds,
             RefitTestFixture.CreateMagnitudes(lookup, affixIds, 0.10d),
             0UL,
-            string.Empty,
+            null!,
         };
 
         var valid = (bool)method!.Invoke(RefitTestFixture.CreateService(lookup), arguments)!;
 
         Assert.That(valid, Is.False);
-        Assert.That((string)arguments[5], Does.Contain("regressed"));
+        Assert.That(((OperationFailure)arguments[5]).Diagnostic, Does.Contain("regressed"));
     }
 
     [Test]
@@ -636,7 +637,7 @@ public sealed class RefitServiceTests
         var result = session.RefitItem(item.ItemInstanceId, 0x1234UL);
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Error, Does.Contain("잔향"));
+        Assert.That(result.Failure?.Code, Is.EqualTo(SessionOperationFailureCodes.RefitUnaffordable));
         Assert.That(session.Profile.Currencies.Echo, Is.Zero);
         Assert.That(item.RefitLevel, Is.EqualTo(oldLevel));
         Assert.That(item.AffixIds, Is.EqualTo(oldAffixes));

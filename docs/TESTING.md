@@ -167,6 +167,10 @@ pwsh -File tools/test-harness-lint.ps1 -RepoRoot .
 6. **quit-with-runTests**: 스크립트/문서에서 `-quit`와 `-runTests`를 같이 사용하면 실패.
 7. **FinalUnits raw id comparison**: `FinalUnits`의 prefixed runtime id를 raw loadout id literal과 직접 비교하면 항상 false가 되므로 실패한다.
 8. **authored content reachability**: `tools/content-reachability/field-catalog.tsv`에 없는 새 authored field, runtime consumer 증거가 없는 live 판정, marker가 없는 dead 판정, 등록되지 않은 fallback trap이면 실패한다. trap 경고는 저작값이 실제로 어떤 값으로 대체되는지와 `wire it / delete it / mark it` 처분을 함께 출력한다.
+9. **authored icon routing**: authored `IconId`가 실제 PNG로 해석되거나 known-missing-art로 명시되지 않으면 실패한다.
+10. **first playable scope contract**: first playable cap의 콘텐츠가 live/parking 계약에서 누락되거나 중복되면 실패한다.
+11. **serialized MonoBehaviour namespace**: scene/prefab에 직렬화된 `MonoBehaviour`가 file-scoped namespace를 쓰면 실패한다.
+12. **player-facing text boundary**: runtime UI literal key의 Korean seed 누락·빈 값·영문 복사와 player surface의 raw content id, `Enum.ToString()`, service diagnostic/exception 렌더링 패턴을 실패시킨다. 위반 출력은 `surface`, 실제 `string`, 수정 `action`을 한 줄에 함께 적는다. 동적으로 계산한 key, content table의 의미상 오역, third-party UI, 정적 연결이 없는 화면 조합은 이 source lint의 범위 밖이며 PlayMode witness와 visual review로 보완한다.
 
 추가 메모:
 - 기본 playable/runtime 경로는 `new RuntimeCombatContentLookup()`의 default mode를 사용한다.

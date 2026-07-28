@@ -13,6 +13,7 @@ using SM.Meta.Model;
 using SM.Meta.Services;
 using SM.Persistence.Abstractions.Models;
 using SM.Unity.Narrative;
+using static SM.Unity.SessionPlayerTextArgs;
 using SM.Unity.Sandbox;
 using Unity.Profiling;
 
@@ -1097,8 +1098,8 @@ public sealed partial class GameSessionState
             GameLocalizationTables.UIReward,
             "ui.reward.summary.extract_settlement",
             "Settlement complete\nRoute: {0}\nReward Source: {1}",
-            SessionTextArg.Localized(GameLocalizationTables.UIExpedition, node.LabelKey, node.Id),
-            SessionTextArg.Localized(GameLocalizationTables.UIExpedition, node.PlannedRewardKey, node.Id));
+            BuildExpeditionNodeNameArg(node),
+            BuildRewardSourceNameArg(node));
     }
 
     private static int WrapIndex(int index, int count)
@@ -1351,10 +1352,9 @@ public sealed partial class GameSessionState
                 out var updatedRun,
                 out var revisitEntries);
             var revisitTimestamp = DateTime.UtcNow.ToString("O");
-            var revisitSummaryParts = new List<string>();
             foreach (var entry in revisitEntries)
             {
-                ApplyAutomaticLootEntry(entry, revisitTimestamp, revisitSummaryParts);
+                ApplyAutomaticLootEntry(entry, revisitTimestamp);
             }
 
             ActiveRun = updatedRun;
@@ -1362,6 +1362,7 @@ public sealed partial class GameSessionState
                 updatedRun.Overlay.RewardSourceId,
                 "CampaignRecovery:automatic_loot",
                 revisitEntries);
+            LastExpeditionEffectMessage = AutomaticLootTextTokenBuilder.Build(_lastAutomaticLootBundle);
             SyncActiveRunRecord();
             return true;
         }
@@ -1380,21 +1381,23 @@ public sealed partial class GameSessionState
                 ActiveRun.Overlay.BattleSeed,
                 ResolveCurrentRewardContextTags(snapshot),
                 out var bundle,
-                out _,
+                out var lootFailure,
                 heat: dropHeat))
         {
+            UnityEngine.Debug.LogError(
+                $"[SessionExpeditionFlow] automatic loot resolution failed: "
+                + $"cause='{lootFailure?.Code ?? "<missing>"}' diagnostic='{lootFailure?.Diagnostic ?? "<missing>"}'");
             return false;
         }
 
-        var summaryParts = new List<string>();
         var timestamp = DateTime.UtcNow.ToString("O");
         foreach (var entry in bundle.Entries)
         {
-            ApplyAutomaticLootEntry(entry, timestamp, summaryParts);
+            ApplyAutomaticLootEntry(entry, timestamp);
         }
 
         _lastAutomaticLootBundle = bundle;
-        LastExpeditionEffectMessage = SessionTextToken.Plain($"Auto Loot: {string.Join(", ", summaryParts)}");
+        LastExpeditionEffectMessage = AutomaticLootTextTokenBuilder.Build(bundle);
         return true;
     }
 
@@ -1438,18 +1441,16 @@ public sealed partial class GameSessionState
         return tags.OrderBy(tag => tag, StringComparer.Ordinal).ToList();
     }
 
-    private void ApplyAutomaticLootEntry(LootEntry entry, string timestamp, ICollection<string> summaryParts)
+    private void ApplyAutomaticLootEntry(LootEntry entry, string timestamp)
     {
         var applied = true;
         switch (entry.RewardType)
         {
             case SM.Core.Content.RewardType.Gold:
                 Profile.Currencies.Gold += entry.Amount;
-                summaryParts.Add($"gold +{entry.Amount}");
                 break;
             case SM.Core.Content.RewardType.Echo:
                 Profile.Currencies.Echo += entry.Amount;
-                summaryParts.Add($"echo +{entry.Amount}");
                 break;
             case SM.Core.Content.RewardType.TemporaryAugment:
                 for (var i = 0; i < Math.Max(1, entry.Amount); i++)
@@ -1465,8 +1466,6 @@ public sealed partial class GameSessionState
                         TrackPermanentAugmentProgression(entry.Id);
                     }
                 }
-
-                summaryParts.Add($"{entry.Id} x{Math.Max(1, entry.Amount)}");
                 break;
             case SM.Core.Content.RewardType.Item:
                 for (var i = 0; i < Math.Max(1, entry.Amount); i++)
@@ -1494,15 +1493,9 @@ public sealed partial class GameSessionState
                         SourceKind = ResolveRewardSourceKind(ActiveRun?.Overlay.RewardSourceId),
                     });
                 }
-
-                summaryParts.Add(
-                    entry.ItemGrade.HasValue
-                        ? $"{entry.Id} [{entry.ItemGrade.Value}] x{entry.Amount}"
-                        : $"{entry.Id} x{entry.Amount}");
                 break;
             case SM.Core.Content.RewardType.SkillManual:
             case SM.Core.Content.RewardType.SkillShard:
-                summaryParts.Add($"{entry.Id} x{entry.Amount}");
                 break;
             default:
                 applied = false;

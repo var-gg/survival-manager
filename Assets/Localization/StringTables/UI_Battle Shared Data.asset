@@ -763,6 +763,314 @@ MonoBehaviour:
     m_Key: ui.battle.action.speed_05
     m_Metadata:
       m_Items: []
+  - m_Id: 43406945645039616
+    m_Key: ui.battle.error.setup_failed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399744
+    m_Key: ui.battle.positioning.intent.backline_dive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399745
+    m_Key: ui.battle.positioning.intent.flank_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399746
+    m_Key: ui.battle.positioning.intent.flank_right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399747
+    m_Key: ui.battle.positioning.intent.frontline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399748
+    m_Key: ui.battle.positioning.intent.maintain_range
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399749
+    m_Key: ui.battle.positioning.intent.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399750
+    m_Key: ui.battle.positioning.intent.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399751
+    m_Key: ui.battle.positioning.reason.cadence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399752
+    m_Key: ui.battle.positioning.reason.mobility_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399753
+    m_Key: ui.battle.positioning.reason.none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399754
+    m_Key: ui.battle.positioning.reason.range_break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399755
+    m_Key: ui.battle.positioning.reason.skill_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399756
+    m_Key: ui.battle.positioning.reason.slot_lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399757
+    m_Key: ui.battle.positioning.reason.target_lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399758
+    m_Key: ui.battle.positioning.reason.target_moved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399759
+    m_Key: ui.battle.positioning.reason.took_hit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399760
+    m_Key: ui.battle.positioning.reason.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399761
+    m_Key: ui.battle.skill.damage.healing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399762
+    m_Key: ui.battle.skill.damage.magical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399763
+    m_Key: ui.battle.skill.damage.physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399764
+    m_Key: ui.battle.skill.damage.true
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399765
+    m_Key: ui.battle.skill.damage.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399766
+    m_Key: ui.battle.skill.delivery.aura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399767
+    m_Key: ui.battle.skill.delivery.melee
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399768
+    m_Key: ui.battle.skill.delivery.nova
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399769
+    m_Key: ui.battle.skill.delivery.projectile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399770
+    m_Key: ui.battle.skill.delivery.ranged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399771
+    m_Key: ui.battle.skill.delivery.trap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399772
+    m_Key: ui.battle.skill.delivery.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399773
+    m_Key: ui.battle.skill.delivery.zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399774
+    m_Key: ui.battle.skill.kind.buff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399775
+    m_Key: ui.battle.skill.kind.debuff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399776
+    m_Key: ui.battle.skill.kind.heal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399777
+    m_Key: ui.battle.skill.kind.shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399778
+    m_Key: ui.battle.skill.kind.strike
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399779
+    m_Key: ui.battle.skill.kind.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399780
+    m_Key: ui.battle.skill.kind.utility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399781
+    m_Key: ui.battle.skill.scaling.flat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399782
+    m_Key: ui.battle.skill.scaling.healing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399783
+    m_Key: ui.battle.skill.scaling.health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399784
+    m_Key: ui.battle.skill.scaling.magical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399785
+    m_Key: ui.battle.skill.scaling.physical
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399786
+    m_Key: ui.battle.skill.scaling.power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399787
+    m_Key: ui.battle.skill.target.lowest_hp_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399788
+    m_Key: ui.battle.skill.target.lowest_hp_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399789
+    m_Key: ui.battle.skill.target.marked_target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399790
+    m_Key: ui.battle.skill.target.most_exposed_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399791
+    m_Key: ui.battle.skill.target.nearest_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399792
+    m_Key: ui.battle.skill.target.protected_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399793
+    m_Key: ui.battle.skill.target.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399794
+    m_Key: ui.battle.skill.target.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399795
+    m_Key: ui.battle.status.cleanse.pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399796
+    m_Key: ui.battle.status.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399797
+    m_Key: ui.battle.targeting.fallback.abort
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399798
+    m_Key: ui.battle.targeting.fallback.keep_current
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399799
+    m_Key: ui.battle.targeting.fallback.lowest_current_hp_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399800
+    m_Key: ui.battle.targeting.fallback.nearest_reachable_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399801
+    m_Key: ui.battle.targeting.fallback.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399802
+    m_Key: ui.battle.targeting.fallback.unknown
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399803
+    m_Key: ui.battle.targeting.selector.backline_exposed_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399804
+    m_Key: ui.battle.targeting.selector.current
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399805
+    m_Key: ui.battle.targeting.selector.empty_point_near_self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399806
+    m_Key: ui.battle.targeting.selector.empty_point_near_target
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399807
+    m_Key: ui.battle.targeting.selector.largest_enemy_cluster
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399808
+    m_Key: ui.battle.targeting.selector.lowest_current_hp_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399809
+    m_Key: ui.battle.targeting.selector.lowest_current_hp_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399810
+    m_Key: ui.battle.targeting.selector.lowest_ehp_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399811
+    m_Key: ui.battle.targeting.selector.lowest_ehp_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399812
+    m_Key: ui.battle.targeting.selector.lowest_hp_percent_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399813
+    m_Key: ui.battle.targeting.selector.lowest_hp_percent_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399814
+    m_Key: ui.battle.targeting.selector.marked_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399815
+    m_Key: ui.battle.targeting.selector.nearest_frontline_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399816
+    m_Key: ui.battle.targeting.selector.nearest_injured_ally
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399817
+    m_Key: ui.battle.targeting.selector.nearest_reachable_enemy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399818
+    m_Key: ui.battle.targeting.selector.self
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43406945674399819
+    m_Key: ui.battle.targeting.selector.unknown
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

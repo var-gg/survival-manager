@@ -952,7 +952,7 @@ public sealed class BattleScreenView
         BattleStatLineCategory.Resource => "자원",
         BattleStatLineCategory.Movement => "기동",
         BattleStatLineCategory.Targeting => "표적",
-        _ => category.ToString(),
+        _ => "알 수 없음",
     };
 
     private static bool IsOverviewDial(BattleTacticDial dial)
@@ -1166,11 +1166,6 @@ public sealed class BattleScreenView
     private static string BuildSkillTooltip(BattleSkillSlotViewState state)
     {
         var lines = new List<string> { state.SkillName };
-        if (!string.IsNullOrWhiteSpace(state.SkillId))
-        {
-            lines.Add(state.SkillId);
-        }
-
         if (!string.IsNullOrWhiteSpace(state.Description))
         {
             lines.Add(state.Description);
@@ -1189,11 +1184,6 @@ public sealed class BattleScreenView
         if (!string.IsNullOrWhiteSpace(state.ScalingSummary))
         {
             lines.Add(state.ScalingSummary);
-        }
-
-        if (state.Tags.Count > 0)
-        {
-            lines.Add(string.Join(" / ", state.Tags));
         }
 
         return string.Join("\n", lines);

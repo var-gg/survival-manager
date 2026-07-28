@@ -1,5 +1,6 @@
 using System;
 using SM.Combat.Model;
+using SM.Core.Content;
 
 namespace SM.Unity.UI.Town.Preview;
 
@@ -65,6 +66,34 @@ internal sealed class CompendiumSkillReadoutFormatter
         return $"{FormatDamage(skill.DamageType)} / {FormatDelivery(skill.Delivery)} / {FormatTarget(skill.TargetRule)}";
     }
 
+    public string FormatKind(SkillKind kind)
+    {
+        return kind switch
+        {
+            SkillKind.Strike => _localize("ui.town.compendium.kind.strike", "공격"),
+            SkillKind.Heal => _localize("ui.town.compendium.kind.heal", "회복"),
+            SkillKind.Shield => _localize("ui.town.compendium.kind.shield", "보호막"),
+            SkillKind.Buff => _localize("ui.town.compendium.kind.buff", "강화"),
+            SkillKind.Debuff => _localize("ui.town.compendium.kind.debuff", "약화"),
+            SkillKind.Utility => _localize("ui.town.compendium.kind.utility", "지원"),
+            _ => _localize("ui.town.compendium.kind.unknown", "알 수 없는 유형"),
+        };
+    }
+
+    public string FormatKind(SkillKindValue kind)
+    {
+        return kind switch
+        {
+            SkillKindValue.Strike => _localize("ui.town.compendium.kind.strike", "공격"),
+            SkillKindValue.Heal => _localize("ui.town.compendium.kind.heal", "회복"),
+            SkillKindValue.Shield => _localize("ui.town.compendium.kind.shield", "보호막"),
+            SkillKindValue.Buff => _localize("ui.town.compendium.kind.buff", "강화"),
+            SkillKindValue.Debuff => _localize("ui.town.compendium.kind.debuff", "약화"),
+            SkillKindValue.Utility => _localize("ui.town.compendium.kind.utility", "지원"),
+            _ => _localize("ui.town.compendium.kind.unknown", "알 수 없는 유형"),
+        };
+    }
+
     public string FormatDamage(DamageType damage)
     {
         return damage switch
@@ -73,7 +102,7 @@ internal sealed class CompendiumSkillReadoutFormatter
             DamageType.Magical => _localize("ui.town.compendium.damage.magical", "마법"),
             DamageType.Healing => _localize("ui.town.compendium.damage.healing", "회복"),
             DamageType.True => _localize("ui.town.compendium.damage.true", "고정"),
-            _ => damage.ToString(),
+            _ => _localize("ui.town.compendium.damage.unknown", "알 수 없는 피해"),
         };
     }
 
@@ -88,7 +117,7 @@ internal sealed class CompendiumSkillReadoutFormatter
             SkillDelivery.Aura => _localize("ui.town.compendium.delivery.aura", "오라"),
             SkillDelivery.Trap => _localize("ui.town.compendium.delivery.trap", "함정"),
             SkillDelivery.Zone => _localize("ui.town.compendium.delivery.zone", "장판"),
-            _ => delivery.ToString(),
+            _ => _localize("ui.town.compendium.delivery.unknown", "알 수 없는 전달 방식"),
         };
     }
 
@@ -103,7 +132,22 @@ internal sealed class CompendiumSkillReadoutFormatter
             SkillTargetRule.ProtectedAlly => _localize("ui.town.compendium.target.protected_ally", "보호 대상"),
             SkillTargetRule.Self => _localize("ui.town.compendium.target.self", "자신"),
             SkillTargetRule.MarkedTarget => _localize("ui.town.compendium.target.marked", "표식 대상"),
-            _ => target.ToString(),
+            _ => _localize("ui.town.compendium.target.unknown", "알 수 없는 대상"),
+        };
+    }
+
+    public string FormatTarget(SkillTargetRuleValue target)
+    {
+        return target switch
+        {
+            SkillTargetRuleValue.NearestEnemy => _localize("ui.town.compendium.target.nearest_enemy", "가까운 적"),
+            SkillTargetRuleValue.LowestHpEnemy => _localize("ui.town.compendium.target.lowest_hp_enemy", "약한 적"),
+            SkillTargetRuleValue.MostExposedEnemy => _localize("ui.town.compendium.target.exposed_enemy", "노출된 적"),
+            SkillTargetRuleValue.LowestHpAlly => _localize("ui.town.compendium.target.lowest_hp_ally", "약한 아군"),
+            SkillTargetRuleValue.ProtectedAlly => _localize("ui.town.compendium.target.protected_ally", "보호 대상"),
+            SkillTargetRuleValue.Self => _localize("ui.town.compendium.target.self", "자신"),
+            SkillTargetRuleValue.MarkedTarget => _localize("ui.town.compendium.target.marked", "표식 대상"),
+            _ => _localize("ui.town.compendium.target.unknown", "알 수 없는 대상"),
         };
     }
 }

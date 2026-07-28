@@ -31,7 +31,7 @@ public sealed class EncounterResolutionServiceFastTests
             "faction_wolfpine",
             string.Empty);
 
-        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error?.Diagnostic);
 
         var enemy = resolved.Enemies.Single();
         Assert.That(enemy.ArchetypeId, Is.EqualTo("reaver"));
@@ -56,7 +56,7 @@ public sealed class EncounterResolutionServiceFastTests
             "faction_wolfpine",
             string.Empty);
 
-        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error?.Diagnostic);
 
         var enemy = resolved.Enemies.Single();
         var participantPackage = enemy.RulePackages?.Single(package => package.SourceId == "participant:enemy_grey_fang");
@@ -73,7 +73,7 @@ public sealed class EncounterResolutionServiceFastTests
         var resolver = new EncounterResolutionService(CreateSnapshot());
         var context = TestContextState();
 
-        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error?.Diagnostic);
         Assert.That(resolved.Enemies.Single().NumericPackages, Is.Empty);
     }
 
@@ -86,7 +86,7 @@ public sealed class EncounterResolutionServiceFastTests
             equipmentAffixIds: new[] { "affix.enemy.sturdy" }));
         var context = TestContextState();
 
-        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error?.Diagnostic);
         Assert.That(
             resolved.Enemies.Single().NumericPackages.Select(value => value.SourceId),
             Is.EquivalentTo(new[] { "item.enemy.armor", "affix.enemy.sturdy" }));
@@ -154,7 +154,7 @@ public sealed class EncounterResolutionServiceFastTests
             ResolvedModifierIds: Array.Empty<string>());
 
         var context = resolver.BuildBattleContextFromPayload(run, payload);
-        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error);
+        Assert.That(resolver.TryResolveEncounter(context, out var resolved, out var error), Is.True, error?.Diagnostic);
 
         var enemy = resolved.Enemies.Single();
         Assert.That(enemy.ArchetypeId, Is.EqualTo("reaver"));

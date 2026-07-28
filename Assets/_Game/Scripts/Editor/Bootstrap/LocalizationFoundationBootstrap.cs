@@ -15,7 +15,7 @@ using SM.Core.Content;
 
 namespace SM.Editor.Bootstrap;
 
-public static class LocalizationFoundationBootstrap
+public static partial class LocalizationFoundationBootstrap
 {
     public const string LocalizationRoot = "Assets/Localization";
     public const string SettingsPath = "Assets/Localization/Localization Settings.asset";
@@ -169,7 +169,7 @@ public static class LocalizationFoundationBootstrap
             ["ui.town.action.start_first_expedition"] = ("첫 원정 시작", "Start First Expedition", false),
             ["ui.town.action.start_endless_cycle"] = ("무한 순환 시작", "Start Endless Cycle", false),
             ["ui.town.tooltip.expedition_endless"] = ("무한 순환 {0}회차 — 순환마다 적이 강해지고(열기 {1}) 잔향 보상이 커집니다.", "Endless cycle {0} — enemies grow stronger each cycle (heat {1}) and Echo rewards scale up.", true),
-            ["ui.town.action.quick_battle"] = ("Quick Battle", "Quick Battle", false),
+            ["ui.town.action.quick_battle"] = ("빠른 전투", "Quick Battle", false),
             ["ui.town.action.resume_expedition"] = ("원정 재개", "Resume Expedition", false),
         ["ui.expedition.title"] = ("원정 운영 화면", "Expedition Operator UI", false),
         ["ui.expedition.position.summary"] = ("위치: {0}/{1} | 현재: {2} | 선택: {3}", "Position: {0}/{1} | Current: {2} | Selected: {3}", true),
@@ -394,6 +394,7 @@ public static class LocalizationFoundationBootstrap
     private static void EnsureClosureEntries()
     {
         AddOrUpdateEntries(SiteEventChoiceSurfaceEntries);
+        RegisterPlayerFacingTextClosureEntries();
         AddOrUpdateEntries(new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)
         {
             ["ui.common.help"] = ("도움말", "Help", false),
@@ -764,7 +765,7 @@ public static class LocalizationFoundationBootstrap
             ["ui.battle.group.playback"] = ("재생", "Playback", false),
             ["ui.battle.group.primary"] = ("주요 행동", "Primary Action", false),
             ["ui.battle.group.smoke"] = ("디버그 / 스모크", "Debug / Smoke", false),
-            ["ui.battle.group.sandbox"] = ("Combat Sandbox", "Combat Sandbox", false),
+            ["ui.battle.group.sandbox"] = ("전투 모의실험", "Combat Sandbox", false),
             ["ui.battle.group.utility"] = ("유틸리티", "Utility", false),
             ["ui.battle.help.body"] = ("요약, 최근 로그, 선택 유닛 패널로 현재 전투를 읽고 종료 후 Continue를 누르세요.", "Read the battle through the summary, recent log, and selected unit panel. Continue unlocks after the battle resolves.", false),
             ["ui.battle.help.body_sandbox"] = ("요약, 최근 로그, 선택 유닛 패널로 현재 전투를 읽으세요. Combat Sandbox는 Reward로 가지 않고, 같은 seed 재생, 새 seed, sandbox 종료만 제공합니다.", "Read the battle through the summary, recent log, and selected unit panel. Combat Sandbox stays inside battle: replay the same seed, roll a new seed, or exit the sandbox.", false),

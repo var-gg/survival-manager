@@ -66,8 +66,8 @@ public sealed class EncounterAndLootResolutionTests
         Assert.That(lookup.TryGetCombatSnapshot(out var snapshot, out var error), Is.True, error);
 
         var service = new LootResolutionService(snapshot);
-        Assert.That(service.TryResolveBundle("reward_source_boss", 12345, out var first, out var firstError), Is.True, firstError);
-        Assert.That(service.TryResolveBundle("reward_source_boss", 12345, out var second, out var secondError), Is.True, secondError);
+        Assert.That(service.TryResolveBundle("reward_source_boss", 12345, out var first, out var firstError), Is.True, firstError?.Diagnostic);
+        Assert.That(service.TryResolveBundle("reward_source_boss", 12345, out var second, out var secondError), Is.True, secondError?.Diagnostic);
 
         Assert.That(first.Entries.Select(entry => $"{entry.Id}:{entry.RewardType}:{entry.Amount}:{entry.RarityBracket}"),
             Is.EqualTo(second.Entries.Select(entry => $"{entry.Id}:{entry.RewardType}:{entry.Amount}:{entry.RarityBracket}")));

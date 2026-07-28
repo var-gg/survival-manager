@@ -88,7 +88,7 @@ public sealed class GameSessionStateTests
         var result = session.Recruit(0);
 
         Assert.That(result.IsSuccess, Is.False);
-        Assert.That(result.Error, Does.Contain("Town roster cap"));
+        Assert.That(result.Failure?.Code, Is.EqualTo(SessionOperationFailureCodes.RecruitRosterFull));
         Assert.That(session.Profile.Heroes.Count, Is.EqualTo(heroCountBefore));
         Assert.That(session.Profile.Currencies.Gold, Is.EqualTo(goldBefore));
         Assert.That(session.RecruitOffers.Select(offer => offer.UnitBlueprintId).ToArray(), Is.EqualTo(offerIdsBefore));

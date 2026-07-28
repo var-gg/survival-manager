@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SM.Content.Definitions;
 using SM.Core.Content;
+using SM.Core.Results;
 using UnityEngine;
 
 namespace SM.Unity.UI.Town.Preview;
@@ -44,7 +45,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
     private string _selectedItemInstanceId = string.Empty;
     private CraftOperationKindValue _selectedOperation = CraftOperationKindValue.Reforge;
     private bool _confirmationVisible;
-    private string _operationError = string.Empty;
+    private OperationFailure? _operationFailure;
 
     public EquipmentRefitPresenter(
         GameSessionState session,
@@ -101,7 +102,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         _selectedOperation = CraftOperationKindValue.Reforge;
         _sealedAffixIds.Clear();
         _confirmationVisible = false;
-        _operationError = string.Empty;
+        _operationFailure = null;
         Refresh();
     }
 
@@ -121,7 +122,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
 
         _selectedOperation = operation;
         _confirmationVisible = false;
-        _operationError = string.Empty;
+        _operationFailure = null;
         Refresh();
     }
 
@@ -141,7 +142,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         }
 
         _confirmationVisible = false;
-        _operationError = string.Empty;
+        _operationFailure = null;
         Refresh();
     }
 
@@ -154,7 +155,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         }
 
         _confirmationVisible = true;
-        _operationError = string.Empty;
+        _operationFailure = null;
         Refresh();
     }
 
@@ -185,7 +186,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             : _session.RefitItem(selectedItem.ItemInstanceId);
 
         _confirmationVisible = false;
-        _operationError = result.IsSuccess ? string.Empty : result.Error;
+        _operationFailure = result.IsSuccess ? null : result.Failure;
         Refresh();
     }
 
@@ -217,7 +218,9 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
         }
 
         var noItemQuote = SM.Meta.Services.RefitQuote.Unavailable(
-            _text.SelectItemReason);
+            OperationFailure.Refusal(
+                SessionOperationFailureCodes.RefitItemSelectionRequired,
+                "Select an item before requesting a Refit quote."));
         var refitQuote = selectedItem == null
             ? noItemQuote
             : session.GetRefitQuote(selectedItem.ItemInstanceId);
@@ -246,23 +249,22 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             _selectedOperation = CraftOperationKindValue.Reforge;
         }
 
-        var refitPurchaseBlockReason = selectedItem == null
-            ? noItemQuote.Reason
-            : session.GetRefitPurchaseBlockReason(selectedItem.ItemInstanceId);
-        var sealPurchaseBlockReason = selectedItem == null
-            ? noItemQuote.Reason
-            : session.GetSealPurchaseBlockReason(
+        var refitPurchaseBlockFailure = selectedItem == null
+            ? noItemQuote.Failure
+            : session.GetRefitPurchaseBlockFailure(selectedItem.ItemInstanceId);
+        var sealPurchaseBlockFailure = selectedItem == null
+            ? noItemQuote.Failure
+            : session.GetSealPurchaseBlockFailure(
                 selectedItem.ItemInstanceId,
                 canonicalSealedAffixIds);
         var selectedQuote = _selectedOperation == CraftOperationKindValue.Seal
             ? sealQuote
             : refitQuote;
-        var selectedPurchaseBlockReason = _selectedOperation == CraftOperationKindValue.Seal
-            ? sealPurchaseBlockReason
-            : refitPurchaseBlockReason;
+        var selectedPurchaseBlockFailure = _selectedOperation == CraftOperationKindValue.Seal
+            ? sealPurchaseBlockFailure
+            : refitPurchaseBlockFailure;
         var selectedOperationCanPurchase = selectedQuote.CanPurchase
-                                           && string.IsNullOrWhiteSpace(
-                                               selectedPurchaseBlockReason);
+                                           && selectedPurchaseBlockFailure == null;
 
         // Pool — Profile.Inventory 전체. ItemBaseDefinition으로 이름 / slot / rarity 보강.
         var pool = inventory
@@ -326,6 +328,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 affixes.Add(new EquipmentRefitAffixRowViewState(
                     AffixId: affixId,
                     GroupKey: group,
+                    GroupLabel: _text.AffixGroupHeader(group),
                     CategoryKey: category,
                     Name: _affixName(affixId),
                     MagnitudeText: magnitudeText,
@@ -411,7 +414,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                 CraftOperationKindValue.Reforge,
                 lockedAffixCount: 0,
                 totalAffixCount: selectedItem?.AffixIds.Count ?? 0,
-                purchaseBlockReason: refitPurchaseBlockReason),
+                purchaseBlockFailure: refitPurchaseBlockFailure),
             Affixes: affixes,
             Pool: pool,
             SelectedOperation: _selectedOperation,
@@ -420,16 +423,16 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
             SealOperationReason: sealOperationSelectable
                 ? string.Empty
                 : _text.SealUnavailable(
-                    _text.LocalizePurchaseBlockReason(
-                        sealOperationQuote.Reason,
+                    _text.LocalizeFailure(
+                        sealOperationQuote.Failure,
                         CraftOperationKindValue.Seal,
                         sealOperationQuote)),
             SelectedOperationCanPurchase: selectedOperationCanPurchase,
             SelectedOperationCost: selectedQuote.EchoCost,
             SelectedOperationCostLabel: _text.CostLabel(selectedQuote.EchoCost),
-            SelectedOperationStatusMessage: !string.IsNullOrWhiteSpace(_operationError)
-                ? _text.LocalizePurchaseBlockReason(
-                    _operationError,
+            SelectedOperationStatusMessage: _operationFailure != null
+                ? _text.LocalizeFailure(
+                    _operationFailure,
                     _selectedOperation,
                     selectedQuote)
                 : _text.BuildOperationStatus(
@@ -437,7 +440,7 @@ public sealed class EquipmentRefitPresenter : IEquipmentRefitActions
                     _selectedOperation,
                     canonicalSealedAffixIds.Length,
                     selectedItem?.AffixIds.Count ?? 0,
-                    selectedPurchaseBlockReason),
+                    selectedPurchaseBlockFailure),
             ConfirmationVisible: _confirmationVisible && selectedOperationCanPurchase,
             PanelTitle: _text.PanelTitle,
             OperationSelectorLabel: _text.OperationSelectorLabel,
