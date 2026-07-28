@@ -48,13 +48,17 @@
 /* --- Board ring guide layer — 옛 flat grey canvas 보강 ---
    center (46%,40%) · 동심 ring r 0.18 / 0.36 · 중앙 warm glow.
    node가 그 위에 올라가도록 BoardCanvas보다 먼저 선언. picking 무시. */
+/* 노드 그래프가 주인공이다. 예전엔 보드의 80%를 덮어 노드를 가렸고, 자산에 크로마 잔류가
+   불투명하게 남아 중앙이 마젠타 덩어리로 보였다(자산은 별도 수리). 시안의 중심은 은은한
+   온기 + 클래스 워터마크지 화면을 채우는 발광이 아니다 — 배경으로 물러난다. */
 .pbp-board__glow {
     position: absolute;
-    left: 6%; top: 0%;
-    width: 80%; height: 80%;
+    /* 보드 설계 중심은 (46%,40%) — ring-core와 동심이어야 한다. 크기의 절반을 빼서 맞춘다. */
+    left: 28%; top: 18%;
+    width: 36%; height: 44%;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
     -unity-background-scale-mode: scale-to-fit;
-    opacity: 0.55;
+    opacity: 0.13;
 }
 .pbp-board__ring {
     position: absolute;
@@ -205,11 +209,10 @@
     border-bottom-right-radius: var(--sm-r-lg);
 }
 
+/* 같은 셀렉터가 이 파일에 두 번 있었고 뒤쪽이 앞쪽 크기·불투명도를 조용히 덮었다.
+   배경 투명만 남기고 형상은 위 규칙 하나가 소유한다. */
 .pbp-board__glow {
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
-    -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(0, 0, 0, 0);
-    opacity: 0.42;
 }
 
 .pbp-board__node {

@@ -37,7 +37,7 @@
     padding-top: var(--sm-s-4);
     padding-bottom: var(--sm-s-5);
     background-color: rgba(20, 26, 53, 0.88);
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/panel_modal_frame_9slice.png");
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/panel_modal_frame_9slice.png");
     -unity-slice-left: 96;
     -unity-slice-right: 96;
     -unity-slice-top: 96;
@@ -89,7 +89,7 @@
     height: 24px;
     margin-left: var(--sm-s-4);
     margin-right: var(--sm-s-4);
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/ornament_divider_warm_gold.png");
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/ornament_divider_warm_gold.png");
     -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: var(--sm-gold-200);
     opacity: 0.82;
@@ -409,7 +409,7 @@
     padding-bottom: var(--sm-s-2);
     align-items: flex-start;
     background-color: var(--sm-bg-1-a54);
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/panel_card_frame_9slice.png");
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/panel_card_frame_9slice.png");
     -unity-slice-left: 48;
     -unity-slice-right: 48;
     -unity-slice-top: 48;
@@ -447,7 +447,7 @@
     right: -6px;
     top: -6px;
     bottom: -6px;
-    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/TacticalWorkshop/glow_halo_warm_gold.png");
+    background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
     -unity-background-scale-mode: stretch-to-fill;
     opacity: 0;
     transition-property: opacity;

@@ -554,6 +554,22 @@ else {
 }
 
 # ────────────────────────────────────────────────
+# Check 13: UITK style asset references resolve on disk
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 13: UITK style asset references ==" -ForegroundColor Cyan
+$ussAssetLint = Join-Path $RepoRoot 'tools/uss-asset-reference/lint.ps1'
+if (-not (Test-Path -LiteralPath $ussAssetLint)) {
+    Write-LintError -Check 'USS-asset-reference' -File 'tools/uss-asset-reference/lint.ps1' -Detail 'USS asset reference lint is missing. A url() pointing at a nonexistent file renders nothing and logs no error, so a surface loses its frame or icon silently.'
+}
+else {
+    & $ussAssetLint -RepoRoot $RepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        Write-LintError -Check 'USS-asset-reference' -File 'Assets/_Game/UI' -Detail 'A UITK style sheet references an asset that does not exist. Repoint the exact url reported above or add the asset; UITK will not tell you at runtime.'
+    }
+}
+
+# ────────────────────────────────────────────────
 # Summary
 # ────────────────────────────────────────────────
 
