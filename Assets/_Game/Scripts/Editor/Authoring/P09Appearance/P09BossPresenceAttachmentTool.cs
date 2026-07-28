@@ -55,6 +55,159 @@ public static class P09BossPresenceAttachmentTool
         Debug.Log($"[P09BossPresence] before/after written to {OutputFolder}.");
     }
 
+    /// <summary>
+    /// <b>같은 캐릭터를 실제 렌더 파이프라인(URP + lilToon)으로 찍는다.</b>
+    ///
+    /// 위의 비교 렌더는 <see cref="PreviewRenderUtility"/> 안에서 돌고, 거기서는 lilToon 이
+    /// 안 잡혀 마젠타가 되므로 프로젝트가 <c>Hidden/SM/P09PreviewTintedUnlit</c> 로 갈아끼운다.
+    /// 그 셰이더는 <b>조명이 아예 없다</b> — 텍스처를 샘플해 색을 곱하고 텍스처 자체 휘도로
+    /// 가짜 음영 밴드를 만드는 게 전부다. 그래서 프리뷰 렌더는 납작하고 탁하게 나온다.
+    /// 저작 판단(계열·머리색 고르기)에는 충분하지만 <b>색감·분위기 판단의 근거로 쓰면 안 된다.</b>
+    ///
+    /// 이 메뉴는 임시 카메라를 실제 씬에 세워 게임과 같은 경로로 렌더한다.
+    /// 프리뷰 렌더와 나란히 놓고 "탁한 색이 파이프라인 문제인지 에셋 문제인지"를 판정하기 위한 것이다.
+    /// </summary>
+    [MenuItem("SM/Internal/P09/Render Boss Presence Comparison (Game Shaders)")]
+    public static void RenderGameShaderComparisonMenu()
+    {
+        const string characterId = "extra_sunken_bastion_adjudicator";
+        Directory.CreateDirectory(OutputFolder);
+
+        RenderThroughGamePipeline(characterId, withAttachments: false, $"{characterId}_game_before.png");
+        RenderThroughGamePipeline(characterId, withAttachments: true, $"{characterId}_game_after.png");
+
+        AssetDatabase.Refresh();
+        Debug.Log($"[P09BossPresence] game-shader renders written to {OutputFolder}.");
+    }
+
+    private static void RenderThroughGamePipeline(string characterId, bool withAttachments, string fileName)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(VisualPrefabPath);
+        if (prefab == null)
+        {
+            throw new FileNotFoundException($"Missing P09 visual prefab: {VisualPrefabPath}");
+        }
+
+        var preset = FindPreset(characterId);
+        var generated = new List<Material>();
+        GameObject? instance = null;
+        GameObject? rig = null;
+        RenderTexture? target = null;
+        Texture2D? readback = null;
+        var previousActive = RenderTexture.active;
+        System.Action? restoreAmbient = null;
+        try
+        {
+            instance = Object.Instantiate(prefab);
+            instance.transform.position = Vector3.zero;
+            instance.transform.rotation = Quaternion.identity;
+            instance.hideFlags = HideFlags.DontSave;
+            if (preset != null)
+            {
+                preset.ApplyTo(instance.transform, generated);
+            }
+
+            P09PreviewPoseUtility.TryApplyDefaultIdlePose(instance, preset != null ? preset.SexId : 1);
+
+            // 여기서는 머티리얼을 <b>갈아끼우지 않는다.</b> 그게 이 렌더의 전부다.
+            if (withAttachments)
+            {
+                BuildAdjudicatorPresence(instance);
+            }
+
+            rig = new GameObject("__SM_P09GameShaderRig") { hideFlags = HideFlags.DontSave };
+
+            // 조명을 지어내지 않는다. 전투 씬이 실제로 쓰는 BattleRenderEnvironmentAuthoring 의
+            // 기본값을 그대로 옮긴다 — 각도·색·환경광까지. 임의 조명으로 찍으면 그건 게임도
+            // 프리뷰도 아닌 세 번째 그림이 되고, 색감 판단의 근거가 되지 못한다.
+            var previousAmbientMode = RenderSettings.ambientMode;
+            var previousSky = RenderSettings.ambientSkyColor;
+            var previousEquator = RenderSettings.ambientEquatorColor;
+            var previousGround = RenderSettings.ambientGroundColor;
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(0.125f, 0.155f, 0.190f, 1f);
+            RenderSettings.ambientEquatorColor = new Color(0.105f, 0.112f, 0.100f, 1f);
+            RenderSettings.ambientGroundColor = new Color(0.040f, 0.045f, 0.036f, 1f);
+            restoreAmbient = () =>
+            {
+                RenderSettings.ambientMode = previousAmbientMode;
+                RenderSettings.ambientSkyColor = previousSky;
+                RenderSettings.ambientEquatorColor = previousEquator;
+                RenderSettings.ambientGroundColor = previousGround;
+            };
+
+            var keyGo = new GameObject("Key") { hideFlags = HideFlags.DontSave };
+            keyGo.transform.SetParent(rig.transform, false);
+            var key = keyGo.AddComponent<Light>();
+            key.type = LightType.Directional;
+            key.intensity = 1.35f;
+            key.color = new Color(1f, 0.97f, 0.91f);
+            keyGo.transform.rotation = Quaternion.Euler(44f, -50f, 0f);
+
+            var fillGo = new GameObject("Fill") { hideFlags = HideFlags.DontSave };
+            fillGo.transform.SetParent(rig.transform, false);
+            var fill = fillGo.AddComponent<Light>();
+            fill.type = LightType.Directional;
+            fill.intensity = 0.35f;
+            fill.color = new Color(0.78f, 0.84f, 1f);
+            fillGo.transform.rotation = Quaternion.Euler(35f, 135f, 0f);
+
+            var camGo = new GameObject("Cam") { hideFlags = HideFlags.DontSave };
+            camGo.transform.SetParent(rig.transform, false);
+            var camera = camGo.AddComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = Background;
+            camera.allowMSAA = true;
+            camera.cullingMask = ~0;
+            camera.fieldOfView = 30f;
+            FrameCamera(camera, instance.transform);
+
+            target = new RenderTexture(RenderWidth, RenderHeight, 24, RenderTextureFormat.Default,
+                RenderTextureReadWrite.sRGB) { antiAliasing = 4 };
+            camera.targetTexture = target;
+            camera.Render();
+
+            RenderTexture.active = target;
+            readback = new Texture2D(RenderWidth, RenderHeight, TextureFormat.RGBA32, false, false);
+            readback.ReadPixels(new Rect(0, 0, RenderWidth, RenderHeight), 0, 0);
+            readback.Apply();
+            File.WriteAllBytes(Path.Combine(OutputFolder, fileName).Replace('\\', '/'), readback.EncodeToPNG());
+        }
+        finally
+        {
+            RenderTexture.active = previousActive;
+            restoreAmbient?.Invoke();
+            if (target != null)
+            {
+                target.Release();
+                Object.DestroyImmediate(target);
+            }
+
+            if (readback != null)
+            {
+                Object.DestroyImmediate(readback);
+            }
+
+            if (rig != null)
+            {
+                Object.DestroyImmediate(rig);
+            }
+
+            if (instance != null)
+            {
+                Object.DestroyImmediate(instance);
+            }
+
+            foreach (var material in generated)
+            {
+                if (material != null)
+                {
+                    Object.DestroyImmediate(material);
+                }
+            }
+        }
+    }
+
     private static void RenderOne(string characterId, bool withAttachments, string fileName)
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(VisualPrefabPath);
