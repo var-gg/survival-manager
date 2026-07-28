@@ -25,6 +25,7 @@ public static class P09WardrobeReferenceExporter
     private const string VisualPrefabPath =
         "Assets/P09_Modular_Humanoid/Scenes/DemoScene_Data/Demo_Prefab/P09_Human_Combat_Demo Variant.prefab";
     private const string OutputFolder = "Logs/p09-wardrobe";
+    private const string AnchorRoot = "art-pipeline/ref/characters";
     private const int RenderWidth = 700;
     private const int RenderHeight = 1200;
 
@@ -36,6 +37,48 @@ public static class P09WardrobeReferenceExporter
         var written = ExportWardrobe();
         Debug.Log($"[P09WardrobeReferenceExporter] {written} crop(s) written to {OutputFolder}.");
         EditorUtility.RevealInFinder(Path.GetFullPath(OutputFolder));
+    }
+
+    /// <summary>
+    /// 저작된 P09 프리셋을 art-pipeline 앵커로 렌더한다. 2D 초상 생성은 이 앵커를 정체성 원본으로
+    /// 삼으므로(의상 슬롯·실루엣·색 구역), 앵커 없이 생성하면 기존 캐릭터들과 화풍·의상이 어긋난다.
+    /// 앵커가 이미 있는 캐릭터는 건너뛴다 — 재생성은 기존 2D와의 연속성을 깬다.
+    /// </summary>
+    [MenuItem("SM/Internal/P09/Export Missing Character Anchors")]
+    public static void ExportMissingAnchorsMenu()
+    {
+        var written = ExportMissingAnchors();
+        Debug.Log($"[P09WardrobeReferenceExporter] {written} anchor(s) written under {AnchorRoot}.");
+    }
+
+    /// <summary>자동화 진입점 — 새로 쓴 앵커 개수를 돌려준다.</summary>
+    public static int ExportMissingAnchors()
+    {
+        var presets = Resources.LoadAll<BattleP09AppearancePreset>(BattleP09AppearancePreset.ResourcesFolder);
+        var written = 0;
+        foreach (var preset in presets)
+        {
+            if (preset == null || string.IsNullOrWhiteSpace(preset.CharacterId))
+            {
+                continue;
+            }
+
+            var dir = Path.Combine(AnchorRoot, preset.CharacterId).Replace('\\', '/');
+            var path = Path.Combine(dir, "anchor.png").Replace('\\', '/');
+            if (File.Exists(path))
+            {
+                continue;
+            }
+
+            Directory.CreateDirectory(dir);
+            if (RenderOne(preset, path, absolutePath: true))
+            {
+                written++;
+                Debug.Log($"[P09WardrobeReferenceExporter] anchor -> {path}");
+            }
+        }
+
+        return written;
     }
 
     /// <summary>자동화 진입점 — 렌더한 파일 개수를 돌려준다.</summary>
@@ -122,7 +165,7 @@ public static class P09WardrobeReferenceExporter
         return preset;
     }
 
-    private static bool RenderOne(BattleP09AppearancePreset preset, string fileName)
+    private static bool RenderOne(BattleP09AppearancePreset preset, string fileName, bool absolutePath = false)
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(VisualPrefabPath);
         if (prefab == null)
@@ -171,7 +214,9 @@ public static class P09WardrobeReferenceExporter
             renderer.Render();
             texture = renderer.EndStaticPreview();
 
-            var path = Path.Combine(OutputFolder, fileName).Replace('\\', '/');
+            var path = absolutePath
+                ? fileName
+                : Path.Combine(OutputFolder, fileName).Replace('\\', '/');
             File.WriteAllBytes(path, texture.EncodeToPNG());
             return true;
         }
@@ -198,13 +243,24 @@ public static class P09WardrobeReferenceExporter
         }
     }
 
+    /// <summary>
+    /// P09 모델의 forward는 +Z다. 카메라를 -Z에 identity로 두면 <b>뒤통수가 찍힌다</b> —
+    /// 첫 렌더가 실제로 그렇게 나왔다. 위키 크롭(<see cref="P09DetailPreservingPaletteTool"/>)이 쓰는
+    /// 정면 3/4 방향을 그대로 따른다. 이 시트와 앵커는 기존 캐릭터 크롭과 같은 화각이어야
+    /// 나중에 2D 생성 결과가 한 가족으로 보인다.
+    /// </summary>
     private static void FrameCamera(Camera camera, Transform root)
     {
         var bounds = CalculateBounds(root);
-        var height = Mathf.Max(bounds.size.y, 0.1f);
-        var distance = height / (2f * Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad)) * 1.18f;
-        camera.transform.position = bounds.center + new Vector3(0f, 0f, -distance);
-        camera.transform.rotation = Quaternion.identity;
+        var target = bounds.center + Vector3.up * (bounds.size.y * 0.03f);
+        var aspect = RenderWidth / (float)RenderHeight;
+        var half = Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        var verticalDistance = bounds.size.y * 0.5f / half;
+        var horizontalDistance = bounds.size.x * 0.5f / (half * aspect);
+        var distance = Mathf.Max(verticalDistance, horizontalDistance, 1.5f) * 1.16f;
+        var direction = Quaternion.Euler(3f, -28f, 0f) * Vector3.forward;
+        camera.transform.position = target + direction * distance;
+        camera.transform.rotation = Quaternion.LookRotation(target - camera.transform.position, Vector3.up);
         camera.nearClipPlane = 0.05f;
         camera.farClipPlane = distance * 4f;
     }
