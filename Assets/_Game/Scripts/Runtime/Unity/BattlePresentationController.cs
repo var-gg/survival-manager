@@ -136,6 +136,7 @@ public sealed class BattlePresentationController : MonoBehaviour
             }
 
             view.Initialize(actor, actorOverlayRoot, _camera, this, _metadataFormatter);
+            wrapper.ApplyPresentationRenderingLayer();
             view.ApplyOptions(_options);
             _actorViews[actor.Id] = view;
         }

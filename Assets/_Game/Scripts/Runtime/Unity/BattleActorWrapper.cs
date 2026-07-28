@@ -26,6 +26,7 @@ public readonly record struct BattleActorSocketStatus(
 public sealed class BattleActorWrapper : MonoBehaviour
 {
     private const float GroundPlaneY = -0.98f;
+    internal const string PresentationRenderingLayerName = "BattleActor";
 
     [SerializeField] private Transform visualRoot = null!;
     [SerializeField] private Transform vendorVisualSlot = null!;
@@ -43,6 +44,8 @@ public sealed class BattleActorWrapper : MonoBehaviour
 
     public Transform VisualRoot => visualRoot != null ? visualRoot : transform;
     public Transform VendorVisualSlot => vendorVisualSlot != null ? vendorVisualSlot : VisualRoot;
+    internal static uint PresentationRenderingLayerMask =>
+        UnityEngine.RenderingLayerMask.GetMask(PresentationRenderingLayerName);
 
     public void ConfigureAuthoring(
         Transform visualRootTransform,
@@ -73,6 +76,23 @@ public sealed class BattleActorWrapper : MonoBehaviour
     public void Configure(BattleUnitReadModel actor)
     {
         _resolvedHeadAnchorHeight = Mathf.Max(1.2f, actor.HeadAnchorHeight);
+    }
+
+    internal void ApplyPresentationRenderingLayer()
+    {
+        var actorLayerMask = PresentationRenderingLayerMask;
+        if (actorLayerMask == 0u)
+        {
+            Debug.LogError(
+                $"[BattleActorWrapper] Rendering layer '{PresentationRenderingLayerName}' is not defined. " +
+                $"Actor '{name}' renderers were left unchanged.");
+            return;
+        }
+
+        foreach (var renderer in GetComponentsInChildren<Renderer>(true))
+        {
+            renderer.renderingLayerMask |= actorLayerMask;
+        }
     }
 
     public Transform? GetSocketTransform(BattleActorSocketId socketId)

@@ -124,6 +124,23 @@ public static class BattleSceneCaptureTool
 
         SessionState.SetBool(PlayAutoPendingKey, true);
         SessionState.SetInt(PlayAutoFrameKey, 0);
+        SessionState.EraseBool(ScreenshotRequestedKey);
+
+        try
+        {
+            if (File.Exists(PlayModeScreenshotPath))
+            {
+                File.Delete(PlayModeScreenshotPath);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            SessionState.EraseBool(PlayAutoPendingKey);
+            SessionState.EraseInt(PlayAutoFrameKey);
+            Debug.LogError(
+                $"[BattleSceneCaptureTool] PlayAuto: could not reset '{PlayModeScreenshotPath}' before capture. {ex.Message}");
+            return;
+        }
 
         if (!EditorApplication.isPlaying)
         {
@@ -134,7 +151,7 @@ public static class BattleSceneCaptureTool
 
     private const string PlayAutoPendingKey = "SM.BattleCapture.PlayAutoPending";
     private const string PlayAutoFrameKey = "SM.BattleCapture.PlayAutoFrame";
-    private const int PlayAutoFramesToWait = 360;
+    private const int PlayAutoReadyTimeoutFrames = 360;
 
     /// <summary>내용이 안 보이면 이 프레임 수만큼 더 기다리며 다시 찍는다.</summary>
     private const int PlayAutoMaxExtraFrames = 1800;
@@ -193,8 +210,16 @@ public static class BattleSceneCaptureTool
         var frame = SessionState.GetInt(PlayAutoFrameKey, 0) + 1;
         SessionState.SetInt(PlayAutoFrameKey, frame);
 
-        if (frame < PlayAutoFramesToWait)
+        if (!TryGetBattleCaptureReadiness(out var readiness))
         {
+            if (frame < PlayAutoReadyTimeoutFrames)
+            {
+                return;
+            }
+
+            FailPlayAutoCapture(
+                $"timed out after {frame} frames waiting for the simulation to advance and all spawned actors " +
+                $"to expose an active character renderer. Current state: {readiness}");
             return;
         }
 
@@ -210,35 +235,119 @@ public static class BattleSceneCaptureTool
         {
             ScreenCapture.CaptureScreenshot(PlayModeScreenshotPath);
             SessionState.SetBool(ScreenshotRequestedKey, true);
+            Debug.Log($"[BattleSceneCaptureTool] PlayAuto runtime gate passed at frame {frame}. {readiness}");
             return;
         }
 
-        if (!File.Exists(PlayModeScreenshotPath)
-            && frame < PlayAutoFramesToWait + PlayAutoMaxExtraFrames)
+        if (!File.Exists(PlayModeScreenshotPath))
         {
+            if (frame < PlayAutoReadyTimeoutFrames + PlayAutoMaxExtraFrames)
+            {
+                return;
+            }
+
+            FailPlayAutoCapture(
+                $"timed out waiting for backbuffer screenshot '{PlayModeScreenshotPath}' after the runtime gate passed. " +
+                $"Current state: {readiness}");
             return;
         }
 
         // 비교용으로 기존 오프스크린 경로도 한 장 남긴다. 두 장이 다르면 그 차이가 곧 진단이다.
         CaptureBattleLive();
         if (LastCaptureLuminance < MinUsefulCaptureLuminance
-            && frame < PlayAutoFramesToWait + PlayAutoMaxExtraFrames)
+            && frame < PlayAutoReadyTimeoutFrames + PlayAutoMaxExtraFrames)
         {
             return;
         }
-
-        SessionState.EraseBool(PlayAutoPendingKey);
-        SessionState.EraseInt(PlayAutoFrameKey);
-        SessionState.EraseBool(ScreenshotRequestedKey);
 
         if (LastCaptureLuminance < MinUsefulCaptureLuminance)
         {
             Debug.LogError(
                 $"[BattleSceneCaptureTool] 캡쳐가 거의 검다(평균 휘도 {LastCaptureLuminance:0.000}). " +
-                "인트로 페이드나 전환 중일 수 있다. PlayAutoFramesToWait 를 늘리거나 컷씬 스킵을 확인하라.");
+                $"런타임 게이트는 통과했지만 렌더 결과가 유효하지 않다. Current state: {readiness}");
         }
 
+        ClearPlayAutoState();
         EditorApplication.ExitPlaymode();
+    }
+
+    private static bool TryGetBattleCaptureReadiness(out string state)
+    {
+        var screen = Object.FindFirstObjectByType<BattleScreenController>();
+        var step = screen != null ? screen.LatestStep : null;
+        var stepIndex = step?.StepIndex ?? -1;
+        var expectedActorCount = step?.Units.Count ?? 0;
+        var wrappers = Object.FindObjectsByType<BattleActorWrapper>(FindObjectsSortMode.None);
+        var activeWrapperCount = 0;
+        var wrappersWithCharacterRenderer = 0;
+        var firstMissingCharacterRenderer = "<none>";
+
+        foreach (var wrapper in wrappers)
+        {
+            if (!wrapper.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            activeWrapperCount++;
+            var hasCharacterRenderer = false;
+            foreach (var renderer in wrapper.GetComponentsInChildren<Renderer>(true))
+            {
+                if (IsCaptureReadyCharacterRenderer(renderer))
+                {
+                    hasCharacterRenderer = true;
+                    break;
+                }
+            }
+
+            if (hasCharacterRenderer)
+            {
+                wrappersWithCharacterRenderer++;
+            }
+            else if (firstMissingCharacterRenderer == "<none>")
+            {
+                firstMissingCharacterRenderer = wrapper.name;
+            }
+        }
+
+        state =
+            $"controller={(screen != null ? "present" : "missing")}, stepIndex={stepIndex}, " +
+            $"expectedActors={expectedActorCount}, activeWrappers={activeWrapperCount}, " +
+            $"wrappersWithCharacterRenderer={wrappersWithCharacterRenderer}, " +
+            $"firstMissingCharacterRenderer={firstMissingCharacterRenderer}";
+
+        return stepIndex > 0
+               && expectedActorCount > 0
+               && activeWrapperCount >= expectedActorCount
+               && wrappersWithCharacterRenderer >= expectedActorCount;
+    }
+
+    private static bool IsCaptureReadyCharacterRenderer(Renderer renderer)
+    {
+        if (!renderer.enabled
+            || renderer.forceRenderingOff
+            || !renderer.gameObject.activeInHierarchy)
+        {
+            return false;
+        }
+
+        return renderer.name != "ContactShadow"
+               && renderer.name != "GroundShadow"
+               && renderer.name != "PulseProxy";
+    }
+
+    private static void FailPlayAutoCapture(string reason)
+    {
+        Debug.LogError($"[BattleSceneCaptureTool] PlayAuto failed: {reason}");
+        ClearPlayAutoState();
+        EditorApplication.ExitPlaymode();
+    }
+
+    private static void ClearPlayAutoState()
+    {
+        SessionState.EraseBool(PlayAutoPendingKey);
+        SessionState.EraseInt(PlayAutoFrameKey);
+        SessionState.EraseBool(ScreenshotRequestedKey);
     }
 
     public static string Capture(bool addPreviewSunIfMissing)

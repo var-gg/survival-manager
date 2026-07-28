@@ -175,6 +175,14 @@ public static class P09BossPresenceAttachmentTool
             envGo = new GameObject("__SM_JudgingRenderEnvironment");
             envGo.AddComponent<BattleRenderEnvironmentAuthoring>().Apply();
 
+            // 배경을 <b>실제 전장 지면색</b>으로 덮는다(실측 rgb 163,154,133). 카메라 clear 색은
+            // 지오메트리가 없는 곳에만 보이고, 실제로 캐릭터 뒤에 있는 건 지면이다.
+            // 이 유닛의 진짜 문제는 "캐릭터가 어둡다"가 아니라 <b>"지면과 값이 같다"</b>였다 —
+            // 실측 휘도 지면 154.3 대 캐릭터 150.0, 4 포인트 차이. 검은 배경에서 보면 그 문제가
+            // 아예 안 보이고, 밝기를 올리는 방향이 오히려 더 붙게 만들 수도 있다.
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.639f, 0.604f, 0.522f, 1f);
+
             if (Camera.main != camera)
             {
                 Debug.LogWarning("[P09BossPresence] Camera.main 이 판단 카메라가 아니다 — " +
@@ -296,6 +304,218 @@ public static class P09BossPresenceAttachmentTool
             RenderSettings.fogEndDistance = _fogEnd;
             RenderSettings.fogDensity = _fogDensity;
             DynamicGI.UpdateEnvironment();
+        }
+    }
+
+    /// <summary>
+    /// 캐릭터 가독성 사다리. lilToon 이 이 문제를 위해 이미 갖고 있는 장치를 단계별로 켜서
+    /// 어느 값이 맞는지 <b>눈으로</b> 고르기 위한 것이다.
+    ///
+    /// 출고 상태는 P09 머티리얼 82개 전부 <c>_LightMinLimit = 0.05</c> 다. 이건 "환경이 아무리
+    /// 어두워도 이 아래로는 안 내려간다"는 <b>바닥</b>인데 0.05 는 사실상 검정이다. 어두운 전투
+    /// 환경에서 캐릭터가 정확히 그 바닥에 앉아 평균 휘도 4.6 이 나왔다.
+    /// <c>_RimEnableLighting = 1</c> 이라 실루엣을 떼어낼 림마저 조명에 곱해져 같이 죽는다.
+    ///
+    /// 목표는 "리그 오브 레전드 + 젤다 한 스푼" — 환경이 어둡든 말든 캐릭터는 읽힌다(LoL),
+    /// 림은 하늘빛으로 차게(젤다). 조명을 새로 달기 전에 <b>셰이더가 이미 가진 레버</b>부터 쓴다.
+    ///
+    /// 머티리얼은 반드시 인스턴스를 떠서 만진다 — 벤더 자산 82 개를 제자리에서 고치면
+    /// 에셋 갱신 때 통째로 날아간다.
+    /// </summary>
+    [MenuItem("SM/Internal/P09/Render Character Readability Ladder")]
+    public static void RenderReadabilityLadderMenu()
+    {
+        const string characterId = "extra_sunken_bastion_adjudicator";
+        Directory.CreateDirectory(OutputFolder);
+
+        RenderReadabilityStep(characterId, "readability_0_shipped.png", null);
+        RenderReadabilityStep(characterId, "readability_1_floor.png", m =>
+        {
+            SetFloat(m, "_LightMinLimit", 0.22f);
+        });
+        RenderReadabilityStep(characterId, "readability_2_floor_rim.png", m =>
+        {
+            SetFloat(m, "_LightMinLimit", 0.22f);
+            SetFloat(m, "_RimEnableLighting", 0f);
+            SetColor(m, "_RimColor", new Color(0.72f, 0.83f, 1f, 1f));
+            SetFloat(m, "_RimBorder", 0.34f);
+            SetFloat(m, "_RimBlur", 0.35f);
+            SetFloat(m, "_RimFresnelPower", 2.6f);
+        });
+        RenderReadabilityStep(characterId, "readability_3_strong.png", m =>
+        {
+            SetFloat(m, "_LightMinLimit", 0.30f);
+            SetFloat(m, "_RimEnableLighting", 0f);
+            SetColor(m, "_RimColor", new Color(0.78f, 0.88f, 1f, 1f));
+            SetFloat(m, "_RimBorder", 0.42f);
+            SetFloat(m, "_RimBlur", 0.30f);
+            SetFloat(m, "_RimFresnelPower", 2.2f);
+            // 젤다 한 스푼 — 중성 회색 그림자를 찬 쪽으로 민다.
+            SetColor(m, "_ShadowColor", new Color(0.52f, 0.56f, 0.66f, 1f));
+        });
+
+        AssetDatabase.Refresh();
+        Debug.Log($"[P09BossPresence] readability ladder written to {OutputFolder}.");
+    }
+
+    private static void SetFloat(Material material, string property, float value)
+    {
+        if (material.HasProperty(property))
+        {
+            material.SetFloat(property, value);
+        }
+    }
+
+    private static void SetColor(Material material, string property, Color value)
+    {
+        if (material.HasProperty(property))
+        {
+            material.SetColor(property, value);
+        }
+    }
+
+    private static void RenderReadabilityStep(string characterId, string fileName, System.Action<Material>? tune)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(VisualPrefabPath);
+        if (prefab == null)
+        {
+            throw new FileNotFoundException($"Missing P09 visual prefab: {VisualPrefabPath}");
+        }
+
+        var preset = FindPreset(characterId);
+        var generated = new List<Material>();
+        var previousActiveRt = RenderTexture.active;
+        var snapshot = RenderSettingsSnapshot.Capture();
+        var suspendedCameras = new List<GameObject>();
+
+        GameObject? instance = null;
+        GameObject? camGo = null;
+        GameObject? envGo = null;
+        RenderTexture? target = null;
+        Texture2D? readback = null;
+        try
+        {
+            instance = Object.Instantiate(prefab);
+            instance.transform.position = Vector3.zero;
+            instance.transform.rotation = Quaternion.identity;
+            if (preset != null)
+            {
+                preset.ApplyTo(instance.transform, generated);
+            }
+
+            P09PreviewPoseUtility.TryApplyDefaultIdlePose(instance, preset != null ? preset.SexId : 1);
+            BuildAdjudicatorPresence(instance);
+
+            if (tune != null)
+            {
+                // 공유 머티리얼을 그대로 만지면 벤더 자산이 더러워진다. 인스턴스를 떠서 붙인다.
+                foreach (var renderer in instance.GetComponentsInChildren<Renderer>(includeInactive: true))
+                {
+                    var shared = renderer.sharedMaterials;
+                    var instanced = new Material[shared.Length];
+                    for (var i = 0; i < shared.Length; i++)
+                    {
+                        if (shared[i] == null)
+                        {
+                            continue;
+                        }
+
+                        var copy = new Material(shared[i]) { hideFlags = HideFlags.DontSave };
+                        tune(copy);
+                        generated.Add(copy);
+                        instanced[i] = copy;
+                    }
+
+                    renderer.sharedMaterials = instanced;
+                }
+            }
+
+            foreach (var other in Object.FindObjectsByType<Camera>(FindObjectsSortMode.None))
+            {
+                if (other == null || !other.gameObject.activeSelf)
+                {
+                    continue;
+                }
+
+                suspendedCameras.Add(other.gameObject);
+                other.gameObject.SetActive(false);
+            }
+
+            camGo = new GameObject("__SM_JudgingCamera") { tag = "MainCamera" };
+            var camera = camGo.AddComponent<Camera>();
+            camera.allowMSAA = true;
+            camera.cullingMask = ~0;
+            camera.fieldOfView = 30f;
+            FrameCamera(camera, instance.transform);
+
+            envGo = new GameObject("__SM_JudgingRenderEnvironment");
+            envGo.AddComponent<BattleRenderEnvironmentAuthoring>().Apply();
+
+            // 배경을 <b>실제 전장 지면색</b>으로 덮는다(실측 rgb 163,154,133). 카메라 clear 색은
+            // 지오메트리가 없는 곳에만 보이고, 실제로 캐릭터 뒤에 있는 건 지면이다.
+            // 이 유닛의 진짜 문제는 "캐릭터가 어둡다"가 아니라 <b>"지면과 값이 같다"</b>였다 —
+            // 실측 휘도 지면 154.3 대 캐릭터 150.0, 4 포인트 차이. 검은 배경에서 보면 그 문제가
+            // 아예 안 보이고, 밝기를 올리는 방향이 오히려 더 붙게 만들 수도 있다.
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.639f, 0.604f, 0.522f, 1f);
+
+            target = new RenderTexture(RenderWidth, RenderHeight, 24, RenderTextureFormat.DefaultHDR,
+                RenderTextureReadWrite.sRGB) { antiAliasing = 4 };
+            camera.targetTexture = target;
+            camera.Render();
+
+            RenderTexture.active = target;
+            readback = new Texture2D(RenderWidth, RenderHeight, TextureFormat.RGBA32, false, false);
+            readback.ReadPixels(new Rect(0, 0, RenderWidth, RenderHeight), 0, 0);
+            readback.Apply();
+            File.WriteAllBytes(Path.Combine(OutputFolder, fileName).Replace('\\', '/'), readback.EncodeToPNG());
+        }
+        finally
+        {
+            RenderTexture.active = previousActiveRt;
+            if (target != null)
+            {
+                target.Release();
+                Object.DestroyImmediate(target);
+            }
+
+            if (readback != null)
+            {
+                Object.DestroyImmediate(readback);
+            }
+
+            if (envGo != null)
+            {
+                Object.DestroyImmediate(envGo);
+            }
+
+            if (camGo != null)
+            {
+                Object.DestroyImmediate(camGo);
+            }
+
+            if (instance != null)
+            {
+                Object.DestroyImmediate(instance);
+            }
+
+            foreach (var material in generated)
+            {
+                if (material != null)
+                {
+                    Object.DestroyImmediate(material);
+                }
+            }
+
+            foreach (var suspended in suspendedCameras)
+            {
+                if (suspended != null)
+                {
+                    suspended.SetActive(true);
+                }
+            }
+
+            snapshot.Restore();
         }
     }
 

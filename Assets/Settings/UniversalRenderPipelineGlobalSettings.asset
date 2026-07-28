@@ -73,7 +73,7 @@ MonoBehaviour:
   m_ObsoleteDefaultVolumeProfile: {fileID: 0}
   m_RenderingLayerNames:
   - Light Layer default
-  - Light Layer 1
+  - BattleActor
   - Light Layer 2
   - Light Layer 3
   - Light Layer 4
@@ -82,7 +82,7 @@ MonoBehaviour:
   - Light Layer 7
   m_ValidRenderingLayers: 0
   lightLayerName0: Light Layer default
-  lightLayerName1: Light Layer 1
+  lightLayerName1: BattleActor
   lightLayerName2: Light Layer 2
   lightLayerName3: Light Layer 3
   lightLayerName4: Light Layer 4
