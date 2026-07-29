@@ -372,6 +372,29 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 캐릭터 전용 조명만 껐다 켠다. <b>측정용</b>이다 — 같은 플레이 세션·같은 프레임 구간에서
+    /// 이 조명 하나만 움직여 A/B 를 찍기 위한 것이고, 저작 값(<c>characterLightingEnabled</c>)은
+    /// 건드리지 않아 다음 <see cref="Apply"/> 에서 저작 상태로 되돌아온다.
+    ///
+    /// 이 seam 이 필요한 이유: 지금까지의 조명 수치는 전부 오프스크린 판단 렌더에서 잰 것인데
+    /// 그 경로는 Linear→RGB24 변환이 빠져 계통적으로 어둡다. <b>실제 화면에서 재지 않으면
+    /// 어떤 조명 값도 눈먼 저작이다.</b> 두 장을 한 세션 안에서 찍어야 시뮬 상태·카메라·후처리가
+    /// 전부 동일해 조명만 남는다.
+    /// </summary>
+    public void SetCharacterLightingEnabled(bool enabled)
+    {
+        if (_characterKeyLight != null)
+        {
+            _characterKeyLight.enabled = enabled;
+        }
+
+        if (_characterRimLight != null)
+        {
+            _characterRimLight.enabled = enabled;
+        }
+    }
+
     private static Light? FindOrCreateLight(string name, Transform parent)
     {
         var existing = parent.Find(name);
