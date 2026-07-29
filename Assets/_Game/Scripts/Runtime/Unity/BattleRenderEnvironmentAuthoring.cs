@@ -86,8 +86,21 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     [Tooltip("Sun과 반대 방향에서 오는 약한 보조광. 그림자 영역이 완전 검정 되지 않게.")]
     [SerializeField] private Vector3 fillRotationEuler = new(35f, 135f, 0f);
 
-    [Header("Character-only lighting (LoL 식 가독성)")]
-    [SerializeField] private bool characterLightingEnabled = true;
+    [Header("Character-only lighting (LoL 식 가독성) — 현재 OFF, 아래 사유")]
+
+    /// <summary>
+    /// <b>기본값 off.</b> 이 조명은 "액터 렌더링 레이어에만 닿는다"는 전제로 저작했는데,
+    /// 실제 화면 A/B 로 재 보니 <b>전제가 거짓이었다</b> — 두 프레임의 차이가
+    /// 화면 픽셀의 93% 에 걸쳐 있었고 지면과 나무가 통째로 날아갔다.
+    /// URP 라이트 레이어는 셰이더가 레이어 검사를 구현해야 걸러지는데 이 화면의
+    /// 캐릭터 셰이더(lilToon)와 지형이 그걸 하지 않아, 사실상 전역 밝기 부스트로 동작했다.
+    ///
+    /// 값을 낮춰서 쓸 수 있는 문제가 아니다 — 메커니즘이 의도와 다르므로 값에 의미가 없다.
+    /// 다시 켜려면 <c>tools/unity-bridge.ps1 capture-battle-character-lighting-ab</c> 로
+    /// <b>바뀐 픽셀이 캐릭터 영역에만 있는지</b>를 먼저 증명해야 한다.
+    /// 아래 값들은 그때 다시 잡을 출발점으로 남겨 둔다.
+    /// </summary>
+    [SerializeField] private bool characterLightingEnabled;
 
     /// <summary>정면에 가깝게 — 얼굴이 읽혀야 하고, 값을 지면 위로 들어올리는 게 목적이다.</summary>
     [SerializeField] private Vector3 characterKeyRotationEuler = new(34f, -28f, 0f);

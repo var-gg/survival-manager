@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-07-25
+- 최종수정일: 2026-07-29
 - 소스오브트루스: `docs/03_architecture/index.md`
 - 관련문서:
   - `docs/index.md`
@@ -121,7 +121,7 @@
 - `balance-scenario-coverage-matrix.md`: balance smoke, threat topology, Loop D scenario coverage matrix
 - `pruning-playbook.md`: content health grade, prune rule, move-out-of-v1 기준
 - `status-runtime-stack-and-cleanse-rules.md`: status stack / refresh / ownership runtime 규칙
-- `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling 경계
+- `editor-sandbox-tooling.md`: Unity combat sandbox/editor tooling과 character-lighting A/B 캡처 세션 경계
 - `combat-sandbox-inspector-surface-inventory.md`: Combat Sandbox inspector/window/HUD 검증 표면 inventory
 - `town-character-sheet-contract.md`: Town readonly character sheet source/view-state contract
 - `character-axis-and-localized-battle-metadata.md`: `CharacterDefinition`, localized inspector, battle metadata 흐름

@@ -1,5 +1,4 @@
 using System.IO;
-using SM.Editor.Bootstrap;
 using SM.Unity;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -113,7 +112,7 @@ public static class BattleSceneCaptureTool
     [MenuItem("SM/Internal/Capture/Battle Play Auto")]
     public static void StartPlayAutoCapture()
     {
-        StartPlayAutoCapture(characterLightingAb: false);
+        BattlePlayAutoCaptureSession.Start(characterLightingAb: false);
     }
 
     /// <summary>
@@ -126,101 +125,13 @@ public static class BattleSceneCaptureTool
     [MenuItem("SM/Internal/Capture/Battle Play Auto A-B (Character Lighting)")]
     public static void StartPlayAutoCaptureCharacterLightingAb()
     {
-        StartPlayAutoCapture(characterLightingAb: true);
+        BattlePlayAutoCaptureSession.Start(characterLightingAb: true);
     }
-
-    private static void StartPlayAutoCapture(bool characterLightingAb)
-    {
-        // 1. 전투 세션이 실제로 서는 경로로 Play 진입
-        // 2. 런타임 게이트 통과 후 백버퍼 캡쳐
-        // 3. Exit Play
-        // State is persisted via SessionState across domain reload.
-        if (!EnsureBattleSceneOpen())
-        {
-            Debug.LogError("[BattleSceneCaptureTool] PlayAuto: failed to open Battle scene.");
-            return;
-        }
-
-        SessionState.SetBool(PlayAutoPendingKey, true);
-        SessionState.SetInt(PlayAutoFrameKey, 0);
-        SessionState.EraseBool(ScreenshotRequestedKey);
-        SessionState.SetBool(AbModeKey, characterLightingAb);
-        SessionState.SetInt(AbStepKey, 0);
-        SessionState.SetInt(AbStepFrameKey, 0);
-
-        try
-        {
-            DeleteIfExists(PlayModeScreenshotPath);
-            if (characterLightingAb)
-            {
-                DeleteIfExists(AbOffScreenshotPath);
-                DeleteIfExists(AbOnScreenshotPath);
-            }
-        }
-        catch (System.Exception ex)
-        {
-            ClearPlayAutoState();
-            Debug.LogError(
-                $"[BattleSceneCaptureTool] PlayAuto: could not reset capture outputs before capture. {ex.Message}");
-            return;
-        }
-
-        if (EditorApplication.isPlaying)
-        {
-            // 이미 세션이 도는 중이면 그 세션에 얹는다.
-            return;
-        }
-
-        // Battle 씬만 열고 Play 를 눌러 봐야 세션이 없어 시뮬이 안 돈다 — 실제로 stepIndex=-1,
-        // activeWrappers=0 로 게이트가 영원히 안 열린다. 전투를 실제로 세우는 경로로 들어간다.
-        FirstPlayableBootstrap.PlayCombatSandbox();
-    }
-
-    private static void DeleteIfExists(string path)
-    {
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
-    }
-
-    private const string PlayAutoPendingKey = "SM.BattleCapture.PlayAutoPending";
-    private const string PlayAutoFrameKey = "SM.BattleCapture.PlayAutoFrame";
-    /// <summary>
-    /// 전투가 실제로 시작될 때까지 기다릴 상한. 360(약 6초)이었는데 <b>너무 짧아서</b>
-    /// 세션이 정상적으로 서는 중에 타임아웃이 났고, 타임아웃이 <see cref="EditorApplication.ExitPlaymode"/>를
-    /// 부르면서 전투 샌드박스 EditorPref 까지 지워 <b>다음 시도까지 오염시켰다</b>
-    /// (그 다음 Play 는 샌드박스 레인이 아닌 direct-scene fallback 으로 들어가 인카운터 해석에 실패했다).
-    /// 게이트가 상태 기반이라 상한을 넉넉히 잡아도 비용이 없다 — 조건이 서면 즉시 찍는다.
-    /// </summary>
-    private const int PlayAutoReadyTimeoutFrames = 3600;
-
-    /// <summary>내용이 안 보이면 이 프레임 수만큼 더 기다리며 다시 찍는다.</summary>
-    private const int PlayAutoMaxExtraFrames = 1800;
-
-    /// <summary>PlayMode 백버퍼 캡쳐 산출물. 화면에 나간 프레임 그대로이므로 이쪽이 정본이다.</summary>
-    private const string PlayModeScreenshotPath = "Captures/battle_playmode.png";
-
-    private const string ScreenshotRequestedKey = "SM.BattleCapture.ScreenshotRequested";
-
-    private const string AbModeKey = "SM.BattleCapture.AbCharacterLighting";
-    private const string AbStepKey = "SM.BattleCapture.AbStep";
-    private const string AbStepFrameKey = "SM.BattleCapture.AbStepFrame";
-    private const string AbOffScreenshotPath = "Captures/battle_ab_charlight_off.png";
-    private const string AbOnScreenshotPath = "Captures/battle_ab_charlight_on.png";
-
-    /// <summary>조명 토글은 다음 렌더부터 반영된다. 셔터를 그만큼 늦춰야 이전 프레임을 찍지 않는다.</summary>
-    private const int AbSettleFrames = 6;
-
-    private const int AbFileWaitFrames = 900;
-
-    /// <summary>이 값 아래면 사실상 검은 화면이다. 순검정 PNG 를 "성공"으로 보고하지 않기 위한 바닥.</summary>
-    private const float MinUsefulCaptureLuminance = 0.012f;
 
     /// <summary>마지막 캡쳐의 평균 휘도. 캡쳐가 내용을 담았는지 판정하는 유일한 근거다.</summary>
     public static float LastCaptureLuminance { get; private set; }
 
-    private static float MeanLuminance(Texture2D texture)
+    internal static float MeanLuminance(Texture2D texture)
     {
         var pixels = texture.GetPixels32();
         if (pixels.Length == 0)
@@ -239,277 +150,6 @@ public static class BattleSceneCaptureTool
         }
 
         return samples == 0 ? 0f : (float)(total / samples);
-    }
-
-    [InitializeOnLoadMethod]
-    private static void RegisterPlayAutoHooks()
-    {
-        EditorApplication.update -= OnPlayAutoUpdate;
-        EditorApplication.update += OnPlayAutoUpdate;
-    }
-
-    private static void OnPlayAutoUpdate()
-    {
-        if (!SessionState.GetBool(PlayAutoPendingKey, false))
-        {
-            return;
-        }
-
-        if (!EditorApplication.isPlaying)
-        {
-            return;
-        }
-
-        var frame = SessionState.GetInt(PlayAutoFrameKey, 0) + 1;
-        SessionState.SetInt(PlayAutoFrameKey, frame);
-
-        if (!TryGetBattleCaptureReadiness(out var readiness))
-        {
-            if (frame < PlayAutoReadyTimeoutFrames)
-            {
-                return;
-            }
-
-            FailPlayAutoCapture(
-                $"timed out after {frame} frames waiting for the simulation to advance and all spawned actors " +
-                $"to expose an active character renderer. Current state: {readiness}");
-            return;
-        }
-
-        if (SessionState.GetBool(AbModeKey, false))
-        {
-            AdvanceCharacterLightingAb(frame, readiness);
-            return;
-        }
-
-        // 프레임 수만 세고 찍으면 인트로 페이드가 남아 있을 때 순검정 PNG 가 저장된다 —
-        // 툴은 "captured" 라고 보고하므로 조용한 실패다. 실제로 그렇게 한 장 나왔다.
-        // 내용이 보일 때까지 다시 찍고, 끝내 안 보이면 실패로 명확히 남긴다.
-        // 화면에 실제로 나간 프레임을 그대로 가져온다. camera.Render() 로 오프스크린 RT 에 그리는 건
-        // <b>플레이어가 보는 프레임과 같은 경로가 아니다</b> — 최종 blit 후처리 적용 여부가 달라질 수 있고,
-        // 이 프로젝트는 Linear 컬러 스페이스라 HDR RT 를 RGB24 로 ReadPixels 하면 sRGB 변환이 빠져
-        // 저장본이 계통적으로 어두워진다. 그래서 PlayMode 에서는 백버퍼 캡쳐를 정본으로 삼는다.
-        // (같은 기법을 TownPreviewCaptureUtility 가 이미 쓰고 있다.)
-        if (!SessionState.GetBool(ScreenshotRequestedKey, false))
-        {
-            ScreenCapture.CaptureScreenshot(PlayModeScreenshotPath);
-            SessionState.SetBool(ScreenshotRequestedKey, true);
-            Debug.Log($"[BattleSceneCaptureTool] PlayAuto runtime gate passed at frame {frame}. {readiness}");
-            return;
-        }
-
-        if (!File.Exists(PlayModeScreenshotPath))
-        {
-            if (frame < PlayAutoReadyTimeoutFrames + PlayAutoMaxExtraFrames)
-            {
-                return;
-            }
-
-            FailPlayAutoCapture(
-                $"timed out waiting for backbuffer screenshot '{PlayModeScreenshotPath}' after the runtime gate passed. " +
-                $"Current state: {readiness}");
-            return;
-        }
-
-        // 비교용으로 기존 오프스크린 경로도 한 장 남긴다. 두 장이 다르면 그 차이가 곧 진단이다.
-        CaptureBattleLive();
-        if (LastCaptureLuminance < MinUsefulCaptureLuminance
-            && frame < PlayAutoReadyTimeoutFrames + PlayAutoMaxExtraFrames)
-        {
-            return;
-        }
-
-        if (LastCaptureLuminance < MinUsefulCaptureLuminance)
-        {
-            Debug.LogError(
-                $"[BattleSceneCaptureTool] 캡쳐가 거의 검다(평균 휘도 {LastCaptureLuminance:0.000}). " +
-                $"런타임 게이트는 통과했지만 렌더 결과가 유효하지 않다. Current state: {readiness}");
-        }
-
-        ClearPlayAutoState();
-        EditorApplication.ExitPlaymode();
-    }
-
-    /// <summary>
-    /// 캐릭터 조명 OFF → ON 두 장을 같은 세션에서 순서대로 찍는다.
-    /// 한 장씩 따로 돌리면 시뮬이 다른 순간에 있고 유닛 위치도 달라져 차분이 조명 기여분이 아니게 된다.
-    /// </summary>
-    private static void AdvanceCharacterLightingAb(int frame, string readiness)
-    {
-        var step = SessionState.GetInt(AbStepKey, 0);
-        var stepFrame = SessionState.GetInt(AbStepFrameKey, 0);
-
-        switch (step)
-        {
-            case 0:
-                if (!TrySetCharacterLighting(false))
-                {
-                    FailPlayAutoCapture(
-                        "A/B: no BattleRenderEnvironmentAuthoring in the running scene, so character lighting " +
-                        $"could not be toggled. Current state: {readiness}");
-                    return;
-                }
-
-                AdvanceAbStep(1, frame);
-                return;
-
-            case 1:
-                if (frame - stepFrame < AbSettleFrames)
-                {
-                    return;
-                }
-
-                ScreenCapture.CaptureScreenshot(AbOffScreenshotPath);
-                AdvanceAbStep(2, frame);
-                return;
-
-            case 2:
-                if (!File.Exists(AbOffScreenshotPath))
-                {
-                    if (frame - stepFrame < AbFileWaitFrames)
-                    {
-                        return;
-                    }
-
-                    FailPlayAutoCapture(
-                        $"A/B: lights-off frame '{AbOffScreenshotPath}' never landed. Current state: {readiness}");
-                    return;
-                }
-
-                TrySetCharacterLighting(true);
-                AdvanceAbStep(3, frame);
-                return;
-
-            case 3:
-                if (frame - stepFrame < AbSettleFrames)
-                {
-                    return;
-                }
-
-                ScreenCapture.CaptureScreenshot(AbOnScreenshotPath);
-                AdvanceAbStep(4, frame);
-                return;
-
-            default:
-                if (!File.Exists(AbOnScreenshotPath))
-                {
-                    if (frame - stepFrame < AbFileWaitFrames)
-                    {
-                        return;
-                    }
-
-                    FailPlayAutoCapture(
-                        $"A/B: lights-on frame '{AbOnScreenshotPath}' never landed. Current state: {readiness}");
-                    return;
-                }
-
-                Debug.Log(
-                    $"[BattleSceneCaptureTool] A/B captured at frame {frame}: " +
-                    $"'{AbOffScreenshotPath}' (character lighting off) and '{AbOnScreenshotPath}' (on). {readiness}");
-                ClearPlayAutoState();
-                EditorApplication.ExitPlaymode();
-                return;
-        }
-    }
-
-    private static void AdvanceAbStep(int step, int frame)
-    {
-        SessionState.SetInt(AbStepKey, step);
-        SessionState.SetInt(AbStepFrameKey, frame);
-    }
-
-    private static bool TrySetCharacterLighting(bool enabled)
-    {
-        var environment = Object.FindFirstObjectByType<BattleRenderEnvironmentAuthoring>();
-        if (environment == null)
-        {
-            return false;
-        }
-
-        environment.SetCharacterLightingEnabled(enabled);
-        return true;
-    }
-
-    private static bool TryGetBattleCaptureReadiness(out string state)
-    {
-        var screen = Object.FindFirstObjectByType<BattleScreenController>();
-        var step = screen != null ? screen.LatestStep : null;
-        var stepIndex = step?.StepIndex ?? -1;
-        var expectedActorCount = step?.Units.Count ?? 0;
-        var wrappers = Object.FindObjectsByType<BattleActorWrapper>(FindObjectsSortMode.None);
-        var activeWrapperCount = 0;
-        var wrappersWithCharacterRenderer = 0;
-        var firstMissingCharacterRenderer = "<none>";
-
-        foreach (var wrapper in wrappers)
-        {
-            if (!wrapper.gameObject.activeInHierarchy)
-            {
-                continue;
-            }
-
-            activeWrapperCount++;
-            var hasCharacterRenderer = false;
-            foreach (var renderer in wrapper.GetComponentsInChildren<Renderer>(true))
-            {
-                if (IsCaptureReadyCharacterRenderer(renderer))
-                {
-                    hasCharacterRenderer = true;
-                    break;
-                }
-            }
-
-            if (hasCharacterRenderer)
-            {
-                wrappersWithCharacterRenderer++;
-            }
-            else if (firstMissingCharacterRenderer == "<none>")
-            {
-                firstMissingCharacterRenderer = wrapper.name;
-            }
-        }
-
-        state =
-            $"controller={(screen != null ? "present" : "missing")}, stepIndex={stepIndex}, " +
-            $"expectedActors={expectedActorCount}, activeWrappers={activeWrapperCount}, " +
-            $"wrappersWithCharacterRenderer={wrappersWithCharacterRenderer}, " +
-            $"firstMissingCharacterRenderer={firstMissingCharacterRenderer}";
-
-        return stepIndex > 0
-               && expectedActorCount > 0
-               && activeWrapperCount >= expectedActorCount
-               && wrappersWithCharacterRenderer >= expectedActorCount;
-    }
-
-    private static bool IsCaptureReadyCharacterRenderer(Renderer renderer)
-    {
-        if (!renderer.enabled
-            || renderer.forceRenderingOff
-            || !renderer.gameObject.activeInHierarchy)
-        {
-            return false;
-        }
-
-        return renderer.name != "ContactShadow"
-               && renderer.name != "GroundShadow"
-               && renderer.name != "PulseProxy";
-    }
-
-    private static void FailPlayAutoCapture(string reason)
-    {
-        Debug.LogError($"[BattleSceneCaptureTool] PlayAuto failed: {reason}");
-        ClearPlayAutoState();
-        EditorApplication.ExitPlaymode();
-    }
-
-    private static void ClearPlayAutoState()
-    {
-        SessionState.EraseBool(PlayAutoPendingKey);
-        SessionState.EraseInt(PlayAutoFrameKey);
-        SessionState.EraseBool(ScreenshotRequestedKey);
-        SessionState.EraseBool(AbModeKey);
-        SessionState.EraseInt(AbStepKey);
-        SessionState.EraseInt(AbStepFrameKey);
     }
 
     public static string Capture(bool addPreviewSunIfMissing)
@@ -579,7 +219,7 @@ public static class BattleSceneCaptureTool
         }
     }
 
-    private static bool EnsureBattleSceneOpen()
+    internal static bool EnsureBattleSceneOpen()
     {
         var active = SceneManager.GetActiveScene();
         if (active.IsValid() && active.path == BattleScenePath)

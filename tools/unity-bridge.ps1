@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'capture-battle', 'capture-battle-live', 'capture-battle-play-auto', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
+    [ValidateSet('status', 'list', 'compile', 'clear-console', 'console', 'prepare-playable', 'repair-scenes', 'ensure-localization', 'quick-battle-smoke', 'seed-content', 'content-validate', 'balance-sweep-smoke', 'test-edit', 'test-play', 'test-batch-edit', 'test-batch-fast', 'report-town', 'report-battle', 'smoke-observer', 'capture-battle', 'capture-battle-live', 'capture-battle-play-auto', 'capture-battle-character-lighting-ab', 'loopd-slice', 'loopd-purekit', 'loopd-systemic', 'loopd-runlite', 'loopd-smoke', 'loopd-full', 'exec')]
     [string]$Verb,
     [int]$Lines = 30,
     [string]$Filter = 'error,warning,log',
@@ -615,6 +615,60 @@ try {
                 }
                 Start-Sleep -Milliseconds 500
             }
+        }
+        'capture-battle-character-lighting-ab' {
+            $resultPath = Join-Path $projectRoot 'Captures\battle_ab_charlight_result.json'
+            $offPath = Join-Path $projectRoot 'Captures\battle_ab_charlight_off.png'
+            $onPath = Join-Path $projectRoot 'Captures\battle_ab_charlight_on.png'
+            $previousResult = Get-FileLastWriteTimeUtcOrMinValue -Path $resultPath
+
+            Invoke-UnityMenuCommand `
+                -MenuPath 'SM/Internal/Capture/Battle Play Auto A-B (Character Lighting)' `
+                -ReadyContext 'battle character-lighting A/B capture'
+
+            $captureResult = $null
+            for ($attempt = 1; $attempt -le 360; $attempt++) {
+                if (Test-Path $resultPath) {
+                    $resultItem = Get-Item $resultPath
+                    if ($resultItem.LastWriteTimeUtc -gt $previousResult -and $resultItem.Length -gt 0) {
+                        try {
+                            $captureResult = Get-Content -Raw -LiteralPath $resultPath | ConvertFrom-Json
+                            break
+                        }
+                        catch {
+                            $captureResult = $null
+                        }
+                    }
+                }
+
+                Start-Sleep -Milliseconds 500
+            }
+
+            if ($null -eq $captureResult) {
+                throw "Battle character-lighting A/B capture did not produce a fresh result within 180 seconds: $resultPath"
+            }
+
+            if ($captureResult.status -ne 'success') {
+                throw "Battle character-lighting A/B capture failed: $($captureResult.reason)"
+            }
+
+            if (-not (Test-Path $offPath) -or -not (Test-Path $onPath)) {
+                throw "Battle character-lighting A/B capture reported success without both PNG files."
+            }
+
+            $offItem = Get-Item $offPath
+            $onItem = Get-Item $onPath
+            $actualBytesDiffer = (Get-FileHash -Algorithm SHA256 -LiteralPath $offPath).Hash -ne `
+                (Get-FileHash -Algorithm SHA256 -LiteralPath $onPath).Hash
+            if (-not $actualBytesDiffer -or -not [bool]$captureResult.bytes_differ) {
+                throw "Battle character-lighting A/B capture produced byte-identical PNG files."
+            }
+
+            Write-Host "Battle character-lighting A/B capture succeeded."
+            Write-Host "  off: $offPath ($($offItem.Length) bytes, luminance=$($captureResult.off_luminance))"
+            Write-Host "  on:  $onPath ($($onItem.Length) bytes, luminance=$($captureResult.on_luminance))"
+            Write-Host "  frame: step=$($captureResult.step_index), alive=$($captureResult.alive_units)/$($captureResult.total_units)"
+            Write-Host "  bytes differ: $actualBytesDiffer"
         }
         'smoke-observer' {
             Invoke-Step -Name 'compile' -Action { Invoke-UnityCli @('editor', 'refresh', '--compile') -WaitForReady -ReadyContext 'compile' }

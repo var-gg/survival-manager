@@ -2,7 +2,7 @@
 
 - 상태: active
 - 소유자: repository
-- 최종수정일: 2026-04-09
+- 최종수정일: 2026-07-29
 - 소스오브트루스: `docs/03_architecture/editor-sandbox-tooling.md`
 - 관련문서:
   - `docs/03_architecture/content-authoring-model.md`
@@ -207,6 +207,22 @@ category는 유지하지만 출력은 category 이름만 남기지 않는다.
   - `Continue -> Reward`, `Return to Town` 의미를 유지한다.
 - heavy library 탐색, history 비교, 결과 drill-down은 window에 둔다.
 - daily edit/compile/play loop는 Inspector에 둔다.
+
+## 전투 화면 character-lighting A/B 캡처 하네스
+
+character-lighting 비교 캡처는 아래 한 명령으로 실행한다.
+
+```powershell
+pwsh -File tools/unity-bridge.ps1 capture-battle-character-lighting-ab
+```
+
+- 메뉴 진입점은 `SM/Internal/Capture/Battle Play Auto A-B (Character Lighting)`이다.
+- 메뉴 디스패치 안에서 곧바로 `EnterPlaymode()`를 호출하지 않는다. 캡처 제어 상태는 domain reload에 안전한 `SessionState`에 두고, 메뉴 호출이 반환된 뒤 editor callback에서 기존 combat-sandbox 요청 신호를 설정한 다음 Play 진입을 요청한다.
+- `ExitingEditMode`와 `EnteredPlayMode`에서 요청 신호를 다시 읽는다. Play 요청이 무시되거나 신호가 사라지면 캡처 프레임을 기다리지 않고 실패 결과를 남긴다.
+- 준비 게이트는 `stepIndex > 0`, 기대 액터 전체의 활성 character renderer, 양 팀 생존 유닛, 피해를 받은 생존 유닛, 전체 유닛의 75% 이상 생존을 모두 요구한다. 75% 아래로 내려가면 종료 프레임을 대신 찍지 않고 capture-window miss로 실패한다.
+- 게이트 통과 시 playback을 일시정지하고 step과 생존 수가 고정됐는지 확인한 뒤 조명 OFF/ON 프레임을 순서대로 저장한다. 두 PNG가 byte-identical이거나 평균 휘도 바닥을 통과하지 못하면 실패다.
+- 결과는 `Captures/battle_ab_charlight_result.json`에 성공/실패, step, 생존 수, 파일 크기, 평균 휘도, byte-difference 판정을 기록한다. PNG 정본은 `Captures/battle_ab_charlight_off.png`와 `Captures/battle_ab_charlight_on.png`다.
+- 이 하네스는 세션과 캡처 배선만 소유한다. 조명·색·카메라 저작값과 전투 시뮬레이션은 변경하지 않는다.
 
 ## knob 관리 규칙
 
