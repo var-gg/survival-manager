@@ -91,7 +91,12 @@ public sealed class BattleScreenController : MonoBehaviour
     public TeamPostureType? ActiveAllyPosture => _simulator?.State.AllyPosture;
     public BattlePlaybackMode PlaybackMode => _policy.Mode;
 
-    private const float DefaultCameraFieldOfView = 54f;
+    /// <summary>
+    /// 54 → 42. 카메라를 옮기지 않고 캐릭터를 약 28% 크게 만드는 가장 싼 레버다.
+    /// 원근 왜곡도 같이 줄어 화면이 덜 어안(魚眼)스러워진다 — 캐릭터 쇼케이스가 이미 23 을 쓴다.
+    /// 42 에서도 경기장(가로 16 유닛)은 프레임 안에 들어온다.
+    /// </summary>
+    private const float DefaultCameraFieldOfView = 42f;
     private static readonly Vector3 DefaultCameraPosition = new(0.4f, 7.7f, -8.9f);
     private static readonly Quaternion DefaultCameraRotation = Quaternion.Euler(33f, -12f, 0f);
     private bool IsSmokeLane => _policy.Mode == BattlePlaybackMode.QuickBattle;
