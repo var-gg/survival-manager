@@ -85,6 +85,19 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     [Header("필 라이트 (Fill — 그림자 없는 보조광)")]
     [Tooltip("Sun과 반대 방향에서 오는 약한 보조광. 그림자 영역이 완전 검정 되지 않게.")]
     [SerializeField] private Vector3 fillRotationEuler = new(35f, 135f, 0f);
+
+    [Header("Character-only lighting (LoL 식 가독성)")]
+    [SerializeField] private bool characterLightingEnabled = true;
+
+    /// <summary>정면에 가깝게 — 얼굴이 읽혀야 하고, 값을 지면 위로 들어올리는 게 목적이다.</summary>
+    [SerializeField] private Vector3 characterKeyRotationEuler = new(34f, -28f, 0f);
+    [SerializeField] private Color characterKeyColor = new(1f, 0.97f, 0.92f, 1f);
+    [Range(0f, 4f), SerializeField] private float characterKeyIntensity = 2.35f;
+
+    /// <summary>뒤·위에서 차게 — 윤곽을 만든다. 하늘빛(젤다 한 스푼).</summary>
+    [SerializeField] private Vector3 characterRimRotationEuler = new(-18f, 152f, 0f);
+    [SerializeField] private Color characterRimColor = new(0.70f, 0.82f, 1f, 1f);
+    [Range(0f, 6f), SerializeField] private float characterRimIntensity = 3.1f;
     [Tooltip("필 색. 보통 차가운 톤 (Sun이 따뜻한 경우 보색 대비).")]
     [ColorUsage(false, true), SerializeField] private Color fillColor = new(0.18f, 0.24f, 0.34f, 1f);
     [Tooltip("필 세기. 0.05~0.20이 적절. 너무 높으면 그림자가 사라지는 느낌.")]
@@ -142,6 +155,8 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
     private Transform? _envRoot;
     private Light? _sunLight;
     private Light? _fillLight;
+    private Light? _characterKeyLight;
+    private Light? _characterRimLight;
     private Volume? _runtimeVolume;
     private VolumeProfile? _runtimeProfile;
 
@@ -154,6 +169,7 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
         DestroyOrphanRuntimeVolumes();
         ApplyRenderSettings();
         ApplyLights();
+        ApplyCharacterLights();
         ApplyCamera();
         ApplyVolume();
         ForceShadowCastingOnSceneRenderers();
@@ -300,6 +316,59 @@ public sealed class BattleRenderEnvironmentAuthoring : MonoBehaviour
             _fillLight.color = fillColor;
             _fillLight.intensity = fillIntensity;
             _fillLight.shadows = LightShadows.None;
+        }
+    }
+
+    /// <summary>
+    /// 캐릭터 전용 조명. 실측한 결함은 "캐릭터가 어둡다"가 아니라 <b>지면과 값이 같다</b>였다 —
+    /// 실제 전투 화면에서 지면 휘도 154.3 대 캐릭터 150.0, 4 포인트 차이. 값 위계가 없으니
+    /// 아무리 잘 만든 실루엣도 안 읽힌다.
+    ///
+    /// 그래서 환경 조명은 그대로 두고 <b>액터에만 닿는 조명</b>을 얹는다. 리그 오브 레전드가
+    /// 챔피언 가독성을 지키는 방식이 이것이다 — 월드가 어떻든 캐릭터는 자기 조명을 갖는다.
+    /// 셰이더 파라미터(lilToon 림)를 찍어 보는 것보다 훨씬 큰 레버고, 환경을 건드리지 않아
+    /// 기존 화면 톤이 그대로 남는다.
+    ///
+    /// 키는 값을 들어올려 지면 위로 띄우고, 림은 뒤에서 차갑게 때려 윤곽을 만든다(젤다 한 스푼).
+    /// URP 라이트 레이어가 켜져 있어야 동작한다(PC/Mobile RP 에셋 모두 m_SupportsLightLayers: 1).
+    /// </summary>
+    private void ApplyCharacterLights()
+    {
+        if (_envRoot == null)
+        {
+            return;
+        }
+
+        var actorMask = BattleActorWrapper.PresentationRenderingLayerMask;
+        if (actorMask == 0u)
+        {
+            Debug.LogWarning(
+                "[BattleRenderEnvironment] BattleActor 렌더링 레이어가 없어 캐릭터 전용 조명을 건너뛴다.");
+            return;
+        }
+
+        _characterKeyLight ??= FindOrCreateLight("BattleCharacterKey", _envRoot);
+        if (_characterKeyLight != null)
+        {
+            _characterKeyLight.enabled = characterLightingEnabled;
+            _characterKeyLight.type = LightType.Directional;
+            _characterKeyLight.transform.rotation = Quaternion.Euler(characterKeyRotationEuler);
+            _characterKeyLight.color = characterKeyColor;
+            _characterKeyLight.intensity = characterKeyIntensity;
+            _characterKeyLight.shadows = LightShadows.None;
+            _characterKeyLight.renderingLayerMask = unchecked((int)actorMask);
+        }
+
+        _characterRimLight ??= FindOrCreateLight("BattleCharacterRim", _envRoot);
+        if (_characterRimLight != null)
+        {
+            _characterRimLight.enabled = characterLightingEnabled;
+            _characterRimLight.type = LightType.Directional;
+            _characterRimLight.transform.rotation = Quaternion.Euler(characterRimRotationEuler);
+            _characterRimLight.color = characterRimColor;
+            _characterRimLight.intensity = characterRimIntensity;
+            _characterRimLight.shadows = LightShadows.None;
+            _characterRimLight.renderingLayerMask = unchecked((int)actorMask);
         }
     }
 

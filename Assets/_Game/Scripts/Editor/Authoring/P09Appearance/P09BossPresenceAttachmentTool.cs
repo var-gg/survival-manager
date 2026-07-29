@@ -41,6 +41,9 @@ public static class P09BossPresenceAttachmentTool
     private const int RenderWidth = 700;
     private const int RenderHeight = 1200;
 
+    /// <summary>전투 액터에 부여되는 렌더링 레이어. 캐릭터 전용 조명이 이 레이어만 비춘다.</summary>
+    private const string ActorRenderingLayerName = "BattleActor";
+
     private static readonly Color Background = new(0.36f, 0.38f, 0.44f, 1f);
 
     [MenuItem("SM/Internal/P09/Render Boss Presence Comparison")]
@@ -171,6 +174,23 @@ public static class P09BossPresenceAttachmentTool
             camera.cullingMask = ~0;
             camera.fieldOfView = 30f;
             FrameCamera(camera, instance.transform);
+
+            // 판단 대상에 <b>액터 렌더링 레이어</b>를 부여한다. 캐릭터 전용 조명은 이 레이어에만 닿으므로,
+            // 이걸 빼먹으면 조명을 붙여 놓고 "효과가 없다"는 잘못된 결론을 내리게 된다.
+            // (실제 전투에서는 BattleActorWrapper 가 같은 일을 한다.)
+            var actorLayer = UnityEngine.RenderingLayerMask.GetMask(ActorRenderingLayerName);
+            if (actorLayer != 0u)
+            {
+                foreach (var renderer in instance.GetComponentsInChildren<Renderer>(includeInactive: true))
+                {
+                    renderer.renderingLayerMask |= actorLayer;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[P09BossPresence] '{ActorRenderingLayerName}' 렌더링 레이어가 없다 — " +
+                                 "캐릭터 전용 조명이 이 렌더에 반영되지 않는다.");
+            }
 
             envGo = new GameObject("__SM_JudgingRenderEnvironment");
             envGo.AddComponent<BattleRenderEnvironmentAuthoring>().Apply();
@@ -342,6 +362,13 @@ public static class P09BossPresenceAttachmentTool
             SetFloat(m, "_RimBlur", 0.35f);
             SetFloat(m, "_RimFresnelPower", 2.6f);
         });
+        // 아웃라인은 저작이 다 돼 있는데(_OutlineWidth 0.08~0.18, 색까지) _UseOutline 이 0 이라
+        // 화면에 도달하지 않는다. 알베도가 거의 검정이라 조명으로는 값을 못 올리는 상황에서,
+        // 아웃라인은 <b>알베도·조명과 무관하게</b> 윤곽을 그리는 유일한 수단이다.
+        RenderReadabilityStep(characterId, "readability_4_outline.png", m =>
+        {
+            SetFloat(m, "_UseOutline", 1f);
+        });
         RenderReadabilityStep(characterId, "readability_3_strong.png", m =>
         {
             SetFloat(m, "_LightMinLimit", 0.30f);
@@ -447,6 +474,23 @@ public static class P09BossPresenceAttachmentTool
             camera.cullingMask = ~0;
             camera.fieldOfView = 30f;
             FrameCamera(camera, instance.transform);
+
+            // 판단 대상에 <b>액터 렌더링 레이어</b>를 부여한다. 캐릭터 전용 조명은 이 레이어에만 닿으므로,
+            // 이걸 빼먹으면 조명을 붙여 놓고 "효과가 없다"는 잘못된 결론을 내리게 된다.
+            // (실제 전투에서는 BattleActorWrapper 가 같은 일을 한다.)
+            var actorLayer = UnityEngine.RenderingLayerMask.GetMask(ActorRenderingLayerName);
+            if (actorLayer != 0u)
+            {
+                foreach (var renderer in instance.GetComponentsInChildren<Renderer>(includeInactive: true))
+                {
+                    renderer.renderingLayerMask |= actorLayer;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[P09BossPresence] '{ActorRenderingLayerName}' 렌더링 레이어가 없다 — " +
+                                 "캐릭터 전용 조명이 이 렌더에 반영되지 않는다.");
+            }
 
             envGo = new GameObject("__SM_JudgingRenderEnvironment");
             envGo.AddComponent<BattleRenderEnvironmentAuthoring>().Apply();
