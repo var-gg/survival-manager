@@ -7,7 +7,27 @@ namespace SM.Unity;
 public sealed class BattleP09ActorVisualAdapter : BattleActorVisualAdapter
 {
     private const float GroundShadowWorldY = -0.965f;
-    private const float BattleCameraToonOutlineWidth = 0.12f;
+    /// <summary>
+    /// lilToon 아웃라인 폭. <b>단위를 조심해야 한다 — 0.12 는 화면에서 0.18 픽셀이었다.</b>
+    ///
+    /// 실측(2026-07-30): "아웃라인이 안 나온다"가 아니라 <b>서브픽셀이라 점선으로 부서져</b>
+    /// 실루엣에 검은 점이 흩뿌려진 것처럼 보이고 있었다. 4배 확대해서야 보였다.
+    ///
+    /// 셰이더가 <c>lil_common_functions.hlsl:275</c> 에서 <c>outlineWidth *= 0.01</c> 을 한다.
+    /// 그래서 0.12 는 오브젝트 공간 0.0012 유닛이다. 이 게임의 부감 카메라(피치 33°, FOV 42)에서
+    /// 패시브 줌이면 1 월드유닛 ≈ 153 px 이므로 <b>0.18 px</b> — 픽셀 하나를 못 채운다.
+    /// VRChat 아바타 기준값(0.05~0.15)을 그대로 가져오면 이렇게 된다. 그쪽은 카메라가 1~3 m 라
+    /// 유닛당 픽셀이 서너 배다.
+    ///
+    /// <c>_OutlineFixWidth</c> 는 여기서 무효다 — <c>saturate(length(lilHeadDirection))</c> 이라
+    /// 카메라가 1 유닛만 넘게 떨어지면 항상 1.0 이다. 거리 보정을 기대하면 안 된다.
+    /// 즉 아웃라인은 <b>월드 공간</b>이라 카메라가 멀어지면 화면에서 얇아진다. 1.6 은
+    /// 패시브 줌에서 중앙값 3 px, 가장 넓은 부트스트랩 줌(높이 8.4)에서도 약 1.8 px 로 살아남는다.
+    ///
+    /// 실측 결과(1.6): 스트로크 중앙값 3 px / 캐릭터 높이 약 150 px = 2%. 실루엣이 지면에서
+    /// 확실히 떨어진다. 더 얇게 가려면 1.1~1.2 가 약 2 px 이다.
+    /// </summary>
+    private const float BattleCameraToonOutlineWidth = 1.6f;
     private const float BattleCameraToonOutlineFixWidth = 0.75f;
     private static readonly Vector3 GroundShadowWorldScale = new(0.58f, 0.006f, 0.58f);
 
