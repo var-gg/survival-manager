@@ -292,6 +292,16 @@ internal static class BattlePlayAutoCaptureSession
         }
 
         screen.TogglePause();
+
+        // 카메라를 수렴된 보드 프레임으로 확정한다.
+        //
+        // 이게 없으면 같은 시드·같은 스텝인데 <b>회차마다 프레이밍이 달라진다</b>. 패시브 프레이밍은
+        // 시정수 약 0.54 초짜리 지수 블렌드라 개전 후 2~3 초는 부트스트랩 와이드 프레임에서
+        // 수렴하는 중이고, 여기서 붙잡는 시점은 전투 1.6 초(step 16)다. 정지 전까지 흐른 실시간이
+        // 에디터 부하에 따라 달라지므로 수렴 정도가 회차마다 달랐고, 실제로 전투가 좌하단 구석에서
+        // UI 뒤로 밀린 캡쳐가 나왔다. 시각 A/B 를 하려면 카메라가 통제 변수여야 한다.
+        screen.SnapCameraToSettledBoardFrame();
+
         var pausedReadiness = BattleCaptureReadinessProbe.Observe();
         SessionState.SetBool(PlaybackPausedKey, true);
         SessionState.SetInt(CaptureStepIndexKey, pausedReadiness.StepIndex);

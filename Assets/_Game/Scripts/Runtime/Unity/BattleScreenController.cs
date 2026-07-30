@@ -963,6 +963,34 @@ public sealed class BattleScreenController : MonoBehaviour
     }
 
     /// <summary>
+    /// 카메라를 현재 스텝의 <b>수렴된</b> 보드 프레임으로 즉시 맞춘다.
+    ///
+    /// 평상시 패시브 프레이밍은 <c>1 - exp(-1.85 * dt)</c> 지수 블렌드라 시정수가 약 0.54 초다.
+    /// 즉 개전 직후 부트스트랩 와이드 프레임에서 보드 프레임으로 <b>수렴하는 데 2~3 초가 걸린다</b>.
+    /// 그 사이 아무 시점에서나 화면을 붙잡으면 카메라가 블렌드 도중이라 전투가 프레임 구석에 걸린다.
+    ///
+    /// 실제로 캡쳐 하네스가 전투 1.6 초(step 16)에 일시정지하고 6 프레임 뒤 찍는 바람에
+    /// <b>같은 시드·같은 스텝인데 프레이밍이 회차마다 달랐다</b> — 어떤 회차는 전투가 중앙,
+    /// 어떤 회차는 좌하단 구석에 UI 뒤로 밀렸다. 에디터 부하에 따라 정지 전까지 흐른 실시간이
+    /// 달라져서 수렴 정도가 달라진 것이다. 정지해도 <c>Time.timeScale</c> 은 건드리지 않으므로
+    /// (이 저장소는 timeScale 을 아예 안 쓴다) 기다리면 수렴하긴 하지만, 기다리는 것보다
+    /// <b>수렴 결과로 확정</b>하는 편이 재현 가능하다.
+    ///
+    /// 플레이어가 2~3 초 뒤 실제로 보는 화면이 바로 이 프레임이므로 대표성도 이쪽이 낫다.
+    /// 디렉터 강조 샷은 일부러 무시한다 — 여기서 원하는 건 연출 컷이 아니라 안정된 보드 뷰다.
+    /// </summary>
+    public void SnapCameraToSettledBoardFrame()
+    {
+        if (cameraController == null || LatestStep is not { } step)
+        {
+            return;
+        }
+
+        cameraController.SnapToSuggestedFrame(
+            _cameraFramingPolicy.BuildPassiveFrame(step, _selectedUnitId));
+    }
+
+    /// <summary>
     /// Phase 4 — 디렉터가 강조 샷을 쥐고 있으면 사건 당사자 프레임, 아니면 종전 passive 보드 프레임.
     /// 어느 쪽이든 비-bootstrap 제안(블렌드)이라 하드 스냅이 없고 수동 카메라 우선권이 유지된다.
     /// </summary>
