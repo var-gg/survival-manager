@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using SM.Editor.Bootstrap;
 using SM.Unity;
+using SM.Unity.UI.Battle;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,6 +24,12 @@ internal static class BattlePlayAutoCaptureSession
     private const string PlayEntryRequestedKey = "SM.BattleCapture.PlayEntryRequested";
     private const string PlayEntryWaitUpdatesKey = "SM.BattleCapture.PlayEntryWaitUpdates";
     private const string PlaybackPausedKey = "SM.BattleCapture.PlaybackPaused";
+
+    /// <summary>
+    /// 켜면 정지 직후 유닛 상세창을 열고 찍는다. 상세창은 클릭해야 나오는 화면이라
+    /// 평소 캡쳐 경로로는 <b>한 번도 볼 수 없다</b> — 눈으로 못 본 화면은 고칠 수도 없다.
+    /// </summary>
+    private const string OpenUnitDetailKey = "SM.BattleCapture.OpenUnitDetail";
     private const string CaptureStepIndexKey = "SM.BattleCapture.StepIndex";
     private const string CaptureAliveUnitsKey = "SM.BattleCapture.AliveUnits";
     private const string CaptureTotalUnitsKey = "SM.BattleCapture.TotalUnits";
@@ -57,8 +64,11 @@ internal static class BattlePlayAutoCaptureSession
         }
     }
 
-    internal static void Start(bool characterLightingAb)
+    internal static void Start(bool characterLightingAb) => Start(characterLightingAb, openUnitDetail: false);
+
+    internal static void Start(bool characterLightingAb, bool openUnitDetail)
     {
+        SessionState.SetBool(OpenUnitDetailKey, openUnitDetail);
         if (EditorApplication.isPlayingOrWillChangePlaymode)
         {
             if (characterLightingAb)
@@ -301,6 +311,11 @@ internal static class BattlePlayAutoCaptureSession
         // 에디터 부하에 따라 달라지므로 수렴 정도가 회차마다 달랐고, 실제로 전투가 좌하단 구석에서
         // UI 뒤로 밀린 캡쳐가 나왔다. 시각 A/B 를 하려면 카메라가 통제 변수여야 한다.
         screen.SnapCameraToSettledBoardFrame();
+
+        if (SessionState.GetBool(OpenUnitDetailKey, false))
+        {
+            screen.SelectUnitDetailTab(BattleUnitDetailTab.Overview);
+        }
 
         var pausedReadiness = BattleCaptureReadinessProbe.Observe();
         SessionState.SetBool(PlaybackPausedKey, true);

@@ -213,10 +213,12 @@ public sealed class BattleUnitMetadataFormatter
         string role,
         string roleFamily)
     {
+        // "캐릭터"(이름)와 "역할군"은 뺐다 — 둘 다 화면에서 바로 옆 칸과 겹친다.
+        // 이름은 상세창 제목이 이미 "선택 유닛: 묘직 (墓直)" 로 달고 있고,
+        // 역할군은 다음 줄 "역할" 이 "고정축 / 선봉" 으로 이미 포함해 출력한다.
+        // 실제 화면에서 8 칸 중 2 칸이 제목·옆칸의 재출력이라 정보 밀도가 아니라 노이즈였다.
         return new[]
         {
-            Line("ui.battle.axis.character", "캐릭터", "Character", character, BattleStatLineCategory.Vital),
-            Line("ui.battle.axis.role_family", "역할군", "Role Family", roleFamily, BattleStatLineCategory.Vital),
             Line("ui.battle.axis.role", "역할", "Role", $"{role} / {roleFamily}", BattleStatLineCategory.Vital),
             Line(
                 "ui.battle.axis.dominant_hand",

@@ -822,16 +822,27 @@ public sealed class BattleScreenView
         yield return DeploymentAnchorId.BackBottom;
     }
 
+    /// <summary>
+    /// 진형 칸 표시명.
+    ///
+    /// 2026-07-31 까지 여기는 <c>"FT" / "FC" / "FB" / "BT" / "BC" / "BB"</c> 를 냈다.
+    /// 내부 enum 의 머리글자 약어가 <b>플레이어 화면에 그대로 떠 있었다.</b> 유닛 상세창은
+    /// 클릭해야 나오는 화면이라 캡쳐 경로에 한 번도 안 걸렸고, 그래서 아무도 이걸 못 봤다.
+    ///
+    /// 같은 enum 을 <see cref="SM.Unity.UI.Atlas.AtlasScreenController"/> 는 이미
+    /// "전열 상 / 전열 중 ..." 으로 한글화해 쓰고 있었다 — 즉 전투 화면만 예외였다.
+    /// 표기를 그쪽에 맞춘다. 화면마다 같은 칸을 다른 말로 부르면 그것도 결함이다.
+    /// </summary>
     private static string FormatAnchorShort(DeploymentAnchorId anchor)
     {
         return anchor switch
         {
-            DeploymentAnchorId.FrontTop => "FT",
-            DeploymentAnchorId.FrontCenter => "FC",
-            DeploymentAnchorId.FrontBottom => "FB",
-            DeploymentAnchorId.BackTop => "BT",
-            DeploymentAnchorId.BackCenter => "BC",
-            DeploymentAnchorId.BackBottom => "BB",
+            DeploymentAnchorId.FrontTop => "전열 상",
+            DeploymentAnchorId.FrontCenter => "전열 중",
+            DeploymentAnchorId.FrontBottom => "전열 하",
+            DeploymentAnchorId.BackTop => "후열 상",
+            DeploymentAnchorId.BackCenter => "후열 중",
+            DeploymentAnchorId.BackBottom => "후열 하",
             _ => "?"
         };
     }

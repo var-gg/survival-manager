@@ -128,6 +128,19 @@ public static class BattleSceneCaptureTool
         BattlePlayAutoCaptureSession.Start(characterLightingAb: true);
     }
 
+    /// <summary>
+    /// 유닛 상세창을 열어 둔 채로 전투 중반을 찍는다.
+    ///
+    /// 상세창은 클릭해야 뜨는 화면이라 일반 캡쳐 경로에는 <b>절대 나오지 않는다</b>.
+    /// 그래서 이 화면만 시각 검토 사각지대에 남아 있었다 — 탭이 7 개까지 늘어난 것도
+    /// 아무도 전체를 한 장으로 본 적이 없기 때문이다. 출력은 A/B 캡쳐와 같은 경로를 쓴다.
+    /// </summary>
+    [MenuItem("SM/Internal/Capture/Battle Play Auto (Unit Detail)")]
+    public static void StartPlayAutoCaptureUnitDetail()
+    {
+        BattlePlayAutoCaptureSession.Start(characterLightingAb: true, openUnitDetail: true);
+    }
+
     /// <summary>마지막 캡쳐의 평균 휘도. 캡쳐가 내용을 담았는지 판정하는 유일한 근거다.</summary>
     public static float LastCaptureLuminance { get; private set; }
 
