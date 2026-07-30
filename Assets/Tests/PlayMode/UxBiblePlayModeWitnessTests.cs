@@ -456,7 +456,6 @@ public sealed partial class UxBiblePlayModeWitnessTests
         AssertVisible(root, "SettingsPanel", allowDisplayNone: true);
         AssertVisible(root, "ProgressTrack");
         AssertVisible(root, "AllyRosterList");
-        AssertVisible(root, "EnemyRosterList");
         AssertNonEmptyText<Label>(root, "LogLabel");
         Assert.That(Require<VisualElement>(root, "BattleDebugFoldout").style.display.value, Is.EqualTo(DisplayStyle.None));
         Assert.That(Require<VisualElement>(root, "PlaybackActionsGroup").style.display.value, Is.EqualTo(DisplayStyle.None));
@@ -941,7 +940,6 @@ public sealed partial class UxBiblePlayModeWitnessTests
                 "SmokeActionsGroup",
                 "ProgressFill",
                 "AllyRosterList",
-                "EnemyRosterList",
             });
         }
 

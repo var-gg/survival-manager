@@ -407,12 +407,38 @@ public sealed class BattleScreenPresenter
             .Select(unit => new BattleRosterUnitViewState(
                 unit.Id,
                 ResolveUnitDisplayName(unit),
-                SanitizeBattleStateText(BattleReadabilityFormatter.BuildPlayerFacingState(unit, step, LocaleCode), step),
+                BuildRosterActionLabel(unit, step),
                 unit.MaxHealth > 0f ? UnityEngine.Mathf.Clamp01(unit.CurrentHealth / unit.MaxHealth) : 0f,
                 unit.IsAlive,
                 string.Equals(unit.Id, selectedUnitId, System.StringComparison.Ordinal),
-                _portraitResolver.Resolve(unit)))
+                _portraitResolver.Resolve(unit),
+                BuildRosterHealthText(unit)))
             .ToList();
+    }
+
+    /// <summary>
+    /// 파티 카드에 쓸 <b>동사만</b> 남긴다.
+    ///
+    /// <see cref="BattleReadabilityFormatter.BuildPlayerFacingState"/> 는 머리 위 표시를 겸해서
+    /// <c>"접근 -&gt; 침월 (沉月)"</c> 처럼 대상을 붙이고, 대상이 아직 없으면 <c>"대상 탐색 -&gt; -"</c> 가 된다.
+    /// 카드 폭이 122 px 라 대상은 어차피 잘려서 <c>"접근 -&gt; 침월 (沉月) ..."</c> 로 보이고,
+    /// 잘린 화살표는 <b>상태 기계 로그처럼</b> 읽힌다. 실제로 이 화면이 시뮬레이터처럼 보이던 원인 중 하나다.
+    /// 누구를 노리는지는 전장에서 보이므로 카드에는 동사만 남긴다.
+    /// </summary>
+    private string BuildRosterActionLabel(BattleUnitReadModel unit, BattleSimulationStep step)
+    {
+        var text = SanitizeBattleStateText(
+            BattleReadabilityFormatter.BuildPlayerFacingState(unit, step, LocaleCode), step);
+
+        var arrow = text.IndexOf("->", System.StringComparison.Ordinal);
+        return arrow > 0 ? text[..arrow].TrimEnd() : text;
+    }
+
+    private static string BuildRosterHealthText(BattleUnitReadModel unit)
+    {
+        return unit.MaxHealth > 0f
+            ? $"{UnityEngine.Mathf.CeilToInt(UnityEngine.Mathf.Max(0f, unit.CurrentHealth))}/{UnityEngine.Mathf.CeilToInt(unit.MaxHealth)}"
+            : string.Empty;
     }
 
     private HelpStripViewState CreateHelpState(bool showHelp)

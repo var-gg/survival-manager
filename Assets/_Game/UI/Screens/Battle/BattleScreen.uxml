@@ -2,8 +2,6 @@
     <Style src="../../Foundation/USS/common_detail.uss" />
     <ui:VisualElement name="BattleScreenRoot" class="screen battle-screen sm-bs-shell">
         <ui:VisualElement name="TopChrome" class="screen__topbar screen__toolbar sm-bs-topbar">
-            <ui:Label name="TitleLabel" class="screen__title sm-bs-title" />
-
             <ui:VisualElement name="SummaryPanel" class="battle-shell__summary sm-bs-top-status">
                 <ui:VisualElement class="battle-shell__summary-header sm-bs-summary-header">
                     <ui:Label name="SummaryTitleLabel" class="panel__title battle-shell__summary-title sm-bs-section-title" />
@@ -12,8 +10,6 @@
                 <ui:VisualElement name="SummaryBody" class="battle-shell__summary-body sm-bs-summary-body">
                     <ui:VisualElement name="StatusHeadline" class="sm-bs-status-headline">
                         <ui:Label name="ResultLabel" class="panel__text battle-shell__result sm-bs-result" />
-                        <ui:Label name="StatusLabel" class="panel__text battle-shell__status sm-bs-status-text" />
-                        <ui:Label name="SpeedLabel" class="panel__text panel__text--muted sm-bs-speed" />
                     </ui:VisualElement>
                     <ui:VisualElement name="ProgressTrack" class="battle-track sm-bs-progress-track">
                         <ui:VisualElement name="ProgressFill" class="battle-track__fill sm-bs-progress-fill" />
@@ -44,28 +40,6 @@
         <ui:VisualElement name="HelpStrip" class="help-strip sm-bs-help-strip">
             <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
             <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss sm-bs-control-btn" />
-        </ui:VisualElement>
-
-        <ui:VisualElement name="TurnOrderStrip" class="sm-bs-turn-order" />
-
-        <ui:VisualElement name="BattleIntelPanel" class="sm-bs-intel-panel sm-vellum-card">
-            <ui:Label name="BattleIntelTitleLabel" class="panel__title sm-bs-section-title sm-bs-intel-title" />
-            <ui:VisualElement name="BattleIntelBoard" class="sm-bs-intel-board" />
-            <ui:VisualElement name="BattleIntelLegend" class="sm-bs-intel-legend" />
-        </ui:VisualElement>
-
-        <ui:VisualElement name="BattleSideRail" class="sm-bs-side-rail sm-vellum-card">
-            <ui:Label name="BattleSideRailTitleLabel" class="panel__title sm-bs-section-title sm-bs-side-rail-title" />
-            <ui:VisualElement name="BattleSideRailSteps" class="sm-bs-side-rail-steps" />
-        </ui:VisualElement>
-
-        <ui:VisualElement name="EnemySummaryPanel" class="sm-bs-threat-strip sm-vellum-card">
-            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--striker" />
-            <ui:VisualElement class="sm-bs-strip-header">
-                <ui:Label name="EnemyTitleLabel" class="panel__title sm-bs-rail-title" />
-                <ui:Label name="EnemyHpLabel" class="panel__text sm-bs-rail-summary" />
-            </ui:VisualElement>
-            <ui:VisualElement name="EnemyRosterList" class="sm-bs-roster-list sm-bs-roster-list--enemy" />
         </ui:VisualElement>
 
         <ui:VisualElement name="BattleShellMain" class="battle-shell__main sm-bs-layout">
@@ -181,12 +155,6 @@
                 <ui:Label name="ObserverStatusTitleLabel" class="action-group__title sm-bs-control-title sm-bs-observer-title" />
                 <ui:VisualElement name="ObserverStatusChips" class="sm-bs-observer-chips" />
             </ui:VisualElement>
-        </ui:VisualElement>
-
-        <ui:VisualElement name="TacticalReadoutPanel" class="sm-bs-readout-panel sm-vellum-card">
-            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--vanguard" />
-            <ui:Label name="TacticalReadoutTitleLabel" class="panel__title sm-bs-section-title" />
-            <ui:VisualElement name="TacticalReadoutRows" class="sm-bs-readout-rows" />
         </ui:VisualElement>
 
         <ui:VisualElement name="SettingsPanel" class="panel battle-settings sm-bs-settings-panel sm-vellum-card">

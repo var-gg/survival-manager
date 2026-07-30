@@ -57,10 +57,6 @@ public sealed partial class UxBiblePlayModeWitnessTests
         var panels = new[]
         {
             Require<VisualElement>(root, "TopChrome"),
-            Require<VisualElement>(root, "TurnOrderStrip"),
-            Require<VisualElement>(root, "EnemySummaryPanel"),
-            Require<VisualElement>(root, "BattleIntelPanel"),
-            Require<VisualElement>(root, "BattleSideRail"),
             Require<VisualElement>(root, "CompactLog"),
             Require<VisualElement>(root, "AllySummaryPanel"),
             Require<VisualElement>(root, "ControlBar"),
@@ -81,17 +77,9 @@ public sealed partial class UxBiblePlayModeWitnessTests
         Assert.That(logToControlGap, Is.InRange(8f, 24f),
             "Battle HUD log must be anchored immediately above the Control Bar instead of floating in the battlefield.");
 
-        var turnOrder = Require<VisualElement>(root, "TurnOrderStrip");
-        foreach (var token in turnOrder.Query<VisualElement>(className: "sm-bs-combatant-token").ToList())
-        {
-            AssertContained(turnOrder, token, "Battle HUD turn-order token");
-            AssertVisibleTextContained(token, "Battle HUD turn-order token");
-        }
-
         foreach (var roster in new[]
                  {
                      Require<VisualElement>(root, "AllyRosterList"),
-                     Require<VisualElement>(root, "EnemyRosterList"),
                  })
         {
             foreach (var unit in roster.Query<VisualElement>(className: "sm-bs-roster-unit").ToList())
@@ -101,13 +89,9 @@ public sealed partial class UxBiblePlayModeWitnessTests
             }
         }
 
-        var status = Require<Label>(root, "StatusLabel");
-        Assert.That(status.worldBound.width, Is.GreaterThanOrEqualTo(220f),
-            "Battle HUD status text must retain a readable allocation instead of collapsing to a one-character ellipsis.");
-        var intelTitle = Require<Label>(root, "BattleIntelTitleLabel");
-        var readoutTitle = Require<Label>(root, "TacticalReadoutTitleLabel");
-        Assert.That(intelTitle.text, Is.Not.EqualTo(readoutTitle.text),
-            "Spatial force distribution and quantitative tactical readout are distinct panels and must not share a title.");
+        // StatusLabel / BattleIntelTitleLabel / TacticalReadoutTitleLabel 검사는 2026-07-31 에 제거됐다.
+        // 셋 다 그 요소들과 함께 사라졌다 — 상단 raw 스텝 로그와, 전장 배치를 다시 그리던
+        // 전력 분포·전황 판단 패널이다. 새 계약은 BattleHudShellVisualContractFastTests 가 든다.
     }
 
     private static void AssertRewardContainment(VisualElement root)

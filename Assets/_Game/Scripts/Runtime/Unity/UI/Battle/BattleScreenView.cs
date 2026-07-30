@@ -43,7 +43,6 @@ public sealed class BattleScreenView
     private const float EnemyRosterPortraitWidth = 64f;
     private const float EnemyRosterPortraitHeight = 76f;
 
-    private readonly Label _titleLabel;
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
     private readonly Button _localeEnButton;
@@ -56,29 +55,12 @@ public sealed class BattleScreenView
     private readonly Button _summaryToggleButton;
     private readonly VisualElement _summaryBody;
     private readonly Label _allyTitleLabel;
-    private readonly Label _enemyTitleLabel;
     private readonly Label _logTitleLabel;
     private readonly VisualElement _allySummaryPanel;
-    private readonly VisualElement _enemySummaryPanel;
     private readonly VisualElement _allyRosterList;
-    private readonly VisualElement _enemyRosterList;
-    private readonly VisualElement _combatantTokenStrip;
-    private readonly VisualElement _tacticalReadoutPanel;
-    private readonly Label _tacticalReadoutTitleLabel;
-    private readonly VisualElement _tacticalReadoutRows;
-    private readonly VisualElement _battleIntelPanel;
-    private readonly Label _battleIntelTitleLabel;
-    private readonly VisualElement _battleIntelBoard;
-    private readonly VisualElement _battleIntelLegend;
-    private readonly VisualElement _battleSideRail;
-    private readonly Label _battleSideRailTitleLabel;
-    private readonly VisualElement _battleSideRailSteps;
     private readonly Label _allyHpLabel;
-    private readonly Label _enemyHpLabel;
     private readonly Label _logLabel;
     private readonly Label _resultLabel;
-    private readonly Label _speedLabel;
-    private readonly Label _statusLabel;
     private readonly VisualElement _playbackActionsGroup;
     private readonly Label _playbackGroupTitleLabel;
     private readonly Button _speed05Button;
@@ -167,7 +149,6 @@ public sealed class BattleScreenView
     public BattleScreenView(VisualElement root)
     {
         root.pickingMode = PickingMode.Ignore;
-        _titleLabel = Require<Label>(root, "TitleLabel");
         _localeStatusLabel = Require<Label>(root, "LocaleStatusLabel");
         _localeKoButton = Require<Button>(root, "LocaleKoButton");
         _localeEnButton = Require<Button>(root, "LocaleEnButton");
@@ -180,29 +161,12 @@ public sealed class BattleScreenView
         _summaryToggleButton = Require<Button>(root, "SummaryToggleButton");
         _summaryBody = Require<VisualElement>(root, "SummaryBody");
         _allyTitleLabel = Require<Label>(root, "AllyTitleLabel");
-        _enemyTitleLabel = Require<Label>(root, "EnemyTitleLabel");
         _logTitleLabel = Require<Label>(root, "LogTitleLabel");
         _allySummaryPanel = Require<VisualElement>(root, "AllySummaryPanel");
-        _enemySummaryPanel = Require<VisualElement>(root, "EnemySummaryPanel");
         _allyRosterList = Require<VisualElement>(root, "AllyRosterList");
-        _enemyRosterList = Require<VisualElement>(root, "EnemyRosterList");
-        _combatantTokenStrip = Require<VisualElement>(root, "TurnOrderStrip");
-        _tacticalReadoutPanel = Require<VisualElement>(root, "TacticalReadoutPanel");
-        _tacticalReadoutTitleLabel = Require<Label>(root, "TacticalReadoutTitleLabel");
-        _tacticalReadoutRows = Require<VisualElement>(root, "TacticalReadoutRows");
-        _battleIntelPanel = Require<VisualElement>(root, "BattleIntelPanel");
-        _battleIntelTitleLabel = Require<Label>(root, "BattleIntelTitleLabel");
-        _battleIntelBoard = Require<VisualElement>(root, "BattleIntelBoard");
-        _battleIntelLegend = Require<VisualElement>(root, "BattleIntelLegend");
-        _battleSideRail = Require<VisualElement>(root, "BattleSideRail");
-        _battleSideRailTitleLabel = Require<Label>(root, "BattleSideRailTitleLabel");
-        _battleSideRailSteps = Require<VisualElement>(root, "BattleSideRailSteps");
         _allyHpLabel = Require<Label>(root, "AllyHpLabel");
-        _enemyHpLabel = Require<Label>(root, "EnemyHpLabel");
         _logLabel = Require<Label>(root, "LogLabel");
         _resultLabel = Require<Label>(root, "ResultLabel");
-        _speedLabel = Require<Label>(root, "SpeedLabel");
-        _statusLabel = Require<Label>(root, "StatusLabel");
         _playbackActionsGroup = Require<VisualElement>(root, "PlaybackActionsGroup");
         _playbackGroupTitleLabel = Require<Label>(root, "PlaybackGroupTitleLabel");
         _speed05Button = Require<Button>(root, "Speed05Button");
@@ -278,7 +242,6 @@ public sealed class BattleScreenView
         _unitDetailCloseButton.text = "X";
 
         SetNonBlocking(
-            _titleLabel,
             _localeStatusLabel,
             _helpStrip,
             _helpBodyLabel,
@@ -286,29 +249,12 @@ public sealed class BattleScreenView
             _summaryTitleLabel,
             _summaryBody,
             _allyTitleLabel,
-            _enemyTitleLabel,
             _logTitleLabel,
             _allySummaryPanel,
-            _enemySummaryPanel,
             _allyRosterList,
-            _enemyRosterList,
-            _combatantTokenStrip,
-            _tacticalReadoutPanel,
-            _tacticalReadoutTitleLabel,
-            _tacticalReadoutRows,
-            _battleIntelPanel,
-            _battleIntelTitleLabel,
-            _battleIntelBoard,
-            _battleIntelLegend,
-            _battleSideRail,
-            _battleSideRailTitleLabel,
-            _battleSideRailSteps,
             _allyHpLabel,
-            _enemyHpLabel,
             _logLabel,
             _resultLabel,
-            _speedLabel,
-            _statusLabel,
             _playbackGroupTitleLabel,
             _continueGroupTitleLabel,
             _smokeGroupTitleLabel,
@@ -436,7 +382,6 @@ public sealed class BattleScreenView
 
     public void Render(BattleShellViewState state)
     {
-        _titleLabel.text = state.Title;
         _localeStatusLabel.text = state.LocaleStatus;
         _localeKoButton.text = state.LocaleKoLabel;
         _localeEnButton.text = state.LocaleEnLabel;
@@ -450,14 +395,10 @@ public sealed class BattleScreenView
         _summaryToggleButton.tooltip = state.SummaryToggleTooltip;
         _summaryBody.style.display = state.IsSummaryExpanded ? DisplayStyle.Flex : DisplayStyle.None;
         _allyTitleLabel.text = state.AllyTitle;
-        _enemyTitleLabel.text = state.EnemyTitle;
         _logTitleLabel.text = state.LogTitle;
         _allyHpLabel.text = state.AllyHpText;
-        _enemyHpLabel.text = state.EnemyHpText;
         _logLabel.text = state.LogText;
         _resultLabel.text = state.ResultText;
-        _speedLabel.text = state.SpeedText;
-        _statusLabel.text = state.StatusText;
 
         _playbackActionsGroup.style.display = state.ShowPlaybackControls ? DisplayStyle.Flex : DisplayStyle.None;
         _playbackGroupTitleLabel.text = state.PlaybackGroupTitle;
@@ -500,13 +441,7 @@ public sealed class BattleScreenView
         _settingsButton.tooltip = state.SettingsTooltip;
 
         _allySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
-        _enemySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
-        RenderCombatantTokens(state.CombatantTokens);
-        RenderTacticalReadout(state.TacticalReadoutTitle, state.TacticalReadoutRows);
         RenderRoster(_allyRosterList, state.AllyRoster, isEnemy: false);
-        RenderRoster(_enemyRosterList, state.EnemyRoster, isEnemy: true);
-        RenderBattleIntelPanel(state);
-        RenderBattleSideRail(state);
         RenderObserverStatusDock(state);
 
         _settingsPanel.style.display = state.Settings.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
@@ -617,167 +552,53 @@ public sealed class BattleScreenView
             status.AddToClassList("sm-bs-roster-status");
             meta.Add(status);
 
+            // HP 바는 인라인 치수·색으로 박는다.
+            //
+            // 클래스만 걸었을 때 이 바는 <b>양 팀 모두 화면에 한 번도 나온 적이 없었다</b>.
+            // 렌더 코드는 있고 USS 규칙도 하나뿐인데(8px, 알파 10% 트랙) 실제 캡쳐를 픽셀 단위로
+            // 훑어도 초록 채널 우세 픽셀이 카드 안에 0 이었다. 원인을 더 파는 대신, 파티 카드는
+            // 어차피 다시 짓는 자리라 <b>치수와 색을 인라인으로 확정</b>했다. 인라인은 USS 로 덮이지 않는다.
+            // 즉 이 바가 안 보이면 그건 레이아웃이 아니라 데이터 문제다 — 원인이 한 곳으로 좁혀진다.
             var track = new VisualElement();
             track.AddToClassList("sm-bs-roster-hp-track");
+            // fill 을 가로로 눕히려면 트랙이 row 여야 한다. 기본값 column 에서는 퍼센트 높이가
+            // 교차축 stretch 와 얽혀 실제로 칠해지지 않았다 — 트랙 선만 나오고 초록이 안 나왔다.
+            track.style.flexDirection = FlexDirection.Row;
+            track.style.height = 9f;
+            track.style.marginTop = 5f;
+            track.style.backgroundColor = new Color(0.06f, 0.07f, 0.10f, 0.92f);
+            track.style.borderTopWidth = 1f;
+            track.style.borderBottomWidth = 1f;
+            track.style.borderLeftWidth = 1f;
+            track.style.borderRightWidth = 1f;
+            var edge = new Color(0f, 0f, 0f, 0.55f);
+            track.style.borderTopColor = edge;
+            track.style.borderBottomColor = edge;
+            track.style.borderLeftColor = edge;
+            track.style.borderRightColor = edge;
+
+            var health = Mathf.Clamp01(unit.HealthNormalized);
             var fill = new VisualElement();
             fill.AddToClassList("sm-bs-roster-hp-fill");
-            fill.style.width = Length.Percent(Mathf.Clamp01(unit.HealthNormalized) * 100f);
+            fill.style.height = 7f;
+            fill.style.width = Length.Percent(health * 100f);
+            fill.style.backgroundColor = ResolveHealthColor(health, unit.IsAlive);
             track.Add(fill);
             meta.Add(track);
 
+            if (!string.IsNullOrEmpty(unit.HealthText))
+            {
+                var healthLabel = new Label(unit.HealthText);
+                healthLabel.AddToClassList("sm-bs-roster-hp-text");
+                healthLabel.style.marginTop = 3f;
+                healthLabel.style.fontSize = 11f;
+                healthLabel.style.color = new Color(0.78f, 0.80f, 0.84f, 1f);
+                healthLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+                meta.Add(healthLabel);
+            }
+
             row.Add(meta);
             container.Add(row);
-        }
-    }
-
-    private void RenderCombatantTokens(IReadOnlyList<BattleCombatantTokenViewState>? tokens)
-    {
-        _combatantTokenStrip.Clear();
-        if (tokens == null || tokens.Count == 0)
-        {
-            _combatantTokenStrip.style.display = DisplayStyle.None;
-            return;
-        }
-
-        _combatantTokenStrip.style.display = DisplayStyle.Flex;
-        foreach (var token in tokens)
-        {
-            var slot = new VisualElement();
-            slot.AddToClassList("sm-bs-combatant-token");
-            slot.EnableInClassList("sm-bs-combatant-token--ally", token.IsAlly);
-            slot.EnableInClassList("sm-bs-combatant-token--enemy", !token.IsAlly);
-            slot.EnableInClassList("sm-bs-combatant-token--active", token.IsActive);
-            slot.EnableInClassList("sm-bs-combatant-token--down", token.IsDown);
-            slot.tooltip = $"{token.DisplayName}\n{token.ActionText}";
-
-            var mark = new Label(BuildInitial(token.DisplayName));
-            mark.AddToClassList("sm-bs-combatant-token__mark");
-            slot.Add(mark);
-
-            var copy = new VisualElement();
-            copy.AddToClassList("sm-bs-combatant-token__copy");
-            var name = new Label(token.DisplayName);
-            name.AddToClassList("sm-bs-combatant-token__name");
-            var action = new Label(token.ActionText);
-            action.AddToClassList("sm-bs-combatant-token__action");
-            copy.Add(name);
-            copy.Add(action);
-            slot.Add(copy);
-
-            var track = new VisualElement();
-            track.AddToClassList("sm-bs-combatant-token__track");
-            var fill = new VisualElement();
-            fill.AddToClassList("sm-bs-combatant-token__fill");
-            fill.style.width = Length.Percent(Mathf.Clamp01(token.HealthNormalized) * 100f);
-            track.Add(fill);
-            slot.Add(track);
-            _combatantTokenStrip.Add(slot);
-        }
-    }
-
-    private void RenderTacticalReadout(string title, IReadOnlyList<BattleTacticalReadoutRowViewState>? rows)
-    {
-        _tacticalReadoutRows.Clear();
-        if (rows == null || rows.Count == 0)
-        {
-            _tacticalReadoutPanel.style.display = DisplayStyle.None;
-            return;
-        }
-
-        _tacticalReadoutPanel.style.display = DisplayStyle.Flex;
-        _tacticalReadoutTitleLabel.text = title;
-        foreach (var rowState in rows)
-        {
-            var row = new VisualElement();
-            row.AddToClassList("sm-bs-readout-row");
-            row.AddToClassList($"sm-bs-readout-row--{rowState.Tone}");
-
-            var header = new VisualElement();
-            header.AddToClassList("sm-bs-readout-row__header");
-            var label = new Label(rowState.Label);
-            label.AddToClassList("sm-bs-readout-row__label");
-            var value = new Label(rowState.Value);
-            value.AddToClassList("sm-bs-readout-row__value");
-            header.Add(label);
-            header.Add(value);
-            row.Add(header);
-
-            var track = new VisualElement();
-            track.AddToClassList("sm-bs-readout-row__track");
-            var fill = new VisualElement();
-            fill.AddToClassList("sm-bs-readout-row__fill");
-            fill.style.width = Length.Percent(Mathf.Clamp01(rowState.NormalizedValue) * 100f);
-            track.Add(fill);
-            row.Add(track);
-            _tacticalReadoutRows.Add(row);
-        }
-    }
-
-    private void RenderBattleIntelPanel(BattleShellViewState state)
-    {
-        var allies = state.AllyRoster ?? Array.Empty<BattleRosterUnitViewState>();
-        var enemies = state.EnemyRoster ?? Array.Empty<BattleRosterUnitViewState>();
-        if (!state.ShowTeamSummary || allies.Count == 0 && enemies.Count == 0)
-        {
-            _battleIntelPanel.style.display = DisplayStyle.None;
-            return;
-        }
-
-        _battleIntelPanel.style.display = DisplayStyle.Flex;
-        _battleIntelTitleLabel.text = state.BattleIntelTitle;
-        _battleIntelBoard.Clear();
-        _battleIntelLegend.Clear();
-
-        var axis = new VisualElement();
-        axis.AddToClassList("sm-bs-intel-axis");
-        _battleIntelBoard.Add(axis);
-
-        var progress = new VisualElement();
-        progress.AddToClassList("sm-bs-intel-progress");
-        progress.style.width = Length.Percent(Mathf.Clamp01(state.ProgressNormalized) * 100f);
-        _battleIntelBoard.Add(progress);
-
-        RenderBattleIntelPips(_battleIntelBoard, enemies, isEnemy: true);
-        RenderBattleIntelPips(_battleIntelBoard, allies, isEnemy: false);
-        AddBattleIntelLegend(_battleIntelLegend, state.AllyTitle, "ally");
-        AddBattleIntelLegend(_battleIntelLegend, state.EnemyTitle, "enemy");
-        AddBattleIntelLegend(_battleIntelLegend, state.SummaryTitle, "progress", BuildProgressText(state.ProgressNormalized));
-    }
-
-    private void RenderBattleSideRail(BattleShellViewState state)
-    {
-        var tokens = state.CombatantTokens ?? Array.Empty<BattleCombatantTokenViewState>();
-        if (tokens.Count == 0)
-        {
-            _battleSideRail.style.display = DisplayStyle.None;
-            return;
-        }
-
-        _battleSideRail.style.display = DisplayStyle.Flex;
-        _battleSideRailTitleLabel.text = state.SummaryTitle;
-        _battleSideRailSteps.Clear();
-        foreach (var token in tokens.Take(7))
-        {
-            var item = new VisualElement();
-            item.AddToClassList("sm-bs-side-rail-token");
-            item.EnableInClassList("sm-bs-side-rail-token--ally", token.IsAlly);
-            item.EnableInClassList("sm-bs-side-rail-token--enemy", !token.IsAlly);
-            item.EnableInClassList("sm-bs-side-rail-token--active", token.IsActive);
-            item.EnableInClassList("sm-bs-side-rail-token--down", token.IsDown);
-            item.tooltip = $"{token.DisplayName}\n{token.ActionText}";
-
-            var mark = new Label(BuildInitial(token.DisplayName));
-            mark.AddToClassList("sm-bs-side-rail-token__mark");
-            item.Add(mark);
-
-            var fillTrack = new VisualElement();
-            fillTrack.AddToClassList("sm-bs-side-rail-token__track");
-            var fill = new VisualElement();
-            fill.AddToClassList("sm-bs-side-rail-token__fill");
-            fill.style.height = Length.Percent(Mathf.Clamp01(token.HealthNormalized) * 100f);
-            fillTrack.Add(fill);
-            item.Add(fillTrack);
-            _battleSideRailSteps.Add(item);
         }
     }
 
@@ -798,43 +619,6 @@ public sealed class BattleScreenView
         AddObserverStatusChip(_observerStatusChips, state.SummaryTitle, BuildProgressText(state.ProgressNormalized), "progress");
     }
 
-    private static void RenderBattleIntelPips(VisualElement board, IReadOnlyList<BattleRosterUnitViewState> roster, bool isEnemy)
-    {
-        var count = Math.Min(roster.Count, 5);
-        for (var index = 0; index < count; index++)
-        {
-            var unit = roster[index];
-            var pip = new Label(BuildInitial(unit.DisplayName));
-            pip.AddToClassList("sm-bs-intel-pip");
-            pip.EnableInClassList("sm-bs-intel-pip--ally", !isEnemy);
-            pip.EnableInClassList("sm-bs-intel-pip--enemy", isEnemy);
-            pip.EnableInClassList("sm-bs-intel-pip--selected", unit.IsSelected);
-            pip.EnableInClassList("sm-bs-intel-pip--down", !unit.IsAlive);
-            pip.tooltip = $"{unit.DisplayName}\n{unit.StatusText}";
-            var column = isEnemy ? 54f + index * 8f : 12f + index * 8f;
-            var row = isEnemy ? 20f + index % 2 * 22f : 58f + index % 2 * 22f;
-            pip.style.left = Length.Percent(Mathf.Clamp(column, 4f, 88f));
-            pip.style.top = Length.Percent(Mathf.Clamp(row, 8f, 80f));
-            board.Add(pip);
-        }
-    }
-
-    private static void AddBattleIntelLegend(VisualElement container, string labelText, string tone, string? valueText = null)
-    {
-        var item = new VisualElement();
-        item.AddToClassList("sm-bs-intel-legend-item");
-        item.AddToClassList($"sm-bs-intel-legend-item--{tone}");
-
-        var marker = new VisualElement();
-        marker.AddToClassList("sm-bs-intel-legend-marker");
-        item.Add(marker);
-
-        var label = new Label(string.IsNullOrWhiteSpace(valueText) ? labelText : $"{labelText} {valueText}");
-        label.AddToClassList("sm-bs-intel-legend-label");
-        item.Add(label);
-        container.Add(item);
-    }
-
     private static void AddObserverStatusChip(VisualElement container, string labelText, string valueText, string tone)
     {
         var chip = new VisualElement();
@@ -849,6 +633,27 @@ public sealed class BattleScreenView
         value.AddToClassList("sm-bs-observer-chip__value");
         chip.Add(value);
         container.Add(chip);
+    }
+
+    /// <summary>
+    /// 체력 구간에 따라 바 색을 바꾼다 — 한 눈에 "누가 위험한가"가 읽혀야 파티 바가 제 일을 한다.
+    /// 숫자를 읽게 만들면 이미 늦다.
+    /// </summary>
+    private static Color ResolveHealthColor(float normalized, bool isAlive)
+    {
+        if (!isAlive)
+        {
+            return new Color(0.34f, 0.36f, 0.40f, 0.85f);
+        }
+
+        if (normalized <= 0.3f)
+        {
+            return new Color(0.85f, 0.28f, 0.30f, 0.95f);
+        }
+
+        return normalized <= 0.6f
+            ? new Color(0.92f, 0.72f, 0.32f, 0.95f)
+            : new Color(0.44f, 0.78f, 0.42f, 0.95f);
     }
 
     private static string BuildProgressText(float normalized)

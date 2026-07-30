@@ -22,7 +22,8 @@ public sealed record BattleRosterUnitViewState(
     float HealthNormalized,
     bool IsAlive,
     bool IsSelected,
-    Texture2D? Portrait);
+    Texture2D? Portrait,
+    string HealthText = "");
 
 public sealed record BattleCombatantTokenViewState(
     string UnitId,
