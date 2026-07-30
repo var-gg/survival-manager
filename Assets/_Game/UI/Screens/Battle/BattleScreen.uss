@@ -1803,3 +1803,78 @@
 .battle-screen .sm-bs-readout-row--warning .sm-bs-readout-row__fill {
     background-color: var(--sm-state-warn-a78);
 }
+
+/* ==========================================================================
+   2026-07-31 전투 HUD 아트 패스 — "창"이 아니라 "화면"으로
+
+   중복 패널 5개를 걷어낸 뒤에도 남은 크롬이 여전히 윈도우 대화상자처럼 읽혔다.
+   원인은 토큰이 아니었다(이 파일의 var(--sm-*) 참조는 310개로 채택률이 높다).
+   형태였다.
+
+   1) 불투명 슬랩 + 완전한 박스 윤곽. 상단 바가 rgba(4,7,16,0.97) 에 2px 골드 테두리를
+      네 변 전부 두르고 76px 높이로 1400px 를 가로질렀다. 그 안에 든 건 라벨 하나와
+      진행 바 하나뿐이라 <b>1100px 가 빈 검정</b>이었다. 내용이 아니라 타이틀바다.
+      게임 HUD 는 아트 위에 얹히되 아트를 오려내지 않는다 — 테두리를 지우고,
+      불투명도를 낮추고, 모서리를 굴려 슬랩을 걷어낸다.
+
+   2) 균일한 1~2px 선. 버튼도 패널도 카드도 같은 굵기라 무엇이 중요한지 형태가 말해주지
+      않았다. 크롬에서 테두리를 빼면 남는 위계는 값 차이로 생긴다.
+
+   3) 어두운 값이 세 계통. 로그는 웜그레이, 파티 카드는 다크네이비, 컨트롤바는 근검정이었다.
+      하나로 모은다.
+   ========================================================================== */
+
+.battle-screen .sm-bs-topbar {
+    height: 54px;
+    background-color: rgba(6, 9, 18, 0.62);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* 한 줄짜리 피드에 "전투 기록" 헤더는 필요 없다 — 제목이 내용보다 크고 굵었다. */
+.battle-screen .sm-bs-event-feed .sm-bs-section-title {
+    display: none;
+}
+
+.battle-screen .sm-bs-event-feed {
+    min-height: 44px;
+    max-height: 56px;
+    background-color: rgba(6, 9, 18, 0.62);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* 컨트롤바는 사라진 패널을 기준으로 배치돼 있었다.
+   원래 주석: "아군 strip(우측 ~756) ↔ 전황판단(좌측 ~1474) 가용공간의 중앙".
+   전황 판단을 걷어냈으므로 그 중앙은 더 이상 의미가 없다 — 비게 된 우하단으로 보낸다. */
+.battle-screen .sm-bs-control-bar {
+    left: auto;
+    right: 24px;
+    height: 78px;
+    background-color: rgba(6, 9, 18, 0.62);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* 파티 카드도 같은 계통으로. 크롬끼리 값이 어긋나면 그것만으로 조립품처럼 보인다. */
+.battle-screen .sm-bs-ally-strip {
+    background-color: rgba(6, 9, 18, 0.72);
+}
