@@ -34,16 +34,22 @@ public sealed class BootScreenController : MonoBehaviour
             return;
         }
 
+        // 폴백이 곧 이 화면의 문구다.
+        //
+        // 시작 화면은 로컬라이제이션이 초기화되기 전에 그려진다 — 실측하면 테이블 값이 아니라
+        // <b>여기 적힌 폴백이 그대로 화면에 나온다</b>(시드를 한국어로 바꿔도 "Start" 가 떴다).
+        // 그래서 이 넷은 "번역 실패 시 임시 문자열"이 아니라 <b>제품 문구</b>로 취급한다.
+        // 시드(ui.common.start_screen.*)와 문구를 일치시켜 두 경로가 갈라지지 않게 한다.
         SetButtonLabel(offlineLocalButton, Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_local_run",
-            "Start Local Run"));
+            "이어서 시작"));
         offlineLocalButton.interactable = !_root.HasBlockingError;
 
         titleText.text = Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.title",
-            "Start");
+            "잿골 연대기");
         statusText.text = BuildStatusText();
         var hint = BuildHintText();
         hintText.text = hint;
@@ -69,20 +75,18 @@ public sealed class BootScreenController : MonoBehaviour
             return _root.LastBlockingError ?? string.Empty;
         }
 
-        // 빌드 파이프라인 설명(영문)이 아니라 플레이어용 도입 1줄을 fallback으로 — Boot 온보딩 0줄 문제 해소.
         return Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.status",
-            "잿골 마을로 이동 중 — 동료를 편성하고 첫 원정을 떠납니다.");
+            "잿문이 닫힌 뒤로, 변방에 남은 것은 잿골 하나뿐이다.");
     }
 
     private string BuildHintText()
     {
-        // 빈 문자열 대신 첫 행동을 안내 — 신규 플레이어가 시작 화면에서 막히지 않게.
         return Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.hint",
-            "마을에서 동료를 모은 뒤 [원정으로]를 눌러 첫 전투를 시작하세요.");
+            "마을을 꾸리고, 분대를 짜고, 원정에 나선다.");
     }
 
     private string Localize(string table, string key, string fallback, params object[] args)
