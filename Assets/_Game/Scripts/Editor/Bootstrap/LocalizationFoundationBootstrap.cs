@@ -57,6 +57,9 @@ public static partial class LocalizationFoundationBootstrap
     private static readonly IReadOnlyDictionary<string, (string ko, string en, bool smart)> SiteEventChoiceSurfaceEntries =
         new Dictionary<string, (string ko, string en, bool smart)>(StringComparer.Ordinal)
         {
+            // 각인도 제목 옆 무한 순환 표식. 2026-07-31 이전에는 무한 순환으로 들어가도
+            // 각인도가 스토리 원정과 글자 하나 다르지 않았다 — 적은 이미 강해진 뒤였다.
+            ["ui.expedition.atlas.endless_cycle_mark"] = ("무한 순환 {0}회차 · 열기 {1}", "Endless cycle {0} · heat {1}", true),
             ["ui.expedition.site_event.hud"] = ("현장 사건", "SITE EVENT", false),
             ["ui.expedition.site_event.dialogue.eyebrow"] = ("현장 보고", "FIELD REPORT", false),
             ["ui.expedition.site_event.choice.none"] = ("즉시 변화 없음", "No immediate change", false),
@@ -127,6 +130,10 @@ public static partial class LocalizationFoundationBootstrap
         ["ui.common.start_screen.title"] = ("잿골 연대기", "Chronicles of Ashglen", false),
         ["ui.common.start_screen.status"] = ("잿문이 닫힌 뒤로, 변방에 남은 것은 잿골 하나뿐이다.", "Since the Ashen Gate closed, Ashglen is all the frontier has left.", false),
         ["ui.common.start_screen.hint"] = ("마을을 꾸리고, 분대를 짜고, 원정에 나선다.", "Tend the village, form your squad, and set out.", false),
+        // 세이브를 못 읽어 시작 CTA 가 잠긴 화면의 첫 줄. 2026-07-31 이전에는 저장소 진단
+        // 문자열이 그대로 나왔다 — "Save recovery failed. primary=invalid; backup=missing".
+        // 사유는 그 아래 줄이 계속 받는다(사유는 서비스, 문구는 UI).
+        ["ui.common.start_screen.blocked"] = ("저장된 기록을 열지 못했습니다. 게임을 다시 시작해 주세요.", "Your saved game could not be opened. Please restart the game.", false),
         ["ui.common.start_local_run"] = ("이어서 시작", "Begin", false),
         ["ui.common.on"] = ("ON", "ON", false),
         ["ui.common.off"] = ("OFF", "OFF", false),
@@ -291,7 +298,10 @@ public static partial class LocalizationFoundationBootstrap
         ["ui.reward.choice.hook_spear.title"] = ("갈고리 창", "Hook Spear", false),
         ["ui.reward.choice.hook_spear.desc"] = ("전열 교전용 아이템을 획득합니다.", "Gain a frontline skirmish item.", false),
         ["ui.reward.choice.scout_intel.title"] = ("정찰 보고서", "Scout Intel", false),
-        ["ui.reward.choice.scout_intel.desc"] = ("다음 recruit/retrain 복구용 Echo를 추가로 획득합니다.", "Gain extra Echo for recruit and retrain recovery.", false),
+        // 화폐 표시명은 "잔향"이다(코드 id Echo 보존 — P3 roadmap 확정). 아래 넷은 그 정책이
+        // 정해지기 전 문장이라 카드 본문에만 "Echo"가 남아 있었다 — 같은 화면의 칩은 "잔향 +9"라
+        // 적고 카드 본문은 "Echo를 획득합니다"라고 적혀 한 화면이 스스로 모순됐다.
+        ["ui.reward.choice.scout_intel.desc"] = ("다음 영입과 재훈련에 쓸 잔향을 더 확보합니다.", "Gain extra Echo for recruit and retrain recovery.", false),
         ["ui.reward.choice.field_kit.title"] = ("현장 수리 키트", "Field Kit", false),
         ["ui.reward.choice.field_kit.desc"] = ("안정적인 방어형 아이템을 획득합니다.", "Gain a steady defensive item.", false),
         ["ui.reward.choice.anchor_beat.title"] = ("고정 박동", "Anchor Beat", false),
@@ -303,15 +313,15 @@ public static partial class LocalizationFoundationBootstrap
         ["ui.reward.choice.sigil_core.title"] = ("시질 코어", "Sigil Core", false),
         ["ui.reward.choice.sigil_core.desc"] = ("후반 대비용 아이템을 획득합니다.", "Gain a late-run utility item.", false),
         ["ui.reward.choice.doctrine_cache.title"] = ("교리 보관고", "Doctrine Cache", false),
-        ["ui.reward.choice.doctrine_cache.desc"] = ("Echo를 크게 확보합니다.", "Gain a larger Echo payout.", false),
+        ["ui.reward.choice.doctrine_cache.desc"] = ("잔향을 크게 확보합니다.", "Gain a larger Echo payout.", false),
         ["ui.reward.choice.fallback_stash.title"] = ("비상 보급함", "Fallback Stash", false),
         ["ui.reward.choice.fallback_stash.desc"] = ("패배 후 최소 보상을 챙깁니다.", "Collect a minimum fallback payout after defeat.", false),
         ["ui.reward.choice.tactical_notes.title"] = ("전술 메모", "Tactical Notes", false),
-        ["ui.reward.choice.tactical_notes.desc"] = ("전술 보정용 Echo를 획득합니다.", "Gain Echo for tactical correction.", false),
+        ["ui.reward.choice.tactical_notes.desc"] = ("전술을 고쳐 잡는 데 쓸 잔향을 얻습니다.", "Gain Echo for tactical correction.", false),
         ["ui.reward.choice.guard_spark.title"] = ("수호 점화", "Guard Spark", false),
         ["ui.reward.choice.guard_spark.desc"] = ("안정화용 임시 증강을 획득합니다.", "Gain a stabilizing temporary augment.", false),
         ["ui.reward.choice.gold_fallback"] = ("영입과 서비스 비용을 위한 즉시 골드입니다.", "Immediate gold for recruit and service costs.", false),
-        ["ui.reward.choice.echo_fallback"] = ("정찰과 복구를 위한 Echo 예비분입니다.", "Echo reserve for scouting and recovery.", false),
+        ["ui.reward.choice.echo_fallback"] = ("정찰과 복구에 쓸 잔향 예비분입니다.", "Echo reserve for scouting and recovery.", false),
         ["ui.reward.choice.item_fallback"] = ("장비 후보: {0}.", "Equipment candidate: {0}.", true),
         ["ui.reward.choice.augment_fallback"] = ("임시 빌드 명제: {0}.", "Temporary run thesis: {0}.", true),
         ["ui.reward.choice.permanent_slot_fallback"] = ("영구 빌드 슬롯 보상입니다.", "Permanent build slot reward.", false),
@@ -896,8 +906,8 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.reward.status.default.return_town"] = ("보상이 확정되었습니다. 마을로 돌아가 다음 상태를 확인하세요.", "Reward locked in. Return to Town to continue.", false),
             ["ui.reward.status.default.quick"] = ("빠른 전투 정산입니다. 카드 한 장을 고르고 마을로 돌아가세요.", "Quick Battle settlement: pick one card and return to Town.", false),
             ["ui.reward.status.default.defeat"] = ("원정에 실패했습니다. 대체 보상을 고르고 마을로 돌아가세요.", "Run failed. Pick a fallback reward and return to Town.", false),
-            ["ui.reward.status.default.complete"] = ("런이 완료되었습니다. 보상을 고르고 Town으로 돌아가세요.", "Run complete. Pick one reward and return to Town.", false),
-            ["ui.reward.status.default.resume"] = ("보상을 고르고 Town으로 돌아간 뒤 원정을 다시 이어갈 수 있습니다.", "Pick one reward and return to Town. You can resume the expedition later.", false),
+            ["ui.reward.status.default.complete"] = ("원정을 마쳤습니다. 보상을 고르고 마을로 돌아가세요.", "Run complete. Pick one reward and return to Town.", false),
+            ["ui.reward.status.default.resume"] = ("보상을 고르고 마을로 돌아간 뒤 원정을 다시 이어갈 수 있습니다.", "Pick one reward and return to Town. You can resume the expedition later.", false),
             ["ui.reward.summary.settlement_result"] = ("정산 결과: {0}", "Settlement: {0}", true),
             ["ui.reward.summary.base_reward"] = ("기본 보상: {0}", "Base Reward: {0}", true),
             ["ui.reward.summary.auto_loot"] = ("자동 전리품: {0}", "Auto Loot: {0}", true),
@@ -905,7 +915,7 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.reward.summary.permanent_unlock"] = ("대기 중인 영구 해금 후보: {0}", "Permanent Candidate Pending: {0}", true),
             ["ui.reward.progression.permanent_unlock"] = ("영구 해금", "Permanent Unlock", false),
             ["ui.reward.progression.permanent_unlock_pending"] = ("{0} · 귀환 시 영구 후보로 확정", "{0} · permanent candidate locks on return", true),
-            ["ui.reward.summary.wallet"] = ("현재 자원: {0} Gold / {1} Echo", "Wallet Now: {0} Gold / {1} Echo", true),
+            ["ui.reward.summary.wallet"] = ("현재 자원: 골드 {0} / 잔향 {1}", "Wallet Now: {0} Gold / {1} Echo", true),
             ["ui.reward.summary.inventory_now"] = ("현재 인벤토리: {0}개", "Inventory Now: {0} items", true),
             ["ui.reward.summary.continuation"] = ("이어지는 상태: {0}", "Continuation: {0}", true),
             ["ui.reward.summary.awaiting_choice"] = ("보상 한 장을 고른 뒤 돌아가세요.", "Choose one reward before returning.", false),
@@ -941,11 +951,11 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.reward.build_impact.augment.ward"] = ("빌드 훅: ward 안정화 라인입니다.", "Build hook: ward stability line.", false),
             ["ui.reward.build_impact.augment.permanent"] = ("빌드 훅: 영구 해금 후보 라인입니다.", "Build hook: permanent unlock candidate.", false),
             ["ui.reward.continuation.smoke"] = ("빠른 전투 종료", "Quick Battle closes", false),
-            ["ui.reward.continuation.complete"] = ("런 종료", "run closes", false),
-            ["ui.reward.continuation.resume"] = ("Town으로 돌아간 뒤 원정을 다시 재개할 수 있습니다.", "Return to Town, then resume the expedition", false),
+            ["ui.reward.continuation.complete"] = ("원정 종료", "run closes", false),
+            ["ui.reward.continuation.resume"] = ("마을로 돌아간 뒤 원정을 다시 재개할 수 있습니다.", "Return to Town, then resume the expedition", false),
             ["ui.reward.tooltip.choice"] = ("{0}. {1}", "{0}. {1}", true),
             ["ui.reward.tooltip.return_locked"] = ("먼저 보상 한 장을 고르세요. 적용 결과는 요약에 남아 있습니다.", "Choose one reward first. The summary will keep the applied delta on screen.", false),
-            ["ui.reward.tooltip.return_ready"] = ("적용된 보상과 이어지는 상태를 가지고 Town으로 돌아갑니다.", "Return to Town with the applied reward result and continuation state.", false),
+            ["ui.reward.tooltip.return_ready"] = ("적용된 보상과 이어지는 상태를 가지고 마을로 돌아갑니다.", "Return to Town with the applied reward result and continuation state.", false),
         });
     }
 

@@ -48,10 +48,13 @@ public sealed class BootScreenController : MonoBehaviour
             "ui.common.start_screen.title",
             "잿골 연대기");
 
+        var blocked = _root.HasBlockingError;
         _statusLabel.text = BuildStatusText();
+        _statusLabel.EnableInClassList("boot-screen__status--blocked", blocked);
 
         var hint = BuildHintText();
         _hintLabel.text = hint;
+        _hintLabel.EnableInClassList("boot-screen__hint--reason", blocked);
         _hintLabel.style.display = string.IsNullOrWhiteSpace(hint) ? DisplayStyle.None : DisplayStyle.Flex;
 
         _startButton.text = Localize(
@@ -100,11 +103,26 @@ public sealed class BootScreenController : MonoBehaviour
         _root.SceneFlow.GoToTown();
     }
 
+    /// <summary>
+    /// 첫 줄. 차단 상태에서는 <b>플레이어의 문장</b>을 쓴다.
+    ///
+    /// 2026-07-31 에 이 화면을 처음 실제로 띄워 보고 고쳤다. 그전에는 여기에
+    /// <see cref="GameSessionRoot.LastBlockingError"/> 가 <b>그대로</b> 나왔다 — 세이브 저장소가
+    /// 내는 문자열이라 실제 화면 문구가 이랬다.
+    /// <code>Save recovery failed. primary=invalid; backup=missing</code>
+    /// 한국어 플레이어가 게임의 첫 화면에서 만나는 문장이 이것이었다.
+    ///
+    /// 사유를 감추지는 않는다 — 사유는 <see cref="BuildHintText"/> 가 아래 줄에서 받는다.
+    /// <b>사유는 서비스가 정하고, 문구는 UI 가 정한다.</b>
+    /// </summary>
     private string BuildStatusText()
     {
         if (_root.HasBlockingError)
         {
-            return _root.LastBlockingError ?? string.Empty;
+            return Localize(
+                GameLocalizationTables.UICommon,
+                "ui.common.start_screen.blocked",
+                "저장된 기록을 열지 못했습니다. 게임을 다시 시작해 주세요.");
         }
 
         return Localize(
@@ -113,8 +131,19 @@ public sealed class BootScreenController : MonoBehaviour
             "잿문이 닫힌 뒤로, 변방에 남은 것은 잿골 하나뿐이다.");
     }
 
+    /// <summary>
+    /// 둘째 줄. 평시엔 다음 행동 안내, 차단 상태에서는 <b>기술적 사유</b>를 받는다.
+    ///
+    /// 차단 상태에서 안내 문구를 그대로 두면 화면이 "못 들어갑니다" 와 "마을을 꾸리고
+    /// 원정에 나선다" 를 같이 말한다 — 실패 화면에 들뜬 온보딩 문구가 남아 있었다.
+    /// </summary>
     private string BuildHintText()
     {
+        if (_root.HasBlockingError)
+        {
+            return _root.LastBlockingError ?? string.Empty;
+        }
+
         return Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.hint",

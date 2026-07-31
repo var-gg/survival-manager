@@ -541,6 +541,11 @@ MonoBehaviour:
     m_Localized: The selected site event outcome could not be applied.
     m_Metadata:
       m_Items: []
+  - m_Id: 44618033451569152
+    m_Localized: "Endless cycle {0} \xB7 heat {1}"
+    m_Metadata:
+      m_Items:
+      - rid: 162163771961769986
   references:
     version: 2
     RefIds:
@@ -584,3 +589,4 @@ MonoBehaviour:
         - id: 17539471758397446
         - id: 42997485323751427
         - id: 42997485323751449
+        - id: 44618033451569152

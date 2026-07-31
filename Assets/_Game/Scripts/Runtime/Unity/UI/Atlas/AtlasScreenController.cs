@@ -140,7 +140,7 @@ public sealed class AtlasScreenController : MonoBehaviour
             return;
         }
 
-        CurrentState = InjectEnemyIntel(_presenter.Build());
+        CurrentState = InjectEndlessCycleMark(InjectEnemyIntel(_presenter.Build()));
         _view.Render(CurrentState);
         ViewStateRendered?.Invoke(CurrentState);
     }
@@ -154,6 +154,32 @@ public sealed class AtlasScreenController : MonoBehaviour
                 EnemyIntel = BuildEnemyIntel(),
             },
         };
+    }
+
+    /// <summary>
+    /// 무한 순환 run 임을 각인도 제목에 표시한다.
+    ///
+    /// 2026-07-31 에 무한 순환 진입 경로를 처음 실제로 타 보고 발견했다 — "무한 순환 시작" 을
+    /// 누르고 도착한 각인도가 <b>스토리 원정과 글자 하나 다르지 않았다.</b> 회차도 열기도
+    /// 화면 어디에도 없었고, 적은 이미 열기만큼 강해진 상태였다. 모드가 실재하는데
+    /// 보이지 않으면 플레이어는 자기가 어디 있는지 모른다.
+    /// </summary>
+    private AtlasScreenViewState InjectEndlessCycleMark(AtlasScreenViewState state)
+    {
+        var cycleIndex = _root?.SessionState.ActiveRun?.EndlessCycleIndex ?? 0;
+        if (cycleIndex <= 0)
+        {
+            return state;
+        }
+
+        var heat = _root!.SessionState.StoryDirector.Progress.EndlessCycle.Heat;
+        var mark = _root.Localization.LocalizeOrFallback(
+            GameLocalizationTables.UIExpedition,
+            "ui.expedition.atlas.endless_cycle_mark",
+            "무한 순환 {0}회차 · 열기 {1}",
+            cycleIndex,
+            heat + 1);
+        return state with { RegionTitle = $"{state.RegionTitle} — {mark}" };
     }
 
     private AtlasEnemyIntelViewState BuildEnemyIntel()

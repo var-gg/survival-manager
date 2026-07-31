@@ -1978,11 +1978,15 @@
     display: none;
 }
 
+/* 체력 막대 위에 겹쳐 얹는 숫자. top/bottom 을 0 으로 늘려도 UITK 는 상자를 글리프
+   높이(10px 글꼴에 8px)로 잡아서 middle-right 가 막대 전체 기준으로 맞지 않는다.
+   보상 화면 생존자 막대에서 같은 증상을 먼저 잡았다 — min-height 로 상자를 세운다. */
 .battle-screen .sm-bs-roster-hp-text {
     position: absolute;
     right: 4px;
     top: 0;
     bottom: 0;
+    min-height: 12px;
     color: var(--sm-vellum);
     font-size: 10px;
     -unity-font-style: bold;
@@ -2027,11 +2031,48 @@
     min-width: 0;
     margin-left: 0;
     bottom: 14px;
-    height: 70px;
+    /* 고정 높이를 주면 안 된다. 이 바는 모드마다 다른 것을 담는다 — 시안이 그린 속도
+       버튼 + 스크러버(얇음)와, 실전투에서만 뜨는 관전 상태 칩 네 개(높음)다.
+       70px 로 못 박았더니 칩 안의 값 라벨이 바닥 테두리를 뚫고 전장 위로 나갔다.
+       바닥에 붙어 있으므로 필요한 만큼 위로 자라게 둔다. */
+    height: auto;
+    min-height: 70px;
     justify-content: space-between;
     padding-left: 16px;
     padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     background-image: none;
+}
+
+/* 관전 모드(재생 컨트롤이 숨는 실전투)에서는 이 바 안에 상태 칩 네 개가 들어온다.
+   바를 시안대로 94px → 70px 로 줄이면서 칩(42px)과 제목(14+5)을 그대로 뒀더니
+   칩 안의 값 라벨이 바 아래로 10px 삐져나왔다 — 아래쪽 테두리를 뚫고 전장 위에 떴다.
+   칩을 바 높이에 맞춰 다시 재운다: 8 + 12 + 3 + 36 + 8 = 67 ≤ 70. */
+.battle-screen .sm-bs-control-bar .sm-bs-observer-title {
+    height: 12px;
+    margin-bottom: 3px;
+}
+
+/* 칩을 눕힌다. 세로로 쌓으면(이름 위 / 값 아래) 한국어 값 라벨 한 줄이 22px 로 잡혀
+   칩 높이가 43px 을 넘고, 그러면 바가 99px 까지 자라 위쪽 전투 기록과 겹친다.
+   가로로 누이면 30px 이면 되고, 슬림한 바 안에서 "속도 · 2배" 처럼 한 줄로 읽힌다. */
+.battle-screen .sm-bs-control-bar .sm-bs-observer-chip {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    min-width: 0;
+    height: auto;
+    min-height: 30px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.battle-screen .sm-bs-control-bar .sm-bs-observer-chip__value {
+    margin-top: 0;
+    margin-left: 7px;
 }
 
 /* 시안의 중앙 타이틀. 상단 띠가 전폭을 쓰는데 안에 상태 라벨 하나뿐이면

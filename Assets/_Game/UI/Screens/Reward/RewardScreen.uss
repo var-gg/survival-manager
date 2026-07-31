@@ -1173,7 +1173,12 @@
     background-color: var(--sm-gold-300-a42);
 }
 
+/* 기반 `.card__body` 는 flex-grow:1 이라 남는 세로 공간을 본문 라벨이 통째로 먹는다.
+   카드가 세 장일 때는 안 보이지만 <b>한 장짜리 정산</b>(패배 대체 보상)에서 드러났다 —
+   한 줄짜리 설명이 640px 카드 한가운데에 떠서 위아래로 거대한 공백이 생겼다.
+   본문은 제 크기만 차지하고, 남는 공간은 `__kind` 의 margin-top:auto 가 아래로 민다. */
 .reward-screen .reward-card__body {
+    flex-grow: 0;
     margin: 0;
     color: var(--sm-ink-1);
     font-size: 15px;
@@ -1291,11 +1296,15 @@
     margin-top: 4px;
 }
 
+/* 막대 안에 숫자를 겹쳐 얹는다 — 그래서 <b>막대 높이가 곧 글자의 상자</b>다.
+   13px 막대에 10px 숫자를 넣어 두었더니 라벨이 글꼴 크기보다 낮게 잡혔다
+   ("7 / 26" 이 8px 상자에 들어갔다). 패배 정산 위트니스를 처음 돌렸을 때 잡혔다. */
 .reward-screen .reward-survivor-row__hp-bar {
     flex-grow: 1;
     flex-shrink: 1;
     flex-direction: row;
-    height: 13px;
+    height: 16px;
+    min-height: 16px;
     background-color: rgba(6, 10, 20, 0.92);
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0.55);
@@ -1306,12 +1315,16 @@
     background-color: var(--sm-state-safe-a86);
 }
 
+/* 막대 위에 겹쳐 얹는 숫자. top/bottom 을 0 으로 늘려도 UITK 는 이 라벨의 상자를
+   글리프 높이(10px 글꼴에 8px)로 잡는다 — 그래서 middle-center 가 막대 전체가 아니라
+   글자 상자 안에서만 가운데를 맞춘다. min-height 로 상자를 막대 안쪽 크기에 맞춘다. */
 .reward-screen .reward-survivor-row__hp {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
+    min-height: 14px;
     color: var(--sm-vellum);
     font-size: 10px;
     -unity-text-align: middle-center;

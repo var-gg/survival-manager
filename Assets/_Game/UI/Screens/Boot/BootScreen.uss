@@ -93,6 +93,27 @@
     white-space: normal;
 }
 
+/* ------------------------------------------------------------------
+   차단 상태 — 세이브를 못 읽어 시작 CTA 가 잠긴 화면.
+
+   2026-07-31 에 처음 실제로 띄워 봤다. 그전에는 저장소가 내는 영문 진단 문자열이
+   본문 자리에 그대로 앉아 있었고("Save recovery failed. primary=invalid; …"),
+   그 아래에 평시 안내("마을을 꾸리고 …")가 그대로 붙어 있었다.
+
+   이제 첫 줄은 플레이어의 문장이고 둘째 줄이 사유를 받는다. 사유는 지우지 않되
+   <b>본문보다 작고 흐리게</b> 둬서 무엇이 읽을 문장인지 눈이 먼저 알게 한다.
+   ------------------------------------------------------------------ */
+.boot-screen__status--blocked {
+    color: var(--sm-state-danger);
+}
+
+.boot-screen__hint--reason {
+    margin-top: 14px;
+    color: var(--sm-ink-3);
+    font-size: 12px;
+    line-height: 18px;
+}
+
 .boot-screen__cta {
     width: 320px;
     min-height: 54px;

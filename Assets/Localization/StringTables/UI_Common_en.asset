@@ -267,6 +267,10 @@ MonoBehaviour:
     m_Localized: Tap to continue
     m_Metadata:
       m_Items: []
+  - m_Id: 44615571604836352
+    m_Localized: Your saved game could not be opened. Please restart the game.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

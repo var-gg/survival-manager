@@ -418,10 +418,16 @@ public sealed class TownScreenPresenter
 
         if (EndlessEntryResolver.IsEndlessEntryActive(session.Profile.CampaignProgress))
         {
+            // 인자는 Localize 안으로 넣는다. 2026-07-31 이전에는 인자 없이 Localize 를 부른 뒤
+            // 결과를 string.Format 했는데, 이 항목은 smart format 이라 로컬라이제이션 단계에서
+            // 이미 {0} 을 셀렉터로 평가하려다 매번 터졌다 —
+            //   OperationException : Error parsing format string: Could not evaluate the selector "0"
+            // 엔딩 이후 마을을 그릴 때마다 났고, 그 화면에 도달하는 경로가 없어서 안 보였다.
             var cycle = session.StoryDirector.Progress.EndlessCycle;
-            return string.Format(
-                Localize(GameLocalizationTables.UITown, "ui.town.tooltip.expedition_endless",
-                    "무한 순환 {0}회차 — 순환마다 적이 강해지고(열기 {1}) 잔향 보상이 커집니다."),
+            return Localize(
+                GameLocalizationTables.UITown,
+                "ui.town.tooltip.expedition_endless",
+                "무한 순환 {0}회차 — 순환마다 적이 강해지고(열기 {1}) 잔향 보상이 커집니다.",
                 cycle.CycleIndex + 1,
                 cycle.Heat + 1);
         }

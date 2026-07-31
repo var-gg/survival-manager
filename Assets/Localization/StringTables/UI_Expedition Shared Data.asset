@@ -499,6 +499,10 @@ MonoBehaviour:
     m_Key: ui.expedition.site_event.error.choice_failed
     m_Metadata:
       m_Items: []
+  - m_Id: 44618033451569152
+    m_Key: ui.expedition.atlas.endless_cycle_mark
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

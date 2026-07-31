@@ -102,36 +102,41 @@ public sealed partial class UxBiblePlayModeWitnessTests
         // 그 게이트에 보이지 않는다.</b> HUD 골격을 건드리면 여기도 같은 작업 단위에서 손봐야 한다.
     }
 
+    /// <summary>
+    /// 2026-07-31 4구역 모달(<c>82e6a51e</c>) 기준. 이 함수는 <b>세 커밋 동안 지워진 요소
+    /// 아홉 개를 요구</b>하고 있었다(왼쪽 레일·정산 패널·타임라인·영문 RESULT 배너 …).
+    /// 같은 함정을 <c>AssertBattleHudContainment</c> 주석이 이미 기록해 뒀다 —
+    /// PlayMode 위트니스는 <c>test-batch-fast</c> 에 보이지 않으므로 화면 골격을 바꾸면
+    /// 여기도 같은 작업 단위에서 손봐야 한다.
+    ///
+    /// 구역은 위에서 아래로 다섯이고, 전과 원장·생존자 스트립은 내용이 없으면 숨는다 —
+    /// 그래서 보이는 것만 골라 순서·담김을 본다.
+    /// </summary>
     private static void AssertRewardContainment(VisualElement root)
     {
-        var rewardRoot = Require<VisualElement>(root, "RewardScreenRoot");
-        var board = RequireClass(root, "reward-bible__board");
-        var leftRail = Require<ScrollView>(root, "RewardLeftRail");
-        var settlement = Require<VisualElement>(root, "SettlementSummaryPanel");
-        var survivors = Require<VisualElement>(root, "RewardSurvivorPanel");
-        var progression = Require<VisualElement>(root, "RewardProgressionPanel");
-        var timeline = Require<VisualElement>(root, "RewardTimelinePanel");
-        var statusBand = Require<VisualElement>(root, "RewardStatusBand");
-        var choicePanel = Require<VisualElement>(root, "RewardChoicePanel");
-        var choiceTitle = Require<Label>(root, "ChoicesHeaderLabel");
-        var victoryBanner = Require<VisualElement>(root, "RewardVictoryBanner");
-
-        AssertContained(board, leftRail, "Reward left-rail viewport");
-        var leftPanels = new[] { settlement, survivors, progression };
-        foreach (var panel in leftPanels)
+        var modal = Require<VisualElement>(root, "RewardModal");
+        var zones = new[]
         {
-            AssertContained(leftRail.contentContainer, panel, $"Reward left-rail panel '{panel.name}'");
-            AssertVisibleTextContained(panel, $"Reward left-rail panel '{panel.name}'");
+            Require<VisualElement>(root, "RewardResultStrip"),
+            Require<VisualElement>(root, "RewardPayoffPanel"),
+            RequireClass(root, "reward-card-row"),
+            Require<VisualElement>(root, "RewardSurvivorPanel"),
+            Require<VisualElement>(root, "RewardStatusBand"),
+        }.Where(IsEffectivelyVisible).ToArray();
+
+        foreach (var zone in zones)
+        {
+            AssertContained(modal, zone, $"Reward modal zone '{zone.name}'");
+            AssertVisibleTextContained(zone, $"Reward modal zone '{zone.name}'");
         }
 
-        AssertVerticalSequence(leftPanels, "Reward left-rail panels");
-        AssertContained(rewardRoot, timeline, "Reward timeline");
-        AssertContained(rewardRoot, statusBand, "Reward status band");
-        AssertNoOverlap(board, timeline, "Reward board and timeline");
-        AssertNoOverlap(timeline, statusBand, "Reward timeline and status band");
-        AssertContained(choicePanel, victoryBanner, "Reward result banner");
-        AssertNoOverlap(choiceTitle, victoryBanner, "Reward choice title and RESULT banner");
-        AssertVisibleTextContained(victoryBanner, "Reward result banner");
+        AssertVerticalSequence(zones, "Reward modal zones");
+
+        // 카드 세 장은 개별로 숨을 수 있다(선택지가 3개 미만인 정산). 뜬 카드만 본다.
+        foreach (var card in root.Query<VisualElement>(className: "reward-card").ToList().Where(IsEffectivelyVisible))
+        {
+            AssertVisibleTextContained(card, $"Reward choice card '{card.name}'");
+        }
     }
 
     private static void AssertEquipmentRefitContainment(VisualElement root)
@@ -194,16 +199,19 @@ public sealed partial class UxBiblePlayModeWitnessTests
         Assert.That(IsEffectivelyVisible(child), Is.True, $"{context}: child should be visible.");
         var ownerBounds = owner.worldBound;
         var childBounds = child.worldBound;
-        Assert.That(childBounds.width, Is.GreaterThan(0f), $"{context}: child must have rendered width.");
-        Assert.That(childBounds.height, Is.GreaterThan(0f), $"{context}: child must have rendered height.");
+        // 실패 메시지가 두 상자를 들고 있어야 다음 세션이 USS 를 뒤지지 않는다.
+        var boxes = $" child=[{DescribeElement(child)}] {Format(childBounds)} "
+                    + $"owner=[{DescribeElement(owner)}] {Format(ownerBounds)}";
+        Assert.That(childBounds.width, Is.GreaterThan(0f), $"{context}: child must have rendered width.{boxes}");
+        Assert.That(childBounds.height, Is.GreaterThan(0f), $"{context}: child must have rendered height.{boxes}");
         Assert.That(childBounds.xMin, Is.GreaterThanOrEqualTo(ownerBounds.xMin - tolerance),
-            $"{context}: child escaped the owner's left edge.");
+            $"{context}: child escaped the owner's left edge.{boxes}");
         Assert.That(childBounds.xMax, Is.LessThanOrEqualTo(ownerBounds.xMax + tolerance),
-            $"{context}: child escaped the owner's right edge.");
+            $"{context}: child escaped the owner's right edge.{boxes}");
         Assert.That(childBounds.yMin, Is.GreaterThanOrEqualTo(ownerBounds.yMin - tolerance),
-            $"{context}: child escaped the owner's top edge.");
+            $"{context}: child escaped the owner's top edge.{boxes}");
         Assert.That(childBounds.yMax, Is.LessThanOrEqualTo(ownerBounds.yMax + tolerance),
-            $"{context}: child escaped the owner's bottom edge.");
+            $"{context}: child escaped the owner's bottom edge.{boxes}");
     }
 
     private static void AssertContainedWithinPadding(
@@ -245,8 +253,12 @@ public sealed partial class UxBiblePlayModeWitnessTests
     private static void AssertSingleLineHeight(TextElement text, string context)
     {
         var fontSize = text.resolvedStyle.fontSize;
+        var parentBox = text.parent == null ? "<none>" : Format(text.parent.worldBound);
+        var parentClasses = text.parent == null ? "<none>" : string.Join(".", text.parent.GetClasses());
         Assert.That(text.worldBound.height + GeometryTolerance, Is.GreaterThanOrEqualTo(fontSize),
-            $"{context}: the laid-out label is shorter than its rendered font size.");
+            $"{context}: the laid-out label is shorter than its rendered font size. "
+            + $"label={Format(text.worldBound)} fontSize={fontSize:0.#} "
+            + $"position={text.resolvedStyle.position} parent=[{parentClasses}] {parentBox}");
     }
 
     private static void AssertNoPairwiseOverlap(IEnumerable<VisualElement> elements, string context)
@@ -289,6 +301,13 @@ public sealed partial class UxBiblePlayModeWitnessTests
                        && firstBounds.yMax > secondBounds.yMin + tolerance;
         Assert.That(overlaps, Is.False,
             $"{context} overlap: first={Format(firstBounds)}, second={Format(secondBounds)}.");
+    }
+
+    /// <summary>이름 또는 클래스 목록 — 어느 규칙을 고쳐야 하는지 실패 메시지가 바로 말하게.</summary>
+    private static string DescribeElement(VisualElement element)
+    {
+        var classes = string.Join(".", element.GetClasses());
+        return string.IsNullOrEmpty(element.name) ? classes : $"{element.name} {classes}";
     }
 
     private static string ShortText(string text)

@@ -263,6 +263,10 @@ MonoBehaviour:
     m_Key: ui.common.story_continue_hint
     m_Metadata:
       m_Items: []
+  - m_Id: 44615571604836352
+    m_Key: ui.common.start_screen.blocked
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -463,12 +463,19 @@ public sealed partial class UxBiblePlayModeWitnessTests
         AssertBattleHudContainment(root);
     }
 
+    /// <summary>
+    /// 2026-07-31 4구역 모달(<c>82e6a51e</c>)로 갱신. 이전 계약은 지워진 9패널 대시보드의
+    /// <c>SettlementSummaryPanel</c> / <c>RewardProgressionRows</c> / <c>RewardTimelineTicks</c> 를
+    /// 요구하고 있었다 — 세 커밋 동안 <b>이 위트니스는 깨진 채였고 아무도 몰랐다.</b>
+    /// <c>test-batch-fast</c> 는 FastUnit 만 돌리므로 PlayMode 위트니스가 그 게이트에 안 보인다.
+    ///
+    /// 전과 원장(<c>RewardPayoffRows</c>)은 <b>행 수를 요구하지 않는다</b> — 평시엔 0 행이라
+    /// 조용한 것이 설계다. 행이 있을 때 담기는지는 <see cref="AssertRewardContainment"/> 가 본다.
+    /// </summary>
     private static void VerifyReward(VisualElement root)
     {
-        AssertVisible(root, "SettlementSummaryPanel");
-        AssertNonEmptyText<Label>(root, "SettlementSummaryTitleLabel");
-        Assert.That(Require<VisualElement>(root, "RewardProgressionRows").childCount, Is.GreaterThan(0));
-        Assert.That(Require<VisualElement>(root, "RewardTimelineTicks").childCount, Is.GreaterThan(0));
+        AssertVisible(root, "RewardResultStrip");
+        AssertNonEmptyText<Label>(root, "ResultHeadlineLabel");
         AssertNonEmptyText<Label>(root, "ChoiceCard1TitleLabel");
         Assert.That(Require<Button>(root, "ChoiceCard1Button").enabledSelf, Is.True);
         Assert.That(Require<Button>(root, "ReturnTownButton"), Is.Not.Null);
