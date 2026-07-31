@@ -62,16 +62,53 @@ public sealed class BattleHudShellVisualContractFastTests
 
         // 2026-07-31 — 아래 패널들은 <b>일부러</b> 없앴다. 다시 들어오면 이 테스트가 잡는다.
         //
-        // 이 화면은 같은 8 유닛을 상단 칩 레일 · 적군 로스터 카드 · 좌측 세로 레일 · 전력 분포
-        // 산점도 · 전황 판단 텔레메트리로 <b>중복해서</b> 그리고 있었다. 유닛 상태를 네 번,
-        // "누가 이기나"를 세 번 반복한 셈이라 전투 화면이 아니라 관측 대시보드로 읽혔다.
-        // 적 상태와 유닛 위치는 <b>전장에 이미 그려져 있다</b> — 머리 위 HP 바와 실제 배치가 그것이다.
-        // 패널로 다시 그리는 건 정보 추가가 아니라 전장 가림이었다.
-        Assert.That(uxml, Does.Not.Contain("TurnOrderStrip"), "상단 칩 레일은 파티 바와 중복이라 제거됨");
-        Assert.That(uxml, Does.Not.Contain("EnemyRosterList"), "적 상태는 전장 머리 위 HP 바로 읽는다");
+        // 이 화면은 같은 8 유닛을 상단 칩 레일 · 좌측 세로 레일 · 전력 분포 산점도 ·
+        // 전황 판단 텔레메트리로 <b>중복해서</b> 그리고 있었다. "누가 이기나"를 세 번 반복한 셈이라
+        // 전투 화면이 아니라 관측 대시보드로 읽혔다.
+        // 이 넷은 시안(`Screenshots/mockups/ui_ux_bible_battle_hud_v1.png`)에도 없다.
+        Assert.That(uxml, Does.Not.Contain("TurnOrderStrip"), "상단 칩 레일은 팀 기둥과 중복이라 제거됨");
         Assert.That(uxml, Does.Not.Contain("BattleIntelPanel"), "전력 분포 산점도는 전장 배치의 중복 표현");
-        Assert.That(uxml, Does.Not.Contain("BattleSideRail"), "좌측 세로 레일은 파티 바와 중복");
+        Assert.That(uxml, Does.Not.Contain("BattleSideRail"), "좌측 세로 레일은 팀 기둥과 중복");
         Assert.That(uxml, Does.Not.Contain("TacticalReadoutPanel"), "전황 판단은 텔레메트리 대시보드");
+    }
+
+    /// <summary>
+    /// 시안 기준 골격 — `Screenshots/mockups/ui_ux_bible_battle_hud_v1.png`.
+    ///
+    /// 앞선 정리에서 적군 로스터도 "중복"으로 보고 지웠는데, <b>시안에는 있다.</b>
+    /// 좌측 아군 기둥과 우측 적군 기둥이 전장을 사이에 두고 마주 보는 게 이 화면의 골격이고,
+    /// 그걸 지우니 남은 크롬이 어디에도 기대지 못해 떠다녔다. 판단 근거로 삼을 시안이
+    /// 이미 있었는데 열어보지 않은 것이 실수였다 — 되돌아가지 않도록 계약으로 건다.
+    /// </summary>
+    [Test]
+    public void BattleHudShell_KeepsMockupSkeleton_TwoTeamColumnsFlankingTheStage()
+    {
+        var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Battle/BattleScreen.uxml");
+        var uss = File.ReadAllText("Assets/_Game/UI/Screens/Battle/BattleScreen.uss");
+        var view = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Battle/BattleScreenView.cs");
+        var presenter = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Battle/BattleScreenPresenter.cs");
+
+        Assert.That(uxml, Does.Contain("AllyRosterList"), "좌측 아군 기둥");
+        Assert.That(uxml, Does.Contain("EnemyRosterList"), "우측 적군 기둥 — 시안의 골격이다");
+        Assert.That(uss, Does.Contain("sm-bs-ally-column"));
+        Assert.That(uss, Does.Contain("sm-bs-enemy-column"));
+        Assert.That(
+            view,
+            Does.Contain("RenderRoster(_enemyRosterList, state.EnemyRoster, isEnemy: true)"),
+            "UXML 에만 있고 그리지 않으면 빈 기둥이 선다");
+
+        // 역할 칩은 시안이 이름 밑에 둔 자리다. 시안 시점엔 손으로 적은 라벨이었지만
+        // 지금은 RoleInstructionId / RoleTag 가 실데이터라 그 자리를 실데이터로 채운다.
+        Assert.That(presenter, Does.Contain("BuildRosterRoleText"));
+        Assert.That(uss, Does.Contain("sm-bs-roster-role"));
+
+        // 시안은 전부 금테 헤어라인 + 근검정 남색이다. 테두리를 지운 앞선 아트 패스로
+        // 되돌아가면 전투만 다른 시각 언어를 쓰게 된다.
+        Assert.That(uss, Does.Contain("ui_ux_bible_battle_hud_v1.png"), "기준 시안 출처를 파일에 남긴다");
+        Assert.That(
+            uss,
+            Does.Not.Contain("2026-07-31 전투 HUD 아트 패스"),
+            "시안을 보지 않고 내린 전역 아트 결정 블록은 대체됐다");
     }
 
     [Test]

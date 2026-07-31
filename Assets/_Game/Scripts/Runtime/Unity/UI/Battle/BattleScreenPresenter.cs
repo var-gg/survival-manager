@@ -9,8 +9,11 @@ namespace SM.Unity.UI.Battle;
 
 public sealed class BattleScreenPresenter
 {
-    private const int MaxVisibleLogs = 3;
-    private const int MaxVisibleDecisive = 3;
+    // 시안(ui_ux_bible_battle_hud_v1)의 로그는 기둥 사이 전폭을 쓰는 여러 줄 피드다.
+    // 3 줄은 이전 레이아웃에서 로그를 440px 폭 한 뼘으로 몰아넣은 결과였다.
+    // USS 예산: max-height 104px - padding 16 = 88px, line-height 19px → 4 줄.
+    private const int MaxVisibleLogs = 4;
+    private const int MaxVisibleDecisive = 4;
 
     private readonly GameLocalizationController _localization;
     private readonly GameSessionState _sessionState;
@@ -406,14 +409,70 @@ public sealed class BattleScreenPresenter
             .ThenBy(unit => unit.Name)
             .Select(unit => new BattleRosterUnitViewState(
                 unit.Id,
-                ResolveUnitDisplayName(unit),
+                BuildRosterDisplayName(unit),
                 BuildRosterActionLabel(unit, step),
                 unit.MaxHealth > 0f ? UnityEngine.Mathf.Clamp01(unit.CurrentHealth / unit.MaxHealth) : 0f,
                 unit.IsAlive,
                 string.Equals(unit.Id, selectedUnitId, System.StringComparison.Ordinal),
                 _portraitResolver.Resolve(unit),
-                BuildRosterHealthText(unit)))
+                BuildRosterHealthText(unit),
+                BuildRosterRoleText(unit)))
             .ToList();
+    }
+
+    /// <summary>
+    /// 카드·전투 기록에 쓸 <b>짧은 이름</b>.
+    ///
+    /// 등록부 표시명은 <c>단린 (丹麟) / Dawn Priest</c> 형식이다 — 한국어 표시명 + 한자 +
+    /// 영문 별칭을 <b>한 문자열에</b> 담은 형태고, 그건 등록부·상세창의 형식이지 카드의 형식이 아니다.
+    /// 폭 268px 카드에 그대로 넣으면 <c>단린 (丹麟) / Dawn Pri...</c> 로 잘려서 <b>세 표기 중
+    /// 어느 것도 온전히 안 읽힌다</b>. 전투 기록 한 줄에 두 명이 들어가면 줄이 통째로 넘친다.
+    ///
+    /// 이름 자체(SoT)는 건드리지 않는다. 여기서 줄이는 건 <b>표시 밀도</b>일 뿐이고,
+    /// 온전한 표기는 상세창이 갖는다.
+    /// </summary>
+    private string BuildRosterDisplayName(BattleUnitReadModel unit)
+    {
+        return ToCompactDisplayName(ResolveUnitDisplayName(unit));
+    }
+
+    private static string ToCompactDisplayName(string full)
+    {
+        if (string.IsNullOrWhiteSpace(full))
+        {
+            return full;
+        }
+
+        var slash = full.IndexOf('/');
+        var head = (slash > 0 ? full[..slash] : full).Trim();
+
+        var paren = head.IndexOf('(');
+        if (paren > 0)
+        {
+            head = head[..paren].TrimEnd();
+        }
+
+        // 별칭만 있는 이름(영문 단독)은 잘라낼 게 없으므로 원문을 지킨다.
+        return head.Length == 0 ? full.Trim() : head;
+    }
+
+    /// <summary>
+    /// 유닛 카드의 역할 칩.
+    ///
+    /// 시안(<c>ui_ux_bible_battle_hud_v1</c>)은 이름 밑에 "근접 딜러 / 탱커 / 서포터" 같은
+    /// 역할을 작은 상자로 뒀다. 시안 시점에는 그게 손으로 적은 라벨이었지만, 지금은
+    /// <see cref="BattleUnitReadModel.RoleInstructionId"/> 와 <c>RoleTag</c> 가 실데이터로 있다.
+    /// 그래서 이 자리는 시안을 그대로 따르면서 동시에 <b>현행 시스템의 진실</b>을 쓴다.
+    /// </summary>
+    private string BuildRosterRoleText(BattleUnitReadModel unit)
+    {
+        if (_contentText == null)
+        {
+            return string.Empty;
+        }
+
+        var role = _contentText.GetRoleName(unit.RoleInstructionId, unit.RoleTag);
+        return string.IsNullOrWhiteSpace(role) ? string.Empty : SanitizePlayerFacingText(role, string.Empty);
     }
 
     /// <summary>
@@ -678,8 +737,8 @@ public sealed class BattleScreenPresenter
         }
 
         return unit != null
-            ? ResolveUnitDisplayName(unit)
-            : SanitizePlayerFacingText(fallbackName ?? "?", "?");
+            ? BuildRosterDisplayName(unit)
+            : ToCompactDisplayName(SanitizePlayerFacingText(fallbackName ?? "?", "?"));
     }
 
     private string SanitizeBattleStateText(string stateText, BattleSimulationStep step)

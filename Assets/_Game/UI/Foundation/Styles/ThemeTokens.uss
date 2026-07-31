@@ -147,6 +147,10 @@
     --sm-state-warn-a56: rgba(232, 169, 59, 0.56);
     /* a78: Battle 경고 막대 fill/테두리가 참조하나 미정의였던 렌더 버그 → 정식 정의. */
     --sm-state-warn-a78: rgba(232, 169, 59, 0.78);
+    /* a14/a42: 시안(ui_ux_bible_battle_hud_v1)의 적군 기둥은 아군 금테와 같은 두께의
+       적색 헤어라인을 쓴다. 팀 구분이 색 하나로 서는 자리라 정식 토큰으로 둔다. */
+    --sm-state-danger-a14: rgba(226, 85, 72, 0.14);
+    --sm-state-danger-a42: rgba(226, 85, 72, 0.42);
     --sm-state-safe-a86: rgba(166, 220, 154, 0.86);
     --sm-state-safe-a92: rgba(166, 220, 154, 0.92);
     --sm-state-shield-a82: rgba(118, 168, 230, 0.82);

@@ -38,10 +38,10 @@ public sealed class BattleScreenView
     // USS .sm-bs-roster-portrait(pass-2 override)와 일치해야 한다. 실제 크기는 레이아웃 후
     // GeometryChangedEvent로 재적용하므로 이 값은 첫 프레임 추정치 역할만 한다.
     // (과거 128x152 stale 값 때문에 1:1 얼굴이 82x70 창에 152px로 렌더돼 정수리만 보이던 버그)
-    private const float AllyRosterPortraitWidth = 82f;
-    private const float AllyRosterPortraitHeight = 70f;
-    private const float EnemyRosterPortraitWidth = 64f;
-    private const float EnemyRosterPortraitHeight = 76f;
+    private const float AllyRosterPortraitWidth = 86f;
+    private const float AllyRosterPortraitHeight = 160f;
+    private const float EnemyRosterPortraitWidth = 86f;
+    private const float EnemyRosterPortraitHeight = 128f;
 
     private readonly Label _localeStatusLabel;
     private readonly Button _localeKoButton;
@@ -54,11 +54,16 @@ public sealed class BattleScreenView
     private readonly Label _summaryTitleLabel;
     private readonly Button _summaryToggleButton;
     private readonly VisualElement _summaryBody;
+    private readonly Label _battleTitleLabel;
     private readonly Label _allyTitleLabel;
     private readonly Label _logTitleLabel;
     private readonly VisualElement _allySummaryPanel;
     private readonly VisualElement _allyRosterList;
     private readonly Label _allyHpLabel;
+    private readonly Label _enemyTitleLabel;
+    private readonly VisualElement _enemySummaryPanel;
+    private readonly VisualElement _enemyRosterList;
+    private readonly Label _enemyHpLabel;
     private readonly Label _logLabel;
     private readonly Label _resultLabel;
     private readonly VisualElement _playbackActionsGroup;
@@ -152,11 +157,16 @@ public sealed class BattleScreenView
         _summaryTitleLabel = Require<Label>(root, "SummaryTitleLabel");
         _summaryToggleButton = Require<Button>(root, "SummaryToggleButton");
         _summaryBody = Require<VisualElement>(root, "SummaryBody");
+        _battleTitleLabel = Require<Label>(root, "BattleTitleLabel");
         _allyTitleLabel = Require<Label>(root, "AllyTitleLabel");
         _logTitleLabel = Require<Label>(root, "LogTitleLabel");
         _allySummaryPanel = Require<VisualElement>(root, "AllySummaryPanel");
         _allyRosterList = Require<VisualElement>(root, "AllyRosterList");
         _allyHpLabel = Require<Label>(root, "AllyHpLabel");
+        _enemyTitleLabel = Require<Label>(root, "EnemyTitleLabel");
+        _enemySummaryPanel = Require<VisualElement>(root, "EnemySummaryPanel");
+        _enemyRosterList = Require<VisualElement>(root, "EnemyRosterList");
+        _enemyHpLabel = Require<Label>(root, "EnemyHpLabel");
         _logLabel = Require<Label>(root, "LogLabel");
         _resultLabel = Require<Label>(root, "ResultLabel");
         _playbackActionsGroup = Require<VisualElement>(root, "PlaybackActionsGroup");
@@ -232,11 +242,16 @@ public sealed class BattleScreenView
             _summaryPanel,
             _summaryTitleLabel,
             _summaryBody,
+            _battleTitleLabel,
             _allyTitleLabel,
             _logTitleLabel,
             _allySummaryPanel,
             _allyRosterList,
             _allyHpLabel,
+            _enemyTitleLabel,
+            _enemySummaryPanel,
+            _enemyRosterList,
+            _enemyHpLabel,
             _logLabel,
             _resultLabel,
             _playbackGroupTitleLabel,
@@ -368,9 +383,12 @@ public sealed class BattleScreenView
         _summaryToggleButton.text = state.SummaryToggleLabel;
         _summaryToggleButton.tooltip = state.SummaryToggleTooltip;
         _summaryBody.style.display = state.IsSummaryExpanded ? DisplayStyle.Flex : DisplayStyle.None;
+        _battleTitleLabel.text = state.Title;
         _allyTitleLabel.text = state.AllyTitle;
         _logTitleLabel.text = state.LogTitle;
         _allyHpLabel.text = state.AllyHpText;
+        _enemyTitleLabel.text = state.EnemyTitle;
+        _enemyHpLabel.text = state.EnemyHpText;
         _logLabel.text = state.LogText;
         _resultLabel.text = state.ResultText;
 
@@ -415,7 +433,9 @@ public sealed class BattleScreenView
         _settingsButton.tooltip = state.SettingsTooltip;
 
         _allySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
+        _enemySummaryPanel.style.display = state.ShowTeamSummary ? DisplayStyle.Flex : DisplayStyle.None;
         RenderRoster(_allyRosterList, state.AllyRoster, isEnemy: false);
+        RenderRoster(_enemyRosterList, state.EnemyRoster, isEnemy: true);
         RenderObserverStatusDock(state);
 
         _settingsPanel.style.display = state.Settings.IsVisible ? DisplayStyle.Flex : DisplayStyle.None;
@@ -518,6 +538,15 @@ public sealed class BattleScreenView
             name.AddToClassList("sm-bs-roster-name");
             meta.Add(name);
 
+            // 역할 칩 — 시안이 이름 밑에 둔 자리. 값이 없으면 칩 자체를 만들지 않는다.
+            // 빈 상자가 뜨느니 없는 편이 낫고, 그래야 미해결 id 가 화면에 새지 않는다.
+            if (!string.IsNullOrEmpty(unit.RoleText))
+            {
+                var role = new Label(unit.RoleText);
+                role.AddToClassList("sm-bs-roster-role");
+                meta.Add(role);
+            }
+
             var status = new Label(unit.StatusText);
             status.AddToClassList("sm-bs-roster-status");
             meta.Add(status);
@@ -534,7 +563,7 @@ public sealed class BattleScreenView
             // fill 을 가로로 눕히려면 트랙이 row 여야 한다. 기본값 column 에서는 퍼센트 높이가
             // 교차축 stretch 와 얽혀 실제로 칠해지지 않았다 — 트랙 선만 나오고 초록이 안 나왔다.
             track.style.flexDirection = FlexDirection.Row;
-            track.style.height = 9f;
+            track.style.height = 14f;
             track.style.marginTop = 5f;
             track.style.backgroundColor = new Color(0.06f, 0.07f, 0.10f, 0.92f);
             track.style.borderTopWidth = 1f;
@@ -550,22 +579,22 @@ public sealed class BattleScreenView
             var health = Mathf.Clamp01(unit.HealthNormalized);
             var fill = new VisualElement();
             fill.AddToClassList("sm-bs-roster-hp-fill");
-            fill.style.height = 7f;
+            fill.style.height = 12f;
             fill.style.width = Length.Percent(health * 100f);
-            fill.style.backgroundColor = ResolveHealthColor(health, unit.IsAlive);
+            fill.style.backgroundColor = ResolveHealthColor(health, unit.IsAlive, isEnemy);
             track.Add(fill);
-            meta.Add(track);
 
+            // 수치는 바 <b>위에</b> 얹는다 — 시안이 그렇게 했고, 카드 한 장이 세로로
+            // 이름·역할·바·숫자 네 줄이 되면 4장이 기둥 높이를 넘긴다.
             if (!string.IsNullOrEmpty(unit.HealthText))
             {
                 var healthLabel = new Label(unit.HealthText);
                 healthLabel.AddToClassList("sm-bs-roster-hp-text");
-                healthLabel.style.marginTop = 3f;
-                healthLabel.style.fontSize = 11f;
-                healthLabel.style.color = new Color(0.78f, 0.80f, 0.84f, 1f);
-                healthLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-                meta.Add(healthLabel);
+                healthLabel.pickingMode = PickingMode.Ignore;
+                track.Add(healthLabel);
             }
+
+            meta.Add(track);
 
             row.Add(meta);
             container.Add(row);
@@ -609,11 +638,24 @@ public sealed class BattleScreenView
     /// 체력 구간에 따라 바 색을 바꾼다 — 한 눈에 "누가 위험한가"가 읽혀야 파티 바가 제 일을 한다.
     /// 숫자를 읽게 만들면 이미 늦다.
     /// </summary>
-    private static Color ResolveHealthColor(float normalized, bool isAlive)
+    /// <summary>
+    /// HP 바 색.
+    ///
+    /// 아군은 초록 → 호박 → 빨강으로 <b>남은 양</b>을 색으로도 말한다.
+    /// 적군은 시안(<c>ui_ux_bible_battle_hud_v1</c>)대로 항상 적색이다 — 색은 <b>소속</b>을,
+    /// 길이는 남은 양을 말하는 업계 관습이다. 적 카드에까지 초록이 뜨면 화면에서
+    /// 어느 쪽이 우리 편인지가 한눈에 안 잡힌다.
+    /// </summary>
+    private static Color ResolveHealthColor(float normalized, bool isAlive, bool isEnemy = false)
     {
         if (!isAlive)
         {
             return new Color(0.34f, 0.36f, 0.40f, 0.85f);
+        }
+
+        if (isEnemy)
+        {
+            return new Color(0.80f, 0.26f, 0.24f, 0.95f);
         }
 
         if (normalized <= 0.3f)

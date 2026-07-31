@@ -38,13 +38,25 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.battle.equipment.pending"] = ("장비 정보 준비 중", "Equipment pending", false),
             ["ui.battle.equipment.weapon"] = ("무기", "Weapon", false),
             ["ui.battle.error.setup_failed"] = ("전투를 준비할 수 없습니다.", "The battle could not be prepared.", false),
-            ["ui.battle.feed.basic_attack"] = ("기본 공격", "Basic Attack", false),
-            ["ui.battle.feed.down"] = ("전투불능", "Down", false),
+            // 전투 기록 줄 — <b>서식 문자열</b>이다. 명사만 남기면 안 된다.
+            //
+            // 2026-07-31 이전까지 이 일곱 줄은 "기본 공격" / "스킬" / "방어" 처럼 <b>명사 하나</b>였다.
+            // 호출부는 시각·행위자·대상·수치를 인자로 넘기고 있었지만
+            // (BattleScreenPresenter.BuildLogLine), 자리표시자가 없는 문자열은 인자를 그냥 버린다.
+            // 그래서 화면의 전투 기록은 "스킬 / 전투 행동" 두 단어였다 — 누가, 누구를, 얼마나,
+            // 언제가 전부 사라진 채로. 코드 폴백에는 서식이 살아 있었으므로 이 시드가 덮은 것이다.
+            //
+            // 형식은 시안(ui_ux_bible_battle_hud_v1)의 로그 줄을 따른다:
+            //   [12:42] 명사수 → 척후병: 84 피해
+            // 시안의 벽시계 대신 결정론 스텝 시각을 쓴다.
+            ["ui.battle.feed.basic_attack"] = ("[{0:0.0}s] {1} → {2} : {3:0} 피해", "[{0:0.0}s] {1} → {2} : {3:0} dmg", false),
+            ["ui.battle.feed.down"] = ("[{0:0.0}s] {1} 전투불능", "[{0:0.0}s] {1} is down", false),
             ["ui.battle.feed.empty"] = ("아직 전투 기록이 없습니다.", "No battle events yet", false),
-            ["ui.battle.feed.generic"] = ("전투 행동", "Battle Action", false),
-            ["ui.battle.feed.guard"] = ("방어", "Guard", false),
-            ["ui.battle.feed.heal"] = ("회복", "Heal", false),
-            ["ui.battle.feed.skill"] = ("스킬", "Skill", false),
+            // 형제 줄들과 같은 " : " 구분자를 쓴다. 영문은 서술형이라 형태가 갈린다.
+            ["ui.battle.feed.generic"] = ("[{0:0.0}s] {1} : {2}", "[{0:0.0}s] {1} performs {2}", false),
+            ["ui.battle.feed.guard"] = ("[{0:0.0}s] {1} 방어 태세", "[{0:0.0}s] {1} holds guard", false),
+            ["ui.battle.feed.heal"] = ("[{0:0.0}s] {1} → {2} : +{3:0} 회복", "[{0:0.0}s] {1} → {2} : +{3:0} heal", false),
+            ["ui.battle.feed.skill"] = ("[{0:0.0}s] {1} → {2} : {3:0} 스킬 피해", "[{0:0.0}s] {1} → {2} : {3:0} skill dmg", false),
             ["ui.battle.panel.feed"] = ("전투 기록", "Battle Feed", false),
             ["ui.battle.positioning.intent.backline_dive"] = ("후열 돌파", "Dive backline", false),
             ["ui.battle.positioning.intent.flank_left"] = ("왼쪽 측면", "Left flank", false),

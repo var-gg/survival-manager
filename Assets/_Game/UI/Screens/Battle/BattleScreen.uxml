@@ -11,12 +11,10 @@
                     <ui:VisualElement name="StatusHeadline" class="sm-bs-status-headline">
                         <ui:Label name="ResultLabel" class="panel__text battle-shell__result sm-bs-result" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="ProgressTrack" class="battle-track sm-bs-progress-track">
-                        <ui:VisualElement name="ProgressFill" class="battle-track__fill sm-bs-progress-fill" />
-                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
 
+            <ui:Label name="BattleTitleLabel" class="sm-bs-battle-title" />
             <ui:Button name="SettingsButton" class="ui-button sm-bs-control-btn sm-bs-settings-entry" />
         </ui:VisualElement>
 
@@ -108,13 +106,20 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement name="AllySummaryPanel" class="sm-bs-ally-strip sm-vellum-card">
-            <ui:VisualElement class="sm-family-tint-rib sm-family-tint-rib--mystic" />
-            <ui:VisualElement class="sm-bs-strip-header">
+        <ui:VisualElement name="AllySummaryPanel" class="sm-bs-team-column sm-bs-ally-column">
+            <ui:VisualElement class="sm-bs-column-header">
                 <ui:Label name="AllyTitleLabel" class="panel__title sm-bs-rail-title" />
                 <ui:Label name="AllyHpLabel" class="panel__text sm-bs-rail-summary" />
             </ui:VisualElement>
             <ui:VisualElement name="AllyRosterList" class="sm-bs-roster-list sm-bs-roster-list--ally" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="EnemySummaryPanel" class="sm-bs-team-column sm-bs-enemy-column">
+            <ui:VisualElement class="sm-bs-column-header">
+                <ui:Label name="EnemyTitleLabel" class="panel__title sm-bs-rail-title" />
+                <ui:Label name="EnemyHpLabel" class="panel__text sm-bs-rail-summary" />
+            </ui:VisualElement>
+            <ui:VisualElement name="EnemyRosterList" class="sm-bs-roster-list sm-bs-roster-list--enemy" />
         </ui:VisualElement>
 
         <ui:VisualElement name="ControlBar" class="sm-bs-control-bar">
@@ -128,6 +133,13 @@
                     <ui:Button name="PauseButton" class="ui-button sm-bs-control-btn sm-bs-control-btn--primary" />
                     <ui:Button name="ReplayButton" class="ui-button sm-bs-control-btn" />
                 </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- 시안의 재생 바는 속도 버튼 옆에 타임라인 스크러버를 둔다. 이 트랙은 원래
+                 상단 띠에 있었는데, 재생을 조작하는 손과 진행을 읽는 눈이 화면 위아래로
+                 갈라져 있었다. 드래그 시크는 이미 이 트랙에 붙어 있으므로 자리만 옮긴다. -->
+            <ui:VisualElement name="ProgressTrack" class="battle-track sm-bs-progress-track">
+                <ui:VisualElement name="ProgressFill" class="battle-track__fill sm-bs-progress-fill" />
             </ui:VisualElement>
 
             <ui:VisualElement name="ContinueActionsGroup" class="action-group sm-bs-control-group">

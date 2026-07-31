@@ -641,11 +641,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011028
-    m_Localized: Basic Attack
+    m_Localized: "[{0:0.0}s] {1} \u2192 {2} : {3:0} dmg"
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011029
-    m_Localized: Down
+    m_Localized: '[{0:0.0}s] {1} is down'
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011030
@@ -653,19 +653,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011031
-    m_Localized: Battle Action
+    m_Localized: '[{0:0.0}s] {1} performs {2}'
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011032
-    m_Localized: Guard
+    m_Localized: '[{0:0.0}s] {1} holds guard'
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011033
-    m_Localized: Heal
+    m_Localized: "[{0:0.0}s] {1} \u2192 {2} : +{3:0} heal"
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011034
-    m_Localized: Skill
+    m_Localized: "[{0:0.0}s] {1} \u2192 {2} : {3:0} skill dmg"
     m_Metadata:
       m_Items: []
   - m_Id: 3380253606011035
