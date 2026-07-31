@@ -1,66 +1,98 @@
 using SM.Meta.Model;
+using SM.Unity.UI;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace SM.Unity
 {
 
+/// <summary>
+/// 시작 화면.
+///
+/// 2026-07-31 에 레거시 uGUI(<c>UnityEngine.UI.Text</c> / <c>Button</c>)에서 UITK 로 옮겼다.
+/// 이 화면만 다른 UI 시스템에 있어서, 게임의 <b>첫 화면</b>에 프로젝트의 금테·딥네이비
+/// 언어가 하나도 붙지 않았다 — 기본 스카이박스 위에 민무늬 파란 버튼 하나였다.
+///
+/// 문구 주의 — <b>폴백이 곧 이 화면의 문구다.</b> 시작 화면은 로컬라이제이션이 초기화되기
+/// 전에 그려지므로 테이블 값이 아니라 아래 폴백이 그대로 화면에 나온다(실제로 시드를
+/// 한국어로 바꾼 뒤에도 "Start" 가 떴다). 그래서 폴백을 제품 문구로 취급하고,
+/// 시드와 일치하는지를 <c>BootScreenCopyFastTests</c> 가 계약으로 든다.
+/// </summary>
 public sealed class BootScreenController : MonoBehaviour
 {
-    [SerializeField] private Text titleText = null!;
-    [SerializeField] private Text statusText = null!;
-    [SerializeField] private Text hintText = null!;
-    [SerializeField] private Button offlineLocalButton = null!;
+    [SerializeField] private RuntimePanelHost panelHost = null!;
 
     private GameSessionRoot _root = null!;
+    private Label _titleLabel = null!;
+    private Label _statusLabel = null!;
+    private Label _hintLabel = null!;
+    private Button _startButton = null!;
+    private bool _bound;
 
     private void Start()
     {
         _root = GameSessionRoot.EnsureInstance();
-
-        if (offlineLocalButton != null)
-        {
-            offlineLocalButton.onClick.RemoveListener(HandleOfflineSelected);
-            offlineLocalButton.onClick.AddListener(HandleOfflineSelected);
-        }
-
+        EnsureBound();
         Refresh();
     }
 
     public void Refresh()
     {
-        if (_root == null)
+        if (_root == null || !EnsureBound())
         {
             return;
         }
 
-        // 폴백이 곧 이 화면의 문구다.
-        //
-        // 시작 화면은 로컬라이제이션이 초기화되기 전에 그려진다 — 실측하면 테이블 값이 아니라
-        // <b>여기 적힌 폴백이 그대로 화면에 나온다</b>(시드를 한국어로 바꿔도 "Start" 가 떴다).
-        // 그래서 이 넷은 "번역 실패 시 임시 문자열"이 아니라 <b>제품 문구</b>로 취급한다.
-        // 시드(ui.common.start_screen.*)와 문구를 일치시켜 두 경로가 갈라지지 않게 한다.
-        SetButtonLabel(offlineLocalButton, Localize(
-            GameLocalizationTables.UICommon,
-            "ui.common.start_local_run",
-            "이어서 시작"));
-        offlineLocalButton.interactable = !_root.HasBlockingError;
-
-        titleText.text = Localize(
+        _titleLabel.text = Localize(
             GameLocalizationTables.UICommon,
             "ui.common.start_screen.title",
             "잿골 연대기");
-        statusText.text = BuildStatusText();
+
+        _statusLabel.text = BuildStatusText();
+
         var hint = BuildHintText();
-        hintText.text = hint;
-        hintText.gameObject.SetActive(!string.IsNullOrWhiteSpace(hint));
+        _hintLabel.text = hint;
+        _hintLabel.style.display = string.IsNullOrWhiteSpace(hint) ? DisplayStyle.None : DisplayStyle.Flex;
+
+        _startButton.text = Localize(
+            GameLocalizationTables.UICommon,
+            "ui.common.start_local_run",
+            "이어서 시작");
+        _startButton.SetEnabled(!_root.HasBlockingError);
+    }
+
+    private bool EnsureBound()
+    {
+        if (_bound)
+        {
+            return true;
+        }
+
+        if (panelHost == null)
+        {
+            return false;
+        }
+
+        var root = panelHost.Root;
+        _titleLabel = root.Q<Label>("BootTitleLabel");
+        _statusLabel = root.Q<Label>("BootStatusLabel");
+        _hintLabel = root.Q<Label>("BootHintLabel");
+        _startButton = root.Q<Button>("BootStartButton");
+        if (_titleLabel == null || _statusLabel == null || _hintLabel == null || _startButton == null)
+        {
+            return false;
+        }
+
+        _startButton.clicked += HandleOfflineSelected;
+        _bound = true;
+        return true;
     }
 
     private void HandleOfflineSelected()
     {
         if (!_root.StartRealm(SessionRealm.OfflineLocal, out var error))
         {
-            statusText.text = error;
+            _statusLabel.text = error;
             return;
         }
 
@@ -92,20 +124,6 @@ public sealed class BootScreenController : MonoBehaviour
     private string Localize(string table, string key, string fallback, params object[] args)
     {
         return _root.Localization.LocalizeOrFallback(table, key, fallback, args);
-    }
-
-    private static void SetButtonLabel(Button button, string label)
-    {
-        if (button == null)
-        {
-            return;
-        }
-
-        var text = button.GetComponentInChildren<Text>();
-        if (text != null)
-        {
-            text.text = label;
-        }
     }
 }
 }

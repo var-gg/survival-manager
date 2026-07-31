@@ -1,0 +1,133 @@
+/* ==========================================================================
+   시작 화면 — 2026-07-31 UITK 재작성
+
+   시안이 없는 화면이라 마스터 톤(`Screenshots/mockups/ui_art_bible_master_tone_v1c.png`)의
+   값 계통만 따랐다. 딥네이비 바탕 + 금색 트림, 가운데 액자 하나.
+   Town 허브가 이미 같은 배경 계열(UI/Backdrops/*_dusk.png)을 쓰고 있어 그 어휘를 잇는다.
+   ========================================================================== */
+
+.boot-screen {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(4, 7, 18);
+}
+
+.boot-screen__backdrop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    /* 변방 마을 dusk — 이 게임이 시작하는 자리를 첫 화면이 먼저 보여준다. */
+    background-image: url("project://database/Assets/_Game/UI/Backdrops/town_frontier_village_dusk.png");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* 배경 위에 글자를 얹으려면 값을 눌러야 한다. 배경은 분위기지 읽을 대상이 아니다. */
+.boot-screen__backdrop-dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(3, 6, 16, 0.62);
+}
+
+.boot-screen__card {
+    width: 720px;
+    align-items: center;
+    padding-left: 56px;
+    padding-right: 56px;
+    padding-top: 48px;
+    padding-bottom: 44px;
+    background-color: rgba(6, 11, 26, 0.86);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+}
+
+.boot-screen__title {
+    margin: 0;
+    min-height: 62px;
+    color: var(--sm-gold-100);
+    font-size: 52px;
+    letter-spacing: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}
+
+.boot-screen__rule {
+    width: 60%;
+    height: 1px;
+    min-height: 1px;
+    margin-top: 22px;
+    margin-bottom: 22px;
+    background-color: var(--sm-gold-300-a42);
+}
+
+/* 도입 한 줄. 세계를 말하지 빌드를 말하지 않는다. */
+.boot-screen__status {
+    margin: 0;
+    min-height: 26px;
+    color: var(--sm-vellum);
+    font-size: 17px;
+    line-height: 26px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.boot-screen__hint {
+    margin-top: 10px;
+    min-height: 22px;
+    color: var(--sm-ink-2);
+    font-size: 14px;
+    line-height: 22px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.boot-screen__cta {
+    width: 320px;
+    min-height: 54px;
+    margin-top: 34px;
+    font-size: 19px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    color: var(--sm-bg-0);
+    background-color: var(--sm-gold-300);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-100);
+    border-right-color: var(--sm-gold-100);
+    border-top-color: var(--sm-gold-100);
+    border-bottom-color: var(--sm-gold-100);
+}
+
+.boot-screen__cta:hover {
+    background-color: var(--sm-gold-100);
+}
+
+.boot-screen__cta:disabled {
+    opacity: 0.45;
+}
+
+/* 차단 에러가 있을 때 CTA 가 꺼지므로, 무엇이 막혔는지는 status 줄이 말한다. */
+.boot-screen__footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 26px;
+    color: var(--sm-ink-2);
+    font-size: 12px;
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+}

@@ -12,8 +12,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
-using UIButton = UnityEngine.UI.Button;
-using UIText = UnityEngine.UI.Text;
 
 namespace SM.Tests.PlayMode;
 
@@ -45,16 +43,22 @@ public sealed class PlayModeSmokeTests
         yield return WaitForComponent<BootScreenController>();
         yield return PlayModeSmokeEvidence.CaptureScreenshot(PlayModeSmokeEvidence.ScreenshotFileNames[0]);
 
-        var startButton = GameObject.Find("OfflineLocalButton")?.GetComponent<UIButton>();
-        var startButtonLabel = GameObject.Find("OfflineLocalButtonText")?.GetComponent<UIText>();
-        Assert.That(startButton, Is.Not.Null, BuildSceneDiagnostic("Boot scene should expose the Start Local Run button."));
-        Assert.That(startButtonLabel, Is.Not.Null, BuildSceneDiagnostic("Boot scene should expose the Start Local Run label."));
-        // localization-agnostic: 한국어 환경에서는 "로컬 실행 시작", 영문 환경에서는 "Start Local Run".
-        Assert.That(startButtonLabel!.text, Is.EqualTo("Start Local Run").Or.EqualTo("로컬 실행 시작"),
-            $"OfflineLocalButton label은 영문 또는 한국어로 표시 (실제: '{startButtonLabel.text}').");
+        // 2026-07-31: 시작 화면이 레거시 uGUI 에서 UITK 로 옮겨졌다. 다른 모든 화면과 같은
+        // RuntimePanelHost 경로를 타므로 여기서도 uGUI Button 대신 UITK 버튼을 찾는다.
+        var bootHost = Object.FindFirstObjectByType<RuntimePanelHost>();
+        Assert.That(bootHost, Is.Not.Null, BuildSceneDiagnostic("Boot scene should expose the UITK panel host."));
+        var startButton = bootHost!.Root.Q<Button>("BootStartButton");
+        Assert.That(startButton, Is.Not.Null, BuildSceneDiagnostic("Boot scene should expose the start button."));
+        Assert.That(startButton!.enabledSelf, Is.True, "차단 에러가 없으면 시작 버튼은 눌러야 한다.");
+        // 문구는 폴백이 곧 화면 문구라 한국어가 기본이다. 영문 로케일도 허용.
+        Assert.That(startButton.text, Is.EqualTo("이어서 시작").Or.EqualTo("Begin"),
+            $"시작 버튼 문구 (실제: '{startButton.text}').");
         Assert.That(GameObject.Find("OnlineAuthoritativeButton"), Is.Null, "Boot scene should not expose the hidden future-seam online button.");
 
-        startButton!.onClick.Invoke();
+        using (var click = new NavigationSubmitEvent() { target = startButton })
+        {
+            startButton.SendEvent(click);
+        }
         yield return WaitForScene(SceneNames.Town);
         yield return WaitForComponent<TownScreenController>();
 

@@ -1,0 +1,27 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      2026-07-31 시작 화면 UITK 재작성.
+
+      이 화면만 레거시 uGUI(Text / Button)였다. 그래서 게임의 <b>첫 화면</b>에
+      프로젝트의 금테·딥네이비 언어가 하나도 붙어 있지 않았고, 기본 스카이박스 위에
+      민무늬 파란 버튼 하나였다. 다른 모든 화면과 같은 UXML/USS 로 다시 짓는다.
+
+      구성은 네 덩어리다 — 배경 일러스트 / 어둡게 깔기 / 가운데 금테 카드(제목·구분선·
+      도입 두 줄·CTA) / 하단 각인. 시안이 없는 화면이라 마스터 톤(ui_art_bible_master_tone_v1c)의
+      값 계통만 따랐다.
+    -->
+    <ui:VisualElement name="BootScreenRoot" class="screen boot-screen">
+        <ui:VisualElement class="boot-screen__backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="boot-screen__backdrop-dim" picking-mode="Ignore" />
+
+        <ui:VisualElement name="BootCard" class="boot-screen__card">
+            <ui:Label name="BootTitleLabel" class="boot-screen__title" />
+            <ui:VisualElement class="boot-screen__rule" picking-mode="Ignore" />
+            <ui:Label name="BootStatusLabel" class="boot-screen__status" />
+            <ui:Label name="BootHintLabel" class="boot-screen__hint" />
+            <ui:Button name="BootStartButton" class="ui-button boot-screen__cta" />
+        </ui:VisualElement>
+
+        <ui:Label name="BootFooterLabel" class="boot-screen__footer" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>
