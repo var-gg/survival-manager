@@ -22,13 +22,17 @@
     bottom: 0;
 }
 
+/* 84% 로는 Atlas 가 그대로 뒤에서 경쟁했다 — 좌측 각인석 목록·우측 조우 상세·하단 바가
+   선택 카드와 겹쳐 글자 위에 글자가 찍혔다. 시안(ui_ux_bible_dialogue_event_choice_v0)의
+   뒤에는 장면 일러스트뿐이고 다른 UI 가 없다.
+   사건 화면은 <b>자기 화면</b>으로 읽혀야 하므로 뒤를 확실히 덮는다. */
 .site-event-choice__backdrop {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: var(--sm-bg-0-a84);
+    background-color: rgba(6, 10, 24, 0.975);
 }
 
 .site-event-choice__hud {
@@ -315,11 +319,16 @@
     border-right-width: 2px;
     border-top-width: 2px;
     border-bottom-width: 2px;
-    border-left-color: var(--sm-gold-500);
-    border-right-color: var(--sm-gold-500);
-    border-top-color: var(--sm-gold-500);
-    border-bottom-color: var(--sm-gold-500);
-    border-radius: var(--sm-r-lg);
+    /* 선택 카드는 --sm-gold-400 각진 액자인데 이 상자만 어두운 gold-500 + 둥근 모서리였다.
+       같은 화면에서 액자 계통이 갈리면 그것만으로 조립품처럼 보인다. */
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .site-event-choice__dialogue-eyebrow {
