@@ -15,7 +15,7 @@
                 <ui:Button name="dialogue-scene-skip-all-button" class="ui-button story-skip-button dialogue-scene-skip-button" text="장면 건너뛰기" />
             </ui:VisualElement>
             <ui:Label name="dialogue-scene-line" class="dialogue-scene-line story-text--character" text="Dialogue line" />
-            <ui:Label name="dialogue-scene-continue-hint" class="story-continue-hint dialogue-scene-continue-hint" text="Tap to continue" />
+            <ui:Label name="dialogue-scene-continue-hint" class="story-continue-hint dialogue-scene-continue-hint" text="계속하려면 클릭" />
         </ui:VisualElement>
         <ui:VisualElement name="dialogue-scene-skip-confirm-overlay" class="story-confirm-overlay dialogue-scene-skip-confirm-overlay">
             <ui:VisualElement name="dialogue-scene-skip-confirm-panel" class="story-panel dialogue-scene-skip-confirm-panel">

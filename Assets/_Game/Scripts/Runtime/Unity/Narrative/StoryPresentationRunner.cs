@@ -380,6 +380,7 @@ public sealed class StoryPresentationRunner : MonoBehaviour
             SkipConfirmBodyText = LocalizeUiCommon(
                 "ui.common.story_skip_confirm_body",
                 "연출만 건너뜁니다. 내용은 그대로 진행됩니다."),
+            ContinueHintText = LocalizeUiCommon("ui.common.story_continue_hint", "계속하려면 클릭"),
             SkipButtonText = LocalizeUiCommon("ui.common.story_skip_scene", "장면 건너뛰기"),
             SkipConfirmAcceptText = LocalizeUiCommon("ui.common.story_skip_confirm_accept", "건너뛰기"),
             SkipConfirmCancelText = LocalizeUiCommon("ui.common.story_skip_confirm_cancel", "계속 보기"),

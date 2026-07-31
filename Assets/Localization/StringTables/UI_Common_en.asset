@@ -144,20 +144,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12
-    m_Localized: Start
+    m_Localized: Chronicles of Ashglen
     m_Metadata:
       m_Items: []
   - m_Id: 13
-    m_Localized: This build runs a local loop from Town through Expedition, Battle,
-      and Reward.
+    m_Localized: Since the Ashen Gate closed, Ashglen is all the frontier has left.
     m_Metadata:
       m_Items: []
   - m_Id: 14
-    m_Localized: Start the local loop and verify Town, Atlas, Battle, and Reward.
+    m_Localized: Tend the village, form your squad, and set out.
     m_Metadata:
       m_Items: []
   - m_Id: 15
-    m_Localized: Start Local Run
+    m_Localized: Begin
     m_Metadata:
       m_Items: []
   - m_Id: 34
@@ -262,6 +261,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 44563876011118595
     m_Localized: Keep Watching
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44581890496466944
+    m_Localized: Tap to continue
     m_Metadata:
       m_Items: []
   references:

@@ -9,7 +9,7 @@
                 </ui:ScrollView>
                 <ui:VisualElement name="story-card-actions" class="story-card-actions">
                     <ui:Button name="story-card-skip-button" class="ui-button story-skip-button" text="Skip" />
-                    <ui:Label name="story-card-continue-hint" class="story-continue-hint story-card-continue-hint" text="Tap to continue" />
+                    <ui:Label name="story-card-continue-hint" class="story-continue-hint story-card-continue-hint" text="계속하려면 클릭" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

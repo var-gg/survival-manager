@@ -259,6 +259,10 @@ MonoBehaviour:
     m_Key: ui.common.story_skip_confirm_cancel
     m_Metadata:
       m_Items: []
+  - m_Id: 44581890496466944
+    m_Key: ui.common.story_continue_hint
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

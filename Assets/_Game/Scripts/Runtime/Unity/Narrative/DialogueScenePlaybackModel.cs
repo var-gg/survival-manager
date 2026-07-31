@@ -16,6 +16,7 @@ public sealed class DialogueScenePlaybackModel
     public float DefaultAutoAdvanceDelaySeconds { get; init; } = 1.1f;
     public string SkipConfirmTitleText { get; init; } = string.Empty;
     public string SkipConfirmBodyText { get; init; } = string.Empty;
+    public string ContinueHintText { get; init; } = string.Empty;
     public string SkipButtonText { get; init; } = string.Empty;
     public string SkipConfirmAcceptText { get; init; } = string.Empty;
     public string SkipConfirmCancelText { get; init; } = string.Empty;

@@ -144,22 +144,21 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12
-    m_Localized: "\uC2DC\uC791"
+    m_Localized: "\uC7BF\uACE8 \uC5F0\uB300\uAE30"
     m_Metadata:
       m_Items: []
   - m_Id: 13
-    m_Localized: "\uC774 \uBE4C\uB4DC\uB294 Town\uC5D0\uC11C \uC900\uBE44\uD558\uACE0
-      Expedition/Battle/Reward\uB97C \uAC70\uCE58\uB294 \uB85C\uCEEC \uD50C\uB808\uC774
-      \uB8E8\uD504\uC785\uB2C8\uB2E4."
+    m_Localized: "\uC7BF\uBB38\uC774 \uB2EB\uD78C \uB4A4\uB85C, \uBCC0\uBC29\uC5D0
+      \uB0A8\uC740 \uAC83\uC740 \uC7BF\uACE8 \uD558\uB098\uBFD0\uC774\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 14
-    m_Localized: "\uB85C\uCEEC \uB8E8\uD504\uB97C \uC2DC\uC791\uD574 Town, Atlas,
-      Battle, Reward\uB97C \uC21C\uC11C\uB300\uB85C \uD655\uC778\uD569\uB2C8\uB2E4."
+    m_Localized: "\uB9C8\uC744\uC744 \uAFB8\uB9AC\uACE0, \uBD84\uB300\uB97C \uC9DC\uACE0,
+      \uC6D0\uC815\uC5D0 \uB098\uC120\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 15
-    m_Localized: "\uB85C\uCEEC \uC2E4\uD589 \uC2DC\uC791"
+    m_Localized: "\uC774\uC5B4\uC11C \uC2DC\uC791"
     m_Metadata:
       m_Items: []
   - m_Id: 34
@@ -265,6 +264,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 44563876011118595
     m_Localized: "\uACC4\uC18D \uBCF4\uAE30"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44581890496466944
+    m_Localized: "\uACC4\uC18D\uD558\uB824\uBA74 \uD074\uB9AD"
     m_Metadata:
       m_Items: []
   references:

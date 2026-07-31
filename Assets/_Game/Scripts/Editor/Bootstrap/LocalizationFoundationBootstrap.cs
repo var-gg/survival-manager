@@ -106,6 +106,7 @@ public static partial class LocalizationFoundationBootstrap
         // 테이블을 정한다(아래 IsKeyForTable). 기존 `ui.story.skip_confirm.title` 은 어느 테이블에도
         // 라우팅되지 않아 <b>한 번도 시드된 적이 없었고</b>, 런타임은 늘 영문 코드 폴백을 썼다.
         // 소비자(StoryPresentationRunner.LocalizeUiCommon)가 읽는 테이블이 UICommon 이므로 접두사를 맞춘다.
+        ["ui.common.story_continue_hint"] = ("계속하려면 클릭", "Tap to continue", false),
         ["ui.common.story_skip_scene"] = ("장면 건너뛰기", "Skip Scene", false),
         ["ui.common.story_skip_confirm_title"] = ("이 장면을 건너뛸까요?", "Skip this scene?", false),
         ["ui.common.story_skip_confirm_body"] = ("연출만 건너뜁니다. 내용은 그대로 진행됩니다.", "This only skips the presentation.", false),
@@ -118,10 +119,15 @@ public static partial class LocalizationFoundationBootstrap
         ["ui.common.pause"] = ("일시정지", "Pause", false),
         ["ui.common.resume"] = ("재개", "Resume", false),
         ["ui.common.continue"] = ("계속", "Continue", false),
-        ["ui.common.start_screen.title"] = ("시작", "Start", false),
-        ["ui.common.start_screen.status"] = ("이 빌드는 Town에서 준비하고 Expedition/Battle/Reward를 거치는 로컬 플레이 루프입니다.", "This build runs a local loop from Town through Expedition, Battle, and Reward.", false),
-        ["ui.common.start_screen.hint"] = ("로컬 루프를 시작해 Town, Atlas, Battle, Reward를 순서대로 확인합니다.", "Start the local loop and verify Town, Atlas, Battle, and Reward.", false),
-        ["ui.common.start_local_run"] = ("로컬 실행 시작", "Start Local Run", false),
+        // 게임의 <b>첫 화면</b>이다. 2026-07-31 이전까지 이 넷은 개발용 하네스 문구였다 —
+        // "이 빌드는 Town에서 준비하고 Expedition/Battle/Reward를 거치는 로컬 플레이 루프입니다",
+        // 버튼은 "로컬 실행 시작". 플레이어에게 빌드 구조를 설명하고 있었고, 한국어 문장 안에
+        // Town / Expedition / Battle / Reward / Atlas 가 영문 그대로 박혀 있었다.
+        // 화면 자체의 아트(로고·액자·배경)는 아직 없다 — 문구만 먼저 플레이어 것으로 되돌린다.
+        ["ui.common.start_screen.title"] = ("잿골 연대기", "Chronicles of Ashglen", false),
+        ["ui.common.start_screen.status"] = ("잿문이 닫힌 뒤로, 변방에 남은 것은 잿골 하나뿐이다.", "Since the Ashen Gate closed, Ashglen is all the frontier has left.", false),
+        ["ui.common.start_screen.hint"] = ("마을을 꾸리고, 분대를 짜고, 원정에 나선다.", "Tend the village, form your squad, and set out.", false),
+        ["ui.common.start_local_run"] = ("이어서 시작", "Begin", false),
         ["ui.common.on"] = ("ON", "ON", false),
         ["ui.common.off"] = ("OFF", "OFF", false),
         ["ui.common.empty"] = ("비어 있음", "Empty", false),

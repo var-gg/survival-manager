@@ -7,7 +7,7 @@
             <ui:VisualElement name="dialogue-overlay-center" class="dialogue-overlay-center">
                 <ui:Label name="dialogue-overlay-speaker" class="story-speaker-name dialogue-overlay-speaker" text="Speaker" />
                 <ui:Label name="dialogue-overlay-line" class="dialogue-overlay-line story-text--character" text="Dialogue line" />
-                <ui:Label name="dialogue-overlay-continue-hint" class="story-continue-hint dialogue-overlay-continue-hint" text="Tap to continue" />
+                <ui:Label name="dialogue-overlay-continue-hint" class="story-continue-hint dialogue-overlay-continue-hint" text="계속하려면 클릭" />
             </ui:VisualElement>
             <ui:VisualElement name="dialogue-overlay-right-slot" class="dialogue-overlay-slot">
                 <ui:Image name="dialogue-overlay-right-portrait" class="story-portrait dialogue-overlay-portrait" />

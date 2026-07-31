@@ -73,6 +73,7 @@ public sealed class DialogueSceneView : IDisposable
     {
         _nameplateLabel.text = state.SpeakerNameText;
         _lineLabel.text = state.LineText;
+        ApplyLabel(_continueHintLabel, state.ContinueHintText);
         ApplyLabel(_skipAllButton, state.SkipButtonText);
         ApplyLabel(_skipConfirmAcceptButton, state.SkipConfirmAcceptText);
         ApplyLabel(_skipConfirmCancelButton, state.SkipConfirmCancelText);
@@ -214,6 +215,14 @@ public sealed class DialogueSceneView : IDisposable
         if (!string.IsNullOrWhiteSpace(text))
         {
             button.text = text;
+        }
+    }
+
+    private static void ApplyLabel(Label label, string text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            label.text = text;
         }
     }
 }
