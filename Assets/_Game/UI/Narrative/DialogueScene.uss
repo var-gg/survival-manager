@@ -103,3 +103,101 @@
 .dialogue-scene-confirm-actions > Button {
     margin-left: 10px;
 }
+
+/* ==========================================================================
+   2026-07-31 컷씬 시안 정렬 — 기준은 `Screenshots/mockups/ui_ux_bible_dialogue_event_choice_v0.png`
+
+   전용 위트니스(UxBiblePlayModeWitnessTests.Cutscene)를 만들고 나서야 이 화면을 처음 봤다.
+   이 표면은 신규 프로필 첫 실행에서만 저절로 뜨는데 그 실행이 매번 도달 전에 죽어서
+   실화면을 본 적이 없었다. 보고 나니 사실상 디자인이 없었다 —
+   회색 1px 둥근 상자 하나에 작은 글자, 화자 이름칸도 액자도 없음.
+
+   시안이 정한 것: 금테 대사창 / 이름칸은 자기 액자를 가진 칩 / 계속 표시는 우하단 셰브런.
+   시안과 다르게 둔 것: 시안의 원형 초상 메달리온은 <b>이벤트 선택</b> 화면 것이다.
+   여기는 미연시식 대형 버스트 무대를 이미 쓰고 있고 그쪽이 대사 씬에 맞다 — 유지한다.
+   ========================================================================== */
+
+.dialogue-scene-dialoguebox {
+    left: 64px;
+    right: 64px;
+    bottom: 44px;
+    min-height: 208px;
+    padding-left: 34px;
+    padding-right: 34px;
+    padding-top: 26px;
+    padding-bottom: 24px;
+    background-color: rgba(6, 11, 26, 0.94);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* 스킵 버튼을 헤더 flex 에서 빼서 상자 우상단에 고정한다.
+   내레이션 줄에서는 이름칸이 숨겨지는데, space-between 헤더에 홀로 남으면
+   버튼이 <b>왼쪽으로 튀어</b> 이름칸 자리에 앉았다(실화면에서 그렇게 나왔다). */
+.dialogue-scene-dialoguebox-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 30px;
+    margin-bottom: 14px;
+}
+
+.dialogue-scene-skip-button {
+    position: absolute;
+    right: 18px;
+    top: 16px;
+    min-width: 118px;
+    min-height: 32px;
+    font-size: 12px;
+    color: var(--sm-gold-200);
+    background-color: rgba(14, 22, 44, 0.92);
+    border-width: 1px;
+    border-color: var(--sm-gold-300-a42);
+}
+
+/* 이름칸은 시안처럼 자기 액자를 가진 칩이다 — 대사와 같은 글줄에 흘려두지 않는다. */
+.dialogue-scene-nameplate {
+    align-self: flex-start;
+    min-height: 30px;
+    margin: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+    color: var(--sm-gold-100);
+    font-size: 18px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    background-color: rgba(14, 22, 44, 0.92);
+    border-width: 1px;
+    border-color: var(--sm-gold-300-a42);
+}
+
+.dialogue-scene-line {
+    margin: 0;
+    min-height: 84px;
+    color: var(--sm-vellum);
+    font-size: 21px;
+    line-height: 34px;
+    white-space: normal;
+}
+
+.dialogue-scene-continue-hint {
+    position: absolute;
+    right: 22px;
+    bottom: 14px;
+    margin-top: 0;
+    color: var(--sm-gold-200);
+    font-size: 12px;
+    letter-spacing: 1px;
+    -unity-text-align: middle-right;
+}

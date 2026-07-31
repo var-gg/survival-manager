@@ -45,7 +45,7 @@
 .story-card-title {
     color: var(--story-accent-color);
     font-size: 36px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     margin-bottom: 18px;
     -unity-text-align: middle-center;
 }

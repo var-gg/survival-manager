@@ -48,7 +48,7 @@
 .story-speaker-name {
     color: var(--story-accent-color);
     font-size: 15px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     letter-spacing: 0.6px;
     margin-bottom: var(--sm-s-2);
 }
@@ -63,7 +63,7 @@
     color: var(--story-narrator-color);
     font-size: 22px;
     white-space: normal;
-    unity-font-style: italic;
+    -unity-font-style: italic;
 }
 
 .story-speaker--hidden {
@@ -92,7 +92,7 @@
     margin-top: 10px;
     color: var(--story-muted-text-color);
     font-size: var(--sm-fs-s);
-    unity-font-style: italic;
+    -unity-font-style: italic;
 }
 
 .story-skip-button {

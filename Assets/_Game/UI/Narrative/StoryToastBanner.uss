@@ -26,7 +26,7 @@
 .story-toast-title {
     color: var(--story-accent-color);
     font-size: 17px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     margin-bottom: var(--sm-s-1);
 }
 
