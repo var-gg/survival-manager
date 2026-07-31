@@ -101,9 +101,7 @@ public sealed class BattleScreenView
     private readonly Button _unitDetailStatsTab;
     private readonly Button _unitDetailSkillsTab;
     private readonly Button _unitDetailEquipmentTab;
-    private readonly Button _unitDetailTacticTab;
     private readonly Button _unitDetailStatusTab;
-    private readonly Button _unitDetailRecordTab;
     private readonly VisualElement _selectedUnitAilmentTint;
     private readonly VisualElement _selectedUnitHpFill;
     private readonly VisualElement _selectedUnitShieldFill;
@@ -111,18 +109,12 @@ public sealed class BattleScreenView
     private readonly VisualElement _unitDetailStatsContent;
     private readonly VisualElement _unitDetailSkillsContent;
     private readonly VisualElement _unitDetailEquipmentContent;
-    private readonly VisualElement _unitDetailTacticContent;
     private readonly VisualElement _unitDetailStatusContent;
-    private readonly VisualElement _unitDetailRecordContent;
     private readonly VisualElement _overviewCoreStats;
     private readonly VisualElement _overviewFormationGrid;
-    private readonly VisualElement _overviewTacticDials;
     private readonly VisualElement _statsList;
-    private readonly Label _selectedUnitBodyLabel;
     private readonly VisualElement _skillPresentationSlots;
     private readonly VisualElement _equipmentSlots;
-    private readonly VisualElement _tacticDials;
-    private readonly VisualElement _tacticPriorityList;
     private readonly Label _statusPermanentTitle;
     private readonly VisualElement _statusPermanentGrid;
     private readonly Label _statusBattleScopedTitle;
@@ -207,9 +199,7 @@ public sealed class BattleScreenView
         _unitDetailStatsTab = Require<Button>(root, "UnitDetailStatsTab");
         _unitDetailSkillsTab = Require<Button>(root, "UnitDetailSkillsTab");
         _unitDetailEquipmentTab = Require<Button>(root, "UnitDetailEquipmentTab");
-        _unitDetailTacticTab = Require<Button>(root, "UnitDetailTacticTab");
         _unitDetailStatusTab = Require<Button>(root, "UnitDetailStatusTab");
-        _unitDetailRecordTab = Require<Button>(root, "UnitDetailRecordTab");
         _selectedUnitAilmentTint = Require<VisualElement>(root, "SelectedUnitAilmentTint");
         _selectedUnitHpFill = Require<VisualElement>(root, "SelectedUnitHpFill");
         _selectedUnitShieldFill = Require<VisualElement>(root, "SelectedUnitShieldFill");
@@ -217,18 +207,12 @@ public sealed class BattleScreenView
         _unitDetailStatsContent = Require<VisualElement>(root, "UnitDetailStatsContent");
         _unitDetailSkillsContent = Require<VisualElement>(root, "UnitDetailSkillsContent");
         _unitDetailEquipmentContent = Require<VisualElement>(root, "UnitDetailEquipmentContent");
-        _unitDetailTacticContent = Require<VisualElement>(root, "UnitDetailTacticContent");
         _unitDetailStatusContent = Require<VisualElement>(root, "UnitDetailStatusContent");
-        _unitDetailRecordContent = Require<VisualElement>(root, "UnitDetailRecordContent");
         _overviewCoreStats = Require<VisualElement>(root, "OverviewCoreStats");
         _overviewFormationGrid = Require<VisualElement>(root, "OverviewFormationGrid");
-        _overviewTacticDials = Require<VisualElement>(root, "OverviewTacticDials");
         _statsList = Require<VisualElement>(root, "StatsList");
-        _selectedUnitBodyLabel = Require<Label>(root, "SelectedUnitBodyLabel");
         _skillPresentationSlots = Require<VisualElement>(root, "SkillPresentationSlots");
         _equipmentSlots = Require<VisualElement>(root, "EquipmentSlots");
-        _tacticDials = Require<VisualElement>(root, "TacticDials");
-        _tacticPriorityList = Require<VisualElement>(root, "TacticPriorityList");
         _statusPermanentTitle = Require<Label>(root, "StatusPermanentTitle");
         _statusPermanentGrid = Require<VisualElement>(root, "StatusPermanentGrid");
         _statusBattleScopedTitle = Require<Label>(root, "StatusBattleScopedTitle");
@@ -277,18 +261,12 @@ public sealed class BattleScreenView
             _unitDetailStatsContent,
             _unitDetailSkillsContent,
             _unitDetailEquipmentContent,
-            _unitDetailTacticContent,
             _unitDetailStatusContent,
-            _unitDetailRecordContent,
             _overviewCoreStats,
             _overviewFormationGrid,
-            _overviewTacticDials,
             _statsList,
-            _selectedUnitBodyLabel,
             _skillPresentationSlots,
             _equipmentSlots,
-            _tacticDials,
-            _tacticPriorityList,
             _statusPermanentTitle,
             _statusPermanentGrid,
             _statusBattleScopedTitle,
@@ -321,9 +299,7 @@ public sealed class BattleScreenView
             _unitDetailStatsTab,
             _unitDetailSkillsTab,
             _unitDetailEquipmentTab,
-            _unitDetailTacticTab,
             _unitDetailStatusTab,
-            _unitDetailRecordTab,
             _toggleOverheadButton,
             _toggleDamageTextButton,
             _toggleTeamSummaryButton,
@@ -367,9 +343,7 @@ public sealed class BattleScreenView
         _unitDetailStatsTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Stats);
         _unitDetailSkillsTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Skills);
         _unitDetailEquipmentTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Equipment);
-        _unitDetailTacticTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Tactic);
         _unitDetailStatusTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Status);
-        _unitDetailRecordTab.clicked += () => actions.SelectUnitDetailTab(BattleUnitDetailTab.Record);
         _seekRequested = actions.HandleScrubberSeek;
 
         _progressTrack.RegisterCallback<PointerDownEvent>(HandlePointerDown);
@@ -473,16 +447,12 @@ public sealed class BattleScreenView
         _unitDetailStatsTab.text = selectedUnit.StatsTabLabel;
         _unitDetailSkillsTab.text = selectedUnit.SkillsTabLabel;
         _unitDetailEquipmentTab.text = selectedUnit.EquipmentTabLabel;
-        _unitDetailTacticTab.text = selectedUnit.TacticTabLabel;
         _unitDetailStatusTab.text = selectedUnit.StatusTabLabel;
-        _unitDetailRecordTab.text = selectedUnit.RecordTabLabel;
         UpdateDetailTab(_unitDetailOverviewTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Overview);
         UpdateDetailTab(_unitDetailStatsTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Stats);
         UpdateDetailTab(_unitDetailSkillsTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Skills);
         UpdateDetailTab(_unitDetailEquipmentTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Equipment);
-        UpdateDetailTab(_unitDetailTacticTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Tactic);
         UpdateDetailTab(_unitDetailStatusTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Status);
-        UpdateDetailTab(_unitDetailRecordTab, selectedUnit.ActiveTab == BattleUnitDetailTab.Record);
         RenderUnitDetail(selectedUnit);
 
         if (!_isDragging)
@@ -698,19 +668,13 @@ public sealed class BattleScreenView
         _unitDetailStatsContent.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Stats ? DisplayStyle.Flex : DisplayStyle.None;
         _unitDetailSkillsContent.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Skills ? DisplayStyle.Flex : DisplayStyle.None;
         _unitDetailEquipmentContent.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Equipment ? DisplayStyle.Flex : DisplayStyle.None;
-        _unitDetailTacticContent.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Tactic ? DisplayStyle.Flex : DisplayStyle.None;
         _unitDetailStatusContent.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Status ? DisplayStyle.Flex : DisplayStyle.None;
-        _unitDetailRecordContent.style.display = selectedUnit.ActiveTab == BattleUnitDetailTab.Record ? DisplayStyle.Flex : DisplayStyle.None;
 
         RenderOverview(selectedUnit);
         RenderStats(selectedUnit.StatLines);
         RenderSkillSlots(selectedUnit.SkillSlots);
         RenderEquipment(selectedUnit.EquipmentSlots);
-        RenderTactic(selectedUnit.TacticSummary);
         RenderStatusEffects(selectedUnit.StatusEffects);
-        _selectedUnitBodyLabel.text = string.IsNullOrWhiteSpace(selectedUnit.CombatRecordBody)
-            ? selectedUnit.Body
-            : selectedUnit.CombatRecordBody;
     }
 
     private bool IsNarrowDetailViewport()
@@ -727,7 +691,6 @@ public sealed class BattleScreenView
             .ToArray();
         RenderStatGrid(_overviewCoreStats, overviewLines, compact: true);
         RenderFormationGrid(_overviewFormationGrid, selectedUnit.PositionSummary);
-        RenderDialGrid(_overviewTacticDials, selectedUnit.TacticSummary?.Dials?.Where(IsOverviewDial).Take(4).ToArray());
     }
 
     private void RenderStats(IReadOnlyList<BattleStatLine>? statLines)
@@ -759,18 +722,6 @@ public sealed class BattleScreenView
         BattleStatLineCategory.Targeting => "표적",
         _ => "알 수 없음",
     };
-
-    private static bool IsOverviewDial(BattleTacticDial dial)
-    {
-        return dial.Label.IndexOf("Compact", StringComparison.OrdinalIgnoreCase) >= 0
-               || dial.Label.IndexOf("밀집", StringComparison.OrdinalIgnoreCase) >= 0
-               || dial.Label.IndexOf("Width", StringComparison.OrdinalIgnoreCase) >= 0
-               || dial.Label.IndexOf("폭", StringComparison.OrdinalIgnoreCase) >= 0
-               || dial.Label.IndexOf("Depth", StringComparison.OrdinalIgnoreCase) >= 0
-               || dial.Label.IndexOf("깊", StringComparison.OrdinalIgnoreCase) >= 0
-               || dial.Label.IndexOf("Flank", StringComparison.OrdinalIgnoreCase) >= 0
-               || dial.Label.IndexOf("측면", StringComparison.OrdinalIgnoreCase) >= 0;
-    }
 
     private void RenderStatGrid(VisualElement container, IReadOnlyList<BattleStatLine>? lines, bool compact)
     {
@@ -1043,37 +994,6 @@ public sealed class BattleScreenView
         }
     }
 
-    private void RenderTactic(BattleTacticSummary? summary)
-    {
-        _tacticDials.Clear();
-        _tacticPriorityList.Clear();
-        if (summary == null)
-        {
-            _tacticDials.Add(BuildEmptyLine());
-            return;
-        }
-
-        var header = new Label(summary.PresetName);
-        header.AddToClassList("sm-bs-tactic-header");
-        _tacticPriorityList.Add(header);
-        if (!string.IsNullOrWhiteSpace(summary.RoleInstruction))
-        {
-            _tacticPriorityList.Add(BuildTacticLine("Role", summary.RoleInstruction));
-        }
-
-        if (!string.IsNullOrWhiteSpace(summary.ArchetypeQuirk))
-        {
-            _tacticPriorityList.Add(BuildTacticLine("Archetype", summary.ArchetypeQuirk));
-        }
-
-        foreach (var rule in summary.PriorityRules ?? Array.Empty<string>())
-        {
-            _tacticPriorityList.Add(BuildTacticLine("*", rule));
-        }
-
-        RenderDialGrid(_tacticDials, summary.Dials);
-    }
-
     private static VisualElement BuildTacticLine(string label, string value)
     {
         var row = new VisualElement();
@@ -1178,39 +1098,6 @@ public sealed class BattleScreenView
         }
 
         return string.Join("\n", lines.Where(line => !string.IsNullOrWhiteSpace(line)));
-    }
-
-    private static void RenderDialGrid(VisualElement container, IReadOnlyList<BattleTacticDial>? dials)
-    {
-        container.Clear();
-        if (dials == null || dials.Count == 0)
-        {
-            container.Add(BuildEmptyLine());
-            return;
-        }
-
-        foreach (var dial in dials)
-        {
-            var row = new VisualElement();
-            row.AddToClassList("sm-bs-dial-row");
-            var header = new VisualElement();
-            header.AddToClassList("sm-bs-dial-header");
-            var label = new Label(dial.Label);
-            label.AddToClassList("sm-bs-dial-label");
-            var value = new Label(dial.ValueText);
-            value.AddToClassList("sm-bs-dial-value");
-            header.Add(label);
-            header.Add(value);
-            var track = new VisualElement();
-            track.AddToClassList("sm-bs-dial-track");
-            var fill = new VisualElement();
-            fill.AddToClassList("sm-bs-dial-fill");
-            fill.style.width = Length.Percent(Mathf.Clamp01(dial.NormalizedValue) * 100f);
-            track.Add(fill);
-            row.Add(header);
-            row.Add(track);
-            container.Add(row);
-        }
     }
 
     private static Label BuildEmptyLine()

@@ -1878,3 +1878,17 @@
 .battle-screen .sm-bs-ally-strip {
     background-color: rgba(6, 9, 18, 0.72);
 }
+
+/* 상단 바가 반투명이 된 뒤에도 폭이 1400px 라 여전히 빈 띠였다. 든 것은 상태 라벨 하나와
+   진행 바 하나뿐이므로 내용만큼만 차지하게 한다 — 크롬은 자기 내용보다 커지면 안 된다. */
+.battle-screen .sm-bs-topbar {
+    right: auto;
+    width: 560px;
+}
+
+/* 파티 카드 좌측 리브가 계열색 원색이라 화면에서 캐릭터보다 채도가 높았다.
+   소속을 알리는 표식이 주인공보다 튀면 안 된다 — 폭을 줄이고 채도를 낮춘다. */
+.battle-screen .sm-bs-roster-list--ally .sm-bs-roster-unit {
+    border-left-width: 2px;
+    border-left-color: rgba(122, 104, 168, 0.55);
+}

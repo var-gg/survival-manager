@@ -68,9 +68,7 @@
                     <ui:Button name="UnitDetailStatsTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                     <ui:Button name="UnitDetailSkillsTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                     <ui:Button name="UnitDetailEquipmentTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
-                    <ui:Button name="UnitDetailTacticTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                     <ui:Button name="UnitDetailStatusTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
-                    <ui:Button name="UnitDetailRecordTab" class="ui-button sm-bs-control-btn sm-bs-unit-detail-tab" />
                 </ui:VisualElement>
                 <ui:VisualElement name="UnitDetailContent" class="sm-bs-unit-detail-content">
                     <ui:VisualElement name="UnitDetailIllustrationPane" class="sm-bs-unit-illustration-pane">
@@ -89,7 +87,6 @@
                         <ui:VisualElement name="UnitDetailOverviewContent" class="sm-bs-unit-tab-content">
                             <ui:VisualElement name="OverviewCoreStats" class="sm-bs-stat-grid sm-bs-stat-grid--overview" />
                             <ui:VisualElement name="OverviewFormationGrid" class="sm-bs-anchor-grid" />
-                            <ui:VisualElement name="OverviewTacticDials" class="sm-bs-dial-grid sm-bs-dial-grid--overview" />
                         </ui:VisualElement>
                         <ui:VisualElement name="UnitDetailStatsContent" class="sm-bs-unit-tab-content">
                             <ui:VisualElement name="StatsList" class="sm-bs-stat-list" />
@@ -100,18 +97,11 @@
                         <ui:VisualElement name="UnitDetailEquipmentContent" class="sm-bs-unit-tab-content">
                             <ui:VisualElement name="EquipmentSlots" class="sm-bs-equipment-grid" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="UnitDetailTacticContent" class="sm-bs-unit-tab-content">
-                            <ui:VisualElement name="TacticDials" class="sm-bs-dial-grid" />
-                            <ui:VisualElement name="TacticPriorityList" class="sm-bs-tactic-list" />
-                        </ui:VisualElement>
                         <ui:VisualElement name="UnitDetailStatusContent" class="sm-bs-unit-tab-content">
                             <ui:Label name="StatusPermanentTitle" class="sm-bs-subtitle" />
                             <ui:VisualElement name="StatusPermanentGrid" class="sm-bs-status-chip-grid" />
                             <ui:Label name="StatusBattleScopedTitle" class="sm-bs-subtitle" />
                             <ui:VisualElement name="StatusBattleGrid" class="sm-bs-status-chip-grid" />
-                        </ui:VisualElement>
-                        <ui:VisualElement name="UnitDetailRecordContent" class="sm-bs-unit-tab-content">
-                            <ui:Label name="SelectedUnitBodyLabel" class="panel__text battle-shell__selected-body sm-bs-unit-detail-body" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
