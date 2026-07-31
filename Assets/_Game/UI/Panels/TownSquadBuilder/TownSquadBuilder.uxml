@@ -17,7 +17,8 @@
 
             <ui:VisualElement class="sm-sqb-modal__header">
                 <ui:VisualElement class="sm-sqb-modal__title-group">
-                    <ui:Label name="SquadBuilderEyebrowLabel" class="sm-eyebrow sm-sqb-modal__eyebrow" text="TACTICAL SETUP" />
+                    <!-- 영문 캡스 eyebrow 는 시안의 장식이었지만 한국어 화면에 영어가 하나 더 늘 뿐이다. -->
+                    <ui:Label name="SquadBuilderEyebrowLabel" class="sm-eyebrow sm-sqb-modal__eyebrow" text="출격 준비" />
                     <ui:Label name="SquadBuilderTitleLabel" class="sm-headline sm-sqb-modal__title" text="전술 편성" />
                 </ui:VisualElement>
                 <!-- wave-58 mockup chip strip: 배치 / 태세 / 위험 점수 (시안 갤러리 squad workshop v1) -->

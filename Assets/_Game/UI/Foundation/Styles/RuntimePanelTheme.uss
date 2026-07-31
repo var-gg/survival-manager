@@ -969,10 +969,13 @@
     top: 0;
     bottom: 0;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
-    -unity-slice-left: 48;
-    -unity-slice-right: 48;
-    -unity-slice-top: 48;
-    -unity-slice-bottom: 48;
+    /* 2026-07-31 알파 실측: 이 액자의 코너 장식은 66px 까지 뻗는다. 슬라이스가 48 이라
+       장식 18px 이 변/가운데 타일로 넘어가 요소 크기만큼 늘어나고 있었다.
+       공용 테마라 모든 모달이 같은 상태였다. */
+    -unity-slice-left: 68;
+    -unity-slice-right: 68;
+    -unity-slice-top: 68;
+    -unity-slice-bottom: 68;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.50);
     border-left-width: 1px;
     border-right-width: 1px;

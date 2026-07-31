@@ -240,14 +240,14 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
 
         return new PassiveBoardDetailViewState(
             SelectedNodeId: selected.NodeId,
-            KindLabel: selected.KindKey.ToUpperInvariant(),
+            KindLabel: FormatNodeKind(selected.KindKey),
             TitleText: GetPassiveNodeName(selected.NodeId),
             RuleSummary: selected.RuleSummary,
             Tags: selected.Tags,
             AvailableLabel: string.IsNullOrEmpty(toggleFailureLabel)
-                ? (selected.IsActive ? "ACTIVE" : "INACTIVE")
+                ? (selected.IsActive ? "활성" : "비활성")
                 : toggleFailureLabel,
-            ButtonLabel: selected.IsActive ? "DEACTIVATE" : "ACTIVATE",
+            ButtonLabel: selected.IsActive ? "해제" : "활성화",
             IconSprite: null);
     }
 
@@ -263,9 +263,11 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
                 case "keystone": tKeystone++; if (n.IsActive) aKeystone++; break;
             }
         }
-        var boardName = GetPassiveBoardName(boardId).ToUpperInvariant();
+        // ToUpperInvariant 는 시안의 영문 캡스 흉내였는데, 한국어 이름에는 아무 효과가 없고
+        // 라틴 폴백(vanguard)만 "VANGUARD" 로 키워 화면에 영어를 더 크게 띄웠다.
+        var boardName = GetPassiveBoardName(boardId);
         return new PassiveBoardFooterViewState(
-            $"{boardName} · SMALL {aSmall}/{tSmall} · NOTABLE {aNotable}/{tNotable} · KEYSTONE {aKeystone}/{tKeystone}");
+            $"{boardName} · 소형 {aSmall}/{tSmall} · 주요 {aNotable}/{tNotable} · 핵심 {aKeystone}/{tKeystone}");
     }
 
     private string LocalizeToggleFailure(OperationFailure? failure)
@@ -318,7 +320,36 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
 
     private string GetArchetypeName(string id) => _contentText?.GetArchetypeName(id) ?? "—";
 
-    private string GetPassiveBoardName(string id) => _contentText?.GetPassiveBoardName(id) ?? "—";
+    /// <summary>노드 등급 표시명. 이전에는 raw id 를 대문자로 올려 "KEYSTONE" 이 그대로 떴다.</summary>
+    private static string FormatNodeKind(string kindKey) => kindKey switch
+    {
+        "small" => "소형",
+        "notable" => "주요",
+        "keystone" => "핵심",
+        _ => "노드",
+    };
+
+    /// <summary>
+    /// 보드 이름. 콘텐츠에 한국어 이름이 저작돼 있지 않으면 해석기가 <c>LegacyDisplayName</c>
+    /// (= 역할군 raw id, "vanguard")을 그대로 낸다. 보드 id 는 역할군 태그와 같으므로
+    /// 이미 있는 한국어 역할군 사전으로 떨어뜨린다 — 화면에 영어 id 를 띄우지 않는다.
+    /// </summary>
+    private string GetPassiveBoardName(string id)
+    {
+        var name = _contentText?.GetPassiveBoardName(id);
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "—";
+        }
+
+        // 저작된 이름이 "vanguard 보드" 처럼 <b>영문 태그 + 한국어 접미사</b> 형태다.
+        // 앞 토큰만 사전으로 바꾼다(사전에 없으면 손대지 않는다).
+        var head = name.Split(' ')[0];
+        var family = SM.Content.Definitions.RoleGlossary.GetLocalizedRoleFamilyFallback(head, "ko");
+        return string.Equals(family, head, StringComparison.Ordinal)
+            ? name
+            : family + name[head.Length..];
+    }
 
     private string GetPassiveNodeName(string id) => _contentText?.GetPassiveNodeName(id) ?? "—";
 

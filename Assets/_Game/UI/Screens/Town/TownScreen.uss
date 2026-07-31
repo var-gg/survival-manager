@@ -248,10 +248,10 @@
     top: 18px;
     bottom: 88px;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_panel_frame_inner.png");
-    -unity-slice-left: 64;
-    -unity-slice-right: 64;
-    -unity-slice-top: 64;
-    -unity-slice-bottom: 64;
+    -unity-slice-left: 68;
+    -unity-slice-right: 68;
+    -unity-slice-top: 68;
+    -unity-slice-bottom: 68;
     -unity-slice-scale: 0.32;
     -unity-background-image-tint-color: rgba(255, 235, 200, 0.34);
     background-color: rgba(36, 26, 14, 0.62);
@@ -276,10 +276,10 @@
     -unity-text-align: middle-center;
     -unity-font-style: bold;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
-    -unity-slice-left: 93;
-    -unity-slice-right: 93;
-    -unity-slice-top: 84;
-    -unity-slice-bottom: 83;
+    -unity-slice-left: 94;
+    -unity-slice-right: 94;
+    -unity-slice-top: 85;
+    -unity-slice-bottom: 84;
     -unity-slice-scale: 0.13;
     background-color: rgba(11, 17, 39, 0.72);
 }
@@ -301,10 +301,10 @@
     padding-right: var(--sm-s-4);
     justify-content: center;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
-    -unity-slice-left: 91;
-    -unity-slice-right: 87;
-    -unity-slice-top: 81;
-    -unity-slice-bottom: 84;
+    -unity-slice-left: 92;
+    -unity-slice-right: 89;
+    -unity-slice-top: 82;
+    -unity-slice-bottom: 85;
     -unity-slice-scale: 0.12;
     background-color: rgba(10, 16, 37, 0.82);
 }
@@ -361,10 +361,10 @@
     align-items: center;
     justify-content: space-between;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
-    -unity-slice-left: 91;
-    -unity-slice-right: 87;
-    -unity-slice-top: 81;
-    -unity-slice-bottom: 84;
+    -unity-slice-left: 92;
+    -unity-slice-right: 89;
+    -unity-slice-top: 82;
+    -unity-slice-bottom: 85;
     -unity-slice-scale: 0.12;
     background-color: rgba(10, 16, 37, 0.86);
 }
@@ -377,10 +377,10 @@
     font-size: var(--sm-fs-xl);
     color: var(--sm-gold-100);
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
-    -unity-slice-left: 93;
-    -unity-slice-right: 93;
-    -unity-slice-top: 84;
-    -unity-slice-bottom: 83;
+    -unity-slice-left: 94;
+    -unity-slice-right: 94;
+    -unity-slice-top: 85;
+    -unity-slice-bottom: 84;
     -unity-slice-scale: 0.08;
     background-color: rgba(12, 18, 42, 0.78);
 }
@@ -642,10 +642,10 @@
        읽혔다. 값 계통이 어긋나면 그것만으로 조립품처럼 보인다. */
     background-color: rgba(10, 16, 37, 0.86);
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/Frame/ui_card_frame_normal.png");
-    -unity-slice-left: 91;
-    -unity-slice-right: 87;
-    -unity-slice-top: 81;
-    -unity-slice-bottom: 84;
+    -unity-slice-left: 92;
+    -unity-slice-right: 89;
+    -unity-slice-top: 82;
+    -unity-slice-bottom: 85;
     -unity-slice-scale: 0.11;
     /* USS 1px 금색 테두리를 뺐다 — 9-slice 액자 위에 또 하나의 테두리가 겹쳐서
        "얇은 금선 + 붉은 선" 이중으로 보였다. 형제 카드(utility-entry)에는 이 테두리가 없다. */
@@ -660,10 +660,10 @@
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/ArtBible/IconSlot/ui_icon_slot_frame.png");
-    -unity-slice-left: 93;
-    -unity-slice-right: 93;
-    -unity-slice-top: 84;
-    -unity-slice-bottom: 83;
+    -unity-slice-left: 94;
+    -unity-slice-right: 94;
+    -unity-slice-top: 85;
+    -unity-slice-bottom: 84;
     -unity-slice-scale: 0.07;
     background-color: rgba(13, 20, 45, 0.84);
 }

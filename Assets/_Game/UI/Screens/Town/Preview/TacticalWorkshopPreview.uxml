@@ -20,7 +20,7 @@
             <ui:VisualElement class="sm-frame-corner-cap sm-frame-corner-cap--br" picking-mode="Ignore" />
 
             <ui:VisualElement class="twp-header">
-                <ui:Label class="twp-header__eyebrow" text="TACTICAL WORKSHOP" />
+                <ui:Label class="twp-header__eyebrow" text="전술 공방" />
                 <ui:Label class="twp-header__title" text="전술 공방" />
                 <ui:Button class="twp-header__close" text="X" />
             </ui:VisualElement>

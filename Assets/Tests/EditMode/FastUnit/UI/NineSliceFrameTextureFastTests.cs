@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 namespace SM.Tests.EditMode.FastUnit.UI;
@@ -59,6 +60,86 @@ public sealed class NineSliceFrameTextureFastTests
                 "-unity-slice-* 값을 새 밴드 두께로 맞추세요. 그렇지 않으면 액자가 중앙 타일에 들어가 " +
                 "요소 폭만큼 늘어나고, 화면에는 얇은 빈 상자로 보입니다.");
         }
+    }
+
+    /// <summary>
+    /// 각 액자 텍스처의 <b>실측 코너 장식 범위</b>(텍스처 가장자리에서 잰 픽셀).
+    /// USS <c>-unity-slice-*</c> 가 이 값보다 작으면 장식 일부가 가운데/변 타일로 넘어가
+    /// 요소 크기만큼 늘어난다. 2026-07-31 알파 스캔으로 잰 값이다.
+    /// </summary>
+    private static readonly IReadOnlyDictionary<string, (int Left, int Top, int Right, int Bottom)> MinimumSlice =
+        new Dictionary<string, (int, int, int, int)>(StringComparer.Ordinal)
+        {
+            // 액자는 정사각이 아니다 — 변마다 따로 잰다(카드 액자는 좌 92 / 상 81 로 11px 차이).
+            ["ui_card_frame_normal"] = (92, 81, 89, 84),
+            ["ui_icon_slot_frame"] = (94, 85, 93, 83),
+            ["ui_card_frame_locked"] = (65, 65, 64, 64),
+            ["ui_card_frame_selected_base"] = (66, 65, 65, 65),
+            ["ui_panel_frame_inner"] = (67, 67, 66, 66),
+            ["ui_panel_frame_outer"] = (50, 50, 50, 50),
+        };
+
+    /// <summary>
+    /// USS 슬라이스가 실측 장식 범위를 덮는지 본다.
+    ///
+    /// 크기 계약만으로는 부족하다 — 같은 크기를 유지한 채 슬라이스 값만 줄여도 같은 결함이 난다.
+    /// 실제로 2026-07-31 에 공용 테마의 <c>ui_panel_frame_inner</c> 가 슬라이스 48 인데 장식은
+    /// 66px 까지 뻗어 있어 <b>18px 이 늘어나고 있었다.</b>
+    ///
+    /// 반대 방향(슬라이스가 필요보다 큰 경우)은 잡지 않는다. 남는 구간이 투명하면 잉크는
+    /// 제자리에 그려지고 최소 크기만 커진다(<c>ui_panel_frame_outer</c>: 장식 50 · 슬라이스 96).
+    /// </summary>
+    [Test]
+    public void NineSliceValues_CoverTheMeasuredCornerOrnament()
+    {
+        var offenders = new List<string>();
+        var checkedRules = 0;
+
+        foreach (var sheet in Directory.EnumerateFiles("Assets/_Game/UI", "*.uss", SearchOption.AllDirectories))
+        {
+            foreach (var block in File.ReadAllText(sheet).Split('}'))
+            {
+                var url = Regex.Match(block, @"background-image\s*:\s*url\(""project://database/([^""]+)""\)");
+                if (!url.Success)
+                {
+                    continue;
+                }
+
+                var texture = Path.GetFileNameWithoutExtension(url.Groups[1].Value);
+                if (!MinimumSlice.TryGetValue(texture, out var minimum))
+                {
+                    continue;
+                }
+
+                foreach (Match slice in Regex.Matches(block, @"-unity-slice-(left|right|top|bottom)\s*:\s*(\d+)"))
+                {
+                    checkedRules++;
+                    var edge = slice.Groups[1].Value;
+                    var required = edge switch
+                    {
+                        "left" => minimum.Left,
+                        "top" => minimum.Top,
+                        "right" => minimum.Right,
+                        _ => minimum.Bottom,
+                    };
+                    var value = int.Parse(slice.Groups[2].Value);
+                    if (value < required)
+                    {
+                        offenders.Add(
+                            $"{Path.GetFileName(sheet)} → {texture}: -unity-slice-{edge} {value} < 실측 장식 {required}");
+                    }
+                }
+            }
+        }
+
+        Assert.That(checkedRules, Is.GreaterThan(0), "9-slice 규칙을 하나도 못 찾았습니다 — USS 파싱이 깨졌습니다.");
+        Assert.That(
+            offenders,
+            Is.Empty,
+            "9-slice 슬라이스가 액자 장식보다 작습니다. 넘어간 장식은 가운데/변 타일에 들어가 요소 크기만큼 " +
+            "늘어나고, 화면에서는 '늘어난 액자' 또는 '얇은 빈 상자'로 보입니다. 슬라이스를 실측값 이상으로 " +
+            "올리거나 텍스처를 다시 트림하세요. 실측은 알파 스캔으로 합니다(가장자리에서 잉크 끝까지).\n  " +
+            string.Join("\n  ", offenders));
     }
 
     /// <summary>PNG IHDR 에서 폭/높이만 읽는다 — 에디터 API 없이 FastUnit 레인에서 돈다.</summary>

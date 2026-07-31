@@ -354,7 +354,7 @@ public sealed class SquadBuilderPresenter : ISquadBuilderActions
     {
         var posture = LocalizePosture(session.SelectedTeamPosture);
         var coverageLine = BuildCoverageLine(anchorByHeroId, heroById);
-        var disclaimer = "확정 전투 예측이 아니라 현재 편성 read model의 대응 힌트입니다.";
+        var disclaimer = "확정된 전투 예측이 아니라, 지금 편성으로 읽은 대응 힌트입니다.";
         return string.IsNullOrEmpty(coverageLine)
             ? $"{posture} 기준. {disclaimer}"
             : $"{posture} 기준 · {coverageLine}\n{disclaimer}";
@@ -566,15 +566,17 @@ public sealed class SquadBuilderPresenter : ISquadBuilderActions
 
     private static string BuildBiasLabel(RoleInstructionDefinition? roleInstruction)
     {
+        // 세 성향(ProtectCarryBias / BacklinePressureBias / RetreatBias) 중 가장 큰 것을 이름표로 쓴다.
+        // 코드 필드명은 bias 지만 화면에는 "성향" 으로 적는다 — 나머지 둘은 이미 그렇게 돼 있었다.
         if (roleInstruction == null)
         {
-            return "기본 bias";
+            return "기본 성향";
         }
 
         var protect = Mathf.Clamp01(roleInstruction.ProtectCarryBias);
         var pressure = Mathf.Clamp01(roleInstruction.BacklinePressureBias);
         var retreat = Mathf.Clamp01(roleInstruction.RetreatBias);
-        if (protect >= pressure && protect >= retreat) return "보호 bias";
+        if (protect >= pressure && protect >= retreat) return "보호 성향";
         if (pressure >= retreat) return "후열 압박";
         return "후퇴 성향";
     }
