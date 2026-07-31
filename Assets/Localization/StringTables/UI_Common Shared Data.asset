@@ -239,6 +239,26 @@ MonoBehaviour:
     m_Key: ui.common.description_unavailable
     m_Metadata:
       m_Items: []
+  - m_Id: 44563875977564160
+    m_Key: ui.common.story_skip_scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118592
+    m_Key: ui.common.story_skip_confirm_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118593
+    m_Key: ui.common.story_skip_confirm_body
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118594
+    m_Key: ui.common.story_skip_confirm_accept
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118595
+    m_Key: ui.common.story_skip_confirm_cancel
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

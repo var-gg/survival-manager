@@ -244,6 +244,26 @@ MonoBehaviour:
     m_Localized: Description unavailable
     m_Metadata:
       m_Items: []
+  - m_Id: 44563875977564160
+    m_Localized: Skip Scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118592
+    m_Localized: Skip this scene?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118593
+    m_Localized: This only skips the presentation.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118594
+    m_Localized: Skip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44563876011118595
+    m_Localized: Keep Watching
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

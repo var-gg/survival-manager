@@ -13,7 +13,7 @@
                 <ui:Image name="dialogue-overlay-right-portrait" class="story-portrait dialogue-overlay-portrait" />
             </ui:VisualElement>
             <ui:VisualElement name="dialogue-overlay-actions" class="dialogue-overlay-actions">
-                <ui:Button name="dialogue-overlay-skip-all-button" class="ui-button story-skip-button" text="Skip" />
+                <ui:Button name="dialogue-overlay-skip-all-button" class="ui-button story-skip-button" text="건너뛰기" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

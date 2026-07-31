@@ -99,6 +99,18 @@ public static partial class LocalizationFoundationBootstrap
         ["ui.common.save"] = ("저장", "Save", false),
         ["ui.common.load"] = ("불러오기", "Load", false),
         ["ui.common.return_town"] = ("마을 복귀", "Return Town", false),
+        // 컷씬 스킵 크롬. 확인창 제목·본문만 번역되고 정작 누르는 버튼 셋은
+        // UXML 에 "Skip Scene" / "Skip" / "Cancel" 로 박혀 있었다.
+        //
+        // 키가 ui.story.* 가 아니라 ui.common.story_* 인 이유: 이 시더는 `ui.<table>.` 접두사로만
+        // 테이블을 정한다(아래 IsKeyForTable). 기존 `ui.story.skip_confirm.title` 은 어느 테이블에도
+        // 라우팅되지 않아 <b>한 번도 시드된 적이 없었고</b>, 런타임은 늘 영문 코드 폴백을 썼다.
+        // 소비자(StoryPresentationRunner.LocalizeUiCommon)가 읽는 테이블이 UICommon 이므로 접두사를 맞춘다.
+        ["ui.common.story_skip_scene"] = ("장면 건너뛰기", "Skip Scene", false),
+        ["ui.common.story_skip_confirm_title"] = ("이 장면을 건너뛸까요?", "Skip this scene?", false),
+        ["ui.common.story_skip_confirm_body"] = ("연출만 건너뜁니다. 내용은 그대로 진행됩니다.", "This only skips the presentation.", false),
+        ["ui.common.story_skip_confirm_accept"] = ("건너뛰기", "Skip", false),
+        ["ui.common.story_skip_confirm_cancel"] = ("계속 보기", "Keep Watching", false),
         ["ui.common.return_start"] = ("시작으로 돌아가기", "Return to Start", false),
         ["ui.common.expand"] = ("펼치기", "Expand", false),
         ["ui.common.collapse"] = ("접기", "Collapse", false),
@@ -479,11 +491,13 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.town.tooltip.expedition_first_run"] = ("동료가 준비됐습니다. 첫 원정을 시작해 전투 → 보상 → 성장 루프를 경험하세요.", "Your companions are ready. Start your first expedition to experience the battle, reward, and growth loop.", false),
             ["ui.town.tooltip.expedition_resume"] = ("현재 선택된 authored 경로에서 원정을 재개합니다.", "Resume the authored expedition from the currently selected route.", false),
             ["ui.town.tooltip.expedition_reward"] = ("이전 노드 정산을 위해 Reward를 먼저 엽니다.", "Open Reward to settle the previous node before continuing.", false),
-            ["ui.town.eyebrow"] = ("ASHGLEN — 잿골", "ASHGLEN — Ashglen", false),
+            // 제목이 "변방 잿골 마을"이라 eyebrow 까지 지명을 넣으면 "잿골"이 두 번 찍힌다.
+            // 게다가 ASHGLEN 은 로마자 표기 id 이지 플레이어에게 보여줄 이름이 아니다.
+            ["ui.town.eyebrow"] = ("거점", "OUTPOST", false),
             ["ui.town.welcome.empty"] = ("잿골은 늘 그대로일세. 한 사람도 함께가 아닌가.", "Ashglen still stands on its own. Not a single soul here with us.", false),
             ["ui.town.welcome.greeting_default"] = ("잿골은 늘 그대로일세. 잠시 숨을 돌리시지요.", "Ashglen still stands on its own. Catch your breath for a moment.", false),
             // Phase 7 V3 hub column / utility entry / cluster labels (UXML literal 분리)
-            ["ui.town.ledger.title"] = ("LEDGER · 마을 비망록", "LEDGER · Town Records", false),
+            ["ui.town.ledger.title"] = ("마을 비망록", "TOWN RECORDS", false),
             ["ui.town.entry.roster"] = ("◈  동료 명부", "◈  Roster", false),
             ["ui.town.entry.compendium"] = ("도감", "Compendium", false),
             ["ui.town.entry.squad_builder"] = ("❖  전열 편성", "❖  Squad Builder", false),

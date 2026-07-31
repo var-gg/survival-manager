@@ -73,6 +73,9 @@ public sealed class DialogueSceneView : IDisposable
     {
         _nameplateLabel.text = state.SpeakerNameText;
         _lineLabel.text = state.LineText;
+        ApplyLabel(_skipAllButton, state.SkipButtonText);
+        ApplyLabel(_skipConfirmAcceptButton, state.SkipConfirmAcceptText);
+        ApplyLabel(_skipConfirmCancelButton, state.SkipConfirmCancelText);
         _skipConfirmTitleLabel.text = state.SkipConfirmTitleText;
         _skipConfirmBodyLabel.text = state.SkipConfirmBodyText;
 
@@ -203,5 +206,14 @@ public sealed class DialogueSceneView : IDisposable
     private static T Require<T>(VisualElement root, string name) where T : VisualElement
     {
         return root.Q<T>(name) ?? throw new InvalidOperationException($"Missing UITK element '{name}'.");
+    }
+
+    /// <summary>빈 값이면 UXML 기본 문구를 지우지 않는다 — 번역 누락이 <b>빈 버튼</b>이 되면 더 나쁘다.</summary>
+    private static void ApplyLabel(Button button, string text)
+    {
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            button.text = text;
+        }
     }
 }

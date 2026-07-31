@@ -228,6 +228,9 @@ public sealed class DialogueScenePresenter : IDisposable
             ShowSkipConfirmation: IsSkipConfirmationOpen,
             _model.SkipConfirmTitleText,
             _model.SkipConfirmBodyText,
+            _model.SkipButtonText,
+            _model.SkipConfirmAcceptText,
+            _model.SkipConfirmCancelText,
             IsTyping,
             ShowContinueHint: !IsTyping);
 

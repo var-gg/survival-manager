@@ -187,9 +187,15 @@
     margin-bottom: 14px;
 }
 
+/* NPC 카드의 초상 창이 300x64 였다 — 가로 4.7:1 레터박스라 어떤 얼굴도 들어가지 않는다.
+   실제로 네 장이 각각 이마 / 털깃 / 어깨 / 모자만 보여줬다(scale-and-crop 은 가운데를 잡는데,
+   원화마다 얼굴 높이가 달라 잘리는 부위가 제각각이었다).
+   창을 사람 얼굴 비율(112x100)로 되돌리고 카드를 그만큼 키운다. 화면 아래 동료 스트립이
+   같은 비율로 이미 잘 보이고 있었다 — 그게 이 값의 근거다. */
 .town-hub__npc-strip .sm-face-card--lg {
     width: 300px;
-    height: 112px;
+    height: 146px;
+    align-items: center;
     background-color: rgba(13, 20, 45, 0.88);
     border-left-width: 2px;
     border-right-width: 2px;
@@ -202,8 +208,10 @@
 }
 
 .town-hub__npc-strip .sm-face-card__portrait {
-    height: 64px;
+    width: 112px;
+    height: 100px;
     flex-grow: 0;
+    align-self: center;
     background-color: rgba(24, 31, 63, 0.66);
 }
 
@@ -639,14 +647,8 @@
     -unity-slice-top: 81;
     -unity-slice-bottom: 84;
     -unity-slice-scale: 0.11;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-    border-left-color: rgba(230, 183, 81, 0.32);
-    border-right-color: rgba(230, 183, 81, 0.32);
-    border-top-color: rgba(245, 214, 138, 0.36);
-    border-bottom-color: rgba(138, 100, 24, 0.50);
+    /* USS 1px 금색 테두리를 뺐다 — 9-slice 액자 위에 또 하나의 테두리가 겹쳐서
+       "얇은 금선 + 붉은 선" 이중으로 보였다. 형제 카드(utility-entry)에는 이 테두리가 없다. */
 }
 
 .town-hub__feature-service-icon {

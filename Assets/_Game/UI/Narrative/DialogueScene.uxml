@@ -12,18 +12,18 @@
         <ui:VisualElement name="dialogue-scene-dialoguebox" class="story-panel dialogue-scene-dialoguebox">
             <ui:VisualElement name="dialogue-scene-dialoguebox-header" class="dialogue-scene-dialoguebox-header">
                 <ui:Label name="dialogue-scene-nameplate" class="story-speaker-name dialogue-scene-nameplate" text="Speaker" />
-                <ui:Button name="dialogue-scene-skip-all-button" class="ui-button story-skip-button dialogue-scene-skip-button" text="Skip Scene" />
+                <ui:Button name="dialogue-scene-skip-all-button" class="ui-button story-skip-button dialogue-scene-skip-button" text="장면 건너뛰기" />
             </ui:VisualElement>
             <ui:Label name="dialogue-scene-line" class="dialogue-scene-line story-text--character" text="Dialogue line" />
             <ui:Label name="dialogue-scene-continue-hint" class="story-continue-hint dialogue-scene-continue-hint" text="Tap to continue" />
         </ui:VisualElement>
         <ui:VisualElement name="dialogue-scene-skip-confirm-overlay" class="story-confirm-overlay dialogue-scene-skip-confirm-overlay">
             <ui:VisualElement name="dialogue-scene-skip-confirm-panel" class="story-panel dialogue-scene-skip-confirm-panel">
-                <ui:Label name="dialogue-scene-skip-confirm-title" class="dialogue-scene-confirm-title" text="Skip this scene?" />
-                <ui:Label name="dialogue-scene-skip-confirm-body" class="dialogue-scene-confirm-body" text="This only skips presentation." />
+                <ui:Label name="dialogue-scene-skip-confirm-title" class="dialogue-scene-confirm-title" text="이 장면을 건너뛸까요?" />
+                <ui:Label name="dialogue-scene-skip-confirm-body" class="dialogue-scene-confirm-body" text="연출만 건너뜁니다. 내용은 그대로 진행됩니다." />
                 <ui:VisualElement name="dialogue-scene-skip-confirm-actions" class="dialogue-scene-confirm-actions">
-                    <ui:Button name="dialogue-scene-skip-confirm-accept-button" class="ui-button story-confirm-button--primary" text="Skip" />
-                    <ui:Button name="dialogue-scene-skip-confirm-cancel-button" class="ui-button story-confirm-button--secondary" text="Cancel" />
+                    <ui:Button name="dialogue-scene-skip-confirm-accept-button" class="ui-button story-confirm-button--primary" text="건너뛰기" />
+                    <ui:Button name="dialogue-scene-skip-confirm-cancel-button" class="ui-button story-confirm-button--secondary" text="계속 보기" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

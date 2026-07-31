@@ -1015,7 +1015,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17539472987328512
-    m_Localized: "ASHGLEN \u2014 Ashglen"
+    m_Localized: OUTPOST
     m_Metadata:
       m_Items: []
   - m_Id: 17539473020882944
@@ -1027,7 +1027,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 17541022656827392
-    m_Localized: "LEDGER \xB7 Town Records"
+    m_Localized: TOWN RECORDS
     m_Metadata:
       m_Items: []
   - m_Id: 17541022661021696
