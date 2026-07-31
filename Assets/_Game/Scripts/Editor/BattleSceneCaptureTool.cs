@@ -141,6 +141,20 @@ public static class BattleSceneCaptureTool
         BattlePlayAutoCaptureSession.Start(characterLightingAb: true, openUnitDetail: true);
     }
 
+    /// <summary>
+    /// 전투 <b>종료</b> 화면을 찍는다 — 결과 표시, 등장하는 컨트롤바, 시체가 깔린 판.
+    ///
+    /// 이 화면은 사람이 끝까지 지켜봐야만 볼 수 있어서 자동 캡쳐에 한 번도 안 걸렸다.
+    /// "몇 초 기다린다" 식으로 잡으면 밸런스가 바뀌어 전투 길이가 달라질 때마다 깨지므로,
+    /// 재생 타임라인을 sim 종료까지 밀어서 잡는다 — 전투가 몇 스텝이든 "끝"은 항상 정의된다.
+    /// 중반 게이트를 먼저 통과시키므로 셋업 실패와 종료 화면 결함이 구분된다.
+    /// </summary>
+    [MenuItem("SM/Internal/Capture/Battle Play Auto (Battle End)")]
+    public static void StartPlayAutoCaptureBattleEnd()
+    {
+        BattlePlayAutoCaptureSession.Start(characterLightingAb: true, openUnitDetail: false, seekBattleEnd: true);
+    }
+
     /// <summary>마지막 캡쳐의 평균 휘도. 캡쳐가 내용을 담았는지 판정하는 유일한 근거다.</summary>
     public static float LastCaptureLuminance { get; private set; }
 

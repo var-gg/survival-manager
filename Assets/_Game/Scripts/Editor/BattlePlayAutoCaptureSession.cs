@@ -30,6 +30,13 @@ internal static class BattlePlayAutoCaptureSession
     /// 평소 캡쳐 경로로는 <b>한 번도 볼 수 없다</b> — 눈으로 못 본 화면은 고칠 수도 없다.
     /// </summary>
     private const string OpenUnitDetailKey = "SM.BattleCapture.OpenUnitDetail";
+
+    /// <summary>
+    /// 켜면 중반 게이트를 통과한 뒤 재생을 <b>전투 종료까지</b> 밀고 찍는다.
+    /// 중반 게이트를 먼저 통과시키는 게 중요하다 — "전투가 실제로 돌고 액터가 전부 렌더링된다"를
+    /// 확인한 다음에 끝으로 보내야, 끝 화면이 비어 있을 때 그게 결함인지 셋업 실패인지 구분된다.
+    /// </summary>
+    private const string SeekBattleEndKey = "SM.BattleCapture.SeekBattleEnd";
     private const string CaptureStepIndexKey = "SM.BattleCapture.StepIndex";
     private const string CaptureAliveUnitsKey = "SM.BattleCapture.AliveUnits";
     private const string CaptureTotalUnitsKey = "SM.BattleCapture.TotalUnits";
@@ -67,8 +74,12 @@ internal static class BattlePlayAutoCaptureSession
     internal static void Start(bool characterLightingAb) => Start(characterLightingAb, openUnitDetail: false);
 
     internal static void Start(bool characterLightingAb, bool openUnitDetail)
+        => Start(characterLightingAb, openUnitDetail, seekBattleEnd: false);
+
+    internal static void Start(bool characterLightingAb, bool openUnitDetail, bool seekBattleEnd)
     {
         SessionState.SetBool(OpenUnitDetailKey, openUnitDetail);
+        SessionState.SetBool(SeekBattleEndKey, seekBattleEnd);
         if (EditorApplication.isPlayingOrWillChangePlaymode)
         {
             if (characterLightingAb)
@@ -218,9 +229,17 @@ internal static class BattlePlayAutoCaptureSession
         SessionState.SetInt(PlayAutoFrameKey, frame);
 
         var readiness = BattleCaptureReadinessProbe.Observe();
-        if (!readiness.IsReady)
+
+        // 종료 화면 모드는 <b>중반 창을 요구하지 않는다.</b> 중반 창(생존 75% 등)은 레이스라
+        // 관측이 늦으면 전투가 창을 지나쳐 캡쳐가 통째로 실패한다 — 실제로 첫 시도가
+        // stepIndex=185 · aliveUnits=2/8 로 그렇게 죽었다. 어차피 끝까지 밀 것이므로
+        // "씬이 제대로 섰는가"만 확인하면 되고, 그러면 전투 길이·밸런스와 무관하게 항상 성립한다.
+        var seekBattleEnd = SessionState.GetBool(SeekBattleEndKey, false);
+        var gatePassed = seekBattleEnd ? readiness.IsSceneBuilt : readiness.IsReady;
+
+        if (!gatePassed)
         {
-            if (readiness.CaptureWindowMissed)
+            if (!seekBattleEnd && readiness.CaptureWindowMissed)
             {
                 FailPlayAutoCapture(
                     "the mid-battle capture window was missed because fewer than 75% of the units remain alive. " +
@@ -310,6 +329,16 @@ internal static class BattlePlayAutoCaptureSession
         // 수렴하는 중이고, 여기서 붙잡는 시점은 전투 1.6 초(step 16)다. 정지 전까지 흐른 실시간이
         // 에디터 부하에 따라 달라지므로 수렴 정도가 회차마다 달랐고, 실제로 전투가 좌하단 구석에서
         // UI 뒤로 밀린 캡쳐가 나왔다. 시각 A/B 를 하려면 카메라가 통제 변수여야 한다.
+        // 끝으로 보내는 건 카메라 스냅보다 <b>먼저</b> 해야 한다. 유닛이 이동·사망하므로
+        // 종료 시점의 보드 프레임은 중반 프레임과 다르다. 순서가 뒤집히면 카메라가 옛 위치를 잡는다.
+        if (SessionState.GetBool(SeekBattleEndKey, false) && !screen.SeekToBattleEnd())
+        {
+            FailPlayAutoCapture(
+                "전투 종료까지 밀었는데 타임라인이 종료 상태가 아니다. "
+                + $"최대 스텝 안에 승부가 안 났을 수 있다. {readiness.State}");
+            return;
+        }
+
         screen.SnapCameraToSettledBoardFrame();
 
         if (SessionState.GetBool(OpenUnitDetailKey, false))
@@ -317,6 +346,8 @@ internal static class BattlePlayAutoCaptureSession
             screen.SelectUnitDetailTab(BattleUnitDetailTab.Overview);
         }
 
+        // readiness 는 seek 이후에 다시 관측한다 — CaptureStateRemainedStable 이 이 값과
+        // 대조하므로, seek 전 값을 기록하면 A/B 준비 중에 "재생이 안 멈췄다"고 오진한다.
         var pausedReadiness = BattleCaptureReadinessProbe.Observe();
         SessionState.SetBool(PlaybackPausedKey, true);
         SessionState.SetInt(CaptureStepIndexKey, pausedReadiness.StepIndex);

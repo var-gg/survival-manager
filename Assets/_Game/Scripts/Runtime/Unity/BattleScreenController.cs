@@ -979,6 +979,36 @@ public sealed class BattleScreenController : MonoBehaviour
     /// 플레이어가 2~3 초 뒤 실제로 보는 화면이 바로 이 프레임이므로 대표성도 이쪽이 낫다.
     /// 디렉터 강조 샷은 일부러 무시한다 — 여기서 원하는 건 연출 컷이 아니라 안정된 보드 뷰다.
     /// </summary>
+    /// <summary>
+    /// 재생 타임라인을 <b>전투 종료 시점까지</b> 밀어 놓는다. 종료 상태에 도달했으면 true.
+    ///
+    /// <b>왜 이게 필요한가.</b> 전투 종료 화면(결과 표시 · 컨트롤바 등장 · 시체가 깔린 판)은
+    /// 사람이 끝까지 지켜봐야만 볼 수 있어서 자동 캡쳐에 한 번도 안 걸렸다. 그래서 이 화면만
+    /// 시각 검토 사각지대로 남았다.
+    ///
+    /// <b>왜 이 방식이 패치에 안 견디는 게 아니라 견디는가.</b> "몇 초 기다린다"거나 "step 16 에서
+    /// 찍는다" 같은 방식은 밸런스가 바뀌어 전투 길이가 달라지면 그대로 깨진다. 반면 여기서 쓰는
+    /// <see cref="BattleTimelineController.SeekToStep"/> 은 <c>while (!IsFinished) Step()</c> 로
+    /// sim 을 끝까지 돌린 뒤 <b>마지막으로 기록된 스텝</b>에 안착한다. 전투가 20 스텝이든 250 스텝이든
+    /// "끝"은 항상 정의되고, 벽시계·프레임률·재생 배속에 전혀 의존하지 않는다.
+    ///
+    /// 스크러버(<see cref="HandleScrubberSeek"/>)를 쓰지 않고 별도 메서드로 둔 이유도 같다 —
+    /// 스크러버는 IsSmokeLane 과 재생 정책 게이트에 묶여 있어서, 그 정책이 바뀌면 캡쳐가 조용히 멈춘다.
+    /// </summary>
+    public bool SeekToBattleEnd()
+    {
+        if (_timeline == null)
+        {
+            return false;
+        }
+
+        // SeekToStep 은 목표 인덱스까지 가되 sim 이 끝나면 거기서 멈추고 MarkFinished 한다.
+        // 그래서 상한을 넘겨 줘도 초과 전진이 아니라 "끝까지"가 된다.
+        _timeline.SeekToStep(MaxBattleSteps);
+        RefreshAfterSeek();
+        return _timeline.IsFinished;
+    }
+
     public void SnapCameraToSettledBoardFrame()
     {
         if (cameraController == null || LatestStep is not { } step)

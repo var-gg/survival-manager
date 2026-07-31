@@ -74,9 +74,22 @@ internal static class BattleCaptureReadinessProbe
                       && activeWrapperCount >= expectedActorCount
                       && wrappersWithCharacterRenderer >= expectedActorCount;
 
+        // 씬이 지어졌는가만 본다 — 전투가 시작됐고 기대한 액터가 전부 렌더러를 들고 서 있는가.
+        //
+        // 중반 창 조건(생존 75%, 부상자 존재, 양 팀 생존)은 <b>레이스</b>다. 관측이 늦으면
+        // 전투가 창을 지나쳐 버리고 캡쳐 전체가 실패한다. 실제로 종료 캡쳐 첫 시도가
+        // stepIndex=185 · aliveUnits=2/8 로 그렇게 죽었다.
+        // 전투 종료 화면을 찍는 모드는 "지금이 중반인가"를 물을 이유가 없다 —
+        // 어차피 끝까지 밀 것이므로, 씬이 제대로 섰는지만 확인하면 된다.
+        var isSceneBuilt = stepIndex > 0
+                           && expectedActorCount > 0
+                           && activeWrapperCount >= expectedActorCount
+                           && wrappersWithCharacterRenderer >= expectedActorCount;
+
         return new BattleCaptureReadiness(
             isReady,
             captureWindowMissed,
+            isSceneBuilt,
             stepIndex,
             aliveUnits,
             expectedActorCount,
@@ -103,6 +116,7 @@ internal readonly struct BattleCaptureReadiness
     internal BattleCaptureReadiness(
         bool isReady,
         bool captureWindowMissed,
+        bool isSceneBuilt,
         int stepIndex,
         int aliveUnits,
         int totalUnits,
@@ -110,6 +124,7 @@ internal readonly struct BattleCaptureReadiness
     {
         IsReady = isReady;
         CaptureWindowMissed = captureWindowMissed;
+        IsSceneBuilt = isSceneBuilt;
         StepIndex = stepIndex;
         AliveUnits = aliveUnits;
         TotalUnits = totalUnits;
@@ -118,6 +133,7 @@ internal readonly struct BattleCaptureReadiness
 
     internal bool IsReady { get; }
     internal bool CaptureWindowMissed { get; }
+    internal bool IsSceneBuilt { get; }
     internal int StepIndex { get; }
     internal int AliveUnits { get; }
     internal int TotalUnits { get; }
