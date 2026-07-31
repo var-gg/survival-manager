@@ -234,12 +234,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 47
-    m_Localized: "Echo \uD68C\uC218 \uBCF4\uC0C1"
+    m_Localized: "\uC794\uD5A5 \uD68C\uC218 \uBCF4\uC0C1"
     m_Metadata:
       m_Items: []
   - m_Id: 48
-    m_Localized: "\uC804\uD22C \uD6C4 Echo\uB97C \uD68C\uC218\uD574 \uBAA8\uC9D1
-      RNG\uB97C \uBCF5\uAD6C\uD558\uB294 \uACBD\uB85C\uC785\uB2C8\uB2E4."
+    m_Localized: "\uC804\uD22C \uB4A4 \uC794\uD5A5\uC744 \uAC70\uB46C \uC601\uC785
+      \uD6C4\uBCF4\uB97C \uB2E4\uC2DC \uBF51\uC744 \uC5EC\uC720\uB97C \uB9CC\uB4ED\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 49
@@ -372,8 +372,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 77
-    m_Localized: "\uC804\uD22C \uC5C6\uC774 \uC815\uC0B0 \uB178\uB4DC\uB97C \uCC98\uB9AC\uD558\uACE0
-      Reward\uB85C \uC774\uB3D9\uD569\uB2C8\uB2E4."
+    m_Localized: "\uC804\uD22C \uC5C6\uC774 \uC774 \uC9C0\uC810\uC744 \uCC98\uB9AC\uD558\uACE0
+      \uC815\uC0B0 \uD654\uBA74\uC73C\uB85C \uB118\uC5B4\uAC11\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 78

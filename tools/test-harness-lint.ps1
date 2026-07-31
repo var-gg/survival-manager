@@ -570,6 +570,44 @@ else {
 }
 
 # ────────────────────────────────────────────────
+# Check 14: UITK Unity-specific property names carry the leading dash
+#
+# UITK 전용 속성은 전부 `-unity-` 로 시작한다(`-unity-font-style`, `-unity-text-align`, …).
+# 앞의 `-` 를 빠뜨리면 UITK 는 그 선언을 <b>조용히 버린다</b> — 에러도, 워닝도, 인스펙터
+# 경고도 없다. 저작자는 굵게 썼다고 믿고, 화면은 한 번도 굵어지지 않는다.
+#
+# 2026-07-31 에 두 번 적발됐다. 먼저 내러티브 USS 3파일 5건(화자 이름 볼드·내레이션
+# 이탤릭·토스트 강조), 같은 날 각인도 14건 + 공용 테마 4건. 공용 테마 쪽은 <b>모든 화면</b>의
+# 굵기가 죽어 있었다는 뜻이다. 사람 눈으로는 "원래 저 굵기인가 보다" 로 읽혀 안 잡힌다.
+# ────────────────────────────────────────────────
+
+Write-Host "`n== Check 14: UITK -unity- property prefix ==" -ForegroundColor Cyan
+$ussRoot = Join-Path $RepoRoot 'Assets/_Game/UI'
+$missingDash = @()
+if (Test-Path -LiteralPath $ussRoot) {
+    foreach ($sheet in Get-ChildItem -LiteralPath $ussRoot -Filter '*.uss' -Recurse -File) {
+        $lineNumber = 0
+        foreach ($line in Get-Content -LiteralPath $sheet.FullName) {
+            $lineNumber++
+            if ($line -match '^\s*unity-[a-z-]+\s*:') {
+                $relative = $sheet.FullName.Substring($RepoRoot.Length).TrimStart('\', '/')
+                $missingDash += "$relative`:$lineNumber $($line.Trim())"
+            }
+        }
+    }
+}
+
+if ($missingDash.Count -gt 0) {
+    Write-LintError -Check 'USS-unity-prefix' -File 'Assets/_Game/UI' -Detail (
+        "UITK 전용 속성 $($missingDash.Count)건이 앞의 '-' 없이 적혀 있습니다. UITK 는 이런 선언을 " +
+        "조용히 버리므로 저작한 스타일이 화면에 한 번도 적용되지 않습니다. '-unity-' 로 고치세요. " +
+        "위치: $($missingDash -join ' | ')")
+}
+else {
+    Write-Host "  PASS: every Unity-specific USS property uses the -unity- prefix." -ForegroundColor Green
+}
+
+# ────────────────────────────────────────────────
 # Summary
 # ────────────────────────────────────────────────
 

@@ -1,3 +1,4 @@
+using System;
 using SM.Content.Definitions;
 using SM.Core.Content;
 
@@ -128,7 +129,11 @@ public sealed class ContentTextResolver
 
         if (BattleP09AppearanceRoster.TryGetDefinedDisplayName(characterId, out var p09DisplayName))
         {
-            return p09DisplayName;
+            // P09 로스터 값은 <b>저작 라벨</b>이다 — 아티스트가 에셋을 맞출 수 있게
+            // "이빨바람 / Pack Raider" 처럼 영문 별칭을 붙여 둔다. 이 메서드는 플레이어에게
+            // 읽히는 이름을 내는 자리이므로 별칭을 떼고 앞쪽만 돌려준다(ID/라벨 분리).
+            // 2026-07-31 이전에는 각인도 추천 목록이 이 별칭을 그대로 화면에 찍었다.
+            return StripAuthoringAlias(p09DisplayName);
         }
 
         return !string.IsNullOrWhiteSpace(fallbackArchetypeId)
@@ -295,6 +300,16 @@ public sealed class ContentTextResolver
             GameLocalizationTables.UICommon,
             key,
             fallback);
+
+    /// <summary>
+    /// <c>"이름 / Alias"</c> 형태의 저작 라벨에서 표시 이름만 남긴다. 한국어 표시명에는
+    /// <c>" / "</c> 가 쓰이지 않으므로 이 구분자가 곧 별칭 경계다.
+    /// </summary>
+    private static string StripAuthoringAlias(string value)
+    {
+        var separator = value.IndexOf(" / ", StringComparison.Ordinal);
+        return separator > 0 ? value[..separator].TrimEnd() : value;
+    }
 
     private string UnknownContent()
         => Unknown("ui.common.unknown_content", "Unknown content");

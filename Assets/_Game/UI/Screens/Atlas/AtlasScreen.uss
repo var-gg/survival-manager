@@ -20,7 +20,7 @@
 
 .atlas-title {
     font-size: 21px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     color: rgb(250, 247, 232);
 }
 
@@ -69,7 +69,7 @@
     background-color: rgba(11, 16, 28, 0.78);
     color: rgb(184, 160, 95);
     font-size: 16px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -81,7 +81,7 @@
 
 .atlas-section-title {
     font-size: var(--sm-fs-eb);
-    unity-font-style: bold;
+    -unity-font-style: bold;
     color: rgb(233, 215, 168);
     margin-bottom: 6px;
 }
@@ -186,7 +186,7 @@
     background-color: rgba(11, 15, 21, 0.44);
     color: rgb(245, 204, 112);
     font-size: 16px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 
@@ -548,7 +548,7 @@
     background-color: rgba(24, 28, 29, 0.50);
     color: rgb(255, 231, 145);
     font-size: var(--sm-fs-s);
-    unity-font-style: bold;
+    -unity-font-style: bold;
 }
 
 .atlas-stage-badge.is-current {
@@ -701,7 +701,7 @@
 
 .atlas-preview-title {
     font-size: var(--sm-fs-l);
-    unity-font-style: bold;
+    -unity-font-style: bold;
     color: rgb(250, 247, 232);
     margin-bottom: var(--sm-s-1);
     white-space: normal;
@@ -709,7 +709,7 @@
 
 .atlas-judgement {
     color: rgb(245, 204, 112);
-    unity-font-style: bold;
+    -unity-font-style: bold;
     margin-bottom: var(--sm-s-2);
     white-space: normal;
 }
@@ -730,7 +730,7 @@
     background-color: rgba(53, 47, 34, 0.72);
     color: rgb(255, 231, 145);
     font-size: var(--sm-fs-eb);
-    unity-font-style: bold;
+    -unity-font-style: bold;
 }
 
 .atlas-preview-threat-band {
@@ -744,7 +744,7 @@
     background-color: rgba(38, 64, 50, 0.62);
     color: rgb(176, 223, 173);
     font-size: var(--sm-fs-eb);
-    unity-font-style: bold;
+    -unity-font-style: bold;
 }
 
 .atlas-preview-threat-band.is-elevated {
@@ -767,13 +767,16 @@
 
 .atlas-preview-label {
     font-size: var(--sm-fs-eb);
-    unity-font-style: bold;
+    -unity-font-style: bold;
     color: rgb(233, 215, 168);
     margin-top: 0;
     margin-bottom: var(--sm-s-1);
 }
 
+/* 여러 줄 본문. UITK 가 잡는 라벨 높이는 한국어 마지막 줄의 괄호·받침을 담기에 빠듯해서
+   카드 아래 테두리에 글자가 달라붙는다. 마지막 줄 아래 여백을 명시로 준다. */
 .atlas-preview-body {
+    padding-bottom: 4px;
     font-size: var(--sm-fs-eb);
     white-space: normal;
     color: rgb(230, 234, 229);
@@ -806,7 +809,7 @@
     border-color: rgb(245, 204, 112);
     background-color: rgb(69, 62, 43);
     color: rgb(255, 242, 198);
-    unity-font-style: bold;
+    -unity-font-style: bold;
 }
 
 .atlas-continue-button:hover {
@@ -865,7 +868,7 @@
     background-color: rgba(40, 47, 53, 0.70);
     color: rgb(196, 206, 198);
     font-size: var(--sm-fs-eb);
-    unity-font-style: bold;
+    -unity-font-style: bold;
 }
 
 .atlas-spine-stage.is-current {
@@ -912,14 +915,14 @@
 
 .sitetrack-node__icon {
     font-size: 15px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     color: rgb(220, 226, 220);
     margin-bottom: 2px;
 }
 
 .sitetrack-node__label {
     font-size: 10px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     color: rgb(200, 210, 202);
     -unity-text-align: middle-center;
     white-space: normal;

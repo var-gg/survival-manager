@@ -259,7 +259,9 @@ public sealed class BattleScreenPresenter
                     : settingsStatusText),
             allyRoster,
             enemyRoster,
-            selectedUnit ?? BattleSelectedUnitViewState.Hidden);
+            selectedUnit ?? BattleSelectedUnitViewState.Hidden,
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.observer.state", "상태"),
+            Localize(GameLocalizationTables.UIBattle, "ui.battle.observer.progress", "진행"));
     }
 
     private IReadOnlyList<BattleCombatantTokenViewState> BuildCombatantTokens(BattleSimulationStep step, string selectedUnitId)
@@ -472,7 +474,15 @@ public sealed class BattleScreenPresenter
         }
 
         var role = _contentText.GetRoleName(unit.RoleInstructionId, unit.RoleTag);
-        return string.IsNullOrWhiteSpace(role) ? string.Empty : SanitizePlayerFacingText(role, string.Empty);
+        if (string.IsNullOrWhiteSpace(role) || LooksLikeRawLocalizationKey(role) || LooksLikeIdentifierPhrase(role))
+        {
+            // 역할이 저작되지 않은 유닛(적군 다수)에서는 raw id 가 올라온다. 이전에는
+            // SanitizePlayerFacingText 가 그걸 title case 로 다듬어 <b>영어 단어를 만들어 냈고</b>,
+            // 적군 카드마다 "Unit" 이라는 칩이 붙었다. 없는 정보를 영어로 지어내지 말고 칩을 숨긴다.
+            return string.Empty;
+        }
+
+        return role.Trim();
     }
 
     /// <summary>

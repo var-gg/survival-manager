@@ -131,4 +131,8 @@ public sealed record BattleShellViewState(
     BattleSettingsViewState Settings,
     IReadOnlyList<BattleRosterUnitViewState>? AllyRoster = null,
     IReadOnlyList<BattleRosterUnitViewState>? EnemyRoster = null,
-    BattleSelectedUnitViewState? SelectedUnit = null);
+    BattleSelectedUnitViewState? SelectedUnit = null,
+    // 관전 상태 독(재생 컨트롤이 숨는 실전투) 칩 이름표. 이전에는 "요약"(SummaryTitle)을
+    // 결과 칩과 진행 칩이 함께 써서 같은 이름표가 두 번 떴다.
+    string ObserverStateTitle = "",
+    string ObserverProgressTitle = "");

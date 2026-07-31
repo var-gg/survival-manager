@@ -45,17 +45,25 @@ public static class AtlasReadabilityFormatter
         };
     }
 
+    /// <summary>
+    /// 그래이박스 폴백 이름표. 실제 이름은 <c>ContentTextResolver.GetCharacterName</c> 가 낸다 —
+    /// presenter 가 그쪽을 먼저 쓰고, 못 읽을 때만 여기로 온다.
+    ///
+    /// 2026-07-31 까지 이 표는 <c>"이빨바람 / Pack Raider"</c> 처럼 <b>영문 별칭을 표시 문자열에
+    /// 붙여</b> 반환했고, 각인도 추천 목록이 그걸 그대로 화면에 찍었다. 별칭은 식별용이지
+    /// 플레이어에게 읽히는 이름이 아니다(ID/라벨 분리).
+    /// </summary>
     public static string FormatCharacterName(string characterId, string fallback)
     {
         return characterId switch
         {
-            "hero_dawn_priest" => "단린 / Dawn Priest",
-            "hero_pack_raider" => "이빨바람 / Pack Raider",
-            "hero_echo_savant" => "공한 / Echo Savant",
-            "hero_grave_hexer" => "묵향 / Grave Hexer",
-            "hero_iron_warden" => "철위 / Iron Warden",
-            "hero_trail_scout" => "숲살이 / Trail Scout",
-            "hero_ash_cartographer" => "숲살이 / Trail Scout",
+            "hero_dawn_priest" => "단린",
+            "hero_pack_raider" => "이빨바람",
+            "hero_echo_savant" => "공한",
+            "hero_grave_hexer" => "묵향",
+            "hero_iron_warden" => "철위",
+            "hero_trail_scout" => "숲살이",
+            "hero_ash_cartographer" => "숲살이",
             _ => HumanizeToken(fallback),
         };
     }
@@ -101,13 +109,13 @@ public static class AtlasReadabilityFormatter
     {
         return definition.FootprintProfileId switch
         {
-            "RewardBias.Cluster.Dense" => "좁은 보상 pocket / 강한 밀도",
-            "RewardBias.Cluster.Wide" => "넓은 보상 pocket / 약한 밀도",
+            "RewardBias.Cluster.Dense" => "좁은 보상권 / 강한 밀도",
+            "RewardBias.Cluster.Wide" => "넓은 보상권 / 약한 밀도",
             "ThreatPressure.Lane.Hard" => "짧은 위험 통로 / 강한 압박",
             "ThreatPressure.Lane.Long" => "긴 위험 통로 / 약한 압박",
             "AffinityBoost.ScoutArc.Deep" => "깊은 정찰 부채꼴 / 좁은 판독",
             "AffinityBoost.ScoutArc.Wide" => "넓은 정찰 부채꼴 / 얕은 판독",
-            _ => $"{FormatModifierCategory(definition.SigilCategory)} trade-off",
+            _ => $"{FormatModifierCategory(definition.SigilCategory)} 득실",
         };
     }
 
@@ -398,48 +406,40 @@ public static class AtlasReadabilityFormatter
         return $"{FormatNodeKind(node.Kind)} / {reward} / {threat}";
     }
 
+    /// <summary>
+    /// 각인도 상단 한 줄. 2026-07-31 까지 이 자리에는 저작 진단표가 그대로 떠 있었다.
+    /// <code>각인 배치 2/3: 야수 전리 각인@압박 앵커/2단계-3단계 | 측면 압박 각인@단서 앵커/3단계-보스. 선택 노드 영향: 없음.</code>
+    /// <c>@</c>·<c>|</c>·단계 밴드 사슬은 저작자가 배치를 검산할 때 쓰는 표기다. 플레이어는
+    /// 어느 각인이 어느 앵커에 앉았는지를 <b>지도에서 이미 본다.</b> 남길 것은 둘뿐이다 —
+    /// 각인을 몇 개 놓았는지, 그리고 <b>지금 고른 노드가 그 영향을 받는지.</b>
+    /// </summary>
     public static string BuildPlacementSummary(
         IReadOnlyList<AtlasPlacedSigil> placements,
         int activeSigilCap,
-        IReadOnlyList<AtlasSigilDefinition> sigilPool,
-        IReadOnlyList<SigilAnchorSlot> anchorSlots,
         AtlasNodeModifierStack? selectedStack)
     {
-        var anchorsById = anchorSlots.ToDictionary(slot => slot.AnchorId, StringComparer.Ordinal);
-        var placed = placements
-            .OrderBy(placement => placement.SigilId, StringComparer.Ordinal)
-            .ThenBy(placement => placement.AnchorId, StringComparer.Ordinal)
-            .Select(placement =>
-            {
-                var sigil = sigilPool.FirstOrDefault(candidate => string.Equals(candidate.SigilId, placement.SigilId, StringComparison.Ordinal));
-                var anchor = anchorsById.TryGetValue(placement.AnchorId, out var slot) ? FormatAnchorRole(slot) : FormatCoordinate(placement.AnchorHex);
-                return $"{FormatSigilName(sigil?.DisplayName ?? placement.SigilId)}@{anchor}";
-            });
+        var placedCount = placements.Count.ToString(CultureInfo.InvariantCulture);
+        var cap = activeSigilCap.ToString(CultureInfo.InvariantCulture);
+        if (placements.Count == 0)
+        {
+            return $"각인을 아직 배치하지 않았습니다 (0/{cap}). 각인석에 놓으면 주변 노드의 보상과 위험이 바뀝니다.";
+        }
+
         var affecting = selectedStack == null || selectedStack.Influences.Count == 0
-            ? "없음"
+            ? string.Empty
             : string.Join(", ", selectedStack.Influences
                 .OrderBy(influence => influence.SigilId, StringComparer.Ordinal)
                 .Select(influence => FormatSigilName(influence.DisplayName))
                 .Distinct(StringComparer.Ordinal));
-        return $"각인 배치 {placements.Count.ToString(CultureInfo.InvariantCulture)}/{activeSigilCap.ToString(CultureInfo.InvariantCulture)}: {string.Join(" | ", placed)}. 선택 노드 영향: {affecting}.";
+
+        return string.IsNullOrEmpty(affecting)
+            ? $"각인 {placedCount}/{cap} 배치 · 고른 노드는 각인의 영향을 받지 않습니다."
+            : $"각인 {placedCount}/{cap} 배치 · 고른 노드에 미치는 각인: {affecting}";
     }
 
-    public static string FormatAnchorRole(SigilAnchorSlot slot)
-    {
-        var role = slot.AnchorRole switch
-        {
-            "Approach" => "진입 앵커",
-            "Pressure" => "압박 앵커",
-            "Evidence" => "단서 앵커",
-            _ => HumanizeToken(slot.AnchorRole),
-        };
-        return $"{role}/{FormatStageBand(slot.StageBand)}";
-    }
-
-    public static string FormatCoordinate(AtlasHexCoordinate hex)
-    {
-        return $"q={hex.Q.ToString(CultureInfo.InvariantCulture)},r={hex.R.ToString(CultureInfo.InvariantCulture)}";
-    }
+    // FormatAnchorRole / FormatCoordinate / FormatStageBand 는 2026-07-31 에 삭제했다.
+    // 셋 다 상단 배치 요약(저작 진단표)에서만 쓰였고, 그 줄이 플레이어 문장으로 바뀌면서
+    // 소비자가 사라졌다. 특히 FormatCoordinate 는 `q=..,r=..` 를 그대로 화면에 낼 수 있었다.
 
     private static string ResolveDifficultyLabel(AtlasRegionNode node, AtlasNodeModifierStack? stack)
     {
@@ -543,29 +543,6 @@ public static class AtlasReadabilityFormatter
         }
 
         return token.Replace('_', ' ').Replace('-', ' ').Trim();
-    }
-
-    private static string FormatStageBand(string stageBand)
-    {
-        if (string.IsNullOrWhiteSpace(stageBand))
-        {
-            return "단계 미상";
-        }
-
-        var tokens = stageBand.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries)
-            .Where(token => !string.Equals(token, "stage", StringComparison.OrdinalIgnoreCase))
-            .Select(token => token switch
-            {
-                "boss" => "보스",
-                "extract" => "추출",
-                _ => int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var stage)
-                    ? $"{stage.ToString(CultureInfo.InvariantCulture)}단계"
-                    : HumanizeToken(token)
-            })
-            .Where(token => !string.IsNullOrWhiteSpace(token))
-            .ToArray();
-
-        return tokens.Length == 0 ? "단계 미상" : string.Join("-", tokens);
     }
 
     private static bool Contains(string value, string token)

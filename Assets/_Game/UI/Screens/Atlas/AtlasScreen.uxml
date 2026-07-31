@@ -45,7 +45,8 @@
                 <!-- wave-25 closure (GPT Pro P0): recommendations card를 primary 직후로 이동.
                      decision-atlas-regional-sigil의 "지도 선택이 곧 캐릭터 운용 선택" 정합. -->
                 <ui:VisualElement class="atlas-decision-card atlas-preview-card--recommendations">
-                    <ui:Label text="추천 캐릭터 3" class="atlas-preview-label" />
+                    <!-- 라벨에 개수를 박아 두면 추천이 두 명일 때도 "3" 이 남는다. 개수는 목록이 말한다. -->
+                    <ui:Label text="추천 동료" class="atlas-preview-label" />
                     <ui:Label name="atlas-preview-recommendations" class="atlas-preview-body" />
                 </ui:VisualElement>
 

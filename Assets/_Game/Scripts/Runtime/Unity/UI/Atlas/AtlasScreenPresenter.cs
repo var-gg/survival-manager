@@ -292,7 +292,8 @@ public sealed class AtlasScreenPresenter
             .ToArray();
     }
 
-    private static AtlasPreviewPanelViewState BuildPreview(
+    // 주입된 이름표 해석기(_characterName)를 쓰려고 2026-07-31 에 static 을 뗐다.
+    private AtlasPreviewPanelViewState BuildPreview(
         AtlasNodePreview preview,
         AtlasRegionNode selectedNode,
         AtlasNodeModifierStack selectedStack,
@@ -314,7 +315,7 @@ public sealed class AtlasScreenPresenter
                 return $"{AtlasReadabilityFormatter.FormatModifierCategory(modifier.Category)} {AtlasReadabilityFormatter.FormatModifierIntensity(modifier.Category, modifier.Percent)} - {sources}{cap}";
             }));
         var recommended = string.Join("\n", preview.RecommendedCharacters.Select(character =>
-            $"{AtlasReadabilityFormatter.FormatCharacterName(character.CharacterId, character.DisplayName)} - {AtlasReadabilityFormatter.FormatRole(character.Role)} ({AtlasReadabilityFormatter.FormatRecommendationReason(character.Reason)})"));
+            $"{ResolveRecommendedName(character)} · {AtlasReadabilityFormatter.FormatRole(character.Role)} ({AtlasReadabilityFormatter.FormatRecommendationReason(character.Reason)})"));
 
         // task-atlas-modifier-application-v1 acceptance #5 (3 surface 일관 표시) Atlas surface 측 closure —
         // RewardScreen settlement summary가 이미 노출하는 ThreatBand 분기를
@@ -337,9 +338,34 @@ public sealed class AtlasScreenPresenter
             ScoutHint: scoutHint);
     }
 
+    /// <summary>
+    /// 추천 목록에 쓸 이름. <b>진짜 이름표는 이미 주입돼 있다</b>(<c>SetHeroSource</c> 의
+    /// <c>characterName</c> = <c>ContentTextResolver.GetCharacterName</c>) — 2026-07-31 까지
+    /// 이 자리는 그걸 두고 그래이박스 하드코딩 표를 썼고, 그 표가 <c>"이빨바람 / Pack Raider"</c>
+    /// 처럼 영문 별칭을 붙여 화면에 그대로 찍혔다. 주입된 해석기를 먼저 쓴다.
+    /// </summary>
+    private string ResolveRecommendedName(AtlasRecommendedCharacter character)
+    {
+        var graybox = AtlasReadabilityFormatter.FormatCharacterName(character.CharacterId, character.DisplayName);
+        if (_characterName == null)
+        {
+            return graybox;
+        }
+
+        var resolved = _characterName(character.CharacterId, string.Empty);
+
+        // 콘텐츠에 없는 id 는 해석기가 "알 수 없는 콘텐츠" 를 돌려준다. 그 문구를 추천 목록에
+        // 그대로 찍느니 그래이박스 이름표가 낫다 — 빈 id 로 한 번 물어 그 값을 알아낸다.
+        // (2026-07-31 첫 시도에서 추천 세 줄 중 하나가 실제로 그렇게 나왔다.)
+        var unknownMarker = _characterName(string.Empty, string.Empty);
+        return string.IsNullOrWhiteSpace(resolved) || string.Equals(resolved, unknownMarker, StringComparison.Ordinal)
+            ? graybox
+            : resolved;
+    }
+
     private string BuildPlacementSummary(AtlasNodeModifierStack? selectedStack, string sigilSnapshotHash, int activeSigilCap)
     {
-        return AtlasReadabilityFormatter.BuildPlacementSummary(_session.Placements, activeSigilCap, _region.SigilPool, _region.SigilAnchorSlots, selectedStack);
+        return AtlasReadabilityFormatter.BuildPlacementSummary(_session.Placements, activeSigilCap, selectedStack);
     }
 
     private AtlasAnchorVisibilityState ResolveAnchorHighlightState(SigilAnchorSlot? slot)

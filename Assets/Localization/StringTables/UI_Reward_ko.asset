@@ -433,19 +433,19 @@ MonoBehaviour:
       m_Items:
       - rid: 162163771961769985
   - m_Id: 86
-    m_Localized: "Hex \uC9D1\uC911"
+    m_Localized: "\uC800\uC8FC \uC9D1\uC911"
     m_Metadata:
       m_Items: []
   - m_Id: 87
-    m_Localized: "Hunt \uC9D1\uC911"
+    m_Localized: "\uC0AC\uB0E5 \uC9D1\uC911"
     m_Metadata:
       m_Items: []
   - m_Id: 88
-    m_Localized: "Tempo \uC9D1\uC911"
+    m_Localized: "\uAC00\uC18D \uC9D1\uC911"
     m_Metadata:
       m_Items: []
   - m_Id: 89
-    m_Localized: "Ward \uC9D1\uC911"
+    m_Localized: "\uC218\uD638 \uC9D1\uC911"
     m_Metadata:
       m_Items: []
   - m_Id: 90
@@ -503,19 +503,22 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 101
-    m_Localized: "\uBE4C\uB4DC \uD6C5: hex \uC555\uBC15 \uB77C\uC778\uC785\uB2C8\uB2E4."
+    m_Localized: "\uBE4C\uB4DC \uD6C5: \uC800\uC8FC\uB85C \uC555\uBC15\uD558\uB294
+      \uAC08\uB798\uC785\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 102
-    m_Localized: "\uBE4C\uB4DC \uD6C5: hunt \uB9C8\uBB34\uB9AC \uB77C\uC778\uC785\uB2C8\uB2E4."
+    m_Localized: "\uBE4C\uB4DC \uD6C5: \uC0AC\uB0E5\uC73C\uB85C \uB9C8\uBB34\uB9AC\uD558\uB294
+      \uAC08\uB798\uC785\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 103
-    m_Localized: "\uBE4C\uB4DC \uD6C5: tempo \uAC00\uC18D \uB77C\uC778\uC785\uB2C8\uB2E4."
+    m_Localized: "\uBE4C\uB4DC \uD6C5: \uC18D\uB3C4\uB97C \uB04C\uC5B4\uC62C\uB9AC\uB294
+      \uAC08\uB798\uC785\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 104
-    m_Localized: "\uBE4C\uB4DC \uD6C5: ward \uC548\uC815\uD654 \uB77C\uC778\uC785\uB2C8\uB2E4."
+    m_Localized: "\uBE4C\uB4DC \uD6C5: \uC218\uD638\uB85C \uBC84\uD2F0\uB294 \uAC08\uB798\uC785\uB2C8\uB2E4."
     m_Metadata:
       m_Items: []
   - m_Id: 105

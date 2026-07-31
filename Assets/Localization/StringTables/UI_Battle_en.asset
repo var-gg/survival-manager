@@ -1117,6 +1117,14 @@ MonoBehaviour:
     m_Localized: Unknown target rule
     m_Metadata:
       m_Items: []
+  - m_Id: 44646428524744704
+    m_Localized: State
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44646428562493440
+    m_Localized: Progress
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

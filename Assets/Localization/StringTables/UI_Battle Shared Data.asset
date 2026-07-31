@@ -1075,6 +1075,14 @@ MonoBehaviour:
     m_Key: ui.battle.targeting.selector.unknown
     m_Metadata:
       m_Items: []
+  - m_Id: 44646428524744704
+    m_Key: ui.battle.observer.state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44646428562493440
+    m_Key: ui.battle.observer.progress
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

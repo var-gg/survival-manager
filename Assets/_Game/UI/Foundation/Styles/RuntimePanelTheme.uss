@@ -17,7 +17,7 @@
 
 .screen__title {
     font-size: var(--font-size-xl);
-    unity-font-style: bold;
+    -unity-font-style: bold;
     color: var(--color-text);
 }
 
@@ -92,7 +92,7 @@
 .panel__title {
     margin-bottom: var(--space-2);
     font-size: var(--font-size-l);
-    unity-font-style: bold;
+    -unity-font-style: bold;
 }
 
 .panel__text {
@@ -219,7 +219,7 @@
 }
 
 .card__title {
-    unity-font-style: bold;
+    -unity-font-style: bold;
     font-size: var(--font-size-l);
 }
 
@@ -245,7 +245,7 @@
     margin-bottom: var(--space-2);
     font-size: var(--font-size-s);
     color: var(--color-text-muted);
-    unity-font-style: bold;
+    -unity-font-style: bold;
     text-transform: uppercase;
 }
 

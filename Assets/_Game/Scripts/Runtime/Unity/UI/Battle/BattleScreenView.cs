@@ -612,10 +612,12 @@ public sealed class BattleScreenView
             return;
         }
 
-        AddObserverStatusChip(_observerStatusChips, state.SummaryTitle, state.ResultText, "primary");
+        // 2026-07-31: 칩 넷 중 둘이 문제였다. 세 번째는 시뮬레이터 스텝 문자열을 그대로 냈고
+        // ("스텝 000 | 묘직 준비 -> - | 압박 균형"), 첫째와 넷째는 이름표로 "요약"을 함께 써서
+        // 같은 글자가 두 번 떴다. 스텝 줄은 전투 기록이 이미 서술하므로 뺀다.
+        AddObserverStatusChip(_observerStatusChips, state.ObserverStateTitle, state.ResultText, "primary");
         AddObserverStatusChip(_observerStatusChips, state.PlaybackGroupTitle, state.SpeedText, "speed");
-        AddObserverStatusChip(_observerStatusChips, state.TacticalReadoutTitle, state.StatusText, "status");
-        AddObserverStatusChip(_observerStatusChips, state.SummaryTitle, BuildProgressText(state.ProgressNormalized), "progress");
+        AddObserverStatusChip(_observerStatusChips, state.ObserverProgressTitle, BuildProgressText(state.ProgressNormalized), "progress");
     }
 
     private static void AddObserverStatusChip(VisualElement container, string labelText, string valueText, string tone)
