@@ -619,6 +619,18 @@ MonoBehaviour:
     m_Key: ui.reward.summary.extract_settlement
     m_Metadata:
       m_Items: []
+  - m_Id: 44531304354877440
+    m_Key: ui.reward.chip.gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44531304392626176
+    m_Key: ui.reward.chip.echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44531304392626177
+    m_Key: ui.reward.chip.loot
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -126,13 +126,9 @@ public sealed class RewardScreenPresenter
             GetLocaleButtonLabel("en", "English"),
             Localize(GameLocalizationTables.UICommon, "ui.common.help", "Help"),
             BuildHelpState(),
-            Localize(GameLocalizationTables.UIReward, "ui.reward.panel.summary", "Summary"),
-            BuildRunDeltaText(session),
-            Localize(GameLocalizationTables.UIReward, "ui.reward.panel.build_context", "Build Impact"),
-            BuildBuildContextText(session),
-            Localize(GameLocalizationTables.UIReward, "ui.reward.panel.progression", "Progression"),
-            Localize(GameLocalizationTables.UIReward, "ui.reward.panel.timeline", "Event Timeline"),
-            Localize(GameLocalizationTables.UIReward, "ui.reward.choices.header", "Choose one reward card"),
+            BuildResultHeadline(session),
+            BuildCurrencyChips(session),
+            BuildPayoffRows(session),
             BuildChoiceCards(session),
             string.IsNullOrWhiteSpace(message)
                 ? defaultStatus
@@ -141,11 +137,94 @@ public sealed class RewardScreenPresenter
             BuildReturnTownTooltip(session),
             canReturnToTown,
             canReturnToTown,
-            BuildSettlementSummaryState(session),
-            BuildProgressionRows(session, profile),
-            BuildTimelineTicks(session, profile),
             // wave-28-survivor GPT Pro patch: squad 4명 survivor row — BattleDeployHeroIds 기반.
             BuildSurvivorRows(session, profile));
+    }
+
+    /// <summary>
+    /// 시안(<c>ui_ux_bible_reward_v1</c>)의 <c>승리 — 늪지 척후소</c> 줄.
+    ///
+    /// 이전에는 같은 정보가 세 곳에 흩어져 있었다 — 정산 패널의 거점/단계/조우 네 행,
+    /// 카드 위의 영문 <c>RESULT</c> 배너, 진행 패널의 <c>승리 / 100 스텝 / 이벤트 0개</c>.
+    /// 마지막 것은 결과가 아니라 시뮬레이터 계측이다. 한 줄로 모은다.
+    /// </summary>
+    private string BuildResultHeadline(GameSessionState session)
+    {
+        var outcome = session.LastBattleVictory
+            ? Localize(GameLocalizationTables.UIReward, "ui.reward.result.victory", "승리")
+            : Localize(GameLocalizationTables.UIReward, "ui.reward.result.defeat", "패배");
+
+        var settlement = BuildSettlementSummaryState(session);
+        var place = settlement.SiteValueText;
+        return string.IsNullOrWhiteSpace(place) || string.Equals(place, "-", StringComparison.Ordinal)
+            ? outcome
+            : $"{outcome} — {place}";
+    }
+
+    /// <summary>
+    /// 결과 줄 옆 화폐 칩. 시안의 <c>XP +84 / 골드 +25 / 잔향 +8</c> 자리다.
+    ///
+    /// 실제 전리품 번들에서만 만든다. 시안의 XP 칩은 <b>넣지 않았다</b> — 현행 시스템은
+    /// 전투 단위 경험치 증분을 노출하지 않아서, 그 칩을 채우려면 없는 값을 지어내야 한다.
+    /// 아이템은 종류별로 나열하면 칩 줄이 넘치므로 개수 하나로 묶는다.
+    /// </summary>
+    private IReadOnlyList<RewardCurrencyChipViewState> BuildCurrencyChips(GameSessionState session)
+    {
+        var bundle = session.LastAutomaticLootBundle;
+        if (bundle == null || bundle.Entries.Count == 0)
+        {
+            return Array.Empty<RewardCurrencyChipViewState>();
+        }
+
+        var gold = bundle.Entries.Where(entry => entry.RewardType == RewardType.Gold).Sum(entry => entry.Amount);
+        var echo = bundle.Entries.Where(entry => entry.RewardType == RewardType.Echo).Sum(entry => entry.Amount);
+        var items = bundle.Entries
+            .Where(entry => entry.RewardType != RewardType.Gold && entry.RewardType != RewardType.Echo)
+            .Sum(entry => Math.Max(1, entry.Amount));
+
+        var chips = new List<RewardCurrencyChipViewState>();
+        if (gold > 0)
+        {
+            chips.Add(new RewardCurrencyChipViewState(
+                Localize(GameLocalizationTables.UIReward, "ui.reward.chip.gold", "골드 +{0}", gold), "gold"));
+        }
+
+        if (echo > 0)
+        {
+            chips.Add(new RewardCurrencyChipViewState(
+                Localize(GameLocalizationTables.UIReward, "ui.reward.chip.echo", "잔향 +{0}", echo), "echo"));
+        }
+
+        if (items > 0)
+        {
+            chips.Add(new RewardCurrencyChipViewState(
+                Localize(GameLocalizationTables.UIReward, "ui.reward.chip.loot", "전리품 {0}점", items), "loot"));
+        }
+
+        return chips;
+    }
+
+    /// <summary>
+    /// 전과 원장 — 이번 전투가 실제로 만든 것만.
+    ///
+    /// 이전 "진행" 패널의 여섯 행 중 다섯(전투 스텝 수·자동 전리품·보상 선택 상태·지갑 총액·
+    /// 인벤토리 개수·복귀 상태)은 계측이거나 다른 표면의 중복이라 결과 줄·화폐 칩·하단 힌트로
+    /// 옮겼다. 여기 남은 셋은 <b>일부러 만든 페이오프 표면</b>이라 지우지 않는다.
+    /// </summary>
+    private IReadOnlyList<RewardProgressionRowViewState> BuildPayoffRows(GameSessionState session)
+    {
+        var rows = new List<RewardProgressionRowViewState>();
+
+        // 게임의 중심 카타르시스 — "내 진형이 만든 그림"(MVP·진형 전과·발현)을 전투 직후 빌드를 고르는
+        // 이 dwell 화면으로 운반한다. 전투 피드의 transient 3줄과 달리 여기선 다음 빌드 결정과 나란히 읽힌다.
+        rows.AddRange(BuildFormationPayoffRows(session));
+
+        // 첫 임시 증강 픽으로 곧 영구 후보가 해금될 예정임을 픽 직후 정산 화면에서 확인시킨다.
+        rows.AddRange(BuildPermanentUnlockRows(session));
+
+        // ADR-0028 #1 가독성: 정치 정산 행 — 전투→정치 인과를 같은 화면에서 읽게.
+        rows.AddRange(BuildPoliticalRows(session));
+        return rows;
     }
 
     public RewardSettlementSummaryViewState BuildSettlementSummaryState(GameSessionState session)
@@ -175,20 +254,6 @@ public sealed class RewardScreenPresenter
             session,
             (_, fallback) => fallback,
             (_, fallback, percent) => string.Format(System.Globalization.CultureInfo.InvariantCulture, fallback, percent));
-    }
-
-    internal static IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRowsForTest(GameSessionState session, ProfileView profile)
-    {
-        return BuildProgressionRowsCore(
-            session,
-            profile,
-            token => token.HasValue ? "recorded" : "none",
-            BuildContinuationTextForTest);
-    }
-
-    internal static IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicksForTest(GameSessionState session, ProfileView profile)
-    {
-        return BuildTimelineTicksCore(session, profile);
     }
 
     // wave-33-progression: ProfileHeroView가 Level/Experience/HP를 실데이터로 노출하므로
@@ -265,34 +330,6 @@ public sealed class RewardScreenPresenter
         if (key.Contains("ranger")) return "❖";
         if (key.Contains("mystic")) return "✦";
         return "◆";
-    }
-
-    private IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRows(GameSessionState session, ProfileView profile)
-    {
-        var rows = BuildProgressionRowsCore(
-            session,
-            profile,
-            token => token.HasValue ? SanitizePlayerFacingSummary(ResolveTokenForProgression(token)) : Localize(GameLocalizationTables.UICommon, "ui.common.none", "None"),
-            BuildContinuationText,
-            SanitizePlayerFacingSummary,
-            BuildLootSummary)
-            .Select(LocalizeProgressionRow)
-            .ToList();
-
-        // 게임의 중심 카타르시스 — "내 진형이 만든 그림"(MVP·진형 전과·발현)을 전투 직후 빌드를 고르는
-        // 이 dwell 화면으로 운반한다. 전투 피드의 transient 3줄과 달리 여기선 다음 빌드 결정과 나란히 읽힌다.
-        // 전투 피드와 동일한 한국어 어휘라 LocalizeProgressionRow 우회(정치/영구해금 행과 동일).
-        rows.AddRange(BuildFormationPayoffRows(session));
-
-        // 첫 임시 증강 픽으로 곧 영구 후보가 해금될 예정임을 픽 직후 정산 화면에서 확인시킨다.
-        // 선택 카드의 preview("첫 임시 픽으로 X 영구 해금")는 픽 후 카드가 사라지면 같이 사라지므로, 정산 ledger에 확인 행을 남긴다.
-        // 이미 한국어 표시형이라 LocalizeProgressionRow를 통과시키지 않는다(정치 행과 동일).
-        rows.AddRange(BuildPermanentUnlockRows(session));
-
-        // ADR-0028 #1 가독성: 정치 정산 행을 progression ledger에 이어붙인다 — 전투→정치 인과를 같은 화면에서 읽게.
-        // 이미 한국어 표시형이라 LocalizeProgressionRow를 통과시키지 않는다(영문 remap 대상 아님).
-        rows.AddRange(BuildPoliticalRows(session));
-        return rows;
     }
 
     // 픽 직후 pending 영구 해금을 정산 ledger에 surfacing. PendingPermanentUnlockId 는 ApplyRewardChoice 시 세팅돼
@@ -436,116 +473,6 @@ public sealed class RewardScreenPresenter
             sign);
     }
 
-    private static IReadOnlyList<RewardProgressionRowViewState> BuildProgressionRowsCore(
-        GameSessionState session,
-        ProfileView profile,
-        Func<SessionTextToken, string> resolveToken,
-        Func<GameSessionState, string> resolveContinuation,
-        Func<string, string>? sanitizeText = null,
-        Func<LootBundleResult, string>? resolveLoot = null)
-    {
-        sanitizeText ??= value => value;
-        resolveLoot ??= _ => "Automatic loot recorded";
-        var battleValue = session.LastBattleSummary.HasValue
-            ? sanitizeText(resolveToken(session.LastBattleSummary))
-            : session.LastBattleVictory ? "Victory" : "Defeat";
-        var lootValue = session.LastAutomaticLootBundle == null
-            ? "None"
-            : sanitizeText(resolveLoot(session.LastAutomaticLootBundle));
-        var choiceValue = session.LastRewardApplicationSummary.HasValue
-            ? sanitizeText(resolveToken(session.LastRewardApplicationSummary))
-            : session.PendingRewardChoices.Count == 0 ? "Applied" : "Awaiting choice";
-
-        return new[]
-        {
-            new RewardProgressionRowViewState("Battle", battleValue, session.LastBattleVictory ? "victory" : "defeat"),
-            new RewardProgressionRowViewState("Auto Loot", lootValue, session.LastAutomaticLootBundle == null ? "empty" : "loot"),
-            new RewardProgressionRowViewState("Reward Choice", choiceValue, session.PendingRewardChoices.Count == 0 ? "applied" : "pending"),
-            new RewardProgressionRowViewState("Wallet", $"{profile.Gold} Gold / {profile.Echo} Echo", "economy"),
-            new RewardProgressionRowViewState("Inventory", $"{profile.InventoryCount} items", "inventory"),
-            new RewardProgressionRowViewState("Continuation", sanitizeText(resolveContinuation(session)), session.PendingRewardChoices.Count == 0 ? "ready" : "locked"),
-        };
-    }
-
-    private IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicks(GameSessionState session, ProfileView profile)
-    {
-        return BuildTimelineTicksCore(session, profile)
-            .Select(LocalizeTimelineTick)
-            .ToArray();
-    }
-
-    private static IReadOnlyList<RewardTimelineTickViewState> BuildTimelineTicksCore(GameSessionState session, ProfileView profile)
-    {
-        var rewardApplied = session.LastRewardApplicationSummary.HasValue || session.PendingRewardChoices.Count == 0;
-        return new[]
-        {
-            new RewardTimelineTickViewState(
-                "Battle",
-                session.LastBattleSummary.HasValue ? "settlement recorded" : "fallback settlement",
-                true,
-                false),
-            new RewardTimelineTickViewState(
-                "Auto Loot",
-                session.LastAutomaticLootBundle == null ? "no automatic loot" : "automatic loot bundled",
-                session.LastAutomaticLootBundle != null,
-                false),
-            new RewardTimelineTickViewState(
-                "Reward Choice",
-                rewardApplied ? "choice applied" : $"{session.PendingRewardChoices.Count} pending choices",
-                rewardApplied,
-                !rewardApplied),
-            new RewardTimelineTickViewState(
-                "Return",
-                rewardApplied ? $"town return ready · {profile.InventoryCount} inventory" : "locked until reward choice",
-                rewardApplied,
-                rewardApplied),
-        };
-    }
-
-    private RewardProgressionRowViewState LocalizeProgressionRow(RewardProgressionRowViewState row)
-    {
-        if (!IsKoreanLocale)
-        {
-            return row;
-        }
-
-        return row with
-        {
-            KeyText = row.KeyText switch
-            {
-                "Battle" => "전투",
-                "Auto Loot" => "자동 전리품",
-                "Reward Choice" => "보상 선택",
-                "Wallet" => "자원",
-                "Inventory" => "인벤토리",
-                "Continuation" => "복귀 상태",
-                _ => row.KeyText,
-            },
-            ValueText = LocalizeProgressionValue(row.ValueText)
-        };
-    }
-
-    private RewardTimelineTickViewState LocalizeTimelineTick(RewardTimelineTickViewState tick)
-    {
-        if (!IsKoreanLocale)
-        {
-            return tick;
-        }
-
-        return tick with
-        {
-            StepText = tick.StepText switch
-            {
-                "Battle" => "전투",
-                "Auto Loot" => "자동 전리품",
-                "Reward Choice" => "보상 선택",
-                "Return" => "마을 복귀",
-                _ => tick.StepText,
-            },
-            DetailText = LocalizeTimelineDetail(tick.DetailText)
-        };
-    }
-
     private static string LocalizeProgressionValue(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -596,11 +523,6 @@ public sealed class RewardScreenPresenter
             "locked until reward choice" => "보상 선택 전 잠김",
             _ => value,
         };
-    }
-
-    private string ResolveTokenForProgression(SessionTextToken token)
-    {
-        return token.Resolve(_localization, _contentText);
     }
 
     private static RewardSettlementSummaryViewState BuildSettlementSummaryStateCore(
@@ -723,82 +645,30 @@ public sealed class RewardScreenPresenter
         return percentResolver(key, fallbackFormat, percent);
     }
 
+    /// <summary>
+    /// 실제 선택지만 카드로 만든다.
+    ///
+    /// 이전에는 항상 세 장을 만들고 남는 자리를 <c>빈 카드 / 선택지가 없습니다 / -</c> 로 채웠다.
+    /// 패배 회수 레인처럼 선택지가 한 장뿐일 때 <b>금테 두른 빈 액자 두 개</b>가 나란히 섰고,
+    /// 그건 "선택지가 없다"가 아니라 <b>"로딩에 실패했다"</b>로 읽힌다. 없는 카드는 안 그린다
+    /// (<see cref="RewardScreenView"/> 가 남는 슬롯을 감춘다).
+    /// </summary>
     private IReadOnlyList<RewardChoiceCardViewState> BuildChoiceCards(GameSessionState session)
     {
         var cards = new List<RewardChoiceCardViewState>(3);
-        for (var i = 0; i < 3; i++)
+        foreach (var choice in session.PendingRewardChoices.Take(3))
         {
-            var choice = i < session.PendingRewardChoices.Count ? session.PendingRewardChoices[i] : null;
             cards.Add(new RewardChoiceCardViewState(
-                choice == null ? Localize(GameLocalizationTables.UIReward, "ui.reward.choice.empty", "Empty Card") : ResolveChoiceTitle(choice),
-                choice == null ? Localize(GameLocalizationTables.UIReward, "ui.reward.choice.none", "No reward choice is available.") : ResolveChoiceDescription(choice),
-                choice == null ? "-" : BuildKindText(choice),
-                choice == null ? string.Empty : Localize(GameLocalizationTables.UIReward, "ui.reward.choice.build_impact", "Build Impact: {0}", BuildChoiceContextText(choice, session)),
+                ResolveChoiceTitle(choice),
+                ResolveChoiceDescription(choice),
+                BuildKindText(choice),
+                Localize(GameLocalizationTables.UIReward, "ui.reward.choice.build_impact", "Build Impact: {0}", BuildChoiceContextText(choice, session)),
                 Localize(GameLocalizationTables.UIReward, "ui.reward.action.choose", "Choose"),
-                choice == null ? string.Empty : BuildChoiceTooltip(choice, session),
-                choice != null));
+                BuildChoiceTooltip(choice, session),
+                true));
         }
 
         return cards;
-    }
-
-    private string BuildRunDeltaText(GameSessionState session)
-    {
-        var lootSummary = session.LastAutomaticLootBundle == null
-            ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
-            : SanitizePlayerFacingSummary(BuildLootSummary(session.LastAutomaticLootBundle));
-        var continuation = session.PendingRewardChoices.Count == 0
-            ? BuildContinuationText(session)
-            : Localize(GameLocalizationTables.UIReward, "ui.reward.summary.awaiting_choice", "Choose one reward before returning.");
-
-        var lines = new[]
-        {
-            Localize(
-            GameLocalizationTables.UIReward,
-            "ui.reward.summary.settlement_result",
-            "Settlement: {0}",
-            BuildSettlementHeadline(session)),
-            Localize(GameLocalizationTables.UIReward, "ui.reward.summary.auto_loot", "Auto Loot: {0}", lootSummary),
-            Localize(GameLocalizationTables.UIReward, "ui.reward.summary.continuation", "Continuation: {0}", continuation),
-        }.Select(line => ClampPanelLine(line, 92)).ToList();
-
-        // ADR-0028 #1 가독성: 정치 정산 headline — 가장 많이 읽히는 Summary 패널에 1줄로 노출(상세는 progression 행).
-        var politicalHeadline = BuildPoliticalHeadline(session);
-        if (!string.IsNullOrWhiteSpace(politicalHeadline))
-        {
-            lines.Add(ClampPanelLine(politicalHeadline, 92));
-        }
-
-        if (session.LastRewardApplicationSummary.HasValue)
-        {
-            lines.Add(ClampPanelLine(Localize(
-                GameLocalizationTables.UIReward,
-                "ui.reward.summary.choice_applied",
-                "Chosen Reward: {0}",
-                SanitizePlayerFacingSummary(session.LastRewardApplicationSummary.Resolve(_localization, _contentText))), 92));
-        }
-
-        return string.Join("\n", lines);
-    }
-
-    private string BuildLootSummary(LootBundleResult bundle)
-    {
-        if (bundle.Entries.Count == 0)
-        {
-            return Localize(
-                GameLocalizationTables.UIReward,
-                "ui.reward.loot.none",
-                "No automatic loot");
-        }
-
-        return string.Join(
-            ", ",
-            bundle.Entries.Select(entry => Localize(
-                GameLocalizationTables.UIReward,
-                "ui.reward.loot.entry",
-                "{0} x{1}",
-                ResolveLootEntryName(entry),
-                entry.Amount)));
     }
 
     private string ResolveLootEntryName(LootEntry entry)
@@ -848,25 +718,6 @@ public sealed class RewardScreenPresenter
                 "ui.reward.loot.unknown",
                 "Unknown reward"),
         };
-    }
-
-    private string BuildBuildContextText(GameSessionState session)
-    {
-        var equippedPermanentId = GetEquippedPermanentAugmentId(session);
-        var benchPermanentIds = session.Profile.UnlockedPermanentAugmentIds
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Where(id => !string.Equals(id, equippedPermanentId, StringComparison.Ordinal))
-            .Where(id => _root.CombatContentLookup.TryGetAugmentDefinition(id, out var augment) && augment.IsPermanent)
-            .Distinct(StringComparer.Ordinal)
-            .ToList();
-        var builder = new StringBuilder();
-        builder.AppendLine(ClampPanelLine(Localize(
-            GameLocalizationTables.UIReward,
-            "ui.reward.build.posture",
-            "Posture: {0}",
-            TeamPostureText.Resolve(_localization, session.SelectedTeamPosture)), 82));
-        builder.AppendLine(ClampPanelLine(Localize(GameLocalizationTables.UIReward, "ui.reward.build.equipped_permanent", "Equipped Permanent: {0}", FormatAugmentName(equippedPermanentId)), 82));
-        return builder.ToString().TrimEnd();
     }
 
     private string BuildLocaleStatus()
@@ -1194,30 +1045,6 @@ public sealed class RewardScreenPresenter
         return names.Count == 0
             ? Localize(GameLocalizationTables.UICommon, "ui.common.none", "None")
             : string.Join(", ", names);
-    }
-
-    private string BuildContinuationText(GameSessionState session)
-    {
-        if (session.IsQuickBattleSmokeActive)
-        {
-            return Localize(GameLocalizationTables.UIReward, "ui.reward.continuation.smoke", "빠른 전투를 마치고 마을로 돌아갑니다.");
-        }
-
-        return IsFinalExtractSettlement(session)
-            ? Localize(GameLocalizationTables.UIReward, "ui.reward.continuation.complete", "Run closes after this return to Town.")
-            : Localize(GameLocalizationTables.UIReward, "ui.reward.continuation.resume", "Run stays active and can resume from Town.");
-    }
-
-    private static string BuildContinuationTextForTest(GameSessionState session)
-    {
-        if (session.IsQuickBattleSmokeActive)
-        {
-            return "빠른 전투를 마치고 마을로 돌아갑니다.";
-        }
-
-        return IsFinalExtractSettlement(session)
-            ? "Run closes after this return to Town."
-            : "Run stays active and can resume from Town.";
     }
 
     private string ResolveChoiceTitle(RewardChoiceViewModel choice) => Localize(GameLocalizationTables.UIReward, choice.TitleKey, BuildChoiceFallbackTitle(choice));

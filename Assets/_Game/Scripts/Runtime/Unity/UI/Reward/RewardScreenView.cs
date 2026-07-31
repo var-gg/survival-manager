@@ -15,31 +15,15 @@ public sealed class RewardScreenView
     private readonly VisualElement _helpStrip;
     private readonly Label _helpBodyLabel;
     private readonly Button _helpDismissButton;
-    private readonly Label _summaryTitleLabel;
-    private readonly Label _runDeltaLabel;
-    private readonly Label _buildContextTitleLabel;
-    private readonly Label _buildContextLabel;
-    private readonly Label _progressionTitleLabel;
-    private readonly Label _timelineTitleLabel;
-    private readonly VisualElement _progressionRows;
+    private readonly Label _resultHeadlineLabel;
+    private readonly VisualElement _currencyChips;
+    private readonly VisualElement _payoffPanel;
+    private readonly VisualElement _payoffRows;
+    private readonly VisualElement _survivorPanel;
     private readonly VisualElement _survivorRows;
-    private readonly VisualElement _timelineTicks;
-    private readonly Label _choicesHeaderLabel;
     private readonly Label _statusLabel;
     private readonly Button _returnTownButton;
-    private readonly IReadOnlyList<(Label title, Label body, Label kind, Label context, Button button)> _choiceCards;
-    private readonly Label _settlementSummaryTitleLabel;
-    private readonly Label _settlementSiteKeyLabel;
-    private readonly Label _settlementSiteValueLabel;
-    private readonly Label _settlementStageKeyLabel;
-    private readonly Label _settlementStageValueLabel;
-    private readonly Label _settlementEncounterKeyLabel;
-    private readonly Label _settlementEncounterValueLabel;
-    private readonly Label _settlementCommitIdKeyLabel;
-    private readonly Label _settlementCommitIdValueLabel;
-    private readonly Label _settlementModifierRewardBiasChip;
-    private readonly Label _settlementModifierThreatPressureChip;
-    private readonly Label _settlementModifierAffinityBoostChip;
+    private readonly IReadOnlyList<(VisualElement card, Label title, Label body, Label kind, Label context, Button button)> _choiceCards;
 
     public RewardScreenView(VisualElement root)
     {
@@ -51,39 +35,24 @@ public sealed class RewardScreenView
         _helpStrip = Require<VisualElement>(root, "HelpStrip");
         _helpBodyLabel = Require<Label>(root, "HelpBodyLabel");
         _helpDismissButton = Require<Button>(root, "HelpDismissButton");
-        _summaryTitleLabel = Require<Label>(root, "SummaryTitleLabel");
-        _runDeltaLabel = Require<Label>(root, "RunDeltaLabel");
-        _buildContextTitleLabel = Require<Label>(root, "BuildContextTitleLabel");
-        _buildContextLabel = Require<Label>(root, "BuildContextLabel");
-        _progressionTitleLabel = Require<Label>(root, "ProgressionTitleLabel");
-        _timelineTitleLabel = Require<Label>(root, "TimelineTitleLabel");
-        _progressionRows = Require<VisualElement>(root, "RewardProgressionRows");
+        _resultHeadlineLabel = Require<Label>(root, "ResultHeadlineLabel");
+        _currencyChips = Require<VisualElement>(root, "RewardCurrencyChips");
+        _payoffPanel = Require<VisualElement>(root, "RewardPayoffPanel");
+        _payoffRows = Require<VisualElement>(root, "RewardPayoffRows");
         // wave-28-survivor GPT Pro patch: squad 4명 survivor list.
+        _survivorPanel = Require<VisualElement>(root, "RewardSurvivorPanel");
         _survivorRows = Require<VisualElement>(root, "RewardSurvivorRows");
-        _timelineTicks = Require<VisualElement>(root, "RewardTimelineTicks");
-        _choicesHeaderLabel = Require<Label>(root, "ChoicesHeaderLabel");
         _statusLabel = Require<Label>(root, "StatusLabel");
         _returnTownButton = Require<Button>(root, "ReturnTownButton");
         _choiceCards = Enumerable.Range(1, 3)
             .Select(index => (
+                Require<VisualElement>(root, $"ChoiceCard{index}"),
                 Require<Label>(root, $"ChoiceCard{index}TitleLabel"),
                 Require<Label>(root, $"ChoiceCard{index}BodyLabel"),
                 Require<Label>(root, $"ChoiceCard{index}KindLabel"),
                 Require<Label>(root, $"ChoiceCard{index}ContextLabel"),
                 Require<Button>(root, $"ChoiceCard{index}Button")))
             .ToArray();
-        _settlementSummaryTitleLabel = Require<Label>(root, "SettlementSummaryTitleLabel");
-        _settlementSiteKeyLabel = Require<Label>(root, "SettlementSiteKeyLabel");
-        _settlementSiteValueLabel = Require<Label>(root, "SettlementSiteValueLabel");
-        _settlementStageKeyLabel = Require<Label>(root, "SettlementStageKeyLabel");
-        _settlementStageValueLabel = Require<Label>(root, "SettlementStageValueLabel");
-        _settlementEncounterKeyLabel = Require<Label>(root, "SettlementEncounterKeyLabel");
-        _settlementEncounterValueLabel = Require<Label>(root, "SettlementEncounterValueLabel");
-        _settlementCommitIdKeyLabel = Require<Label>(root, "SettlementCommitIdKeyLabel");
-        _settlementCommitIdValueLabel = Require<Label>(root, "SettlementCommitIdValueLabel");
-        _settlementModifierRewardBiasChip = Require<Label>(root, "SettlementModifierRewardBiasChip");
-        _settlementModifierThreatPressureChip = Require<Label>(root, "SettlementModifierThreatPressureChip");
-        _settlementModifierAffinityBoostChip = Require<Label>(root, "SettlementModifierAffinityBoostChip");
     }
 
     public void Bind(RewardScreenPresenter presenter)
@@ -108,16 +77,10 @@ public sealed class RewardScreenView
         _helpStrip.style.display = DisplayStyle.None;
         _helpBodyLabel.text = state.Help.Body;
         _helpDismissButton.text = state.Help.DismissLabel;
-        _summaryTitleLabel.text = state.SummaryTitle;
-        _runDeltaLabel.text = state.RunDeltaText;
-        _buildContextTitleLabel.text = state.BuildContextTitle;
-        _buildContextLabel.text = state.BuildContextText;
-        _progressionTitleLabel.text = state.ProgressionTitle;
-        _timelineTitleLabel.text = state.TimelineTitle;
-        RenderProgressionRows(state.ProgressionRows);
+        _resultHeadlineLabel.text = state.ResultHeadline;
+        RenderCurrencyChips(state.CurrencyChips);
+        RenderPayoffRows(state.PayoffRows);
         RenderSurvivorRows(state.SurvivorRows);
-        RenderTimelineTicks(state.TimelineTicks);
-        _choicesHeaderLabel.text = state.ChoicesHeaderText;
         _statusLabel.text = state.StatusText;
         _returnTownButton.text = state.ReturnTownLabel;
         _returnTownButton.tooltip = state.ReturnTownTooltip;
@@ -126,44 +89,81 @@ public sealed class RewardScreenView
 
         for (var i = 0; i < _choiceCards.Count; i++)
         {
-            var cardState = i < state.Choices.Count
+            var hasCard = i < state.Choices.Count;
+            var cardState = hasCard
                 ? state.Choices[i]
                 : new RewardChoiceCardViewState(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false);
+
+            // 카드가 세 장 미만이면 빈 액자를 남기지 않는다. 시안은 항상 세 장이지만
+            // 회수 보상 레인은 두 장일 수 있고, 그때 빈 금테 상자가 서면 "로딩 실패"로 읽힌다.
+            _choiceCards[i].card.style.display = hasCard ? DisplayStyle.Flex : DisplayStyle.None;
+
             _choiceCards[i].title.text = cardState.Title;
             _choiceCards[i].title.tooltip = cardState.Tooltip;
             _choiceCards[i].body.text = cardState.Body;
             _choiceCards[i].body.tooltip = cardState.Tooltip;
             _choiceCards[i].kind.text = cardState.KindText;
             _choiceCards[i].kind.tooltip = cardState.Tooltip;
+            ApplyOptionalText(_choiceCards[i].kind, cardState.KindText);
             _choiceCards[i].context.text = cardState.ContextText;
             _choiceCards[i].context.tooltip = cardState.Tooltip;
+            ApplyOptionalText(_choiceCards[i].context, cardState.ContextText);
             _choiceCards[i].button.text = cardState.ActionLabel;
             _choiceCards[i].button.tooltip = cardState.Tooltip;
             _choiceCards[i].button.SetEnabled(cardState.IsEnabled);
             SetPrimaryClass(_choiceCards[i].button, cardState.IsEnabled && !state.ReturnTownIsPrimary);
         }
-
-        RenderSettlementSummary(state.SettlementSummary);
     }
 
-    private void RenderProgressionRows(IReadOnlyList<RewardProgressionRowViewState> rows)
+    /// <summary>
+    /// 결과 줄 옆의 화폐 칩. 시안의 <c>XP +84 / 골드 +25 / 잔향 +8</c> 자리다.
+    /// 전리품이 없으면 칩 줄 자체를 비운다 — "없음"이라고 적힌 칩은 정보가 아니라 잡음이다.
+    /// </summary>
+    private void RenderCurrencyChips(IReadOnlyList<RewardCurrencyChipViewState>? chips)
     {
-        _progressionRows.Clear();
-        foreach (var row in rows ?? Array.Empty<RewardProgressionRowViewState>())
+        _currencyChips.Clear();
+        foreach (var chip in chips ?? Array.Empty<RewardCurrencyChipViewState>())
+        {
+            if (string.IsNullOrWhiteSpace(chip.Label))
+            {
+                continue;
+            }
+
+            var label = new Label(chip.Label);
+            label.AddToClassList("reward-currency-chip");
+            label.AddToClassList($"reward-currency-chip--{chip.ToneKey}");
+            _currencyChips.Add(label);
+        }
+    }
+
+    /// <summary>
+    /// 전과 원장. 행이 하나도 없으면 패널째 감춘다 — 평시엔 이 화면에 존재하지 않는 게 맞다.
+    /// </summary>
+    private void RenderPayoffRows(IReadOnlyList<RewardProgressionRowViewState>? rows)
+    {
+        _payoffRows.Clear();
+        if (rows == null || rows.Count == 0)
+        {
+            _payoffPanel.style.display = DisplayStyle.None;
+            return;
+        }
+
+        _payoffPanel.style.display = DisplayStyle.Flex;
+        foreach (var row in rows)
         {
             var container = new VisualElement();
-            container.AddToClassList("reward-progression-row");
-            container.AddToClassList($"reward-progression-row--{row.ToneKey}");
+            container.AddToClassList("reward-payoff-row");
+            container.AddToClassList($"reward-payoff-row--{row.ToneKey}");
 
             var key = new Label(row.KeyText);
-            key.AddToClassList("reward-progression-row__key");
+            key.AddToClassList("reward-payoff-row__key");
             container.Add(key);
 
             var value = new Label(row.ValueText);
-            value.AddToClassList("reward-progression-row__value");
+            value.AddToClassList("reward-payoff-row__value");
             container.Add(value);
 
-            _progressionRows.Add(container);
+            _payoffRows.Add(container);
         }
     }
 
@@ -173,10 +173,11 @@ public sealed class RewardScreenView
         _survivorRows.Clear();
         if (rows == null || rows.Count == 0)
         {
-            _survivorRows.style.display = DisplayStyle.None;
+            _survivorPanel.style.display = DisplayStyle.None;
             return;
         }
-        _survivorRows.style.display = DisplayStyle.Flex;
+
+        _survivorPanel.style.display = DisplayStyle.Flex;
         foreach (var row in rows)
         {
             var container = new VisualElement();
@@ -195,15 +196,16 @@ public sealed class RewardScreenView
 
             var stats = new VisualElement();
             stats.AddToClassList("reward-survivor-row__stats");
-            var hpLabel = new Label(row.HpText);
-            hpLabel.AddToClassList("reward-survivor-row__hp");
-            stats.Add(hpLabel);
             var hpBar = new VisualElement();
             hpBar.AddToClassList("reward-survivor-row__hp-bar");
             var hpFill = new VisualElement();
             hpFill.AddToClassList("reward-survivor-row__hp-fill");
             hpFill.style.width = new StyleLength(new Length(Math.Clamp(row.HpPercent * 100f, 0f, 100f), LengthUnit.Percent));
             hpBar.Add(hpFill);
+            var hpLabel = new Label(row.HpText);
+            hpLabel.AddToClassList("reward-survivor-row__hp");
+            hpLabel.pickingMode = PickingMode.Ignore;
+            hpBar.Add(hpLabel);
             stats.Add(hpBar);
             var expLabel = new Label(row.ExpText);
             expLabel.AddToClassList("reward-survivor-row__exp");
@@ -211,62 +213,13 @@ public sealed class RewardScreenView
             copy.Add(stats);
             container.Add(copy);
 
-            if (!string.IsNullOrEmpty(row.StatusChipText))
-            {
-                var chip = new Label(row.StatusChipText);
-                chip.AddToClassList("reward-survivor-row__chip");
-                chip.AddToClassList($"reward-survivor-row__chip--{row.StatusChipKind}");
-                container.Add(chip);
-            }
-
             _survivorRows.Add(container);
         }
     }
 
-    private void RenderTimelineTicks(IReadOnlyList<RewardTimelineTickViewState> ticks)
+    private static void ApplyOptionalText(Label label, string text)
     {
-        _timelineTicks.Clear();
-        foreach (var tick in ticks ?? Array.Empty<RewardTimelineTickViewState>())
-        {
-            var container = new VisualElement();
-            container.AddToClassList("reward-timeline-tick");
-            container.EnableInClassList("reward-timeline-tick--complete", tick.IsComplete);
-            container.EnableInClassList("reward-timeline-tick--current", tick.IsCurrent);
-
-            var marker = new Label(tick.IsComplete ? "✓" : "•");
-            marker.AddToClassList("reward-timeline-tick__marker");
-            container.Add(marker);
-
-            var text = new Label($"{tick.StepText} · {tick.DetailText}");
-            text.AddToClassList("reward-timeline-tick__text");
-            container.Add(text);
-
-            _timelineTicks.Add(container);
-        }
-    }
-
-    public void RenderSettlementSummary(RewardSettlementSummaryViewState state)
-    {
-        var snapshot = state ?? RewardSettlementSummaryViewState.Empty;
-        _settlementSummaryTitleLabel.text = snapshot.TitleText;
-        _settlementSiteKeyLabel.text = snapshot.SiteKeyText;
-        _settlementSiteValueLabel.text = snapshot.SiteValueText;
-        _settlementStageKeyLabel.text = snapshot.StageKeyText;
-        _settlementStageValueLabel.text = snapshot.StageValueText;
-        _settlementEncounterKeyLabel.text = snapshot.EncounterKeyText;
-        _settlementEncounterValueLabel.text = snapshot.EncounterValueText;
-        _settlementCommitIdKeyLabel.text = snapshot.CommitIdKeyText;
-        _settlementCommitIdValueLabel.text = snapshot.CommitIdValueText;
-
-        ApplyChip(_settlementModifierRewardBiasChip, snapshot.RewardBiasChipText);
-        ApplyChip(_settlementModifierThreatPressureChip, snapshot.ThreatPressureChipText);
-        ApplyChip(_settlementModifierAffinityBoostChip, snapshot.AffinityBoostChipText);
-    }
-
-    private static void ApplyChip(Label chip, string text)
-    {
-        chip.text = text ?? string.Empty;
-        chip.style.display = string.IsNullOrWhiteSpace(text)
+        label.style.display = string.IsNullOrWhiteSpace(text)
             ? DisplayStyle.None
             : DisplayStyle.Flex;
     }

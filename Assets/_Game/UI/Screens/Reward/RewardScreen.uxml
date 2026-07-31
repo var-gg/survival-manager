@@ -1,135 +1,103 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <!--
+      2026-07-31 시안 재정렬 — 기준은 `Screenshots/mockups/ui_ux_bible_reward_v1.png`.
+
+      시안은 네 구역짜리 <b>모달</b>이다. 제목 띠 / 결과 + 화폐 칩 / 카드 세 장 / 하단 CTA.
+      구현은 9 패널 3 단 대시보드였다 — 정산(커밋 id 포함) · 생존자 · 진행 · 카드 · 장식 글리프 ·
+      요약 · 빌드 맥락 · 이벤트 타임라인 · 상태 띠. 같은 결과를 정산·진행·요약 세 곳이 반복했고,
+      왼쪽 레일은 스크롤바가 생길 만큼 넘쳤다.
+
+      뺀 것 — 시안에 없고, 다른 표면이 이미 같은 말을 한다.
+        정산 패널     : 거점/단계/조우 는 결과 줄이 말한다. 커밋 id 는 플레이어 정보가 아니다.
+        진행 패널     : "승리 / 100 스텝 / 이벤트 0개" 는 텔레메트리다. 지갑은 화폐 칩이 가져간다.
+        이벤트 타임라인: 텔레메트리.
+        요약 패널     : 결과·전리품·다음 안내를 셋 다 중복. 다음 안내만 하단 힌트로 남긴다.
+        빌드 맥락 패널 : 카드마다 "빌드 영향" 줄이 이미 있다.
+        장식 글리프    : 빈 패널 안의 장식 하나.
+        RESULT 배너   : 카드 제목 옆에 뜬 영문 raw 라벨.
+
+      남긴 것 — 시안 이후에 생겼고 실제 값을 가진다.
+        전투 생존자    : HP/Lv 실데이터. 시안의 여백(하단)에 가로 스트립으로 눕힌다.
+        빌드 영향 줄   : 카드마다 한 줄, 본문 아래 흐린 글씨로 유지.
+        전과 원장      : 진형 페이오프(MVP·전과·발현) · 영구 해금 예고 · 정치 정산.
+                        진행 패널의 여섯 행 중 <b>이 셋만</b> 진짜 성과다 — 나머지는 텔레메트리라
+                        결과 줄·화폐 칩·하단 힌트가 가져갔다. 평시엔 행이 0 개라 조용하다.
+    -->
     <ui:VisualElement name="RewardScreenRoot" class="screen reward-screen reward-bible">
         <ui:VisualElement class="reward-bible__backdrop" />
-        <ui:VisualElement class="screen__topbar reward-bible__topbar">
-            <!-- wave-39 chrome cleanup: crest + rune row 제거 (책임 매트릭스 §11 chrome budget) -->
-            <ui:VisualElement class="reward-bible__title-stack">
+
+        <ui:VisualElement name="RewardModal" class="reward-bible__modal">
+            <ui:VisualElement class="screen__topbar reward-bible__topbar">
                 <ui:Label name="TitleLabel" class="screen__title reward-bible__title" />
-            </ui:VisualElement>
-            <ui:VisualElement class="screen__toolbar">
-                <ui:VisualElement class="screen__locale">
-                    <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
-                    <ui:Button name="LocaleKoButton" class="ui-button" />
-                    <ui:Button name="LocaleEnButton" class="ui-button" />
-                </ui:VisualElement>
-                <ui:Button name="HelpButton" class="ui-button" />
-            </ui:VisualElement>
-        </ui:VisualElement>
-
-        <ui:VisualElement name="HelpStrip" class="panel panel--dense help-strip">
-            <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
-            <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
-        </ui:VisualElement>
-
-        <ui:VisualElement class="screen__body reward-bible__board">
-            <ui:ScrollView name="RewardLeftRail" class="screen__column reward-bible__left-rail" mode="Vertical">
-                <ui:VisualElement name="SettlementSummaryPanel" class="panel panel--dense reward-settlement-summary">
-                    <ui:Label name="SettlementSummaryTitleLabel" class="panel__title reward-settlement-summary__title" />
-                    <ui:VisualElement class="reward-settlement-summary__rows">
-                        <ui:VisualElement class="reward-settlement-summary__row">
-                            <ui:Label name="SettlementSiteKeyLabel" class="reward-settlement-summary__key" />
-                            <ui:Label name="SettlementSiteValueLabel" class="reward-settlement-summary__value" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="reward-settlement-summary__row">
-                            <ui:Label name="SettlementStageKeyLabel" class="reward-settlement-summary__key" />
-                            <ui:Label name="SettlementStageValueLabel" class="reward-settlement-summary__value" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="reward-settlement-summary__row">
-                            <ui:Label name="SettlementEncounterKeyLabel" class="reward-settlement-summary__key" />
-                            <ui:Label name="SettlementEncounterValueLabel" class="reward-settlement-summary__value" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="reward-settlement-summary__row">
-                            <ui:Label name="SettlementCommitIdKeyLabel" class="reward-settlement-summary__key" />
-                            <ui:Label name="SettlementCommitIdValueLabel" class="reward-settlement-summary__value" />
-                        </ui:VisualElement>
+                <ui:VisualElement class="screen__toolbar">
+                    <ui:VisualElement class="screen__locale">
+                        <ui:Label name="LocaleStatusLabel" class="screen__locale-status" />
+                        <ui:Button name="LocaleKoButton" class="ui-button" />
+                        <ui:Button name="LocaleEnButton" class="ui-button" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="SettlementModifierChips" class="reward-settlement-summary__chips">
-                        <ui:Label name="SettlementModifierRewardBiasChip" class="reward-settlement-summary__chip" />
-                        <ui:Label name="SettlementModifierThreatPressureChip" class="reward-settlement-summary__chip" />
-                        <ui:Label name="SettlementModifierAffinityBoostChip" class="reward-settlement-summary__chip" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-                <!-- wave-28-survivor GPT Pro patch: squad 4 survivor list (portrait + HP/EXP). -->
-                <ui:VisualElement name="RewardSurvivorPanel" class="panel reward-survivor-panel">
-                    <ui:Label name="RewardSurvivorSectionTitleLabel" class="panel__title" text="전투 생존자" />
-                    <ui:VisualElement name="RewardSurvivorRows" class="reward-survivor-rows" />
-                </ui:VisualElement>
-                <ui:VisualElement name="RewardProgressionPanel" class="panel reward-progression-panel">
-                    <ui:Label name="ProgressionTitleLabel" class="panel__title" />
-                    <ui:VisualElement name="RewardProgressionRows" class="reward-progression-rows" />
-                </ui:VisualElement>
-            </ui:ScrollView>
-
-            <ui:VisualElement class="screen__column reward-bible__center-stage">
-                <ui:VisualElement name="RewardChoicePanel" class="panel reward-choice-panel">
-                    <ui:Label name="ChoicesHeaderLabel" class="panel__title" />
-                    <!-- wave-39 chrome cleanup: victory medallion + runes 제거 (선택 결정 surface, mood ornament 불필요) -->
-                    <ui:VisualElement name="RewardVictoryBanner" class="reward-bible__victory-banner reward-bible__victory-banner--flat">
-                        <ui:Label name="RewardVictoryBannerResultLabel" class="reward-bible__victory-banner-text" text="RESULT" />
-                        <ui:Label name="RewardVictoryBannerStatusLabel" class="reward-bible__victory-banner-text reward-bible__victory-banner-text--ko" text="정산 완료" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="card-row reward-card-row">
-                        <ui:VisualElement class="card reward-card reward-card--gold" name="ChoiceCard1">
-                            <ui:VisualElement class="reward-card__art reward-card__art--gold">
-                                <ui:VisualElement class="reward-card__sigil" />
-                            </ui:VisualElement>
-                            <ui:Label name="ChoiceCard1TitleLabel" class="card__title" />
-                            <ui:Label name="ChoiceCard1KindLabel" class="panel__text panel__text--muted" />
-                            <ui:Label name="ChoiceCard1BodyLabel" class="card__body" />
-                            <ui:Label name="ChoiceCard1ContextLabel" class="panel__text panel__text--muted" />
-                            <ui:Button name="ChoiceCard1Button" class="ui-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="card reward-card reward-card--steel" name="ChoiceCard2">
-                            <ui:VisualElement class="reward-card__art reward-card__art--steel">
-                                <ui:VisualElement class="reward-card__sigil" />
-                            </ui:VisualElement>
-                            <ui:Label name="ChoiceCard2TitleLabel" class="card__title" />
-                            <ui:Label name="ChoiceCard2KindLabel" class="panel__text panel__text--muted" />
-                            <ui:Label name="ChoiceCard2BodyLabel" class="card__body" />
-                            <ui:Label name="ChoiceCard2ContextLabel" class="panel__text panel__text--muted" />
-                            <ui:Button name="ChoiceCard2Button" class="ui-button" />
-                        </ui:VisualElement>
-                        <ui:VisualElement class="card reward-card reward-card--violet" name="ChoiceCard3">
-                            <ui:VisualElement class="reward-card__art reward-card__art--violet">
-                                <ui:VisualElement class="reward-card__sigil" />
-                            </ui:VisualElement>
-                            <ui:Label name="ChoiceCard3TitleLabel" class="card__title" />
-                            <ui:Label name="ChoiceCard3KindLabel" class="panel__text panel__text--muted" />
-                            <ui:Label name="ChoiceCard3BodyLabel" class="card__body" />
-                            <ui:Label name="ChoiceCard3ContextLabel" class="panel__text panel__text--muted" />
-                            <ui:Button name="ChoiceCard3Button" class="ui-button" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
+                    <ui:Button name="HelpButton" class="ui-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement class="screen__column reward-bible__right-rail">
-                <ui:VisualElement class="reward-bible__decision-glyph">
-                    <ui:VisualElement class="reward-bible__decision-icon" />
+            <ui:VisualElement name="HelpStrip" class="panel panel--dense help-strip">
+                <ui:Label name="HelpBodyLabel" class="panel__text help-strip__body" />
+                <ui:Button name="HelpDismissButton" class="ui-button help-strip__dismiss" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="RewardResultStrip" class="reward-result-strip">
+                <ui:Label name="ResultHeadlineLabel" class="reward-result-strip__headline" />
+                <ui:VisualElement name="RewardCurrencyChips" class="reward-result-strip__chips" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="RewardPayoffPanel" class="reward-payoff-panel">
+                <ui:VisualElement name="RewardPayoffRows" class="reward-payoff-rows" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="card-row reward-card-row">
+                <ui:VisualElement class="card reward-card reward-card--gold" name="ChoiceCard1">
+                    <ui:VisualElement class="reward-card__art reward-card__art--gold">
+                        <ui:VisualElement class="reward-card__sigil" />
+                    </ui:VisualElement>
+                    <ui:Label name="ChoiceCard1TitleLabel" class="card__title reward-card__title" />
+                    <ui:VisualElement class="reward-card__rule" />
+                    <ui:Label name="ChoiceCard1BodyLabel" class="card__body reward-card__body" />
+                    <ui:Label name="ChoiceCard1ContextLabel" class="reward-card__context" />
+                    <ui:Label name="ChoiceCard1KindLabel" class="reward-card__kind" />
+                    <ui:Button name="ChoiceCard1Button" class="ui-button reward-card__cta" />
                 </ui:VisualElement>
-                <ui:VisualElement class="panel reward-run-delta-panel">
-                    <ui:Label name="SummaryTitleLabel" class="panel__title" />
-                    <ui:Label name="RunDeltaLabel" class="panel__text" />
+                <ui:VisualElement class="card reward-card reward-card--steel" name="ChoiceCard2">
+                    <ui:VisualElement class="reward-card__art reward-card__art--steel">
+                        <ui:VisualElement class="reward-card__sigil" />
+                    </ui:VisualElement>
+                    <ui:Label name="ChoiceCard2TitleLabel" class="card__title reward-card__title" />
+                    <ui:VisualElement class="reward-card__rule" />
+                    <ui:Label name="ChoiceCard2BodyLabel" class="card__body reward-card__body" />
+                    <ui:Label name="ChoiceCard2ContextLabel" class="reward-card__context" />
+                    <ui:Label name="ChoiceCard2KindLabel" class="reward-card__kind" />
+                    <ui:Button name="ChoiceCard2Button" class="ui-button reward-card__cta" />
                 </ui:VisualElement>
-                <ui:VisualElement class="panel reward-build-impact-panel">
-                    <ui:Label name="BuildContextTitleLabel" class="panel__title" />
-                    <ui:Label name="BuildContextLabel" class="panel__text" />
+                <ui:VisualElement class="card reward-card reward-card--violet" name="ChoiceCard3">
+                    <ui:VisualElement class="reward-card__art reward-card__art--violet">
+                        <ui:VisualElement class="reward-card__sigil" />
+                    </ui:VisualElement>
+                    <ui:Label name="ChoiceCard3TitleLabel" class="card__title reward-card__title" />
+                    <ui:VisualElement class="reward-card__rule" />
+                    <ui:Label name="ChoiceCard3BodyLabel" class="card__body reward-card__body" />
+                    <ui:Label name="ChoiceCard3ContextLabel" class="reward-card__context" />
+                    <ui:Label name="ChoiceCard3KindLabel" class="reward-card__kind" />
+                    <ui:Button name="ChoiceCard3Button" class="ui-button reward-card__cta" />
                 </ui:VisualElement>
             </ui:VisualElement>
-        </ui:VisualElement>
 
-        <ui:VisualElement name="RewardTimelinePanel" class="panel reward-timeline-panel">
-            <ui:Label name="TimelineTitleLabel" class="panel__title" />
-            <ui:VisualElement name="RewardTimelineTicks" class="reward-timeline-ticks" />
-        </ui:VisualElement>
-
-        <ui:VisualElement name="RewardStatusBand" class="panel panel--dense status-bar reward-bible__status-band">
-            <ui:VisualElement class="action-group">
-                <ui:VisualElement class="action-row">
-                    <ui:Button name="ReturnTownButton" class="ui-button" />
-                </ui:VisualElement>
+            <ui:VisualElement name="RewardSurvivorPanel" class="reward-survivor-strip">
+                <ui:Label name="RewardSurvivorSectionTitleLabel" class="reward-survivor-strip__title" text="전투 생존자" />
+                <ui:VisualElement name="RewardSurvivorRows" class="reward-survivor-rows" />
             </ui:VisualElement>
-            <ui:Label name="StatusLabel" class="panel__text panel__text--muted" />
+
+            <ui:VisualElement name="RewardStatusBand" class="reward-bible__status-band">
+                <ui:Label name="StatusLabel" class="reward-bible__status-hint" />
+                <ui:Button name="ReturnTownButton" class="ui-button reward-bible__cta" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -154,53 +154,47 @@ public sealed class RewardSettlementSummaryFastTests
             "default fallback label은 '위협 고조'.");
     }
 
+    /// <summary>
+    /// 결산 화면의 <b>남은</b> 계약 — 시안(ui_ux_bible_reward_v1) 재정렬 후.
+    ///
+    /// 예전 이 테스트는 "진행" 여섯 행과 "이벤트 타임라인" 네 눈금이 존재하는지를 봤다.
+    /// 둘 다 사라졌다 — 시안에 없고, 전투 스텝 수·지갑 총액·인벤토리 개수는 결과가 아니라
+    /// 계측이다. 그 자리는 결과 줄 한 줄과 화폐 칩이 가져갔다.
+    ///
+    /// 대신 <b>일부러 만든 페이오프 표면</b>이 살아 있는지를 계약으로 건다. 진형 페이오프·
+    /// 영구 해금 예고·정치 정산 셋은 시안에 없다는 이유로 지우면 안 되는 것들이다.
+    /// </summary>
     [Test]
-    public void RewardResultProgressionRows_AndTimelineTicks_AreDeclared()
+    public void RewardResult_KeepsPayoffLedger_AndDropsTelemetryPanels()
     {
-        var session = GameSessionTestFactory.Create();
-        var profile = new ProfileView(
-            "profile-test",
-            "Player",
-            SessionRealm.OfflineLocal,
-            false,
-            Gold: 123,
-            Echo: 45,
-            PermanentAugmentSlotCount: 0,
-            HeroCount: 2,
-            InventoryCount: 7,
-            Heroes: System.Array.Empty<ProfileHeroView>());
-
-        var rows = RewardScreenPresenter.BuildProgressionRowsForTest(session, profile);
-        var ticks = RewardScreenPresenter.BuildTimelineTicksForTest(session, profile);
-
-        Assert.That(rows.Select(row => row.KeyText), Is.SupersetOf(new[] { "Battle", "Auto Loot", "Reward Choice", "Wallet", "Inventory", "Continuation" }));
-        Assert.That(rows.Single(row => row.KeyText == "Wallet").ValueText, Does.Contain("123").And.Contain("45"));
-        Assert.That(rows.Single(row => row.KeyText == "Inventory").ValueText, Does.Contain("7"));
-        Assert.That(ticks.Select(tick => tick.StepText), Is.EqualTo(new[] { "Battle", "Auto Loot", "Reward Choice", "Return" }));
-        Assert.That(ticks.Any(tick => tick.IsCurrent), Is.True);
-
         var viewStateSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenViewState.cs");
         var presenterSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenPresenter.cs");
         var viewSource = File.ReadAllText("Assets/_Game/Scripts/Runtime/Unity/UI/Reward/RewardScreenView.cs");
         var uxml = File.ReadAllText("Assets/_Game/UI/Screens/Reward/RewardScreen.uxml");
 
-        Assert.That(viewStateSource, Does.Contain("RewardProgressionRowViewState"));
-        Assert.That(viewStateSource, Does.Contain("RewardTimelineTickViewState"));
-        Assert.That(viewStateSource, Does.Contain("ProgressionTitle"));
-        Assert.That(viewStateSource, Does.Contain("TimelineTitle"));
-        Assert.That(viewStateSource, Does.Contain("ProgressionRows"));
-        Assert.That(viewStateSource, Does.Contain("TimelineTicks"));
-        Assert.That(presenterSource, Does.Contain("LastBattleSummary"));
+        // 시안 골격: 결과 줄 + 화폐 칩 + 카드 세 장 + 하단 CTA.
+        Assert.That(uxml, Does.Contain("ResultHeadlineLabel"));
+        Assert.That(uxml, Does.Contain("RewardCurrencyChips"));
+        Assert.That(uxml, Does.Contain("ChoiceCard1TitleLabel"));
+        Assert.That(uxml, Does.Contain("ReturnTownButton"));
+        Assert.That(viewStateSource, Does.Contain("ResultHeadline"));
+        Assert.That(presenterSource, Does.Contain("BuildResultHeadline"));
+        Assert.That(presenterSource, Does.Contain("BuildCurrencyChips"));
         Assert.That(presenterSource, Does.Contain("LastAutomaticLootBundle"));
-        Assert.That(presenterSource, Does.Contain("LastRewardApplicationSummary"));
-        Assert.That(presenterSource, Does.Contain("BuildProgressionRows"));
-        Assert.That(presenterSource, Does.Contain("BuildTimelineTicks"));
-        Assert.That(viewSource, Does.Contain("RenderProgressionRows"));
-        Assert.That(viewSource, Does.Contain("RenderTimelineTicks"));
-        Assert.That(uxml, Does.Contain("ProgressionTitleLabel"));
-        Assert.That(uxml, Does.Contain("TimelineTitleLabel"));
-        Assert.That(uxml, Does.Contain("RewardProgressionRows"));
-        Assert.That(uxml, Does.Contain("RewardTimelineTicks"));
+
+        // 페이오프 표면 — 시안에 없다는 이유로 지우면 안 되는 셋.
+        Assert.That(uxml, Does.Contain("RewardPayoffRows"));
+        Assert.That(viewSource, Does.Contain("RenderPayoffRows"));
+        Assert.That(presenterSource, Does.Contain("BuildFormationPayoffRows"), "진형 페이오프 — 전투의 중심 카타르시스");
+        Assert.That(presenterSource, Does.Contain("BuildPermanentUnlockRows"), "영구 해금 예고");
+        Assert.That(presenterSource, Does.Contain("BuildPoliticalRows"), "ADR-0028 정치 정산");
+
+        // 걷어낸 계측 표면 — 되돌아오면 여기서 잡는다.
+        Assert.That(uxml, Does.Not.Contain("RewardTimelineTicks"), "이벤트 타임라인은 텔레메트리");
+        Assert.That(uxml, Does.Not.Contain("SettlementCommitIdValueLabel"), "커밋 id 는 플레이어 정보가 아니다");
+        Assert.That(uxml, Does.Not.Contain("RunDeltaLabel"), "요약 패널은 결과 줄과 중복");
+        Assert.That(uxml, Does.Not.Contain("BuildContextLabel"), "빌드 맥락은 카드마다 있는 빌드 영향 줄과 중복");
+        Assert.That(uxml, Does.Not.Contain("RewardVictoryBanner"), "카드 위 영문 RESULT 배너");
     }
 
     private static ActiveRunState CreateStubActiveRun()

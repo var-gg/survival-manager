@@ -59,8 +59,8 @@ public sealed partial class UxBiblePlayModeWitnessTests
             Require<VisualElement>(root, "TopChrome"),
             Require<VisualElement>(root, "CompactLog"),
             Require<VisualElement>(root, "AllySummaryPanel"),
+            Require<VisualElement>(root, "EnemySummaryPanel"),
             Require<VisualElement>(root, "ControlBar"),
-            Require<VisualElement>(root, "TacticalReadoutPanel"),
         };
 
         foreach (var panel in panels.Where(IsEffectivelyVisible))
@@ -80,6 +80,7 @@ public sealed partial class UxBiblePlayModeWitnessTests
         foreach (var roster in new[]
                  {
                      Require<VisualElement>(root, "AllyRosterList"),
+                     Require<VisualElement>(root, "EnemyRosterList"),
                  })
         {
             foreach (var unit in roster.Query<VisualElement>(className: "sm-bs-roster-unit").ToList())
@@ -92,6 +93,13 @@ public sealed partial class UxBiblePlayModeWitnessTests
         // StatusLabel / BattleIntelTitleLabel / TacticalReadoutTitleLabel 검사는 2026-07-31 에 제거됐다.
         // 셋 다 그 요소들과 함께 사라졌다 — 상단 raw 스텝 로그와, 전장 배치를 다시 그리던
         // 전력 분포·전황 판단 패널이다. 새 계약은 BattleHudShellVisualContractFastTests 가 든다.
+        //
+        // 같은 날 `EnemySummaryPanel` / `EnemyRosterList` 는 <b>되살아났다</b> — 시안
+        // (ui_ux_bible_battle_hud_v1)의 골격이 좌우 팀 기둥이기 때문이다.
+        //
+        // 교훈: 이 파일이 요구하던 `TacticalReadoutPanel` 은 UXML 에서 사라진 뒤에도 하루 가까이
+        // 남아 있었다. `test-batch-fast` 는 FastUnit 만 돌리므로 <b>이 PlayMode 위트니스는
+        // 그 게이트에 보이지 않는다.</b> HUD 골격을 건드리면 여기도 같은 작업 단위에서 손봐야 한다.
     }
 
     private static void AssertRewardContainment(VisualElement root)

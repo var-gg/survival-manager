@@ -44,7 +44,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1
-    m_Localized: Battle Rewards
+    m_Localized: "Battle Complete \u2014 Choose a Reward"
     m_Metadata:
       m_Items: []
   - m_Id: 2
@@ -681,6 +681,18 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 162163771961769992
+  - m_Id: 44531304354877440
+    m_Localized: Gold +{0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44531304392626176
+    m_Localized: Echo +{0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44531304392626177
+    m_Localized: '{0} items'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -951,3 +951,417 @@
 .reward-screen .reward-card .card__title {
     font-size: 20px;
 }
+
+/* ==========================================================================
+   2026-07-31 시안 재정렬 — 기준은 `Screenshots/mockups/ui_ux_bible_reward_v1.png`
+
+   시안은 딥네이비 위 금테 <b>모달</b> 한 장이다. 화면 전체를 쓰는 3 단 대시보드가 아니다.
+   세로 순서: 제목 띠 / 결과 + 화폐 칩 / 전과 원장(있을 때만) / 카드 세 장 /
+   생존자 스트립 / 하단 힌트 + CTA.
+
+   이전 구현이 무너진 지점은 <b>가로 3 단</b>이었다. 좌측 레일에 정산·생존자·진행 세 패널을
+   쌓으니 세로가 모자라 ScrollView 스크롤바가 생겼고, 우측 레일에는 장식 글리프 하나가
+   빈 패널을 차지했다. 화면의 주인공(카드 세 장)이 가운데 3 분의 1 로 눌렸다.
+   ========================================================================== */
+
+.reward-screen .reward-bible__modal {
+    position: absolute;
+    top: 40px;
+    bottom: 40px;
+    left: 120px;
+    right: 120px;
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    background-color: rgba(9, 15, 32, 0.97);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: var(--sm-gold-400);
+    border-right-color: var(--sm-gold-400);
+    border-top-color: var(--sm-gold-400);
+    border-bottom-color: var(--sm-gold-400);
+}
+
+/* --- 1. 제목 띠 ---------------------------------------------------------- */
+
+.reward-screen .reward-bible__modal .reward-bible__topbar {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: auto;
+    height: 52px;
+    min-height: 52px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-left: 0;
+    padding-right: 0;
+    background-color: var(--sm-transparent);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-bible__modal .reward-bible__title {
+    margin: 0;
+    color: var(--sm-gold-100);
+    font-size: 26px;
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+}
+
+/* --- 2. 결과 줄 + 화폐 칩 ------------------------------------------------- */
+
+.reward-screen .reward-result-strip {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    min-height: 56px;
+    margin-bottom: 14px;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: rgba(4, 9, 22, 0.86);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-result-strip__headline {
+    min-height: 26px;
+    color: var(--sm-gold-100);
+    font-size: 21px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-result-strip__chips {
+    flex-direction: row;
+    align-items: center;
+}
+
+.reward-screen .reward-currency-chip {
+    min-height: 30px;
+    margin-left: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
+    color: var(--sm-gold-100);
+    font-size: 15px;
+    -unity-text-align: middle-center;
+    background-color: rgba(14, 22, 44, 0.92);
+    border-width: 1px;
+    border-color: var(--sm-gold-300-a42);
+}
+
+/* --- 3. 전과 원장 -------------------------------------------------------- */
+
+.reward-screen .reward-payoff-panel {
+    margin-bottom: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: rgba(4, 9, 22, 0.7);
+    border-left-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-payoff-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 20px;
+}
+
+.reward-screen .reward-payoff-row__key {
+    width: 168px;
+    min-width: 168px;
+    min-height: 18px;
+    color: var(--sm-gold-200);
+    font-size: var(--sm-fs-s);
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-payoff-row__value {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 18px;
+    color: var(--sm-ink-1);
+    font-size: var(--sm-fs-s);
+    white-space: normal;
+}
+
+/* --- 4. 카드 세 장 -------------------------------------------------------
+   화면의 주인공이다. 남은 세로를 전부 가져간다. */
+
+.reward-screen .reward-card-row {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.reward-screen .reward-card {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    max-width: 420px;
+    margin-left: 9px;
+    margin-right: 9px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 18px;
+    padding-bottom: 16px;
+    align-items: center;
+    background-color: rgba(15, 24, 48, 0.94);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: var(--sm-gold-300-a42);
+    border-right-color: var(--sm-gold-300-a42);
+    border-top-color: var(--sm-gold-300-a42);
+    border-bottom-color: var(--sm-gold-300-a42);
+}
+
+/* 시안의 카드 아트는 원형 액자 안의 렌더링된 일러스트다. 지금은 그 자산이 없어서
+   원형 액자와 문양 자리만 세운다 — 자산이 오면 이 액자 안이 채워진다. */
+.reward-screen .reward-card__art {
+    width: 172px;
+    height: 172px;
+    min-height: 172px;
+    margin-bottom: 16px;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 86px;
+    border-top-right-radius: 86px;
+    border-bottom-left-radius: 86px;
+    border-bottom-right-radius: 86px;
+    border-width: 2px;
+    border-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-card__title {
+    margin: 0;
+    min-height: 30px;
+    color: var(--sm-vellum);
+    font-size: 24px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* 시안이 제목과 효과 사이에 둔 얇은 금색 가로선. */
+.reward-screen .reward-card__rule {
+    height: 1px;
+    min-height: 1px;
+    width: 76%;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    background-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-card__body {
+    margin: 0;
+    color: var(--sm-ink-1);
+    font-size: 15px;
+    line-height: 22px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.reward-screen .reward-card__context {
+    margin-top: 8px;
+    color: var(--sm-ink-2);
+    font-size: 12px;
+    line-height: 17px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* 시안의 분류 칩(재화 / 장비 / 전술). CTA 바로 위에 붙는다. */
+.reward-screen .reward-card__kind {
+    align-self: center;
+    margin-top: auto;
+    margin-bottom: 12px;
+    min-height: 24px;
+    padding-left: 14px;
+    padding-right: 14px;
+    color: var(--sm-gold-200);
+    font-size: 13px;
+    -unity-text-align: middle-center;
+    background-color: var(--sm-gold-300-a12);
+    border-width: 1px;
+    border-color: var(--sm-gold-300-a42);
+}
+
+.reward-screen .reward-card__cta {
+    width: 100%;
+    min-height: 44px;
+    font-size: 17px;
+}
+
+/* --- 5. 생존자 스트립 ----------------------------------------------------
+   시안에 없다. 시안 이후에 생긴 실데이터(HP/Lv)라 시안의 여백에 가로로 눕힌다. */
+
+.reward-screen .reward-survivor-strip {
+    flex-direction: row;
+    align-items: center;
+    min-height: 62px;
+    margin-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: rgba(4, 9, 22, 0.7);
+    border-top-width: 1px;
+    border-top-color: var(--sm-gold-300-a24);
+}
+
+.reward-screen .reward-survivor-strip__title {
+    width: 96px;
+    min-width: 96px;
+    min-height: 18px;
+    color: var(--sm-gold-200);
+    font-size: var(--sm-fs-eb);
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+}
+
+.reward-screen .reward-survivor-rows {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+}
+
+.reward-screen .reward-survivor-row {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: rgba(15, 24, 48, 0.8);
+    border-width: 1px;
+    border-color: var(--sm-gold-300-a24);
+}
+
+.reward-screen .reward-survivor-row__portrait {
+    width: 26px;
+    min-width: 26px;
+    min-height: 20px;
+    margin-right: 8px;
+    color: var(--sm-gold-300);
+    font-size: 17px;
+    -unity-text-align: middle-center;
+}
+
+.reward-screen .reward-survivor-row__copy {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.reward-screen .reward-survivor-row__name {
+    min-height: 16px;
+    color: var(--sm-vellum);
+    font-size: var(--sm-fs-eb);
+    -unity-font-style: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reward-screen .reward-survivor-row__stats {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.reward-screen .reward-survivor-row__hp-bar {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: row;
+    height: 13px;
+    background-color: rgba(6, 10, 20, 0.92);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.55);
+}
+
+.reward-screen .reward-survivor-row__hp-fill {
+    height: 100%;
+    background-color: var(--sm-state-safe-a86);
+}
+
+.reward-screen .reward-survivor-row__hp {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    color: var(--sm-vellum);
+    font-size: 10px;
+    -unity-text-align: middle-center;
+}
+
+.reward-screen .reward-survivor-row__exp {
+    min-width: 84px;
+    min-height: 14px;
+    margin-left: 8px;
+    color: var(--sm-ink-2);
+    font-size: 10px;
+    -unity-text-align: middle-right;
+}
+
+/* --- 6. 하단 힌트 + CTA --------------------------------------------------- */
+
+.reward-screen .reward-bible__status-band {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+    min-height: 58px;
+    padding-left: 4px;
+    padding-right: 0;
+    background-color: var(--sm-transparent);
+    border-left-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-top-width: 1px;
+    border-top-color: var(--sm-gold-300-a24);
+}
+
+.reward-screen .reward-bible__status-hint {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 20px;
+    margin-right: 20px;
+    color: var(--sm-ink-1);
+    font-size: var(--sm-fs-s);
+    white-space: normal;
+}
+
+.reward-screen .reward-bible__cta {
+    min-width: 260px;
+    min-height: 46px;
+    font-size: 17px;
+    -unity-font-style: bold;
+}

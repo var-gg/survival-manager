@@ -1823,8 +1823,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 22px;
-    min-height: 22px;
+    height: 26px;
+    min-height: 26px;
     margin-bottom: 8px;
     padding-left: 2px;
     padding-right: 2px;
@@ -1836,7 +1836,10 @@
     border-bottom-color: var(--sm-state-danger-a42);
 }
 
+/* 라벨 높이를 명시하지 않으면 헤더의 align-items:center 아래에서 폰트 크기보다
+   낮게 눌린다(위트니스가 10.5 < 11 로 잡았다) — 글자 위아래가 잘리는 자리다. */
 .battle-screen .sm-bs-rail-title {
+    min-height: 16px;
     color: var(--sm-gold-200);
     font-size: var(--sm-fs-eb);
     letter-spacing: 2px;
@@ -1849,6 +1852,7 @@
 
 .battle-screen .sm-bs-rail-summary {
     margin-top: 0;
+    min-height: 16px;
     color: var(--sm-ink-2);
     font-size: var(--sm-fs-eb);
     white-space: nowrap;

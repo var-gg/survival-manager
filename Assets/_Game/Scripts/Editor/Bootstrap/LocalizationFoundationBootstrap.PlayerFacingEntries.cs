@@ -183,8 +183,13 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.reward.loot.trait_lock"] = ("특성 고정권", "Trait Lock", false),
             ["ui.reward.loot.trait_purge"] = ("특성 정화권", "Trait Purge", false),
             ["ui.reward.loot.unknown"] = ("알 수 없는 전리품", "Unknown loot", false),
-            ["ui.reward.panel.progression"] = ("진행", "Progression", false),
-            ["ui.reward.panel.timeline"] = ("전투 흐름", "Timeline", false),
+            // 시안(ui_ux_bible_reward_v1)의 결과 줄과 화폐 칩.
+            // "진행"·"전투 흐름" 패널 키는 2026-07-31 에 사라졌다 — 둘 다 계측 패널이었다.
+            ["ui.reward.result.victory"] = ("승리", "Victory", false),
+            ["ui.reward.result.defeat"] = ("패배", "Defeat", false),
+            ["ui.reward.chip.gold"] = ("골드 +{0}", "Gold +{0}", false),
+            ["ui.reward.chip.echo"] = ("잔향 +{0}", "Echo +{0}", false),
+            ["ui.reward.chip.loot"] = ("전리품 {0}점", "{0} items", false),
             ["ui.reward.settlement.chip.affinity_boost"] = ("상성 보너스 +{0}%", "Affinity Boost +{0}%", true),
             ["ui.reward.settlement.chip.reward_bias"] = ("보상 편향 +{0}%", "Reward Bias +{0}%", true),
             ["ui.reward.settlement.chip.threat_pressure"] = ("위협 압력 +{0}%", "Threat Pressure +{0}%", true),
