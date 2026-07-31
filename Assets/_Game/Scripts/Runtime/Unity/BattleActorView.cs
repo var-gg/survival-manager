@@ -1455,7 +1455,15 @@ public sealed class BattleActorView : MonoBehaviour
 
         if (_overlayHpBarRoot != null)
         {
-            _overlayHpBarRoot.SetActive(_options.ShowOverheadUi);
+            // 죽은 유닛의 HP 바는 내린다.
+            //
+            // 이 토글은 원래 ShowOverheadUi 만 봤다. 그래서 <b>시체 위에도 바가 계속 떠 있었다</b> —
+            // 전투 종료 화면을 처음 캡쳐하고 나서야 보였다(아군 전멸 판에 회색 가로선 네 개가
+            // 그대로 남아 있었다). 살아 있는 동안만 볼 수 있는 화면이 아니었는데도
+            // 종료 화면을 자동으로 볼 방법이 없어서 아무도 못 봤다.
+            //
+            // 0 이 된 바는 정보가 아니다 — 사망은 이미 자세·그림자·파티 카드가 말한다.
+            _overlayHpBarRoot.SetActive(_options.ShowOverheadUi && (_currentState?.IsAlive ?? true));
         }
 
         if (_floatingText != null)

@@ -582,10 +582,17 @@ public sealed class BattleScreenPresenter
             return Localize(GameLocalizationTables.UIBattle, "ui.battle.result.in_progress", "Battle in progress");
         }
 
-        var outcome = step.Winner == TeamSide.Ally
+        // 승패만 낸다.
+        //
+        // 원래는 "{0} | {1:000} steps | {2} events" 로 스텝 수와 이벤트 수를 붙여서
+        // 화면에 <b>"패배 | 185 스텝 | 이벤트 0개"</b> 가 떴다. 스텝 인덱스와 이벤트 카운트는
+        // 계측치지 플레이어가 읽을 결과가 아니다. 게다가 패배는 이 게임에서 감정적 정점인데
+        // 그 자리에 텔레메트리를 얹으면 정점이 아니라 로그 줄이 된다.
+        //
+        // 남은 서식 인자를 쓰지 않으므로 totalEventCount 도 더 이상 결과 문구에 관여하지 않는다.
+        return step.Winner == TeamSide.Ally
             ? Localize(GameLocalizationTables.UIBattle, "ui.battle.result.victory", "Victory")
             : Localize(GameLocalizationTables.UIBattle, "ui.battle.result.defeat", "Defeat");
-        return Localize(GameLocalizationTables.UIBattle, "ui.battle.result.summary", "{0} | {1:000} steps | {2} events", outcome, step.StepIndex, totalEventCount);
     }
 
     private string BuildLogText(
