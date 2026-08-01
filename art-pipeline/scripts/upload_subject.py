@@ -208,6 +208,198 @@ DISABLE_PRO_MODE_JS = """
 }
 """
 
+# 모델/Thinking 레벨 셀렉터에서 목표 라벨(예: '중간')을 선택.
+# gpt-pro-submit submit.py의 ENABLE_PRO_MODE_JS 파인더를 이식 — composer 근처의
+# 짧은 모델 라벨 텍스트(지능/즉시/중간/높음/Instant/Thinking/Pro 등)를 트리거로 잡고
+# 드롭다운에서 목표 항목을 넓은 후보 탐색으로 클릭한다.
+SET_THINKING_MODE_JS = """
+async (targetLabel) => {
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const normalizeText = (value) => (value || '')
+    .replace(/\\u00a0/g, ' ')
+    .replace(/[\\u200B-\\u200D\\uFEFF]/g, '')
+    .replace(/\\s+/g, ' ')
+    .trim();
+  const compactOf = (txt) => normalizeText(txt).replace(/[\\s·•・\\-]+/g, '');
+  const target = compactOf(targetLabel);
+  const isVisible = (el) => {
+    if (!el || !(el instanceof Element)) return false;
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return false;
+    const style = window.getComputedStyle(el);
+    return style.visibility !== 'hidden' && style.display !== 'none' && Number(style.opacity || 1) > 0;
+  };
+  const clickElement = (el) => {
+    el.scrollIntoView({ block: 'center', inline: 'center' });
+    const init = { bubbles: true, cancelable: true, view: window };
+    try {
+      el.dispatchEvent(new PointerEvent('pointerdown', init));
+      el.dispatchEvent(new PointerEvent('pointerup', init));
+    } catch (_) {}
+    el.dispatchEvent(new MouseEvent('mousedown', init));
+    el.dispatchEvent(new MouseEvent('mouseup', init));
+    el.dispatchEvent(new MouseEvent('click', init));
+    if (typeof el.click === 'function') el.click();
+  };
+  const elementText = (el) => {
+    const seen = new Set();
+    const parts = [
+      el.innerText || '',
+      el.textContent || '',
+      el.getAttribute('aria-label') || '',
+      el.getAttribute('title') || '',
+    ].map(normalizeText).filter(Boolean).filter((p) => {
+      if (seen.has(p)) return false;
+      seen.add(p);
+      return true;
+    });
+    return normalizeText(parts.join(' '));
+  };
+  function clickableFor(el) {
+    let cur = el;
+    for (let i = 0; cur && i < 6; i += 1, cur = cur.parentElement) {
+      const role = cur.getAttribute('role') || '';
+      if (
+        cur.tagName === 'BUTTON' || cur.tagName === 'A' ||
+        role === 'menuitem' || role === 'option' || role === 'menuitemradio' ||
+        cur.hasAttribute('data-radix-collection-item') || cur.hasAttribute('cmdk-item') ||
+        cur.getAttribute('tabindex') === '0'
+      ) return cur;
+    }
+    return el;
+  }
+
+  const EXCLUDE_TRIGGER_RE = /send|보내기|voice|음성|microphone|마이크|upload|attach|첨부|new chat|새 채팅|source|소스|conversation|대화 옵션|compare|비교|enterprise/i;
+  const promptEl = document.getElementById('prompt-textarea');
+  const isModelLabelText = (txt) => {
+    const text = normalizeText(txt);
+    if (!text || text.length > 48) return false;
+    if (EXCLUDE_TRIGGER_RE.test(text)) return false;
+    const compact = compactOf(text);
+    return (
+      /^Pro(?:확장|Extended)?(?:선택됨|Selected)?$/i.test(compact) ||
+      /^(Instant|Thinking|지능|즉시|중간|높음|매우높음|최신)(?:선택됨|Selected)?$/i.test(compact) ||
+      /^GPT(?:-)?[0-9](?:\\.[0-9])?(?:선택됨|Selected)?$/i.test(compact) ||
+      /^5\\.[0-9](?:선택됨|Selected)?$/i.test(compact)
+    );
+  };
+
+  const findModelButton = () => {
+    const validCandidate = (el) => {
+      if (!el || !isVisible(el)) return false;
+      const txt = elementText(el);
+      if (!txt || txt.length > 80) return false;
+      return isModelLabelText(txt);
+    };
+    const directSelectors = [
+      'button[data-testid="model-switcher-dropdown-button"]',
+      '[role="button"][data-testid="model-switcher-dropdown-button"]',
+      'button[data-testid*="model" i]',
+      '[role="button"][data-testid*="model" i]',
+      'button[aria-label*="model" i]',
+      'button[aria-label*="모델"]',
+    ];
+    for (const sel of directSelectors) {
+      try {
+        const el = document.querySelector(sel);
+        if (validCandidate(el)) return { el, via: `selector:${sel}` };
+      } catch (_) {}
+    }
+    for (const b of document.querySelectorAll('button[aria-haspopup], [role="button"][aria-haspopup], div[aria-haspopup]')) {
+      if (validCandidate(b)) return { el: b, via: 'aria-haspopup+label' };
+    }
+    for (const b of document.querySelectorAll('button, [role="button"]')) {
+      if (validCandidate(b)) return { el: b, via: 'text-only' };
+    }
+    if (promptEl) {
+      const pr = promptEl.getBoundingClientRect();
+      const candidates = [];
+      for (const el of document.querySelectorAll('div, span, p')) {
+        if (!isVisible(el)) continue;
+        const txt = elementText(el);
+        if (!isModelLabelText(txt)) continue;
+        const r = el.getBoundingClientRect();
+        const sameComposerBand = Math.abs((r.top + r.height / 2) - (pr.top + pr.height / 2)) < 90;
+        const rightOfPromptStart = r.left > pr.left;
+        if (!sameComposerBand || !rightOfPromptStart) continue;
+        candidates.push({ el: clickableFor(el), x: r.left });
+      }
+      candidates.sort((a, b) => b.x - a.x);
+      if (candidates[0]) return { el: candidates[0].el, via: 'composer-near-text' };
+    }
+    return null;
+  };
+
+  let trigger = null;
+  for (let i = 0; i < 16; i += 1) {
+    trigger = findModelButton();
+    if (trigger) break;
+    await sleep(250);
+  }
+  if (!trigger) return { ok: false, stage: 'find-trigger' };
+
+  const activeLabel = elementText(trigger.el);
+  if (compactOf(activeLabel).startsWith(target)) {
+    return { ok: true, already: true, label: activeLabel };
+  }
+
+  clickElement(trigger.el);
+  await sleep(700);
+
+  const isTargetLabel = (txt) => {
+    const text = normalizeText(txt);
+    if (!text || text.length > 40) return false;
+    const compact = compactOf(text);
+    return compact === target || compact === target + '선택됨' || compact === target + 'Selected';
+  };
+  const findTarget = () => {
+    const items = document.querySelectorAll(
+      '[role="menuitem"], [role="option"], [role="menuitemradio"], [data-radix-collection-item], [cmdk-item], button, li, div, span'
+    );
+    const candidates = [];
+    for (const it of items) {
+      if (!isVisible(it)) continue;
+      const txt = normalizeText(it.innerText || it.textContent);
+      if (!isTargetLabel(txt)) continue;
+      const clickable = clickableFor(it);
+      const role = clickable.getAttribute('role') || '';
+      const rect = clickable.getBoundingClientRect();
+      const hasMenuRole = ['menuitem', 'option', 'menuitemradio'].includes(role);
+      const score = (hasMenuRole ? 0 : 10) + (clickable.tagName === 'BUTTON' ? 1 : 0) + Math.min(20, txt.length);
+      candidates.push({ el: clickable, text: txt, role, area: Math.round(rect.width * rect.height), score });
+    }
+    candidates.sort((a, b) => a.score - b.score || b.area - a.area);
+    return candidates[0] || null;
+  };
+  const menuTexts = () => {
+    const seen = new Set();
+    const out = [];
+    for (const it of document.querySelectorAll('[role="menuitem"], [role="option"], [role="menuitemradio"], li, button')) {
+      if (!isVisible(it)) continue;
+      const txt = normalizeText(it.innerText || it.textContent);
+      if (!txt || txt.length > 50 || seen.has(txt)) continue;
+      seen.add(txt);
+      out.push(txt);
+      if (out.length >= 20) break;
+    }
+    return out;
+  };
+
+  let item = findTarget();
+  if (!item) {
+    await sleep(900);
+    item = findTarget();
+  }
+  if (!item) {
+    document.body.click();
+    return { ok: false, stage: 'find-item', triggerLabel: activeLabel, menuTexts: menuTexts() };
+  }
+  clickElement(item.el);
+  await sleep(500);
+  return { ok: true, previousLabel: activeLabel, selected: item.text, role: item.role };
+}
+"""
+
 
 # -------------------------------------------------------------------------
 # Window minimize helpers (PID-scoped, Windows-only)
@@ -364,6 +556,40 @@ def disable_pro_mode(page: Page) -> None:
         page.wait_for_timeout(800)
 
 
+def set_thinking_mode(page: Page, label: str) -> None:
+    """composer의 모델/Thinking 레벨 셀렉터에서 label(예: '중간')을 선택.
+
+    Pro 쿼터를 태우지 않기 위한 명시적 다운시프트. 셀렉터/메뉴 구조가 바뀌어
+    못 찾아도 non-fatal — 경고만 남기고 진행한다 (disable_pro_mode가 최소 방어선).
+    """
+    try:
+        result = page.evaluate(SET_THINKING_MODE_JS, label)
+    except Exception as e:
+        print(
+            f"[imagegen] WARNING: thinking mode {label!r} evaluate failed (non-fatal): {type(e).__name__}",
+            file=sys.stderr,
+        )
+        return
+    if isinstance(result, dict) and result.get("ok"):
+        if result.get("already"):
+            print(f"[imagegen] thinking mode already {result.get('label')!r}", file=sys.stderr)
+        else:
+            print(
+                f"[imagegen] thinking mode set: {result.get('previousLabel')!r} -> {result.get('selected')!r}",
+                file=sys.stderr,
+            )
+        page.wait_for_timeout(400)
+    else:
+        print(
+            f"[imagegen] WARNING: thinking mode {label!r} selection failed (non-fatal): {result}",
+            file=sys.stderr,
+        )
+        try:
+            page.keyboard.press("Escape")
+        except Exception:
+            pass
+
+
 def force_new_chat(page: Page, project_url: str) -> None:
     current_url = page.url
     if "/c/" in current_url:
@@ -440,8 +666,45 @@ def submit_prompt(page: Page) -> None:
     print("[imagegen] submitting", file=sys.stderr)
     btn = page.locator('button[aria-label="프롬프트 보내기"], button[data-testid="send-button"]').first
     btn.wait_for(state="visible", timeout=10_000)
-    btn.click()
-    page.wait_for_timeout(2000)
+    # 첨부 처리/상시 애니메이션 탓에 버튼이 "not stable"로 남아 locator 클릭이
+    # 영영 타임아웃나는 케이스가 실측됨 (Playwright 안정성 검사 통과 불가).
+    # 1) locator 클릭 3회 → 2) JS 직접 클릭(안정성 검사 우회) → 3) composer에서 Enter.
+    last_err: Exception | None = None
+    for attempt in range(3):
+        try:
+            btn.click(timeout=15_000)
+            page.wait_for_timeout(2000)
+            return
+        except Exception as e:
+            last_err = e
+            print(
+                f"[imagegen] send click not ready (attempt {attempt + 1}/3) — waiting for attachments to settle",
+                file=sys.stderr,
+            )
+            page.wait_for_timeout(4000)
+    print("[imagegen] falling back to JS click (bypasses stability check)", file=sys.stderr)
+    try:
+        clicked = page.evaluate(
+            """() => {
+              const b = document.querySelector('button[aria-label="프롬프트 보내기"], button[data-testid="send-button"]');
+              if (!b || b.disabled) return false;
+              b.click();
+              return true;
+            }"""
+        )
+        if clicked:
+            page.wait_for_timeout(2000)
+            return
+    except Exception as e:
+        last_err = e
+    print("[imagegen] falling back to Enter key in composer", file=sys.stderr)
+    try:
+        page.locator("#prompt-textarea").first.press("Enter", timeout=5_000)
+        page.wait_for_timeout(2000)
+        return
+    except Exception as e:
+        last_err = e
+    raise RuntimeError(f"send button never became clickable: {last_err}")
 
 
 def poll_for_image(page: Page, timeout_s: int, initial_srcs: list[str]) -> dict[str, Any]:
@@ -571,6 +834,12 @@ def main() -> int:
     ap.add_argument("--keep-browser-open", action="store_true", help="don't close browser after completion")
     ap.add_argument("--no-minimized", action="store_true", help="do not start browser minimized")
     ap.add_argument("--no-chroma", action="store_true", help="skip chroma cutout (raw save only)")
+    ap.add_argument(
+        "--thinking-mode",
+        type=str,
+        default=None,
+        help="composer Thinking 레벨 라벨 선택 (예: '중간'). 미지정 시 기존 동작 그대로",
+    )
     args = ap.parse_args()
 
     if args.subject is not None and args.subject_json is not None:
@@ -681,6 +950,8 @@ def main() -> int:
                 minimize_chrome_windows(pids, timeout_s=1.0)
             force_new_chat(page, config["chatgpt_project_url"])
             disable_pro_mode(page)
+            if args.thinking_mode:
+                set_thinking_mode(page, args.thinking_mode)
             upload_refs(page, ref_paths)
             inject_prompt(page, prompt)
             initial_srcs = snapshot_initial_imgs(page)
