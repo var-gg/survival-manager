@@ -187,13 +187,14 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
             {
                 var node = ringNodes[i];
                 var (left, top) = ComputeRingPosition(depth, i, ringNodes.Count);
+                var iconKey = ResolveNodeIconKey(node);
                 result.Add(new PassiveBoardNodeViewState(
                     NodeId: node.Id,
                     KindKey: node.NodeKind.ToString().ToLowerInvariant(),
                     Left: left,
                     Top: top,
-                    IconKey: string.Empty,  // TODO: node icon mapping (CompileTags 기반)
-                    IconSprite: null,       // sprite는 Bootstrap mock에서만 — runtime은 affix 매핑 후
+                    IconKey: iconKey,
+                    IconSprite: _affixSprite(iconKey),
                     RuleSummary: GetPassiveNodeDescription(node.Id),
                     Tags: string.Join(" · ", node.CompileTags.Select(t => t?.ToString() ?? string.Empty).Where(s => s.Length > 0)),
                     IsActive: activeNodeIds.Contains(node.Id)));
@@ -201,6 +202,61 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
         }
         return result;
     }
+
+    /// <summary>
+    /// 노드가 무엇을 하는지 아이콘 하나로 말하게 한다.
+    ///
+    /// 2026-07-31 까지 모든 노드가 <b>무지 파란 사각형/원</b>이었다 — 프리젠터가
+    /// <c>IconSprite: null</c> 을 내려보내고 있었고, 주입된 affix 스프라이트 로더는
+    /// 한 번도 호출되지 않았다("TODO: node icon mapping"). 클릭해서 상세를 열기 전에는
+    /// 어느 노드가 공격이고 어느 노드가 방어인지 화면이 전혀 말하지 않았다.
+    ///
+    /// 노드의 첫 스탯 수정자를 축으로 잡는다 — 노드가 실제로 바꾸는 값이고, affix 아이콘
+    /// 세트가 이미 같은 축(공격·체력·치명·방어…)으로 그려져 있다.
+    /// </summary>
+    private static string ResolveNodeIconKey(PassiveNodeDefinition node)
+    {
+        foreach (var modifier in node.Modifiers)
+        {
+            if (StatIconTokens.TryGetValue(modifier.StatId ?? string.Empty, out var token))
+            {
+                return token;
+            }
+        }
+
+        // 스탯을 안 바꾸고 스킬만 주는 노드(키스톤에 많다)는 등급 표식으로 둔다.
+        return node.NodeKind == SM.Core.Content.PassiveNodeKindValue.Keystone ? "charge" : "link";
+    }
+
+    /// <summary>스탯 축 → affix 아이콘 토큰. 아이콘 세트에 있는 24종 안에서만 고른다.</summary>
+    private static readonly IReadOnlyDictionary<string, string> StatIconTokens =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["phys_power"] = "atk",
+            ["mag_power"] = "magic_atk",
+            ["max_health"] = "hp",
+            ["crit_chance"] = "crit",
+            ["crit_multiplier"] = "crit",
+            ["armor"] = "armor",
+            ["resist"] = "resist_magic",
+            ["tenacity"] = "block",
+            ["protect_radius"] = "aura",
+            ["aggro_radius"] = "taunt",
+            ["move_speed"] = "speed",
+            ["attack_speed"] = "cast_speed",
+            ["cooldown_recovery"] = "cooldown",
+            ["attack_windup"] = "charge",
+            ["projectile_speed"] = "charge",
+            ["attack_range"] = "pierce",
+            ["preferred_distance"] = "pierce",
+            ["phys_pen"] = "pierce",
+            ["mag_pen"] = "amplify",
+            ["heal_power"] = "heal",
+            ["lifesteal"] = "lifesteal",
+            ["mana_max"] = "mana",
+            ["mana_gain_on_hit"] = "mana",
+            ["target_switch_delay"] = "link",
+        };
 
     /// <summary>BoardDepth ring layout — depth 0=center, 1=inner ring(r 0.18), 2+=outer ring(r 0.36).</summary>
     private static (float Left, float Top) ComputeRingPosition(int depth, int index, int ringCount)
@@ -248,7 +304,8 @@ public sealed class PassiveBoardPresenter : IPassiveBoardActions
                 ? (selected.IsActive ? "활성" : "비활성")
                 : toggleFailureLabel,
             ButtonLabel: selected.IsActive ? "해제" : "활성화",
-            IconSprite: null);
+            // 보드에서 고른 노드와 같은 아이콘을 상세에도 띄운다 — 눈이 둘을 잇는다.
+            IconSprite: selected.IconSprite);
     }
 
     private PassiveBoardFooterViewState BuildFooter(string boardId, IReadOnlyList<PassiveBoardNodeViewState> nodes)

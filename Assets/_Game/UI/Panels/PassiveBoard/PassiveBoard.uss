@@ -58,7 +58,9 @@
     width: 36%; height: 44%;
     background-image: url("project://database/Assets/_Game/UI/Foundation/Sprites/Frame/glow_halo_warm_gold.png");
     -unity-background-scale-mode: scale-to-fit;
-    opacity: 0.13;
+    /* 2026-07-31 자산 수리 후 재조정. 노드에 실제 아이콘이 붙으면서 보드의 주인공이
+       분명해졌으므로, 중앙 온기는 두 단계 더 물러난다(0.13 → 0.05). */
+    opacity: 0.05;
 }
 .pbp-board__ring {
     position: absolute;
@@ -85,7 +87,7 @@
 .pbp-board__ring-core {
     position: absolute;
     left: 40%; top: 31%; width: 12%; height: 18%;
-    background-color: rgba(200,147,42,0.14);
+    background-color: rgba(200,147,42,0.09);
     border-top-left-radius: 50%; border-top-right-radius: 50%;
     border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;
 }
