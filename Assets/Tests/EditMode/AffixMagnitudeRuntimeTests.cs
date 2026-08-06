@@ -129,18 +129,33 @@ public sealed class AffixMagnitudeRuntimeTests
         session.BindProfile(new SaveProfile
         {
             ProfileId = "magnitude-legacy-bind",
+            // hero 를 비우면 bind 가 데모 프로필을 대신 심어 인벤토리가 이 아이템만 있지 않게 된다.
+            Heroes = new List<HeroInstanceRecord>
+            {
+                new() { HeroId = "magnitude-legacy-hero", EquippedItemIds = new List<string>() },
+            },
             Inventory = new List<InventoryItemRecord>
             {
                 CreateStrandedItem(itemBaseId, affixIds),
             },
         });
 
-        var bound = session.Profile.Inventory.Single();
+        var bound = session.Profile.Inventory.Single(item =>
+            string.Equals(item.ItemInstanceId, "item-instance-legacy", StringComparison.Ordinal));
         Assert.That(bound.AffixIds, Is.Not.Empty);
         Assert.That(
             bound.AffixMagnitudeRolls.Select(roll => roll.AffixId),
             Is.EqualTo(bound.AffixIds),
             "굴림 없는 접사를 남기면 그 아이템은 저작 기준값으로 싸우고 Seal 도 쓸 수 없다.");
+
+        // 로드가 끝난 인벤토리에는 굴림 없는 접사가 한 개도 남아 있으면 안 된다.
+        foreach (var item in session.Profile.Inventory)
+        {
+            Assert.That(
+                item.AffixMagnitudeRolls.Select(roll => roll.AffixId),
+                Is.EqualTo(item.AffixIds),
+                $"item '{item.ItemInstanceId}' 의 접사와 굴림이 어긋난 채로 로드를 통과했다.");
+        }
     }
 
     private static IReadOnlyList<string> CreateAffixIds(
@@ -201,9 +216,10 @@ public sealed class AffixMagnitudeRuntimeTests
                 "Life Steal +0.05",
                 "Max Health -5%",
             }));
+            // 굴림 문맥 문구는 시드 폴백을 그대로 쓴다 — 한국어 화면 문구가 곧 기대값이다.
             Assert.That(
                 text.FormatAffixRollContext(readout),
-                Is.EqualTo("Roll quality 100%"));
+                Is.EqualTo("굴림 품질 100%"));
         }
         finally
         {
@@ -226,7 +242,8 @@ public sealed class AffixMagnitudeRuntimeTests
             Assert.That(readout.HasPersistedRoll, Is.False);
             Assert.That(readout.Effects[0].Value, Is.EqualTo(0.04f).Within(0.000001f));
             Assert.That(readout.Effects[1].Value, Is.EqualTo(-0.04f).Within(0.000001f));
-            Assert.That(rollContext, Is.EqualTo("Legacy baseline"));
+            Assert.That(rollContext, Is.EqualTo("굴림 없음 · 기본치"));
+            Assert.That(rollContext, Does.Not.Contain("품질"));
             Assert.That(rollContext, Does.Not.Contain("quality").IgnoreCase);
             Assert.That(rollContext, Does.Not.Contain("%"));
         }

@@ -208,7 +208,8 @@ public sealed class SiteEventSessionController
                     ? new List<string>()
                     : new List<string> { grant.AffixId },
             };
-            _session.EnsureAffixMagnitudeRolls(granted);
+            // 굴림 없이 인벤토리에 들어간 아이템은 다음 로드까지 기준값으로 싸우고 Seal 도 못 쓴다.
+            _session.InventoryItemBuilder.EnsureAffixMagnitudeRolls(granted, granted.ItemBaseId);
             _session.Profile.Inventory.Add(granted);
         }
 
