@@ -151,10 +151,29 @@ public sealed class PassiveBoardView : IPassiveBoardView
         }
     }
 
+    /// <summary>
+    /// 노드를 아직 안 골랐을 때는 <b>빈 자리를 비워 둔다</b>. 2026-07-31 까지 이 패널은
+    /// 등급 바와 가용 라벨에 "—" 를 찍어, 값이 없다는 사실을 값처럼 보여 주고 있었다.
+    /// 태그 라벨은 이미 같은 방식으로 숨고 있었다 — 나머지도 그 선례를 따른다.
+    /// </summary>
     private void RenderDetail(PassiveBoardDetailViewState detail)
     {
-        if (detail.IconSprite != null) _detailIcon.style.backgroundImage = new StyleBackground(detail.IconSprite);
-        if (_tierLabel != null) _tierLabel.text = detail.KindLabel;
+        // 이전 선택의 아이콘이 남지 않도록 null 도 반영한다.
+        _detailIcon.style.backgroundImage = detail.IconSprite != null
+            ? new StyleBackground(detail.IconSprite)
+            : new StyleBackground();
+        _detailIcon.style.display = detail.IconSprite != null ? DisplayStyle.Flex : DisplayStyle.None;
+
+        if (_tierLabel != null)
+        {
+            _tierLabel.text = detail.KindLabel;
+            // 등급 바는 라벨 하나만 담은 띠라, 라벨이 비면 띠째로 사라져야 빈 상자가 안 생긴다.
+            var tierBar = _tierLabel.parent ?? _tierLabel;
+            tierBar.style.display = string.IsNullOrEmpty(detail.KindLabel)
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
+        }
+
         if (_detailTitle != null) _detailTitle.text = detail.TitleText;
         if (_detailDesc != null) _detailDesc.text = detail.RuleSummary;
         if (_detailTags != null)
@@ -164,7 +183,14 @@ public sealed class PassiveBoardView : IPassiveBoardView
                 ? DisplayStyle.None
                 : DisplayStyle.Flex;
         }
-        if (_availableLabel != null) _availableLabel.text = detail.AvailableLabel;
+
+        if (_availableLabel != null)
+        {
+            _availableLabel.text = detail.AvailableLabel;
+            _availableLabel.style.display = string.IsNullOrEmpty(detail.AvailableLabel)
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
+        }
         if (_activateButton != null)
         {
             _activateButton.text = detail.ButtonLabel;

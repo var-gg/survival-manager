@@ -117,14 +117,16 @@ public static class AffixMagnitudePresentation
         if (readout == null) throw new ArgumentNullException(nameof(readout));
         if (localize == null) throw new ArgumentNullException(nameof(localize));
 
+        // 굴림이 기록돼 있을 때만 굴림 품질을 말한다. 기록이 없으면 위치를 계산할 수는 있지만
+        // 그 수치는 <b>굴린 적 없는 값</b>이라 화면에 띄우면 없는 사실을 지어내는 것이다.
         return readout.HasPersistedRoll
             ? localize(
                 "ui.town.refit.affix.roll_quality",
-                "Roll quality {0:0}%",
+                "굴림 품질 {0:0}%",
                 readout.RollPosition * 100d)
             : localize(
                 "ui.town.refit.affix.legacy_baseline",
-                "Legacy baseline");
+                "굴림 없음 · 기본치");
     }
 
     private static IReadOnlyList<AffixMagnitudeEffectReadout> ResolveEffects(

@@ -1242,18 +1242,34 @@ public sealed class BattleActorView : MonoBehaviour
         _nameText = CreateOverlayText(_overlayRoot, "NameText", font, new Vector2(0f, -3f), new Vector2(OverlayScreenWidth, 16f), 12, TextAnchor.MiddleCenter);
         _stateText = CreateOverlayText(_overlayRoot, "StateText", font, new Vector2(0f, -3f), new Vector2(OverlayScreenWidth, 16f), 12, TextAnchor.MiddleCenter);
 
+        // 머리 위 체력 막대는 2026-07-31 까지 <b>테두리 없는 초록/빨강 사각형</b>이었다.
+        // 체력이 가득 차면 채움이 뒷판을 완전히 덮어서 전장 위에 원색 막대만 남았고,
+        // 그게 이 화면을 디버그 오버레이처럼 보이게 하던 원인 중 하나였다.
+        // 얇은 금색 테 → 검은 뒷판 → 1px 안쪽으로 들어간 채움. 세 겹이면 만든 물건처럼 읽힌다.
+        var barTrimGo = new GameObject("HpBarTrim", typeof(RectTransform));
+        barTrimGo.transform.SetParent(_overlayRoot, false);
+        _overlayHpBarRoot = barTrimGo;
+        var barTrimRect = barTrimGo.GetComponent<RectTransform>();
+        barTrimRect.anchorMin = new Vector2(0.5f, 0f);
+        barTrimRect.anchorMax = new Vector2(0.5f, 0f);
+        barTrimRect.pivot = new Vector2(0.5f, 0f);
+        barTrimRect.anchoredPosition = new Vector2(0f, 7f);
+        barTrimRect.sizeDelta = new Vector2(OverlayHpWidth + 2f, OverlayHpHeight + 2f);
+
+        var barTrimImage = barTrimGo.AddComponent<Image>();
+        barTrimImage.color = new Color(0.78f, 0.62f, 0.30f, 0.62f);
+        barTrimImage.raycastTarget = false;
+
         var barBackGo = new GameObject("HpBarBack", typeof(RectTransform));
-        barBackGo.transform.SetParent(_overlayRoot, false);
-        _overlayHpBarRoot = barBackGo;
+        barBackGo.transform.SetParent(barTrimRect, false);
         var barBackRect = barBackGo.GetComponent<RectTransform>();
-        barBackRect.anchorMin = new Vector2(0.5f, 0f);
-        barBackRect.anchorMax = new Vector2(0.5f, 0f);
-        barBackRect.pivot = new Vector2(0.5f, 0f);
-        barBackRect.anchoredPosition = new Vector2(0f, 7f);
-        barBackRect.sizeDelta = new Vector2(OverlayHpWidth, OverlayHpHeight);
+        barBackRect.anchorMin = Vector2.zero;
+        barBackRect.anchorMax = Vector2.one;
+        barBackRect.offsetMin = new Vector2(1f, 1f);
+        barBackRect.offsetMax = new Vector2(-1f, -1f);
 
         var barBackImage = barBackGo.AddComponent<Image>();
-        barBackImage.color = new Color(0.04f, 0.04f, 0.04f, 0.86f);
+        barBackImage.color = new Color(0.03f, 0.04f, 0.07f, 0.94f);
         barBackImage.raycastTarget = false;
 
         var fillGo = new GameObject("HpBarFill", typeof(RectTransform));
@@ -1261,8 +1277,9 @@ public sealed class BattleActorView : MonoBehaviour
         var fillRect = fillGo.GetComponent<RectTransform>();
         fillRect.anchorMin = Vector2.zero;
         fillRect.anchorMax = Vector2.one;
-        fillRect.offsetMin = Vector2.zero;
-        fillRect.offsetMax = Vector2.zero;
+        // 채움을 1px 안쪽으로 들여 뒷판이 사방에서 테로 보이게 한다(가득 차도 원색 덩어리가 안 된다).
+        fillRect.offsetMin = new Vector2(1f, 1f);
+        fillRect.offsetMax = new Vector2(-1f, -1f);
 
         _hpFill = fillGo.AddComponent<Image>();
         _hpFill.raycastTarget = false;

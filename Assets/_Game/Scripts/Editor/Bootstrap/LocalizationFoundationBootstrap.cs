@@ -485,7 +485,10 @@ public static partial class LocalizationFoundationBootstrap
             ["ui.town.refit.status.unequipped"] = ("미장착", "Unequipped", false),
             ["ui.town.refit.status.equipped"] = ("장착: {0}", "Equipped: {0}", true),
             ["ui.town.refit.affix.roll_quality"] = ("굴림 품질 {0:0}%", "Roll quality {0:0}%", true),
-            ["ui.town.refit.affix.legacy_baseline"] = ("기존 기준값", "Legacy baseline", false),
+            // 굴림 기록이 없는 접사. "기존 기준값" 은 플레이어에게 아무 뜻이 아니었고,
+            // <b>굴림이 없다는 사실 자체</b>를 감추기까지 했다 — 저장된 프로필의 아이템 상당수가
+            // AffixIds 만 있고 AffixMagnitudeRolls 가 비어 있어서 재련 화면 모든 행이 이 문구였다.
+            ["ui.town.refit.affix.legacy_baseline"] = ("굴림 없음 · 기본치", "No recorded roll", false),
             ["ui.town.refit.affix.effect.flat"] = ("{0} {1:+0.###;-0.###;0}", "{0} {1:+0.###;-0.###;0}", true),
             ["ui.town.refit.affix.effect.percent"] = ("{0} {1:+0.###;-0.###;0}%", "{0} {1:+0.###;-0.###;0}%", true),
             ["ui.town.refit.affix.effect.clamp_min"] = ("{0} 최솟값 {1:+0.###;-0.###;0}", "{0} min {1:+0.###;-0.###;0}", true),
