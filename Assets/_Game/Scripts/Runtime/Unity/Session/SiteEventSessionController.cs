@@ -200,14 +200,16 @@ public sealed class SiteEventSessionController
         foreach (var grant in resolved.GrantedItems)
         {
             _session.Profile.ItemInstanceCounter = checked(_session.Profile.ItemInstanceCounter + 1L);
-            _session.Profile.Inventory.Add(new InventoryItemRecord
+            var granted = new InventoryItemRecord
             {
                 ItemInstanceId = $"{grant.ItemBaseId}-event-i{_session.Profile.ItemInstanceCounter.ToString(CultureInfo.InvariantCulture)}",
                 ItemBaseId = grant.ItemBaseId,
                 AffixIds = string.IsNullOrWhiteSpace(grant.AffixId)
                     ? new List<string>()
                     : new List<string> { grant.AffixId },
-            });
+            };
+            _session.EnsureAffixMagnitudeRolls(granted);
+            _session.Profile.Inventory.Add(granted);
         }
 
         _consumableIds.AddRange(resolved.GrantedConsumableIds);

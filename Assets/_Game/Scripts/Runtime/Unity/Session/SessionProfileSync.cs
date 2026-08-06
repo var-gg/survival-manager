@@ -241,6 +241,7 @@ public sealed partial class GameSessionState
 
     private void NormalizeInventoryContentIds()
     {
+        var itemBuilder = InventoryItemBuilder;
         for (var i = 0; i < Profile.Inventory.Count; i++)
         {
             var item = Profile.Inventory[i];
@@ -272,6 +273,15 @@ public sealed partial class GameSessionState
                 .Where(roll => liveAffixIds.Contains(roll.AffixId))
                 .GroupBy(roll => roll.AffixId, StringComparer.Ordinal)
                 .Select(group => group.First())
+                .ToList();
+
+            // 저장된 아이템 상당수가 AffixIds 만 있고 굴림이 비어 있다(실측 2026-08-07:
+            // default.smoke.json 163개 중 119개, default.json 41개 중 37개). 굴림이 없으면 위력은
+            // 저작 기준값으로 조용히 되돌아가고 Seal 은 아예 실패하므로, 두 필드를 다시 맞추는
+            // 마이그레이션은 로드마다 전 아이템을 훑는 이 패스가 소유한다. 접사 id 정규화가
+            // 끝난 뒤에 돌려야 정규화 전 id 로 굴림을 채우는 일이 없다.
+            itemBuilder.EnsureAffixMagnitudeRolls(item, item.ItemBaseId);
+            item.AffixMagnitudeRolls = item.AffixMagnitudeRolls
                 .OrderBy(roll => item.AffixIds.IndexOf(roll.AffixId))
                 .ToList();
         }

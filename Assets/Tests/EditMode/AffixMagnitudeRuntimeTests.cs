@@ -7,6 +7,7 @@ using SM.Content.Definitions;
 using SM.Core.Content;
 using SM.Core.Stats;
 using SM.Persistence.Abstractions.Models;
+using SM.Tests.EditMode.Fakes;
 using SM.Unity;
 using SM.Unity.UI.Town.Preview;
 using UnityEngine;
@@ -58,6 +59,114 @@ public sealed class AffixMagnitudeRuntimeTests
                    != BitConverter.SingleToInt32Bits(definition.Modifiers[0].Value);
         }), Is.True, "The generated item must carry actual magnitude variance, not copied definition constants.");
     }
+
+    [Test]
+    public void LegacySavedItem_WithAffixIdsAndNoRolls_BackfillsOneDeterministicRollPerAffix()
+    {
+        var lookup = new RuntimeCombatContentLookup();
+        var itemBaseId = lookup.GetCanonicalItemIds().First();
+        var builder = new SessionInventoryItemBuilder(lookup, BuildStableSeed);
+        var affixIds = CreateAffixIds(builder, itemBaseId);
+        var stranded = CreateStrandedItem(itemBaseId, affixIds);
+        var replica = CreateStrandedItem(itemBaseId, affixIds);
+
+        Assert.That(builder.EnsureAffixMagnitudeRolls(stranded, itemBaseId), Is.True);
+        builder.EnsureAffixMagnitudeRolls(replica, itemBaseId);
+
+        Assert.That(
+            stranded.AffixMagnitudeRolls.Select(roll => roll.AffixId),
+            Is.EqualTo(stranded.AffixIds),
+            "접사 하나당 굴림 하나가 접사 순서 그대로 있어야 한다.");
+        foreach (var roll in stranded.AffixMagnitudeRolls)
+        {
+            Assert.That(lookup.TryGetAffixDefinition(roll.AffixId, out var definition), Is.True);
+            Assert.That(roll.Magnitude, Is.InRange(
+                Math.Min(definition.ValueMin, definition.ValueMax),
+                Math.Max(definition.ValueMin, definition.ValueMax)));
+        }
+
+        Assert.That(
+            replica.AffixMagnitudeRolls.Select(roll => BitConverter.SingleToInt32Bits(roll.Magnitude)),
+            Is.EqualTo(stranded.AffixMagnitudeRolls.Select(roll => BitConverter.SingleToInt32Bits(roll.Magnitude))),
+            "같은 저장 아이템은 몇 번을 로드해도 같은 굴림을 내야 한다.");
+
+        // 두 번째 호출이 값을 건드리면 그건 굴림이 아니라 로드마다 새로 뽑는 난수다.
+        var settled = stranded.AffixMagnitudeRolls
+            .Select(roll => BitConverter.SingleToInt32Bits(roll.Magnitude))
+            .ToArray();
+        Assert.That(builder.EnsureAffixMagnitudeRolls(stranded, itemBaseId), Is.False);
+        Assert.That(
+            stranded.AffixMagnitudeRolls.Select(roll => BitConverter.SingleToInt32Bits(roll.Magnitude)),
+            Is.EqualTo(settled));
+    }
+
+    [Test]
+    public void AffixPadding_FillsMissingRolls_EvenWhenAffixCountAlreadyMeetsTarget()
+    {
+        var lookup = new RuntimeCombatContentLookup();
+        var itemBaseId = lookup.GetCanonicalItemIds().First();
+        var builder = new SessionInventoryItemBuilder(lookup, BuildStableSeed);
+        var affixIds = CreateAffixIds(builder, itemBaseId);
+        var stranded = CreateStrandedItem(itemBaseId, affixIds);
+
+        // 접사 수가 이미 목표치인 record — 패딩이 여기서 빠져나가며 굴림을 영원히 비워 두고 있었다.
+        builder.EnsureAffixPadding(stranded, itemBaseId, stranded.AffixIds.Count);
+
+        Assert.That(
+            stranded.AffixMagnitudeRolls.Select(roll => roll.AffixId),
+            Is.EqualTo(stranded.AffixIds));
+    }
+
+    [Test]
+    public void ProfileBind_MigratesSavedItemsThatCarryAffixIdsWithoutRolls()
+    {
+        var lookup = new RuntimeCombatContentLookup();
+        var itemBaseId = lookup.GetCanonicalItemIds().First();
+        var builder = new SessionInventoryItemBuilder(lookup, BuildStableSeed);
+        var affixIds = CreateAffixIds(builder, itemBaseId);
+        var session = GameSessionTestFactory.Create(lookup);
+
+        session.BindProfile(new SaveProfile
+        {
+            ProfileId = "magnitude-legacy-bind",
+            Inventory = new List<InventoryItemRecord>
+            {
+                CreateStrandedItem(itemBaseId, affixIds),
+            },
+        });
+
+        var bound = session.Profile.Inventory.Single();
+        Assert.That(bound.AffixIds, Is.Not.Empty);
+        Assert.That(
+            bound.AffixMagnitudeRolls.Select(roll => roll.AffixId),
+            Is.EqualTo(bound.AffixIds),
+            "굴림 없는 접사를 남기면 그 아이템은 저작 기준값으로 싸우고 Seal 도 쓸 수 없다.");
+    }
+
+    private static IReadOnlyList<string> CreateAffixIds(
+        SessionInventoryItemBuilder builder,
+        string itemBaseId)
+    {
+        var generated = builder.CreateGeneratedInventoryItem(
+            new SaveProfile { ProfileId = "magnitude-legacy-source" },
+            itemBaseId,
+            "item-instance-legacy",
+            rolledRarityTier: (int)ItemRarityTierValue.Legendary);
+        Assert.That(generated.AffixIds, Is.Not.Empty);
+        return generated.AffixIds;
+    }
+
+    /// <summary>저장된 레거시 아이템의 지문 — 접사 id는 있는데 굴림 목록이 비어 있다.</summary>
+    private static InventoryItemRecord CreateStrandedItem(
+        string itemBaseId,
+        IReadOnlyList<string> affixIds)
+        => new()
+        {
+            ItemInstanceId = "item-instance-legacy",
+            ItemBaseId = itemBaseId,
+            AffixIds = affixIds.ToList(),
+            AffixMagnitudeRolls = new List<InventoryAffixMagnitudeRecord>(),
+        };
 
     [Test]
     public void Presentation_MultiModifierRolledInstance_RendersEveryScaledEffectInItsOperationUnit()

@@ -76,10 +76,59 @@ internal sealed class SessionInventoryItemBuilder
                ?? 12.3f;
     }
 
+    /// <summary>
+    /// AffixIds 에는 있는데 대응하는 굴림이 없는 접사를 결정적으로 채운다.
+    /// 굴림이 없으면 <see cref="AffixMagnitudePackageResolver"/> 가 조용히 저작 기준값으로 되돌아가고,
+    /// Seal 은 <c>RefitSealMagnitudeMissing</c> 로 아예 실패한다 — 즉 두 필드의 불일치는 표시 문제가
+    /// 아니라 위력과 동사가 같이 죽는 상태다. 시드는 이미 영속된 아이템 정체성(base id + instance id)에서
+    /// 파생하므로 같은 세이브는 몇 번을 로드해도 같은 굴림을 낸다.
+    /// </summary>
+    /// <returns>굴림을 하나라도 새로 채웠으면 true.</returns>
+    internal bool EnsureAffixMagnitudeRolls(InventoryItemRecord record, string itemBaseId)
+    {
+        if (record == null) throw new ArgumentNullException(nameof(record));
+        record.AffixIds ??= new List<string>();
+        record.AffixMagnitudeRolls ??= new List<InventoryAffixMagnitudeRecord>();
+        if (record.AffixIds.Count == 0) return false;
+
+        var rolled = new HashSet<string>(
+            record.AffixMagnitudeRolls
+                .Where(roll => roll != null && !string.IsNullOrWhiteSpace(roll.AffixId))
+                .Select(roll => roll.AffixId),
+            StringComparer.Ordinal);
+        if (record.AffixIds.All(affixId =>
+                string.IsNullOrWhiteSpace(affixId) || rolled.Contains(affixId)))
+        {
+            return false;
+        }
+
+        // 패딩이 쓰는 시드와 같은 식 — 한 아이템의 굴림이 백필 경로와 패딩 경로에서 갈리지 않는다.
+        var seed = _buildStableSeed($"{itemBaseId}|{record.ItemInstanceId}", record.AffixIds.Count);
+        var filled = false;
+        for (var ordinal = 0; ordinal < record.AffixIds.Count; ordinal++)
+        {
+            var affixId = record.AffixIds[ordinal];
+            if (string.IsNullOrWhiteSpace(affixId)
+                || !rolled.Add(affixId)
+                || !TryBuildAffixMagnitudeRoll(seed, affixId, ordinal, out var roll))
+            {
+                continue;
+            }
+
+            record.AffixMagnitudeRolls.Add(roll);
+            filled = true;
+        }
+
+        return filled;
+    }
+
     internal void EnsureAffixPadding(InventoryItemRecord record, string itemBaseId, int targetCount)
     {
         record.AffixIds ??= new List<string>();
         record.AffixMagnitudeRolls ??= new List<InventoryAffixMagnitudeRecord>();
+        // 백필을 early-return 앞에 둔다. 접사 수가 이미 목표치인 아이템은 여기서 빠져나가면서
+        // 굴림 없는 접사를 영원히 그대로 두고 있었다 — 패딩된 접사만 굴림을 받던 이유.
+        EnsureAffixMagnitudeRolls(record, itemBaseId);
         if (record.AffixIds.Count >= targetCount) return;
         var eligibleAffixIds = GeneratedItemAffixSelector.GetEligibleAffixIds(
             _sessionLookup,
