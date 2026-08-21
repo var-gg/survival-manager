@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -69,6 +70,24 @@ STORY_SHEET_VARIANTS = [
 ]
 
 CURRENT_DIALOGUE_IDS = [*LEAD_IDS, *NAMED_STORY_IDS, *BATTLE_CORE_IDS]
+
+
+# 공용 ChatGPT 이미지 드라이버의 집. survival-manager는 이 드라이버의 소유자가 아니라
+# 사용자다 — 다섯 프로젝트가 같은 파일을 쓰는데 한 제품 repo 안에 살면 남의 repo를
+# 편집해야 자기 파이프라인을 고칠 수 있게 된다. SSOT: dotfiles-skills/skills/gpt-imagegen.
+IMAGEGEN_DRIVER_ENV = "GPT_IMAGEGEN_SCRIPTS"
+IMAGEGEN_DRIVER_DEFAULT = Path.home() / "dotfiles-skills" / "skills" / "gpt-imagegen" / "scripts"
+
+
+def imagegen_driver() -> Path:
+    root = Path(os.environ.get(IMAGEGEN_DRIVER_ENV) or IMAGEGEN_DRIVER_DEFAULT)
+    driver = root / "upload_subject.py"
+    if not driver.is_file():
+        raise SystemExit(
+            f"[queue] upload_subject.py not found at {driver} — "
+            f"{IMAGEGEN_DRIVER_ENV} 로 gpt-imagegen scripts 경로를 지정하세요."
+        )
+    return driver
 
 
 def repo_root_from_script() -> Path:
@@ -146,7 +165,7 @@ def run_job(
     stderr_path = logs_dir / f"{character_id}_{variant}_{stamp}.err.log"
     cmd = [
         sys.executable,
-        "art-pipeline/scripts/upload_subject.py",
+        str(imagegen_driver()),
         str(subject.relative_to(repo_root)),
         "--timeout",
         str(timeout),

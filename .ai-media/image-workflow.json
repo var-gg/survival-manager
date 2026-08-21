@@ -1,0 +1,50 @@
+{
+  "schema": "ai-infra.image_workflow.v1",
+  "workflowId": "survival-manager.game-art",
+  "project": "survival-manager",
+  "context": {
+    "id": "survival-manager.game-art.v1",
+    "promptPolicyFiles": [
+      "art-pipeline/imagegen-direction.md",
+      "art-pipeline/README.md",
+      "art-pipeline/style/style-anchor-common.md"
+    ],
+    "referenceRoots": [
+      "art-pipeline/ref",
+      "art-pipeline/style",
+      "art-pipeline/subjects"
+    ],
+    "allowExternalPromptFiles": false
+  },
+  "defaults": {
+    "size": "1024x1536",
+    "quality": "high",
+    "format": "png",
+    "background": "opaque",
+    "outputCount": 1
+  },
+  "paths": {
+    "promptRoots": [
+      "art-pipeline/subjects",
+      "art-pipeline/output"
+    ],
+    "outputRoot": "art-pipeline/output"
+  },
+  "owners": {
+    "prompt": "survival-manager",
+    "references": "survival-manager",
+    "output": "survival-manager",
+    "acceptance": "survival-manager",
+    "postprocess": "survival-manager"
+  },
+  "execution": {
+    "interactiveSurface": "codex-imagegen",
+    "durableProviderId": "image.openai.api"
+  },
+  "legacy": {
+    "browserAutomation": "allowed",
+    "configPaths": [
+      "art-pipeline/.imagegen-config.yaml"
+    ]
+  }
+}

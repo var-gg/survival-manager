@@ -1,5 +1,6 @@
 # game-image-gen 자동화 설정
-# upload_subject.py가 art-pipeline/ 루트에서 이 파일을 읽음 (없으면 DEFAULT_CONFIG 사용)
+# 공용 드라이버(gpt-imagegen 스킬의 scripts/upload_subject.py)가 --pipeline-root 로 받은
+# art-pipeline/ 루트에서 이 파일을 읽음 (없으면 DEFAULT_CONFIG 사용)
 
 # ChatGPT 게임 프로젝트 URL (사용자가 셋업한 GPT 프로젝트)
 chatgpt_project_url: https://chatgpt.com/g/g-p-69c7aa09d1588191a8dd5bd93db389ba/project

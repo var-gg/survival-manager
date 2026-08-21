@@ -1,6 +1,7 @@
 # art-pipeline
 
-게임 이미지 리소스 자동 생성 워크스페이스. `.claude/skills/game-image-gen` skill의 운영 디렉토리.
+게임 이미지 리소스 자동 생성 워크스페이스. 이미지 생성 진입점은 전역 `gpt-imagegen` 스킬이고,
+이 repo의 아트 디렉션은 `art-pipeline/imagegen-direction.md`가 소유한다.
 
 multi-subject 운영 정책: `pindoc://decision-game-image-gen-multi-subject-operations`.
 
@@ -24,8 +25,7 @@ multi-subject 운영 정책: `pindoc://decision-game-image-gen-multi-subject-ope
 | `Assets/Resources/_Game/Art/Characters/{subject_id}/` | 런타임 production 이미지 + Unity `.meta` | commit |
 | `inbox/` `working/` `selected/` | 수동 조작용 (재시도/선별) | gitignore |
 | `postprocess/chroma_key.py` | 누끼 스크립트 | commit |
-| `scripts/assemble_prompt.py` | prompt 조립 (kind 분기 anchor + ref 디렉토리, 단독 testable) | commit |
-| `scripts/upload_subject.py` | 메인 오케스트레이터 (Playwright + ChatGPT + kind 기반 chroma 자동) | commit |
+| `imagegen-direction.md` | 이 repo의 아트 디렉션·입력 계약 (manifest promptPolicyFiles) | commit |
 | `scripts/audit_character_assets.py` | 캐릭터별 ref/subject/output coverage 감사 | commit |
 | `scripts/audit_skill_assets.py` | skill/presentation icon subject/output coverage 감사 | commit |
 | `scripts/audit_p09_visual_identity.py` | P09 preset 기반 alias/의상 겹침/색상 식별성 감사 | commit |
@@ -47,49 +47,49 @@ python -m playwright install chromium
 
 ```text
 # character (kind 생략 시 character 폴백 — backward compat)
-/game-image-gen 단린 portrait_full default
+/gpt-imagegen 단린 portrait_full default
 
 # map cycle
-/game-image-gen map site_wolfpine_trail concept_thumbnail
-/game-image-gen map site_sunken_bastion layout_isometric
+/gpt-imagegen map site_wolfpine_trail concept_thumbnail
+/gpt-imagegen map site_sunken_bastion layout_isometric
 
 # icon
-/game-image-gen icon_skill mystic_phantom_summon default
+/gpt-imagegen icon_skill mystic_phantom_summon default
 
 # cutscene
-/game-image-gen cutscene aldric_journal_discovery shot_01
+/gpt-imagegen cutscene aldric_journal_discovery shot_01
 
 # background
-/game-image-gen background town_main_hall day
+/gpt-imagegen background town_main_hall day
 ```
 
-skill 내부 처리: subject 페이지 path 결정 → `python scripts/upload_subject.py {그 페이지}` 호출 → ChatGPT 자동 조작 → chroma 누끼 자동 분기 → 결과 보고.
+skill 내부 처리: subject 페이지 path 결정 → 공용 드라이버 `upload_subject.py {그 페이지}` 호출 → ChatGPT 자동 조작 → chroma 누끼 자동 분기 → 결과 보고.
 
-자세한 호출 패턴 + kind 매핑 + chroma 정책은 `.claude/skills/game-image-gen/SKILL.md` 참조.
+자세한 호출 패턴 + kind 매핑 + chroma 정책은 `imagegen-direction.md`와 전역 `gpt-imagegen` 스킬 참조.
 
 ## 단독 실행 (skill 없이 직접)
 
 ```powershell
 # dry-run: prompt 조립만 출력 (브라우저 안 띄움)
-python art-pipeline/scripts/upload_subject.py `
+python $env:GPT_IMAGEGEN_SCRIPTS/upload_subject.py `
     art-pipeline/subjects/characters/hero_dawn_priest/portrait_full_default.md `
     --dry-run
 
 # 실제 실행
-python art-pipeline/scripts/upload_subject.py `
+python $env:GPT_IMAGEGEN_SCRIPTS/upload_subject.py `
     art-pipeline/subjects/characters/hero_dawn_priest/portrait_full_default.md
 
 # 재생성
-python art-pipeline/scripts/upload_subject.py {subject.md} --force
+python $env:GPT_IMAGEGEN_SCRIPTS/upload_subject.py {subject.md} --force
 
 # chroma 강제 OFF (frontmatter / kind default 무시)
-python art-pipeline/scripts/upload_subject.py {subject.md} --no-chroma
+python $env:GPT_IMAGEGEN_SCRIPTS/upload_subject.py {subject.md} --no-chroma
 
 # 헤드리스 (세션 저장 후에만)
-python art-pipeline/scripts/upload_subject.py {subject.md} --headless
+python $env:GPT_IMAGEGEN_SCRIPTS/upload_subject.py {subject.md} --headless
 
 # 디버깅: 브라우저 안 닫기
-python art-pipeline/scripts/upload_subject.py {subject.md} --keep-browser-open
+python $env:GPT_IMAGEGEN_SCRIPTS/upload_subject.py {subject.md} --keep-browser-open
 ```
 
 ## 캐릭터 자산 감사
@@ -159,10 +159,10 @@ python art-pipeline/scripts/audit_skill_assets.py --show-missing
 
 | 단계 | 산출물 | 책임자 |
 | --- | --- | --- |
-| **map_concept** (시안 1장) | quarter-view + 4-layer + mood + Unity kitbash ref + 아트북/로딩 통합 | game-image-gen |
+| **map_concept** (시안 1장) | quarter-view + 4-layer + mood + Unity kitbash ref + 아트북/로딩 통합 | gpt-imagegen |
 | Unity 3D kitbash | `BattleMap_{site}.prefab` (project-owned, vendor nested ref) | 사용자 + AI 협업 |
 | reference_screenshot | Unity 카메라 캡처 → `ref/maps/{site_id}/baseline.png` | `tools/unity-bridge.ps1 capture-map` (후속 추가 예정) |
-| **map_painted_{variant}** (선택) | 시간대/날씨/특수 mood 분기, narrative beat 강한 site만 (보스/결말 등). baseline screenshot을 ref로 | game-image-gen |
+| **map_painted_{variant}** (선택) | 시간대/날씨/특수 mood 분기, narrative beat 강한 site만 (보스/결말 등). baseline screenshot을 ref로 | gpt-imagegen |
 
 ### `refs:` syntax
 
@@ -222,7 +222,7 @@ storage 매핑: `pindoc-server-daemon:/var/lib/pindoc/assets/{sha[0:2]}/{sha}` (
 
 ## 관련 문서
 
-- skill: `.claude/skills/game-image-gen/SKILL.md`
+- skill: 전역 `gpt-imagegen` (드라이버는 `~/dotfiles-skills/skills/gpt-imagegen/scripts/`)
 - character asset matrix: `art-pipeline/subjects/characters/_asset_matrix.md`
 - multi-subject 운영 결정: `pindoc://decision-game-image-gen-multi-subject-operations`
 - 맵 cycle 정책: `pindoc://map-concept-cycle-and-edge-treatment-v1`
